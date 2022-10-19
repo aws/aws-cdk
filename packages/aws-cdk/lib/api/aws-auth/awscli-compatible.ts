@@ -5,7 +5,7 @@ import * as util from 'util';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { debug } from '../../logging';
+import { debug } from './_env';
 import { PatchedSharedIniFileCredentials } from './aws-sdk-inifile';
 import { SharedIniFile } from './sdk_ini_file';
 
@@ -33,17 +33,15 @@ export class AwsCliCompatible {
    * 4. Respects $AWS_DEFAULT_PROFILE in addition to $AWS_PROFILE.
    */
   public static async credentialChain(options: CredentialChainOptions = {}) {
+    // Force reading the `config` file if it exists by setting the appropriate
+    // environment variable.
+    await forceSdkToReadConfigIfPresent();
 
     // To match AWS CLI behavior, if a profile is explicitly given using --profile,
     // we use that to the exclusion of everything else (note: this does not apply
     // to AWS_PROFILE, environment credentials still take precedence over AWS_PROFILE)
     if (options.profile) {
-      await forceSdkToReadConfigIfPresent();
-      const theProfile = options.profile;
-      return new AWS.CredentialProviderChain([
-        () => profileCredentials(theProfile),
-        () => new AWS.ProcessCredentials({ profile: theProfile }),
-      ]);
+      return new AWS.CredentialProviderChain(iniFileCredentialFactories(options.profile, options.httpOptions));
     }
 
     const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
@@ -51,15 +49,8 @@ export class AwsCliCompatible {
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
       () => new AWS.EnvironmentCredentials('AMAZON'),
+      ...iniFileCredentialFactories(implicitProfile, options.httpOptions),
     ];
-
-    if (await fs.pathExists(credentialsFileName())) {
-      // Force reading the `config` file if it exists by setting the appropriate
-      // environment variable.
-      await forceSdkToReadConfigIfPresent();
-      sources.push(() => profileCredentials(implicitProfile));
-      sources.push(() => new AWS.ProcessCredentials({ profile: implicitProfile }));
-    }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
@@ -82,6 +73,17 @@ export class AwsCliCompatible {
         httpOptions: options.httpOptions,
         tokenCodeFn,
       });
+    }
+
+    function iniFileCredentialFactories(theProfile: string, theHttpOptions?: AWS.HTTPOptions) {
+      return [
+        () => profileCredentials(theProfile),
+        () => new AWS.SsoCredentials({
+          profile: theProfile,
+          httpOptions: theHttpOptions,
+        }),
+        () => new AWS.ProcessCredentials({ profile: theProfile }),
+      ];
     }
   }
 
@@ -177,12 +179,18 @@ async function isEc2Instance() {
     let instance = false;
     if (process.platform === 'win32') {
       // https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
-      const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
-      // output looks like
-      //  UUID
-      //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
-      const lines = result.stdout.toString().split('\n');
-      instance = lines.some(x => matchesRegex(/^ec2/i, x));
+      try {
+        const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
+        // output looks like
+        //  UUID
+        //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
+        const lines = result.stdout.toString().split('\n');
+        instance = lines.some(x => matchesRegex(/^ec2/i, x));
+      } catch (e) {
+        // Modern machines may not have wmic.exe installed. No reason to fail, just assume it's not an EC2 instance.
+        debug(`Checking using WMIC failed, assuming NOT an EC2 instance: ${e.message} (pass --ec2creds to force)`);
+        instance = false;
+      }
     } else {
       // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
       const files: Array<[string, RegExp]> = [
@@ -340,4 +348,3 @@ async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) 
     cb(err);
   }
 }
-

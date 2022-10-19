@@ -30,6 +30,7 @@ export enum Command {
   METADATA = 'metadata',
   INIT = 'init',
   VERSION = 'version',
+  WATCH = 'watch',
 }
 
 const BUNDLING_COMMANDS = [
@@ -37,6 +38,7 @@ const BUNDLING_COMMANDS = [
   Command.DIFF,
   Command.SYNTH,
   Command.SYNTHESIZE,
+  Command.WATCH,
 ];
 
 export type Arguments = {
@@ -112,6 +114,10 @@ export class Configuration {
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
     const readUserContext = this.props.readUserContext ?? true;
+
+    if (userConfig.get(['build'])) {
+      throw new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead');
+    }
 
     const contextSources = [
       this.commandLineContext,
@@ -229,6 +235,14 @@ export class Settings {
 
   /**
    * Parse Settings out of CLI arguments.
+   *
+   * CLI arguments in must be accessed in the CLI code via
+   * `configuration.settings.get(['argName'])` instead of via `args.argName`.
+   *
+   * The advantage is that they can be configured via `cdk.json` and
+   * `$HOME/.cdk.json`. Arguments not listed below and accessed via this object
+   * can only be specified on the command line.
+   *
    * @param argv the received CLI arguments.
    * @returns a new Settings object.
    */
@@ -239,11 +253,11 @@ export class Settings {
     // Determine bundling stacks
     let bundlingStacks: string[];
     if (BUNDLING_COMMANDS.includes(argv._[0])) {
-    // If we deploy, diff or synth a list of stacks exclusively we skip
+    // If we deploy, diff, synth or watch a list of stacks exclusively we skip
     // bundling for all other stacks.
       bundlingStacks = argv.exclusively
-        ? argv.STACKS ?? ['*']
-        : ['*'];
+        ? argv.STACKS ?? ['**']
+        : ['**'];
     } else { // Skip bundling for all stacks
       bundlingStacks = [];
     }
@@ -251,6 +265,7 @@ export class Settings {
     return new Settings({
       app: argv.app,
       browser: argv.browser,
+      build: argv.build,
       context,
       debug: argv.debug,
       tags,
@@ -268,9 +283,12 @@ export class Settings {
       versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
+      outputsFile: argv.outputsFile,
       progress: argv.progress,
       bundlingStacks,
       lookups: argv.lookups,
+      rollback: argv.rollback,
+      notices: argv.notices,
     });
   }
 
@@ -425,7 +443,7 @@ export class Settings {
 
 function expandHomeDir(x: string) {
   if (x.startsWith('~')) {
-    return fs_path.join(os.homedir(), x.substr(1));
+    return fs_path.join(os.homedir(), x.slice(1));
   }
   return x;
 }

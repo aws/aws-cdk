@@ -1,5 +1,5 @@
 AWS Cloud Development Kit (AWS CDK)
-Copyright 2018-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 -------------------------------------------------------------------------------
 
@@ -355,8 +355,6 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ----------------
 
 ** yallist - https://www.npmjs.com/package/yallist
-
-
 Copyright (c) Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any

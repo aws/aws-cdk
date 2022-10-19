@@ -2,7 +2,8 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
-import { IAspect, IConstruct, Stack } from '@aws-cdk/core';
+import { ArnFormat, IAspect, Stack } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 
 export class BackupableResourcesCollector implements IAspect {
   public readonly resources: string[] = [];
@@ -41,10 +42,22 @@ export class BackupableResourcesCollector implements IAspect {
     }
 
     if (node instanceof rds.CfnDBInstance) {
+      const dbInstance = node as rds.CfnDBInstance;
+      if (!dbInstance.dbClusterIdentifier) {
+        this.resources.push(Stack.of(node).formatArn({
+          service: 'rds',
+          resource: 'db',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          resourceName: node.ref,
+        }));
+      }
+    }
+
+    if (node instanceof rds.CfnDBCluster) {
       this.resources.push(Stack.of(node).formatArn({
         service: 'rds',
-        resource: 'db',
-        sep: ':',
+        resource: 'cluster',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: node.ref,
       }));
     }

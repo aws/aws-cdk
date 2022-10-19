@@ -17,7 +17,7 @@
 
 A linter for the AWS Construct Library's API. It reflects a construct library's
 module via it's `.jsii` manifest and checks that the module adheres to the [AWS
-Resource Construct Design Guidelines](../../DESIGN_GUIDELINES.md).
+Resource Construct Design Guidelines](../../docs/DESIGN_GUIDELINES.md).
 
 ## Usage
 
@@ -139,6 +139,6 @@ resource-class: every resource must have a resource class (L2)
 ...
 ```
 
-The [AWS Resource Construct Design Guidelines](../../DESIGN_GUIDELINES.md) document
-includes references for all rules. For example, see [#construct-interface](../../DESIGN_GUIDELINES.md#construct-interface)
+The [AWS Resource Construct Design Guidelines](../../docs/DESIGN_GUIDELINES.md) document
+includes references for all rules. For example, see [#construct-interface](../../docs/DESIGN_GUIDELINES.md#construct-interface)
 for a discussion about the "construct-interface" rule.

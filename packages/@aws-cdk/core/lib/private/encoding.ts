@@ -14,7 +14,10 @@ const QUOTED_BEGIN_STRING_TOKEN_MARKER = regexQuote(BEGIN_STRING_TOKEN_MARKER);
 const QUOTED_BEGIN_LIST_TOKEN_MARKER = regexQuote(BEGIN_LIST_TOKEN_MARKER);
 const QUOTED_END_TOKEN_MARKER = regexQuote(END_TOKEN_MARKER);
 
-const STRING_TOKEN_REGEX = new RegExp(`${QUOTED_BEGIN_STRING_TOKEN_MARKER}([${VALID_KEY_CHARS}]+)${QUOTED_END_TOKEN_MARKER}`, 'g');
+// Sometimes the number of digits is different
+export const STRINGIFIED_NUMBER_PATTERN = '-1\\.\\d{10,16}e\\+289';
+
+const STRING_TOKEN_REGEX = new RegExp(`${QUOTED_BEGIN_STRING_TOKEN_MARKER}([${VALID_KEY_CHARS}]+)${QUOTED_END_TOKEN_MARKER}|(${STRINGIFIED_NUMBER_PATTERN})`, 'g');
 const LIST_TOKEN_REGEX = new RegExp(`${QUOTED_BEGIN_LIST_TOKEN_MARKER}([${VALID_KEY_CHARS}]+)${QUOTED_END_TOKEN_MARKER}`, 'g');
 
 /**
@@ -52,7 +55,7 @@ export class TokenString {
         ret.addLiteral(this.str.substring(rest, m.index));
       }
 
-      ret.addToken(lookup(m[1]));
+      ret.addToken(lookup(m[1] ?? m[2]));
 
       rest = this.re.lastIndex;
       m = this.re.exec(this.str);
@@ -217,4 +220,13 @@ export function extractTokenDouble(encoded: number): number | undefined {
   // will force 32-bits integer arithmetic, + will not).
   return ints[0] + shl32(ints[1] & 0xFFFF);
   /* eslint-enable no-bitwise */
+}
+
+const STRINGIFIED_NUMBER_REGEX = new RegExp(STRINGIFIED_NUMBER_PATTERN);
+
+/**
+ * Return whether the given string contains accidentally stringified number tokens
+ */
+export function stringContainsNumberTokens(x: string) {
+  return !!x.match(STRINGIFIED_NUMBER_REGEX);
 }

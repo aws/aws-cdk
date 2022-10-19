@@ -3,17 +3,15 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import * as ssm from '@aws-cdk/aws-ssm';
-import { Duration, Lazy, IResource, Resource, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, ArnFormat } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
+import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster } from './ecs.generated';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
 
 /**
  * The properties used to define an ECS cluster.
@@ -52,15 +50,30 @@ export interface ClusterProps {
    * The capacity providers to add to the cluster
    *
    * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
+   * @deprecated Use {@link ClusterProps.enableFargateCapacityProviders} instead.
    */
   readonly capacityProviders?: string[];
 
   /**
+   * Whether to enable Fargate Capacity Providers
+   *
+   * @default false
+   */
+  readonly enableFargateCapacityProviders?: boolean;
+
+  /**
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
-   * @default - Container Insights will be disabled for this cluser.
+   * @default - Container Insights will be disabled for this cluster.
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The execute command configuration for the cluster
+   *
+   * @default - no configuration will be provided.
+   */
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 }
 
 /**
@@ -89,6 +102,41 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Import an existing cluster to the stack from the cluster ARN.
+   * This does not provide access to the vpc, hasEc2Capacity, or connections -
+   * use the `fromClusterAttributes` method to access those properties.
+   */
+  public static fromClusterArn(scope: Construct, id: string, clusterArn: string): ICluster {
+    const stack = Stack.of(scope);
+    const arn = stack.splitArn(clusterArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const clusterName = arn.resourceName;
+
+    if (!clusterName) {
+      throw new Error(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`);
+    }
+
+    const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
+
+    class Import extends Resource implements ICluster {
+      public readonly clusterArn = clusterArn;
+      public readonly clusterName = clusterName!;
+      get hasEc2Capacity(): boolean {
+        throw new Error(`hasEc2Capacity ${errorSuffix}`);
+      }
+      get connections(): ec2.Connections {
+        throw new Error(`connections ${errorSuffix}`);
+      }
+      get vpc(): ec2.IVpc {
+        throw new Error(`vpc ${errorSuffix}`);
+      }
+    }
+
+    return new Import(scope, id, {
+      environmentFromArn: clusterArn,
+    });
+  }
+
+  /**
    * Manage the allowed network connections for the cluster with Security Groups.
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
@@ -109,11 +157,9 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterName: string;
 
   /**
-   * The capacity providers associated with the cluster.
-   *
-   * Currently only FARGATE and FARGATE_SPOT are supported.
+   * The names of both ASG and Fargate capacity providers associated with the cluster.
    */
-  private _capacityProviders: string[] = [];
+  private _capacityProviderNames: string[] = [];
 
   /**
    * The AWS Cloud Map namespace to associate with the cluster.
@@ -129,6 +175,11 @@ export class Cluster extends Resource implements ICluster {
    * The autoscaling group for added Ec2 capacity
    */
   private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
+   * The execute command configuration for the cluster
+   */
+  private _executeCommandConfiguration?: ExecuteCommandConfiguration;
 
   /**
    * Constructs a new instance of the Cluster class.
@@ -148,12 +199,23 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
     }
 
-    this._capacityProviders = props.capacityProviders ?? [];
+    this._capacityProviderNames = props.capacityProviders ?? [];
+    if (props.enableFargateCapacityProviders) {
+      this.enableFargateCapacityProviders();
+    }
+
+    if (props.executeCommandConfiguration) {
+      if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
+        (props.executeCommandConfiguration.logConfiguration !== undefined)) {
+        throw new Error('Execute command log configuration must only be specified when logging is OVERRIDE.');
+      }
+      this._executeCommandConfiguration = props.executeCommandConfiguration;
+    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      capacityProviders: Lazy.list({ produce: () => this._capacityProviders }, { omitEmpty: true }),
+      configuration: this._executeCommandConfiguration && this.renderExecuteCommandConfiguration(),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -173,6 +235,51 @@ export class Cluster extends Resource implements ICluster {
     this._autoscalingGroup = props.capacity !== undefined
       ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
+
+    // Only create cluster capacity provider associations if there are any EC2
+    // capacity providers. Ordinarily we'd just add the construct to the tree
+    // since it's harmless, but we'd prefer not to add unexpected new
+    // resources to the stack which could surprise users working with
+    // brown-field CDK apps and stacks.
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames));
+  }
+
+  /**
+   * Enable the Fargate capacity providers for this cluster.
+   */
+  public enableFargateCapacityProviders() {
+    for (const provider of ['FARGATE', 'FARGATE_SPOT']) {
+      if (!this._capacityProviderNames.includes(provider)) {
+        this._capacityProviderNames.push(provider);
+      }
+    }
+  }
+
+  private renderExecuteCommandConfiguration() : CfnCluster.ClusterConfigurationProperty {
+    return {
+      executeCommandConfiguration: {
+        kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
+        logConfiguration: this._executeCommandConfiguration?.logConfiguration && this.renderExecuteCommandLogConfiguration(),
+        logging: this._executeCommandConfiguration?.logging,
+      },
+    };
+  }
+
+  private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
+    const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
+    if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3Bucket) {
+      throw new Error('You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.');
+    }
+    if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroup) {
+      throw new Error('You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.');
+    }
+    return {
+      cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
+      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupName,
+      s3BucketName: logConfiguration?.s3Bucket?.bucketName,
+      s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
+      s3KeyPrefix: logConfiguration?.s3KeyPrefix,
+    };
   }
 
   /**
@@ -211,27 +318,32 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
-    if (options.machineImage && options.machineImageType) {
-      throw new Error('You can only specify either machineImage or machineImageType, not both.');
-    }
+    // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
+    // Otherwise, determine the machineImageType from the given AMI.
+    const machineImage = options.machineImage ??
+      (options.machineImageType === MachineImageType.BOTTLEROCKET ? new BottleRocketImage({
+        architecture: options.instanceType.architecture,
+      }) : new EcsOptimizedAmi());
 
-    const machineImage = options.machineImage ?? options.machineImageType === MachineImageType.BOTTLEROCKET ?
-      new BottleRocketImage() : new EcsOptimizedAmi();
+    const machineImageType = options.machineImageType ??
+      (isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
       machineImage,
-      updateType: options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
+      updateType: !!options.updatePolicy ? undefined : options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
       ...options,
     });
 
     this.addAutoScalingGroup(autoScalingGroup, {
-      machineImageType: options.machineImageType,
+      machineImageType: machineImageType,
       ...options,
     });
 
@@ -239,8 +351,31 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * This method adds an Auto Scaling Group Capacity Provider to a cluster.
+   *
+   * @param provider the capacity provider to add to this cluster.
+   */
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions= {}) {
+    // Don't add the same capacity provider more than once.
+    if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
+      return;
+    }
+    this._hasEc2Capacity = true;
+    this.configureAutoScalingGroup(provider.autoScalingGroup, {
+      ...options,
+      machineImageType: provider.machineImageType,
+      // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
+      taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+      canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
+    });
+
+    this._capacityProviderNames.push(provider.capacityProviderName);
+  }
+
+  /**
    * This method adds compute capacity to a cluster using the specified AutoScalingGroup.
    *
+   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    * @param autoScalingGroup the ASG to add to this cluster.
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
@@ -248,8 +383,11 @@ export class Cluster extends Resource implements ICluster {
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
+    this.configureAutoScalingGroup(autoScalingGroup, options);
+  }
 
-    if ( autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS ) {
+  private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
     } else {
       // Tie instances to cluster
@@ -342,17 +480,19 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * addCapacityProvider adds the name of a capacityProvider to the list of supproted capacityProviders for a cluster.
+   * This method enables the Fargate or Fargate Spot capacity providers on the cluster.
    *
    * @param provider the capacity provider to add to this cluster.
+   * @deprecated Use {@link enableFargateCapacityProviders} instead.
+   * @see {@link addAsgCapacityProvider} to add an Auto Scaling Group capacity provider to the cluster.
    */
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
       throw new Error('CapacityProvider not supported');
     }
 
-    if (!this._capacityProviders.includes(provider)) {
-      this._capacityProviders.push(provider);
+    if (!this._capacityProviderNames.includes(provider)) {
+      this._capacityProviderNames.push(provider);
     }
   }
 
@@ -398,6 +538,13 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Getter for execute command configuration associated with the cluster.
+   */
+  public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
+    return this._executeCommandConfiguration;
+  }
+
+  /**
    * This method returns the CloudWatch metric for this clusters CPU reservation.
    *
    * @default average over 5 minutes
@@ -440,7 +587,7 @@ export class Cluster extends Resource implements ICluster {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName },
+      dimensionsMap: { ClusterName: this.clusterName },
       ...props,
     }).attachTo(this);
   }
@@ -452,240 +599,6 @@ export class Cluster extends Resource implements ICluster {
       ...fn({ ClusterName: this.clusterName }),
       ...props,
     }).attachTo(this);
-  }
-}
-
-/**
- * ECS-optimized Windows version list
- */
-export enum WindowsOptimizedVersion {
-  SERVER_2019 = '2019',
-  SERVER_2016 = '2016',
-}
-
-/*
- * TODO:v2.0.0
- *  * remove `export` keyword
- *  * remove @depracted
- */
-/**
- * The properties that define which ECS-optimized AMI is used.
- *
- * @deprecated see {@link EcsOptimizedImage}
- */
-export interface EcsOptimizedAmiProps {
-  /**
-   * The Amazon Linux generation to use.
-   *
-   * @default AmazonLinuxGeneration.AmazonLinux2
-   */
-  readonly generation?: ec2.AmazonLinuxGeneration;
-
-  /**
-   * The Windows Server version to use.
-   *
-   * @default none, uses Linux generation
-   */
-  readonly windowsVersion?: WindowsOptimizedVersion;
-
-  /**
-   * The ECS-optimized AMI variant to use.
-   *
-   * @default AmiHardwareType.Standard
-   */
-  readonly hardwareType?: AmiHardwareType;
-}
-
-/*
- * TODO:v2.0.0 remove EcsOptimizedAmi
- */
-/**
- * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
- *
- * @deprecated see {@link EcsOptimizedImage#amazonLinux}, {@link EcsOptimizedImage#amazonLinux} and {@link EcsOptimizedImage#windows}
- */
-export class EcsOptimizedAmi implements ec2.IMachineImage {
-  private readonly generation?: ec2.AmazonLinuxGeneration;
-  private readonly windowsVersion?: WindowsOptimizedVersion;
-  private readonly hwType: AmiHardwareType;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the EcsOptimizedAmi class.
-   */
-  constructor(props?: EcsOptimizedAmiProps) {
-    this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
-    if (props && props.generation) { // generation defined in the props object
-      if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
-      } else if (props.windowsVersion) {
-        throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
-      } else {
-        this.generation = props.generation;
-      }
-    } else if (props && props.windowsVersion) {
-      if (this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Windows Server does not support special hardware type');
-      } else {
-        this.windowsVersion = props.windowsVersion;
-      }
-    } else { // generation not defined in props object
-      // always default to Amazon Linux v2 regardless of HW
-      this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
-    }
-
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + 'recommended/image_id';
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
-    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
-    return {
-      imageId: ami,
-      osType,
-      userData: ec2.UserData.forOperatingSystem(osType),
-    };
-  }
-}
-
-/**
- * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
- */
-export class EcsOptimizedImage implements ec2.IMachineImage {
-  /**
-   * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
-   *
-   * @param hardwareType ECS-optimized AMI variant to use
-   */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedImage {
-    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType });
-  }
-
-  /**
-   * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
-   */
-  public static amazonLinux(): EcsOptimizedImage {
-    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX });
-  }
-
-  /**
-   * Construct a Windows image from the latest ECS Optimized AMI published in SSM
-   *
-   * @param windowsVersion Windows Version to use
-   */
-  public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedImage {
-    return new EcsOptimizedImage({ windowsVersion });
-  }
-
-  private readonly generation?: ec2.AmazonLinuxGeneration;
-  private readonly windowsVersion?: WindowsOptimizedVersion;
-  private readonly hwType?: AmiHardwareType;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the EcsOptimizedAmi class.
-   */
-  private constructor(props: EcsOptimizedAmiProps) {
-    this.hwType = props && props.hardwareType;
-
-    if (props.windowsVersion) {
-      this.windowsVersion = props.windowsVersion;
-    } else if (props.generation) {
-      this.generation = props.generation;
-    } else {
-      throw new Error('This error should never be thrown');
-    }
-
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + 'recommended/image_id';
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
-    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
-    return {
-      imageId: ami,
-      osType,
-      userData: ec2.UserData.forOperatingSystem(osType),
-    };
-  }
-}
-
-/**
- * Amazon ECS variant
- */
-export enum BottlerocketEcsVariant {
-  /**
-   * aws-ecs-1 variant
-   */
-  AWS_ECS_1 = 'aws-ecs-1'
-
-}
-
-/**
- * Properties for BottleRocketImage
- */
-export interface BottleRocketImageProps {
-  /**
-   * The Amazon ECS variant to use.
-   * Only `aws-ecs-1` is currently available
-   *
-   * @default - BottlerocketEcsVariant.AWS_ECS_1
-   */
-  readonly variant?: BottlerocketEcsVariant;
-}
-
-/**
- * Construct an Bottlerocket image from the latest AMI published in SSM
- */
-export class BottleRocketImage implements ec2.IMachineImage {
-  private readonly amiParameterName: string;
-  /**
-   * Amazon ECS variant for Bottlerocket AMI
-   */
-  private readonly variant: string;
-
-  /**
-   * Constructs a new instance of the BottleRocketImage class.
-   */
-  public constructor(props: BottleRocketImageProps = {}) {
-    this.variant = props.variant ?? BottlerocketEcsVariant.AWS_ECS_1;
-
-    // set the SSM parameter name
-    this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/x86_64/latest/image_id`;
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return {
-      imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX,
-      userData: ec2.UserData.custom(''),
-    };
   }
 }
 
@@ -729,6 +642,11 @@ export interface ICluster extends IResource {
    * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
   readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
+   * The execute command configuration for the cluster
+   */
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 }
 
 /**
@@ -777,6 +695,13 @@ export interface ClusterAttributes {
    * @default - No default autoscaling group
    */
   readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
+   * The execute command configuration for the cluster
+   *
+   * @default - none.
+   */
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 }
 
 /**
@@ -814,6 +739,11 @@ class ImportedCluster extends Resource implements ICluster {
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
+   * The execute command configuration for the cluster
+   */
+  private _executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
    * Constructs a new instance of the ImportedCluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
@@ -822,6 +752,7 @@ class ImportedCluster extends Resource implements ICluster {
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
+    this._executeCommandConfiguration = props.executeCommandConfiguration;
 
     this.clusterArn = props.clusterArn ?? Stack.of(this).formatArn({
       service: 'ecs',
@@ -836,6 +767,10 @@ class ImportedCluster extends Resource implements ICluster {
 
   public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
     return this._defaultCloudMapNamespace;
+  }
+
+  public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
+    return this._executeCommandConfiguration;
   }
 }
 
@@ -859,6 +794,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * Set to 0 to disable task draining.
    *
+   * @deprecated The lifecycle draining hook is not configured if using the EC2 Capacity Provider. Enable managed termination protection instead.
    * @default Duration.minutes(5)
    */
   readonly taskDrainTime?: Duration;
@@ -881,11 +817,18 @@ export interface AddAutoScalingGroupCapacityOptions {
    */
   readonly topicEncryptionKey?: kms.IKey;
 
-
   /**
-   * Specify the machine image type.
+   * What type of machine image this is
    *
-   * @default MachineImageType.AMAZON_LINUX_2
+   * Depending on the setting, different UserData will automatically be added
+   * to the `AutoScalingGroup` to configure it properly for use with ECS.
+   *
+   * If you create an `AutoScalingGroup` yourself and are adding it via
+   * `addAutoScalingGroup()`, you must specify this value. If you are adding an
+   * `autoScalingGroup` via `addCapacity`, this value will be determined
+   * from the `machineImage` you pass.
+   *
+   * @default - Automatically determined from `machineImage`, if available, otherwise `MachineImageType.AMAZON_LINUX_2`.
    */
   readonly machineImageType?: MachineImageType;
 }
@@ -900,11 +843,27 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   readonly instanceType: ec2.InstanceType;
 
   /**
-   * The ECS-optimized AMI variant to use. For more information, see
-   * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
+   * The ECS-optimized AMI variant to use
+   *
+   * The default is to use an ECS-optimized AMI of Amazon Linux 2 which is
+   * automatically updated to the latest version on every deployment. This will
+   * replace the instances in the AutoScalingGroup. Make sure you have not disabled
+   * task draining, to avoid downtime when the AMI updates.
+   *
+   * To use an image that does not update on every deployment, pass:
+   *
+   * ```ts
+   * const machineImage = ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD, {
+   *   cachedInContext: true,
+   * });
+   * ```
+   *
+   * For more information, see [Amazon ECS-optimized
+   * AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
+   *
    * You must define either `machineImage` or `machineImageType`, not both.
    *
-   * @default - Amazon Linux 2
+   * @default - Automatically updated, ECS-optimized Amazon Linux 2
    */
   readonly machineImage?: ec2.IMachineImage;
 }
@@ -933,28 +892,6 @@ export interface CloudMapNamespaceOptions {
   readonly vpc?: ec2.IVpc;
 }
 
-/**
- * The ECS-optimized AMI variant to use. For more information, see
- * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
- */
-export enum AmiHardwareType {
-
-  /**
-   * Use the standard Amazon ECS-optimized AMI.
-   */
-  STANDARD = 'Standard',
-
-  /**
-   * Use the Amazon ECS GPU-optimized AMI.
-   */
-  GPU = 'GPU',
-
-  /**
-   * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
-   */
-  ARM = 'ARM64',
-}
-
 enum ContainerInsights {
   /**
    * Enable CloudWatch Container Insights for the cluster
@@ -975,7 +912,7 @@ enum ContainerInsights {
  */
 export interface CapacityProviderStrategy {
   /**
-   * The name of the Capacity Provider. Currently only FARGATE and FARGATE_SPOT are supported.
+   * The name of the capacity provider.
    */
   readonly capacityProvider: string;
 
@@ -996,4 +933,255 @@ capacity provider. The weight value is taken into consideration after the base v
    * @default - 0
    */
   readonly weight?: number;
+}
+
+/**
+ * The details of the execute command configuration. For more information, see
+ * [ExecuteCommandConfiguration] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-executecommandconfiguration.html
+ */
+export interface ExecuteCommandConfiguration {
+  /**
+   * The AWS Key Management Service key ID to encrypt the data between the local client and the container.
+   *
+   * @default - none
+   */
+  readonly kmsKey?: kms.IKey,
+
+  /**
+   * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.
+   *
+   * @default - none
+   */
+  readonly logConfiguration?: ExecuteCommandLogConfiguration,
+
+  /**
+   * The log settings to use for logging the execute command session.
+   *
+   * @default - none
+   */
+  readonly logging?: ExecuteCommandLogging,
+}
+
+/**
+ * The log settings to use to for logging the execute command session. For more information, see
+ * [Logging] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-executecommandconfiguration.html#cfn-ecs-cluster-executecommandconfiguration-logging
+ */
+export enum ExecuteCommandLogging {
+  /**
+   * The execute command session is not logged.
+   */
+  NONE = 'NONE',
+
+  /**
+   * The awslogs configuration in the task definition is used. If no logging parameter is specified, it defaults to this value. If no awslogs log driver is configured in the task definition, the output won't be logged.
+   */
+  DEFAULT = 'DEFAULT',
+
+  /**
+   * Specify the logging details as a part of logConfiguration.
+   */
+  OVERRIDE = 'OVERRIDE',
+}
+
+/**
+ * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs and/ or an Amazon S3 bucket.
+ * For more information, see [ExecuteCommandLogConfiguration] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-executecommandlogconfiguration.html
+ */
+export interface ExecuteCommandLogConfiguration {
+  /**
+   * Whether or not to enable encryption on the CloudWatch logs.
+   *
+   * @default - encryption will be disabled.
+   */
+  readonly cloudWatchEncryptionEnabled?: boolean,
+
+  /**
+   * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
+   * @default - none
+   */
+  readonly cloudWatchLogGroup?: logs.ILogGroup,
+
+  /**
+   * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
+   *
+   * @default - none
+   */
+  readonly s3Bucket?: s3.IBucket,
+
+  /**
+   * Whether or not to enable encryption on the CloudWatch logs.
+   *
+   * @default - encryption will be disabled.
+   */
+  readonly s3EncryptionEnabled?: boolean,
+
+  /**
+   * An optional folder in the S3 bucket to place logs in.
+   *
+   * @default - none
+   */
+  readonly s3KeyPrefix?: string
+}
+
+/**
+ * The options for creating an Auto Scaling Group Capacity Provider.
+ */
+export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOptions {
+  /**
+   * The name of the capacity provider. If a name is specified,
+   * it cannot start with `aws`, `ecs`, or `fargate`. If no name is specified,
+   * a default name in the CFNStackName-CFNResourceName-RandomString format is used.
+   *
+   * @default CloudFormation-generated name
+   */
+  readonly capacityProviderName?: string;
+
+  /**
+   * The autoscaling group to add as a Capacity Provider.
+   */
+  readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
+
+  /**
+   * Whether to enable managed scaling
+   *
+   * @default true
+   */
+  readonly enableManagedScaling?: boolean;
+
+  /**
+   * Whether to enable managed termination protection
+   *
+   * @default true
+   */
+  readonly enableManagedTerminationProtection?: boolean;
+
+  /**
+   * Maximum scaling step size. In most cases this should be left alone.
+   *
+   * @default 1000
+   */
+  readonly maximumScalingStepSize?: number;
+
+  /**
+   * Minimum scaling step size. In most cases this should be left alone.
+   *
+   * @default 1
+   */
+  readonly minimumScalingStepSize?: number;
+
+  /**
+   * Target capacity percent. In most cases this should be left alone.
+   *
+   * @default 100
+   */
+  readonly targetCapacityPercent?: number;
+}
+
+/**
+ * An Auto Scaling Group Capacity Provider. This allows an ECS cluster to target
+ * a specific EC2 Auto Scaling Group for the placement of tasks. Optionally (and
+ * recommended), ECS can manage the number of instances in the ASG to fit the
+ * tasks, and can ensure that instances are not prematurely terminated while
+ * there are still tasks running on them.
+ */
+export class AsgCapacityProvider extends Construct {
+  /**
+   * Capacity provider name
+   * @default Chosen by CloudFormation
+   */
+  readonly capacityProviderName: string;
+
+  /**
+   * Auto Scaling Group
+   */
+  readonly autoScalingGroup: autoscaling.AutoScalingGroup;
+
+  /**
+   * Auto Scaling Group machineImageType.
+   */
+  readonly machineImageType: MachineImageType;
+
+  /**
+   * Whether managed termination protection is enabled
+   */
+  readonly enableManagedTerminationProtection?: boolean;
+
+  /**
+   * Specifies whether the containers can access the container instance role.
+   *
+   * @default false
+   */
+  readonly canContainersAccessInstanceRole?: boolean;
+
+  constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
+    super(scope, id);
+
+    this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
+
+    this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
+
+    this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
+
+    this.enableManagedTerminationProtection =
+      props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
+
+    if (this.enableManagedTerminationProtection) {
+      this.autoScalingGroup.protectNewInstancesFromScaleIn();
+    }
+    if (props.capacityProviderName) {
+      if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
+        throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+      }
+    }
+    const capacityProvider = new CfnCapacityProvider(this, id, {
+      name: props.capacityProviderName,
+      autoScalingGroupProvider: {
+        autoScalingGroupArn: this.autoScalingGroup.autoScalingGroupName,
+        managedScaling: props.enableManagedScaling === false ? undefined : {
+          status: 'ENABLED',
+          targetCapacity: props.targetCapacityPercent || 100,
+          maximumScalingStepSize: props.maximumScalingStepSize,
+          minimumScalingStepSize: props.minimumScalingStepSize,
+        },
+        managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
+      },
+    });
+
+    this.capacityProviderName = capacityProvider.ref;
+  }
+}
+
+/**
+ * A visitor that adds a capacity provider association to a Cluster only if
+ * the caller created any EC2 Capacity Providers.
+ */
+class MaybeCreateCapacityProviderAssociations implements IAspect {
+  private scope: Construct;
+  private id: string;
+  private capacityProviders: string[]
+  private resource?: CfnClusterCapacityProviderAssociations
+
+  constructor(scope: Construct, id: string, capacityProviders: string[] ) {
+    this.scope = scope;
+    this.id = id;
+    this.capacityProviders = capacityProviders;
+  }
+
+  public visit(node: IConstruct): void {
+    if (node instanceof Cluster) {
+      if (this.capacityProviders.length > 0 && !this.resource) {
+        const resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
+          cluster: node.clusterName,
+          defaultCapacityProviderStrategy: [],
+          capacityProviders: Lazy.list({ produce: () => this.capacityProviders }),
+        });
+        this.resource = resource;
+      }
+    }
+  }
+}
+
+
+function isBottleRocketImage(image: ec2.IMachineImage) {
+  return image instanceof BottleRocketImage;
 }

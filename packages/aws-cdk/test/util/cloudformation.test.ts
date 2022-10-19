@@ -1,3 +1,4 @@
+import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import { CloudFormationStack, TemplateParameters } from '../../lib/api/util/cloudformation';
 import { MockedObject, MockSdkProvider, SyncHandlerSubsetOf } from './mock-sdk';
 
@@ -9,26 +10,57 @@ const USE_OVERRIDE = { ParameterKey: PARAM, ParameterValue: OVERRIDE };
 const USE_PREVIOUS = { ParameterKey: PARAM, UsePreviousValue: true };
 
 let sdkProvider: MockSdkProvider;
+let describeStackMock: jest.Mock;
+let getTemplateMock: jest.Mock;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
 let cfn: AWS.CloudFormation;
 beforeEach(async () => {
   sdkProvider = new MockSdkProvider();
 
+  describeStackMock = jest.fn();
+  getTemplateMock = jest.fn();
   cfnMocks = {
-    describeStacks: jest.fn()
-      // No stacks exist
-      .mockImplementation(() => ({ Stacks: [] })),
+    describeStacks: describeStackMock,
+    getTemplate: getTemplateMock,
   };
   sdkProvider.stubCloudFormation(cfnMocks as any);
-  cfn = (await sdkProvider.forEnvironment()).cloudFormation();
+  cfn = (await sdkProvider.forEnvironment()).sdk.cloudFormation();
 });
 
 test('A non-existent stack pretends to have an empty template', async () => {
+  // GIVEN
+  describeStackMock.mockImplementation(() => ({ Stacks: [] })); // No stacks exist
+
   // WHEN
   const stack = await CloudFormationStack.lookup(cfn, 'Dummy');
 
   // THEN
   expect(await stack.template()).toEqual({});
+});
+
+test("Retrieving a processed template passes 'Processed' to CloudFormation", async () => {
+  // GIVEN
+  describeStackMock.mockImplementation(() => ({
+    Stacks: [
+      {
+        StackName: 'Dummy',
+      },
+    ],
+  }));
+  getTemplateMock.mockImplementation(() => ({
+    TemplateBody: '{}',
+  }));
+
+  // WHEN
+  const retrieveProcessedTemplate = true;
+  const cloudFormationStack = await CloudFormationStack.lookup(cfn, 'Dummy', retrieveProcessedTemplate);
+  await cloudFormationStack.template();
+
+  // THEN
+  expect(getTemplateMock).toHaveBeenCalledWith({
+    StackName: 'Dummy',
+    TemplateStage: 'Processed',
+  });
 });
 
 test.each([
@@ -81,10 +113,32 @@ test('if a parameter is retrieved from SSM, the parameters always count as chang
   const oldValues = { Foo: '/Some/Key' };
 
   // If we don't pass a new value
-  expect(params.updateExisting({}, oldValues).hasChanges(oldValues)).toEqual(true);
+  expect(params.updateExisting({}, oldValues).hasChanges(oldValues)).toEqual('ssm');
 
   // If we do pass a new value but it's the same as the old one
-  expect(params.updateExisting({ Foo: '/Some/Key' }, oldValues).hasChanges(oldValues)).toEqual(true);
+  expect(params.updateExisting({ Foo: '/Some/Key' }, oldValues).hasChanges(oldValues)).toEqual('ssm');
+});
+
+test('if a parameter is retrieved from SSM, the parameters doesnt count as changed if it has the magic marker', () => {
+  const params = TemplateParameters.fromTemplate({
+    Parameters: {
+      Foo: {
+        Type: 'AWS::SSM::Parameter::Name',
+        Default: '/Some/Key',
+        Description: `blabla ${SSMPARAM_NO_INVALIDATE}`,
+      },
+    },
+  });
+  const oldValues = { Foo: '/Some/Key' };
+
+  // If we don't pass a new value
+  expect(params.updateExisting({}, oldValues).hasChanges(oldValues)).toEqual(false);
+
+  // If we do pass a new value but it's the same as the old one
+  expect(params.updateExisting({ Foo: '/Some/Key' }, oldValues).hasChanges(oldValues)).toEqual(false);
+
+  // If we do pass a new value and it's different
+  expect(params.updateExisting({ Foo: '/OTHER/Key' }, oldValues).hasChanges(oldValues)).toEqual(true);
 });
 
 test('empty string is a valid update value', () => {

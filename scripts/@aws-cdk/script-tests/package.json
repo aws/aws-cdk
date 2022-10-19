@@ -1,0 +1,17 @@
+{
+  "name": "@aws-cdk/script-tests",
+  "private": true,
+  "version": "0.0.0",
+  "description": "various tests for development and build scripts",
+  "scripts": {
+    "build": "echo ok",
+    "test": "jest",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}

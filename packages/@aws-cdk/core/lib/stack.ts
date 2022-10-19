@@ -3,15 +3,15 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
+import * as minimatch from 'minimatch';
 import { Annotations } from './annotations';
 import { App } from './app';
-import { Arn, ArnComponents } from './arn';
+import { Arn, ArnComponents, ArnFormat } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -19,10 +19,6 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -148,7 +144,7 @@ export interface StackProps {
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends CoreConstruct implements ITaggable {
+export class Stack extends Construct implements ITaggable {
   /**
    * Return whether the given object is a Stack.
    *
@@ -211,9 +207,9 @@ export class Stack extends CoreConstruct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.region` when the stack is defined. This can
-   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.region`
+   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.REGION`
    *    token.
-   * 3. `Aws.region`, which is represents the CloudFormation intrinsic reference
+   * 3. `Aws.REGION`, which is represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::Region" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
@@ -233,9 +229,9 @@ export class Stack extends CoreConstruct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.account` when the stack is defined. This can
-   *    either be a concerete account (e.g. `585695031111`) or the
-   *    `Aws.accountId` token.
-   * 3. `Aws.accountId`, which represents the CloudFormation intrinsic reference
+   *    either be a concrete account (e.g. `585695031111`) or the
+   *    `Aws.ACCOUNT_ID` token.
+   * 3. `Aws.ACCOUNT_ID`, which represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::AccountId" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
@@ -258,7 +254,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * environment.
    *
    * If either `stack.account` or `stack.region` are not concrete values (e.g.
-   * `Aws.account` or `Aws.region`) the special strings `unknown-account` and/or
+   * `Aws.ACCOUNT_ID` or `Aws.REGION`) the special strings `unknown-account` and/or
    * `unknown-region` will be used respectively to indicate this stack is
    * region/account-agnostic.
    */
@@ -273,7 +269,6 @@ export class Stack extends CoreConstruct implements ITaggable {
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
-   * @experimental
    */
   public readonly nestedStackResource?: CfnResource;
 
@@ -281,7 +276,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
-   * @example 'MyStack.template.json'
+   * Example value: `MyStack.template.json`
    */
   public readonly templateFile: string;
 
@@ -293,7 +288,6 @@ export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Synthesis method for this stack
    *
-   * @experimental
    */
   public readonly synthesizer: IStackSynthesizer;
 
@@ -372,6 +366,9 @@ export class Stack extends CoreConstruct implements ITaggable {
     }
 
     this._stackName = props.stackName ?? this.generateStackName();
+    if (this._stackName.length > 128) {
+      throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
+    }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
@@ -425,6 +422,17 @@ export class Stack extends CoreConstruct implements ITaggable {
   }
 
   /**
+   * DEPRECATED
+   * @deprecated use `reportMissingContextKey()`
+   */
+  public reportMissingContext(report: cxapi.MissingContext) {
+    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
+      throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
+    }
+    this.reportMissingContextKey(report as cxschema.MissingContext);
+  }
+
+  /**
    * Indicate that a context key was expected
    *
    * Contains instructions which will be emitted into the cloud assembly on how
@@ -432,11 +440,8 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * @param report The set of parameters needed to obtain the context
    */
-  public reportMissingContext(report: cxapi.MissingContext) {
-    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
-      throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
-    }
-    this._missingContext.push(report as cxschema.MissingContext);
+  public reportMissingContextKey(report: cxschema.MissingContext) {
+    this._missingContext.push(report);
   }
 
   /**
@@ -496,7 +501,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * scheme based on the construct path to ensure uniqueness.
    *
    * If you wish to obtain the deploy-time AWS::StackName intrinsic,
-   * you can use `Aws.stackName` directly.
+   * you can use `Aws.STACK_NAME` directly.
    */
   public get stackName(): string {
     return this._stackName;
@@ -506,10 +511,15 @@ export class Stack extends CoreConstruct implements ITaggable {
    * The partition in which this stack is defined
    */
   public get partition(): string {
-    // Always return a non-scoped partition intrinsic. These will usually
-    // be used to construct an ARN, but there are no cross-partition
-    // calls anyway.
-    return Aws.PARTITION;
+    // Return a non-scoped partition intrinsic when the stack's region is
+    // unresolved or unknown.  Otherwise we will return the partition name as
+    // a literal string.
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ENABLE_PARTITION_LITERALS) || Token.isUnresolved(this.region)) {
+      return Aws.PARTITION;
+    } else {
+      const partition = RegionInfo.get(this.region).partition;
+      return partition ?? Aws.PARTITION;
+    }
   }
 
   /**
@@ -556,7 +566,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * The ARN will be formatted as follows:
    *
-   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
    *
    * The required ARN pieces that are omitted will be taken from the stack that
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
@@ -603,9 +613,25 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * @returns an ArnComponents object which allows access to the various
    *      components of the ARN.
+   *
+   * @deprecated use splitArn instead
    */
   public parseArn(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
     return Arn.parse(arn, sepIfToken, hasName);
+  }
+
+  /**
+   * Splits the provided ARN into its components.
+   * Works both if 'arn' is a string like 'arn:aws:s3:::bucket',
+   * and a Token representing a dynamic CloudFormation expression
+   * (in which case the returned components will also be dynamic CloudFormation expressions,
+   * encoded as Tokens).
+   *
+   * @param arn the ARN to split into its components
+   * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   */
+  public splitArn(arn: string, arnFormat: ArnFormat): ArnComponents {
+    return Arn.split(arn, arnFormat);
   }
 
   /**
@@ -689,17 +715,32 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * Duplicate values are removed when stack is synthesized.
    *
-   * @example stack.addTransform('AWS::Serverless-2016-10-31')
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
-   *
    * @param transform The transform to add
+   *
+   * @example
+   * declare const stack: Stack;
+   *
+   * stack.addTransform('AWS::Serverless-2016-10-31')
    */
   public addTransform(transform: string) {
     if (!this.templateOptions.transforms) {
       this.templateOptions.transforms = [];
     }
     this.templateOptions.transforms.push(transform);
+  }
+
+  /**
+   * Adds an arbitary key-value pair, with information you want to record about the stack.
+   * These get translated to the Metadata section of the generated template.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.templateOptions.metadata) {
+      this.templateOptions.metadata = {};
+    }
+    this.templateOptions.metadata[key] = value;
   }
 
   /**
@@ -744,7 +785,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession): void {
+  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -763,17 +804,61 @@ export class Stack extends CoreConstruct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        const counts = Object.entries(count(Object.values(resources).map((r: any) => `${r?.Type}`))).map(([type, c]) => `${type} (${c})`).join(', ');
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}: ${counts}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 1));
 
     for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
+      if (lookupRoleArn != null) {
+        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn } });
+      } else {
+        builder.addMissing(ctx);
+      }
     }
   }
+
+  /**
+   * Look up a fact value for the given fact for the region of this stack
+   *
+   * Will return a definite value only if the region of the current stack is resolved.
+   * If not, a lookup map will be added to the stack and the lookup will be done at
+   * CDK deployment time.
+   *
+   * What regions will be included in the lookup map is controlled by the
+   * `@aws-cdk/core:target-partitions` context value: it must be set to a list
+   * of partitions, and only regions from the given partitions will be included.
+   * If no such context key is set, all regions will be included.
+   *
+   * This function is intended to be used by construct library authors. Application
+   * builders can rely on the abstractions offered by construct libraries and do
+   * not have to worry about regional facts.
+   *
+   * If `defaultValue` is not given, it is an error if the fact is unknown for
+   * the given region.
+   */
+  public regionalFact(factName: string, defaultValue?: string): string {
+    if (!Token.isUnresolved(this.region)) {
+      const ret = Fact.find(this.region, factName) ?? defaultValue;
+      if (ret === undefined) {
+        throw new Error(`region-info: don't know ${factName} for region ${this.region}. Use 'Fact.register' to provide this value.`);
+      }
+      return ret;
+    }
+
+    const partitions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
+    if (partitions !== undefined && !Array.isArray(partitions)) {
+      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(cxapi.TARGET_PARTITIONS)}`);
+    }
+
+    const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
+
+    return deployTimeLookup(this, factName, lookupMap, defaultValue);
+  }
+
 
   /**
    * Create a CloudFormation Export for a value
@@ -833,6 +918,14 @@ export class Stack extends CoreConstruct implements ITaggable {
     const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
+    }
+
+    // if exportValue is being called manually (which is pre onPrepare) then the logicalId
+    // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
+    // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
+    // if the user tries to override the id _after_ calling exportValue
+    if (CfnElement.isCfnElement(resolvable.target)) {
+      resolvable.target._lockLogicalId();
     }
 
     // "teleport" the value here, in case it comes from a nested stack. This will also
@@ -1086,6 +1179,18 @@ export class Stack extends CoreConstruct implements ITaggable {
 
     return makeStackName(ids);
   }
+
+  /**
+   * Indicates whether the stack requires bundling or not
+   */
+  public get bundlingRequired() {
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['**'];
+
+    return bundlingStacks.some(pattern => minimatch(
+      this.node.path, // use the same value for pattern matching as the aws-cdk CLI (displayName / hierarchicalId)
+      pattern,
+    ));
+  }
 }
 
 function merge(template: any, fragment: any): void {
@@ -1227,20 +1332,20 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  */
 function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
-  return makeUniqueId(components);
+  return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
 function getCreateExportsScope(stack: Stack) {
   const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as CoreConstruct;
+  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
   if (stackExports === undefined) {
-    stackExports = new CoreConstruct(stack, exportsName);
+    stackExports = new Construct(stack, exportsName);
   }
 
   return stackExports;
 }
 
-function generateExportName(stackExports: CoreConstruct, id: string) {
+function generateExportName(stackExports: Construct, id: string) {
   const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
@@ -1261,6 +1366,7 @@ interface StackDependency {
   reasons: string[];
 }
 
+
 /**
  * Options for the `stack.exportValue()` method
  */
@@ -1273,6 +1379,18 @@ export interface ExportValueOptions {
   readonly name?: string;
 }
 
+function count(xs: string[]): Record<string, number> {
+  const ret: Record<string, number> = {};
+  for (const x of xs) {
+    if (x in ret) {
+      ret[x] += 1;
+    } else {
+      ret[x] = 1;
+    }
+  }
+  return ret;
+}
+
 // These imports have to be at the end to prevent circular imports
 import { CfnOutput } from './cfn-output';
 import { addDependency } from './deps';
@@ -1280,8 +1398,12 @@ import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
+import { Fact, RegionInfo } from '@aws-cdk/region-info';
+import { deployTimeLookup } from './private/region-lookup';
+import { makeUniqueResourceName } from './private/unique-resource-name';
+

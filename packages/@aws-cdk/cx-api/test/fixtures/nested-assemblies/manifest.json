@@ -1,0 +1,21 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "subassembly": {
+      "type": "cdk:cloud-assembly",
+      "properties": {
+        "directoryName": "subassembly",
+        "displayName": "subassembly"
+      }
+    },
+    "topLevelStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://111111111111/us-east-1",
+      "properties": {
+        "templateFile": "topLevelStack.template.json",
+        "stackName": "topLevelStack"
+      },
+      "displayName": "topLevelStack"
+    }
+  }
+}

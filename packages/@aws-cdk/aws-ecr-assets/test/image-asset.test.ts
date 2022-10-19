@@ -1,160 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { expect as ourExpect, haveResource } from '@aws-cdk/assert';
-import * as iam from '@aws-cdk/aws-iam';
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAsset } from '../lib';
 
-/* eslint-disable quote-props */
-
-const DEMO_IMAGE_ASSET_HASH = 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5';
-
-
-let app: App;
-let stack: Stack;
-beforeEach(() => {
-  app = new App({
-    context: {
-      '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
-    },
-  });
-  stack = new Stack(app, 'Stack');
-});
+const DEMO_IMAGE_ASSET_HASH = '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14';
 
 describe('image asset', () => {
-  test('test instantiating Asset Image', () => {
-    // WHEN
-    new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-    });
-
-    // THEN
-    const asm = app.synth();
-    const artifact = asm.getStackArtifact(stack.artifactId);
-    expect(artifact.template).toEqual({});
-    expect(artifact.assets).toEqual([
-      {
-        repositoryName: 'aws-cdk/assets',
-        imageTag: 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
-        id: 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
-        packaging: 'container-image',
-        path: 'asset.b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
-        sourceHash: 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
-      },
-    ]);
-
-  });
-
-  test('with build args', () => {
-    // WHEN
-    new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: {
-        a: 'b',
-      },
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs).toEqual({ a: 'b' });
-
-  });
-
-  test('with target', () => {
-    // WHEN
-    new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: {
-        a: 'b',
-      },
-      target: 'a-target',
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).target).toEqual('a-target');
-
-  });
-
-  test('with file', () => {
-    // GIVEN
-    const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
-    // WHEN
-    new DockerImageAsset(stack, 'Image', {
-      directory: directoryPath,
-      file: 'Dockerfile.Custom',
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file).toEqual('Dockerfile.Custom');
-
-  });
-
-  test('asset.repository.grantPull can be used to grant a principal permissions to use the image', () => {
-    // GIVEN
-    const user = new iam.User(stack, 'MyUser');
-    const asset = new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-    });
-
-    // WHEN
-    asset.repository.grantPull(user);
-
-    // THEN
-    ourExpect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        'Statement': [
-          {
-            'Action': [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    'Ref': 'AWS::Partition',
-                  },
-                  ':ecr:',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    'Ref': 'AWS::AccountId',
-                  },
-                  ':repository/aws-cdk/assets',
-                ],
-              ],
-            },
-          },
-          {
-            'Action': 'ecr:GetAuthorizationToken',
-            'Effect': 'Allow',
-            'Resource': '*',
-          },
-        ],
-        'Version': '2012-10-17',
-      },
-      'PolicyName': 'MyUserDefaultPolicy7B897426',
-      'Users': [
-        {
-          'Ref': 'MyUserDC45028B',
-        },
-      ],
-    }));
-
-
-  });
-
   test('fails if the directory does not exist', () => {
+    const stack = new Stack();
     // THEN
     expect(() => {
       new DockerImageAsset(stack, 'MyAsset', {
@@ -165,6 +21,7 @@ describe('image asset', () => {
   });
 
   test('fails if the directory does not contain a Dockerfile', () => {
+    const stack = new Stack();
     // THEN
     expect(() => {
       new DockerImageAsset(stack, 'Asset', {
@@ -175,6 +32,7 @@ describe('image asset', () => {
   });
 
   test('fails if the file does not exist', () => {
+    const stack = new Stack();
     // THEN
     expect(() => {
       new DockerImageAsset(stack, 'Asset', {
@@ -186,57 +44,72 @@ describe('image asset', () => {
   });
 
   test('docker directory is staged if asset staging is enabled', () => {
+    const app = new App();
+    const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image'),
     });
 
     const session = app.synth();
 
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile'))).toBeDefined();
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py'))).toBeDefined();
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBe(true);
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
 
   });
 
-  test('docker directory is staged without files specified in .dockerignore', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore();
+  describeDeprecated('docker ignore option', () => {
+    // The 'ignoreMode' property is both deprecated and not deprecated in DockerImageAssetProps interface.
+    // The interface through a complex set of inheritance chain has a 'ignoreMode' prop that is deprecated
+    // and another 'ignoreMode' prop that is not deprecated.
+    // Using a 'describeDeprecated' block here since there's no way to work around this craziness.
+    // When the deprecated property is removed source code, this block can be dropped.
+
+    test('docker directory is staged without files specified in .dockerignore', () => {
+      const app = new App();
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app);
+    });
+
+    test('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', () => {
+      const app = new App();
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
+    });
   });
 
-  test('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(IgnoreMode.GLOB);
-  });
-
-  test('docker directory is staged with whitelisted files specified in .dockerignore', () => {
+  test('docker directory is staged with allow-listed files specified in .dockerignore', () => {
+    const app = new App();
+    const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'whitelisted-image'),
+      directory: path.join(__dirname, 'allow-listed-image'),
     });
 
     const session = app.synth();
 
     // Only the files exempted above should be included.
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore'))).toBeDefined();
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile'))).toBeDefined();
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py'))).toBeDefined();
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt'))).toBeDefined();
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory'))).toBeDefined();
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt'))).toBeDefined();
-    expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'node_modules'))).toBeDefined();
-    expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'node_modules', 'one'))).toBeDefined();
-    expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'node_modules', 'some_dep'))).toBeDefined();
-    expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'node_modules', 'some_dep', 'file'))).toBeDefined();
-
-
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, '.dockerignore'))).toBe(true);
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBe(true);
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBe(true);
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBe(true);
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(true);
+    expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules'))).toBe(true);
+    expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'one'))).toBe(true);
+    expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep'))).toBe(true);
+    expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep', 'file'))).toBe(true);
   });
 
   test('docker directory is staged without files specified in exclude option', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption();
+    const app = new App();
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app);
   });
 
   test('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(IgnoreMode.GLOB);
+    const app = new App();
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app, IgnoreMode.GLOB);
   });
 
   test('fails if using tokens in build args keys or values', () => {
     // GIVEN
+    const stack = new Stack();
     const token = Lazy.string({ produce: () => 'foo' });
     const expected = /Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment/;
 
@@ -250,12 +123,11 @@ describe('image asset', () => {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: { key: token },
     })).toThrow(expected);
-
-
   });
 
-  test('fails if using token as repositoryName', () => {
+  testDeprecated('fails if using token as repositoryName', () => {
     // GIVEN
+    const stack = new Stack();
     const token = Lazy.string({ produce: () => 'foo' });
 
     // THEN
@@ -263,12 +135,12 @@ describe('image asset', () => {
       directory: path.join(__dirname, 'demo-image'),
       repositoryName: token,
     })).toThrow(/Cannot use Token as value of 'repositoryName'/);
-
-
   });
 
   test('docker build options are included in the asset id', () => {
     // GIVEN
+    const app = new App();
+    const stack = new Stack(app);
     const directory = path.join(__dirname, 'demo-image-custom-docker-file');
 
     const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
@@ -277,20 +149,54 @@ describe('image asset', () => {
     const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
     const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
-    const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
 
-    expect(asset1.sourceHash).toEqual('ab01ecd4419f59e1ec0ac9e57a60dbb653be68a29af0223fa8cb24b4b747bc73');
-    expect(asset2.sourceHash).toEqual('7fb12f6148098e3f5c56c788a865d2af689125ead403b795fe6a262ec34384b3');
-    expect(asset3.sourceHash).toEqual('fc3b6d802ba198ba2ee55079dbef27682bcd1288d5849eb5bbd5cd69038359b3');
-    expect(asset4.sourceHash).toEqual('30439ea6dfeb4ddfd9175097286895c78393ef52a78c68f92db08abc4513cad6');
-    expect(asset5.sourceHash).toEqual('5775170880e26ba31799745241b90d4340c674bb3b1c01d758e416ee3f1c386f');
-    expect(asset6.sourceHash).toEqual('ba82fd351a4d3e3f5c5d948b9948e7e829badc3da90f97e00bb7724afbeacfd4');
-    expect(asset7.sourceHash).toEqual('26ec194928431cab6ec5af24ea9f01af2cf7b20e361128b07b2a7405d2951f95');
+    expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    expect(asset2.assetHash).toEqual('36bf205fb9adc5e45ba1c8d534158a0aed96d190eff433af1d90f3b94f96e751');
+    expect(asset3.assetHash).toEqual('4c85bd70e73117b7129c2defbe6dc40a8a3872329f4ddca18d75afa671b38276');
+    expect(asset4.assetHash).toEqual('8a91219a7bb0f58b3282dd84acbf4c03c49c765be54ffb7b125be6a50b6c5645');
+    expect(asset5.assetHash).toEqual('c02bfba13b2e7e1ff5c778a76e10296b9e8d17f7f8252d097f4170ae04ce0eb4');
+    expect(asset6.assetHash).toEqual('3528d6838647a5e9011b0f35aec514d03ad11af05a94653cdcf4dacdbb070a06');
 
+  });
+
+  testDeprecated('repositoryName is included in the asset id', () => {
+    const stack = new Stack();
+    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+
+    const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
+    const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, repositoryName: 'foo' });
+
+    expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    expect(asset2.assetHash).toEqual('b78978ca702a8eccd37804ce31d76cd83a695b557dbf95aeb109332ee8b1fd32');
+  });
+
+  describe('imageTag is correct for different stack synthesizers', () => {
+    const stack1 = new Stack();
+    const stack2 = new Stack(undefined, undefined, {
+      synthesizer: new DefaultStackSynthesizer({
+        dockerTagPrefix: 'banana',
+      }),
+    });
+
+    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+
+    const asset1 = new DockerImageAsset(stack1, 'Asset1', { directory });
+    const asset2 = new DockerImageAsset(stack2, 'Asset2', { directory });
+
+    test('stack with default synthesizer', () => {
+      expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+      expect(asset1.imageTag).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    });
+
+    test('stack with overwritten synthesizer', () => {
+      expect(asset2.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+      expect(asset2.imageTag).toEqual('banana13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    });
   });
 });
 
-function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(ignoreMode?: IgnoreMode) {
+function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app: App, ignoreMode?: IgnoreMode) {
+  const stack = new Stack(app);
   const image = new DockerImageAsset(stack, 'MyAsset', {
     ignoreMode,
     directory: path.join(__dirname, 'dockerignore-image'),
@@ -299,17 +205,16 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(ignoreMo
   const session = app.synth();
 
   // .dockerignore itself should be included in output to be processed during docker build
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore'))).toBeDefined();
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile'))).toBeDefined();
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py'))).toBeDefined();
-  expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt'))).toBeDefined();
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory'))).toBeDefined();
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt'))).toBeDefined();
-
-
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, '.dockerignore'))).toBe(true);
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBe(true);
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
+  expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBe(true);
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBe(true);
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(true);
 }
 
-function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(ignoreMode?: IgnoreMode) {
+function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: App, ignoreMode?: IgnoreMode) {
+  const stack = new Stack(app);
   const image = new DockerImageAsset(stack, 'MyAsset', {
     directory: path.join(__dirname, 'dockerignore-image'),
     exclude: ['subdirectory'],
@@ -318,18 +223,17 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(ignoreM
 
   const session = app.synth();
 
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore'))).toBeDefined();
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile'))).toBeDefined();
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py'))).toBeDefined();
-  expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt'))).toBeDefined();
-  expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory'))).toBeDefined();
-  expect(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt'))).toBeDefined();
-
-
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, '.dockerignore'))).toBe(true);
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBe(true);
+  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
+  expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBe(true);
+  expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBe(true);
+  expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(true);
 }
 
 test('nested assemblies share assets: legacy synth edition', () => {
   // GIVEN
+  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
 
@@ -356,6 +260,7 @@ test('nested assemblies share assets: legacy synth edition', () => {
 
 test('nested assemblies share assets: default synth edition', () => {
   // GIVEN
+  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
 
@@ -368,7 +273,7 @@ test('nested assemblies share assets: default synth edition', () => {
 
   // Read the asset manifests to verify the file paths
   for (const stageName of ['Stage1', 'Stage2']) {
-    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isAssetManifestArtifact)[0];
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
     const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     expect(manifest.dockerImages[DEMO_IMAGE_ASSET_HASH].source).toEqual({
@@ -379,8 +284,4 @@ test('nested assemblies share assets: default synth edition', () => {
 
 function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
   return x instanceof cxapi.CloudFormationStackArtifact;
-}
-
-function isAssetManifestArtifact(x: any): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
 }

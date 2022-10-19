@@ -2,7 +2,7 @@ import * as util from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
@@ -92,7 +92,7 @@ export class StackActivityMonitor {
     cfn: aws.CloudFormation,
     stackName: string,
     stackArtifact: cxapi.CloudFormationStackArtifact, options: WithDefaultPrinterProps = {}) {
-    const stream = process.stderr;
+    const stream = options.ci ? process.stdout : process.stderr;
 
     const props: PrinterProps = {
       resourceTypeColumnWidth: calcMaxResourceTypeLength(stackArtifact.template),
@@ -115,6 +115,10 @@ export class StackActivityMonitor {
     return new StackActivityMonitor(cfn, stackName, printer, stackArtifact, options.changeSetCreationTime);
   }
 
+  /**
+   * Resource errors found while monitoring the deployment
+   */
+  public readonly errors = new Array<string>();
 
   private active = false;
   private activity: { [eventId: string]: StackActivity } = { };
@@ -153,7 +157,6 @@ export class StackActivityMonitor {
 
   public async stop() {
     this.active = false;
-    this.printer.stop();
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
     }
@@ -162,6 +165,8 @@ export class StackActivityMonitor {
     // already returned an error, but the monitor hasn't seen all the events yet and we'd end
     // up not printing the failure reason to users.
     await this.finalPollToEnd();
+
+    this.printer.stop();
   }
 
   private scheduleNextTick() {
@@ -261,6 +266,7 @@ export class StackActivityMonitor {
 
     events.reverse();
     for (const event of events) {
+      this.checkForErrors(event);
       this.printer.addActivity(event);
     }
   }
@@ -281,9 +287,18 @@ export class StackActivityMonitor {
     }
 
     await this.readNewEvents();
+  }
 
-    // Final print
-    this.printer.print();
+  private checkForErrors(activity: StackActivity) {
+    if (hasErrorMessage(activity.event.ResourceStatus ?? '')) {
+      const isCancelled = (activity.event.ResourceStatusReason ?? '').indexOf('cancelled') > -1;
+
+      // Cancelled is not an interesting failure reason, nor is the stack message (stack
+      // message will just say something like "stack failed to update")
+      if (!isCancelled && activity.event.StackName !== activity.event.LogicalResourceId) {
+        this.errors.push(activity.event.ResourceStatusReason ?? '');
+      }
+    }
   }
 
   private simplifyConstructPath(path: string) {
@@ -292,7 +307,7 @@ export class StackActivityMonitor {
 
     // remove "<stack-name>/" prefix
     if (path.startsWith(this.stackName + '/')) {
-      path = path.substr(this.stackName.length + 1);
+      path = path.slice(this.stackName.length + 1);
     }
     return path;
   }
@@ -422,6 +437,10 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       delete this.resourcesInProgress[activity.event.LogicalResourceId];
     }
 
+    if (status.endsWith('_COMPLETE_CLEANUP_IN_PROGRESS')) {
+      this.resourcesDone++;
+    }
+
     if (status.endsWith('_COMPLETE')) {
       const prevState = this.resourcesPrevCompleteState[activity.event.LogicalResourceId];
       if (!prevState) {
@@ -477,6 +496,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   public addActivity(activity: StackActivity) {
     super.addActivity(activity);
     this.printable.push(activity);
+    this.print();
   }
 
   public print() {
@@ -487,31 +507,51 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     this.printInProgress();
   }
 
-  private printOne(activity: StackActivity) {
+  public stop() {
+    // Print failures at the end
+    if (this.failures.length > 0) {
+      this.stream.write('\nFailed resources:\n');
+      for (const failure of this.failures) {
+        // Root stack failures are not interesting
+        if (failure.event.StackName === failure.event.LogicalResourceId) {
+          continue;
+        }
+
+        this.printOne(failure, false);
+      }
+    }
+  }
+
+  private printOne(activity: StackActivity, progress?: boolean) {
     const e = activity.event;
     const color = colorFromStatusResult(e.ResourceStatus);
-    let reasonColor = colors.cyan;
+    let reasonColor = chalk.cyan;
 
     let stackTrace = '';
     const md = activity.metadata;
     if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
       stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
-      reasonColor = colors.red;
+      reasonColor = chalk.red;
     }
 
     const resourceName = md ? md.constructPath : (e.LogicalResourceId || '');
 
     const logicalId = resourceName !== e.LogicalResourceId ? `(${e.LogicalResourceId}) ` : '';
 
-    this.stream.write(util.format(' %s | %s | %s | %s | %s %s%s%s\n',
-      this.progress(),
-      new Date(e.Timestamp).toLocaleTimeString(),
-      color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
-      padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
-      color(colors.bold(resourceName)),
-      logicalId,
-      reasonColor(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
-      reasonColor(stackTrace)));
+    this.stream.write(
+      util.format(
+        '%s | %s%s | %s | %s | %s %s%s%s\n',
+        e.StackName,
+        (progress !== false ? `${this.progress()} | ` : ''),
+        new Date(e.Timestamp).toLocaleTimeString(),
+        color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').slice(0, STATUS_WIDTH))), // pad left and trim
+        padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
+        color(chalk.bold(resourceName)),
+        logicalId,
+        reasonColor(chalk.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
+        reasonColor(stackTrace),
+      ),
+    );
 
     this.lastPrintTime = Date.now();
   }
@@ -541,7 +581,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     if (Object.keys(this.resourcesInProgress).length > 0) {
       this.stream.write(util.format('%s Currently in progress: %s\n',
         this.progress(),
-        colors.bold(Object.keys(this.resourcesInProgress).join(', '))));
+        chalk.bold(Object.keys(this.resourcesInProgress).join(', '))));
     }
 
     // We cheat a bit here. To prevent printInProgress() from repeatedly triggering,
@@ -600,9 +640,9 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
       return util.format('%s | %s | %s | %s%s',
         padLeft(TIMESTAMP_WIDTH, new Date(res.event.Timestamp).toLocaleTimeString()),
-        color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').substr(0, STATUS_WIDTH))),
+        color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').slice(0, STATUS_WIDTH))),
         padRight(this.props.resourceTypeColumnWidth, res.event.ResourceType || ''),
-        color(colors.bold(shorten(40, resourceName))),
+        color(chalk.bold(shorten(40, resourceName))),
         this.failureReasonOnNextLine(res));
     }));
 
@@ -622,21 +662,27 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     // Print failures at the end
     const lines = new Array<string>();
     for (const failure of this.failures) {
-      lines.push(util.format(colors.red('%s | %s | %s | %s%s') + '\n',
+      // Root stack failures are not interesting
+      if (failure.event.StackName === failure.event.LogicalResourceId) {
+        continue;
+      }
+
+      lines.push(util.format(chalk.red('%s | %s | %s | %s%s') + '\n',
         padLeft(TIMESTAMP_WIDTH, new Date(failure.event.Timestamp).toLocaleTimeString()),
-        padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').substr(0, STATUS_WIDTH)),
+        padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').slice(0, STATUS_WIDTH)),
         padRight(this.props.resourceTypeColumnWidth, failure.event.ResourceType || ''),
         shorten(40, failure.event.LogicalResourceId ?? ''),
         this.failureReasonOnNextLine(failure)));
 
       const trace = failure.metadata?.entry?.trace;
       if (trace) {
-        lines.push(colors.red(`\t${trace.join('\n\t\\_ ')}\n`));
+        lines.push(chalk.red(`\t${trace.join('\n\t\\_ ')}\n`));
       }
     }
 
     // Display in the same block space, otherwise we're going to have silly empty lines.
     this.block.displayLines(lines);
+    this.block.removeEmptyLines();
   }
 
   private progressBar(width: number) {
@@ -650,14 +696,14 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     const partialChar = PARTIAL_BLOCK[Math.floor(remainder * PARTIAL_BLOCK.length)];
     const filler = '·'.repeat(innerWidth - Math.floor(chars) - (partialChar ? 1 : 0));
 
-    const color = this.rollingBack ? colors.yellow : colors.green;
+    const color = this.rollingBack ? chalk.yellow : chalk.green;
 
     return '[' + color(fullChars + partialChar) + filler + `] (${this.resourcesDone}/${this.resourcesTotal})`;
   }
 
   private failureReasonOnNextLine(activity: StackActivity) {
     return hasErrorMessage(activity.event.ResourceStatus ?? '')
-      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${colors.red(activity.event.ResourceStatusReason ?? '')}`
+      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(activity.event.ResourceStatusReason ?? '')}`
       : '';
   }
 }
@@ -674,49 +720,49 @@ function hasErrorMessage(status: string) {
 
 function colorFromStatusResult(status?: string) {
   if (!status) {
-    return colors.reset;
+    return chalk.reset;
   }
 
   if (status.indexOf('FAILED') !== -1) {
-    return colors.red;
+    return chalk.red;
   }
   if (status.indexOf('ROLLBACK') !== -1) {
-    return colors.yellow;
+    return chalk.yellow;
   }
   if (status.indexOf('COMPLETE') !== -1) {
-    return colors.green;
+    return chalk.green;
   }
 
-  return colors.reset;
+  return chalk.reset;
 }
 
 function colorFromStatusActivity(status?: string) {
   if (!status) {
-    return colors.reset;
+    return chalk.reset;
   }
 
   if (status.endsWith('_FAILED')) {
-    return colors.red;
+    return chalk.red;
   }
 
-  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
-    return colors.green;
+  if (status.startsWith('CREATE_') || status.startsWith('UPDATE_') || status.startsWith('IMPORT_')) {
+    return chalk.green;
   }
   // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'
   if (status.indexOf('ROLLBACK_') !== -1) {
-    return colors.yellow;
+    return chalk.yellow;
   }
   if (status.startsWith('DELETE_')) {
-    return colors.yellow;
+    return chalk.yellow;
   }
 
-  return colors.reset;
+  return chalk.reset;
 }
 
 function shorten(maxWidth: number, p: string) {
   if (p.length <= maxWidth) { return p; }
   const half = Math.floor((maxWidth - 3) / 2);
-  return p.substr(0, half) + '...' + p.substr(p.length - half);
+  return p.slice(0, half) + '...' + p.slice(-half);
 }
 
 const TIMESTAMP_WIDTH = 12;

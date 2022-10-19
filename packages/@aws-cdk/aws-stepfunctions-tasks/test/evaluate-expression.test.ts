@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import * as tasks from '../lib';
@@ -18,14 +18,14 @@ test('Eval with Node.js', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': [
         '',
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
+            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
           },
           '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
         ],
@@ -33,8 +33,8 @@ test('Eval with Node.js', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Runtime: 'nodejs10.x',
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs14.x',
   });
 });
 
@@ -47,14 +47,14 @@ test('expression does not contain paths', () => {
     definition: task,
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': [
         '',
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
+            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
           },
           '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
         ],
@@ -72,14 +72,14 @@ test('with dash and underscore in path', () => {
     definition: task,
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': [
         '',
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
+            'Fn::GetAtt': ['Evalda2d1181604e4a4586941a6abd7fe42dF371675D', 'Arn'],
           },
           '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],

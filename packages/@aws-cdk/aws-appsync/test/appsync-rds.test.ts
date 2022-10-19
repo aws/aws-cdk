@@ -1,7 +1,7 @@
-import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { Vpc, SecurityGroup, SubnetType, InstanceType, InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2';
-import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
+import { Template } from '@aws-cdk/assertions';
+import { Vpc, SecurityGroup, SubnetType } from '@aws-cdk/aws-ec2';
+import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster } from '@aws-cdk/aws-rds';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
@@ -21,7 +21,7 @@ beforeEach(() => {
 describe('Rds Data Source configuration', () => {
   // GIVEN
   let secret: DatabaseSecret;
-  let cluster: DatabaseCluster;
+  let cluster: ServerlessCluster;
   beforeEach(() => {
     const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
     const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
@@ -31,16 +31,13 @@ describe('Rds Data Source configuration', () => {
     secret = new DatabaseSecret(stack, 'AuroraSecret', {
       username: 'clusteradmin',
     });
-    cluster = new DatabaseCluster(stack, 'AuroraCluster', {
+    cluster = new ServerlessCluster(stack, 'AuroraCluster', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
-      instanceProps: {
-        instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
-        vpcSubnets: { subnetType: SubnetType.PRIVATE },
-        vpc,
-        securityGroups: [securityGroup],
-      },
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
   });
@@ -50,7 +47,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -63,9 +60,27 @@ describe('Rds Data Source configuration', () => {
         },
         {
           Action: [
+            'rds-data:BatchExecuteStatement',
+            'rds-data:BeginTransaction',
+            'rds-data:CommitTransaction',
+            'rds-data:ExecuteStatement',
+            'rds-data:RollbackTransaction',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Resource: { Ref: 'AuroraClusterSecretAttachmentDB8032DA' },
+        },
+        {
+          Action: [
             'rds-data:DeleteItems',
             'rds-data:ExecuteSql',
-            'rds-data:ExecuteStatement',
             'rds-data:GetItems',
             'rds-data:InsertItems',
             'rds-data:UpdateItems',
@@ -102,7 +117,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       RelationalDatabaseConfig: {
         RdsHttpEndpointConfig: {
@@ -129,7 +144,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret, testDatabaseName);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       RelationalDatabaseConfig: {
         RdsHttpEndpointConfig: {
@@ -156,7 +171,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'ds',
     });
@@ -169,7 +184,7 @@ describe('Rds Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'custom',
     });
@@ -183,7 +198,7 @@ describe('Rds Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'custom',
       Description: 'custom description',
@@ -205,7 +220,7 @@ describe('Rds Data Source configuration', () => {
 describe('adding rds data source from imported api', () => {
   // GIVEN
   let secret: DatabaseSecret;
-  let cluster: DatabaseCluster;
+  let cluster: ServerlessCluster;
   beforeEach(() => {
     const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
     const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
@@ -215,16 +230,13 @@ describe('adding rds data source from imported api', () => {
     secret = new DatabaseSecret(stack, 'AuroraSecret', {
       username: 'clusteradmin',
     });
-    cluster = new DatabaseCluster(stack, 'AuroraCluster', {
+    cluster = new ServerlessCluster(stack, 'AuroraCluster', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
-      instanceProps: {
-        instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
-        vpcSubnets: { subnetType: SubnetType.PRIVATE },
-        vpc,
-        securityGroups: [securityGroup],
-      },
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
   });
@@ -237,7 +249,7 @@ describe('adding rds data source from imported api', () => {
     importedApi.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -252,7 +264,7 @@ describe('adding rds data source from imported api', () => {
     importedApi.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

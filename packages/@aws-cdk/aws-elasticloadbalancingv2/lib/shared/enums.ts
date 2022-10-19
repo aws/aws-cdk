@@ -60,7 +60,27 @@ export enum ApplicationProtocol {
   /**
    * HTTPS
    */
-  HTTPS = 'HTTPS'
+  HTTPS = 'HTTPS',
+}
+
+/**
+ * Load balancing protocol version for application load balancers
+ */
+export enum ApplicationProtocolVersion {
+  /**
+   * GRPC
+   */
+  GRPC = 'GRPC',
+
+  /**
+   * HTTP1
+   */
+  HTTP1 = 'HTTP1',
+
+  /**
+   * HTTP2
+   */
+  HTTP2 = 'HTTP2',
 }
 
 /**
@@ -78,9 +98,46 @@ export enum ApplicationProtocol {
  */
 export enum SslPolicy {
   /**
-   * The recommended security policy
+   * The recommended security policy for TLS listeners.
+   * This is the default policy for listeners created using the AWS Management Console
+   */
+  RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
+
+  /**
+   * The recommended policy for http listeners.
+   * This is the default security policy for listeners created using the AWS CLI
    */
   RECOMMENDED = 'ELBSecurityPolicy-2016-08',
+
+  /**
+   * TLS1.2 and 1.3
+   */
+  TLS13_RES = 'ELBSecurityPolicy-TLS13-1-2-Res-2021-06',
+
+  /**
+   * TLS1.2 and 1.3 and no SHA ciphers
+   */
+  TLS13_EXT1 = 'ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06',
+
+  /**
+   * TLS1.2 and 1.3 with all ciphers
+   */
+  TLS13_EXT2 = 'ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06',
+
+  /**
+   * TLS1.0 through 1.3 with all ciphers
+   */
+  TLS13_10 = 'ELBSecurityPolicy-TLS13-1-0-2021-06',
+
+  /**
+   * TLS1.1 through 1.3 with all ciphers
+   */
+  TLS13_11 = 'ELBSecurityPolicy-TLS13-1-1-2021-06',
+
+  /**
+   * TLS1.3 only
+   */
+  TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-2021-06',
 
   /**
    * Strong foward secrecy ciphers and TLV1.2 only (2020 edition).
@@ -99,7 +156,7 @@ export enum SslPolicy {
   FORWARD_SECRECY_TLS12 = 'ELBSecurityPolicy-FS-1-2-2019-08',
 
   /**
-   * Forward secrecy ciphers only with TLS1.1 and higher
+   * Forward secrecy ciphers only with TLS1.1 and 1.2
    */
   FORWARD_SECRECY_TLS11 = 'ELBSecurityPolicy-FS-1-1-2019-08',
 
@@ -119,7 +176,7 @@ export enum SslPolicy {
   TLS12_EXT = 'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
 
   /**
-   * TLS1.1 and higher with all ciphers
+   * TLS1.1 and 1.2 with all ciphers
    */
   TLS11 = 'ELBSecurityPolicy-TLS-1-1-2017-01',
 
@@ -150,4 +207,55 @@ export enum TargetType {
    * Target is a single Lambda Function
    */
   LAMBDA = 'lambda',
+
+  /**
+   * Target is a single Application Load Balancer
+   */
+  ALB = 'alb',
+}
+
+/**
+ * Application-Layer Protocol Negotiation Policies for network load balancers.
+ * Which protocols should be used over a secure connection.
+ */
+export enum AlpnPolicy {
+  /**
+   * Negotiate only HTTP/1.*. The ALPN preference list is http/1.1, http/1.0
+   */
+  HTTP1_ONLY = 'HTTP1Only',
+
+  /**
+   * Negotiate only HTTP/2. The ALPN preference list is h2
+   */
+  HTTP2_ONLY = 'HTTP2Only',
+
+  /**
+   * Prefer HTTP/1.* over HTTP/2 (which can be useful for HTTP/2 testing). The ALPN preference list is http/1.1, http/1.0, h2
+   */
+  HTTP2_OPTIONAL = 'HTTP2Optional',
+
+  /**
+   * Prefer HTTP/2 over HTTP/1.*. The ALPN preference list is h2, http/1.1, http/1.0
+   */
+  HTTP2_PREFERRED = 'HTTP2Preferred',
+
+  /**
+   * Do not negotiate ALPN
+   */
+  NONE = 'None',
+}
+
+/**
+ * Load balancing algorithmm type for target groups
+ */
+export enum TargetGroupLoadBalancingAlgorithmType {
+  /**
+   * round_robin
+   */
+  ROUND_ROBIN = 'round_robin',
+
+  /**
+   * least_outstanding_requests
+   */
+  LEAST_OUTSTANDING_REQUESTS = 'least_outstanding_requests',
 }

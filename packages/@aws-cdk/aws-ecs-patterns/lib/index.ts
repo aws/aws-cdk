@@ -9,6 +9,7 @@ export * from './base/network-load-balanced-service-base';
 export * from './ecs/application-load-balanced-ecs-service';
 export * from './fargate/application-load-balanced-fargate-service';
 export * from './base/application-load-balanced-service-base';
+export * from './base/fargate-service-base';
 
 export * from './ecs/scheduled-ecs-task';
 export * from './fargate/scheduled-fargate-task';

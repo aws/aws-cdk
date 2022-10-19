@@ -1,4 +1,3 @@
-import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -24,12 +23,13 @@ export interface FakeBuildActionProps extends codepipeline.CommonActionProps {
   resource?: IResource;
 }
 
-export class FakeBuildAction implements codepipeline.IAction {
-  public readonly actionProperties: codepipeline.ActionProperties;
+export class FakeBuildAction extends codepipeline.Action {
+  protected readonly providedActionProperties: codepipeline.ActionProperties;
   private readonly customConfigKey: string | undefined;
 
   constructor(props: FakeBuildActionProps) {
-    this.actionProperties = {
+    super();
+    this.providedActionProperties = {
       ...props,
       category: codepipeline.ActionCategory.BUILD,
       provider: 'Fake',
@@ -40,16 +40,12 @@ export class FakeBuildAction implements codepipeline.IAction {
     this.customConfigKey = props.customConfigKey;
   }
 
-  public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  public bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return {
       configuration: {
         CustomConfigKey: this.customConfigKey,
       },
     };
-  }
-
-  public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {
-    throw new Error('onStateChange() is not available on FakeBuildAction');
   }
 }

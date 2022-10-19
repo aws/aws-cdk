@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { Annotations, Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
@@ -32,7 +32,7 @@ test('use AwsApi as an event rule target', () => {
   }));
 
   // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -70,12 +70,12 @@ test('use AwsApi as an event rule target', () => {
         }),
       },
     ],
-  }));
+  });
 
   // Uses a singleton function
-  expect(stack).to(countResources('AWS::Lambda::Function', 1));
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
 
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -91,7 +91,7 @@ test('use AwsApi as an event rule target', () => {
       ],
       Version: '2012-10-17',
     },
-  }));
+  });
 });
 
 test('with policy statement', () => {
@@ -112,7 +112,7 @@ test('with policy statement', () => {
   }));
 
   // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -128,9 +128,9 @@ test('with policy statement', () => {
         }),
       },
     ],
-  }));
+  });
 
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -141,5 +141,27 @@ test('with policy statement', () => {
       ],
       Version: '2012-10-17',
     },
-  }));
+  });
+});
+
+test('with service not in AWS SDK', () => {
+  // GIVEN
+  const stack = new Stack();
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(15 minutes)'),
+  });
+  const awsApi = new targets.AwsApi({
+    service: 'no-such-service',
+    action: 'no-such-action',
+    policyStatement: new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['resource'],
+    }),
+  });
+
+  // WHEN
+  rule.addTarget(awsApi);
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('*', 'Service no-such-service does not exist in the AWS SDK. Check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
 });

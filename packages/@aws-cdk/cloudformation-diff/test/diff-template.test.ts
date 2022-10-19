@@ -581,3 +581,111 @@ test('when a property changes including equivalent DependsOn', () => {
   differences = diffTemplate(newTemplate, currentTemplate);
   expect(differences.resources.differenceCount).toBe(1);
 });
+
+test.each([
+  ['0.31.1-prod', '0.31.2-prod'],
+  ['8.0.5.5.4-identifier', '8.0.5.5.5-identifier'],
+  ['1.1.1.1', '1.1.1.2'],
+  ['1.2.3', '1.2.4'],
+  ['2.2.2.2', '2.2.3.2'],
+  ['3.3.3.3', '3.4.3.3'],
+  ['2021-10-23T06:07:08.000Z', '2021-10-23T09:10:11.123Z'],
+])("reports a change when a string property with a number-like format changes from '%s' to '%s'", (oldValue, newValue) => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          Tags: [oldValue],
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          Tags: [newValue],
+        },
+      },
+    },
+  };
+  // WHEN
+  const differences = diffTemplate(currentTemplate, newTemplate);
+
+  // THEN
+  expect(differences.differenceCount).toBe(1);
+  expect(differences.resources.differenceCount).toBe(1);
+  const difference = differences.resources.changes.BucketResource;
+  expect(difference).not.toBeUndefined();
+  expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
+  expect(difference?.propertyUpdates).toEqual({
+    Tags: { oldValue: [oldValue], newValue: [newValue], changeImpact: ResourceImpact.WILL_UPDATE, isDifferent: true },
+  });
+});
+
+test('when a property with a number-like format doesn\'t change', () => {
+  const tags = ['0.31.1-prod', '8.0.5.5.4-identifier', '1.1.1.1', '1.2.3'];
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          Tags: tags,
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          Tags: tags,
+        },
+      },
+    },
+  };
+
+  const differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.differenceCount).toBe(0);
+  expect(differences.resources.differenceCount).toBe(0);
+  const difference = differences.resources.changes.BucketResource;
+  expect(difference).toBeUndefined();
+});
+
+test('handles a resource changing its Type', () => {
+  const currentTemplate = {
+    Resources: {
+      FunctionApi: {
+        Type: 'AWS::Serverless::Api',
+        Properties: {
+          StageName: 'prod',
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      FunctionApi: {
+        Type: 'AWS::ApiGateway::RestApi',
+      },
+    },
+  };
+
+  const differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.differenceCount).toBe(1);
+  expect(differences.resources.differenceCount).toBe(1);
+  const difference = differences.resources.changes.FunctionApi;
+  expect(difference).toEqual({
+    isAddition: false,
+    isRemoval: false,
+    newValue: { Type: 'AWS::ApiGateway::RestApi' },
+    oldValue: { Properties: { StageName: 'prod' }, Type: 'AWS::Serverless::Api' },
+    otherDiffs: {},
+    propertyDiffs: {},
+    resourceTypes: { newType: 'AWS::ApiGateway::RestApi', oldType: 'AWS::Serverless::Api' },
+  });
+});

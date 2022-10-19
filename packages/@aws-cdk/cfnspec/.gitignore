@@ -12,3 +12,9 @@ dist
 .LAST_PACKAGE
 *.snk
 !.eslintrc.js
+
+!jest.config.js
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

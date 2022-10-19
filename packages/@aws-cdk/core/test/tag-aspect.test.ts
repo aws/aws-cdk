@@ -1,5 +1,5 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
+import { Construct } from 'constructs';
+import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource {
@@ -38,8 +38,8 @@ class MapTaggableResource extends CfnResource {
   }
 }
 
-nodeunitShim({
-  'Tag visit all children of the applied node'(test: Test) {
+describe('tag aspect', () => {
+  test('Tag visit all children of the applied node', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -58,13 +58,13 @@ nodeunitShim({
 
     synthesize(root);
 
-    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
-    test.deepEqual(res2.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
-    test.deepEqual(map.tags.renderTags(), { foo: 'bar' });
-    test.deepEqual(asg.tags.renderTags(), [{ key: 'foo', value: 'bar', propagateAtLaunch: true }]);
-    test.done();
-  },
-  'The last aspect applied takes precedence'(test: Test) {
+    expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
+    expect(res2.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
+    expect(map.tags.renderTags()).toEqual({ foo: 'bar' });
+    expect(asg.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar', propagateAtLaunch: true }]);
+  });
+
+  test('The last aspect applied takes precedence', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -77,11 +77,11 @@ nodeunitShim({
     Aspects.of(res).add(new Tag('foo', 'baz'));
     Aspects.of(res2).add(new Tag('foo', 'good'));
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'baz' }]);
-    test.deepEqual(res2.tags.renderTags(), [{ key: 'foo', value: 'good' }]);
-    test.done();
-  },
-  'RemoveTag will remove a tag if it exists'(test: Test) {
+    expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'baz' }]);
+    expect(res2.tags.renderTags()).toEqual([{ key: 'foo', value: 'good' }]);
+  });
+
+  test('RemoveTag will remove a tag if it exists', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -102,13 +102,13 @@ nodeunitShim({
     Aspects.of(res).add(new RemoveTag('doesnotexist'));
     synthesize(root);
 
-    test.deepEqual(res.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
-    test.deepEqual(map.tags.renderTags(), { first: 'there is only 1' });
-    test.deepEqual(asg.tags.renderTags(), [{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
-    test.deepEqual(res2.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
-    test.done();
-  },
-  'add will add a tag and remove will remove a tag if it exists'(test: Test) {
+    expect(res.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
+    expect(map.tags.renderTags()).toEqual({ first: 'there is only 1' });
+    expect(asg.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
+    expect(res2.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
+  });
+
+  test('add will add a tag and remove will remove a tag if it exists', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -130,13 +130,13 @@ nodeunitShim({
 
     synthesize(root);
 
-    test.deepEqual(res.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
-    test.deepEqual(map.tags.renderTags(), { first: 'there is only 1' });
-    test.deepEqual(asg.tags.renderTags(), [{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
-    test.deepEqual(res2.tags.renderTags(), [{ key: 'first', value: 'there is only 1' }]);
-    test.done();
-  },
-  'the #visit function is idempotent'(test: Test) {
+    expect(res.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
+    expect(map.tags.renderTags()).toEqual({ first: 'there is only 1' });
+    expect(asg.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
+    expect(res2.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
+  });
+
+  test('the #visit function is idempotent', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -144,14 +144,14 @@ nodeunitShim({
 
     Aspects.of(res).add(new Tag('foo', 'bar'));
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
+    expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
+    expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), [{ key: 'foo', value: 'bar' }]);
-    test.done();
-  },
-  'removeTag Aspects by default will override child Tag Aspects'(test: Test) {
+    expect(res.tags.renderTags()).toEqual([{ key: 'foo', value: 'bar' }]);
+  });
+
+  test('removeTag Aspects by default will override child Tag Aspects', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -162,11 +162,11 @@ nodeunitShim({
     Aspects.of(res).add(new RemoveTag('key'));
     Aspects.of(res2).add(new Tag('key', 'value'));
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), undefined);
-    test.deepEqual(res2.tags.renderTags(), undefined);
-    test.done();
-  },
-  'removeTag Aspects with priority 0 will not override child Tag Aspects'(test: Test) {
+    expect(res.tags.renderTags()).toEqual(undefined);
+    expect(res2.tags.renderTags()).toEqual(undefined);
+  });
+
+  test('removeTag Aspects with priority 0 will not override child Tag Aspects', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
@@ -177,11 +177,11 @@ nodeunitShim({
     Aspects.of(res).add(new RemoveTag('key', { priority: 0 }));
     Aspects.of(res2).add(new Tag('key', 'value'));
     synthesize(root);
-    test.deepEqual(res.tags.renderTags(), undefined);
-    test.deepEqual(res2.tags.renderTags(), [{ key: 'key', value: 'value' }]);
-    test.done();
-  },
-  'Aspects are merged with tags created by L1 Constructor'(test: Test) {
+    expect(res.tags.renderTags()).toEqual(undefined);
+    expect(res2.tags.renderTags()).toEqual([{ key: 'key', value: 'value' }]);
+  });
+
+  test('Aspects are merged with tags created by L1 Constructor', () => {
     const root = new Stack();
     const aspectBranch = new TaggableResource(root, 'FakeBranchA', {
       type: 'AWS::Fake::Thing',
@@ -220,22 +220,22 @@ nodeunitShim({
     });
     Aspects.of(aspectBranch).add(new Tag('aspects', 'rule'));
     synthesize(root);
-    test.deepEqual(aspectBranch.testProperties().tags, [{ key: 'aspects', value: 'rule' }, { key: 'cfn', value: 'is cool' }]);
-    test.deepEqual(asgResource.testProperties().tags, [
+    expect(aspectBranch.testProperties().tags).toEqual([{ key: 'aspects', value: 'rule' }, { key: 'cfn', value: 'is cool' }]);
+    expect(asgResource.testProperties().tags).toEqual([
       { key: 'aspects', value: 'rule', propagateAtLaunch: true },
       { key: 'cfn', value: 'is cool', propagateAtLaunch: true },
     ]);
-    test.deepEqual(mapTaggable.testProperties().tags, {
+    expect(mapTaggable.testProperties().tags).toEqual({
       aspects: 'rule',
       cfn: 'is cool',
     });
-    test.deepEqual(cfnBranch.testProperties().tags, [{ key: 'cfn', value: 'is cool' }]);
-    test.done();
-  },
-  'when invalid tag properties are passed from L1s': {
-    'map passed instead of array it raises'(test: Test) {
+    expect(cfnBranch.testProperties().tags).toEqual([{ key: 'cfn', value: 'is cool' }]);
+  });
+
+  describe('when invalid tag properties are passed from L1s', () => {
+    test('map passed instead of array it raises', () => {
       const root = new Stack();
-      test.throws(() => {
+      expect(() => {
         new TaggableResource(root, 'FakeBranchA', {
           type: 'AWS::Fake::Thing',
           properties: {
@@ -245,8 +245,8 @@ nodeunitShim({
             },
           },
         });
-      });
-      test.throws(() => {
+      }).toThrow();
+      expect(() => {
         new AsgTaggableResource(root, 'FakeBranchA', {
           type: 'AWS::Fake::Thing',
           properties: {
@@ -257,12 +257,12 @@ nodeunitShim({
             },
           },
         });
-      });
-      test.done();
-    },
-    'if array is passed instead of map it raises'(test: Test) {
+      }).toThrow();
+    });
+
+    test('if array is passed instead of map it raises', () => {
       const root = new Stack();
-      test.throws(() => {
+      expect(() => {
         new MapTaggableResource(root, 'FakeSam', {
           type: 'AWS::Fake::Thing',
           properties: {
@@ -272,8 +272,7 @@ nodeunitShim({
             ],
           },
         });
-      });
-      test.done();
-    },
-  },
+      }).toThrow();
+    });
+  });
 });

@@ -16,84 +16,108 @@ export class Default {
    * all you have is `{ "Ref": "AWS::Region" }`). This way you get the same defaulting behavior that is normally used
    * for built-in data.
    *
-   * @param service   the name of the service (s3, s3.amazonaws.com, ...)
+   * @param serviceFqn the name of the service (s3, s3.amazonaws.com, ...)
    * @param region    the region in which the service principal is needed.
-   * @param urlSuffix the URL suffix for the partition in which the region is located.
+   * @param urlSuffix deprecated and ignored.
    */
-  public static servicePrincipal(service: string, region: string, urlSuffix: string): string {
-    const matches = service.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
-    if (!matches) {
+  public static servicePrincipal(serviceFqn: string, region: string, urlSuffix: string): string {
+    const serviceName = extractSimpleName(serviceFqn);
+    if (!serviceName) {
       // Return "service" if it does not look like any of the following:
       // - s3
       // - s3.amazonaws.com
       // - s3.amazonaws.com.cn
       // - s3.c2s.ic.gov
       // - s3.sc2s.sgov.gov
-      return service;
+      return serviceFqn;
     }
 
-    service = matches[1]; // Simplify the service name down to something like "s3"
+    function determineConfiguration(service: string): (service: string, region: string, urlSuffix: string) => string {
+      function universal(s: string) { return `${s}.amazonaws.com`; }
+      function partitional(s: string, _: string, u: string) { return `${s}.${u}`; }
+      function regional(s: string, r: string) { return `${s}.${r}.amazonaws.com`; }
+      function regionalPartitional(s: string, r: string, u: string) { return `${s}.${r}.${u}`; }
 
-    // Exceptions for Service Principals in us-iso-*
-    const US_ISO_EXCEPTIONS = new Set([
-      'cloudhsm',
-      'config',
-      'states',
-      'workspaces',
-    ]);
+      // Exceptions for Service Principals in us-iso-*
+      const US_ISO_EXCEPTIONS = new Set([
+        'cloudhsm',
+        'config',
+        'states',
+        'workspaces',
+      ]);
 
-    // Exceptions for Service Principals in us-isob-*
-    const US_ISOB_EXCEPTIONS = new Set([
-      'dms',
-      'states',
-    ]);
+      // Account for idiosyncratic Service Principals in `us-iso-*` regions
+      if (region.startsWith('us-iso-') && US_ISO_EXCEPTIONS.has(service)) {
+        switch (service) {
+          // Services with universal principal
+          case ('states'):
+            return universal;
 
-    // Account for idiosyncratic Service Principals in `us-iso-*` regions
-    if (region.startsWith('us-iso-') && US_ISO_EXCEPTIONS.has(service)) {
+          // Services with a partitional principal
+          default:
+            return partitional;
+        }
+      }
+
+      // Exceptions for Service Principals in us-isob-*
+      const US_ISOB_EXCEPTIONS = new Set([
+        'dms',
+        'states',
+      ]);
+
+      // Account for idiosyncratic Service Principals in `us-isob-*` regions
+      if (region.startsWith('us-isob-') && US_ISOB_EXCEPTIONS.has(service)) {
+        switch (service) {
+          // Services with universal principal
+          case ('states'):
+            return universal;
+
+          // Services with a partitional principal
+          default:
+            return partitional;
+        }
+      }
+
       switch (service) {
-        // Services with universal principal
-        case ('states'):
-          return `${service}.amazonaws.com`;
+        // CodeDeploy is regional+partitional in CN, only regional everywhere else
+        case 'codedeploy':
+          return region.startsWith('cn-')
+            ? regionalPartitional
+            // ...except in the isolated regions, where it's universal
+            : (region.startsWith('us-iso') ? universal : regional);
+
+        // Services with a regional AND partitional principal
+        case 'logs':
+          return regionalPartitional;
+
+        // Services with a regional principal
+        case 'states':
+          return regional;
 
         // Services with a partitional principal
+        case 'ec2':
+          return partitional;
+
+        case 'elasticmapreduce':
+          return region.startsWith('cn-')
+            ? partitional
+            : universal;
+
+        // Services with a universal principal across all regions/partitions (the default case)
         default:
-          return `${service}.${urlSuffix}`;
+          return universal;
+
       }
-    }
+    };
 
-    // Account for idiosyncratic Service Principals in `us-isob-*` regions
-    if (region.startsWith('us-isob-') && US_ISOB_EXCEPTIONS.has(service)) {
-      switch (service) {
-        // Services with universal principal
-        case ('states'):
-          return `${service}.amazonaws.com`;
-
-        // Services with a partitional principal
-        default:
-          return `${service}.${urlSuffix}`;
-      }
-    }
-
-    switch (service) {
-      // Services with a regional AND partitional principal
-      case 'codedeploy':
-      case 'logs':
-        return `${service}.${region}.${urlSuffix}`;
-
-      // Services with a regional principal
-      case 'states':
-        return `${service}.${region}.amazonaws.com`;
-
-      // Services with a partitional principal
-      case 'ec2':
-        return `${service}.${urlSuffix}`;
-
-      // Services with a universal principal across all regions/partitions (the default case)
-      default:
-        return `${service}.amazonaws.com`;
-
-    }
+    const configuration = determineConfiguration(serviceName);
+    return configuration(serviceName, region, urlSuffix);
   }
 
   private constructor() { }
+}
+
+function extractSimpleName(serviceFqn: string) {
+  const matches = serviceFqn.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
+  return matches ? matches[1] : undefined;
 }

@@ -1,4 +1,4 @@
-import { Lazy, Names, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Names, Stack, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
@@ -18,14 +18,14 @@ export interface CompositeAlarmProps {
   /**
    * Description for the alarm
    *
-   * @default No description
+   * @default - No description.
    */
   readonly alarmDescription?: string;
 
   /**
    * Name of the alarm
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly compositeAlarmName?: string;
 
@@ -34,6 +34,28 @@ export interface CompositeAlarmProps {
    */
   readonly alarmRule: IAlarmRule;
 
+  /**
+   * Actions will be suppressed if the suppressor alarm is in the ALARM state.
+   *
+   * @default - alarm will not be suppressed.
+   */
+  readonly actionsSuppressor?: IAlarm;
+
+  /**
+   * The maximum duration that the composite alarm waits after suppressor alarm goes out of the ALARM state.
+   * After this time, the composite alarm performs its actions.
+   *
+   * @default - 1 minute extension period will be set.
+   */
+  readonly actionsSuppressorExtensionPeriod?: Duration;
+
+  /**
+   * The maximum duration that the composite alarm waits for the suppressor alarm to go into the ALARM state.
+   * After this time, the composite alarm performs its actions.
+   *
+   * @default - 1 minute wait period will be set.
+   */
+  readonly actionsSuppressorWaitPeriod?: Duration;
 }
 
 /**
@@ -68,7 +90,7 @@ export class CompositeAlarm extends AlarmBase {
   public static fromCompositeAlarmArn(scope: Construct, id: string, compositeAlarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = compositeAlarmArn;
-      public readonly alarmName = Stack.of(scope).parseArn(compositeAlarmArn).resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -98,6 +120,17 @@ export class CompositeAlarm extends AlarmBase {
       throw new Error('Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule');
     }
 
+    let extensionPeriod = props.actionsSuppressorExtensionPeriod;
+    let waitPeriod = props.actionsSuppressorWaitPeriod;
+    if (props.actionsSuppressor === undefined) {
+      if (extensionPeriod !== undefined || waitPeriod !== undefined) {
+        throw new Error('ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.');
+      }
+    } else {
+      extensionPeriod = extensionPeriod ?? Duration.minutes(1);
+      waitPeriod = waitPeriod ?? Duration.minutes(1);
+    }
+
     this.alarmRule = props.alarmRule.renderAlarmRule();
 
     const alarm = new CfnCompositeAlarm(this, 'Resource', {
@@ -108,6 +141,9 @@ export class CompositeAlarm extends AlarmBase {
       alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
       insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
       okActions: Lazy.list({ produce: () => this.okActionArns }),
+      actionsSuppressor: props.actionsSuppressor?.alarmArn,
+      actionsSuppressorExtensionPeriod: extensionPeriod?.toSeconds(),
+      actionsSuppressorWaitPeriod: waitPeriod?.toSeconds(),
     });
 
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
@@ -115,7 +151,7 @@ export class CompositeAlarm extends AlarmBase {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
   }

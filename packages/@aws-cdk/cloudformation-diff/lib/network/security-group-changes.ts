@@ -1,4 +1,4 @@
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { PropertyChange, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
 import { renderIntrinsics } from '../render-intrinsics';
@@ -66,7 +66,7 @@ export class SecurityGroupChanges {
       inOut,
       rule.describeProtocol(),
       rule.describePeer(),
-    ].map(s => plusMin === '+' ? colors.green(s) : colors.red(s));
+    ].map(s => plusMin === '+' ? chalk.green(s) : chalk.red(s));
 
     // First generate all lines, sort later
     ret.push(...this.ingress.additions.map(renderRule('+', inWord)));

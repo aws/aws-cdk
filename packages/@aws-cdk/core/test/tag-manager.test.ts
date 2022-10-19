@@ -1,63 +1,62 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { TagType } from '../lib/cfn-resource';
 import { TagManager } from '../lib/tag-manager';
 
-nodeunitShim({
-  'TagManagerOptions can set tagPropertyName'(test: Test) {
+describe('tag manager', () => {
+  test('TagManagerOptions can set tagPropertyName', () => {
     const tagPropName = 'specialName';
     const mgr = new TagManager(TagType.MAP, 'Foo', undefined, { tagPropertyName: tagPropName });
 
-    test.deepEqual(mgr.tagPropertyName, tagPropName);
-    test.done();
-  },
-  '#setTag() supports setting a tag regardless of Type'(test: Test) {
+    expect(mgr.tagPropertyName).toEqual(tagPropName);
+  });
+
+  test('#setTag() supports setting a tag regardless of Type', () => {
     const notTaggable = new TagManager(TagType.NOT_TAGGABLE, 'AWS::Resource::Type');
     notTaggable.setTag('key', 'value');
-    test.deepEqual(notTaggable.renderTags(), undefined);
-    test.done();
-  },
-  'when a tag does not exist': {
-    '#removeTag() does not throw an error'(test: Test) {
+    expect(notTaggable.renderTags()).toEqual(undefined);
+  });
+
+  describe('when a tag does not exist', () => {
+    test('#removeTag() does not throw an error', () => {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
-      test.doesNotThrow(() => (mgr.removeTag('dne', 0)));
-      test.done();
-    },
-    '#setTag() creates the tag'(test: Test) {
+      expect(() => (mgr.removeTag('dne', 0))).not.toThrow();
+    });
+
+    test('#setTag() creates the tag', () => {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore');
-      test.deepEqual(mgr.renderTags(), [{ key: 'dne', value: 'notanymore' }]);
-      test.done();
-    },
-  },
-  'when a tag does exist': {
-    '#removeTag() deletes the tag'(test: Test) {
+      expect(mgr.renderTags()).toEqual([{ key: 'dne', value: 'notanymore' }]);
+    });
+  });
+
+  describe('when a tag does exist', () => {
+    test('#removeTag() deletes the tag', () => {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore', 0);
       mgr.removeTag('dne', 0);
-      test.deepEqual(mgr.renderTags(), undefined);
-      test.done();
-    },
-    '#setTag() overwrites the tag'(test: Test) {
+      expect(mgr.renderTags()).toEqual(undefined);
+    });
+
+    test('#setTag() overwrites the tag', () => {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore');
       mgr.setTag('dne', 'iwin');
-      test.deepEqual(mgr.renderTags(), [{ key: 'dne', value: 'iwin' }]);
-      test.done();
-    },
-  },
-  'when there are no tags': {
-    '#renderTags() returns undefined'(test: Test) {
+      expect(mgr.renderTags()).toEqual([{ key: 'dne', value: 'iwin' }]);
+    });
+  });
+
+  describe('when there are no tags', () => {
+    test('#renderTags() returns undefined', () => {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
-      test.deepEqual(mgr.renderTags(), undefined);
-      test.done();
-    },
-    '#hasTags() returns false'(test: Test) {
+      expect(mgr.renderTags()).toEqual(undefined);
+    });
+
+    test('#hasTags() returns false', () => {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
-      test.equal(mgr.hasTags(), false);
-      test.done();
-    },
-  },
-  '#renderTags() handles standard, map, keyValue, and ASG tag formats'(test: Test) {
+      expect(mgr.hasTags()).toEqual(false);
+    });
+  });
+
+  test('#renderTags() handles standard, map, keyValue, and ASG tag formats', () => {
     const tagged: TagManager[] = [];
     const standard = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
     const asg = new TagManager(TagType.AUTOSCALING_GROUP, 'AWS::Resource::Type');
@@ -71,79 +70,76 @@ nodeunitShim({
       res.setTag('foo', 'bar');
       res.setTag('asg', 'only', 0, false);
     }
-    test.deepEqual(standard.renderTags(), [
+    expect(standard.renderTags()).toEqual([
       { key: 'asg', value: 'only' },
       { key: 'foo', value: 'bar' },
     ]);
-    test.deepEqual(asg.renderTags(), [
+    expect(asg.renderTags()).toEqual([
       { key: 'asg', value: 'only', propagateAtLaunch: false },
       { key: 'foo', value: 'bar', propagateAtLaunch: true },
     ]);
-    test.deepEqual(keyValue.renderTags(), [
+    expect(keyValue.renderTags()).toEqual([
       { Key: 'asg', Value: 'only' },
       { Key: 'foo', Value: 'bar' },
     ]);
-    test.deepEqual(mapper.renderTags(), {
+    expect(mapper.renderTags()).toEqual({
       foo: 'bar',
       asg: 'only',
     });
-    test.done();
-  },
-  'when there are tags it hasTags returns true'(test: Test) {
+  });
+
+  test('when there are tags it hasTags returns true', () => {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
     mgr.setTag('key', 'myVal', 2);
     mgr.setTag('key', 'newVal', 1);
-    test.equal(mgr.hasTags(), true);
-    test.done();
-  },
-  'tags with higher or equal priority always take precedence'(test: Test) {
+    expect(mgr.hasTags()).toEqual(true);
+  });
+
+  test('tags with higher or equal priority always take precedence', () => {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
     mgr.setTag('key', 'myVal', 2);
     mgr.setTag('key', 'newVal', 1);
-    test.deepEqual(mgr.renderTags(), [
+    expect(mgr.renderTags()).toEqual([
       { key: 'key', value: 'myVal' },
     ]);
     mgr.removeTag('key', 1);
-    test.deepEqual(mgr.renderTags(), [
+    expect(mgr.renderTags()).toEqual([
       { key: 'key', value: 'myVal' },
     ]);
     mgr.removeTag('key', 2);
-    test.deepEqual(mgr.renderTags(), undefined);
-    test.done();
-  },
-  'tags are always ordered by key name'(test: Test) {
+    expect(mgr.renderTags()).toEqual(undefined);
+  });
+
+  test('tags are always ordered by key name', () => {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
     mgr.setTag('key', 'foo');
     mgr.setTag('aardvark', 'zebra');
     mgr.setTag('name', 'test');
-    test.deepEqual(mgr.renderTags(), [
+    expect(mgr.renderTags()).toEqual([
       { key: 'aardvark', value: 'zebra' },
       { key: 'key', value: 'foo' },
       { key: 'name', value: 'test' },
     ]);
     mgr.setTag('myKey', 'myVal');
-    test.deepEqual(mgr.renderTags(), [
+    expect(mgr.renderTags()).toEqual([
       { key: 'aardvark', value: 'zebra' },
       { key: 'key', value: 'foo' },
       { key: 'myKey', value: 'myVal' },
       { key: 'name', value: 'test' },
     ]);
-    test.done();
-  },
-  'excludeResourceTypes only tags resources that do not match'(test: Test) {
+  });
+
+  test('excludeResourceTypes only tags resources that do not match', () => {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource');
 
-    test.equal(false, mgr.applyTagAspectHere([], ['AWS::Fake::Resource']));
-    test.equal(true, mgr.applyTagAspectHere([], ['AWS::Wrong::Resource']));
+    expect(false).toEqual(mgr.applyTagAspectHere([], ['AWS::Fake::Resource']));
+    expect(true).toEqual(mgr.applyTagAspectHere([], ['AWS::Wrong::Resource']));
+  });
 
-    test.done();
-  },
-  'includeResourceTypes only tags resources that match'(test: Test) {
+  test('includeResourceTypes only tags resources that match', () => {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource');
 
-    test.equal(true, mgr.applyTagAspectHere(['AWS::Fake::Resource'], []));
-    test.equal(false, mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
-
-    test.done();
-  },
+    expect(true).toEqual(mgr.applyTagAspectHere(['AWS::Fake::Resource'], []));
+    expect(false).toEqual(mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
+  });
 });

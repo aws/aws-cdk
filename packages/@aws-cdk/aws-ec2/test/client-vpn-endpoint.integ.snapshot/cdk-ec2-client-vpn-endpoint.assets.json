@@ -1,0 +1,32 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a": {
+      "source": {
+        "path": "asset.1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "eb04fd0d871fbd342944b7f642eee0dfa94e90f5b5be7498df0a43825361b275": {
+      "source": {
+        "path": "cdk-ec2-client-vpn-endpoint.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "eb04fd0d871fbd342944b7f642eee0dfa94e90f5b5be7498df0a43825361b275.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

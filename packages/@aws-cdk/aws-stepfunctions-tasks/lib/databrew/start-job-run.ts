@@ -6,7 +6,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for starting a job run with StartJobRun
- * @experimental
  */
 export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
 
@@ -20,7 +19,6 @@ export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
  * Start a Job run as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html
- * @experimental
  */
 export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
 
@@ -35,7 +33,6 @@ export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   /**
-   * @experimental
    */
   constructor(scope: Construct, id: string, private readonly props: GlueDataBrewStartJobRunProps) {
     super(scope, id, props);

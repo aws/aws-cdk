@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
@@ -17,7 +17,7 @@ describe('LambdaInvoke', () => {
     lambdaFunction = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 
@@ -67,7 +67,7 @@ describe('LambdaInvoke', () => {
     });
   });
 
-  test('optional settings', () => {
+  testDeprecated('optional settings', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
@@ -112,7 +112,59 @@ describe('LambdaInvoke', () => {
     }));
   });
 
-  test('invoke Lambda function and wait for task token', () => {
+  test('resultSelector', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      resultSelector: {
+        Result: sfn.JsonPath.stringAt('$.output.Payload'),
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::lambda:invoke',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Fn9270CBC0',
+            'Arn',
+          ],
+        },
+        'Payload.$': '$',
+      },
+      ResultSelector: {
+        'Result.$': '$.output.Payload',
+      },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
+    }));
+  });
+
+  testDeprecated('invoke Lambda function and wait for task token', () => {
     // GIVEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
@@ -158,7 +210,7 @@ describe('LambdaInvoke', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
-      payload: sfn.TaskInput.fromDataAt('$.foo'),
+      payload: sfn.TaskInput.fromJsonPathAt('$.foo'),
     });
 
     // THEN
@@ -309,7 +361,7 @@ describe('LambdaInvoke', () => {
     }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
   });
 
-  test('fails when qualifier used with payloadResponseOnly', () => {
+  testDeprecated('fails when qualifier used with payloadResponseOnly', () => {
     expect(() => {
       new LambdaInvoke(stack, 'Task', {
         lambdaFunction,

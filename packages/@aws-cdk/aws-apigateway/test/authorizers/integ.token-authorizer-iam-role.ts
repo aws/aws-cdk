@@ -1,8 +1,8 @@
-/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { AuthorizationType, MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer } from '../../lib';
 
 /*
@@ -16,7 +16,7 @@ const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
 });
@@ -30,7 +30,7 @@ const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
   assumeRole: role,
 });
 
-const restapi = new RestApi(stack, 'MyRestApi');
+const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 restapi.root.addMethod('ANY', new MockIntegration({
   integrationResponses: [
@@ -46,4 +46,8 @@ restapi.root.addMethod('ANY', new MockIntegration({
   ],
   authorizer,
   authorizationType: AuthorizationType.CUSTOM,
+});
+
+new IntegTest(app, 'iam-token-authorizer', {
+  testCases: [stack],
 });

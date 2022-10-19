@@ -7,3 +7,9 @@ dist
 .LAST_BUILD
 *.snk
 .eslintrc.js
+
+test/
+jest.config.js
+**/*.integ.snapshot
+**/*.integ.snapshot
+coverage/

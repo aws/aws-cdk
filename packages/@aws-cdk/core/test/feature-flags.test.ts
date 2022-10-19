@@ -1,31 +1,35 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { FeatureFlags, Stack } from '../lib';
 
-nodeunitShim({
-  isEnabled: {
-    'returns true when the flag is enabled'(test: Test) {
+describe('feature flags', () => {
+  describe('isEnabled', () => {
+    test('returns true when the flag is enabled', () => {
       const stack = new Stack();
       stack.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
 
       const actual = FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
-      test.equals(actual, true);
-      test.done();
-    },
+      expect(actual).toEqual(true);
+    });
 
-    'falls back to the default'(test: Test) {
+    test('falls back to the default', () => {
       const stack = new Stack();
 
-      test.equals(FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT),
+      expect(FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)).toEqual(
         cxapi.futureFlagDefault(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT));
-      test.done();
-    },
+    });
 
-    'invalid flag'(test: Test) {
+    test('invalid flag', () => {
       const stack = new Stack();
 
-      test.equals(FeatureFlags.of(stack).isEnabled('non-existent-flag'), undefined);
-      test.done();
-    },
-  },
+      expect(FeatureFlags.of(stack).isEnabled('non-existent-flag')).toEqual(false);
+    });
+
+    test('strings are evaluated as boolean', () => {
+      const stack = new Stack();
+      stack.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, 'true');
+
+      const actual = FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+      expect(actual).toEqual(true);
+    });
+  });
 });

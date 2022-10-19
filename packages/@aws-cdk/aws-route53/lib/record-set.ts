@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
@@ -8,10 +8,7 @@ import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
 
 /**
  * A record set
@@ -58,6 +55,13 @@ export enum RecordType {
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#CNAMEFormat
    */
   CNAME = 'CNAME',
+
+  /**
+   * A delegation signer (DS) record refers a zone key for a delegated subdomain zone.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#DSFormat
+   */
+  DS = 'DS',
 
   /**
    * An MX record specifies the names of your mail servers and, if you have two or more mail servers,
@@ -151,6 +155,17 @@ export interface RecordSetOptions {
    * @default no comment
    */
   readonly comment?: string;
+
+  /**
+   * Whether to delete the same record set in the hosted zone if it already exists.
+   *
+   * This allows to deploy a new record set while minimizing the downtime because the
+   * new record set will be created immediately after the existing one is deleted. It
+   * also avoids "manual" actions to delete existing record sets.
+   *
+   * @default false
+   */
+  readonly deleteExisting?: boolean;
 }
 
 /**
@@ -212,19 +227,64 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
+
+    const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
+      name: recordName,
       type: props.recordType,
       resourceRecords: props.target.values,
-      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
+      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
       ttl,
       comment: props.comment,
     });
 
     this.domainName = recordSet.ref;
+
+    if (props.deleteExisting) {
+      // Delete existing record before creating the new one
+      const provider = CustomResourceProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
+        codeDirectory: path.join(__dirname, 'delete-existing-record-set-handler'),
+        runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+        policyStatements: [{ // IAM permissions for all providers
+          Effect: 'Allow',
+          Action: 'route53:GetChange',
+          Resource: '*',
+        }],
+      });
+
+      // Add to the singleton policy for this specific provider
+      provider.addToRolePolicy({
+        Effect: 'Allow',
+        Action: 'route53:ListResourceRecordSets',
+        Resource: props.zone.hostedZoneArn,
+      });
+      provider.addToRolePolicy({
+        Effect: 'Allow',
+        Action: 'route53:ChangeResourceRecordSets',
+        Resource: props.zone.hostedZoneArn,
+        Condition: {
+          'ForAllValues:StringEquals': {
+            'route53:ChangeResourceRecordSetsRecordTypes': [props.recordType],
+            'route53:ChangeResourceRecordSetsActions': ['DELETE'],
+          },
+        },
+      });
+
+      const customResource = new CustomResource(this, 'DeleteExistingRecordSetCustomResource', {
+        resourceType: DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE,
+        serviceToken: provider.serviceToken,
+        properties: {
+          HostedZoneId: props.zone.hostedZoneId,
+          RecordName: recordName,
+          RecordType: props.recordType,
+        },
+      });
+
+      recordSet.node.addDependency(customResource);
+    }
   }
 }
 
@@ -542,6 +602,56 @@ export class MxRecord extends RecordSet {
 }
 
 /**
+ * Construction properties for a NSRecord.
+ */
+export interface NsRecordProps extends RecordSetOptions {
+  /**
+   * The NS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS NS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class NsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: NsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.NS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
+ * Construction properties for a DSRecord.
+ */
+export interface DsRecordProps extends RecordSetOptions {
+  /**
+   * The DS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS DS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class DsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: DsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.DS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
  * Construction properties for a ZoneDelegationRecord
  */
 export interface ZoneDelegationRecordProps extends RecordSetOptions {
@@ -578,9 +688,18 @@ export interface CrossAccountZoneDelegationRecordProps {
   readonly delegatedZone: IHostedZone;
 
   /**
-   * The hosted zone id in the parent account
+   * The hosted zone name in the parent account
+   *
+   * @default - no zone name
    */
-  readonly parentHostedZoneId: string;
+  readonly parentHostedZoneName?: string;
+
+  /**
+   * The hosted zone id in the parent account
+   *
+   * @default - no zone id
+   */
+  readonly parentHostedZoneId?: string;
 
   /**
    * The delegation role in the parent account
@@ -593,31 +712,59 @@ export interface CrossAccountZoneDelegationRecordProps {
    * @default Duration.days(2)
    */
   readonly ttl?: Duration;
+
+  /**
+   * The removal policy to apply to the record set.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
  * A Cross Account Zone Delegation record
  */
-export class CrossAccountZoneDelegationRecord extends CoreConstruct {
+export class CrossAccountZoneDelegationRecord extends Construct {
   constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {
     super(scope, id);
 
-    const serviceToken = CustomResourceProvider.getOrCreate(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
+    if (!props.parentHostedZoneName && !props.parentHostedZoneId) {
+      throw Error('At least one of parentHostedZoneName or parentHostedZoneId is required');
+    }
+
+    if (props.parentHostedZoneName && props.parentHostedZoneId) {
+      throw Error('Only one of parentHostedZoneName and parentHostedZoneId is supported');
+    }
+
+    const provider = CustomResourceProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
-      policyStatements: [{ Effect: 'Allow', Action: 'sts:AssumeRole', Resource: props.delegationRole.roleArn }],
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
     });
 
-    new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
+    const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
+
+    const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['sts:AssumeRole'],
+      resources: [props.delegationRole.roleArn],
+    }));
+
+    const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
-      serviceToken,
+      serviceToken: provider.serviceToken,
+      removalPolicy: props.removalPolicy,
       properties: {
         AssumeRoleArn: props.delegationRole.roleArn,
+        ParentZoneName: props.parentHostedZoneName,
         ParentZoneId: props.parentHostedZoneId,
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
       },
     });
+
+    if (addToPrinciplePolicyResult.policyDependable) {
+      customResource.node.addDependency(addToPrinciplePolicyResult.policyDependable);
+    }
   }
 }

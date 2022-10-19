@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest, ExpectedResult, InvocationType, Match } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as destinations from '../lib';
 
@@ -16,15 +17,17 @@ import * as destinations from '../lib';
 //   aws logs filter-log-events --log-group-name /aws/lambda/<error function name>
 
 class TestStack extends Stack {
+  public readonly firstFunctionName: string;
+  public readonly thirdFunctionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const lambdaProps: lambda.FunctionProps = {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         console.log('Event: %j', event);
-        if (event === 'error') throw new Error('UnkownError');
+        if (event.status === 'error') throw new Error('UnkownError');
         return event;
       };`),
     };
@@ -33,6 +36,8 @@ class TestStack extends Stack {
     const second = new lambda.Function(this, 'Second', lambdaProps);
     const third = new lambda.Function(this, 'Third', lambdaProps);
     const error = new lambda.Function(this, 'Error', lambdaProps);
+    this.firstFunctionName = first.functionName;
+    this.thirdFunctionName = third.functionName;
 
     first.configureAsyncInvoke({
       onSuccess: new destinations.LambdaDestination(second, { responseOnly: true }),
@@ -52,6 +57,26 @@ class TestStack extends Stack {
 
 const app = new App();
 
-new TestStack(app, 'aws-cdk-lambda-chain');
+const stack = new TestStack(app, 'aws-cdk-lambda-chain');
+const integ = new IntegTest(app, 'LambdaDestChain3', {
+  testCases: [stack],
+});
+integ.assertions.invokeFunction({
+  functionName: stack.firstFunctionName,
+  invocationType: InvocationType.EVENT,
+  payload: JSON.stringify({
+    status: 'success',
+  }),
+});
+
+integ.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
+  logGroupName: `/aws/lambda/${stack.thirdFunctionName}`,
+}).expect(ExpectedResult.objectLike({
+  events: Match.arrayWith([
+    Match.objectLike({
+      message: Match.stringLikeRegexp('success'),
+    }),
+  ]),
+})).waitForAssertions();
 
 app.synth();

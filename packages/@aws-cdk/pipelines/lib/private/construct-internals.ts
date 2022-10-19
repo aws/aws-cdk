@@ -4,7 +4,7 @@
 import * as path from 'path';
 import { App, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Node } from 'constructs';
+import { Construct, IConstruct, Node } from 'constructs';
 
 export function appOf(construct: IConstruct): App {
   const root = Node.of(construct).root;
@@ -18,6 +18,10 @@ export function appOf(construct: IConstruct): App {
 
 export function assemblyBuilderOf(stage: Stage): cxapi.CloudAssemblyBuilder {
   return (stage as any)._assemblyBuilder;
+}
+
+export function pipelineSynth(stage: Stage) {
+  return stage.synth({ validateOnSynthesis: true });
 }
 
 /**
@@ -35,4 +39,12 @@ export function embeddedAsmPath(scope: IConstruct) {
  */
 export function cloudAssemblyBuildSpecDir(scope: IConstruct) {
   return assemblyBuilderOf(appOf(scope)).outdir;
+}
+
+export function obtainScope(parent: Construct, id: string): Construct {
+  const existing = Node.of(parent).tryFindChild(id);
+  if (existing) {
+    return existing as Construct;
+  }
+  return new Construct(parent, id);
 }

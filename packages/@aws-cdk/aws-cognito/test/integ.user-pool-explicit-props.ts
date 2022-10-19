@@ -1,11 +1,12 @@
 import { Code, Function, IFunction, Runtime } from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
 
 const userpool = new UserPool(stack, 'myuserpool', {
+  removalPolicy: RemovalPolicy.DESTROY,
   userPoolName: 'MyUserPool',
   userInvitation: {
     emailSubject: 'invitation email subject from the integ test',
@@ -23,6 +24,10 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
   },
   autoVerify: {
+    email: true,
+    phone: true,
+  },
+  keepOriginal: {
     email: true,
     phone: true,
   },
@@ -68,11 +73,12 @@ const userpool = new UserPool(stack, 'myuserpool', {
     userMigration: dummyTrigger('userMigration'),
     verifyAuthChallengeResponse: dummyTrigger('verifyAuthChallengeResponse'),
   },
+  snsRegion: Stack.of(stack).region,
 });
 
 const cognitoDomain = userpool.addDomain('myuserpooldomain', {
   cognitoDomain: {
-    domainPrefix: 'myawesomeapp',
+    domainPrefix: 'cdkintegrationtestuserpoolexplicitprops',
   },
 });
 
@@ -88,7 +94,7 @@ function dummyTrigger(name: string): IFunction {
   return new Function(stack, name, {
     functionName: name,
     handler: 'index.handler',
-    runtime: Runtime.NODEJS_12_X,
+    runtime: Runtime.NODEJS_14_X,
     code: Code.fromInline('foo'),
   });
 }

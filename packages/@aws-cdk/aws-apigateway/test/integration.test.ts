@@ -1,5 +1,4 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -52,7 +51,7 @@ describe('integration', () => {
     });
     api.root.addMethod('GET', integration);
 
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         Uri: {
           'Fn::Join': [
@@ -133,7 +132,7 @@ describe('integration', () => {
     })).toThrow(/cannot set 'vpcLink' where 'connectionType' is INTERNET/);
   });
 
-  test('connectionType is ABSENT when vpcLink is not specified', () => {
+  test('connectionType is Match.absent() when vpcLink is not specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'restapi');
@@ -146,10 +145,10 @@ describe('integration', () => {
     api.root.addMethod('ANY', integration);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       Integration: {
-        ConnectionType: ABSENT,
+        ConnectionType: Match.absent(),
       },
     });
   });
@@ -177,11 +176,57 @@ describe('integration', () => {
     api.root.addMethod('ANY', integration);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       Integration: {
         ConnectionType: 'VPC_LINK',
       },
     });
   });
+
+  test('validates timeout is valid', () => {
+
+    expect(() => new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        timeout: cdk.Duration.millis(2),
+      },
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds/);
+
+    expect(() => new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        timeout: cdk.Duration.seconds(50),
+      },
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds/);
+  });
+
+  test('sets timeout', () => {
+
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'restapi');
+
+    // WHEN
+    const integration = new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        timeout: cdk.Duration.seconds(1),
+      },
+    });
+    api.root.addMethod('ANY', integration);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      Integration: {
+        TimeoutInMillis: 1000,
+      },
+    });
+
+  });
+
 });

@@ -17,11 +17,13 @@ export interface TestStackArtifact {
   assets?: cxschema.AssetMetadataEntry[];
   properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
   terminationProtection?: boolean;
+  displayName?: string;
 }
 
 export interface TestAssembly {
   stacks: TestStackArtifact[];
   missing?: cxschema.MissingContext[];
+  nestedAssemblies?: TestAssembly[];
 }
 
 export class MockCloudExecutable extends CloudExecutable {
@@ -47,13 +49,12 @@ function clone(obj: any) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
-  const builder = new cxapi.CloudAssemblyBuilder();
-
+function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuilder) {
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
     const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
+    addNestedStacks(templateFile, builder.outdir, template);
 
     // we call patchStackTags here to simulate the tags formatter
     // that is used when building real manifest files.
@@ -79,6 +80,39 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
         templateFile,
         terminationProtection: stack.terminationProtection,
       },
+      displayName: stack.displayName,
+    });
+  }
+}
+
+function addNestedStacks(templatePath: string, outdir: string, rootStackTemplate?: any) {
+  let template = rootStackTemplate;
+
+  if (!template) {
+    const templatePathWithDir = path.join('nested-stack-templates', templatePath);
+    template = JSON.parse(fs.readFileSync(path.join(__dirname, templatePathWithDir)).toString());
+    fs.writeFileSync(path.join(outdir, templatePath), JSON.stringify(template, undefined, 2));
+  }
+
+  for (const logicalId in template.Resources) {
+    if (template.Resources[logicalId].Type === 'AWS::CloudFormation::Stack') {
+      if (template.Resources[logicalId].Metadata && template.Resources[logicalId].Metadata['aws:asset:path']) {
+        const nestedTemplatePath = template.Resources[logicalId].Metadata['aws:asset:path'];
+        addNestedStacks(nestedTemplatePath, outdir);
+      }
+    }
+  }
+}
+
+export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
+  const builder = new cxapi.CloudAssemblyBuilder();
+  addAttributes(assembly, builder);
+
+  if (assembly.nestedAssemblies != null && assembly.nestedAssemblies.length > 0) {
+    assembly.nestedAssemblies?.forEach((nestedAssembly: TestAssembly, i: number) => {
+      const nestedAssemblyBuilder = builder.createNestedAssembly(`nested${i}`, `nested${i}`);
+      addAttributes(nestedAssembly, nestedAssemblyBuilder);
+      nestedAssemblyBuilder.buildAssembly();
     });
   }
 
@@ -111,7 +145,7 @@ function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }):
   return cloned;
 }
 
-export function testStack(stack: TestStackArtifact) {
+export function testStack(stack: TestStackArtifact): cxapi.CloudFormationStackArtifact {
   const assembly = testAssembly({ stacks: [stack] });
   return assembly.getStackByName(stack.stackName);
 }

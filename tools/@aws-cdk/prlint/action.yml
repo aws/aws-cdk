@@ -1,0 +1,5 @@
+name: Pull Request Linter
+description: Execute validation rules on GitHub Pull Requests
+runs:
+  using: node16
+  main: index.js

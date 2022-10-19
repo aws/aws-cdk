@@ -1,19 +1,14 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import { Construct } from 'constructs';
 import * as autoscaling from '../lib';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
-nodeunitShim({
-  'target tracking policies': {
-    'cpu utilization'(test: Test) {
+describe('scaling', () => {
+  describe('target tracking policies', () => {
+    test('cpu utilization', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -24,18 +19,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageCPUUtilization' },
           TargetValue: 30,
         },
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'network ingress'(test: Test) {
+    test('network ingress', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -46,18 +39,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageNetworkIn' },
           TargetValue: 100,
         },
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'network egress'(test: Test) {
+    test('network egress', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -68,18 +59,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageNetworkOut' },
           TargetValue: 100,
         },
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'request count per second'(test: Test) {
+    test('request count per second', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -103,7 +92,7 @@ nodeunitShim({
         ],
       };
 
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           TargetValue: 600,
@@ -122,12 +111,10 @@ nodeunitShim({
             },
           },
         },
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'request count per minute'(test: Test) {
+    test('request count per minute', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -151,7 +138,7 @@ nodeunitShim({
         ],
       };
 
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           TargetValue: 10,
@@ -170,12 +157,10 @@ nodeunitShim({
             },
           },
         },
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'custom metric'(test: Test) {
+    test('custom metric', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -185,7 +170,7 @@ nodeunitShim({
         metric: new cloudwatch.Metric({
           metricName: 'Henk',
           namespace: 'Test',
-          dimensions: {
+          dimensionsMap: {
             Mustache: 'Bushy',
           },
         }),
@@ -193,7 +178,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           CustomizedMetricSpecification: {
@@ -204,13 +189,11 @@ nodeunitShim({
           },
           TargetValue: 2,
         },
-      }));
+      });
+    });
+  });
 
-      test.done();
-    },
-  },
-
-  'step scaling'(test: Test) {
+  test('step scaling', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fixture = new ASGFixture(stack, 'Fixture');
@@ -220,8 +203,9 @@ nodeunitShim({
       metric: new cloudwatch.Metric({
         metricName: 'Legs',
         namespace: 'Henk',
-        dimensions: { Mustache: 'Bushy' },
+        dimensionsMap: { Mustache: 'Bushy' },
       }),
+      estimatedInstanceWarmup: cdk.Duration.seconds(150),
       // Adjust the number of legs to be closer to 2
       scalingSteps: [
         { lower: 0, upper: 2, change: +1 },
@@ -231,7 +215,7 @@ nodeunitShim({
     });
 
     // THEN: scaling in policy
-    expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
       MetricAggregationType: 'Average',
       PolicyType: 'StepScaling',
       StepAdjustments: [
@@ -245,43 +229,109 @@ nodeunitShim({
           ScalingAdjustment: -2,
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       Threshold: 3,
       AlarmActions: [{ Ref: 'FixtureASGMetricUpperPolicyC464CAFB' }],
       AlarmDescription: 'Upper threshold scaling alarm',
-    }));
+    });
 
     // THEN: scaling out policy
-    expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
       MetricAggregationType: 'Average',
       PolicyType: 'StepScaling',
+      EstimatedInstanceWarmup: 150,
       StepAdjustments: [
         {
           MetricIntervalUpperBound: 0,
           ScalingAdjustment: 1,
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       Threshold: 2,
       AlarmActions: [{ Ref: 'FixtureASGMetricLowerPolicy4A1CDE42' }],
       AlarmDescription: 'Lower threshold scaling alarm',
-    }));
+    });
+  });
+});
 
-    test.done();
-  },
+test('step scaling from percentile metric', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // WHEN
+  fixture.asg.scaleOnMetric('Tracking', {
+    metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+    scalingSteps: [
+      { upper: 0, change: -1 },
+      { lower: 100, change: +1 },
+      { lower: 500, change: +5 },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+    PolicyType: 'StepScaling',
+    MetricAggregationType: 'Average',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+    EvaluationPeriods: 1,
+    AlarmActions: [
+      { Ref: 'FixtureASGTrackingUpperPolicy27D4301F' },
+    ],
+    ExtendedStatistic: 'p99',
+    MetricName: 'Metric',
+    Namespace: 'Test',
+    Threshold: 100,
+  });
+});
+
+test('step scaling with evaluation period configured', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // WHEN
+  fixture.asg.scaleOnMetric('Tracking', {
+    metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+    scalingSteps: [
+      { upper: 0, change: -1 },
+      { lower: 100, change: +1 },
+      { lower: 500, change: +5 },
+    ],
+    evaluationPeriods: 10,
+    metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+    PolicyType: 'StepScaling',
+    MetricAggregationType: 'Maximum',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+    EvaluationPeriods: 10,
+    ExtendedStatistic: 'p99',
+    MetricName: 'Metric',
+    Namespace: 'Test',
+    Threshold: 100,
+  });
 });
 
 class ASGFixture extends Construct {
   public readonly vpc: ec2.Vpc;
   public readonly asg: autoscaling.AutoScalingGroup;
 
-  constructor(scope: constructs.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     this.vpc = new ec2.Vpc(this, 'VPC');

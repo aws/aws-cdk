@@ -7,6 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   Annotations,
+  Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
   Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
@@ -14,12 +15,15 @@ import {
   Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import { TerminationPolicy } from './termination-policy';
 import { BlockDevice, BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
+import { WarmPool, WarmPoolOptions } from './warm-pool';
 
 /**
  * Name tag constant
@@ -76,6 +80,8 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Name of SSH keypair to grant access to instances
    *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
+   *
    * @default - No SSH access will be possible.
    */
   readonly keyName?: string;
@@ -115,10 +121,10 @@ export interface CommonAutoScalingGroupProps {
    * This is applied when any of the settings on the ASG are changed that
    * affect how the instances should be created (VPC, instance type, startup
    * scripts, etc.). It indicates how the existing instances should be
-   * replaced with new instances matching the new config. By default, nothing
-   * is done and only new instances are launched with the new config.
+   * replaced with new instances matching the new config. By default,
+   * `updatePolicy` takes precedence over `updateType`.
    *
-   * @default UpdateType.None
+   * @default UpdateType.REPLACING_UPDATE, unless updatePolicy has been set
    * @deprecated Use `updatePolicy` instead
    */
   readonly updateType?: UpdateType;
@@ -186,6 +192,8 @@ export interface CommonAutoScalingGroupProps {
    * Whether instances in the Auto Scaling Group should have public
    * IP addresses associated with them.
    *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
+   *
    * @default - Use subnet setting.
    */
   readonly associatePublicIpAddress?: boolean;
@@ -193,6 +201,8 @@ export interface CommonAutoScalingGroupProps {
   /**
    * The maximum hourly price (in USD) to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
    * launched when the price you specify exceeds the current Spot market price.
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default none
    */
@@ -212,6 +222,8 @@ export interface CommonAutoScalingGroupProps {
    * either an Amazon EBS volume or an instance store volume.
    * You can use block device mappings to specify additional EBS volumes or
    * instance store volumes to attach to an instance when it is launched.
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html
    *
@@ -238,6 +250,8 @@ export interface CommonAutoScalingGroupProps {
    *
    * When detailed monitoring is enabled, Amazon CloudWatch generates metrics every minute and your account
    * is charged a fee. When you disable detailed monitoring, CloudWatch generates metrics every 5 minutes.
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @see https://docs.aws.amazon.com/autoscaling/latest/userguide/as-instance-monitoring.html#enable-as-instance-metrics
    *
@@ -291,10 +305,220 @@ export interface CommonAutoScalingGroupProps {
   readonly updatePolicy?: UpdatePolicy;
 
   /**
+   * Whether newly-launched instances are protected from termination by Amazon
+   * EC2 Auto Scaling when scaling in.
+   *
+   * By default, Auto Scaling can terminate an instance at any time after launch
+   * when scaling in an Auto Scaling Group, subject to the group's termination
+   * policy. However, you may wish to protect newly-launched instances from
+   * being scaled in if they are going to run critical applications that should
+   * not be prematurely terminated.
+   *
+   * This flag must be enabled if the Auto Scaling Group will be associated with
+   * an ECS Capacity Provider with managed termination protection.
+   *
+   * @default false
+   */
+  readonly newInstancesProtectedFromScaleIn?: boolean;
+
+  /**
    * The name of the Auto Scaling group. This name must be unique per Region per account.
    * @default - Auto generated by CloudFormation
    */
   readonly autoScalingGroupName?: string;
+
+  /**
+   * A policy or a list of policies that are used to select the instances to
+   * terminate. The policies are executed in the order that you list them.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html
+   *
+   * @default - `TerminationPolicy.DEFAULT`
+   */
+  readonly terminationPolicies?: TerminationPolicy[];
+}
+
+/**
+ * MixedInstancesPolicy allows you to configure a group that diversifies across On-Demand Instances
+ * and Spot Instances of multiple instance types. For more information, see Auto Scaling groups with
+ * multiple instance types and purchase options in the Amazon EC2 Auto Scaling User Guide:
+ *
+ * https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-purchase-options.html
+ */
+export interface MixedInstancesPolicy {
+  /**
+   * InstancesDistribution to use.
+   *
+   * @default - The value for each property in it uses a default value.
+   */
+  readonly instancesDistribution?: InstancesDistribution;
+
+  /**
+   * Launch template to use.
+   */
+  readonly launchTemplate: ec2.ILaunchTemplate;
+
+  /**
+   * Launch template overrides.
+   *
+   * The maximum number of instance types that can be associated with an Auto Scaling group is 40.
+   *
+   * The maximum number of distinct launch templates you can define for an Auto Scaling group is 20.
+   *
+   * @default - Do not provide any overrides
+   */
+  readonly launchTemplateOverrides?: LaunchTemplateOverrides[];
+}
+
+/**
+ * Indicates how to allocate instance types to fulfill On-Demand capacity.
+ */
+export enum OnDemandAllocationStrategy {
+  /**
+   * This strategy uses the order of instance types in the LaunchTemplateOverrides to define the launch
+   * priority of each instance type. The first instance type in the array is prioritized higher than the
+   * last. If all your On-Demand capacity cannot be fulfilled using your highest priority instance, then
+   * the Auto Scaling group launches the remaining capacity using the second priority instance type, and
+   * so on.
+   */
+  PRIORITIZED = 'prioritized',
+}
+
+/**
+ * Indicates how to allocate instance types to fulfill Spot capacity.
+ */
+export enum SpotAllocationStrategy {
+  /**
+   * The Auto Scaling group launches instances using the Spot pools with the lowest price, and evenly
+   * allocates your instances across the number of Spot pools that you specify.
+   */
+  LOWEST_PRICE = 'lowest-price',
+
+  /**
+   * The Auto Scaling group launches instances using Spot pools that are optimally chosen based on the
+   * available Spot capacity.
+   *
+   * Recommended.
+   */
+  CAPACITY_OPTIMIZED = 'capacity-optimized',
+
+  /**
+   * When you use this strategy, you need to set the order of instance types in the list of launch template
+   * overrides from highest to lowest priority (from first to last in the list). Amazon EC2 Auto Scaling
+   * honors the instance type priorities on a best-effort basis but optimizes for capacity first.
+   */
+  CAPACITY_OPTIMIZED_PRIORITIZED = 'capacity-optimized-prioritized',
+}
+
+/**
+ * InstancesDistribution is a subproperty of MixedInstancesPolicy that describes an instances distribution
+ * for an Auto Scaling group. The instances distribution specifies the distribution of On-Demand Instances
+ * and Spot Instances, the maximum price to pay for Spot Instances, and how the Auto Scaling group allocates
+ * instance types to fulfill On-Demand and Spot capacities.
+ *
+ * For more information and example configurations, see Auto Scaling groups with multiple instance types
+ * and purchase options in the Amazon EC2 Auto Scaling User Guide:
+ *
+ * https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-purchase-options.html
+ */
+export interface InstancesDistribution {
+  /**
+   * Indicates how to allocate instance types to fulfill On-Demand capacity. The only valid value is prioritized,
+   * which is also the default value.
+   *
+   * @default OnDemandAllocationStrategy.PRIORITIZED
+   */
+  readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy,
+
+  /**
+   * The minimum amount of the Auto Scaling group's capacity that must be fulfilled by On-Demand Instances. This
+   * base portion is provisioned first as your group scales. Defaults to 0 if not specified. If you specify weights
+   * for the instance types in the overrides, set the value of OnDemandBaseCapacity in terms of the number of
+   * capacity units, and not the number of instances.
+   *
+   * @default 0
+   */
+  readonly onDemandBaseCapacity?: number,
+
+  /**
+   * Controls the percentages of On-Demand Instances and Spot Instances for your additional capacity beyond
+   * OnDemandBaseCapacity. Expressed as a number (for example, 20 specifies 20% On-Demand Instances, 80% Spot Instances).
+   * Defaults to 100 if not specified. If set to 100, only On-Demand Instances are provisioned.
+   *
+   * @default 100
+   */
+  readonly onDemandPercentageAboveBaseCapacity?: number,
+
+  /**
+   * If the allocation strategy is lowest-price, the Auto Scaling group launches instances using the Spot pools with the
+   * lowest price, and evenly allocates your instances across the number of Spot pools that you specify. Defaults to
+   * lowest-price if not specified.
+   *
+   * If the allocation strategy is capacity-optimized (recommended), the Auto Scaling group launches instances using Spot
+   * pools that are optimally chosen based on the available Spot capacity. Alternatively, you can use capacity-optimized-prioritized
+   * and set the order of instance types in the list of launch template overrides from highest to lowest priority
+   * (from first to last in the list). Amazon EC2 Auto Scaling honors the instance type priorities on a best-effort basis but
+   * optimizes for capacity first.
+   *
+   * @default SpotAllocationStrategy.LOWEST_PRICE
+   */
+  readonly spotAllocationStrategy?: SpotAllocationStrategy,
+
+  /**
+   * The number of Spot Instance pools to use to allocate your Spot capacity. The Spot pools are determined from the different instance
+   * types in the overrides. Valid only when the Spot allocation strategy is lowest-price. Value must be in the range of 1 to 20.
+   * Defaults to 2 if not specified.
+   *
+   * @default 2
+   */
+  readonly spotInstancePools?: number,
+
+  /**
+   * The maximum price per unit hour that you are willing to pay for a Spot Instance. If you leave the value at its default (empty),
+   * Amazon EC2 Auto Scaling uses the On-Demand price as the maximum Spot price. To remove a value that you previously set, include
+   * the property but specify an empty string ("") for the value.
+   *
+   * @default "" - On-Demand price
+   */
+  readonly spotMaxPrice?: string
+}
+
+/**
+ * LaunchTemplateOverrides is a subproperty of LaunchTemplate that describes an override for a launch template.
+ */
+export interface LaunchTemplateOverrides {
+  /**
+   * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
+   * and Availability Zones.
+   *
+   * @default - Do not override instance type
+   */
+  readonly instanceType: ec2.InstanceType,
+
+  /**
+   * Provides the launch template to be used when launching the instance type. For example, some instance types might
+   * require a launch template with a different AMI. If not provided, Amazon EC2 Auto Scaling uses the launch template
+   * that's defined for your mixed instances policy.
+   *
+   * @default - Do not override launch template
+   */
+  readonly launchTemplate?: ec2.ILaunchTemplate,
+
+  /**
+   * The number of capacity units provided by the specified instance type in terms of virtual CPUs, memory, storage,
+   * throughput, or other relative performance characteristic. When a Spot or On-Demand Instance is provisioned, the
+   * capacity units count toward the desired capacity. Amazon EC2 Auto Scaling provisions instances until the desired
+   * capacity is totally fulfilled, even if this results in an overage. Value must be in the range of 1 to 999.
+   *
+   * For example, If there are 2 units remaining to fulfill capacity, and Amazon EC2 Auto Scaling can only provision
+   * an instance with a WeightedCapacity of 5 units, the instance is provisioned, and the desired capacity is exceeded
+   * by 3 units.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-weighting.html
+   *
+   * @default - Do not provide weight
+   */
+  readonly weightedCapacity?: number
 }
 
 /**
@@ -307,17 +531,47 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly vpc: ec2.IVpc;
 
   /**
-   * Type of instance to launch
+   * Launch template to use.
+   *
+   * Launch configuration related settings and MixedInstancesPolicy must not be specified when a
+   * launch template is specified.
+   *
+   * @default - Do not provide any launch template
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly launchTemplate?: ec2.ILaunchTemplate;
+
+  /**
+   * Mixed Instances Policy to use.
+   *
+   * Launch configuration related settings and Launch Template  must not be specified when a
+   * MixedInstancesPolicy is specified.
+   *
+   * @default - Do not provide any MixedInstancesPolicy
+   */
+  readonly mixedInstancesPolicy?: MixedInstancesPolicy;
+
+  /**
+   * Type of instance to launch
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
+   *
+   * @default - Do not provide any instance type
+   */
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * AMI to launch
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
+   *
+   * @default - Do not provide any machine image
    */
-  readonly machineImage: ec2.IMachineImage;
+  readonly machineImage?: ec2.IMachineImage;
 
   /**
    * Security group to launch the instances in.
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @default - A SecurityGroup will be created if none is specified.
    */
@@ -328,6 +582,8 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * The UserData may still be mutated after creation.
    *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
+   *
    * @default - A UserData object appropriate for the MachineImage's
    * Operating System is created.
    */
@@ -337,6 +593,8 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
    *
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
    * @example
    *
@@ -367,6 +625,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - default options
    */
   readonly initOptions?: ApplyCloudFormationInitOptions;
+
+  /**
+   * Whether IMDSv2 should be required on launched instances.
+   *
+   * @default false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -708,6 +973,16 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   }
 
   /**
+   * Add a pool of pre-initialized EC2 instances that sits alongside an Auto Scaling group
+   */
+  public addWarmPool(options?: WarmPoolOptions): WarmPool {
+    return new WarmPool(this, 'WarmPool', {
+      autoScalingGroup: this,
+      ...options,
+    });
+  }
+
+  /**
    * Scale out or in based on time
    */
   public scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction {
@@ -853,16 +1128,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public readonly osType: ec2.OperatingSystemType;
 
   /**
-   * Allows specify security group connections for instances of this fleet.
-   */
-  public readonly connections: ec2.Connections;
-
-  /**
-   * The IAM role assumed by instances of this fleet.
-   */
-  public readonly role: iam.IRole;
-
-  /**
    * The principal to grant permissions to
    */
   public readonly grantPrincipal: iam.IPrincipal;
@@ -878,11 +1143,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public readonly autoScalingGroupArn: string;
 
   /**
-   * UserData for the instances
-   */
-  public readonly userData: ec2.UserData;
-
-  /**
    * The maximum spot price configured for the autoscaling group. `undefined`
    * indicates that this group uses on-demand capacity.
    */
@@ -894,66 +1154,119 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public readonly maxInstanceLifetime?: Duration;
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
-  private readonly securityGroup: ec2.ISecurityGroup;
-  private readonly securityGroups: ec2.ISecurityGroup[] = [];
+  private readonly securityGroup?: ec2.ISecurityGroup;
+  private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private readonly groupMetrics: GroupMetrics[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
+  private readonly launchTemplate?: ec2.LaunchTemplate;
+  private readonly _connections?: ec2.Connections;
+  private readonly _userData?: ec2.UserData;
+  private readonly _role?: iam.IRole;
+
+  protected newInstancesProtectedFromScaleIn?: boolean;
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id, {
       physicalName: props.autoScalingGroupName,
     });
 
+    this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
+
     if (props.initOptions && !props.init) {
       throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
     }
-
-    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
-      vpc: props.vpc,
-      allowAllOutbound: props.allowAllOutbound !== false,
-    });
-    this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-    this.securityGroups.push(this.securityGroup);
-    Tags.of(this).add(NAME_TAG, this.node.path);
-
-    this.role = props.role || new iam.Role(this, 'InstanceRole', {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    });
-
-    this.grantPrincipal = this.role;
 
     if (props.groupMetrics) {
       this.groupMetrics.push(...props.groupMetrics);
     }
 
-    const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [this.role.roleName],
-    });
+    let launchConfig: CfnLaunchConfiguration | undefined = undefined;
+    if (props.launchTemplate || props.mixedInstancesPolicy) {
+      this.verifyNoLaunchConfigPropIsGiven(props);
 
-    // use delayed evaluation
-    const imageConfig = props.machineImage.getImage(this);
-    this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+      const bareLaunchTemplate = props.launchTemplate;
+      const mixedInstancesPolicy = props.mixedInstancesPolicy;
 
-    const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-      imageId: imageConfig.imageId,
-      keyName: props.keyName,
-      instanceType: props.instanceType.toString(),
-      instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
-      securityGroups: securityGroupsToken,
-      iamInstanceProfile: iamProfile.ref,
-      userData: userDataToken,
-      associatePublicIpAddress: props.associatePublicIpAddress,
-      spotPrice: props.spotPrice,
-      blockDeviceMappings: (props.blockDevices !== undefined ?
-        synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
-    });
+      if (bareLaunchTemplate && mixedInstancesPolicy) {
+        throw new Error('Setting \'mixedInstancesPolicy\' must not be set when \'launchTemplate\' is set');
+      }
 
-    launchConfig.node.addDependency(this.role);
+      if (bareLaunchTemplate && bareLaunchTemplate instanceof ec2.LaunchTemplate) {
+        if (!bareLaunchTemplate.instanceType) {
+          throw new Error('Setting \'launchTemplate\' requires its \'instanceType\' to be set');
+        }
+
+        if (!bareLaunchTemplate.imageId) {
+          throw new Error('Setting \'launchTemplate\' requires its \'machineImage\' to be set');
+        }
+
+        this.launchTemplate = bareLaunchTemplate;
+      }
+
+      if (mixedInstancesPolicy && mixedInstancesPolicy.launchTemplate instanceof ec2.LaunchTemplate) {
+        if (!mixedInstancesPolicy.launchTemplate.imageId) {
+          throw new Error('Setting \'mixedInstancesPolicy.launchTemplate\' requires its \'machineImage\' to be set');
+        }
+
+        this.launchTemplate = mixedInstancesPolicy.launchTemplate;
+      }
+
+      this._role = this.launchTemplate?.role;
+      this.grantPrincipal = this._role || new iam.UnknownPrincipal({ resource: this });
+
+      this.osType = this.launchTemplate?.osType ?? ec2.OperatingSystemType.UNKNOWN;
+    } else {
+      if (!props.machineImage) {
+        throw new Error('Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
+      }
+      if (!props.instanceType) {
+        throw new Error('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
+      }
+
+      this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
+        vpc: props.vpc,
+        allowAllOutbound: props.allowAllOutbound !== false,
+      });
+      this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+      this.securityGroups = [this.securityGroup];
+      Tags.of(this).add(NAME_TAG, this.node.path);
+
+      this._role = props.role || new iam.Role(this, 'InstanceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
+
+      this.grantPrincipal = this._role;
+
+      const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
+        roles: [this.role.roleName],
+      });
+
+      // use delayed evaluation
+      const imageConfig = props.machineImage.getImage(this);
+      this._userData = props.userData ?? imageConfig.userData;
+      const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
+      const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups!.map(sg => sg.securityGroupId) });
+
+      launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
+        imageId: imageConfig.imageId,
+        keyName: props.keyName,
+        instanceType: props.instanceType.toString(),
+        instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
+        securityGroups: securityGroupsToken,
+        iamInstanceProfile: iamProfile.ref,
+        userData: userDataToken,
+        associatePublicIpAddress: props.associatePublicIpAddress,
+        spotPrice: props.spotPrice,
+        blockDeviceMappings: (props.blockDevices !== undefined ?
+          synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
+      });
+
+      launchConfig.node.addDependency(this.role);
+      this.osType = imageConfig.osType;
+    }
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
@@ -983,9 +1296,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime &&
-      (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
-      throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
+    // See https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-max-instance-lifetime.html for details on max instance lifetime.
+    if (this.maxInstanceLifetime && !this.maxInstanceLifetime.isUnresolved() &&
+      (this.maxInstanceLifetime.toSeconds() !== 0) &&
+      (this.maxInstanceLifetime.toSeconds() < 86400 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
+      throw new Error('maxInstanceLifetime must be between 1 and 365 days (inclusive)');
     }
 
     if (props.notificationsTopic && props.notifications) {
@@ -1012,7 +1327,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
-      launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.list({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.list({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: this.renderNotificationConfiguration(),
@@ -1021,6 +1335,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
+      newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
+      terminationPolicies: props.terminationPolicies,
+      ...this.getLaunchSettings(launchConfig, props.launchTemplate, props.mixedInstancesPolicy),
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
@@ -1028,7 +1345,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
-    this.osType = imageConfig.osType;
     this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
@@ -1043,6 +1359,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.spotPrice = props.spotPrice;
+
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
+    }
   }
 
   /**
@@ -1052,6 +1372,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
+    if (!this.securityGroups) {
+      throw new Error('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
+    }
+
     this.securityGroups.push(securityGroup);
   }
 
@@ -1097,7 +1421,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -1123,7 +1447,101 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       embedFingerprint: options.embedFingerprint,
       printLog: options.printLog,
       ignoreFailures: options.ignoreFailures,
+      includeRole: options.includeRole,
+      includeUrl: options.includeUrl,
     });
+  }
+
+  /**
+   * Ensures newly-launched instances are protected from scale-in.
+   */
+  public protectNewInstancesFromScaleIn() {
+    this.newInstancesProtectedFromScaleIn = true;
+  }
+
+  /**
+   * Returns `true` if newly-launched instances are protected from scale-in.
+   */
+  public areNewInstancesProtectedFromScaleIn(): boolean {
+    return this.newInstancesProtectedFromScaleIn === true;
+  }
+
+  /**
+   * The network connections associated with this resource.
+   */
+  public get connections(): ec2.Connections {
+    if (this._connections) {
+      return this._connections;
+    }
+
+    if (this.launchTemplate) {
+      return this.launchTemplate.connections;
+    }
+
+    throw new Error('AutoScalingGroup can only be used as IConnectable if it is not created from an imported Launch Template.');
+  }
+
+  /**
+   * The Base64-encoded user data to make available to the launched EC2 instances.
+   *
+   * @throws an error if a launch template is given and it does not provide a non-null `userData`
+   */
+  public get userData(): ec2.UserData {
+    if (this._userData) {
+      return this._userData;
+    }
+
+    if (this.launchTemplate?.userData) {
+      return this.launchTemplate.userData;
+    }
+
+    throw new Error('The provided launch template does not expose its user data.');
+  }
+
+  /**
+   * The IAM Role in the instance profile
+   *
+   * @throws an error if a launch template is given
+   */
+  public get role(): iam.IRole {
+    if (this._role) {
+      return this._role;
+    }
+
+    throw new Error('The provided launch template does not expose or does not define its role.');
+  }
+
+  private verifyNoLaunchConfigPropIsGiven(props: AutoScalingGroupProps) {
+    if (props.machineImage) {
+      throw new Error('Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.instanceType) {
+      throw new Error('Setting \'instanceType\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.role) {
+      throw new Error('Setting \'role\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.userData) {
+      throw new Error('Setting \'userData\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.securityGroup) {
+      throw new Error('Setting \'securityGroup\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.keyName) {
+      throw new Error('Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.instanceMonitoring) {
+      throw new Error('Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.associatePublicIpAddress !== undefined) {
+      throw new Error('Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.spotPrice) {
+      throw new Error('Setting \'spotPrice\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.blockDevices) {
+      throw new Error('Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
   }
 
   /**
@@ -1225,7 +1643,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
     }
@@ -1251,6 +1669,76 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       granularity: '1Minute',
       metrics: group._metrics?.size !== 0 ? [...group._metrics].map(m => m.name) : undefined,
     }));
+  }
+
+  private getLaunchSettings(launchConfig?: CfnLaunchConfiguration, launchTemplate?: ec2.ILaunchTemplate, mixedInstancesPolicy?: MixedInstancesPolicy)
+    : Pick<CfnAutoScalingGroupProps, 'launchConfigurationName'>
+    | Pick<CfnAutoScalingGroupProps, 'launchTemplate'>
+    | Pick<CfnAutoScalingGroupProps, 'mixedInstancesPolicy'> {
+    if (launchConfig) {
+      return {
+        launchConfigurationName: launchConfig.ref,
+      };
+    }
+
+    if (launchTemplate) {
+      return {
+        launchTemplate: this.convertILaunchTemplateToSpecification(launchTemplate),
+      };
+    }
+
+    if (mixedInstancesPolicy) {
+      let instancesDistribution: CfnAutoScalingGroup.InstancesDistributionProperty | undefined = undefined;
+      if (mixedInstancesPolicy.instancesDistribution) {
+        const dist = mixedInstancesPolicy.instancesDistribution;
+        instancesDistribution = {
+          onDemandAllocationStrategy: dist.onDemandAllocationStrategy?.toString(),
+          onDemandBaseCapacity: dist.onDemandBaseCapacity,
+          onDemandPercentageAboveBaseCapacity: dist.onDemandPercentageAboveBaseCapacity,
+          spotAllocationStrategy: dist.spotAllocationStrategy?.toString(),
+          spotInstancePools: dist.spotInstancePools,
+          spotMaxPrice: dist.spotMaxPrice,
+        };
+      }
+      return {
+        mixedInstancesPolicy: {
+          instancesDistribution,
+          launchTemplate: {
+            launchTemplateSpecification: this.convertILaunchTemplateToSpecification(mixedInstancesPolicy.launchTemplate),
+            ...(mixedInstancesPolicy.launchTemplateOverrides ? {
+              overrides: mixedInstancesPolicy.launchTemplateOverrides.map(override => {
+                if (override.weightedCapacity && Math.floor(override.weightedCapacity) !== override.weightedCapacity) {
+                  throw new Error('Weight must be an integer');
+                }
+                return {
+                  instanceType: override.instanceType.toString(),
+                  launchTemplateSpecification: override.launchTemplate
+                    ? this.convertILaunchTemplateToSpecification(override.launchTemplate)
+                    : undefined,
+                  weightedCapacity: override.weightedCapacity?.toString(),
+                };
+              }),
+            } : {}),
+          },
+        },
+      };
+    }
+
+    throw new Error('Either launchConfig, launchTemplate or mixedInstancesPolicy needs to be specified.');
+  }
+
+  private convertILaunchTemplateToSpecification(launchTemplate: ec2.ILaunchTemplate): CfnAutoScalingGroup.LaunchTemplateSpecificationProperty {
+    if (launchTemplate.launchTemplateId) {
+      return {
+        launchTemplateId: launchTemplate.launchTemplateId,
+        version: launchTemplate.versionNumber,
+      };
+    } else {
+      return {
+        launchTemplateName: launchTemplate.launchTemplateName,
+        version: launchTemplate.versionNumber,
+      };
+    }
   }
 }
 
@@ -1327,6 +1815,7 @@ export enum ScalingEvent {
 
 /**
  * Additional settings when a rolling update is selected
+ * @deprecated use `UpdatePolicy.rollingUpdate()`
  */
 export interface RollingUpdateConfiguration {
   /**
@@ -1424,6 +1913,12 @@ export class ScalingEvents {
   public static readonly LAUNCH_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH, ScalingEvent.INSTANCE_LAUNCH_ERROR);
 
   /**
+   * Fleet termination launch events
+   */
+  public static readonly TERMINATION_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_TERMINATE, ScalingEvent.INSTANCE_TERMINATE_ERROR);
+
+
+  /**
    * @internal
    */
   public readonly _types: ScalingEvent[];
@@ -1516,7 +2011,7 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): Cfn
     minInstancesInService: config.minInstancesInService,
     minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
     waitOnResourceSignals,
-    pauseTime: pauseTime && pauseTime.toISOString(),
+    pauseTime: pauseTime && pauseTime.toIsoString(),
     suspendProcesses: config.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
   };
 }
@@ -1559,6 +2054,11 @@ export interface IAutoScalingGroup extends IResource, iam.IGrantable {
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
   addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+
+  /**
+   * Add a pool of pre-initialized EC2 instances that sits alongside an Auto Scaling group
+   */
+  addWarmPool(options?: WarmPoolOptions): WarmPool;
 
   /**
    * Scale out or in based on time
@@ -1619,13 +2119,13 @@ export interface RequestCountScalingProps extends BaseTargetTrackingProps {
    * Target average requests/seconds on each instance
    *
    * @deprecated Use 'targetRequestsPerMinute' instead
-   * @default - Specify exactly one of 'targetRequestsPerSecond' and 'targetRequestsPerSecond'
+   * @default - Specify exactly one of 'targetRequestsPerMinute' and 'targetRequestsPerSecond'
    */
   readonly targetRequestsPerSecond?: number;
 
   /**
    * Target average requests/minute on each instance
-   * @default - Specify exactly one of 'targetRequestsPerSecond' and 'targetRequestsPerSecond'
+   * @default - Specify exactly one of 'targetRequestsPerMinute' and 'targetRequestsPerSecond'
    */
   readonly targetRequestsPerMinute?: number;
 }
@@ -1737,4 +2237,23 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly ignoreFailures?: boolean;
+
+  /**
+   * Include --url argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the cloudformation endpoint in the deployed region
+   * e.g. https://cloudformation.us-east-1.amazonaws.com
+   *
+   * @default false
+   */
+  readonly includeUrl?: boolean;
+
+  /**
+  * Include --role argument when running cfn-init and cfn-signal commands
+  *
+  * This will be the IAM instance profile attached to the EC2 instance
+  *
+  * @default false
+  */
+  readonly includeRole?: boolean;
 }

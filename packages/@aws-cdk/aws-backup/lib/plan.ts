@@ -1,7 +1,7 @@
 import { IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
-import { BackupPlanRule } from './rule';
+import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
 
@@ -43,6 +43,15 @@ export interface BackupPlanProps {
    * @default - use `addRule()` to add rules
    */
   readonly backupPlanRules?: BackupPlanRule[];
+
+  /**
+   * Enable Windows VSS backup.
+   *
+   * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html
+   *
+   * @default false
+   */
+  readonly windowsVss?: boolean;
 }
 
 /**
@@ -124,6 +133,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
+        advancedBackupSettings: this.advancedBackupSettings(props),
         backupPlanName: props.backupPlanName || id,
         backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
@@ -138,6 +148,20 @@ export class BackupPlan extends Resource implements IBackupPlan {
     for (const rule of props.backupPlanRules || []) {
       this.addRule(rule);
     }
+
+    this.node.addValidation({ validate: () => this.validatePlan() });
+  }
+
+  private advancedBackupSettings(props: BackupPlanProps) {
+    if (!props.windowsVss) {
+      return undefined;
+    }
+    return [{
+      backupOptions: {
+        WindowsVSS: 'enabled',
+      },
+      resourceType: 'EC2',
+    }];
   }
 
   /**
@@ -165,8 +189,20 @@ export class BackupPlan extends Resource implements IBackupPlan {
       ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this.rules.length}`,
       scheduleExpression: rule.props.scheduleExpression?.expressionString,
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
+      enableContinuousBackup: rule.props.enableContinuousBackup,
       targetBackupVault: vault.backupVaultName,
+      copyActions: rule.props.copyActions?.map(this.planCopyActions),
     });
+  }
+
+  private planCopyActions(props: BackupPlanCopyActionProps): CfnBackupPlan.CopyActionResourceTypeProperty {
+    return {
+      destinationBackupVaultArn: props.destinationBackupVault.backupVaultArn,
+      lifecycle: (props.deleteAfter || props.moveToColdStorageAfter) && {
+        deleteAfterDays: props.deleteAfter?.toDays(),
+        moveToColdStorageAfterDays: props.moveToColdStorageAfter?.toDays(),
+      },
+    };
   }
 
   /**
@@ -192,7 +228,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     });
   }
 
-  protected validate() {
+  private validatePlan() {
     if (this.rules.length === 0) {
       return ['A backup plan must have at least 1 rule.'];
     }

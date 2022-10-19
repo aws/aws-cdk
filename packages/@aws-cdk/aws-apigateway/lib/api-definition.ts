@@ -1,18 +1,16 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
+import { CfnRestApi } from './apigateway.generated';
+import { IRestApi } from './restapi';
 
 /**
  * Represents an OpenAPI definition asset.
- * @experimental
  */
 export abstract class ApiDefinition {
   /**
    * Creates an API definition from a specification file in an S3 bucket
-   * @experimental
    */
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3ApiDefinition {
     return new S3ApiDefinition(bucket, key, objectVersion);
@@ -23,7 +21,8 @@ export abstract class ApiDefinition {
    * schema of OpenAPI 2.0 or OpenAPI 3.0
    *
    * @example
-   *   ApiDefinition.fromInline({
+   *
+   *   apigateway.ApiDefinition.fromInline({
    *     openapi: '3.0.2',
    *     paths: {
    *       '/pets': {
@@ -70,7 +69,6 @@ export abstract class ApiDefinition {
 
   /**
    * Loads the API specification from a local disk asset.
-   * @experimental
    */
   public static fromAsset(file: string, options?: s3_assets.AssetOptions): AssetApiDefinition {
     return new AssetApiDefinition(file, options);
@@ -84,11 +82,19 @@ export abstract class ApiDefinition {
    * assume it's initialized. You may just use it as a construct scope.
    */
   public abstract bind(scope: Construct): ApiDefinitionConfig;
+
+  /**
+   * Called after the CFN RestApi resource has been created to allow the Api
+   * Definition to bind to it. Specifically it's required to allow assets to add
+   * metadata for tooling like SAM CLI to be able to find their origins.
+   */
+  public bindAfterCreate(_scope: Construct, _restApi: IRestApi) {
+    return;
+  }
 }
 
 /**
  * S3 location of the API definition file
- * @experimental
  */
 export interface ApiDefinitionS3Location {
   /** The S3 bucket */
@@ -104,7 +110,6 @@ export interface ApiDefinitionS3Location {
 
 /**
  * Post-Binding Configuration for a CDK construct
- * @experimental
  */
 export interface ApiDefinitionConfig {
   /**
@@ -124,7 +129,6 @@ export interface ApiDefinitionConfig {
 
 /**
  * OpenAPI specification from an S3 archive.
- * @experimental
  */
 export class S3ApiDefinition extends ApiDefinition {
   private bucketName: string;
@@ -152,7 +156,6 @@ export class S3ApiDefinition extends ApiDefinition {
 
 /**
  * OpenAPI specification from an inline JSON object.
- * @experimental
  */
 export class InlineApiDefinition extends ApiDefinition {
   constructor(private definition: any) {
@@ -176,7 +179,6 @@ export class InlineApiDefinition extends ApiDefinition {
 
 /**
  * OpenAPI specification from a local file.
- * @experimental
  */
 export class AssetApiDefinition extends ApiDefinition {
   private asset?: s3_assets.Asset;
@@ -204,5 +206,19 @@ export class AssetApiDefinition extends ApiDefinition {
         key: this.asset.s3ObjectKey,
       },
     };
+  }
+
+  public bindAfterCreate(scope: Construct, restApi: IRestApi) {
+    if (!scope.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    if (!this.asset) {
+      throw new Error('bindToResource() must be called after bind()');
+    }
+
+    const child = Node.of(restApi).defaultChild as CfnRestApi;
+    child.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, this.asset.assetPath);
+    child.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'BodyS3Location');
   }
 }

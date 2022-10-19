@@ -1,7 +1,10 @@
 import * as crypto from 'crypto';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ConstructNode, IConstruct, ISynthesisSession } from '../construct-compat';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Node, IConstruct } from 'constructs';
 import { Stack } from '../stack';
+import { Token } from '../token';
+import { ISynthesisSession } from './types';
 
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
@@ -46,6 +49,7 @@ export function addStackArtifactToAssembly(
     templateFile: stack.templateFile,
     terminationProtection: stack.terminationProtection,
     tags: nonEmptyDict(stack.tags.tagValues()),
+    validateOnSynth: session.validateOnSynth,
     ...stackProps,
     ...stackNameProperty,
   };
@@ -57,6 +61,7 @@ export function addStackArtifactToAssembly(
     properties,
     dependencies: deps.length > 0 ? deps : undefined,
     metadata: Object.keys(meta).length > 0 ? meta : undefined,
+    displayName: stack.node.path,
   });
 }
 
@@ -79,7 +84,7 @@ function collectStackMetadata(stack: Stack) {
 
     if (node.node.metadata.length > 0) {
       // Make the path absolute
-      output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
+      output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
     }
 
     for (const child of node.node.children) {
@@ -88,7 +93,7 @@ function collectStackMetadata(stack: Stack) {
   }
 
   function findParentStack(node: IConstruct): Stack | undefined {
-    if (node instanceof Stack && node.nestedStackParent === undefined) {
+    if (Stack.isStack(node) && node.nestedStackParent === undefined) {
       return node;
     }
 
@@ -120,4 +125,47 @@ export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
 
 function nonEmptyDict<A>(xs: Record<string, A>) {
   return Object.keys(xs).length > 0 ? xs : undefined;
+}
+
+/**
+ * A "replace-all" function that doesn't require us escaping a literal string to a regex
+ */
+function replaceAll(s: string, search: string, replace: string) {
+  return s.split(search).join(replace);
+}
+
+export class StringSpecializer {
+  constructor(private readonly stack: Stack, private readonly qualifier: string) {
+  }
+
+  /**
+   * Function to replace placeholders in the input string as much as possible
+   *
+   * We replace:
+   * - ${Qualifier}: always
+   * - ${AWS::AccountId}, ${AWS::Region}: only if we have the actual values available
+   * - ${AWS::Partition}: never, since we never have the actual partition value.
+   */
+  public specialize(s: string): string {
+    s = replaceAll(s, '${Qualifier}', this.qualifier);
+    return cxapi.EnvironmentPlaceholders.replace(s, {
+      region: resolvedOr(this.stack.region, cxapi.EnvironmentPlaceholders.CURRENT_REGION),
+      accountId: resolvedOr(this.stack.account, cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT),
+      partition: cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+    });
+  }
+
+  /**
+   * Specialize only the qualifier
+   */
+  public qualifierOnly(s: string): string {
+    return replaceAll(s, '${Qualifier}', this.qualifier);
+  }
+}
+
+/**
+ * Return the given value if resolved or fall back to a default
+ */
+export function resolvedOr<A>(x: string, def: A): string | A {
+  return Token.isUnresolved(x) ? def : x;
 }

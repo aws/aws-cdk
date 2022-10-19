@@ -27,10 +27,6 @@ class TheParentStack extends Stack {
   }
 }
 
-const app = new App({
-  context: {
-    '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
-  },
-});
+const app = new App();
 new TheParentStack(app, 'nested-stacks-docker');
 app.synth();

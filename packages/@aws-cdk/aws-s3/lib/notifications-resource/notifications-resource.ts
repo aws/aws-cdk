@@ -1,20 +1,20 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
+import { Construct } from 'constructs';
+import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
-   *
-   * This cannot be an `IBucket` because the bucket maintains the 1:1
-   * relationship with this resource.
    */
-  bucket: Bucket;
+  bucket: IBucket;
+
+  /**
+   * The role to be used by the lambda handler
+   */
+  handlerRole?: iam.IRole;
 }
 
 /**
@@ -33,15 +33,18 @@ interface NotificationsProps {
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfig.html
  */
 export class BucketNotifications extends Construct {
+  private eventBridgeEnabled = false;
   private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
-  private readonly bucket: Bucket;
+  private readonly bucket: IBucket;
+  private readonly handlerRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
+    this.handlerRole = props.handlerRole;
   }
 
   /**
@@ -89,8 +92,14 @@ export class BucketNotifications extends Construct {
     }
   }
 
+  public enableEventBridgeNotification() {
+    this.createResourceOnce();
+    this.eventBridgeEnabled = true;
+  }
+
   private renderNotificationConfiguration(): NotificationConfiguration {
     return {
+      EventBridgeConfiguration: this.eventBridgeEnabled ? {} : undefined,
       LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
       QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
       TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
@@ -104,14 +113,26 @@ export class BucketNotifications extends Construct {
    */
   private createResourceOnce() {
     if (!this.resource) {
-      const handlerArn = NotificationsResourceHandler.singleton(this);
+      const handler = NotificationsResourceHandler.singleton(this, {
+        role: this.handlerRole,
+      });
+
+      const managed = this.bucket instanceof Bucket;
+
+      if (!managed) {
+        handler.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['s3:GetBucketNotification'],
+          resources: ['*'],
+        }));
+      }
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
         properties: {
-          ServiceToken: handlerArn,
+          ServiceToken: handler.functionArn,
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
+          Managed: managed,
         },
       });
     }
@@ -159,6 +180,7 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
 }
 
 interface NotificationConfiguration {
+  EventBridgeConfiguration?: EventBridgeConfiguration;
   LambdaFunctionConfigurations?: LambdaFunctionConfiguration[];
   QueueConfigurations?: QueueConfiguration[];
   TopicConfigurations?: TopicConfiguration[];
@@ -169,6 +191,8 @@ interface CommonConfiguration {
   Events: EventType[];
   Filter?: Filter
 }
+
+interface EventBridgeConfiguration { }
 
 interface LambdaFunctionConfiguration extends CommonConfiguration {
   LambdaFunctionArn: string;

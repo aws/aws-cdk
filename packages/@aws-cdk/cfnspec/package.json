@@ -3,8 +3,9 @@
   "description": "The CloudFormation resource specification used by @aws-cdk packages",
   "version": "0.0.0",
   "scripts": {
-    "update": "cdk-build && /bin/bash build-tools/update.sh",
+    "update": "cdk-build && /bin/bash build-tools/update.sh && /bin/bash build-tools/update-cfnlint.sh",
     "update-metrics": "/bin/bash build-tools/update-metrics.sh",
+    "rejected": "node build-tools/report-issues.js spec-source/specification/000_cfn/000_official/ rejected",
     "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
@@ -12,11 +13,16 @@
     "test": "cdk-test",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "nyc": {
     "statements": 50,
     "lines": 50
+  },
+  "cdk-build": {
+    "jest": true
   },
   "pkglint": {
     "ignore": true
@@ -24,23 +30,24 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "devDependencies": {
-    "@types/fs-extra": "^8.1.1",
-    "@types/md5": "^2.3.0",
-    "@types/nodeunit": "^0.0.31",
-    "cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/fs-extra": "^8.1.2",
+    "@types/jest": "^27.5.2",
+    "@types/md5": "^2.3.2",
     "fast-json-patch": "^2.2.1",
-    "fs-extra": "^9.1.0",
-    "json-diff": "^0.5.4",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0",
-    "sort-json": "^2.0.0"
+    "jest": "^27.5.1",
+    "json-diff": "^0.9.0",
+    "sort-json": "^2.0.1"
   },
   "dependencies": {
+    "fs-extra": "^9.1.0",
     "md5": "^2.3.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/@aws-cdk/cfnspec"
   },
   "license": "Apache-2.0",
   "author": {

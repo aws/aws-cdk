@@ -1,7 +1,7 @@
 // FIXME: copied from `ckd-assets`, because this tool needs to read the asset manifest aswell.
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetManifest, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
+import { AssetManifest, AwsDestination, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * A manifest of assets
@@ -21,7 +21,7 @@ export class AssetManifestReader {
 
       return new AssetManifestReader(path.dirname(fileName), obj);
     } catch (e) {
-      throw new Error(`Canot read asset manifest '${fileName}': ${e.message}`);
+      throw new Error(`Cannot read asset manifest '${fileName}': ${e.message}`);
     }
   }
 
@@ -63,7 +63,7 @@ export class AssetManifestReader {
     if (selection === undefined) { return this; }
 
     const ret: AssetManifest & Required<Pick<AssetManifest, AssetType>>
-     = { version: this.manifest.version, dockerImages: {}, files: {} };
+      = { version: this.manifest.version, dockerImages: {}, files: {} };
 
     for (const assetType of ASSET_TYPES) {
       for (const [assetId, asset] of Object.entries(this.manifest[assetType] || {})) {
@@ -154,7 +154,7 @@ export interface IManifestEntry {
   /**
    * Type-dependent destination data
    */
-  readonly genericDestination: unknown;
+  readonly destination: AwsDestination;
 }
 
 /**
@@ -162,7 +162,6 @@ export interface IManifestEntry {
  */
 export class FileManifestEntry implements IManifestEntry {
   public readonly genericSource: unknown;
-  public readonly genericDestination: unknown;
   public readonly type = 'file';
 
   constructor(
@@ -174,7 +173,6 @@ export class FileManifestEntry implements IManifestEntry {
     public readonly destination: FileDestination,
   ) {
     this.genericSource = source;
-    this.genericDestination = destination;
   }
 }
 
@@ -183,7 +181,6 @@ export class FileManifestEntry implements IManifestEntry {
  */
 export class DockerImageManifestEntry implements IManifestEntry {
   public readonly genericSource: unknown;
-  public readonly genericDestination: unknown;
   public readonly type = 'docker-image';
 
   constructor(
@@ -195,7 +192,6 @@ export class DockerImageManifestEntry implements IManifestEntry {
     public readonly destination: DockerImageDestination,
   ) {
     this.genericSource = source;
-    this.genericDestination = destination;
   }
 }
 
@@ -271,7 +267,7 @@ export class DestinationPattern {
    */
   public matches(id: DestinationIdentifier) {
     return (this.assetId === undefined || this.assetId === id.assetId)
-    && (this.destinationId === undefined || this.destinationId === id.destinationId);
+      && (this.destinationId === undefined || this.destinationId === id.destinationId);
   }
 
   /**

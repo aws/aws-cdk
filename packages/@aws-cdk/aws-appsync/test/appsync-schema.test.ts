@@ -1,5 +1,5 @@
 import { join } from 'path';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -41,7 +41,7 @@ describe('basic testing schema definition mode `code`', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: '',
     });
   });
@@ -56,7 +56,7 @@ describe('basic testing schema definition mode `code`', () => {
     api.addType(mutation);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${type.toString()}\n${query.toString()}\n${mutation.toString()}\n`,
     });
   });
@@ -71,7 +71,7 @@ describe('basic testing schema definition mode `code`', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: 'schema {\n  query: Query\n}\ntype Query {\n  test: String\n}\n',
     });
   });
@@ -88,7 +88,7 @@ describe('basic testing schema definition mode `code`', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: 'schema {\n  query: Query\n}\ntype Query {\n  test: String\n}\n',
     });
   });
@@ -103,7 +103,7 @@ describe('basic testing schema definition mode `code`', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
     });
   });
@@ -120,7 +120,7 @@ describe('basic testing schema definition mode `code`', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
     });
   });
@@ -135,7 +135,7 @@ describe('basic testing schema definition mode `code`', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
     });
   });
@@ -152,7 +152,7 @@ describe('basic testing schema definition mode `code`', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
     });
   });
@@ -170,7 +170,7 @@ describe('basic testing schema definition mode `code`', () => {
     const out = 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n  @aws_subscribe(mutations: ["test1"])\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: out,
     });
   });
@@ -186,7 +186,7 @@ describe('testing schema definition mode `file`', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${type.toString()}\n${query.toString()}\n${mutation.toString()}\n`,
     });
   });

@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnMesh } from './appmesh.generated';
+import { MeshServiceDiscovery } from './service-discovery';
 import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
@@ -23,7 +24,7 @@ export enum MeshFilterType {
 }
 
 /**
- * Interface wich all Mesh based classes MUST implement
+ * Interface which all Mesh based classes MUST implement
  */
 export interface IMesh extends cdk.IResource {
   /**
@@ -41,17 +42,23 @@ export interface IMesh extends cdk.IResource {
   readonly meshArn: string;
 
   /**
-   * Adds a VirtualRouter to the Mesh with the given id and props
+   * Creates a new VirtualRouter in this Mesh.
+   * Note that the Router is created in the same Stack that this Mesh belongs to,
+   * which might be different than the current stack.
    */
   addVirtualRouter(id: string, props?: VirtualRouterBaseProps): VirtualRouter;
 
   /**
-   * Adds a VirtualNode to the Mesh
+   * Creates a new VirtualNode in this Mesh.
+   * Note that the Node is created in the same Stack that this Mesh belongs to,
+   * which might be different than the current stack.
    */
   addVirtualNode(id: string, props?: VirtualNodeBaseProps): VirtualNode;
 
   /**
-   * Adds a VirtualGateway to the Mesh
+   * Creates a new VirtualGateway in this Mesh.
+   * Note that the Gateway is created in the same Stack that this Mesh belongs to,
+   * which might be different than the current stack.
    */
   addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway;
 }
@@ -108,7 +115,7 @@ export interface MeshProps {
   /**
    * The name of the Mesh being defined
    *
-   * @default - A name is autmoatically generated
+   * @default - A name is automatically generated
    */
   readonly meshName?: string;
 
@@ -118,6 +125,13 @@ export interface MeshProps {
    * @default DROP_ALL
    */
   readonly egressFilter?: MeshFilterType;
+
+  /**
+   * Defines how upstream clients will discover VirtualNodes in the Mesh
+   *
+   * @default - No Service Discovery
+   */
+  readonly serviceDiscovery?: MeshServiceDiscovery;
 }
 
 /**
@@ -130,14 +144,16 @@ export class Mesh extends MeshBase {
    * Import an existing mesh by arn
    */
   public static fromMeshArn(scope: Construct, id: string, meshArn: string): IMesh {
-    const parts = cdk.Stack.of(scope).parseArn(meshArn);
+    const parts = cdk.Stack.of(scope).splitArn(meshArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends MeshBase {
       public meshName = parts.resourceName || '';
       public meshArn = meshArn;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: meshArn,
+    });
   }
 
   /**
@@ -179,6 +195,7 @@ export class Mesh extends MeshBase {
         egressFilter: props.egressFilter ? {
           type: props.egressFilter,
         } : undefined,
+        serviceDiscovery: props.serviceDiscovery,
       },
     });
 

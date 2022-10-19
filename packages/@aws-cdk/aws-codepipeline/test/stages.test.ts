@@ -1,101 +1,122 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { Stage } from '../lib/private/stage';
+import { FakeBuildAction } from './fake-build-action';
+import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'Pipeline Stages': {
-    'can be inserted before another Stage'(test: Test) {
+describe('stages', () => {
+  describe('Pipeline Stages', () => {
+    test('can be inserted before another Stage', () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
       const secondStage = pipeline.addStage({ stageName: 'SecondStage' });
-      pipeline.addStage({
+      const firstStage = pipeline.addStage({
         stageName: 'FirstStage',
         placement: {
           rightBefore: secondStage,
         },
       });
 
-      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      // -- dummy actions here are needed to satisfy validation rules
+      const sourceArtifact = new codepipeline.Artifact();
+      firstStage.addAction(new FakeSourceAction({
+        actionName: 'dummyAction',
+        output: sourceArtifact,
+      }));
+      secondStage.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      // --
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           { 'Name': 'FirstStage' },
           { 'Name': 'SecondStage' },
         ],
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'can be inserted after another Stage'(test: Test) {
+    test('can be inserted after another Stage', () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
       const firstStage = pipeline.addStage({ stageName: 'FirstStage' });
-      pipeline.addStage({ stageName: 'ThirdStage' });
-      pipeline.addStage({
+      const thirdStage = pipeline.addStage({ stageName: 'ThirdStage' });
+      const secondStage = pipeline.addStage({
         stageName: 'SecondStage',
         placement: {
           justAfter: firstStage,
         },
       });
 
-      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      // -- dummy actions here are needed to satisfy validation rules
+      const sourceArtifact = new codepipeline.Artifact();
+      firstStage.addAction(new FakeSourceAction({
+        actionName: 'dummyAction',
+        output: sourceArtifact,
+      }));
+      secondStage.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      thirdStage.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      // --
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           { 'Name': 'FirstStage' },
           { 'Name': 'SecondStage' },
           { 'Name': 'ThirdStage' },
         ],
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    "attempting to insert a Stage before a Stage that doesn't exist results in an error"(test: Test) {
+    test("attempting to insert a Stage before a Stage that doesn't exist results in an error", () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
       const stage = pipeline.addStage({ stageName: 'Stage' });
 
       const anotherPipeline = new codepipeline.Pipeline(stack, 'AnotherPipeline');
-      test.throws(() => {
+      expect(() => {
         anotherPipeline.addStage({
           stageName: 'AnotherStage',
           placement: {
             rightBefore: stage,
           },
         });
-      }, /before/i);
+      }).toThrow(/before/i);
+    });
 
-      test.done();
-    },
-
-    "attempting to insert a Stage after a Stage that doesn't exist results in an error"(test: Test) {
+    test("attempting to insert a Stage after a Stage that doesn't exist results in an error", () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
       const stage = pipeline.addStage({ stageName: 'Stage' });
 
       const anotherPipeline = new codepipeline.Pipeline(stack, 'AnotherPipeline');
-      test.throws(() => {
+      expect(() => {
         anotherPipeline.addStage({
           stageName: 'AnotherStage',
           placement: {
             justAfter: stage,
           },
         });
-      }, /after/i);
+      }).toThrow(/after/i);
+    });
 
-      test.done();
-    },
-
-    'providing more than one placement value results in an error'(test: Test) {
+    test('providing more than one placement value results in an error', () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
       const stage = pipeline.addStage({ stageName: 'Stage' });
 
-      test.throws(() => {
+      expect(() => {
         pipeline.addStage({
           stageName: 'SecondStage',
           placement: {
@@ -105,12 +126,10 @@ nodeunitShim({
         });
       // incredibly, an arrow function below causes nodeunit to crap out with:
       // "TypeError: Function has non-object prototype 'undefined' in instanceof check"
-      }, /(rightBefore.*justAfter)|(justAfter.*rightBefore)/);
+      }).toThrow(/(rightBefore.*justAfter)|(justAfter.*rightBefore)/);
+    });
 
-      test.done();
-    },
-
-    'can be retrieved from a pipeline after it has been created'(test: Test) {
+    test('can be retrieved from a pipeline after it has been created', () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
@@ -122,17 +141,48 @@ nodeunitShim({
 
       pipeline.addStage({ stageName: 'SecondStage' });
 
-      test.equal(pipeline.stages.length, 2);
-      test.equal(pipeline.stages[0].stageName, 'FirstStage');
-      test.equal(pipeline.stages[1].stageName, 'SecondStage');
+      expect(pipeline.stages.length).toEqual(2);
+      expect(pipeline.stages[0].stageName).toEqual('FirstStage');
+      expect(pipeline.stages[1].stageName).toEqual('SecondStage');
 
       // adding stages to the returned array should have no effect
       pipeline.stages.push(new Stage({
         stageName: 'ThirdStage',
       }, pipeline));
-      test.equal(pipeline.stageCount, 2);
+      expect(pipeline.stageCount).toEqual(2);
+    });
 
-      test.done();
-    },
-  },
+    test('can disable transitions to a stage', () => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+
+      const firstStage = pipeline.addStage({ stageName: 'FirstStage' });
+      const secondStage = pipeline.addStage({ stageName: 'SecondStage', transitionToEnabled: false });
+
+      // -- dummy actions here are needed to satisfy validation rules
+      const sourceArtifact = new codepipeline.Artifact();
+      firstStage.addAction(new FakeSourceAction({
+        actionName: 'dummyAction',
+        output: sourceArtifact,
+      }));
+      secondStage.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      // --
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          { Name: 'FirstStage' },
+          { Name: 'SecondStage' },
+        ],
+        DisableInboundStageTransitions: [
+          {
+            Reason: 'Transition disabled',
+            StageName: 'SecondStage',
+          },
+        ],
+      });
+    });
+  });
 });

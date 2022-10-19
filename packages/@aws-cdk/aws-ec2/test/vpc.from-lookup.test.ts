@@ -2,26 +2,25 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
-nodeunitShim({
-  'Vpc.fromLookup()': {
-    'requires concrete values'(test: Test) {
+describe('vpc from lookup', () => {
+  describe('Vpc.fromLookup()', () => {
+    test('requires concrete values', () => {
       // GIVEN
       const stack = new Stack();
 
-      test.throws(() => {
+      expect(() => {
         Vpc.fromLookup(stack, 'Vpc', {
           vpcId: Lazy.string({ produce: () => 'some-id' }),
         });
 
-      }, 'All arguments to Vpc.fromLookup() must be concrete');
+      }).toThrow('All arguments to Vpc.fromLookup() must be concrete');
 
-      test.done();
-    },
 
-    'selecting subnets by name from a looked-up VPC does not throw'(test: Test) {
+    });
+
+    test('selecting subnets by name from a looked-up VPC does not throw', () => {
       // GIVEN
       const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
       const vpc = Vpc.fromLookup(stack, 'VPC', {
@@ -33,11 +32,11 @@ nodeunitShim({
 
       // THEN: no exception
 
-      test.done();
-    },
 
-    'accepts asymmetric subnets'(test: Test) {
-      const previous = mockVpcContextProviderWith(test, {
+    });
+
+    test('accepts asymmetric subnets', () => {
+      const previous = mockVpcContextProviderWith({
         vpcId: 'vpc-1234',
         subnetGroups: [
           {
@@ -84,11 +83,11 @@ nodeunitShim({
           },
         ],
       }, options => {
-        test.deepEqual(options.filter, {
+        expect(options.filter).toEqual({
           isDefault: 'true',
         });
 
-        test.equal(options.subnetGroupNameTag, undefined);
+        expect(options.subnetGroupNameTag).toEqual(undefined);
       });
 
       const stack = new Stack();
@@ -96,17 +95,17 @@ nodeunitShim({
         isDefault: true,
       });
 
-      test.deepEqual(vpc.availabilityZones, ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d']);
-      test.equal(vpc.publicSubnets.length, 2);
-      test.equal(vpc.privateSubnets.length, 4);
-      test.equal(vpc.isolatedSubnets.length, 0);
+      expect(vpc.availabilityZones).toEqual(['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d']);
+      expect(vpc.publicSubnets.length).toEqual(2);
+      expect(vpc.privateSubnets.length).toEqual(4);
+      expect(vpc.isolatedSubnets.length).toEqual(0);
 
       restoreContextProvider(previous);
-      test.done();
-    },
 
-    'selectSubnets onePerAz works on imported VPC'(test: Test) {
-      const previous = mockVpcContextProviderWith(test, {
+    });
+
+    test('selectSubnets onePerAz works on imported VPC', () => {
+      const previous = mockVpcContextProviderWith({
         vpcId: 'vpc-1234',
         subnetGroups: [
           {
@@ -153,11 +152,11 @@ nodeunitShim({
           },
         ],
       }, options => {
-        test.deepEqual(options.filter, {
+        expect(options.filter).toEqual({
           isDefault: 'true',
         });
 
-        test.equal(options.subnetGroupNameTag, undefined);
+        expect(options.subnetGroupNameTag).toEqual(undefined);
       });
 
       const stack = new Stack();
@@ -166,16 +165,16 @@ nodeunitShim({
       });
 
       // WHEN
-      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE, onePerAz: true });
+      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_EGRESS, onePerAz: true });
 
       // THEN: we got 2 subnets and not 4
-      test.deepEqual(subnets.subnets.map(s => s.availabilityZone), ['us-east-1c', 'us-east-1d']);
+      expect(subnets.subnets.map(s => s.availabilityZone)).toEqual(['us-east-1c', 'us-east-1d']);
 
       restoreContextProvider(previous);
-      test.done();
-    },
 
-    'AZ in dummy lookup VPC matches AZ in Stack'(test: Test) {
+    });
+
+    test('AZ in dummy lookup VPC matches AZ in Stack', () => {
       // GIVEN
       const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
       const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
@@ -186,12 +185,12 @@ nodeunitShim({
       });
 
       // THEN
-      test.equals(subnets.subnets.length, 2);
+      expect(subnets.subnets.length).toEqual(2);
 
-      test.done();
-    },
 
-    'don\'t crash when using subnetgroup name in lookup VPC'(test: Test) {
+    });
+
+    test('don\'t crash when using subnetgroup name in lookup VPC', () => {
       // GIVEN
       const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
       const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
@@ -208,10 +207,10 @@ nodeunitShim({
 
       // THEN -- no exception occurred
 
-      test.done();
-    },
-    'subnets in imported VPC has all expected attributes'(test: Test) {
-      const previous = mockVpcContextProviderWith(test, {
+
+    });
+    test('subnets in imported VPC has all expected attributes', () => {
+      const previous = mockVpcContextProviderWith({
         vpcId: 'vpc-1234',
         subnetGroups: [
           {
@@ -228,11 +227,11 @@ nodeunitShim({
           },
         ],
       }, options => {
-        test.deepEqual(options.filter, {
+        expect(options.filter).toEqual({
           isDefault: 'true',
         });
 
-        test.equal(options.subnetGroupNameTag, undefined);
+        expect(options.subnetGroupNameTag).toEqual(undefined);
       });
 
       const stack = new Stack();
@@ -242,33 +241,69 @@ nodeunitShim({
 
       let subnet = vpc.publicSubnets[0];
 
-      test.equal(subnet.availabilityZone, 'us-east-1a');
-      test.equal(subnet.subnetId, 'pub-sub-in-us-east-1a');
-      test.equal(subnet.routeTable.routeTableId, 'rt-123');
-      test.equal(subnet.ipv4CidrBlock, '10.100.0.0/24');
+      expect(subnet.availabilityZone).toEqual('us-east-1a');
+      expect(subnet.subnetId).toEqual('pub-sub-in-us-east-1a');
+      expect(subnet.routeTable.routeTableId).toEqual('rt-123');
+      expect(subnet.ipv4CidrBlock).toEqual('10.100.0.0/24');
 
 
       restoreContextProvider(previous);
-      test.done();
-    },
-  },
+
+    });
+    test('passes account and region', () => {
+      const previous = mockVpcContextProviderWith({
+        vpcId: 'vpc-1234',
+        subnetGroups: [],
+      }, options => {
+        expect(options.region).toEqual('region-1234');
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: 'vpc-1234',
+        region: 'region-1234',
+      });
+
+      expect(vpc.vpcId).toEqual('vpc-1234');
+
+      restoreContextProvider(previous);
+    });
+
+    test('passes region to LookedUpVpc correctly', () => {
+      const previous = mockVpcContextProviderWith({
+        vpcId: 'vpc-1234',
+        subnetGroups: [],
+        region: 'region-1234',
+      }, options => {
+        expect(options.region).toEqual('region-1234');
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: 'vpc-1234',
+        region: 'region-1234',
+      });
+
+      expect(vpc.env.region).toEqual('region-1234');
+      restoreContextProvider(previous);
+    });
+  });
 });
 
 interface MockVcpContextResponse {
   readonly vpcId: string;
   readonly subnetGroups: cxapi.VpcSubnetGroup[];
+  readonly region?: string;
 }
 
 function mockVpcContextProviderWith(
-  test: Test, response: MockVcpContextResponse,
+  response: MockVcpContextResponse,
   paramValidator?: (options: cxschema.VpcContextQuery) => void) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks
-    test.equal(options.provider, cxschema.ContextProvider.VPC_PROVIDER,
-      `Expected provider to be: '${cxschema.ContextProvider.VPC_PROVIDER}', got: '${options.provider}'`);
-    test.equal((options.props || {}).returnAsymmetricSubnets, true,
-      `Expected options.props.returnAsymmetricSubnets to be true, got: '${(options.props || {}).returnAsymmetricSubnets}'`);
+    expect(options.provider).toEqual(cxschema.ContextProvider.VPC_PROVIDER);
+    expect((options.props || {}).returnAsymmetricSubnets).toEqual(true);
 
     if (paramValidator) {
       paramValidator(options.props as any);

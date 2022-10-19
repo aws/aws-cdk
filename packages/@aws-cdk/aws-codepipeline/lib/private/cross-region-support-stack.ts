@@ -1,10 +1,7 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 
@@ -44,6 +41,13 @@ export interface CrossRegionSupportConstructProps {
    * @default true
    */
   readonly createKmsKey?: boolean;
+
+  /**
+   * Enables KMS key rotation for cross-account keys.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 export class CrossRegionSupportConstruct extends Construct {
@@ -58,6 +62,7 @@ export class CrossRegionSupportConstruct extends Construct {
     if (createKmsKey) {
       const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
         removalPolicy: cdk.RemovalPolicy.DESTROY,
+        enableKeyRotation: props.enableKeyRotation,
       });
       encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
         targetKey: encryptionKey,
@@ -69,6 +74,8 @@ export class CrossRegionSupportConstruct extends Construct {
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       encryption: encryptionAlias ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: encryptionAlias,
+      enforceSSL: true,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
   }
 }
@@ -106,6 +113,13 @@ export interface CrossRegionSupportStackProps {
    * @default true
    */
   readonly createKmsKey?: boolean;
+
+  /**
+   * Enables KMS key rotation for cross-account keys.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 /**
@@ -130,6 +144,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
 
     const crossRegionSupportConstruct = new CrossRegionSupportConstruct(this, 'Default', {
       createKmsKey: props.createKmsKey,
+      enableKeyRotation: props.enableKeyRotation,
     });
     this.replicationBucket = crossRegionSupportConstruct.replicationBucket;
   }

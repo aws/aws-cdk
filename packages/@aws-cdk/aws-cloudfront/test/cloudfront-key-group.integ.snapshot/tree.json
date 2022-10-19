@@ -1,0 +1,90 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-cloudfront-custom": {
+        "id": "aws-cdk-cloudfront-custom",
+        "path": "aws-cdk-cloudfront-custom",
+        "children": {
+          "AwesomePublicKey": {
+            "id": "AwesomePublicKey",
+            "path": "aws-cdk-cloudfront-custom/AwesomePublicKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudfront-custom/AwesomePublicKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::PublicKey",
+                  "aws:cdk:cloudformation:props": {
+                    "publicKeyConfig": {
+                      "name": "awscdkcloudfrontcustomAwesomePublicKey0E83393B",
+                      "callerReference": "c88e460888c5762c9c47ac0cdc669370d787fb2d9f",
+                      "encodedKey": "-----BEGIN PUBLIC KEY-----\n      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS\n      JAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa\n      dlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj\n      6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e\n      0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD\n      /3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx\n      NQIDAQAB\n      -----END PUBLIC KEY-----\n      "
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnPublicKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.PublicKey",
+              "version": "0.0.0"
+            }
+          },
+          "AwesomeKeyGroup": {
+            "id": "AwesomeKeyGroup",
+            "path": "aws-cdk-cloudfront-custom/AwesomeKeyGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-cloudfront-custom/AwesomeKeyGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::KeyGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "keyGroupConfig": {
+                      "name": "awscdkcloudfrontcustomAwesomeKeyGroup73FD4DCA",
+                      "items": [
+                        {
+                          "Ref": "AwesomePublicKeyED3E7F55"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnKeyGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.KeyGroup",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

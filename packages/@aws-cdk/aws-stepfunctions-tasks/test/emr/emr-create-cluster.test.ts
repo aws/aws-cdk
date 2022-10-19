@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -32,6 +32,14 @@ beforeEach(() => {
       ],
     }),
   );
+});
+
+test('Create Cluster with an unresolved release label', () => {
+  new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    releaseLabel: cdk.Token.asString({}),
+  });
 });
 
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
@@ -131,7 +139,7 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {},
     clusterRole,
-    name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
+    name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
     serviceRole,
     autoScalingRole,
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -170,6 +178,133 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
       },
     },
   });
+});
+
+describe('Cluster with StepConcurrencyLevel', () => {
+  test('can be specified', async () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 2,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        Name: 'Cluster',
+        StepConcurrencyLevel: 2,
+      },
+    });
+  });
+
+  test('can be set dynamically through JsonPath', async () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: sfn.JsonPath.numberAt('$.foo.bar'),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        'Name': 'Cluster',
+        'StepConcurrencyLevel.$': '$.foo.bar',
+      },
+    });
+  });
+
+  test('throws if < 1 or > 256', async () => {
+    expect(() => new EmrCreateCluster(stack, 'Task1', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 0,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency level must be in range [1, 256], but got 0.');
+
+    expect(() => new EmrCreateCluster(stack, 'Task2', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 257,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency level must be in range [1, 256], but got 257.');
+  });
+
+  test('throws if EMR release label below 5.28 and StepConcurrencyLevel !== 1', async () => {
+    expect(() => new EmrCreateCluster(stack, 'Task2', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      releaseLabel: 'emr-5.14.0',
+      stepConcurrencyLevel: 2,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency is only supported in EMR release version 5.28.0 and above but got emr-5.14.0.');
+  });
+
+  test('does not throw if EMR release label below 5.28 and StepConcurrencyLevel === 1', async () => {
+    new EmrCreateCluster(stack, 'Task1', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      releaseLabel: 'emr-5.14.0',
+      stepConcurrencyLevel: 1,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+  });
+});
+
+test('Cluster with invalid release label will throw', async () => {
+  expect(() => new EmrCreateCluster(stack, 'Task1', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emra-5.14.0',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emra-5.14.0');
+
+  expect(() => new EmrCreateCluster(stack, 'Task2', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.a',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.a');
+
+  expect(() => new EmrCreateCluster(stack, 'Task3', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.0.0',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.0.0');
 });
 
 test('Create Cluster with Tags', () => {
@@ -499,7 +634,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -514,7 +649,7 @@ test('Create Cluster without Roles', () => {
 
   // The stack renders the ec2.amazonaws.com Service principal id with a
   // Join to the URLSuffix
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -540,7 +675,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -636,6 +771,123 @@ test('Create Cluster with Instances configuration', () => {
       },
       AutoScalingRole: {
         Ref: 'AutoScalingRole015ADA0A',
+      },
+    },
+  });
+});
+
+test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimized', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [{
+          bidPrice: '1',
+          bidPriceAsPercentageOfOnDemandPrice: 1,
+          configurations: [{
+            classification: 'Classification',
+            properties: {
+              Key: 'Value',
+            },
+          }],
+          ebsConfiguration: {
+            ebsBlockDeviceConfigs: [{
+              volumeSpecification: {
+                iops: 1,
+                volumeSize: cdk.Size.gibibytes(1),
+                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+              },
+              volumesPerInstance: 1,
+            }],
+            ebsOptimized: true,
+          },
+          instanceType: 'm5.xlarge',
+          weightedCapacity: 1,
+        }],
+        launchSpecifications: {
+          spotSpecification: {
+            allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
+            blockDurationMinutes: 1,
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeoutDurationMinutes: 1,
+          },
+        },
+        name: 'Master',
+        targetOnDemandCapacity: 1,
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+        InstanceFleets: [{
+          InstanceFleetType: 'MASTER',
+          InstanceTypeConfigs: [{
+            BidPrice: '1',
+            BidPriceAsPercentageOfOnDemandPrice: 1,
+            Configurations: [{
+              Classification: 'Classification',
+              Properties: {
+                Key: 'Value',
+              },
+            }],
+            EbsConfiguration: {
+              EbsBlockDeviceConfigs: [{
+                VolumeSpecification: {
+                  Iops: 1,
+                  SizeInGB: 1,
+                  VolumeType: 'standard',
+                },
+                VolumesPerInstance: 1,
+              }],
+              EbsOptimized: true,
+            },
+            InstanceType: 'm5.xlarge',
+            WeightedCapacity: 1,
+          }],
+          LaunchSpecifications: {
+            SpotSpecification: {
+              AllocationStrategy: 'capacity-optimized',
+              BlockDurationMinutes: 1,
+              TimeoutAction: 'TERMINATE_CLUSTER',
+              TimeoutDurationMinutes: 1,
+            },
+          },
+          Name: 'Master',
+          TargetOnDemandCapacity: 1,
+          TargetSpotCapacity: 1,
+        }],
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
       },
     },
   });

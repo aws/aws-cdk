@@ -154,6 +154,14 @@
                     "additionalProperties": {
                         "type": "string"
                     }
+                },
+                "networkMode": {
+                    "description": "Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.\n\nSpecify this property to build images on a specific networking mode. (Default - no networking mode specified)",
+                    "type": "string"
+                },
+                "platform": {
+                    "description": "Platform to build for. _Requires Docker Buildx_.\n\nSpecify this property to build images on a specific platform/architecture. (Default - current machine platform)",
+                    "type": "string"
                 }
             }
         },

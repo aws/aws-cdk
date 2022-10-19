@@ -346,12 +346,12 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
       throw new Error('For imported Database Proxies, the dbUser is required in grantConnect()');
     }
     const scopeStack = cdk.Stack.of(this);
-    const proxyGeneratedId = scopeStack.parseArn(this.dbProxyArn, ':').resourceName;
+    const proxyGeneratedId = scopeStack.splitArn(this.dbProxyArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName;
     const userArn = scopeStack.formatArn({
       service: 'rds-db',
       resource: 'dbuser',
       resourceName: `${proxyGeneratedId}/${dbUser}`,
-      sep: ':',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
     return iam.Grant.addToPrincipal({
       grantee,
@@ -504,7 +504,7 @@ export class DatabaseProxy extends DatabaseProxyBase
       }
       // 'username' is the field RDS uses here,
       // see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html#rds-proxy-secrets-arns
-      dbUser = this.secrets[0].secretValueFromJson('username').toString();
+      dbUser = this.secrets[0].secretValueFromJson('username').unsafeUnwrap();
     }
     return super.grantConnect(grantee, dbUser);
   }

@@ -114,7 +114,10 @@ export class TemplateDiff implements ITemplateDiff {
     const ret = new Array<PropertyChange>();
 
     for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
-      if (!resourceChange) { continue; }
+      if (resourceChange.resourceTypeChanged) {
+        // we ignore resource type changes here, and handle them in scrutinizableResourceChanges()
+        continue;
+      }
 
       const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyTypes);
       for (const propertyName of props) {
@@ -152,7 +155,7 @@ export class TemplateDiff implements ITemplateDiff {
         resourceLogicalId,
       };
 
-      // Even though it's not physically possible in CFN, let's pretend to handle a change of 'Type'.
+      // changes to the Type of resources can happen when migrating from CFN templates that use Transforms
       if (resourceChange.resourceTypeChanged) {
         // Treat as DELETE+ADD
         if (scrutinizableTypes.has(resourceChange.oldResourceType!)) {
@@ -282,7 +285,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
    * @param newValue the new value, cannot be equal (to the sense of +deepEqual+) to +oldValue+.
    */
-  constructor(public readonly oldValue: ValueType | undefined, public readonly newValue: ValueType | undefined) {
+  constructor(public readonly oldValue: ValueType | undefined, public readonly newValue: ValueType | undefined) {
     if (oldValue === undefined && newValue === undefined) {
       throw new AssertionError({ message: 'oldValue and newValue are both undefined!' });
     }
@@ -309,7 +312,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
 export class PropertyDifference<ValueType> extends Difference<ValueType> {
   public readonly changeImpact?: ResourceImpact;
 
-  constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
+  constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
     super(oldValue, newValue);
     this.changeImpact = args.changeImpact;
   }
@@ -506,7 +509,7 @@ export class ResourceDifference implements IDifference<Resource> {
 
   constructor(
     public readonly oldValue: Resource | undefined,
-    public readonly newValue: Resource | undefined,
+    public readonly newValue: Resource | undefined,
     args: {
       resourceType: { oldType?: string, newType?: string },
       propertyDiffs: { [key: string]: PropertyDifference<any> },

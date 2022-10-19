@@ -1,17 +1,17 @@
-import '@aws-cdk/assert/jest';
-import { arrayWith, objectLike } from '@aws-cdk/assert';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Lazy, Stack } from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 describe('alias', () => {
-  test('version and aliases', () => {
+  testDeprecated('version and aliases', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.addVersion('1');
@@ -21,11 +21,11 @@ describe('alias', () => {
       version,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       FunctionVersion: stack.resolve(version.version),
       Name: 'prod',
@@ -37,7 +37,7 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     new lambda.Alias(stack, 'Alias', {
@@ -45,20 +45,20 @@ describe('alias', () => {
       version: fn.latestVersion,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       FunctionVersion: '$LATEST',
       Name: 'latest',
     });
-    expect(stack).not.toHaveResource('AWS::Lambda::Version');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Version', 0);
   });
 
-  test('can use newVersion to create a new Version', () => {
+  testDeprecated('can use newVersion to create a new Version', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version = fn.addVersion('NewVersion');
@@ -68,23 +68,23 @@ describe('alias', () => {
       version,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       Name: 'prod',
     });
   });
 
-  test('can add additional versions to alias', () => {
+  testDeprecated('can add additional versions to alias', () => {
     const stack = new Stack();
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const version1 = fn.addVersion('1');
@@ -96,7 +96,7 @@ describe('alias', () => {
       additionalVersions: [{ version: version2, weight: 0.1 }],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionVersion: stack.resolve(version1.version),
       RoutingConfig: {
         AdditionalVersionWeights: [
@@ -109,12 +109,12 @@ describe('alias', () => {
     });
   });
 
-  test('version and aliases with provisioned execution', () => {
+  testDeprecated('version and aliases with provisioned execution', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     const pce = 5;
@@ -126,13 +126,13 @@ describe('alias', () => {
       provisionedConcurrentExecutions: pce,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       ProvisionedConcurrencyConfig: {
         ProvisionedConcurrentExecutions: 5,
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionVersion: stack.resolve(version.version),
       Name: 'prod',
       ProvisionedConcurrencyConfig: {
@@ -147,10 +147,10 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
 
     // WHEN: Individual weight too high
     expect(() => {
@@ -178,10 +178,10 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
@@ -193,7 +193,7 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Dimensions: [{
         Name: 'FunctionName',
         Value: {
@@ -214,21 +214,21 @@ describe('alias', () => {
     });
   });
 
-  test('sanity checks provisionedConcurrentExecutions', () => {
+  testDeprecated('sanity checks provisionedConcurrentExecutions', () => {
     const stack = new Stack();
     const pce = -1;
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN: Alias provisionedConcurrencyConfig less than 0
     expect(() => {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod',
-        version: fn.addVersion('1'),
+        version: fn.currentVersion,
         provisionedConcurrentExecutions: pce,
       });
     }).toThrow();
@@ -256,10 +256,10 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // THEN
@@ -273,10 +273,10 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
@@ -309,14 +309,13 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-    const version = fn.addVersion('1');
 
     // WHEN
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       onSuccess: {
         bind: () => ({
           destination: 'on-success-arn',
@@ -325,7 +324,7 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'fn5FF616E3',
       },
@@ -356,12 +355,11 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-    const version = fn.addVersion('1');
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       onSuccess: {
         bind: () => ({
           destination: 'on-success-arn',
@@ -385,49 +383,48 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'alias-name',
       MaximumRetryAttempts: 1,
     });
   });
 
-  test('can enable AutoScaling on aliases', () => {
+  testDeprecated('can enable AutoScaling on aliases', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-
-    const version = fn.addVersion('1', undefined, 'testing');
 
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MinCapacity: 1,
       MaxCapacity: 5,
-      ResourceId: objectLike({
-        'Fn::Join': arrayWith(arrayWith(
+      ResourceId: Match.objectLike({
+        'Fn::Join': Match.arrayWith([Match.arrayWith([
           'function:',
-          objectLike({
-            'Fn::Select': arrayWith(
+          Match.objectLike({
+            'Fn::Select': Match.arrayWith([
               {
-                'Fn::Split': arrayWith(
-                  { Ref: 'Alias325C5727' }),
+                'Fn::Split': Match.arrayWith([
+                  { Ref: 'Alias325C5727' },
+                ]),
               },
-            ),
+            ]),
           }),
           ':prod',
-        )),
+        ])]),
       }),
     });
   });
@@ -438,14 +435,12 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-
-    const version = fn.addVersion('1', undefined, 'testing');
 
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       provisionedConcurrentExecutions: 10,
     });
 
@@ -453,26 +448,27 @@ describe('alias', () => {
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MinCapacity: 1,
       MaxCapacity: 5,
-      ResourceId: objectLike({
-        'Fn::Join': arrayWith(arrayWith(
+      ResourceId: Match.objectLike({
+        'Fn::Join': Match.arrayWith([Match.arrayWith([
           'function:',
-          objectLike({
-            'Fn::Select': arrayWith(
+          Match.objectLike({
+            'Fn::Select': Match.arrayWith([
               {
-                'Fn::Split': arrayWith(
-                  { Ref: 'Alias325C5727' }),
+                'Fn::Split': Match.arrayWith([
+                  { Ref: 'Alias325C5727' },
+                ]),
               },
-            ),
+            ]),
           }),
           ':prod',
-        )),
+        ])]),
       }),
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       ProvisionedConcurrencyConfig: {
         ProvisionedConcurrentExecutions: 10,
       },
@@ -485,14 +481,12 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-
-    const version = fn.addVersion('1', undefined, 'testing');
 
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       provisionedConcurrentExecutions: 10,
     });
 
@@ -502,7 +496,7 @@ describe('alias', () => {
     target.scaleOnUtilization({ utilizationTarget: Lazy.number({ produce: () => 0.95 }) });
 
     // THEN: no exception
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
@@ -517,14 +511,12 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-
-    const version = fn.addVersion('1', undefined, 'testing');
 
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN
@@ -540,14 +532,12 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-
-    const version = fn.addVersion('1', undefined, 'testing');
 
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN
@@ -563,14 +553,12 @@ describe('alias', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
-
-    const version = fn.addVersion('1', undefined, 'testing');
 
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN
@@ -581,7 +569,7 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: { MaxCapacity: 10 },
@@ -589,6 +577,84 @@ describe('alias', () => {
           ScheduledActionName: 'Scheduling',
         },
       ],
+    });
+  });
+
+  test('scheduled scaling shows warning when minute is not defined in cron', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+    target.scaleOnSchedule('Scheduling', {
+      schedule: appscaling.Schedule.cron({}),
+      maxCapacity: 10,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Alias/AliasScaling/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+  });
+
+  test('scheduled scaling shows no warning when minute is * in cron', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    const target = alias.addAutoScaling({ maxCapacity: 5 });
+    target.scaleOnSchedule('Scheduling', {
+      schedule: appscaling.Schedule.cron({ minute: '*' }),
+      maxCapacity: 10,
+    });
+
+    // THEN
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(0);
+  });
+
+  test('addFunctionUrl creates a function url', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+    const aliasName = 'prod';
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName,
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    alias.addFunctionUrl();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
+      AuthType: 'AWS_IAM',
+      TargetFunctionArn: {
+        'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+      },
+      Qualifier: aliasName,
     });
   });
 });

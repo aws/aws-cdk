@@ -1,6 +1,6 @@
-import { ResourcePart, arrayWith } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
@@ -18,7 +18,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
@@ -37,13 +37,37 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
         { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' },
       ],
       Type: 'network',
+    });
+  });
+
+  test('VpcEndpointService with Domain Name imported from public hosted zone', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'Nlb', { vpc });
+    const endpointService = new ec2.VpcEndpointService(stack, 'EndpointService', { vpcEndpointServiceLoadBalancers: [nlb] });
+
+    // WHEN
+    const importedPHZ = route53.PublicHostedZone.fromPublicHostedZoneAttributes(stack, 'MyPHZ', {
+      hostedZoneId: 'sampleid',
+      zoneName: 'MyZone',
+    });
+    new route53.VpcEndpointServiceDomainName(stack, 'EndpointServiceDomainName', {
+      endpointService,
+      domainName: 'MyDomain',
+      publicHostedZone: importedPHZ,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'sampleid',
     });
   });
 
@@ -59,19 +83,20 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: arrayWith(
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
         {
           Key: 'load_balancing.cross_zone.enabled',
           Value: 'true',
         },
-      ),
+      ]),
     });
   });
 
   test('Access logging', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
@@ -82,8 +107,8 @@ describe('tests', () => {
     // THEN
 
     // verify that the LB attributes reference the bucket
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: arrayWith(
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
         {
           Key: 'access_logs.s3.enabled',
           Value: 'true',
@@ -92,16 +117,27 @@ describe('tests', () => {
           Key: 'access_logs.s3.bucket',
           Value: { Ref: 'AccessLoggingBucketA6D88F29' },
         },
-      ),
+        {
+          Key: 'access_logs.s3.prefix',
+          Value: '',
+        },
+      ]),
     });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
-    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: [
+              's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
+              's3:Abort*',
+            ],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -132,14 +168,15 @@ describe('tests', () => {
     });
 
     // verify the ALB depends on the bucket *and* the bucket policy
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('access logging with prefix', () => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
@@ -149,8 +186,8 @@ describe('tests', () => {
 
     // THEN
     // verify that the LB attributes reference the bucket
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: arrayWith(
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
         {
           Key: 'access_logs.s3.enabled',
           Value: 'true',
@@ -163,16 +200,23 @@ describe('tests', () => {
           Key: 'access_logs.s3.prefix',
           Value: 'prefix-of-access-logs',
         },
-      ),
+      ]),
     });
 
     // verify the bucket policy allows the ALB to put objects in the bucket
-    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: [
+              's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
+              's3:Abort*',
+            ],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -215,15 +259,105 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'myLoadBalancer',
     });
+  });
+
+  test('loadBalancerName unallowed: more than 32 characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'a'.repeat(33),
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" can have a maximum of 32 characters.');
+  });
+
+  test('loadBalancerName unallowed: starts with "internal-"', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'internal-myLoadBalancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "internal-myLoadBalancer" must not begin with "internal-".');
+  });
+
+  test('loadBalancerName unallowed: starts with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: '-myLoadBalancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "-myLoadBalancer" must not begin or end with a hyphen.');
+  });
+
+  test('loadBalancerName unallowed: ends with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'myLoadBalancer-',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "myLoadBalancer-" must not begin or end with a hyphen.');
+  });
+
+  test('loadBalancerName unallowed: unallowed characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'my load balancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "my load balancer" must contain only alphanumeric characters or hyphens.');
   });
 
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: nlbArn,
     });
@@ -236,7 +370,7 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: nlbArn,
       vpc,
@@ -246,6 +380,19 @@ describe('tests', () => {
     expect(() => listener.addTargets('targetgroup', { port: 8080 })).not.toThrow();
   });
 
+  test('imported load balancer knows its region', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const alb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'ALB', {
+      loadBalancerArn: albArn,
+    });
+
+    // THEN
+    expect(alb.env.region).toEqual('us-west-2');
+  });
+
   test('Trivial construction: internal with Isolated subnets only', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -253,7 +400,7 @@ describe('tests', () => {
       subnetConfiguration: [{
         cidrMask: 20,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -264,7 +411,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
@@ -284,11 +431,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -299,7 +446,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
@@ -319,11 +466,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -334,7 +481,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
@@ -356,7 +503,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
@@ -376,11 +523,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -388,11 +535,11 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: false,
-      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
@@ -421,10 +568,11 @@ describe('tests', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer');
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer', 0);
       expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188');
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
+      expect(loadBalancer.env.region).toEqual('us-west-2');
     });
 
     test('Can add listeners to a looked-up NetworkLoadBalancer', () => {
@@ -456,9 +604,8 @@ describe('tests', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer');
-      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
     });
   });
 });
-

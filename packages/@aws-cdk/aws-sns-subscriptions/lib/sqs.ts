@@ -1,12 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Names, Stack } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Names, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { SubscriptionProps } from './subscription';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for an SQS subscription
@@ -35,20 +33,40 @@ export class SqsSubscription implements sns.ITopicSubscription {
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
-    if (!Construct.isConstruct(this.queue)) {
+    if (!(this.queue instanceof Construct)) {
       throw new Error('The supplied Queue object must be an instance of Construct');
     }
+    const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
 
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.
-    this.queue.addToResourcePolicy(new iam.PolicyStatement({
+    const queuePolicyDependable = this.queue.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.queue.queueArn],
       actions: ['sqs:SendMessage'],
-      principals: [new iam.ServicePrincipal('sns.amazonaws.com')],
+      principals: [snsServicePrincipal],
       conditions: {
         ArnEquals: { 'aws:SourceArn': topic.topicArn },
       },
-    }));
+    })).policyDependable;
+
+    // if the queue is encrypted, add a statement to the key resource policy
+    // which allows this topic to decrypt KMS keys
+    if (this.queue.encryptionMasterKey) {
+      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        principals: [snsServicePrincipal],
+        conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
+          ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
+          : undefined,
+      }));
+    }
+
+    // if the topic and queue are created in different stacks
+    // then we need to make sure the topic is created first
+    if (topic instanceof sns.Topic && topic.stack !== this.queue.stack) {
+      this.queue.stack.addDependency(topic.stack);
+    }
 
     return {
       subscriberScope: this.queue,
@@ -59,14 +77,23 @@ export class SqsSubscription implements sns.ITopicSubscription {
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
       deadLetterQueue: this.props.deadLetterQueue,
+      subscriptionDependency: queuePolicyDependable,
     };
   }
 
   private regionFromArn(topic: sns.ITopic): string | undefined {
     // no need to specify `region` for topics defined within the same stack
     if (topic instanceof sns.Topic) {
+      if (topic.stack !== this.queue.stack) {
+        // only if we know the region, will not work for
+        // env agnostic stacks
+        if (!Token.isUnresolved(topic.env.region) &&
+          (topic.env.region !== this.queue.env.region)) {
+          return topic.env.region;
+        }
+      }
       return undefined;
     }
-    return Stack.of(topic).parseArn(topic.topicArn).region;
+    return Stack.of(topic).splitArn(topic.topicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
   }
 }

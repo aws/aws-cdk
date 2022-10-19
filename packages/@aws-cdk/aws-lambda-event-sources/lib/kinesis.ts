@@ -4,6 +4,12 @@ import * as cdk from '@aws-cdk/core';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 export interface KinesisEventSourceProps extends StreamEventSourceProps {
+  /**
+   * The time from which to start reading, in Unix time seconds.
+   *
+   * @default - no timestamp
+   */
+  readonly startingPositionTimestamp?: number;
 }
 
 /**
@@ -11,9 +17,11 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
  */
 export class KinesisEventSource extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
+  private startingPositionTimestamp?: number;
 
   constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
     super(props);
+    this.startingPositionTimestamp = props.startingPositionTimestamp;
 
     this.props.batchSize !== undefined && cdk.withResolved(this.props.batchSize, batchSize => {
       if (batchSize < 1 || batchSize > 10000) {
@@ -24,7 +32,10 @@ export class KinesisEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${cdk.Names.nodeUniqueId(this.stream.node)}`,
-      this.enrichMappingOptions({ eventSourceArn: this.stream.streamArn }),
+      this.enrichMappingOptions({
+        eventSourceArn: this.stream.streamArn,
+        startingPositionTimestamp: this.startingPositionTimestamp,
+      }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 

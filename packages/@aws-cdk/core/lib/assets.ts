@@ -44,7 +44,8 @@ export interface AssetOptions {
   readonly assetHashType?: AssetHashType;
 
   /**
-   * Bundle the asset by executing a command in a Docker container.
+   * Bundle the asset by executing a command in a Docker container or a custom bundling provider.
+   *
    * The asset path will be mounted at `/asset-input`. The Docker
    * container is responsible for putting content at `/asset-output`.
    * The content at `/asset-output` will be zipped and used as the
@@ -53,7 +54,7 @@ export interface AssetOptions {
    * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
    * archived into a .zip file and uploaded to S3 otherwise
    *
-   * @experimental
+   *
    */
   readonly bundling?: BundlingOptions;
 }
@@ -117,7 +118,7 @@ export interface FileAssetSource {
 
   /**
    * The path, relative to the root of the cloud assembly, in which this asset
-   * source resides. This can be a path to a file or a directory, dependning on the
+   * source resides. This can be a path to a file or a directory, depending on the
    * packaging type.
    *
    * @default - Exactly one of `directory` and `executable` is required
@@ -202,6 +203,24 @@ export interface DockerImageAssetSource {
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
+
+  /**
+   * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
+   *
+   * Specify this property to build images on a specific networking mode.
+   *
+   * @default - no networking mode specified
+   */
+  readonly networkMode?: string;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: string;
 }
 
 /**
@@ -238,42 +257,52 @@ export interface FileAssetLocation {
 
   /**
    * The HTTP URL of this asset on Amazon S3.
+   * @default - value specified in `httpUrl` is used.
    * @deprecated use `httpUrl`
    */
-  readonly s3Url: string;
+  readonly s3Url?: string;
 
   /**
    * The HTTP URL of this asset on Amazon S3.
    *
-   * @example https://s3-us-east-1.amazonaws.com/mybucket/myobject
+   * This value suitable for inclusion in a CloudFormation template, and
+   * may be an encoded token.
+   *
+   * Example value: `https://s3-us-east-1.amazonaws.com/mybucket/myobject`
    */
   readonly httpUrl: string;
 
   /**
    * The S3 URL of this asset on Amazon S3.
    *
-   * @example s3://mybucket/myobject
+   * This value suitable for inclusion in a CloudFormation template, and
+   * may be an encoded token.
+   *
+   * Example value: `s3://mybucket/myobject`
    */
   readonly s3ObjectUrl: string;
 
   /**
-   * The ARN of the KMS key used to encrypt the file asset bucket, if any
+   * The ARN of the KMS key used to encrypt the file asset bucket, if any.
    *
-   * If so, the consuming role should be given "kms:Decrypt" permissions in its
-   * identity policy.
+   * The CDK bootstrap stack comes with a key policy that does not require
+   * setting this property, so you only need to set this property if you
+   * have customized the bootstrap stack to require it.
    *
-   * It's the responsibility of they key's creator to make sure that all
-   * consumers that the key's key policy is configured such that the key can be used
-   * by all consumers that need it.
-   *
-   * The default bootstrap stack provisioned by the CDK CLI ensures this, and
-   * can be used as an example for how to configure the key properly.
-   *
-   * @default - Asset bucket is not encrypted
-   * @deprecated Since bootstrap bucket v4, the key policy properly allows use of the
-   * key via the bucket and no additional parameters have to be granted anymore.
+   * @default - Asset bucket is not encrypted, or decryption permissions are
+   * defined by a Key Policy.
    */
   readonly kmsKeyArn?: string;
+
+  /**
+   * Like `s3ObjectUrl`, but not suitable for CloudFormation consumption
+   *
+   * If there are placeholders in the S3 URL, they will be returned unreplaced
+   * and un-evaluated.
+   *
+   * @default - This feature cannot be used
+   */
+  readonly s3ObjectUrlWithPlaceholders?: string;
 }
 
 /**
@@ -282,7 +311,7 @@ export interface FileAssetLocation {
  */
 export interface DockerImageAssetLocation {
   /**
-   * The URI of the image in Amazon ECR.
+   * The URI of the image in Amazon ECR (including a tag).
    */
   readonly imageUri: string;
 
@@ -290,4 +319,10 @@ export interface DockerImageAssetLocation {
    * The name of the ECR repository.
    */
   readonly repositoryName: string;
+
+  /**
+   * The tag of the image in Amazon ECR.
+   * @default - the hash of the asset, or the `dockerTagPrefix` concatenated with the asset hash if a `dockerTagPrefix` is specified in the stack synthesizer
+   */
+  readonly imageTag?: string;
 }

@@ -2,7 +2,8 @@ import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { warning } from '../../logging';
-import { loadStructuredFile, toYAML } from '../../serialize';
+import { loadStructuredFile, serializeStructure } from '../../serialize';
+import { rootDir } from '../../util/directories';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
 import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
@@ -32,15 +33,14 @@ export class Bootstrapper {
     }
   }
 
-  public async showTemplate() {
+  public async showTemplate(json: boolean) {
     const template = await this.loadTemplate();
-    process.stdout.write(`${toYAML(template)}\n`);
+    process.stdout.write(`${serializeStructure(template, json)}\n`);
   }
 
   /**
    * Deploy legacy bootstrap stack
    *
-   * @experimental
    */
   private async legacyBootstrap(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<DeployStackResult> {
     const params = options.parameters ?? {};
@@ -68,7 +68,6 @@ export class Bootstrapper {
   /**
    * Deploy CI/CD-ready bootstrap stack from template
    *
-   * @experimental
    */
   private async modernBootstrap(
     environment: cxapi.Environment,
@@ -94,7 +93,10 @@ export class Bootstrapper {
     // templates doesn't seem to be able to express the conditions that we need
     // (can't use Fn::Join or reference Conditions) so we do it here instead.
     const trustedAccounts = params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts);
-    info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
+    info(`Trusted accounts for deployment: ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
+
+    const trustedAccountsForLookup = params.trustedAccountsForLookup ?? splitCfnArray(current.parameters.TrustedAccountsForLookup);
+    info(`Trusted accounts for lookup: ${trustedAccountsForLookup.length > 0 ? trustedAccountsForLookup.join(', ') : '(none)'}`);
 
     const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? splitCfnArray(current.parameters.CloudFormationExecutionPolicies);
     if (trustedAccounts.length === 0 && cloudFormationExecutionPolicies.length === 0) {
@@ -139,6 +141,7 @@ export class Bootstrapper {
         FileAssetsBucketKmsKeyId: kmsKeyId,
         // Empty array becomes empty string
         TrustedAccounts: trustedAccounts.join(','),
+        TrustedAccountsForLookup: trustedAccountsForLookup.join(','),
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
@@ -168,7 +171,7 @@ export class Bootstrapper {
       case 'custom':
         return loadStructuredFile(this.source.templateFile);
       case 'default':
-        return loadStructuredFile(path.join(__dirname, 'bootstrap-template.yaml'));
+        return loadStructuredFile(path.join(rootDir(), 'lib', 'api', 'bootstrap', 'bootstrap-template.yaml'));
       case 'legacy':
         return legacyBootstrapTemplate(params);
     }

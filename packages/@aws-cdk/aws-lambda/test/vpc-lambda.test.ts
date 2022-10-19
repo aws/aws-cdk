@@ -1,5 +1,6 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -20,7 +21,7 @@ describe('lambda + vpc', () => {
       fn = new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc: vpc,
         allowAllOutbound: false,
       });
@@ -28,7 +29,7 @@ describe('lambda + vpc', () => {
 
     test('has subnet and securitygroup', () => {
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
@@ -41,17 +42,17 @@ describe('lambda + vpc', () => {
       });
     });
 
-    test('has securitygroup that is passed in props', () => {
+    testDeprecated('has securitygroup that is passed in props', () => {
       // WHEN
       new lambda.Function(stack, 'LambdaWithCustomSG', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc,
         securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupX', { vpc }),
       });
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             { 'Fn::GetAtt': ['CustomSecurityGroupX6C7F3A78', 'GroupId'] },
@@ -69,7 +70,7 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'LambdaWithCustomSGList', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc,
         securityGroups: [
           new ec2.SecurityGroup(stack, 'CustomSecurityGroupA', { vpc }),
@@ -77,7 +78,7 @@ describe('lambda + vpc', () => {
         ],
       });
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             { 'Fn::GetAtt': ['CustomSecurityGroupA267F62DE', 'GroupId'] },
@@ -91,13 +92,13 @@ describe('lambda + vpc', () => {
       });
     });
 
-    test('fails if both of securityGroup and securityGroups are passed in props at once', () => {
+    testDeprecated('fails if both of securityGroup and securityGroups are passed in props at once', () => {
       // THEN
       expect(() => {
         new lambda.Function(stack, 'LambdaWithWrongProps', {
           code: new lambda.InlineCode('foo'),
           handler: 'index.handler',
-          runtime: lambda.Runtime.NODEJS_10_X,
+          runtime: lambda.Runtime.NODEJS_14_X,
           vpc,
           securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupB', { vpc }),
           securityGroups: [
@@ -117,7 +118,7 @@ describe('lambda + vpc', () => {
       fn.connections.allowTo(somethingConnectable, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
         GroupId: { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
@@ -127,7 +128,7 @@ describe('lambda + vpc', () => {
       });
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
         FromPort: 0,
@@ -147,7 +148,7 @@ describe('lambda + vpc', () => {
       somethingConnectable.connections.allowFrom(fn.connections, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(stack2).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+      Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
         GroupId: {
           'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1',
         },
@@ -164,7 +165,7 @@ describe('lambda + vpc', () => {
       });
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(stack2).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+      Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
         FromPort: 0,
@@ -188,7 +189,7 @@ describe('lambda + vpc', () => {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -207,13 +208,13 @@ describe('lambda + vpc', () => {
       allowPublicSubnet: true,
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['PublicLambdaSecurityGroup61D896FD', 'GroupId'] },
@@ -235,14 +236,14 @@ describe('lambda + vpc', () => {
     new lambda.Function(stack, 'PrivateLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['PrivateLambdaSecurityGroupF53C8342', 'GroupId'] },
@@ -262,7 +263,7 @@ describe('lambda + vpc', () => {
       subnetConfiguration: [
         {
           name: 'Isolated',
-          subnetType: ec2.SubnetType.ISOLATED,
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
       ],
     });
@@ -271,14 +272,14 @@ describe('lambda + vpc', () => {
     new lambda.Function(stack, 'IsolatedLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
 
     // THEN
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['IsolatedLambdaSecurityGroupCE25B6A9', 'GroupId'] },
@@ -302,11 +303,11 @@ describe('lambda + vpc', () => {
         },
         {
           name: 'Private',
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
         {
           name: 'Isolated',
-          subnetType: ec2.SubnetType.ISOLATED,
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
       ],
     });
@@ -316,11 +317,26 @@ describe('lambda + vpc', () => {
       new lambda.Function(stack, 'PublicLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
     }).toThrow(/Lambda Functions in a public subnet/);
+  });
+
+  test('specifying vpcSubnets without a vpc throws an Error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new lambda.Function(stack, 'Function', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      });
+    }).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
   });
 });
 

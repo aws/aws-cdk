@@ -45,6 +45,7 @@ export interface CommonEcsRunTaskProps {
 
 /**
  * Construction properties for the BaseRunTaskProps
+ * @deprecated No replacement
  */
 export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
   /**
@@ -57,6 +58,7 @@ export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
 
 /**
  * A StepFunctions Task to run a Task on ECS or Fargate
+ * @deprecated No replacement
  */
 export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask {
   /**
@@ -82,8 +84,8 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
-      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
-      throw new Error('Task Token is missing in containerOverrides (pass JsonPath.taskToken somewhere in containerOverrides)');
+      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
+      throw new Error('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     for (const override of this.props.containerOverrides || []) {
@@ -126,7 +128,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     securityGroup?: ec2.ISecurityGroup) {
 
     if (subnetSelection === undefined) {
-      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
+      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS };
     }
 
     // If none is given here, one will be created later on during bind()

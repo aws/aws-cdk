@@ -13,7 +13,7 @@ const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramewor
 const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
 
 export type Response = AWSLambda.CloudFormationCustomResourceEvent & HandlerResponse;
-export type Handler = (event: AWSLambda.CloudFormationCustomResourceEvent) => Promise<HandlerResponse | void>;
+export type Handler = (event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) => Promise<HandlerResponse | void>;
 export type HandlerResponse = undefined | {
   Data?: any;
   PhysicalResourceId?: string;
@@ -21,8 +21,9 @@ export type HandlerResponse = undefined | {
   NoEcho?: boolean;
 };
 
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  external.log(JSON.stringify(event, undefined, 2));
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+  const sanitizedEvent = { ...event, ResponseURL: '...' };
+  external.log(JSON.stringify(sanitizedEvent, undefined, 2));
 
   // ignore DELETE event when the physical resource ID is the marker that
   // indicates that this DELETE is a subsequent DELETE to a failed CREATE
@@ -39,7 +40,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // cloudformation (otherwise cfn waits).
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const userHandler: Handler = require(external.userHandlerIndex).handler;
-    const result = await userHandler(event);
+    const result = await userHandler(sanitizedEvent, context);
 
     // validate user response and create the combined event
     const responseEvent = renderResponse(event, result);
@@ -117,7 +118,11 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
     headers: { 'content-type': '', 'content-length': responseBody.length },
   };
 
-  await external.sendHttpRequest(req, responseBody);
+  const retryOptions = {
+    attempts: 5,
+    sleep: 1000,
+  };
+  await withRetries(retryOptions, external.sendHttpRequest)(req, responseBody);
 }
 
 async function defaultSendHttpRequest(options: https.RequestOptions, responseBody: string): Promise<void> {
@@ -136,4 +141,33 @@ async function defaultSendHttpRequest(options: https.RequestOptions, responseBod
 function defaultLog(fmt: string, ...params: any[]) {
   // eslint-disable-next-line no-console
   console.log(fmt, ...params);
+}
+
+export interface RetryOptions {
+  /** How many retries (will at least try once) */
+  readonly attempts: number;
+  /** Sleep base, in ms */
+  readonly sleep: number;
+}
+
+export function withRetries<A extends Array<any>, B>(options: RetryOptions, fn: (...xs: A) => Promise<B>): (...xs: A) => Promise<B> {
+  return async (...xs: A) => {
+    let attempts = options.attempts;
+    let ms = options.sleep;
+    while (true) {
+      try {
+        return await fn(...xs);
+      } catch (e) {
+        if (attempts-- <= 0) {
+          throw e;
+        }
+        await sleep(Math.floor(Math.random() * ms));
+        ms *= 2;
+      }
+    }
+  };
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((ok) => setTimeout(ok, ms));
 }

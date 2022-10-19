@@ -1,0 +1,388 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-lambda-python-poetry.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-lambda-python-poetry.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-lambda-python-poetry": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-lambda-python-poetry.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/531f02a0310a61f667b94d14b955adbdc98e5290659054cb1039dc4e3a147271.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-lambda-python-poetry.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-lambda-python-poetry.assets"
+      ],
+      "metadata": {
+        "/integ-lambda-python-poetry/my_handler_inline/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerinlineServiceRole10C681F6"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_inline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerinline53D120C7"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_inline_with_hashes/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerinlinewithhashesServiceRoleDC418F75"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_inline_with_hashes/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerinlinewithhashes352ED54D"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_38/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython38ServiceRole2049AFF7"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_38/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython384D62BBB5"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_38_with_hashes/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython38withhashesServiceRoleFE19CA7C"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_38_with_hashes/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython38withhashesF2275091"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_37/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython37ServiceRole45CBD18D"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_37/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython37C34039A7"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_37_with_hashes/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython37withhashesServiceRoleD9828997"
+          }
+        ],
+        "/integ-lambda-python-poetry/my_handler_python_37_with_hashes/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython37withhashesE95C48AC"
+          }
+        ],
+        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinline53D120C7\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyhandlerinline53D120C7B0898676"
+          }
+        ],
+        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashes352ED54D\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyhandlerinlinewithhashes352ED54DCDE8C1A6"
+          }
+        ],
+        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerpython384D62BBB5\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+          }
+        ],
+        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerpython38withhashesF2275091\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyhandlerpython38withhashesF2275091B829511A"
+          }
+        ],
+        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerpython37C34039A7\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+          }
+        ],
+        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerpython37withhashesE95C48AC\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefmyhandlerpython37withhashesE95C48AC15D1F7B4"
+          }
+        ],
+        "/integ-lambda-python-poetry/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-lambda-python-poetry/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "myhandlerinlinenohashesServiceRole792CBFEE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerinlinenohashesServiceRole792CBFEE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myhandlerinlinenohashes9F4AC298": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerinlinenohashes9F4AC298",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myhandlerpython38nohashesServiceRole95183D41": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython38nohashesServiceRole95183D41",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myhandlerpython38nohashesAC448740": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython38nohashesAC448740",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myhandlerpython37nohashesServiceRoleCB0A268B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython37nohashesServiceRoleCB0A268B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myhandlerpython37nohashes751F0455": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerpython37nohashes751F0455",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-lambda-python-poetry"
+    },
+    "poetryDefaultTestDeployAssertE9C9CB8F.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "poetryDefaultTestDeployAssertE9C9CB8F.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "poetryDefaultTestDeployAssertE9C9CB8F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "poetryDefaultTestDeployAssertE9C9CB8F.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01462ebb52e8f49b3e2b2706bba447690a46e44b6f000448dac39836d7ccdd8f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "poetryDefaultTestDeployAssertE9C9CB8F.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-lambda-python-poetry",
+        "poetryDefaultTestDeployAssertE9C9CB8F.assets"
+      ],
+      "metadata": {
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke81c9998b1b428b309c8501e21b919d3d"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke81c9998b1b428b309c8501e21b919d3dInvokeEBA46CA4"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke81c9998b1b428b309c8501e21b919d3d/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke81c9998b1b428b309c8501e21b919d3d"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8InvokeEA59DC11"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke82a73e0d5d0fdcb04565e4d81ef342b8"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292InvokeFD76DE7B"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke9a0beb4ea6cc38db92e9ff664c085292/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke9a0beb4ea6cc38db92e9ff664c085292"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke26497bb1c12c14ed3deada8d7d76b39e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke26497bb1c12c14ed3deada8d7d76b39e"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke26497bb1c12c14ed3deada8d7d76b39e/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke26497bb1c12c14ed3deada8d7d76b39eInvoke930611A4"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke26497bb1c12c14ed3deada8d7d76b39e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke26497bb1c12c14ed3deada8d7d76b39e"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75Invoke11F9A252"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke631dde0680edf7d2f0eea8d9b9c06c75"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89Invoke884F6CA8"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/LambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke8cbaf98b5be6e4f6f81f5f10b5b8dc89"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/poetry/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "poetry/DefaultTest/DeployAssert"
+    }
+  }
+}

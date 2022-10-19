@@ -1,9 +1,12 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+export class NotificationsResourceHandlerProps {
+  role?: iam.IRole;
+}
 
 /**
  * A Lambda-based custom resource handler that provisions S3 bucket
@@ -29,17 +32,17 @@ export class NotificationsResourceHandler extends Construct {
    *
    * @returns The ARN of the custom resource lambda function.
    */
-  public static singleton(context: Construct) {
+  public static singleton(context: Construct, props: NotificationsResourceHandlerProps = {}) {
     const root = cdk.Stack.of(context);
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
     let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
     if (!lambda) {
-      lambda = new NotificationsResourceHandler(root, logicalId);
+      lambda = new NotificationsResourceHandler(root, logicalId, props);
     }
 
-    return lambda.functionArn;
+    return lambda;
   }
 
   /**
@@ -48,18 +51,22 @@ export class NotificationsResourceHandler extends Construct {
    */
   public readonly functionArn: string;
 
-  constructor(scope: Construct, id: string) {
+  /**
+   * The role of the handler's lambda function.
+   */
+  public readonly role: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
-    const role = new iam.Role(this, 'Role', {
+    this.role = props.role ?? new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-      ],
     });
 
-    // handler allows to put bucket notification on s3 buckets.
-    role.addToPolicy(new iam.PolicyStatement({
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+    );
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['s3:PutBucketNotification'],
       resources: ['*'],
     }));
@@ -69,112 +76,38 @@ export class NotificationsResourceHandler extends Construct {
       public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.STANDARD, resourceType);
 
       protected renderProperties(properties: any): { [key: string]: any } {
-        properties.Tags = cdk.listMapper(
-          cdk.cfnTagToCloudFormation)(this.tags.renderTags());
+        properties.Tags = cdk.listMapper(cdk.cfnTagToCloudFormation)(this.tags.renderTags());
         delete properties.tags;
         return properties;
       }
     }
+
+    const handlerSource = fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8');
+
+    // Removing lines that starts with '#' (comment lines) in order to fit the 4096 limit
+    const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');
+
+    if (handlerSourceWithoutComments.length > 4096) {
+      throw new Error(`Source of Notifications Resource Handler is too large (${handlerSourceWithoutComments.length} > 4096)`);
+    }
+
     const resource = new InLineLambda(this, 'Resource', {
       type: resourceType,
       properties: {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-        Code: { ZipFile: `exports.handler = ${handler.toString()};` },
+        Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
-        Role: role.roleArn,
-        Runtime: 'nodejs10.x',
+        Role: this.role.roleArn,
+        Runtime: 'python3.7',
         Timeout: 300,
       },
     });
-
-    resource.node.addDependency(role);
+    resource.node.addDependency(this.role);
 
     this.functionArn = resource.getAtt('Arn').toString();
   }
+
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    this.role.addToPrincipalPolicy(statement);
+  }
 }
-
-/* eslint-disable no-console */
-
-/**
- * Lambda event handler for the custom resource. Bear in mind that we are going
- * to .toString() this function and inline it as Lambda code.
- *
- * The function will issue a putBucketNotificationConfiguration request for the
- * specified bucket.
- */
-const handler = (event: any, context: any) => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-  const s3 = new (require('aws-sdk').S3)();
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const https = require('https');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const url = require('url');
-
-  log(JSON.stringify(event, undefined, 2));
-
-  const props = event.ResourceProperties;
-
-  if (event.RequestType === 'Delete') {
-    props.NotificationConfiguration = { }; // this is how you clean out notifications
-  }
-
-  const req = {
-    Bucket: props.BucketName,
-    NotificationConfiguration: props.NotificationConfiguration,
-  };
-
-  return s3.putBucketNotificationConfiguration(req, (err: any, data: any) => {
-    log({ err, data });
-    if (err) {
-      return submitResponse('FAILED', err.message + `\nMore information in CloudWatch Log Stream: ${context.logStreamName}`);
-    } else {
-      return submitResponse('SUCCESS');
-    }
-  });
-
-  function log(obj: any) {
-    console.error(event.RequestId, event.StackId, event.LogicalResourceId, obj);
-  }
-
-  // eslint-disable-next-line max-len
-  // adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#cfn-lambda-function-code-cfnresponsemodule
-  // to allow sending an error message as a reason.
-  function submitResponse(responseStatus: string, reason?: string) {
-    const responseBody = JSON.stringify({
-      Status: responseStatus,
-      Reason: reason || 'See the details in CloudWatch Log Stream: ' + context.logStreamName,
-      PhysicalResourceId: event.PhysicalResourceId || event.LogicalResourceId,
-      StackId: event.StackId,
-      RequestId: event.RequestId,
-      LogicalResourceId: event.LogicalResourceId,
-      NoEcho: false,
-    });
-
-    log({ responseBody });
-
-    const parsedUrl = url.parse(event.ResponseURL);
-    const options = {
-      hostname: parsedUrl.hostname,
-      port: 443,
-      path: parsedUrl.path,
-      method: 'PUT',
-      headers: {
-        'content-type': '',
-        'content-length': responseBody.length,
-      },
-    };
-
-    const request = https.request(options, (r: any) => {
-      log({ statusCode: r.statusCode, statusMessage: r.statusMessage });
-      context.done();
-    });
-
-    request.on('error', (error: any) => {
-      log({ sendError: error });
-      context.done();
-    });
-
-    request.write(responseBody);
-    request.end();
-  }
-};

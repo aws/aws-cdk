@@ -15,7 +15,7 @@ class TestStack extends Stack {
     const listener = lb.addListener('Listener', { port: 80 });
 
     const fn = new lambda.Function(this, 'Fun', {
-      code: lambda.Code.inline(`
+      code: lambda.Code.fromInline(`
 def handler(event, context):
   return {
     "isBase64Encoded": False,
@@ -28,7 +28,7 @@ def handler(event, context):
     "body": "Hello from Lambda"
   }
       `),
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.handler',
     });
 

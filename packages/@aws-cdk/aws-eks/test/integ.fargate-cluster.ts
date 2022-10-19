@@ -1,12 +1,12 @@
-/// !cdk-integ pragma:ignore-assets
-import { App } from '@aws-cdk/core';
+/// !cdk-integ pragma:disable-update-workflow
+import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
-import { TestStack } from './util';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 
-class EksFargateClusterStack extends TestStack {
+class EksFargateClusterStack extends Stack {
 
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -20,6 +20,9 @@ class EksFargateClusterStack extends TestStack {
 
 const app = new App();
 
-new EksFargateClusterStack(app, 'aws-cdk-eks-fargate-cluster-test');
+const stack = new EksFargateClusterStack(app, 'aws-cdk-eks-fargate-cluster-test');
+new integ.IntegTest(app, 'aws-cdk-eks-fargate-cluster', {
+  testCases: [stack],
+});
 
 app.synth();

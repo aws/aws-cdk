@@ -12,10 +12,27 @@ export interface TopicPolicyProps {
    * The set of topics this policy applies to.
    */
   readonly topics: ITopic[];
+  /**
+   * IAM policy document to apply to topic(s).
+   * @default empty policy document
+   */
+  readonly policyDocument?: PolicyDocument;
+
 }
 
 /**
- * Applies a policy to SNS topics.
+ * The policy for an SNS Topic
+ *
+ * Policies define the operations that are allowed on this resource.
+ *
+ * You almost never need to define this construct directly.
+ *
+ * All AWS resources that support resource policies have a method called
+ * `addToResourcePolicy()`, which will automatically create a new resource
+ * policy if one doesn't exist yet, otherwise it will add to the existing
+ * policy.
+ *
+ * Prefer to use `addToResourcePolicy()` instead.
  */
 export class TopicPolicy extends Resource {
   /**
@@ -31,6 +48,8 @@ export class TopicPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: TopicPolicyProps) {
     super(scope, id);
+
+    this.document = props.policyDocument ?? this.document;
 
     new CfnTopicPolicy(this, 'Resource', {
       policyDocument: this.document,

@@ -1,6 +1,7 @@
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetManifest, AssetPublishing, EventType, IPublishProgress, IPublishProgressListener } from '../lib';
+import { AssetManifest, AssetPublishing } from '../lib';
+import { FakeListener } from './fake-listener';
 import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
 
 let aws: ReturnType<typeof mockAws>;
@@ -58,6 +59,19 @@ test('test listener', async () => {
   expect(allMessages).toContain('theAsset:theDestination2');
 });
 
+test('test publishing in parallel', async () => {
+  const progressListener = new FakeListener();
+
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener, publishInParallel: true });
+  await pub.publish();
+
+  const allMessages = progressListener.messages.join('\n');
+
+  // Log mentions asset/destination ids
+  expect(allMessages).toContain('theAsset:theDestination1');
+  expect(allMessages).toContain('theAsset:theDestination2');
+});
+
 test('test abort', async () => {
   const progressListener = new FakeListener(true);
 
@@ -69,18 +83,3 @@ test('test abort', async () => {
   // We never get to asset 2
   expect(allMessages).not.toContain('theAsset:theDestination2');
 });
-
-class FakeListener implements IPublishProgressListener {
-  public readonly messages = new Array<string>();
-
-  constructor(private readonly doAbort = false) {
-  }
-
-  public onPublishEvent(_type: EventType, event: IPublishProgress): void {
-    this.messages.push(event.message);
-
-    if (this.doAbort) {
-      event.abort();
-    }
-  }
-}

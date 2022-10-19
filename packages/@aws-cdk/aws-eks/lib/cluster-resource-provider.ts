@@ -4,14 +4,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { NodeProxyAgentLayer } from '@aws-cdk/lambda-layer-node-proxy-agent';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
-const HANDLER_RUNTIME = lambda.Runtime.NODEJS_12_X;
+const HANDLER_RUNTIME = lambda.Runtime.NODEJS_14_X;
 
 export interface ClusterResourceProviderProps {
   /**
@@ -33,6 +30,20 @@ export interface ClusterResourceProviderProps {
    * Environment to add to the handler.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
+   *
+   * If not defined, a default layer will be used.
+   */
+  readonly onEventLayer?: lambda.ILayerVersion;
+
+  /**
+   * The security group to associate with the functions.
+   *
+   * @default - No security group.
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 /**
@@ -56,27 +67,42 @@ export class ClusterResourceProvider extends NestedStack {
   public readonly provider: cr.Provider;
 
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
-    super(scope as CoreConstruct, id);
+    super(scope, id);
+
+    // The NPM dependency proxy-agent is required in order to support proxy routing with the AWS JS SDK.
+    const nodeProxyAgentLayer = new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer');
 
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
-      environment: props.environment,
+      environment: {
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...props.environment,
+      },
       handler: 'index.onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
+      securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
+      // Allow user to override the layer.
+      layers: props.onEventLayer ? [props.onEventLayer] : [nodeProxyAgentLayer],
     });
 
     const isComplete = new lambda.Function(this, 'IsCompleteHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'isComplete handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
+      environment: {
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...props.environment,
+      },
       handler: 'index.isComplete',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
+      securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
+      layers: [nodeProxyAgentLayer],
     });
 
     this.provider = new cr.Provider(this, 'Provider', {
@@ -86,6 +112,7 @@ export class ClusterResourceProvider extends NestedStack {
       queryInterval: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
+      securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
     });
 
     props.adminRole.grant(onEvent.role!, 'sts:AssumeRole');

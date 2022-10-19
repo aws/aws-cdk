@@ -1,8 +1,15 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as route53 from '@aws-cdk/aws-route53';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Token, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * Represents a certificate in AWS Certificate Manager
@@ -14,6 +21,16 @@ export interface ICertificate extends IResource {
    * @attribute
    */
   readonly certificateArn: string;
+
+  /**
+   * Return the DaysToExpiry metric for this AWS Certificate Manager
+   * Certificate. By default, this is the minimum value over 1 day.
+   *
+   * This metric is no longer emitted once the certificate has effectively
+   * expired, so alarms configured on this metric should probably treat missing
+   * data as "breaching".
+   */
+  metricDaysToExpiry(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -55,11 +72,35 @@ export interface CertificateProps {
   readonly validationMethod?: ValidationMethod;
 
   /**
-   * How to validate this certifcate
+   * How to validate this certificate
    *
    * @default CertificateValidation.fromEmail()
    */
   readonly validation?: CertificateValidation;
+
+  /**
+   * Enable or disable transparency logging for this certificate
+   *
+   * Once a certificate has been logged, it cannot be removed from the log.
+   * Opting out at that point will have no effect. If you opt out of logging
+   * when you request a certificate and then choose later to opt back in,
+   * your certificate will not be logged until it is renewed.
+   * If you want the certificate to be logged immediately, we recommend that you issue a new one.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+   *
+   * @default true
+   */
+  readonly transparencyLoggingEnabled?: boolean;
+
+  /**
+   * The Certifcate name.
+   *
+   * Since the Certifcate resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
+   *
+   * @default the full, absolute path of this construct
+   */
+  readonly certificateName?: string
 }
 
 /**
@@ -100,7 +141,7 @@ export interface CertificationValidationProps {
  */
 export class CertificateValidation {
   /**
-   * Validate the certifcate with DNS
+   * Validate the certificate with DNS
    *
    * IMPORTANT: If `hostedZone` is not specified, DNS records must be added
    * manually and the stack will not complete creating until the records are
@@ -116,7 +157,7 @@ export class CertificateValidation {
   }
 
   /**
-   * Validate the certifcate with automatically created DNS records in multiple
+   * Validate the certificate with automatically created DNS records in multiple
    * Amazon Route 53 hosted zones.
    *
    * @param hostedZones a map of hosted zones where DNS records must be created
@@ -130,7 +171,7 @@ export class CertificateValidation {
   }
 
   /**
-   * Validate the certifcate with Email
+   * Validate the certificate with Email
    *
    * IMPORTANT: if you are creating a certificate as part of your stack, the stack
    * will not complete creating until you read and follow the instructions in the
@@ -169,14 +210,13 @@ export class CertificateValidation {
 /**
  * A certificate managed by AWS Certificate Manager
  */
-export class Certificate extends Resource implements ICertificate {
-
+export class Certificate extends CertificateBase implements ICertificate {
   /**
    * Import a certificate
    */
   public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
-    class Import extends Resource implements ICertificate {
-      public certificateArn = certificateArn;
+    class Import extends CertificateBase {
+      public readonly certificateArn = certificateArn;
     }
 
     return new Import(scope, id);
@@ -201,14 +241,27 @@ export class Certificate extends Resource implements ICertificate {
       }
     }
 
+    // check if domain name is 64 characters or less
+    if (props.domainName.length > 64) {
+      throw new Error('Domain name must be 64 characters or less');
+    }
+
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
+
+    let certificateTransparencyLoggingPreference: string | undefined;
+    if (props.transparencyLoggingEnabled !== undefined) {
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
+    }
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: renderDomainValidation(validation, allDomainNames),
       validationMethod: validation.method,
+      certificateTransparencyLoggingPreference,
     });
+
+    Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path.slice(0, 255));
 
     this.certificateArn = cert.ref;
   }

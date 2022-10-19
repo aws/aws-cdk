@@ -30,8 +30,8 @@ Managed policies can be attached using `xxx.addManagedPolicy(ManagedPolicy.fromA
 Many of the AWS CDK resources have `grant*` methods that allow you to grant other resources access to that resource. As an example, the following code gives a Lambda function write permissions (Put, Update, Delete) to a DynamoDB table.
 
 ```ts
-const fn = new lambda.Function(this, 'Function', functionProps);
-const table = new dynamodb.Table(this, 'Table', tableProps);
+declare const fn: lambda.Function;
+declare const table: dynamodb.Table;
 
 table.grantWriteData(fn);
 ```
@@ -39,8 +39,8 @@ table.grantWriteData(fn);
 The more generic `grant` method allows you to give specific permissions to a resource:
 
 ```ts
-const fn = new lambda.Function(this, 'Function', functionProps);
-const table = new dynamodb.Table(this, 'Table', tableProps);
+declare const fn: lambda.Function;
+declare const table: dynamodb.Table;
 
 table.grant(fn, 'dynamodb:PutItem');
 ```
@@ -186,7 +186,7 @@ const role = new iam.Role(this, 'MyRole', {
   assumedBy: new iam.CompositePrincipal(
     new iam.ServicePrincipal('ec2.amazonaws.com'),
     new iam.AccountPrincipal('1818188181818187272')
-  )
+  ),
 });
 ```
 
@@ -202,19 +202,37 @@ const principal = new iam.AccountPrincipal('123456789000')
 
 > NOTE: If you need to define an IAM condition that uses a token (such as a
 > deploy-time attribute of another resource) in a JSON map key, use `CfnJson` to
-> render this condition. See [this test](./test/integ-condition-with-ref.ts) for
+> render this condition. See [this test](./test/integ.condition-with-ref.ts) for
 > an example.
 
 The `WebIdentityPrincipal` class can be used as a principal for web identities like
 Cognito, Amazon, Google or Facebook, for example:
 
 ```ts
-const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com')
-  .withConditions({
-    "StringEquals": { "cognito-identity.amazonaws.com:aud": "us-east-2:12345678-abcd-abcd-abcd-123456" },
-    "ForAnyValue:StringLike": {"cognito-identity.amazonaws.com:amr": "unauthenticated"}
-  });
+const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+  'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456' },
+  'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'unauthenticated' },
+});
 ```
+
+If your identity provider is configured to assume a Role with [session
+tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html), you
+need to call `.withSessionTags()` to add the required permissions to the Role's
+policy document:
+
+```ts
+new iam.Role(this, 'Role', {
+  assumedBy: new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+    'StringEquals': {
+      'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456',
+     },
+    'ForAnyValue:StringLike': {
+      'cognito-identity.amazonaws.com:amr': 'unauthenticated',
+    },
+  }).withSessionTags(),
+});
+```
+
 
 ## Parsing JSON Policy Documents
 
@@ -256,11 +274,11 @@ const customPolicyDocument = iam.PolicyDocument.fromJson(policyDocument);
 
 // You can pass this document as an initial document to a ManagedPolicy
 // or inline Policy.
-const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', {
-  document: customPolicyDocument
+const newManagedPolicy = new iam.ManagedPolicy(this, 'MyNewManagedPolicy', {
+  document: customPolicyDocument,
 });
-const newPolicy = new Policy(stack, 'MyNewPolicy', {
-  document: customPolicyDocument
+const newPolicy = new iam.Policy(this, 'MyNewPolicy', {
+  document: customPolicyDocument,
 });
 ```
 
@@ -296,15 +314,18 @@ const boundary2 = new iam.ManagedPolicy(this, 'Boundary2', {
 });
 
 // Directly apply the boundary to a Role you create
+declare const role: iam.Role;
 iam.PermissionsBoundary.of(role).apply(boundary);
 
 // Apply the boundary to an Role that was implicitly created for you
-iam.PermissionsBoundary.of(lambdaFunction).apply(boundary);
+declare const fn: lambda.Function;
+iam.PermissionsBoundary.of(fn).apply(boundary);
 
 // Apply the boundary to all Roles in a stack
-iam.PermissionsBoundary.of(stack).apply(boundary);
+iam.PermissionsBoundary.of(this).apply(boundary);
 
 // Remove a Permissions Boundary that is inherited, for example from the Stack level
+declare const customResource: CustomResource;
 iam.PermissionsBoundary.of(customResource).clear();
 ```
 
@@ -326,7 +347,7 @@ Identity Pools Developer Guide].
 
 The following examples defines an OpenID Connect provider. Two client IDs
 (audiences) are will be able to send authentication requests to
-https://openid/connect.
+<https://openid/connect>.
 
 ```ts
 const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
@@ -347,10 +368,13 @@ pool](https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html)
 you can reference the provider's ARN as follows:
 
 ```ts
+import * as cognito from '@aws-cdk/aws-cognito';
+
+declare const myProvider: iam.OpenIdConnectProvider;
 new cognito.CfnIdentityPool(this, 'IdentityPool', {
   openIdConnectProviderArns: [myProvider.openIdConnectProviderArn],
   // And the other properties for your identity pool
-  allowUnauthenticatedIdentities,
+  allowUnauthenticatedIdentities: false,
 });
 ```
 
@@ -359,9 +383,50 @@ The `OpenIdConnectPrincipal` class can be used as a principal used with a `OpenI
 ```ts
 const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   url: 'https://openid/connect',
-  clientIds: [ 'myclient1', 'myclient2' ]
+  clientIds: [ 'myclient1', 'myclient2' ],
 });
 const principal = new iam.OpenIdConnectPrincipal(provider);
+```
+
+## SAML provider
+
+An IAM SAML 2.0 identity provider is an entity in IAM that describes an external
+identity provider (IdP) service that supports the SAML 2.0 (Security Assertion
+Markup Language 2.0) standard. You use an IAM identity provider when you want
+to establish trust between a SAML-compatible IdP such as Shibboleth or Active
+Directory Federation Services and AWS, so that users in your organization can
+access AWS resources. IAM SAML identity providers are used as principals in an
+IAM trust policy.
+
+```ts
+new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+```
+
+The `SamlPrincipal` class can be used as a principal with a `SamlProvider`:
+
+```ts
+const provider = new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+const principal = new iam.SamlPrincipal(provider, {
+  StringEquals: {
+    'SAML:iss': 'issuer',
+  },
+});
+```
+
+When creating a role for programmatic and AWS Management Console access, use the `SamlConsolePrincipal`
+class:
+
+```ts
+const provider = new iam.SamlProvider(this, 'Provider', {
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
+});
+new iam.Role(this, 'Role', {
+  assumedBy: new iam.SamlConsolePrincipal(provider),
+});
 ```
 
 ## Users
@@ -369,34 +434,86 @@ const principal = new iam.OpenIdConnectPrincipal(provider);
 IAM manages users for your AWS account. To create a new user:
 
 ```ts
-const user = new User(this, 'MyUser');
+const user = new iam.User(this, 'MyUser');
 ```
 
 To import an existing user by name [with path](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names):
 
 ```ts
-const user = User.fromUserName(stack, 'MyImportedUserByName', 'johnsmith');
+const user = iam.User.fromUserName(this, 'MyImportedUserByName', 'johnsmith');
 ```
 
 To import an existing user by ARN:
 
 ```ts
-const user = User.fromUserArn(this, 'MyImportedUserByArn', 'arn:aws:iam::123456789012:user/johnsmith');
+const user = iam.User.fromUserArn(this, 'MyImportedUserByArn', 'arn:aws:iam::123456789012:user/johnsmith');
 ```
 
 To import an existing user by attributes:
 
 ```ts
-const user = User.fromUserAttributes(stack, 'MyImportedUserByAttributes', {
+const user = iam.User.fromUserAttributes(this, 'MyImportedUserByAttributes', {
   userArn: 'arn:aws:iam::123456789012:user/johnsmith',
 });
 ```
 
+### Access Keys
+
+The ability for a user to make API calls via the CLI or an SDK is enabled by the user having an
+access key pair. To create an access key:
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user });
+```
+
+You can force CloudFormation to rotate the access key by providing a monotonically increasing `serial`
+property. Simply provide a higher serial value than any number used previously: 
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user, serial: 1 });
+```
+
+An access key may only be associated with a single user and cannot be "moved" between users. Changing
+the user associated with an access key replaces the access key (and its ID and secret value).
+
+## Groups
+
+An IAM user group is a collection of IAM users. User groups let you specify permissions for multiple users.
+
+```ts
+const group = new iam.Group(this, 'MyGroup');
+```
+
+To import an existing group by ARN:
+
+```ts
+const group = iam.Group.fromGroupArn(this, 'MyImportedGroupByArn', 'arn:aws:iam::account-id:group/group-name');
+```
+
+To import an existing group by name [with path](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names):
+
+```ts
+const group = iam.Group.fromGroupName(this, 'MyImportedGroupByName', 'group-name');
+```
+
+To add a user to a group (both for a new and imported user/group):
+
+```ts
+const user = new iam.User(this, 'MyUser'); // or User.fromUserName(stack, 'User', 'johnsmith');
+const group = new iam.Group(this, 'MyGroup'); // or Group.fromGroupArn(stack, 'Group', 'arn:aws:iam::account-id:group/group-name');
+
+user.addToGroup(group);
+// or
+group.addUser(user);
+```
+
 ## Features
 
- * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
-   principal, the attachment will fail.
- * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
- * Policies are validated during synthesis to ensure that they have actions, and that policies
-   attached to IAM principals specify relevant resources, while policies attached to resources
-   specify which IAM principals they apply to.
+* Policy name uniqueness is enforced. If two policies by the same name are attached to the same
+    principal, the attachment will fail.
+* Policy names are not required - the CDK logical ID will be used and ensured to be unique.
+* Policies are validated during synthesis to ensure that they have actions, and that policies
+    attached to IAM principals specify relevant resources, while policies attached to resources
+    specify which IAM principals they apply to.

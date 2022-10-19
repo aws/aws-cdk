@@ -48,6 +48,7 @@ export interface RunLambdaTaskProps {
    * Version or alias of the function to be invoked
    *
    * @default - No qualifier
+   * @deprecated pass a Version or Alias object as lambdaFunction instead
    */
   readonly qualifier?: string;
 }
@@ -87,7 +88,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
     return {
       resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
-        resources: [this.lambdaFunction.functionArn],
+        resources: this.lambdaFunction.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',
@@ -95,7 +96,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
       metricDimensions: { LambdaFunctionArn: this.lambdaFunction.functionArn },
       parameters: {
         FunctionName: this.lambdaFunction.functionName,
-        Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromDataAt('$').value,
+        Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromJsonPathAt('$').value,
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
         Qualifier: this.props.qualifier,
@@ -106,6 +107,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
 /**
  * Invocation type of a Lambda
+ * @deprecated use `LambdaInvocationType`
  */
 export enum InvocationType {
   /**

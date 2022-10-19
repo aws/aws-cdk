@@ -1,0 +1,139 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "0.0.0"
+        }
+      },
+      "sspms-creating": {
+        "id": "sspms-creating",
+        "path": "sspms-creating",
+        "children": {
+          "String": {
+            "id": "String",
+            "path": "sspms-creating/String",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "sspms-creating/String/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "abcdef",
+                    "name": "/My/Public/Parameter"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "sspms-using": {
+        "id": "sspms-using",
+        "path": "sspms-using",
+        "children": {
+          "MyParameterVersion": {
+            "id": "MyParameterVersion",
+            "path": "sspms-using/MyParameterVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "MyValue.Parameter": {
+            "id": "MyValue.Parameter",
+            "path": "sspms-using/MyValue.Parameter",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "MyValue": {
+            "id": "MyValue",
+            "path": "sspms-using/MyValue",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "MyValueVersionFromToken": {
+            "id": "MyValueVersionFromToken",
+            "path": "sspms-using/MyValueVersionFromToken",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "MySecureValue": {
+            "id": "MySecureValue",
+            "path": "sspms-using/MySecureValue",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "MySecureValueVersionFromToken": {
+            "id": "MySecureValueVersionFromToken",
+            "path": "sspms-using/MySecureValueVersionFromToken",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "Dummy": {
+            "id": "Dummy",
+            "path": "sspms-using/Dummy",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnResource",
+              "version": "0.0.0"
+            }
+          },
+          "TheValue": {
+            "id": "TheValue",
+            "path": "sspms-using/TheValue",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "TheValueVersionFromToken": {
+            "id": "TheValueVersionFromToken",
+            "path": "sspms-using/TheValueVersionFromToken",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

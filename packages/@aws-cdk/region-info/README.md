@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -28,10 +22,8 @@ the form of the `RegionInfo` class. This is the preferred way to interact with
 the regional information database:
 
 ```ts
-import { RegionInfo } from '@aws-cdk/region-info';
-
 // Get the information for "eu-west-1":
-const region = RegionInfo.get('eu-west-1');
+const region = regionInfo.RegionInfo.get('eu-west-1');
 
 // Access attributes:
 region.s3StaticWebsiteEndpoint; // s3-website-eu-west-1.amazonaws.com
@@ -50,8 +42,6 @@ a list of known fact names, which can then be used with the `RegionInfo` to
 retrieve a particular value:
 
 ```ts
-import * as regionInfo from '@aws-cdk/region-info';
-
 const codeDeployPrincipal = regionInfo.Fact.find('us-east-1', regionInfo.FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com
 
@@ -66,11 +56,13 @@ missing from the library. In such cases, the `Fact.register` method can be used
 to inject FactName into the database:
 
 ```ts
-regionInfo.Fact.register({
-  region: 'bermuda-triangle-1',
-  name: regionInfo.FactName.servicePrincipal('s3.amazonaws.com'),
-  value: 's3-website.bermuda-triangle-1.nowhere.com',
-});
+class MyFact implements regionInfo.IFact {
+  public readonly region = 'bermuda-triangle-1';
+  public readonly name = regionInfo.FactName.servicePrincipal('s3.amazonaws.com');
+  public readonly value = 's3-website.bermuda-triangle-1.nowhere.com';
+}
+
+regionInfo.Fact.register(new MyFact());
 ```
 
 ## Overriding incorrect information
@@ -80,11 +72,13 @@ overridden using the same `Fact.register` method demonstrated above, simply
 adding an extra boolean argument:
 
 ```ts
-regionInfo.Fact.register({
-  region: 'us-east-1',
-  name: regionInfo.FactName.servicePrincipal('service.amazonaws.com'),
-  value: 'the-correct-principal.amazonaws.com',
-}, true /* Allow overriding information */);
+class MyFact implements regionInfo.IFact {
+  public readonly region = 'us-east-1';
+  public readonly name = regionInfo.FactName.servicePrincipal('service.amazonaws.com');
+  public readonly value = 'the-correct-principal.amazonaws.com';
+}
+
+regionInfo.Fact.register(new MyFact(), true /* Allow overriding information */);
 ```
 
 If you happen to have stumbled upon incorrect data built into this library, it

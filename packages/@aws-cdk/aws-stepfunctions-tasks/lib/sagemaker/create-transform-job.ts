@@ -5,12 +5,11 @@ import { Size, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
-import { renderTags } from './private/utils';
+import { renderEnvironment, renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker transform job task
  *
- *  @experimental
  */
 export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps {
   /**
@@ -94,7 +93,6 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
 /**
  * Class representing the SageMaker Create Transform Job task.
  *
- *  @experimental
  */
 export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
@@ -168,7 +166,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private renderParameters(): { [key: string]: any } {
     return {
       ...(this.props.batchStrategy ? { BatchStrategy: this.props.batchStrategy } : {}),
-      ...this.renderEnvironment(this.props.environment),
+      ...renderEnvironment(this.props.environment),
       ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
       ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
       ...this.props.modelClientOptions ? this.renderModelClientOptions(this.props.modelClientOptions) : {},
@@ -229,14 +227,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return {
       TransformResources: {
         InstanceCount: resources.instanceCount,
-        InstanceType: 'ml.' + resources.instanceType,
+        InstanceType: sfn.JsonPath.isEncodedJsonPath(resources.instanceType.toString())
+          ? resources.instanceType.toString() : `ml.${resources.instanceType}`,
         ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },
     };
-  }
-
-  private renderEnvironment(environment: { [key: string]: any } | undefined): { [key: string]: any } {
-    return environment ? { Environment: environment } : {};
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {

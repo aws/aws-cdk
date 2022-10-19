@@ -1,11 +1,12 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the SQS Queue Event Target
  */
-export interface SqsQueueProps {
+export interface SqsQueueProps extends TargetBaseProps {
 
   /**
    * Message Group ID for messages sent to this queue
@@ -24,17 +25,16 @@ export interface SqsQueueProps {
    * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
-
 }
 
 /**
  * Use an SQS Queue as a target for Amazon EventBridge rules.
  *
  * @example
- *
- *    // publish to an SQS queue every time code is committed
- *    // to a CodeCommit repository
- *    repository.onCommit(new targets.SqsQueue(queue));
+ *   /// fixture=withRepoAndSqsQueue
+ *   // publish to an SQS queue every time code is committed
+ *   // to a CodeCommit repository
+ *   repository.onCommit('onCommit', { target: new targets.SqsQueue(queue) });
  *
  */
 export class SqsQueue implements events.IRuleTarget {
@@ -52,17 +52,22 @@ export class SqsQueue implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    // Only add the rule as a condition if the queue is not encrypted, to avoid circular dependency. See issue #11158.
+    const principalOpts = this.queue.encryptionMasterKey ? {} : {
+      conditions: {
+        ArnEquals: { 'aws:SourceArn': rule.ruleArn },
+      },
+    };
+
     // deduplicated automatically
-    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
-      {
-        conditions: {
-          ArnEquals: { 'aws:SourceArn': rule.ruleArn },
-        },
-      }),
-    );
+    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', principalOpts));
+
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
+    }
 
     return {
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: this.queue.queueArn,
       input: this.props.message,
       targetResource: this.queue,

@@ -2,23 +2,20 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, CfnParameter, Stack } from '@aws-cdk/core';
-import * as cfn from '../lib';
+import { App, CfnParameter, NestedStack, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
   readonly siblingTopic?: sns.Topic; // a topic defined in a sibling nested stack
   readonly topicCount: number;
   readonly topicNamePrefix: string;
+  readonly description?: string;
 }
 
-class MyNestedStack extends cfn.NestedStack {
+class MyNestedStack extends NestedStack {
   constructor(scope: Construct, id: string, props: MyNestedStackProps) {
     const topicNamePrefixLogicalId = 'TopicNamePrefix';
 
@@ -26,6 +23,7 @@ class MyNestedStack extends cfn.NestedStack {
       parameters: {
         [topicNamePrefixLogicalId]: props.topicNamePrefix, // pass in a parameter to the nested stack
       },
+      description: props.description,
     });
 
     const topicNamePrefixParameter = new CfnParameter(this, 'TopicNamePrefix', { type: 'String' });
@@ -42,8 +40,8 @@ class MyNestedStack extends cfn.NestedStack {
 
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
-        runtime: lambda.Runtime.NODEJS_10_X,
-        code: lambda.Code.inline('console.error("hi")'),
+        runtime: lambda.Runtime.NODEJS_14_X,
+        code: lambda.Code.fromInline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
           TOPIC_ARN: props.siblingTopic?.topicArn ?? '',
@@ -61,7 +59,7 @@ class MyTestStack extends Stack {
     const queue = new sqs.Queue(this, 'SubscriberQueue');
 
     new MyNestedStack(this, 'NestedStack1', { topicCount: 3, topicNamePrefix: 'Prefix1', subscriber: queue });
-    new MyNestedStack(this, 'NestedStack2', { topicCount: 2, topicNamePrefix: 'Prefix2' });
+    new MyNestedStack(this, 'NestedStack2', { topicCount: 2, topicNamePrefix: 'Prefix2', description: 'This is secound nested stack.' });
   }
 }
 

@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration, validateName } from '../utils';
 import { ILambdaApplication, LambdaApplication } from './application';
 import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
 
@@ -179,7 +179,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       service: 'codedeploy',
       resource: 'deploymentgroup',
       resourceName: `${this.application.applicationName}/${this.physicalName}`,
-      sep: ':',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
 
     if (props.preHook) {
@@ -203,6 +203,8 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     if (this.deploymentConfig instanceof Construct) {
       this.node.addDependency(this.deploymentConfig);
     }
+
+    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
   }
 
   /**

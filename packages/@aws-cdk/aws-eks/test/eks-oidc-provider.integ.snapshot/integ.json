@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-cdk-eks-oidc-provider/DefaultTest": {
+      "stacks": [
+        "aws-eks-oidc-provider-test"
+      ],
+      "assertionStack": "aws-cdk-eks-oidc-provider/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksoidcproviderDefaultTestDeployAssert0BFFC9B9"
+    }
+  }
+}

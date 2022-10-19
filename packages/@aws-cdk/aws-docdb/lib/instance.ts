@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
 import { CfnDBInstance } from './docdb.generated';
@@ -100,9 +101,9 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
    */
   public get instanceArn(): string {
     return cdk.Stack.of(this).formatArn({
-      service: 'docdb',
+      service: 'rds',
       resource: 'db',
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.instanceIdentifier,
     });
   }
@@ -120,7 +121,7 @@ export interface DatabaseInstanceProps {
   /**
    * The name of the compute and memory capacity classes.
    */
-  readonly instanceClass: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
 
   /**
    * The name of the Availability Zone where the DB instance will be located.
@@ -202,7 +203,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
     const instance = new CfnDBInstance(this, 'Resource', {
       dbClusterIdentifier: props.cluster.clusterIdentifier,
-      dbInstanceClass: `db.${props.instanceClass}`,
+      dbInstanceClass: `db.${props.instanceType}`,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade ?? true,
       availabilityZone: props.availabilityZone,
       dbInstanceIdentifier: props.dbInstanceName,

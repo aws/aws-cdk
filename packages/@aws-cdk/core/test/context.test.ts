@@ -1,47 +1,46 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Construct, Stack } from '../lib';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import { App, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 
-nodeunitShim({
-  'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
+describe('context', () => {
+  test('AvailabilityZoneProvider returns a list with dummy values if the context is not available', () => {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const azs = stack.availabilityZones;
 
-    test.deepEqual(azs, ['dummy1a', 'dummy1b', 'dummy1c']);
-    test.done();
-  },
+    expect(azs).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
 
-  'AvailabilityZoneProvider will return context list if available'(test: Test) {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+  });
+
+  test('AvailabilityZoneProvider will return context list if available', () => {
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
+    expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
 
     const azs = stack.availabilityZones;
-    test.deepEqual(azs, ['us-east-1a', 'us-east-1b']);
+    expect(azs).toEqual(['us-east-1a', 'us-east-1b']);
+  });
 
-    test.done();
-  },
-
-  'AvailabilityZoneProvider will complain if not given a list'(test: Test) {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+  test('AvailabilityZoneProvider will complain if not given a list', () => {
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
+    expect(before).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, 'not-a-list');
 
-    test.throws(
+    expect(
       () => stack.availabilityZones,
-    );
+    ).toThrow();
+  });
 
-    test.done();
-  },
-
-  'ContextProvider consistently generates a key'(test: Test) {
+  test('ContextProvider consistently generates a key', () => {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const key = ContextProvider.getKey(stack, {
       provider: 'ssm',
@@ -51,7 +50,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(key, {
+    expect(key).toEqual({
       key: 'ssm:account=12345:anyStringParam=bar:parameterName=foo:region=us-east-1',
       props: {
         account: '12345',
@@ -69,7 +68,7 @@ nodeunitShim({
         igw: false,
       },
     });
-    test.deepEqual(complexKey, {
+    expect(complexKey).toEqual({
       key: 'vpc:account=12345:cidrBlock=192.168.0.16:igw=false:region=us-east-1:tags.Env=Preprod:tags.Name=MyVPC',
       props: {
         account: '12345',
@@ -79,10 +78,9 @@ nodeunitShim({
         igw: false,
       },
     });
-    test.done();
-  },
+  });
 
-  'Key generation can contain arbitrarily deep structures'(test: Test) {
+  test('Key generation can contain arbitrarily deep structures', () => {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
 
@@ -98,7 +96,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(key, {
+    expect(key).toEqual({
       key: 'provider:account=12345:list.0.key=key1:list.0.value=value1:list.1.key=key2:list.1.value=value2:region=us-east-1',
       props: {
         account: '12345',
@@ -109,11 +107,9 @@ nodeunitShim({
         ],
       },
     });
+  });
 
-    test.done();
-  },
-
-  'Keys with undefined values are not serialized'(test: Test) {
+  test('Keys with undefined values are not serialized', () => {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
 
@@ -127,7 +123,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(result, {
+    expect(result).toEqual({
       key: 'provider:account=12345:p1=42:region=us-east-1',
       props: {
         account: '12345',
@@ -136,11 +132,9 @@ nodeunitShim({
         p2: undefined,
       },
     });
+  });
 
-    test.done();
-  },
-
-  'context provider errors are attached to tree'(test: Test) {
+  test('context provider errors are attached to tree', () => {
     const contextProps = { provider: 'availability-zones' };
     const contextKey = 'availability-zones:account=12345:region=us-east-1'; // Depends on the mangling algo
 
@@ -153,7 +147,7 @@ nodeunitShim({
     const construct = new Construct(stack, 'Child');
 
     // Verify that we got the right hardcoded key above, give a descriptive error if not
-    test.equals(ContextProvider.getKey(construct, contextProps).key, contextKey);
+    expect(ContextProvider.getKey(construct, contextProps).key).toEqual(contextKey);
 
     // WHEN
     ContextProvider.getValue(construct, {
@@ -163,10 +157,13 @@ nodeunitShim({
 
     // THEN
     const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
-    test.equals(error && error.data, 'I had a boo-boo');
+    expect(error && error.data).toEqual('I had a boo-boo');
+  });
 
-    test.done();
-  },
+  test('can skip account/region from attach to context', () => {
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    expect(ContextProvider.getKey(stack, { provider: 'asdf', includeEnvironment: false }).key).toEqual('asdf:');
+  });
 });
 
 /**

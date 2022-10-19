@@ -1,10 +1,15 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { Function as LambdaFunction, FunctionProps } from './function';
+import { Construct, IConstruct, IDependable, Node } from 'constructs';
+import { Architecture } from './architecture';
+import { Function as LambdaFunction, FunctionProps, EnvironmentOptions } from './function';
 import { FunctionBase } from './function-base';
 import { Version } from './lambda-version';
+import { ILayerVersion } from './layers';
 import { Permission } from './permission';
+import { Runtime } from './runtime';
 
 /**
  * Properties for a newly created singleton Lambda
@@ -45,7 +50,14 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
-  public readonly permissionsNode: cdk.ConstructNode;
+  public readonly permissionsNode: Node;
+  public readonly architecture: Architecture;
+
+  /**
+   * The runtime environment for the Lambda function.
+   */
+  public readonly runtime: Runtime;
+
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: LambdaFunction;
 
@@ -54,13 +66,43 @@ export class SingletonFunction extends FunctionBase {
 
     this.lambdaFunction = this.ensureLambda(props);
     this.permissionsNode = this.lambdaFunction.node;
+    this.architecture = this.lambdaFunction.architecture;
 
     this.functionArn = this.lambdaFunction.functionArn;
     this.functionName = this.lambdaFunction.functionName;
     this.role = this.lambdaFunction.role;
+    this.runtime = this.lambdaFunction.runtime;
     this.grantPrincipal = this.lambdaFunction.grantPrincipal;
 
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public get isBoundToVpc(): boolean {
+    return this.lambdaFunction.isBoundToVpc;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public get connections(): ec2.Connections {
+    return this.lambdaFunction.connections;
+  }
+
+  /**
+   * The LogGroup where the Lambda function's logs are made available.
+   *
+   * If either `logRetention` is set or this property is called, a CloudFormation custom resource is added to the stack that
+   * pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the correct log retention
+   * period (never expire, by default).
+   *
+   * Further, if the log group already exists and the `logRetention` is not set, the custom resource will reset the log retention
+   * to never expire even if it was configured with a different value.
+   */
+  public get logGroup(): logs.ILogGroup {
+    return this.lambdaFunction.logGroup;
   }
 
   /**
@@ -75,6 +117,32 @@ export class SingletonFunction extends FunctionBase {
     return this.lambdaFunction.currentVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn, `${this.functionArn}:*`];
+  };
+
+  /**
+   * Adds an environment variable to this Lambda function.
+   * If this is a ref to a Lambda function, this operation results in a no-op.
+   * @param key The environment variable key.
+   * @param value The environment variable's value.
+   * @param options Environment variable options.
+   */
+  public addEnvironment(key: string, value: string, options?: EnvironmentOptions) {
+    return this.lambdaFunction.addEnvironment(key, value, options);
+  }
+
+  /**
+   * Adds one or more Lambda Layers to this Lambda function.
+   *
+   * @param layers the layers to be added.
+   *
+   * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
+   */
+  public addLayers(...layers: ILayerVersion[]) {
+    return this.lambdaFunction.addLayers(...layers);
+  }
+
   public addPermission(name: string, permission: Permission) {
     return this.lambdaFunction.addPermission(name, permission);
   }
@@ -83,7 +151,7 @@ export class SingletonFunction extends FunctionBase {
    * Using node.addDependency() does not work on this method as the underlying lambda function is modeled
    * as a singleton across the stack. Use this method instead to declare dependencies.
    */
-  public addDependency(...up: cdk.IDependable[]) {
+  public addDependency(...up: IDependable[]) {
     this.lambdaFunction.node.addDependency(...up);
   }
 
@@ -91,7 +159,7 @@ export class SingletonFunction extends FunctionBase {
    * The SingletonFunction construct cannot be added as a dependency of another construct using
    * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
    */
-  public dependOn(down: cdk.IConstruct) {
+  public dependOn(down: IConstruct) {
     down.node.addDependency(this.lambdaFunction);
   }
 
@@ -104,7 +172,7 @@ export class SingletonFunction extends FunctionBase {
    * Returns the construct tree node that corresponds to the lambda function.
    * @internal
    */
-  protected _functionNode(): cdk.ConstructNode {
+  protected _functionNode(): Node {
     return this.lambdaFunction.node;
   }
 

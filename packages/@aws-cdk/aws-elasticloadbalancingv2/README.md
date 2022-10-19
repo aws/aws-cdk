@@ -26,13 +26,10 @@ You define an application load balancer by creating an instance of
 and adding Targets to the Listener:
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
+declare const asg: AutoScalingGroup;
 
-// ...
-
-const vpc = new ec2.Vpc(...);
+declare const vpc: ec2.Vpc;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
@@ -54,7 +51,6 @@ const listener = lb.addListener('Listener', {
 
 // Create an AutoScaling group and add it as a load balancing
 // target to the listener.
-const asg = new AutoScalingGroup(...);
 listener.addTargets('ApplicationFleet', {
   port: 8080,
   targets: [asg]
@@ -68,14 +64,16 @@ One (or more) security groups can be associated with the load balancer;
 if a security group isn't provided, one will be automatically created.
 
 ```ts
-const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', { vpc });
+declare const vpc: ec2.Vpc;
+
+const securityGroup1 = new ec2.SecurityGroup(this, 'SecurityGroup1', { vpc });
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
   internetFacing: true,
   securityGroup: securityGroup1, // Optional - will be automatically created otherwise
 });
 
-const securityGroup2 = new ec2.SecurityGroup(stack, 'SecurityGroup2', { vpc });
+const securityGroup2 = new ec2.SecurityGroup(this, 'SecurityGroup2', { vpc });
 lb.addSecurityGroup(securityGroup2);
 ```
 
@@ -87,11 +85,14 @@ AutoScalingGroup only if the requested host in the request is either for
 `example.com/ok` or `example.com/path`:
 
 ```ts
+declare const listener: elbv2.ApplicationListener;
+declare const asg: autoscaling.AutoScalingGroup;
+
 listener.addTargets('Example.Com Fleet', {
   priority: 10,
   conditions: [
-    ListenerCondition.hostHeaders(['example.com']),
-    ListenerCondition.pathPatterns(['/ok', '/path']),
+    elbv2.ListenerCondition.hostHeaders(['example.com']),
+    elbv2.ListenerCondition.pathPatterns(['/ok', '/path']),
   ],
   port: 8080,
   targets: [asg]
@@ -112,6 +113,11 @@ Routing traffic from a Load Balancer to a Target involves the following steps:
 
 - Create a Target Group, register the Target into the Target Group
 - Add an Action to the Listener which forwards traffic to the Target Group.
+
+A new listener can be added to the Load Balancer by calling `addListener()`.
+Listeners that have been added to the load balancer can be listed using the
+`listeners` property.  Note that the `listeners` property will throw an Error
+for imported or looked up Load Balancers.
 
 Various methods on the `Listener` take care of this work for you to a greater
 or lesser extent:
@@ -144,12 +150,14 @@ Balancer that the other two convenience methods don't:
 Here's an example of serving a fixed response at the `/ok` URL:
 
 ```ts
+declare const listener: elbv2.ApplicationListener;
+
 listener.addAction('Fixed', {
   priority: 10,
   conditions: [
-    ListenerCondition.pathPatterns(['/ok']),
+    elbv2.ListenerCondition.pathPatterns(['/ok']),
   ],
-  action: ListenerAction.fixedResponse(200, {
+  action: elbv2.ListenerAction.fixedResponse(200, {
     contentType: elbv2.ContentType.TEXT_PLAIN,
     messageBody: 'OK',
   })
@@ -159,12 +167,21 @@ listener.addAction('Fixed', {
 Here's an example of using OIDC authentication before forwarding to a TargetGroup:
 
 ```ts
+declare const listener: elbv2.ApplicationListener;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
 listener.addAction('DefaultAction', {
-  action: ListenerAction.authenticateOidc({
+  action: elbv2.ListenerAction.authenticateOidc({
     authorizationEndpoint: 'https://example.com/openid',
     // Other OIDC properties here
-    // ...
-    next: ListenerAction.forward([myTargetGroup]),
+    clientId: '...',
+    clientSecret: SecretValue.secretsManager('...'),
+    issuer: '...',
+    tokenEndpoint: '...',
+    userInfoEndpoint: '...',
+
+    // Next
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
   }),
 });
 ```
@@ -172,6 +189,8 @@ listener.addAction('DefaultAction', {
 If you just want to redirect all incoming traffic on one port to another port, you can use the following code:
 
 ```ts
+declare const lb: elbv2.ApplicationLoadBalancer;
+
 lb.addRedirect({
   sourceProtocol: elbv2.ApplicationProtocol.HTTPS,
   sourcePort: 8443,
@@ -182,15 +201,17 @@ lb.addRedirect({
 
 If you do not provide any options for this method, it redirects HTTP port 80 to HTTPS port 443.
 
+By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
+ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
+
 ## Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load
 Balancers:
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import * as autoscaling from '@aws-cdk/aws-autoscaling';
+declare const vpc: ec2.Vpc;
+declare const asg: autoscaling.AutoScalingGroup;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
@@ -235,12 +256,65 @@ and add it to the listener by calling `addTargetGroups` instead of `addTargets`.
 `addTargets()` will always return the Target Group it just created for you:
 
 ```ts
+declare const listener: elbv2.NetworkListener;
+declare const asg1: autoscaling.AutoScalingGroup;
+declare const asg2: autoscaling.AutoScalingGroup;
+
 const group = listener.addTargets('AppFleet', {
   port: 443,
   targets: [asg1],
 });
 
 group.addTarget(asg2);
+```
+
+### Sticky sessions for your Application Load Balancer
+
+By default, an Application Load Balancer routes each request independently to a registered target based on the chosen load-balancing algorithm. However, you can use the sticky session feature (also known as session affinity) to enable the load balancer to bind a user's session to a specific target. This ensures that all requests from the user during the session are sent to the same target. This feature is useful for servers that maintain state information in order to provide a continuous experience to clients. To use sticky sessions, the client must support cookies.
+
+Application Load Balancers support both duration-based cookies (`lb_cookie`) and application-based cookies (`app_cookie`). The key to managing sticky sessions is determining how long your load balancer should consistently route the user's request to the same target. Sticky sessions are enabled at the target group level. You can use a combination of duration-based stickiness, application-based stickiness, and no stickiness across all of your target groups.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Target group with duration-based stickiness with load-balancer generated cookie
+const tg1 = new elbv2.ApplicationTargetGroup(this, 'TG1', {
+  targetType: elbv2.TargetType.INSTANCE,
+  port: 80,
+  stickinessCookieDuration: Duration.minutes(5),
+  vpc,
+});
+
+// Target group with application-based stickiness
+const tg2 = new elbv2.ApplicationTargetGroup(this, 'TG2', {
+  targetType: elbv2.TargetType.INSTANCE,
+  port: 80,
+  stickinessCookieDuration: Duration.minutes(5),
+  stickinessCookieName: 'MyDeliciousCookie',
+  vpc,
+});
+```
+
+For more information see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness
+
+### Setting the target group protocol version
+
+By default, Application Load Balancers send requests to targets using HTTP/1.1. You can use the [protocol version](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version) to send requests to targets using HTTP/2 or gRPC.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
+  targetType: elbv2.TargetType.IP,
+  port: 50051,
+  protocol: elbv2.ApplicationProtocol.HTTP,
+  protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+  healthCheck: {
+    enabled: true,
+    healthyGrpcCodes: '0-99',
+  },
+  vpc,
+});
 ```
 
 ## Using Lambda Targets
@@ -250,11 +324,10 @@ To use a Lambda Function as a target, use the integration class in the
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as targets from '@aws-cdk/aws-elasticloadbalancingv2-targets';
 
-const lambdaFunction = new lambda.Function(...);
-const lb = new elbv2.ApplicationLoadBalancer(...);
+declare const lambdaFunction: lambda.Function;
+declare const lb: elbv2.ApplicationLoadBalancer;
 
 const listener = lb.addListener('Listener', { port: 80 });
 listener.addTargets('Targets', {
@@ -270,17 +343,62 @@ listener.addTargets('Targets', {
 
 Only a single Lambda function can be added to a single listener rule.
 
+## Using Application Load Balancer Targets
+
+To use a single application load balancer as a target for the network load balancer, use the integration class in the
+`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+
+```ts
+import * as targets from '@aws-cdk/aws-elasticloadbalancingv2-targets';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as patterns from '@aws-cdk/aws-ecs-patterns';
+
+declare const vpc: ec2.Vpc;
+
+const task = new ecs.FargateTaskDefinition(this, 'Task', { cpu: 256, memoryLimitMiB: 512 });
+task.addContainer('nginx', {
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:latest'),
+  portMappings: [{ containerPort: 80 }],
+});
+
+const svc = new patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  vpc,
+  taskDefinition: task,
+  publicLoadBalancer: false,
+});
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
+  vpc,
+  crossZoneEnabled: true,
+  internetFacing: true,
+});
+
+const listener = nlb.addListener('listener', { port: 80 });
+
+listener.addTargets('Targets', {
+  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  port: 80,
+});
+
+new CfnOutput(this, 'NlbEndpoint', { value: `http://${nlb.loadBalancerDnsName}`})
+```
+
+Only the network load balancer is allowed to add the application load balancer as the target.
+
 ## Configuring Health Checks
 
 Health checks are configured upon creation of a target group:
 
 ```ts
+declare const listener: elbv2.ApplicationListener;
+declare const asg: autoscaling.AutoScalingGroup;
+
 listener.addTargets('AppFleet', {
   port: 8080,
   targets: [asg],
   healthCheck: {
     path: '/ping',
-    interval: cdk.Duration.minutes(1),
+    interval: Duration.minutes(1),
   }
 });
 ```
@@ -294,15 +412,19 @@ you're routing traffic to, the security group already allows the traffic.
 If not, you will have to configure the security groups appropriately:
 
 ```ts
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const listener: elbv2.ApplicationListener;
+declare const asg: autoscaling.AutoScalingGroup;
+
 listener.addTargets('AppFleet', {
   port: 8080,
   targets: [asg],
   healthCheck: {
-    port: 8088,
+    port: '8088',
   }
 });
 
-listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
+asg.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
 
 ## Using a Load Balancer from a different Stack
@@ -330,12 +452,15 @@ call functions on the load balancer and should return metadata about the
 load balancing target:
 
 ```ts
-public attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps {
-  targetGroup.registerConnectable(...);
-  return {
-    targetType: TargetType.Instance | TargetType.Ip
-    targetJson: { id: ..., port: ... },
-  };
+class MyTarget implements elbv2.IApplicationLoadBalancerTarget {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+    // If we need to add security group rules
+    // targetGroup.registerConnectable(...);
+    return {
+      targetType: elbv2.TargetType.IP,
+      targetJson: { id: '1.2.3.4', port: 8080 },
+    };
+  }
 }
 ```
 
@@ -351,12 +476,16 @@ group rules.
 If your load balancer target requires that the TargetGroup has been
 associated with a LoadBalancer before registration can happen (such as is the
 case for ECS Services for example), take a resource dependency on
-`targetGroup.loadBalancerDependency()` as follows:
+`targetGroup.loadBalancerAttached` as follows:
 
 ```ts
+declare const resource: Resource;
+declare const targetGroup: elbv2.ApplicationTargetGroup;
+
 // Make sure that the listener has been created, and so the TargetGroup
 // has been associated with the LoadBalancer, before 'resource' is created.
-resourced.addDependency(targetGroup.loadBalancerDependency());
+
+Node.of(resource).addDependency(targetGroup.loadBalancerAttached);
 ```
 
 ## Looking up Load Balancers and Listeners
@@ -384,15 +513,15 @@ provide more specific criteria.
 **Look up a Application Load Balancer by ARN**
 
 ```ts
-const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
-  loadBalancerArn: YOUR_ALB_ARN,
+const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'ALB', {
+  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456',
 });
 ```
 
 **Look up an Application Load Balancer by tags**
 
 ```ts
-const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
+const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'ALB', {
   loadBalancerTags: {
     // Finds a load balancer matching all tags.
     some: 'tag',
@@ -418,9 +547,9 @@ criteria.
 **Look up a Listener by associated Load Balancer, Port, and Protocol**
 
 ```ts
-const listener = ApplicationListener.fromLookup(stack, 'ALBListener', {
-  loadBalancerArn: YOUR_ALB_ARN,
-  listenerProtocol: ApplicationProtocol.HTTPS,
+const listener = elbv2.ApplicationListener.fromLookup(this, 'ALBListener', {
+  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456',
+  listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
   listenerPort: 443,
 });
 ```
@@ -428,11 +557,11 @@ const listener = ApplicationListener.fromLookup(stack, 'ALBListener', {
 **Look up a Listener by associated Load Balancer Tag, Port, and Protocol**
 
 ```ts
-const listener = ApplicationListener.fromLookup(stack, 'ALBListener', {
+const listener = elbv2.ApplicationListener.fromLookup(this, 'ALBListener', {
   loadBalancerTags: {
     Cluster: 'MyClusterName',
   },
-  listenerProtocol: ApplicationProtocol.HTTPS,
+  listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
   listenerPort: 443,
 });
 ```
@@ -440,11 +569,11 @@ const listener = ApplicationListener.fromLookup(stack, 'ALBListener', {
 **Look up a Network Listener by associated Load Balancer Tag, Port, and Protocol**
 
 ```ts
-const listener = NetworkListener.fromLookup(stack, 'ALBListener', {
+const listener = elbv2.NetworkListener.fromLookup(this, 'ALBListener', {
   loadBalancerTags: {
     Cluster: 'MyClusterName',
   },
-  listenerProtocol: Protocol.TCP,
+  listenerProtocol: elbv2.Protocol.TCP,
   listenerPort: 12345,
 });
 ```

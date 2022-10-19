@@ -1,15 +1,15 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import { Construct } from 'constructs';
 import {
   App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource, Construct,
-  Fn, RemovalPolicy, Stack,
+  CfnDeletionPolicy, CfnResource,
+  Fn, IResource, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'all resources derive from Resource, which derives from Entity'(test: Test) {
+describe('resource', () => {
+  test('all resources derive from Resource, which derives from Entity', () => {
     const stack = new Stack();
 
     new CfnResource(stack, 'MyResource', {
@@ -19,7 +19,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: {
           Type: 'MyResourceType',
@@ -30,17 +30,14 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'resources must reside within a Stack and fail upon creation if not'(test: Test) {
+  test('resources must reside within a Stack and fail upon creation if not', () => {
     const root = new Root();
-    test.throws(() => new CfnResource(root, 'R1', { type: 'ResourceType' }));
-    test.done();
-  },
+    expect(() => new CfnResource(root, 'R1', { type: 'ResourceType' })).toThrow();
+  });
 
-  'all entities have a logical ID calculated based on their full path in the tree'(test: Test) {
+  test('all entities have a logical ID calculated based on their full path in the tree', () => {
     const stack = new Stack(undefined, 'TestStack');
     const level1 = new Construct(stack, 'level1');
     const level2 = new Construct(level1, 'level2');
@@ -48,28 +45,24 @@ nodeunitShim({
     const res1 = new CfnResource(level1, 'childoflevel1', { type: 'MyResourceType1' });
     const res2 = new CfnResource(level3, 'childoflevel3', { type: 'MyResourceType2' });
 
-    test.equal(withoutHash(stack.resolve(res1.logicalId)), 'level1childoflevel1');
-    test.equal(withoutHash(stack.resolve(res2.logicalId)), 'level1level2level3childoflevel3');
+    expect(withoutHash(stack.resolve(res1.logicalId))).toEqual('level1childoflevel1');
+    expect(withoutHash(stack.resolve(res2.logicalId))).toEqual('level1level2level3childoflevel3');
+  });
 
-    test.done();
-  },
-
-  'resource.props can only be accessed by derived classes'(test: Test) {
+  test('resource.props can only be accessed by derived classes', () => {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 10 });
     res.increment();
     res.increment(2);
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 13 } },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'resource attributes can be retrieved using getAtt(s) or attribute properties'(test: Test) {
+  test('resource attributes can be retrieved using getAtt(s) or attribute properties', () => {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 10 });
 
@@ -82,7 +75,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 10 } },
         YourResource: {
@@ -95,11 +88,9 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'ARN-type resource attributes have some common functionality'(test: Test) {
+  test('ARN-type resource attributes have some common functionality', () => {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 1 });
     new CfnResource(stack, 'MyResource2', {
@@ -109,7 +100,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 1 } },
         MyResource2: {
@@ -122,11 +113,9 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'resource.addDependency(e) can be used to add a DependsOn on another resource'(test: Test) {
+  test('resource.addDependency(e) can be used to add a DependsOn on another resource', () => {
     const stack = new Stack();
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
     const r2 = new Counter(stack, 'Counter2', { Count: 1 });
@@ -136,7 +125,7 @@ nodeunitShim({
 
     synthesize(stack);
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         Counter1: {
           Type: 'My::Counter',
@@ -153,11 +142,9 @@ nodeunitShim({
         Resource3: { Type: 'MyResourceType' },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'if addDependency is called multiple times with the same resource, it will only appear once'(test: Test) {
+  test('if addDependency is called multiple times with the same resource, it will only appear once', () => {
     // GIVEN
     const stack = new Stack();
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
@@ -171,7 +158,7 @@ nodeunitShim({
     dependent.addDependsOn(r1);
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         Counter1: {
           Type: 'My::Counter',
@@ -187,24 +174,21 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
+  });
 
-  'conditions can be attached to a resource'(test: Test) {
+  test('conditions can be attached to a resource', () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
     const cond = new CfnCondition(stack, 'MyCondition', { expression: Fn.conditionNot(Fn.conditionEquals('a', 'b')) });
     r1.cfnOptions.condition = cond;
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
       Conditions: { MyCondition: { 'Fn::Not': [{ 'Fn::Equals': ['a', 'b'] }] } },
     });
+  });
 
-    test.done();
-  },
-
-  'creation/update/updateReplace/deletion policies can be set on a resource'(test: Test) {
+  test('creation/update/updateReplace/deletion policies can be set on a resource', () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
@@ -222,7 +206,7 @@ nodeunitShim({
     r1.cfnOptions.deletionPolicy = CfnDeletionPolicy.RETAIN;
     r1.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',
@@ -241,17 +225,15 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'update policies UseOnlineResharding flag'(test: Test) {
+  test('update policies UseOnlineResharding flag', () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.cfnOptions.updatePolicy = { useOnlineResharding: true };
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',
@@ -261,11 +243,9 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'metadata can be set on a resource'(test: Test) {
+  test('metadata can be set on a resource', () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
@@ -274,7 +254,7 @@ nodeunitShim({
       MyValue: 99,
     };
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',
@@ -285,17 +265,14 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'the "type" property is required when creating a resource'(test: Test) {
+  test('the "type" property is required when creating a resource', () => {
     const stack = new Stack();
-    test.throws(() => new CfnResource(stack, 'Resource', { notypehere: true } as any));
-    test.done();
-  },
+    expect(() => new CfnResource(stack, 'Resource', { notypehere: true } as any)).toThrow();
+  });
 
-  'removal policy is a high level abstraction of deletion policy used by l2'(test: Test) {
+  test('removal policy is a high level abstraction of deletion policy used by l2', () => {
     const stack = new Stack();
 
     const retain = new CfnResource(stack, 'Retain', { type: 'T1' });
@@ -308,7 +285,7 @@ nodeunitShim({
     def.applyRemovalPolicy(undefined, { default: RemovalPolicy.DESTROY });
     def2.applyRemovalPolicy(undefined);
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' },
         Destroy: { Type: 'T3', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' },
@@ -316,10 +293,36 @@ nodeunitShim({
         Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' }, // implicit default
       },
     });
-    test.done();
-  },
+  });
 
-  'addDependency adds all dependencyElements of dependent constructs'(test: Test) {
+  test('applyRemovalPolicy available for interface resources', () => {
+    class Child extends Resource {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        new CfnResource(this, 'Resource', {
+          type: 'ChildResourceType',
+        });
+      }
+    }
+
+    const stack = new Stack();
+    const child: IResource = new Child(stack, 'Child');
+
+    child.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        ChildDAB30558: {
+          DeletionPolicy: 'Retain',
+          Type: 'ChildResourceType',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+  });
+
+  test('addDependency adds all dependencyElements of dependent constructs', () => {
 
     class C1 extends Construct {
       public readonly r1: CfnResource;
@@ -364,7 +367,7 @@ nodeunitShim({
 
     synthesize(stack);
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources:
       {
         MyC1R1FB2A562F: { Type: 'T1' },
@@ -382,19 +385,17 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
+  });
 
-  'resource.ref returns the {Ref} token'(test: Test) {
+  test('resource.ref returns the {Ref} token', () => {
     const stack = new Stack();
     const r = new CfnResource(stack, 'MyResource', { type: 'R' });
 
-    test.deepEqual(stack.resolve(r.ref), { Ref: 'MyResource' });
-    test.done();
-  },
+    expect(stack.resolve(r.ref)).toEqual({ Ref: 'MyResource' });
+  });
 
-  overrides: {
-    'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
+  describe('overrides', () => {
+    test('addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions', () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
@@ -405,7 +406,7 @@ nodeunitShim({
       r.addOverride('Use.Dot.Notation', 'To create subtrees');
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -416,11 +417,38 @@ nodeunitShim({
           },
         },
       });
+    });
 
-      test.done();
-    },
+    test('addPropertyOverride() allows assigning an attribute of a different resource', () => {
+      // GIVEN
+      const stack = new Stack();
+      const r1 = new CfnResource(stack, 'MyResource1', { type: 'AWS::Resource::Type' });
+      const r2 = new CfnResource(stack, 'MyResource2', { type: 'AWS::Resource::Type' });
 
-    'addOverride(p, null) will assign an "null" value'(test: Test) {
+      // WHEN
+      r2.addPropertyOverride('A', {
+        B: r1.getAtt('Arn'),
+      });
+
+      // THEN
+      expect(toCloudFormation(stack)).toEqual({
+        Resources: {
+          MyResource1: {
+            Type: 'AWS::Resource::Type',
+          },
+          MyResource2: {
+            Type: 'AWS::Resource::Type',
+            Properties: {
+              A: {
+                B: { 'Fn::GetAtt': ['MyResource1', 'Arn'] },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('addOverride(p, null) will assign an "null" value', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -440,7 +468,7 @@ nodeunitShim({
       r.addOverride('Properties.Hello.World.Value2', null);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -450,11 +478,9 @@ nodeunitShim({
           },
         },
       });
+    });
 
-      test.done();
-    },
-
-    'addOverride(p, undefined) can be used to delete a value'(test: Test) {
+    test('addOverride(p, undefined) can be used to delete a value', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -474,7 +500,7 @@ nodeunitShim({
       r.addOverride('Properties.Hello.World.Value2', undefined);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -484,11 +510,9 @@ nodeunitShim({
           },
         },
       });
+    });
 
-      test.done();
-    },
-
-    'addOverride(p, undefined) will not create empty trees'(test: Test) {
+    test('addOverride(p, undefined) will not create empty trees', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -499,7 +523,7 @@ nodeunitShim({
       r.addPropertyOverride('Tree.Does.Not.Exist', undefined);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -509,11 +533,9 @@ nodeunitShim({
           },
         },
       });
+    });
 
-      test.done();
-    },
-
-    'addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar `undefined`'(test: Test) {
+    test('addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar for `undefined`', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -535,7 +557,7 @@ nodeunitShim({
       r.addPropertyDeletionOverride('Hello.World.Value3');
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -545,11 +567,9 @@ nodeunitShim({
           },
         },
       });
+    });
 
-      test.done();
-    },
-
-    'addOverride(p, v) will overwrite any non-objects along the path'(test: Test) {
+    test('addOverride(p, v) will overwrite any non-objects along the path', () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', {
@@ -567,7 +587,7 @@ nodeunitShim({
       r.addOverride('Properties.Hello.World.Foo.Bar', 42);
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -583,10 +603,9 @@ nodeunitShim({
           },
         },
       });
-      test.done();
-    },
+    });
 
-    'addOverride(p, v) will not split on escaped dots'(test: Test) {
+    test('addOverride(p, v) will not split on escaped dots', () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
@@ -599,7 +618,7 @@ nodeunitShim({
       r.addOverride('Properties.EndWith\\', 42); // Raw string cannot end with a backslash
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -616,10 +635,9 @@ nodeunitShim({
           },
         },
       });
-      test.done();
-    },
+    });
 
-    'addPropertyOverride(pp, v) is a sugar for overriding properties'(test: Test) {
+    test('addPropertyOverride(pp, v) is a sugar for overriding properties', () => {
       // GIVEN
       const stack = new Stack();
       const r = new CfnResource(stack, 'MyResource', {
@@ -631,7 +649,7 @@ nodeunitShim({
       r.addPropertyOverride('Hello.World', { Hey: 'Jude' });
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources:
         {
           MyResource:
@@ -641,10 +659,9 @@ nodeunitShim({
           },
         },
       });
-      test.done();
-    },
+    });
 
-    'overrides are applied after render'(test: Test) {
+    test('overrides are applied after render', () => {
       // GIVEN
       class MyResource extends CfnResource {
         public renderProperties() {
@@ -659,7 +676,7 @@ nodeunitShim({
       cfn.addOverride('Properties.Foo.Bar', 'Bar');
 
       // THEN
-      test.deepEqual(toCloudFormation(stack), {
+      expect(toCloudFormation(stack)).toEqual({
         Resources: {
           rr: {
             Type: 'AWS::Resource::Type',
@@ -673,12 +690,133 @@ nodeunitShim({
           },
         },
       });
-      test.done();
-    },
+    });
 
-    'using mutable properties': {
+    test('overrides allow overriding one intrinsic with another', () => {
+      // GIVEN
+      const stack = new Stack();
 
-      'can be used by derived classes to specify overrides before render()'(test: Test) {
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: Fn.ref('Param'),
+        },
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1', Fn.join('-', ['hello', Fn.ref('Param')]));
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            'Fn::Join': [
+              '-',
+              [
+                'hello',
+                {
+                  Ref: 'Param',
+                },
+              ],
+            ],
+          },
+        },
+      });
+    });
+
+    test('Can override a an object with an intrinsic', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const condition = new CfnCondition(stack, 'MyCondition', {
+        expression: Fn.conditionEquals('us-east-1', 'us-east-1'),
+      });
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: {
+            subprop: {
+              name: Fn.getAtt('resource', 'abc'),
+            },
+          },
+        },
+      });
+      const isEnabled = Fn.conditionIf(condition.logicalId, {
+        Ref: 'AWS::NoValue',
+      }, {
+        name: Fn.getAtt('resource', 'abc'),
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1.subprop', isEnabled);
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            subprop: {
+              'Fn::If': [
+                'MyCondition',
+                {
+                  Ref: 'AWS::NoValue',
+                },
+                {
+                  name: {
+                    'Fn::GetAtt': [
+                      'resource',
+                      'abc',
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('overrides allow overriding a nested intrinsic', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const resource = new CfnResource(stack, 'MyResource', {
+        type: 'MyResourceType',
+        properties: {
+          prop1: Fn.importValue(Fn.sub('${Sub}', { Sub: 'Value' })),
+        },
+      });
+
+      // WHEN
+      resource.addPropertyOverride('prop1', Fn.importValue(Fn.join('-', ['abc', Fn.sub('${Sub}', { Sub: 'Value' })])));
+      const cfn = toCloudFormation(stack);
+
+      // THEN
+      expect(cfn.Resources.MyResource).toEqual({
+        Type: 'MyResourceType',
+        Properties: {
+          prop1: {
+            'Fn::ImportValue': {
+              'Fn::Join': [
+                '-',
+                [
+                  'abc',
+                  {
+                    'Fn::Sub': ['${Sub}', { Sub: 'Value' }],
+                  },
+                ],
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    describe('using mutable properties', () => {
+      test('can be used by derived classes to specify overrides before render()', () => {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource', {
@@ -687,7 +825,7 @@ nodeunitShim({
 
         r.prop2 = 'bar';
 
-        test.deepEqual(toCloudFormation(stack), {
+        expect(toCloudFormation(stack)).toEqual({
           Resources:
           {
             MyResource:
@@ -697,17 +835,16 @@ nodeunitShim({
             },
           },
         });
-        test.done();
-      },
+      });
 
-      '"properties" is undefined'(test: Test) {
+      test('"properties" is undefined', () => {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource');
 
         r.prop3 = 'zoo';
 
-        test.deepEqual(toCloudFormation(stack), {
+        expect(toCloudFormation(stack)).toEqual({
           Resources:
           {
             MyResource:
@@ -717,10 +854,9 @@ nodeunitShim({
             },
           },
         });
-        test.done();
-      },
+      });
 
-      '"properties" is empty'(test: Test) {
+      test('"properties" is empty', () => {
         const stack = new Stack();
 
         const r = new CustomizableResource(stack, 'MyResource', { });
@@ -728,7 +864,7 @@ nodeunitShim({
         r.prop3 = 'zoo';
         r.prop2 = 'hey';
 
-        test.deepEqual(toCloudFormation(stack), {
+        expect(toCloudFormation(stack)).toEqual({
           Resources:
           {
             MyResource:
@@ -738,12 +874,11 @@ nodeunitShim({
             },
           },
         });
-        test.done();
-      },
-    },
-  },
+      });
+    });
+  });
 
-  '"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true'(test: Test) {
+  test('"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true', () => {
     const stack = new Stack();
     stack.node.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
 
@@ -753,7 +888,7 @@ nodeunitShim({
       type: 'MyResourceType',
     });
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources:
       {
         ParentMyResource4B1FDBCC:
@@ -763,11 +898,9 @@ nodeunitShim({
          },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'cross-stack construct dependencies are not rendered but turned into stack dependencies'(test: Test) {
+  test('cross-stack construct dependencies are not rendered but turned into stack dependencies', () => {
     // GIVEN
     const app = new App();
     const stackA = new Stack(app, 'StackA');
@@ -782,20 +915,14 @@ nodeunitShim({
     const assembly = app.synth();
     const templateB = assembly.getStackByName(stackB.stackName).template;
 
-    test.deepEqual(templateB, {
-      Resources: {
-        Resource: {
-          Type: 'R',
-          // Notice absence of 'DependsOn'
-        },
-      },
+    expect(templateB?.Resources?.Resource).toEqual({
+      Type: 'R',
+      // Notice absence of 'DependsOn'
     });
-    test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
+    expect(stackB.dependencies.map(s => s.node.id)).toEqual(['StackA']);
+  });
 
-    test.done();
-  },
-
-  'enableVersionUpgrade can be set on a resource'(test: Test) {
+  test('enableVersionUpgrade can be set on a resource', () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
@@ -803,7 +930,7 @@ nodeunitShim({
       enableVersionUpgrade: true,
     };
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         Resource: {
           Type: 'Type',
@@ -813,9 +940,20 @@ nodeunitShim({
         },
       },
     });
+  });
+});
 
-    test.done();
-  },
+test('Resource can get account and Region from ARN', () => {
+  const stack = new Stack();
+
+  // WHEN
+  const resource = new TestResource(stack, 'Resource', {
+    environmentFromArn: 'arn:partition:service:region:account:relative-id',
+  });
+
+  // THEN
+  expect(resource.env.account).toEqual('account');
+  expect(resource.env.region).toEqual('region');
 });
 
 interface CounterProps {
@@ -845,7 +983,7 @@ class Counter extends CfnResource {
 }
 
 function withoutHash(logId: string) {
-  return logId.substr(0, logId.length - 8);
+  return logId.slice(0, -8);
 }
 
 class CustomizableResource extends CfnResource {
@@ -863,7 +1001,7 @@ class CustomizableResource extends CfnResource {
   }
 
   public renderProperties(): { [key: string]: any } {
-    const props = this.updatedProperites;
+    const props = this.updatedProperties;
     const render: { [key: string]: any } = {};
     for (const key of Object.keys(props)) {
       render[key.toUpperCase()] = props[key];
@@ -871,7 +1009,7 @@ class CustomizableResource extends CfnResource {
     return render;
   }
 
-  protected get updatedProperites(): { [key: string]: any } {
+  protected get updatedProperties(): { [key: string]: any } {
     const props: { [key: string]: any } = {
       prop1: this.prop1,
       prop2: this.prop2,
@@ -887,3 +1025,8 @@ class CustomizableResource extends CfnResource {
     return cleanProps;
   }
 }
+
+/**
+ * Because Resource is abstract
+ */
+class TestResource extends Resource {}

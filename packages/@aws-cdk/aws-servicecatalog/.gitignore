@@ -3,6 +3,7 @@
 *.d.ts
 tsconfig.json
 node_modules
+product-stack-snapshots
 *.generated.ts
 dist
 .jsii
@@ -17,3 +18,7 @@ nyc.config.js
 !jest.config.js
 
 junit.xml
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

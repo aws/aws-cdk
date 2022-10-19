@@ -1,0 +1,140 @@
+{
+  "name": "@aws-cdk/aws-opensearchservice",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::OpenSearchService",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.OpenSearchService",
+        "packageId": "Amazon.CDK.AWS.OpenSearchService",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.opensearchservice",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "opensearchservice"
+        }
+      },
+      "python": {
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ],
+        "distName": "aws-cdk.aws-opensearchservice",
+        "module": "aws_cdk.aws_opensearchservice"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-opensearchservice"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::OpenSearchService",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::OpenSearchService",
+    "aws-opensearchservice",
+    "opensearchservice"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
+    "@types/jest": "^27.5.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "stable",
+  "maturity": "stable",
+  "features": [
+    {
+      "name": "Higher level constructs for Domain",
+      "stability": "Stable"
+    }
+  ],
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "next"
+  },
+  "private": true
+}

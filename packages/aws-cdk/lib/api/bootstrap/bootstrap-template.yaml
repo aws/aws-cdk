@@ -6,6 +6,11 @@ Parameters:
       stacks to this environment
     Default: ''
     Type: CommaDelimitedList
+  TrustedAccountsForLookup:
+    Description: List of AWS accounts that are trusted to look up values in this
+      environment
+    Default: ''
+    Type: CommaDelimitedList
   CloudFormationExecutionPolicies:
     Description: List of the ManagedPolicy ARN(s) to attach to the CloudFormation
       deployment role
@@ -45,6 +50,13 @@ Conditions:
           - Fn::Join:
               - ''
               - Ref: TrustedAccounts
+  HasTrustedAccountsForLookup:
+    Fn::Not:
+      - Fn::Equals:
+          - ''
+          - Fn::Join:
+              - ''
+              - Ref: TrustedAccountsForLookup
   HasCloudFormationExecutionPolicies:
     Fn::Not:
       - Fn::Equals:
@@ -166,6 +178,8 @@ Resources:
             IgnorePublicAcls: true
             RestrictPublicBuckets: true
           - Ref: AWS::NoValue
+      VersioningConfiguration:
+        Status: Enabled
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
@@ -188,11 +202,26 @@ Resources:
   ContainerAssetsRepository:
     Type: AWS::ECR::Repository
     Properties:
+      ImageTagMutability: IMMUTABLE
       RepositoryName:
         Fn::If:
           - HasCustomContainerAssetsRepositoryName
           - Fn::Sub: "${ContainerAssetsRepositoryName}"
           - Fn::Sub: cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          # Necessary for Lambda container images
+          # https://docs.aws.amazon.com/lambda/latest/dg/configuration-images.html#configuration-images-permissions
+          - Sid: LambdaECRImageRetrievalPolicy
+            Effect: Allow
+            Principal: { Service: "lambda.amazonaws.com" }
+            Action:
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
+            Condition:
+              StringLike:
+                "aws:sourceArn": { "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*" }
   FilePublishingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -213,6 +242,9 @@ Resources:
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: file-publishing
   ImagePublishingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -233,6 +265,52 @@ Resources:
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: image-publishing
+  LookupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
+          - Fn::If:
+              - HasTrustedAccountsForLookup
+              - Action: sts:AssumeRole
+                Effect: Allow
+                Principal:
+                  AWS:
+                    Ref: TrustedAccountsForLookup
+              - Ref: AWS::NoValue
+          - Fn::If:
+              - HasTrustedAccounts
+              - Action: sts:AssumeRole
+                Effect: Allow
+                Principal:
+                  AWS:
+                    Ref: TrustedAccounts
+              - Ref: AWS::NoValue
+      RoleName:
+        Fn::Sub: cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}
+      ManagedPolicyArns:
+        - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/ReadOnlyAccess"
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Sid: DontReadSecrets
+                Effect: Deny
+                Action:
+                  - kms:Decrypt
+                Resource: "*"
+            Version: '2012-10-17'
+          PolicyName: LookupRolePolicy
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: lookup
   FilePublishingRoleDefaultPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -241,6 +319,7 @@ Resources:
           - Action:
               - s3:GetObject*
               - s3:GetBucket*
+              - s3:GetEncryptionConfiguration
               - s3:List*
               - s3:DeleteObject*
               - s3:PutObject*
@@ -279,6 +358,8 @@ Resources:
               - ecr:BatchCheckLayerAvailability
               - ecr:DescribeRepositories
               - ecr:DescribeImages
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
             Resource:
               Fn::Sub: "${ContainerAssetsRepository.Arn}"
             Effect: Allow
@@ -312,30 +393,50 @@ Resources:
       Policies:
         - PolicyDocument:
             Statement:
-              - Action:
-                  # Permissions needed in CodePipeline.
-                  # S3 and KMS are needed on '*',
-                  # as we don't know the IDs of the CodePipeline's bucket and key in advance
+              - Sid: CloudFormationPermissions
+                Effect: Allow
+                Action:
                   - cloudformation:CreateChangeSet
                   - cloudformation:DeleteChangeSet
                   - cloudformation:DescribeChangeSet
                   - cloudformation:DescribeStacks
                   - cloudformation:ExecuteChangeSet
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                Resource: "*"
+              - Sid: PipelineCrossAccountArtifactsBucket
+                # Read/write buckets in different accounts. Permissions to buckets in
+                # same account are granted by bucket policies.
+                #
+                # Write permissions necessary to write outputs to the cross-region artifact replication bucket
+                # https://aws.amazon.com/premiumsupport/knowledge-center/codepipeline-deploy-cloudformation/.
+                Effect: Allow
+                Action:
                   - s3:GetObject*
                   - s3:GetBucket*
                   - s3:List*
                   - s3:Abort*
                   - s3:DeleteObject*
                   - s3:PutObject*
-                  # Necessary to write to the cross-region artifact replication bucket
-                  # https://aws.amazon.com/premiumsupport/knowledge-center/codepipeline-deploy-cloudformation/.
+                Resource: "*"
+                Condition:
+                    StringNotEquals:
+                        s3:ResourceAccount:
+                            Ref: 'AWS::AccountId'
+              - Sid: PipelineCrossAccountArtifactsKey
+                # Use keys only for the purposes of reading encrypted files from S3.
+                Effect: Allow
+                Action:
                   - kms:Decrypt
                   - kms:DescribeKey
                   - kms:Encrypt
                   - kms:ReEncrypt*
                   - kms:GenerateDataKey*
                 Resource: "*"
-                Effect: Allow
+                Condition:
+                  StringEquals:
+                    kms:ViaService:
+                      Fn::Sub: s3.${AWS::Region}.amazonaws.com
               - Action: iam:PassRole
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
@@ -351,8 +452,19 @@ Resources:
                   - cloudformation:DeleteStack
                   - cloudformation:UpdateTerminationProtection
                   - sts:GetCallerIdentity
+                  # `cdk import`
+                  - cloudformation:GetTemplateSummary
                 Resource: "*"
                 Effect: Allow
+              - Sid: CliStagingBucket
+                Effect: Allow
+                Action:
+                  - s3:GetObject*
+                  - s3:GetBucket*
+                  - s3:List*
+                Resource:
+                  - Fn::Sub: ${StagingBucket.Arn}
+                  - Fn::Sub: ${StagingBucket.Arn}/*
               - Sid: ReadVersion
                 Effect: Allow
                 Action:
@@ -363,6 +475,9 @@ Resources:
           PolicyName: default
       RoleName:
         Fn::Sub: cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: deploy
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -393,7 +508,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '5'
+      Value: '14'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

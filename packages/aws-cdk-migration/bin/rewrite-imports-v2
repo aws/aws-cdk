@@ -1,0 +1,2 @@
+#!/usr/bin/env node
+require('./rewrite-imports-v2.js');

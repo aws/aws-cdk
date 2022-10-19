@@ -1,78 +1,15 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
-/**
- * Enum of supported TLS modes
- */
-export enum TlsMode {
-  /**
-   * Only accept encrypted traffic
-   */
-  STRICT = 'STRICT',
-
-  /**
-   * Accept encrypted and plaintext traffic.
-   */
-  PERMISSIVE = 'PERMISSIVE',
-
-  /**
-   * TLS is disabled, only accept plaintext traffic.
-   */
-  DISABLED = 'DISABLED',
-}
 
 /**
  * A wrapper for the tls config returned by {@link TlsCertificate.bind}
  */
 export interface TlsCertificateConfig {
   /**
-   * The CFN shape for a listener TLS certificate
+   * The CFN shape for a TLS certificate
    */
   readonly tlsCertificate: CfnVirtualNode.ListenerTlsCertificateProperty,
-
-  /**
-   * The TLS mode.
-   */
-  readonly tlsMode: TlsMode;
-}
-
-/**
- * ACM Certificate Properties
- */
-export interface AcmCertificateOptions {
-  /**
-   * The TLS mode.
-   */
-  readonly tlsMode: TlsMode;
-
-  /**
-   * The ACM certificate
-   */
-  readonly certificate: acm.ICertificate;
-}
-
-/**
- * File Certificate Properties
- */
-export interface FileCertificateOptions {
-  /**
-   * The TLS mode.
-   */
-  readonly tlsMode: TlsMode;
-
-  /**
-   * The file path of the certificate chain file.
-   */
-  readonly certificateChainPath: string;
-
-  /**
-   * The file path of the private key file.
-   */
-  readonly privateKeyPath: string;
 }
 
 /**
@@ -82,15 +19,22 @@ export abstract class TlsCertificate {
   /**
    * Returns an File TLS Certificate
    */
-  public static file(props: FileCertificateOptions): TlsCertificate {
-    return new FileTlsCertificate(props);
+  public static file(certificateChainPath: string, privateKeyPath: string): MutualTlsCertificate {
+    return new FileTlsCertificate(certificateChainPath, privateKeyPath);
   }
 
   /**
    * Returns an ACM TLS Certificate
    */
-  public static acm(props: AcmCertificateOptions): TlsCertificate {
-    return new AcmTlsCertificate(props);
+  public static acm(certificate: acm.ICertificate): TlsCertificate {
+    return new AcmTlsCertificate(certificate);
+  }
+
+  /**
+   * Returns an SDS TLS Certificate
+   */
+  public static sds(secretName: string): MutualTlsCertificate {
+    return new SdsTlsCertificate(secretName);
   }
 
   /**
@@ -101,25 +45,25 @@ export abstract class TlsCertificate {
 }
 
 /**
+ * Represents a TLS certificate that is supported for mutual TLS authentication.
+ */
+export abstract class MutualTlsCertificate extends TlsCertificate {
+  // TypeScript uses structural typing, so we need a property different from TlsCertificate
+  protected readonly differentiator = false;
+}
+
+/**
  * Represents a ACM provided TLS certificate
  */
 class AcmTlsCertificate extends TlsCertificate {
-  /**
-   * The TLS mode.
-   *
-   * @default - TlsMode.DISABLED
-   */
-  readonly tlsMode: TlsMode;
-
   /**
    * The ARN of the ACM certificate
    */
   readonly acmCertificate: acm.ICertificate;
 
-  constructor(props: AcmCertificateOptions) {
+  constructor(certificate: acm.ICertificate) {
     super();
-    this.tlsMode = props.tlsMode;
-    this.acmCertificate = props.certificate;
+    this.acmCertificate = certificate;
   }
 
   bind(_scope: Construct): TlsCertificateConfig {
@@ -129,7 +73,6 @@ class AcmTlsCertificate extends TlsCertificate {
           certificateArn: this.acmCertificate.certificateArn,
         },
       },
-      tlsMode: this.tlsMode,
     };
   }
 }
@@ -137,14 +80,7 @@ class AcmTlsCertificate extends TlsCertificate {
 /**
  * Represents a file provided TLS certificate
  */
-class FileTlsCertificate extends TlsCertificate {
-  /**
-   * The TLS mode.
-   *
-   * @default - TlsMode.DISABLED
-   */
-  readonly tlsMode: TlsMode;
-
+class FileTlsCertificate extends MutualTlsCertificate {
   /**
    * The file path of the certificate chain file.
    */
@@ -155,11 +91,10 @@ class FileTlsCertificate extends TlsCertificate {
    */
   readonly privateKey: string;
 
-  constructor(props: FileCertificateOptions) {
+  constructor(certificateChainPath: string, privateKeyPath: string) {
     super();
-    this.tlsMode = props.tlsMode;
-    this.certificateChain = props.certificateChainPath;
-    this.privateKey = props.privateKeyPath;
+    this.certificateChain = certificateChainPath;
+    this.privateKey = privateKeyPath;
   }
 
   bind(_scope: Construct): TlsCertificateConfig {
@@ -170,7 +105,31 @@ class FileTlsCertificate extends TlsCertificate {
           privateKey: this.privateKey,
         },
       },
-      tlsMode: this.tlsMode,
+    };
+  }
+}
+
+/**
+ * Represents a SDS provided TLS certificate
+ */
+class SdsTlsCertificate extends MutualTlsCertificate {
+  /**
+   * The name of the secret requested from the Secret Discovery Service provider.
+   */
+  readonly secretName: string;
+
+  constructor(secretName: string) {
+    super();
+    this.secretName = secretName;
+  }
+
+  bind(_scope: Construct): TlsCertificateConfig {
+    return {
+      tlsCertificate: {
+        sds: {
+          secretName: this.secretName,
+        },
+      },
     };
   }
 }

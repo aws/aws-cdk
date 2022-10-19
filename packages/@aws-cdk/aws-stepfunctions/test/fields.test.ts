@@ -1,8 +1,7 @@
-import '@aws-cdk/assert/jest';
-import { FieldUtils, JsonPath } from '../lib';
+import { FieldUtils, JsonPath, TaskInput } from '../lib';
 
 describe('Fields', () => {
-  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.' or start with '\$\['/;
+  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array./;
 
   test('deep replace correctly handles fields in arrays', () => {
     expect(
@@ -64,6 +63,13 @@ describe('Fields', () => {
       }),
     ).toStrictEqual(['$.listField', '$.numField', '$.stringField']);
   }),
+  test('JsonPath.listAt before Parallel', () => {
+    expect(
+      FieldUtils.findReferencedPaths({
+        listAt: JsonPath.listAt('$[0].stringList'),
+      }),
+    ).toStrictEqual(['$[0].stringList']);
+  });
   test('cannot have JsonPath fields in arrays', () => {
     expect(() => FieldUtils.renderObject({
       deep: [JsonPath.stringAt('$.hello')],
@@ -71,9 +77,14 @@ describe('Fields', () => {
   }),
   test('datafield path must be correct', () => {
     expect(JsonPath.stringAt('$')).toBeDefined();
+    expect(JsonPath.stringAt('States.Format')).toBeDefined();
+    expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
+    expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
+    expect(JsonPath.stringAt('States.Array')).toBeDefined();
 
     expect(() => JsonPath.stringAt('$hello')).toThrowError(jsonPathValidationErrorMsg);
     expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('States.FooBar')).toThrowError(jsonPathValidationErrorMsg);
   }),
   test('context path must be correct', () => {
     expect(JsonPath.stringAt('$$')).toBeDefined();
@@ -152,4 +163,108 @@ describe('Fields', () => {
     expect(FieldUtils.findReferencedPaths(paths))
       .toStrictEqual(['$.listField', '$.numField', '$.stringField']);
   });
+
+  test('rendering a non-object value should just return itself', () => {
+    expect(
+      FieldUtils.renderObject(TaskInput.fromText('Hello World').value),
+    ).toEqual(
+      'Hello World',
+    );
+    expect(
+      FieldUtils.renderObject('Hello World' as any),
+    ).toEqual(
+      'Hello World',
+    );
+    expect(
+      FieldUtils.renderObject(null as any),
+    ).toEqual(
+      null,
+    );
+    expect(
+      FieldUtils.renderObject(3.14 as any),
+    ).toEqual(
+      3.14,
+    );
+    expect(
+      FieldUtils.renderObject(true as any),
+    ).toEqual(
+      true,
+    );
+    expect(
+      FieldUtils.renderObject(undefined),
+    ).toEqual(
+      undefined,
+    );
+  });
+
+  test('repeated object references at different tree paths should not be considered as recursions', () => {
+    const repeatedObject = {
+      field: JsonPath.stringAt('$.stringField'),
+      numField: JsonPath.numberAt('$.numField'),
+    };
+    expect(FieldUtils.renderObject(
+      {
+        reference1: repeatedObject,
+        reference2: repeatedObject,
+      },
+    )).toStrictEqual({
+      reference1: {
+        'field.$': '$.stringField',
+        'numField.$': '$.numField',
+      },
+      reference2: {
+        'field.$': '$.stringField',
+        'numField.$': '$.numField',
+      },
+    });
+  });
+});
+
+describe('intrinsics constructors', () => {
+  test('array', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.array('asdf', JsonPath.stringAt('$.Id')),
+    })).toEqual({
+      'Field.$': "States.Array('asdf', $.Id)",
+    });
+  });
+
+  test('format', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.format('Hi my name is {}.', JsonPath.stringAt('$.Name')),
+    })).toEqual({
+      'Field.$': "States.Format('Hi my name is {}.', $.Name)",
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.format(JsonPath.stringAt('$.Format'), JsonPath.stringAt('$.Name')),
+    })).toEqual({
+      'Field.$': 'States.Format($.Format, $.Name)',
+    });
+  });
+
+  test('stringToJson', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.stringToJson(JsonPath.stringAt('$.Str')),
+    })).toEqual({
+      'Field.$': 'States.StringToJson($.Str)',
+    });
+  });
+
+  test('jsonToString', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.jsonToString(JsonPath.objectAt('$.Obj')),
+    })).toEqual({
+      'Field.$': 'States.JsonToString($.Obj)',
+    });
+  });
+});
+
+test('find task token even if nested in intrinsic functions', () => {
+  expect(FieldUtils.containsTaskToken({ x: JsonPath.array(JsonPath.taskToken) })).toEqual(true);
+
+  expect(FieldUtils.containsTaskToken({ x: JsonPath.array('nope') })).toEqual(false);
+
+  // Even if it's a hand-written literal and doesn't use our constructors
+  expect(FieldUtils.containsTaskToken({ x: JsonPath.stringAt('States.Array($$.Task.Token)') })).toEqual(true);
 });

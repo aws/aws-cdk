@@ -1,0 +1,117 @@
+{
+  "name": "@aws-cdk/assertions",
+  "version": "0.0.0",
+  "description": "An assertion library for use with CDK Apps",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "compat": "cdk-compat",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "ubergen": {
+    "exports": {
+      "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+    }
+  },
+  "jsii": {
+    "outdir": "dist",
+    "diagnostics": {
+      "language-compatibility/member-name-conflicts-with-type-name": "error",
+      "language-compatibility/reserved-word": "error"
+    },
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.assertions",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "assertions"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.Assertions",
+        "packageId": "Amazon.CDK.Assertions",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.assertions",
+        "module": "aws_cdk.assertions",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^27.5.2",
+    "jest": "^27.5.1",
+    "constructs": "^10.0.0",
+    "ts-jest": "^27.1.5"
+  },
+  "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0",
+    "fs-extra": "^9.1.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "bundledDependencies": [
+    "fs-extra"
+  ],
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/assertions"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "assert"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "stable",
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "next"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "private": true
+}

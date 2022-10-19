@@ -9,13 +9,22 @@ import { Schedule } from './schedule';
  */
 export interface BasicScheduledActionProps {
   /**
+   * Specifies the time zone for a cron expression. If a time zone is not provided, UTC is used by default.
+   *
+   * Valid values are the canonical names of the IANA time zones, derived from the IANA Time Zone Database (such as Etc/GMT+9 or Pacific/Tahiti).
+   *
+   * For more information, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
+   *
+   * @default - UTC
+   *
+   */
+  readonly timeZone?: string;
+  /**
    * When to perform this action.
    *
    * Supports cron expressions.
    *
    * For more information about cron expressions, see https://en.wikipedia.org/wiki/Cron.
-   *
-   * @example 0 8 * * ?
    */
   readonly schedule: Schedule;
 
@@ -88,6 +97,9 @@ export class ScheduledAction extends Resource {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
     }
 
+    // add a warning on synth when minute is not defined in a cron schedule
+    props.schedule._bind(this);
+
     new CfnScheduledAction(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       startTime: formatISO(props.startTime),
@@ -96,6 +108,7 @@ export class ScheduledAction extends Resource {
       maxSize: props.maxCapacity,
       desiredCapacity: props.desiredCapacity,
       recurrence: props.schedule.expressionString,
+      timeZone: props.timeZone,
     });
   }
 }

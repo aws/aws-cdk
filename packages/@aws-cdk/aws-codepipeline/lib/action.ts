@@ -1,12 +1,10 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource } from '@aws-cdk/core';
+import { IResource, Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Artifact } from './artifact';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -119,13 +117,48 @@ export interface ActionConfig {
 }
 
 /**
- * A Pipeline Action
+ * Additional options to pass to the notification rule.
+ */
+export interface PipelineNotifyOnOptions extends notifications.NotificationRuleOptions {
+  /**
+   * A list of event types associated with this notification rule for CodePipeline Pipeline.
+   * For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
+   */
+  readonly events: PipelineNotificationEvents[];
+}
+
+/**
+ * A Pipeline Action.
+ * If you want to implement this interface,
+ * consider extending the {@link Action} class,
+ * which contains some common logic.
  */
 export interface IAction {
+  /**
+   * The simple properties of the Action,
+   * like its Owner, name, etc.
+   * Note that this accessor will be called before the {@link bind} callback.
+   */
   readonly actionProperties: ActionProperties;
 
+  /**
+   * The callback invoked when this Action is added to a Pipeline.
+   *
+   * @param scope the Construct tree scope the Action can use if it needs to create any resources
+   * @param stage the {@link IStage} this Action is being added to
+   * @param options additional options the Action can use,
+   *   like the artifact Bucket of the pipeline it's being added to
+   */
   bind(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
 
+  /**
+   * Creates an Event that will be triggered whenever the state of this Action changes.
+   *
+   * @param name the name to use for the new Event
+   * @param target the optional target for the Event
+   * @param options additional options that can be used to customize the created Event
+   */
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 }
 
@@ -134,7 +167,7 @@ export interface IAction {
  * It extends {@link events.IRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource {
+export interface IPipeline extends IResource, notifications.INotificationRuleSource {
   /**
    * The name of the Pipeline.
    *
@@ -165,6 +198,81 @@ export interface IPipeline extends IResource {
    * @param options Additional options to pass to the event rule.
    */
   onStateChange(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Defines a CodeStar notification rule triggered when the pipeline
+   * events emitted by you specified, it very similar to `onEvent` API.
+   *
+   * You can also use the methods `notifyOnExecutionStateChange`, `notifyOnAnyStageStateChange`,
+   * `notifyOnAnyActionStateChange` and `notifyOnAnyManualApprovalStateChange`
+   * to define rules for these specific event emitted.
+   *
+   * @param id The id of the CodeStar notification rule
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Customization options for CodeStar notification rule
+   * @returns CodeStar notification rule associated with this build project.
+   */
+  notifyOn(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options: PipelineNotifyOnOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Pipeline execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnExecutionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Stage execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnAnyStageStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Action execution" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnAnyActionStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Define an notification rule triggered by the set of the "Manual approval" events emitted from this pipeline.
+   * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+   *
+   * @param id Identifier for this notification handler.
+   * @param target The target to register for the CodeStar Notifications destination.
+   * @param options Additional options to pass to the notification rule.
+   */
+  notifyOnAnyManualApprovalStateChange(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
 }
 
 /**
@@ -233,4 +341,222 @@ export interface CommonAwsActionProps extends CommonActionProps {
    * @default a new Role will be generated
    */
   readonly role?: iam.IRole;
+}
+
+/**
+ * Low-level class for generic CodePipeline Actions implementing the {@link IAction} interface.
+ * Contains some common logic that can be re-used by all {@link IAction} implementations.
+ * If you're writing your own Action class,
+ * feel free to extend this class.
+ */
+export abstract class Action implements IAction {
+  /**
+   * This is a renamed version of the {@link IAction.actionProperties} property.
+   */
+  protected abstract readonly providedActionProperties: ActionProperties;
+
+  private __actionProperties?: ActionProperties;
+  private __pipeline?: IPipeline;
+  private __stage?: IStage;
+  private __scope?: Construct;
+  private readonly _namespaceToken: string;
+  private _customerProvidedNamespace?: string;
+  private _actualNamespace?: string;
+
+  private _variableReferenced = false;
+
+  protected constructor() {
+    this._namespaceToken = Lazy.string({
+      produce: () => {
+        // make sure the action was bound (= added to a pipeline)
+        if (this._actualNamespace === undefined) {
+          throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
+            'as that action was never added to a pipeline');
+        } else {
+          return this._customerProvidedNamespace !== undefined
+            // if a customer passed a namespace explicitly, always use that
+            ? this._customerProvidedNamespace
+            // otherwise, only return a namespace if any variable was referenced
+            : (this._variableReferenced ? this._actualNamespace : undefined);
+        }
+      },
+    });
+  }
+
+  public get actionProperties(): ActionProperties {
+    if (this.__actionProperties === undefined) {
+      const actionProperties = this.providedActionProperties;
+      this._customerProvidedNamespace = actionProperties.variablesNamespace;
+      this.__actionProperties = {
+        ...actionProperties,
+        variablesNamespace: this._customerProvidedNamespace === undefined
+          ? this._namespaceToken
+          : this._customerProvidedNamespace,
+      };
+    }
+    return this.__actionProperties;
+  }
+
+  public bind(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig {
+    this.__pipeline = stage.pipeline;
+    this.__stage = stage;
+    this.__scope = scope;
+
+    this._actualNamespace = this._customerProvidedNamespace === undefined
+      // default a namespace name, based on the stage and action names
+      ? `${stage.stageName}_${this.actionProperties.actionName}_NS`
+      : this._customerProvidedNamespace;
+
+    return this.bound(scope, stage, options);
+  }
+
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this._scope, name, options);
+    rule.addTarget(target);
+    rule.addEventPattern({
+      detailType: ['CodePipeline Action Execution State Change'],
+      source: ['aws.codepipeline'],
+      resources: [this._pipeline.pipelineArn],
+      detail: {
+        stage: [this._stage.stageName],
+        action: [this.actionProperties.actionName],
+      },
+    });
+    return rule;
+  }
+
+  protected variableExpression(variableName: string): string {
+    this._variableReferenced = true;
+    return `#{${this._namespaceToken}.${variableName}}`;
+  }
+
+  /**
+   * This is a renamed version of the {@link IAction.bind} method.
+   */
+  protected abstract bound(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
+
+  private get _pipeline(): IPipeline {
+    if (this.__pipeline) {
+      return this.__pipeline;
+    } else {
+      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+    }
+  }
+
+  private get _stage(): IStage {
+    if (this.__stage) {
+      return this.__stage;
+    } else {
+      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+    }
+  }
+
+  /**
+   * Retrieves the Construct scope of this Action.
+   * Only available after the Action has been added to a Stage,
+   * and that Stage to a Pipeline.
+   */
+  private get _scope(): Construct {
+    if (this.__scope) {
+      return this.__scope;
+    } else {
+      throw new Error('Action must be added to a stage that is part of a pipeline first');
+    }
+  }
+}
+
+/**
+ * The list of event types for AWS Codepipeline Pipeline
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
+ */
+export enum PipelineNotificationEvents {
+  /**
+   * Trigger notification when pipeline execution failed
+   */
+  PIPELINE_EXECUTION_FAILED = 'codepipeline-pipeline-pipeline-execution-failed',
+
+  /**
+   * Trigger notification when pipeline execution canceled
+   */
+  PIPELINE_EXECUTION_CANCELED = 'codepipeline-pipeline-pipeline-execution-canceled',
+
+  /**
+   * Trigger notification when pipeline execution started
+   */
+  PIPELINE_EXECUTION_STARTED = 'codepipeline-pipeline-pipeline-execution-started',
+
+  /**
+   * Trigger notification when pipeline execution resumed
+   */
+  PIPELINE_EXECUTION_RESUMED = 'codepipeline-pipeline-pipeline-execution-resumed',
+
+  /**
+   * Trigger notification when pipeline execution succeeded
+   */
+  PIPELINE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-pipeline-execution-succeeded',
+
+  /**
+   * Trigger notification when pipeline execution superseded
+   */
+  PIPELINE_EXECUTION_SUPERSEDED = 'codepipeline-pipeline-pipeline-execution-superseded',
+
+  /**
+   * Trigger notification when pipeline stage execution started
+   */
+  STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
+
+  /**
+  * Trigger notification when pipeline stage execution succeeded
+  */
+  STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
+
+  /**
+  * Trigger notification when pipeline stage execution resumed
+  */
+  STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
+
+  /**
+  * Trigger notification when pipeline stage execution canceled
+  */
+  STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
+
+  /**
+  * Trigger notification when pipeline stage execution failed
+  */
+  STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
+
+  /**
+   * Trigger notification when pipeline action execution succeeded
+   */
+  ACTION_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-action-execution-succeeded',
+
+  /**
+   * Trigger notification when pipeline action execution failed
+   */
+  ACTION_EXECUTION_FAILED = 'codepipeline-pipeline-action-execution-failed',
+
+  /**
+   * Trigger notification when pipeline action execution canceled
+   */
+  ACTION_EXECUTION_CANCELED = 'codepipeline-pipeline-action-execution-canceled',
+
+  /**
+   * Trigger notification when pipeline action execution started
+   */
+  ACTION_EXECUTION_STARTED = 'codepipeline-pipeline-action-execution-started',
+
+  /**
+   * Trigger notification when pipeline manual approval failed
+   */
+  MANUAL_APPROVAL_FAILED = 'codepipeline-pipeline-manual-approval-failed',
+
+  /**
+   * Trigger notification when pipeline manual approval needed
+   */
+  MANUAL_APPROVAL_NEEDED = 'codepipeline-pipeline-manual-approval-needed',
+
+  /**
+   * Trigger notification when pipeline manual approval succeeded
+   */
+  MANUAL_APPROVAL_SUCCEEDED = 'codepipeline-pipeline-manual-approval-succeeded',
 }

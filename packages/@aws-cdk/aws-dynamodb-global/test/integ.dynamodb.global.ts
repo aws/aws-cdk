@@ -5,6 +5,10 @@ import { GlobalTable } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'Default');
+
+const deprecated = process.env.JSII_DEPRECATED;
+process.env.JSII_DEPRECATED = 'quiet';
+
 new GlobalTable(stack, 'globdynamodbinteg', {
   partitionKey: { name: 'hashKey', type: AttributeType.STRING },
   tableName: 'integrationtest',
@@ -12,3 +16,9 @@ new GlobalTable(stack, 'globdynamodbinteg', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 app.synth();
+
+if (deprecated) {
+  process.env.JSII_DEPRECATED = deprecated;
+} else {
+  delete process.env.JSII_DEPRECATED;
+}

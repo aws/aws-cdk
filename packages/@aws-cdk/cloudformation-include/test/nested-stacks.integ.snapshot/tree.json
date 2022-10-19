@@ -1,0 +1,219 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "ParentStack": {
+        "id": "ParentStack",
+        "path": "ParentStack",
+        "children": {
+          "ParentStack": {
+            "id": "ParentStack",
+            "path": "ParentStack/ParentStack",
+            "children": {
+              "$Mappings": {
+                "id": "$Mappings",
+                "path": "ParentStack/ParentStack/$Mappings",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "$Conditions": {
+                "id": "$Conditions",
+                "path": "ParentStack/ParentStack/$Conditions",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "$Rules": {
+                "id": "$Rules",
+                "path": "ParentStack/ParentStack/$Rules",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "ChildStack": {
+                "id": "ChildStack",
+                "path": "ParentStack/ParentStack/ChildStack",
+                "children": {
+                  "ChildStack": {
+                    "id": "ChildStack",
+                    "path": "ParentStack/ParentStack/ChildStack/ChildStack",
+                    "children": {
+                      "$Mappings": {
+                        "id": "$Mappings",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/$Mappings",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
+                        }
+                      },
+                      "MyBucketParameter": {
+                        "id": "MyBucketParameter",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/MyBucketParameter",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
+                        }
+                      },
+                      "$Conditions": {
+                        "id": "$Conditions",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/$Conditions",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
+                        }
+                      },
+                      "$Rules": {
+                        "id": "$Rules",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/$Rules",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
+                        }
+                      },
+                      "BucketImport": {
+                        "id": "BucketImport",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/BucketImport",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                          "aws:cdk:cloudformation:props": {
+                            "bucketName": {
+                              "Fn::Join": [
+                                "-",
+                                [
+                                  "bucket-name-prefix",
+                                  {
+                                    "Ref": "MyBucketParameter"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "$Hooks": {
+                        "id": "$Hooks",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/$Hooks",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
+                        }
+                      },
+                      "$Ouputs": {
+                        "id": "$Ouputs",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/$Ouputs",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.85"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/cloudformation-include.CfnInclude",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "ChildStack.NestedStack": {
+                "id": "ChildStack.NestedStack",
+                "path": "ParentStack/ParentStack/ChildStack.NestedStack",
+                "children": {
+                  "ChildStack.NestedStackResource": {
+                    "id": "ChildStack.NestedStackResource",
+                    "path": "ParentStack/ParentStack/ChildStack.NestedStack/ChildStack.NestedStackResource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                      "aws:cdk:cloudformation:props": {
+                        "templateUrl": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "https://s3.",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ".",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/",
+                              {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "/5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50.json"
+                            ]
+                          ]
+                        },
+                        "parameters": {
+                          "MyBucketParameter": "some-magic-bucket-name"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "$Hooks": {
+                "id": "$Hooks",
+                "path": "ParentStack/ParentStack/$Hooks",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "$Ouputs": {
+                "id": "$Ouputs",
+                "path": "ParentStack/ParentStack/$Ouputs",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/cloudformation-include.CfnInclude",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

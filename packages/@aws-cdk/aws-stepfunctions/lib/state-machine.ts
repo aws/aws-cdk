@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, ArnFormat, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
@@ -46,7 +46,7 @@ export enum LogLevel {
   /**
    * Log all errors
    */
-  ERROR= 'ERROR',
+  ERROR = 'ERROR',
   /**
    * Log fatal errors
    */
@@ -65,7 +65,7 @@ export interface LogOptions {
   /**
    * Determines whether execution data is included in your log.
    *
-   * @default true
+   * @default false
    */
   readonly includeExecutionData?: boolean;
 
@@ -142,7 +142,22 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       public readonly stateMachineArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: stateMachineArn,
+    });
+  }
+
+  /**
+   * Import a state machine via resource name
+   */
+  public static fromStateMachineName(scope: Construct, id: string, stateMachineName: string): IStateMachine {
+    const stateMachineArn = Stack.of(scope).formatArn({
+      service: 'states',
+      resource: 'stateMachine',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: stateMachineName,
+    });
+    return this.fromStateMachineArn(scope, id, stateMachineArn);
   }
 
   public abstract readonly stateMachineArn: string;
@@ -160,6 +175,18 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return iam.Grant.addToPrincipal({
       grantee: identity,
       actions: ['states:StartExecution'],
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to start a synchronous execution of
+   * this state machine.
+   */
+  public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['states:StartSyncExecution'],
       resourceArns: [this.stateMachineArn],
     });
   }
@@ -244,7 +271,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return new cloudwatch.Metric({
       namespace: 'AWS/States',
       metricName,
-      dimensions: { StateMachineArn: this.stateMachineArn },
+      dimensionsMap: { StateMachineArn: this.stateMachineArn },
       statistic: 'sum',
       ...props,
     }).attachTo(this);
@@ -256,10 +283,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsFailedAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsFailedSum, props);
   }
 
   /**
@@ -278,10 +302,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsAbortedAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsAbortedSum, props);
   }
 
   /**
@@ -290,10 +311,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsSucceededAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsSucceededSum, props);
   }
 
   /**
@@ -302,10 +320,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsTimedOutAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsTimedOutSum, props);
   }
 
   /**
@@ -333,8 +348,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return Stack.of(this).formatArn({
       resource: 'execution',
       service: 'states',
-      resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
-      sep: ':',
+      resourceName: Arn.split(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
@@ -379,6 +394,10 @@ export class StateMachine extends StateMachineBase {
       physicalName: props.stateMachineName,
     });
 
+    if (props.stateMachineName !== undefined) {
+      this.validateStateMachineName(props.stateMachineName);
+    }
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
@@ -408,7 +427,7 @@ export class StateMachine extends StateMachineBase {
       service: 'states',
       resource: 'stateMachine',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
@@ -424,6 +443,18 @@ export class StateMachine extends StateMachineBase {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  private validateStateMachineName(stateMachineName: string) {
+    if (!Token.isUnresolved(stateMachineName)) {
+      if (stateMachineName.length < 1 || stateMachineName.length > 80) {
+        throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
+      }
+
+      if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
+        throw new Error(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`);
+      }
+    }
   }
 
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
@@ -488,6 +519,14 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    * @param identity The principal
    */
   grantStartExecution(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to start a synchronous execution of
+   * this state machine.
+   *
+   * @param identity The principal
+   */
+  grantStartSyncExecution(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity read permissions for this state machine

@@ -2,13 +2,10 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { BitBucketSourceAction } from '..';
+import { Construct } from 'constructs';
+import { CodeStarConnectionsSourceAction } from '..';
 import { Action } from '../action';
 import { CodeCommitSourceAction } from '../codecommit/source-action';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The type of the CodeBuild action that determines its CodePipeline Category -
@@ -102,6 +99,16 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default false
    */
   readonly executeBatchBuild?: boolean;
+
+  /**
+   * Combine the build artifacts for a batch builds.
+   *
+   * Enabling this will combine the build artifacts into the same location for batch builds.
+   * If `executeBatchBuild` is not set to `true`, this property is ignored.
+   *
+   * @default false
+   */
+  readonly combineBatchBuildArtifacts?: boolean;
 }
 
 /**
@@ -180,10 +187,10 @@ export class CodeBuildAction extends Action {
     }
 
     for (const inputArtifact of this.actionProperties.inputs || []) {
-      // if any of the inputs come from the BitBucketSourceAction
+      // if any of the inputs come from the CodeStarConnectionsSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role to use the connection
-      const connectionArn = inputArtifact.getMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY);
+      const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codestar-connections:UseConnection'],
@@ -216,6 +223,10 @@ export class CodeBuildAction extends Action {
     if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';
       this.props.project.enableBatchBuilds();
+
+      if (this.props.combineBatchBuildArtifacts) {
+        configuration.CombineArtifacts = 'true';
+      }
     }
     return {
       configuration,

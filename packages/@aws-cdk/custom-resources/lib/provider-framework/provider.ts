@@ -1,6 +1,7 @@
 import * as path from 'path';
-import * as cfn from '@aws-cdk/aws-cloudformation';
+import { CustomResourceProviderConfig, ICustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import { Duration } from '@aws-cdk/core';
@@ -8,10 +9,6 @@ import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
 import { WaiterStateMachine } from './waiter-state-machine';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -93,12 +90,40 @@ export interface ProviderProps {
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
+  /**
+   * Security groups to attach to the provider functions.
+   *
+   * Only used if 'vpc' is supplied
+   *
+   * @default - If `vpc` is not supplied, no security groups are attached. Otherwise, a dedicated security
+   * group is created for each function.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * AWS Lambda execution role.
+   *
+   * The role that will be assumed by the AWS Lambda.
+   * Must be assumable by the 'lambda.amazonaws.com' service principal.
+   *
+   * @default - A default role will be created.
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * Provider Lambda name.
+   *
+   * The provider lambda function name.
+   *
+   * @default -  CloudFormation default name from unique physical ID
+   */
+  readonly providerFunctionName?: string;
 }
 
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends CoreConstruct implements cfn.ICustomResourceProvider {
+export class Provider extends Construct implements ICustomResourceProvider {
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -122,6 +147,8 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
   private readonly logRetention?: logs.RetentionDays;
   private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
+  private readonly securityGroups?: ec2.ISecurityGroup[];
+  private readonly role?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -137,8 +164,11 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
     this.logRetention = props.logRetention;
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
+    this.securityGroups = props.securityGroups;
 
-    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
+    this.role = props.role;
+
+    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
 
     if (this.isCompleteHandler) {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
@@ -152,7 +182,6 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
         interval: retry.interval,
         maxAttempts: retry.maxAttempts,
       });
-
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
       waiterStateMachine.grantStartExecution(onEventFunction);
@@ -166,22 +195,27 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
    * Called by `CustomResource` which uses this provider.
    * @deprecated use `provider.serviceToken` instead
    */
-  public bind(_: CoreConstruct): cfn.CustomResourceProviderConfig {
+  public bind(_scope: Construct): CustomResourceProviderConfig {
     return {
       serviceToken: this.entrypoint.functionArn,
     };
   }
 
-  private createFunction(entrypoint: string) {
+  private createFunction(entrypoint: string, name?: string) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
-      code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
+      code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH, {
+        exclude: ['*.ts'],
+      }),
       description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
       logRetention: this.logRetention,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
+      securityGroups: this.securityGroups,
+      role: this.role,
+      functionName: name,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);

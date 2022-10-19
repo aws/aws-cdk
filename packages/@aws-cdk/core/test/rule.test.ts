@@ -1,16 +1,15 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { CfnRule, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'Rule can be used to create rules'(test: Test) {
+describe('rule', () => {
+  test('Rule can be used to create rules', () => {
     const stack = new Stack();
 
     const rule = new CfnRule(stack, 'MyRule');
     rule.addAssertion(Fn.conditionEquals('lhs', 'rhs'), 'lhs equals rhs');
     rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains(['hello', 'world'], 'world'))), 'some assertion');
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Rules: {
         MyRule: {
           Assertions: [
@@ -26,23 +25,19 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'a template can contain multiple Rules'(test: Test) {
+  test('a template can contain multiple Rules', () => {
     const stack = new Stack();
 
     new CfnRule(stack, 'Rule1');
     new CfnRule(stack, 'Rule2');
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Rules: {
         Rule1: {},
         Rule2: {},
       },
     });
-
-    test.done();
-  },
+  });
 });

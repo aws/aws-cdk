@@ -1,8 +1,7 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { CfnParameter, Stack } from '../lib';
 
-nodeunitShim({
-  'valueAsString supports both string and number types'(test: Test) {
+describe('cfn parameter', () => {
+  test('valueAsString supports both string and number types', () => {
     // GIVEN
     const stack = new Stack();
     const numberParam = new CfnParameter(stack, 'numberParam', { type: 'Number', default: 10 });
@@ -13,20 +12,16 @@ nodeunitShim({
     const strVal = stringParam.valueAsString;
 
     // THEN
-    test.deepEqual(stack.resolve(numVal), { Ref: 'numberParam' });
-    test.deepEqual(stack.resolve(strVal), { Ref: 'stringParam' });
+    expect(stack.resolve(numVal)).toEqual({ Ref: 'numberParam' });
+    expect(stack.resolve(strVal)).toEqual({ Ref: 'stringParam' });
+  });
 
-    test.done();
-  },
-
-  'valueAsString fails for unsupported types'(test: Test) {
+  test('valueAsString fails for unsupported types', () => {
     // GIVEN
     const stack = new Stack();
     const listParam = new CfnParameter(stack, 'listParam', { type: 'List', default: 10 });
 
     // WHEN - THEN
-    test.throws(() => listParam.valueAsList, /Parameter type \(List\)/);
-
-    test.done();
-  },
+    expect(() => listParam.valueAsList).toThrow(/Parameter type \(List\)/);
+  });
 });

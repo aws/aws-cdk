@@ -1,20 +1,23 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Code, Function as lambdaFn, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
+import { Node } from 'constructs';
 import { WaiterStateMachine } from '../../lib/provider-framework/waiter-state-machine';
 
 describe('state machine', () => {
   test('contains the needed resources', () => {
     // GIVEN
     const stack = new Stack();
+    Node.of(stack).setContext('@aws-cdk/core:target-partitions', ['aws', 'aws-cn']);
+
     const isCompleteHandler = new lambdaFn(stack, 'isComplete', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
     const timeoutHandler = new lambdaFn(stack, 'isTimeout', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
     const interval = Duration.hours(2);
@@ -32,7 +35,7 @@ describe('state machine', () => {
 
     // THEN
     const roleId = 'statemachineRole52044F93';
-    expect(stack).toHaveResourceLike('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       DefinitionString: {
         'Fn::Join': [
           '',
@@ -51,7 +54,7 @@ describe('state machine', () => {
         'Fn::GetAtt': [roleId, 'Arn'],
       },
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -74,18 +77,18 @@ describe('state machine', () => {
         Version: '2012-10-17',
       },
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: stack.resolve(isCompleteHandler.functionArn),
+            Resource: stack.resolve(isCompleteHandler.resourceArnsForGrantInvoke),
           },
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: stack.resolve(timeoutHandler.functionArn),
+            Resource: stack.resolve(timeoutHandler.resourceArnsForGrantInvoke),
           },
         ],
         Version: '2012-10-17',

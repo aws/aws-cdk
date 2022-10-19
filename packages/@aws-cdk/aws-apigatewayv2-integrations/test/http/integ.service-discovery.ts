@@ -17,9 +17,8 @@ const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
 const service = namespace.createService('Service');
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpServiceDiscoveryIntegration({
+  defaultIntegration: new HttpServiceDiscoveryIntegration('DefaultIntegration', service, {
     vpcLink,
-    service,
   }),
 });
 

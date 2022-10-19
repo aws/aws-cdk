@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { LoadManifestOptions } from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
@@ -46,10 +47,10 @@ export class CloudAssembly {
    * Reads a cloud assembly from the specified directory.
    * @param directory The root directory of the assembly.
    */
-  constructor(directory: string) {
+  constructor(directory: string, loadOptions?: LoadManifestOptions) {
     this.directory = directory;
 
-    this.manifest = cxschema.Manifest.load(path.join(directory, MANIFEST_FILE));
+    this.manifest = cxschema.Manifest.loadAssemblyManifest(path.join(directory, MANIFEST_FILE), loadOptions);
     this.version = this.manifest.version;
     this.artifacts = this.renderArtifacts();
     this.runtime = this.manifest.runtime || { libraries: { } };
@@ -108,7 +109,8 @@ export class CloudAssembly {
    * @returns a `CloudFormationStackArtifact` object.
    */
   public getStackArtifact(artifactId: string): CloudFormationStackArtifact {
-    const artifact = this.tryGetArtifact(artifactId);
+    const artifact = this.tryGetArtifactRecursively(artifactId);
+
     if (!artifact) {
       throw new Error(`Unable to find artifact with id "${artifactId}"`);
     }
@@ -118,6 +120,27 @@ export class CloudAssembly {
     }
 
     return artifact;
+  }
+
+  private tryGetArtifactRecursively(artifactId: string): CloudArtifact | undefined {
+    return this.stacksRecursively.find(a => a.id === artifactId);
+  }
+
+  /**
+   * Returns all the stacks, including the ones in nested assemblies
+   */
+  public get stacksRecursively(): CloudFormationStackArtifact[] {
+    function search(stackArtifacts: CloudFormationStackArtifact[], assemblies: CloudAssembly[]): CloudFormationStackArtifact[] {
+      if (assemblies.length === 0) {
+        return stackArtifacts;
+      }
+
+      const [head, ...tail] = assemblies;
+      const nestedAssemblies = head.nestedAssemblies.map(asm => asm.nestedAssembly);
+      return search(stackArtifacts.concat(head.stacks), tail.concat(nestedAssemblies));
+    };
+
+    return search([], [this]);
   }
 
   /**
@@ -303,7 +326,7 @@ export class CloudAssemblyBuilder {
     manifest = filterUndefined(manifest);
 
     const manifestFilePath = path.join(this.outdir, MANIFEST_FILE);
-    cxschema.Manifest.save(manifest, manifestFilePath);
+    cxschema.Manifest.saveAssemblyManifest(manifest, manifestFilePath);
 
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".

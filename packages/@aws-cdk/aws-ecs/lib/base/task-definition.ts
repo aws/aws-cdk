@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Names, PhysicalName, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
@@ -8,6 +8,8 @@ import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRoute
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
+import { RuntimePlatform } from '../runtime-platform';
+import { ImportedTaskDefinition } from './_imported-task-definition';
 
 /**
  * The interface for all task definitions.
@@ -38,6 +40,22 @@ export interface ITaskDefinition extends IResource {
    * Return true if the task definition can be run on a Fargate cluster
    */
   readonly isFargateCompatible: boolean;
+
+  /**
+   * Return true if the task definition can be run on a ECS Anywhere cluster
+   */
+  readonly isExternalCompatible: boolean;
+
+
+  /**
+   * The networking mode to use for the containers in the task.
+   */
+  readonly networkMode: NetworkMode;
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   */
+  readonly taskRole: iam.IRole;
 }
 
 /**
@@ -53,7 +71,7 @@ export interface CommonTaskDefinitionProps {
   readonly family?: string;
 
   /**
-   * The name of the IAM task execution role that grants the ECS agent to call AWS APIs on your behalf.
+   * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs on your behalf.
    *
    * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
    *
@@ -93,7 +111,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * On Fargate, the only supported networking mode is AwsVpc.
    *
-   * @default - NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   * @default - NetworkMode.Bridge for EC2 & External tasks, AwsVpc for Fargate tasks.
    */
   readonly networkMode?: NetworkMode;
 
@@ -131,6 +149,10 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * 4096 (4 vCPU) - Available memory values: Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB)
    *
+   * 8192 (8 vCPU) - Available memory values: Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB)
+   *
+   * 16384 (16 vCPU) - Available memory values: Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB)
+   *
    * @default - CPU units are not specified.
    */
   readonly cpu?: string;
@@ -151,6 +173,10 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * Between 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB) - Available cpu values: 2048 (2 vCPU)
    *
    * Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB) - Available cpu values: 4096 (4 vCPU)
+   *
+   * Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB) - Available cpu values: 8192 (8 vCPU)
+   *
+   * Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB) - Available cpu values: 16384 (16 vCPU)
    *
    * @default - Memory used by task is not specified.
    */
@@ -173,12 +199,77 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - PidMode used by the task is not specified
    */
   readonly pidMode?: PidMode;
+
+  /**
+   * The inference accelerators to use for the containers in the task.
+   *
+   * Not supported in Fargate.
+   *
+   * @default - No inference accelerators.
+   */
+  readonly inferenceAccelerators?: InferenceAccelerator[];
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   *
+   * Only supported in Fargate platform version 1.4.0 or later.
+   *
+   * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
+   */
+  readonly ephemeralStorageGiB?: number;
+
+  /**
+   * The operating system that your task definitions are running on.
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
+}
+
+/**
+ * The common task definition attributes used across all types of task definitions.
+ */
+export interface CommonTaskDefinitionAttributes {
+  /**
+   * The arn of the task definition
+   */
+  readonly taskDefinitionArn: string;
+
+  /**
+   * The networking mode to use for the containers in the task.
+   *
+   * @default Network mode cannot be provided to the imported task.
+   */
+  readonly networkMode?: NetworkMode;
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   *
+   * @default Permissions cannot be granted to the imported task.
+   */
+  readonly taskRole?: iam.IRole;
+}
+
+/**
+ *  A reference to an existing task definition
+ */
+export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
+  /**
+   * What launch types this task definition should be compatible with.
+   *
+   * @default Compatibility.EC2_AND_FARGATE
+   */
+  readonly compatibility?: Compatibility;
 }
 
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 
   public abstract readonly compatibility: Compatibility;
+  public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
+  public abstract readonly taskRole: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
 
   /**
@@ -194,6 +285,13 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public get isFargateCompatible(): boolean {
     return isFargateCompatible(this.compatibility);
   }
+
+  /**
+   * Return true if the task definition can be run on a ECS anywhere cluster
+   */
+  public get isExternalCompatible(): boolean {
+    return isExternalCompatible(this.compatibility);
+  }
 }
 
 /**
@@ -207,13 +305,19 @@ export class TaskDefinition extends TaskDefinitionBase {
    * The task will have a compatibility of EC2+Fargate.
    */
   public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
-    class Import extends TaskDefinitionBase {
-      public readonly taskDefinitionArn = taskDefinitionArn;
-      public readonly compatibility = Compatibility.EC2_AND_FARGATE;
-      public readonly executionRole?: iam.IRole = undefined;
-    }
+    return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: taskDefinitionArn });
+  }
 
-    return new Import(scope, id);
+  /**
+   * Create a task definition from a task definition reference
+   */
+  public static fromTaskDefinitionAttributes(scope: Construct, id: string, attrs: TaskDefinitionAttributes): ITaskDefinition {
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: attrs.compatibility,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**
@@ -248,9 +352,16 @@ export class TaskDefinition extends TaskDefinitionBase {
   public defaultContainer?: ContainerDefinition;
 
   /**
-   * The task launch type compatiblity requirement.
+   * The task launch type compatibility requirement.
    */
   public readonly compatibility: Compatibility;
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   *
+   * Only supported in Fargate platform version 1.4.0 or later.
+   */
+  public readonly ephemeralStorageGiB?: number;
 
   /**
    * The container definitions.
@@ -267,9 +378,16 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
+  /**
+   * Inference accelerators for task instances
+   */
+  private readonly _inferenceAccelerators: InferenceAccelerator[] = [];
+
   private _executionRole?: iam.IRole;
 
-  private _referencesSecretJsonField?: boolean;
+  private _passRoleStatement?: iam.PolicyStatement;
+
+  private runtimePlatform?: RuntimePlatform;
 
   /**
    * Constructs a new instance of the TaskDefinition class.
@@ -299,11 +417,38 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
+    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
+      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+    }
+
+    if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
+      throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
+    }
+
+    if (!this.isFargateCompatible && props.runtimePlatform) {
+      throw new Error('Cannot specify runtimePlatform in non-Fargate compatible tasks');
+    }
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
+
+    if (props.inferenceAccelerators) {
+      props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
+    }
+
+    this.ephemeralStorageGiB = props.ephemeralStorageGiB;
+
+    // validate the cpu and memory size for the Windows operation system family.
+    if (props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily.includes('WINDOWS')) {
+      // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
+      // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
+      this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
+    }
+
+    this.runtimePlatform = props.runtimePlatform;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -314,6 +459,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       requiresCompatibilities: [
         ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
         ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
+        ...(isExternalCompatible(props.compatibility) ? ['EXTERNAL'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.any({
@@ -325,6 +471,17 @@ export class TaskDefinition extends TaskDefinitionBase {
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: props.pidMode,
+      inferenceAccelerators: Lazy.any({
+        produce: () =>
+          !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
+      }, { omitEmptyArray: true }),
+      ephemeralStorage: this.ephemeralStorageGiB ? {
+        sizeInGiB: this.ephemeralStorageGiB,
+      } : undefined,
+      runtimePlatform: this.isFargateCompatible && this.runtimePlatform ? {
+        cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
+        operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
+      } : undefined,
     });
 
     if (props.placementConstraints) {
@@ -332,10 +489,18 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.taskDefinitionArn = taskDef.ref;
+    this.node.addValidation({ validate: () => this.validateTaskDefinition() });
   }
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  /**
+   * Public getter method to access list of inference accelerators attached to the instance.
+   */
+  public get inferenceAccelerators(): InferenceAccelerator[] {
+    return this._inferenceAccelerators;
   }
 
   private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
@@ -353,13 +518,24 @@ export class TaskDefinition extends TaskDefinitionBase {
           scope: spec.dockerVolumeConfiguration.scope,
         },
         efsVolumeConfiguration: spec.efsVolumeConfiguration && {
-          fileSystemId: spec.efsVolumeConfiguration.fileSystemId,
+          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
           authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
           rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
           transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
           transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
 
         },
+      };
+    }
+  }
+
+  private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
+    return this._inferenceAccelerators.map(renderInferenceAccelerator);
+
+    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) : CfnTaskDefinition.InferenceAcceleratorProperty {
+      return {
+        deviceName: inferenceAccelerator.deviceName,
+        deviceType: inferenceAccelerator.deviceType,
       };
     }
   }
@@ -406,14 +582,14 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Adds a policy statement to the task IAM role.
    */
   public addToTaskRolePolicy(statement: iam.PolicyStatement) {
-    this.taskRole.addToPolicy(statement);
+    this.taskRole.addToPrincipalPolicy(statement);
   }
 
   /**
    * Adds a policy statement to the task execution IAM role.
    */
   public addToExecutionRolePolicy(statement: iam.PolicyStatement) {
-    this.obtainExecutionRole().addToPolicy(statement);
+    this.obtainExecutionRole().addToPrincipalPolicy(statement);
   }
 
   /**
@@ -444,9 +620,6 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-    if (container.referencesSecretJsonField) {
-      this._referencesSecretJsonField = true;
-    }
   }
 
   /**
@@ -467,7 +640,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
-   * Adds the specified extention to the task definition.
+   * Adds the specified extension to the task definition.
    *
    * Extension can be used to apply a packaged modification to
    * a task definition.
@@ -477,13 +650,45 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
+   * Adds an inference accelerator to the task definition.
+   */
+  public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
+    if (isFargateCompatible(this.compatibility)) {
+      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+    }
+    this._inferenceAccelerators.push(inferenceAccelerator);
+  }
+
+  /**
+   * Grants permissions to run this task definition
+   *
+   * This will grant the following permissions:
+   *
+   *   - ecs:RunTask
+   *   - iam:PassRole
+   *
+   * @param grantee Principal to grant consume rights to
+   */
+  public grantRun(grantee: iam.IGrantable) {
+    grantee.grantPrincipal.addToPrincipalPolicy(this.passRoleStatement);
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecs:RunTask'],
+      resourceArns: [this.taskDefinitionArn],
+    });
+  }
+
+  /**
    * Creates the task execution IAM role if it doesn't already exist.
    */
   public obtainExecutionRole(): iam.IRole {
     if (!this._executionRole) {
       this._executionRole = new iam.Role(this, 'ExecutionRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        // needed for cross-account access with TagParameterContainerImage
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
       });
+      this.passRoleStatement.addResources(this._executionRole.roleArn);
     }
     return this._executionRole;
   }
@@ -493,14 +698,19 @@ export class TaskDefinition extends TaskDefinitionBase {
    * specific JSON field of a secret stored in Secrets Manager.
    */
   public get referencesSecretJsonField(): boolean | undefined {
-    return this._referencesSecretJsonField;
+    for (const container of this.containers) {
+      if (container.referencesSecretJsonField) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
    * Validates the task definition.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  private validateTaskDefinition(): string[] {
+    const ret = new Array<string>();
 
     if (isEc2Compatible(this.compatibility)) {
       // EC2 mode validations
@@ -518,8 +728,23 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Returns the container that match the provided containerName.
    */
-  private findContainer(containerName: string): ContainerDefinition | undefined {
+  public findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
+  }
+
+  private get passRoleStatement() {
+    if (!this._passRoleStatement) {
+      this._passRoleStatement = new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['iam:PassRole'],
+        resources: this.executionRole ? [this.taskRole.roleArn, this.executionRole.roleArn] : [this.taskRole.roleArn],
+        conditions: {
+          StringLike: { 'iam:PassedToService': 'ecs-tasks.amazonaws.com' },
+        },
+      });
+    }
+
+    return this._passRoleStatement;
   }
 
   private renderNetworkMode(networkMode: NetworkMode): string | undefined {
@@ -547,6 +772,24 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     return this.containers.map(x => x.renderContainerDefinition());
   }
+
+  private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
+    if (Number(cpu) === 1024) {
+      if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory)% 1024 !== 0)) {
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`);
+      }
+    } else if (Number(cpu) === 2048) {
+      if (Number(memory) < 4096 || Number(memory) > 16384 || (Number(memory) % 1024 !== 0)) {
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 4096 and max of 16384, in 1024 increments. Provided memoryMiB ${Number(memory)}.`);
+      }
+    } else if (Number(cpu) === 4096) {
+      if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
+        throw new Error(`If provided cpu is ${ cpu }, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${ Number(memory) }.`);
+      }
+    } else {
+      throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
+    }
+  };
 }
 
 /**
@@ -626,6 +869,24 @@ export enum PidMode {
    * If task is specified, all containers within the specified task share the same process namespace.
    */
   TASK = 'task',
+}
+
+/**
+ * Elastic Inference Accelerator.
+ * For more information, see [Elastic Inference Basics](https://docs.aws.amazon.com/elastic-inference/latest/developerguide/basics.html)
+ */
+export interface InferenceAccelerator {
+  /**
+   * The Elastic Inference accelerator device name.
+   * @default - empty
+   */
+  readonly deviceName?: string;
+
+  /**
+   * The Elastic Inference accelerator type to use. The allowed values are: eia2.medium, eia2.large and eia2.xlarge.
+   * @default - empty
+   */
+  readonly deviceType?: string;
 }
 
 /**
@@ -866,7 +1127,12 @@ export enum Compatibility {
   /**
    * The task can specify either the EC2 or Fargate launch types.
    */
-  EC2_AND_FARGATE
+  EC2_AND_FARGATE,
+
+  /**
+   * The task should specify the External launch type.
+   */
+  EXTERNAL
 }
 
 /**
@@ -890,13 +1156,20 @@ export interface ITaskDefinitionExtension {
 /**
  * Return true if the given task definition can be run on an EC2 cluster
  */
-function isEc2Compatible(compatibility: Compatibility): boolean {
+export function isEc2Compatible(compatibility: Compatibility): boolean {
   return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE].includes(compatibility);
 }
 
 /**
  * Return true if the given task definition can be run on a Fargate cluster
  */
-function isFargateCompatible(compatibility: Compatibility): boolean {
+export function isFargateCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE].includes(compatibility);
+}
+
+/**
+ * Return true if the given task definition can be run on a ECS Anywhere cluster
+ */
+export function isExternalCompatible(compatibility: Compatibility): boolean {
+  return [Compatibility.EXTERNAL].includes(compatibility);
 }

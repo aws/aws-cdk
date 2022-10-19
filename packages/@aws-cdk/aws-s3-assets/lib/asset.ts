@@ -1,6 +1,5 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from '@aws-cdk/assets';
+import { CopyOptions } from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -9,13 +8,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
-
-export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
+export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
@@ -58,7 +51,7 @@ export interface AssetProps extends AssetOptions {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends CoreConstruct implements cdk.IAsset {
+export class Asset extends Construct implements cdk.IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -77,13 +70,13 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
 
   /**
    * Attribute which represents the S3 HTTP URL of this asset.
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   * For example, `https://s3.us-west-1.amazonaws.com/bucket/key`
    */
   public readonly httpUrl: string;
 
   /**
    * Attribute which represents the S3 URL of this asset.
-   * @example s3://bucket/key
+   * For example, `s3://bucket/key`
    */
   public readonly s3ObjectUrl: string;
 
@@ -121,14 +114,21 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
 
   public readonly assetHash: string;
 
+  /**
+   * Indicates if this asset got bundled before staged, or not.
+   */
+  private readonly isBundled: boolean;
+
   constructor(scope: Construct, id: string, props: AssetProps) {
     super(scope, id);
+
+    this.isBundled = props.bundling != null;
 
     // stage the asset source (conditionally).
     const staging = new cdk.AssetStaging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
-      follow: toSymlinkFollow(props.follow),
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       assetHash: props.assetHash ?? props.sourceHash,
     });
 
@@ -139,17 +139,12 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
 
     this.assetPath = staging.relativeStagedPath(stack);
 
-    const packaging = determinePackaging(staging.sourcePath);
+    this.isFile = staging.packaging === cdk.FileAssetPackaging.FILE;
 
-    this.isFile = packaging === cdk.FileAssetPackaging.FILE;
-
-    // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
-      ? true
-      : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
+    this.isZipArchive = staging.isArchive;
 
     const location = stack.synthesizer.addFileAsset({
-      packaging,
+      packaging: staging.packaging,
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
     });
@@ -197,6 +192,7 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
     // points to a local path in order to enable local invocation of this function.
     resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY] = this.isBundled;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 
@@ -209,20 +205,4 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
   }
-}
-
-function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
-  if (!fs.existsSync(assetPath)) {
-    throw new Error(`Cannot find asset at ${assetPath}`);
-  }
-
-  if (fs.statSync(assetPath).isDirectory()) {
-    return cdk.FileAssetPackaging.ZIP_DIRECTORY;
-  }
-
-  if (fs.statSync(assetPath).isFile()) {
-    return cdk.FileAssetPackaging.FILE;
-  }
-
-  throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
 }

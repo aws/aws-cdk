@@ -1,4 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { Token } from '@aws-cdk/core';
 
 /**
  * The ArtifactBounds that make sense for source Actions -
@@ -24,4 +25,14 @@ export function deployArtifactBounds(): codepipeline.ActionArtifactBounds {
     minOutputs: 0,
     maxOutputs: 0,
   };
+}
+
+export function validatePercentage(name: string, value?: number) {
+  if (value === undefined || Token.isUnresolved(value)) {
+    return;
+  }
+
+  if (value < 0 || value > 100 || !Number.isInteger(value)) {
+    throw new Error(`'${name}': must be a whole number between 0 and 100, got: ${value}`);
+  }
 }

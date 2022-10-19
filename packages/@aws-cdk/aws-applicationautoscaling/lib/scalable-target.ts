@@ -39,7 +39,8 @@ export interface ScalableTargetProps {
    *
    * This string consists of the resource type and unique identifier.
    *
-   * @example service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH
+   * Example value: `service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH`
+   *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html
    */
   readonly resourceId: string;
@@ -49,7 +50,7 @@ export interface ScalableTargetProps {
    *
    * Specify the service namespace, resource type, and scaling property.
    *
-   * @example ecs:service:DesiredCount
+   * Example value: `ecs:service:DesiredCount`
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_ScalingPolicy.html
    */
   readonly scalableDimension: string;
@@ -82,7 +83,8 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /**
    * ID of the Scalable Target
    *
-   * @example service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH|ecs:service:DesiredCount|ecs
+   * Example value: `service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH|ecs:service:DesiredCount|ecs`
+   *
    * @attribute
    */
   public readonly scalableTargetId: string;
@@ -136,7 +138,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    * Add a policy statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -146,6 +148,10 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
       throw new Error(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`);
     }
+
+    // add a warning on synth when minute is not defined in a cron schedule
+    action.schedule._bind(this);
+
     this.actions.push({
       scheduledActionName: id,
       schedule: action.schedule.expressionString,
@@ -279,4 +285,9 @@ export enum ServiceNamespace {
    * Kafka
    */
   KAFKA = 'kafka',
+
+  /**
+   * ElastiCache
+   */
+  ELASTICACHE = 'elasticache',
 }

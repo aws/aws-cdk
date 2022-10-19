@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType,
@@ -17,8 +17,8 @@ describe('HttpAuthorizer', () => {
       jwtIssuer: 'issuer',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
+      ApiId: stack.resolve(httpApi.apiId),
       Name: 'HttpAuthorizer',
       AuthorizerType: 'JWT',
       IdentitySource: ['identitysource.1', 'identitysource.2'],
@@ -38,7 +38,7 @@ describe('HttpAuthorizer', () => {
       jwtIssuer: 'issuer',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       Name: 'my-authorizer',
     });
   });
@@ -56,11 +56,31 @@ describe('HttpAuthorizer', () => {
         jwtIssuer: 'issuer',
       });
 
-      expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
         JwtConfiguration: {
           Audience: ['audience.1', 'audience.2'],
           Issuer: 'issuer',
         },
+      });
+    });
+  });
+
+  describe('lambda', () => {
+    it('default', () => {
+      const stack = new Stack();
+      const httpApi = new HttpApi(stack, 'HttpApi');
+
+      new HttpAuthorizer(stack, 'HttpAuthorizer', {
+        httpApi,
+        identitySource: ['identitysource.1', 'identitysource.2'],
+        type: HttpAuthorizerType.LAMBDA,
+        authorizerUri: 'arn:cool-lambda-arn',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
+        AuthorizerType: 'REQUEST',
+        AuthorizerPayloadFormatVersion: '2.0',
+        AuthorizerUri: 'arn:cool-lambda-arn',
       });
     });
   });

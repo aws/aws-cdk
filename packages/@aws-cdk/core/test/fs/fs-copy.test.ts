@@ -1,11 +1,10 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
 
-nodeunitShim({
-  'Default: copies all files and subdirectories, with default follow mode is "External"'(test: Test) {
+describe('fs copy', () => {
+  test('Default: copies all files and subdirectories, with default follow mode is "External"', () => {
     // GIVEN
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
@@ -13,7 +12,7 @@ nodeunitShim({
     FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir);
 
     // THEN
-    test.deepEqual(tree(outdir), [
+    expect(tree(outdir)).toEqual([
       'external-link.txt',
       'file1.txt',
       'local-link.txt => file1.txt',
@@ -25,10 +24,10 @@ nodeunitShim({
       '    subdir3 (D)',
       '        file3.txt',
     ]);
-    test.done();
-  },
 
-  'Always: follow all symlinks'(test: Test) {
+  });
+
+  test('Always: follow all symlinks', () => {
     // GIVEN
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
@@ -38,7 +37,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(tree(outdir), [
+    expect(tree(outdir)).toEqual([
       'external-dir-link (D)',
       '    file2.txt',
       'external-link.txt',
@@ -50,10 +49,10 @@ nodeunitShim({
       '    file-in-subdir.txt',
       'normal-file.txt',
     ]);
-    test.done();
-  },
 
-  'Never: do not follow all symlinks'(test: Test) {
+  });
+
+  test('Never: do not follow all symlinks', () => {
     // GIVEN
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
@@ -63,7 +62,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(tree(outdir), [
+    expect(tree(outdir)).toEqual([
       'external-dir-link => ../test1/subdir',
       'external-link.txt => ../test1/subdir2/subdir3/file3.txt',
       'indirect-external-link.txt => external-link.txt',
@@ -73,10 +72,10 @@ nodeunitShim({
       '    file-in-subdir.txt',
       'normal-file.txt',
     ]);
-    test.done();
-  },
 
-  'External: follow only external symlinks'(test: Test) {
+  });
+
+  test('External: follow only external symlinks', () => {
     // GIVEN
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
@@ -86,7 +85,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(tree(outdir), [
+    expect(tree(outdir)).toEqual([
       'external-dir-link (D)',
       '    file2.txt',
       'external-link.txt',
@@ -98,10 +97,10 @@ nodeunitShim({
       'normal-file.txt',
     ]);
 
-    test.done();
-  },
 
-  'exclude'(test: Test) {
+  });
+
+  test('exclude', () => {
     // GIVEN
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
 
@@ -116,14 +115,14 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(tree(outdir), [
+    expect(tree(outdir)).toEqual([
       'subdir2 (D)',
       '    empty-subdir (D)',
       '    subdir3 (D)',
       '        file3.txt',
     ]);
-    test.done();
-  },
+
+  });
 });
 
 function tree(dir: string, depth = ''): string[] {

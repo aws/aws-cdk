@@ -33,7 +33,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * AWS Lambda function:
+   * AWS Lambda function (not recommended to use AWS Lambda Functions directly,
+   * see the module README):
    *
    * ```ts
    * // invoke an AWS Lambda function when a lifecycle event occurs:
@@ -42,7 +43,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * SNS topic:
+   * SNS topic (not recommended to use AWS Lambda Functions directly, see the
+   * module README):
    *
    * ```ts
    * // publish lifecycle events to an SNS topic:
@@ -98,11 +100,25 @@ export interface CustomResourceProps {
 }
 
 /**
- * Custom resource that is implemented using a Lambda
+ * Instantiation of a custom resource, whose implementation is provided a Provider
  *
- * As a custom resource author, you should be publishing a subclass of this class
- * that hides the choice of provider, and accepts a strongly-typed properties
- * object with the properties your provider accepts.
+ * This class is intended to be used by construct library authors. Application
+ * builder should not be able to tell whether or not a construct is backed by
+ * a custom resource, and so the use of this class should be invisible.
+ *
+ * Instead, construct library authors declare a custom construct that hides the
+ * choice of provider, and accepts a strongly-typed properties object with the
+ * properties your provider accepts.
+ *
+ * Your custom resource provider (identified by the `serviceToken` property)
+ * can be one of 4 constructs:
+ *
+ * - If you are authoring a construct library or application, we recommend you
+ *   use the `Provider` class in the `custom-resources` module.
+ * - If you are authoring a construct for the CDK's AWS Construct Library,
+ *   you should use the `CustomResourceProvider` construct in this package.
+ * - If you want full control over the provider, you can always directly use
+ *   a Lambda Function or SNS Topic by passing the ARN into `serviceToken`.
  *
  * @resource AWS::CloudFormation::CustomResource
  */
@@ -172,7 +188,7 @@ export class CustomResource extends Resource {
 function uppercaseProperties(props: { [key: string]: any }) {
   const ret: { [key: string]: any } = {};
   Object.keys(props).forEach(key => {
-    const upper = key.substr(0, 1).toUpperCase() + key.substr(1);
+    const upper = key.slice(0, 1).toUpperCase() + key.slice(1);
     ret[upper] = props[key];
   });
   return ret;
@@ -187,11 +203,11 @@ function renderResourceType(resourceType?: string) {
     throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
   }
 
-  const typeName = resourceType.substr(resourceType.indexOf('::') + 2);
-  if (typeName.length > 60) {
+  if (resourceType.length > 60) {
     throw new Error(`Custom resource type length > 60 (${resourceType})`);
   }
 
+  const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
   if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
     throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
   }

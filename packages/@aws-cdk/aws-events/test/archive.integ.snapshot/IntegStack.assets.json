@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "c328ab321c3d5fd5f5a82abed4520136f53bd07785ecd2a382c66fc17090bb0d": {
+      "source": {
+        "path": "IntegStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c328ab321c3d5fd5f5a82abed4520136f53bd07785ecd2a382c66fc17090bb0d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,151 @@
+{
+ "Resources": {
+  "CachePolicy26D8A535": {
+   "Type": "AWS::CloudFront::CachePolicy",
+   "Properties": {
+    "CachePolicyConfig": {
+     "DefaultTTL": 86400,
+     "MaxTTL": 31536000,
+     "MinTTL": 0,
+     "Name": "ACustomCachePolicy",
+     "ParametersInCacheKeyAndForwardedToOrigin": {
+      "CookiesConfig": {
+       "CookieBehavior": "none"
+      },
+      "EnableAcceptEncodingBrotli": false,
+      "EnableAcceptEncodingGzip": false,
+      "HeadersConfig": {
+       "HeaderBehavior": "none"
+      },
+      "QueryStringsConfig": {
+       "QueryStringBehavior": "none"
+      }
+     }
+    }
+   }
+  },
+  "OriginRequestPolicy3EFDB4FA": {
+   "Type": "AWS::CloudFront::OriginRequestPolicy",
+   "Properties": {
+    "OriginRequestPolicyConfig": {
+     "CookiesConfig": {
+      "CookieBehavior": "none"
+     },
+     "HeadersConfig": {
+      "HeaderBehavior": "allViewerAndWhitelistCloudFront",
+      "Headers": [
+       "CloudFront-Forwarded-Proto"
+      ]
+     },
+     "Name": "ACustomOriginRequestPolicy",
+     "QueryStringsConfig": {
+      "QueryStringBehavior": "none"
+     }
+    }
+   }
+  },
+  "ResponseHeadersPolicy13DBF9E0": {
+   "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+   "Properties": {
+    "ResponseHeadersPolicyConfig": {
+     "CorsConfig": {
+      "AccessControlAllowCredentials": false,
+      "AccessControlAllowHeaders": {
+       "Items": [
+        "X-Custom-Header-1",
+        "X-Custom-Header-2"
+       ]
+      },
+      "AccessControlAllowMethods": {
+       "Items": [
+        "GET",
+        "POST"
+       ]
+      },
+      "AccessControlAllowOrigins": {
+       "Items": [
+        "*"
+       ]
+      },
+      "AccessControlExposeHeaders": {
+       "Items": [
+        "X-Custom-Header-1",
+        "X-Custom-Header-2"
+       ]
+      },
+      "AccessControlMaxAgeSec": 600,
+      "OriginOverride": true
+     },
+     "Name": "ACustomResponseHeadersPolicy"
+    }
+   }
+  },
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": {
+       "Ref": "CachePolicy26D8A535"
+      },
+      "Compress": true,
+      "OriginRequestPolicyId": {
+       "Ref": "OriginRequestPolicy3EFDB4FA"
+      },
+      "ResponseHeadersPolicyId": {
+       "Ref": "ResponseHeadersPolicy13DBF9E0"
+      },
+      "TargetOriginId": "integdistributionpoliciesDistOrigin17849EF2C",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integdistributionpoliciesDistOrigin17849EF2C"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

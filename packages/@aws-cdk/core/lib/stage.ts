@@ -3,10 +3,6 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { synthesize } from './private/synthesis';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
 /**
@@ -57,6 +53,13 @@ export interface StageProps {
    * temporary directory will be created.
    */
   readonly outdir?: string;
+
+  /**
+   * Name of this stage.
+   *
+   * @default - Derived from the id.
+   */
+  readonly stageName?: string;
 }
 
 /**
@@ -70,12 +73,11 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends CoreConstruct {
+export class Stage extends Construct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
    *
-   * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
     return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
@@ -84,7 +86,6 @@ export class Stage extends CoreConstruct {
   /**
    * Test whether the given construct is a stage.
    *
-   * @experimental
    */
   public static isStage(x: any ): x is Stage {
     return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
@@ -93,21 +94,18 @@ export class Stage extends CoreConstruct {
   /**
    * The default region for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly region?: string;
 
   /**
    * The default account for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly account?: string;
 
   /**
    * The cloud assembly builder that is being used for this App
    *
-   * @experimental
    * @internal
    */
   public readonly _assemblyBuilder: cxapi.CloudAssemblyBuilder;
@@ -116,14 +114,12 @@ export class Stage extends CoreConstruct {
    * The name of the stage. Based on names of the parent stages separated by
    * hypens.
    *
-   * @experimental
    */
   public readonly stageName: string;
 
   /**
    * The parent stage or `undefined` if this is the app.
    * *
-   * @experimental
    */
   public readonly parentStage?: Stage;
 
@@ -147,7 +143,7 @@ export class Stage extends CoreConstruct {
     this.account = props.env?.account ?? this.parentStage?.account;
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
   }
 
   /**
@@ -170,7 +166,6 @@ export class Stage extends CoreConstruct {
    *
    * Derived from the construct path.
    *
-   * @experimental
    */
   public get artifactId() {
     if (!this.node.path) { return ''; }
@@ -187,6 +182,7 @@ export class Stage extends CoreConstruct {
     if (!this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
+        validateOnSynthesis: options.validateOnSynthesis,
       });
     }
 
@@ -209,7 +205,7 @@ export class Stage extends CoreConstruct {
 }
 
 /**
- * Options for assemly synthesis.
+ * Options for assembly synthesis.
  */
 export interface StageSynthesisOptions {
   /**
@@ -217,6 +213,13 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Whether the stack should be validated after synthesis to check for error metadata
+   *
+   * @default - false
+   */
+  readonly validateOnSynthesis?: boolean;
 
   /**
    * Force a re-synth, even if the stage has already been synthesized.

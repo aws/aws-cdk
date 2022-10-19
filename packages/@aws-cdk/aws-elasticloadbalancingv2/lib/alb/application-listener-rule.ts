@@ -7,10 +7,6 @@ import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Basic properties for defining a rule on a listener
  */
@@ -118,6 +114,7 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
 
 /**
  * The content type for a fixed response
+ * @deprecated superceded by `FixedResponseOptions`.
  */
 export enum ContentType {
   TEXT_PLAIN = 'text/plain',
@@ -129,6 +126,7 @@ export enum ContentType {
 
 /**
  * A fixed response
+ * @deprecated superceded by `ListenerAction.fixedResponse()`.
  */
 export interface FixedResponse {
   /**
@@ -153,6 +151,7 @@ export interface FixedResponse {
 
 /**
  * A redirect response
+ * @deprecated superceded by `ListenerAction.redirect()`.
  */
 export interface RedirectResponse {
   /**
@@ -198,7 +197,7 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends CoreConstruct {
+export class ApplicationListenerRule extends Construct {
   /**
    * The ARN of this rule
    */
@@ -226,7 +225,7 @@ export class ApplicationListenerRule extends CoreConstruct {
       throw new Error(`'${providedActions}' specified together, specify only one`);
     }
 
-    if (props.priority <= 0) {
+    if (!cdk.Token.isUnresolved(props.priority) && props.priority <= 0) {
       throw new Error('Priority must have value greater than or equal to 1');
     }
 
@@ -255,7 +254,9 @@ export class ApplicationListenerRule extends CoreConstruct {
       this.configureAction(props.action);
     }
 
-    (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
+    (props.targetGroups || []).forEach((group) => {
+      this.configureAction(ListenerAction.forward([group]));
+    });
 
     if (props.fixedResponse) {
       this.addFixedResponse(props.fixedResponse);
@@ -264,6 +265,8 @@ export class ApplicationListenerRule extends CoreConstruct {
     }
 
     this.listenerRuleArn = resource.ref;
+
+    this.node.addValidation({ validate: () => this.validateListenerRule() });
   }
 
   /**
@@ -354,7 +357,7 @@ export class ApplicationListenerRule extends CoreConstruct {
   /**
    * Validate the rule
    */
-  protected validate() {
+  private validateListenerRule() {
     if (this.action === undefined) {
       return ['Listener rule needs at least one action'];
     }
@@ -385,10 +388,10 @@ export class ApplicationListenerRule extends CoreConstruct {
 
 /**
  * Validate the status code and message body of a fixed response
- *
  * @internal
+ * @deprecated
  */
-export function validateFixedResponse(fixedResponse: FixedResponse) {
+function validateFixedResponse(fixedResponse: FixedResponse) {
   if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
     throw new Error('`statusCode` must be 2XX, 4XX or 5XX.');
   }
@@ -400,10 +403,10 @@ export function validateFixedResponse(fixedResponse: FixedResponse) {
 
 /**
  * Validate the status code and message body of a redirect response
- *
  * @internal
+ * @deprecated
  */
-export function validateRedirectResponse(redirectResponse: RedirectResponse) {
+function validateRedirectResponse(redirectResponse: RedirectResponse) {
   if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
     throw new Error('`protocol` must be HTTP, HTTPS, or #{protocol}.');
   }

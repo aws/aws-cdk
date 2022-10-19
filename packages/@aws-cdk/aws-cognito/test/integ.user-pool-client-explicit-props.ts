@@ -1,12 +1,19 @@
-import { App, Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, ClientAttributes } from '../lib';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { ClientAttributes, OAuthScope, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-client-explicit-props');
 
-const userpool = new UserPool(stack, 'myuserpool');
+const userpool = new UserPool(stack, 'myuserpool', {
+  removalPolicy: RemovalPolicy.DESTROY,
+  customAttributes: {
+    attribute_one: new StringAttribute(),
+    attribute_two: new StringAttribute(),
+  },
+});
 
-userpool.addClient('myuserpoolclient', {
+const client = userpool.addClient('myuserpoolclient', {
   userPoolClientName: 'myuserpoolclient',
   authFlows: {
     adminUserPassword: true,
@@ -50,4 +57,8 @@ userpool.addClient('myuserpoolclient', {
       timezone: true,
       website: true,
     }).withCustomAttributes('attribute_one', 'attribute_two'),
+});
+
+new Secret(stack, 'Secret', {
+  secretStringValue: client.userPoolClientSecret,
 });

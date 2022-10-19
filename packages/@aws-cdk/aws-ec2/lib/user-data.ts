@@ -1,5 +1,5 @@
 import { IBucket } from '@aws-cdk/aws-s3';
-import { CfnElement, Resource, Stack } from '@aws-cdk/core';
+import { Fn, Resource, Stack, CfnResource } from '@aws-cdk/core';
 import { OperatingSystemType } from './machine-image';
 
 /**
@@ -12,6 +12,24 @@ export interface LinuxUserDataOptions {
    * @default "#!/bin/bash"
    */
   readonly shebang?: string;
+}
+
+/**
+ * Options when constructing UserData for Windows
+ */
+export interface WindowsUserDataOptions {
+  /**
+   * Set to true to set this userdata to persist through an instance reboot; allowing
+   * it to run on every instance start.
+   * By default, UserData is run only once during the first instance launch.
+   *
+   * For more information, see:
+   * https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
+   * https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts
+   *
+   * @default false
+   */
+  readonly persist?: boolean;
 }
 
 /**
@@ -36,6 +54,12 @@ export interface S3DownloadOptions {
    *          Windows - %TEMP%/bucketKey
    */
   readonly localFile?: string;
+
+  /**
+   * The region of the S3 Bucket (needed for access via VPC Gateway)
+   * @default none
+   */
+  readonly region?: string
 
 }
 
@@ -72,8 +96,8 @@ export abstract class UserData {
   /**
    * Create a userdata object for Windows hosts
    */
-  public static forWindows(): UserData {
-    return new WindowsUserData();
+  public static forWindows(options: WindowsUserDataOptions = {}): UserData {
+    return new WindowsUserData(options);
   }
 
   /**
@@ -156,7 +180,7 @@ class LinuxUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'`,
+      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : ''),
     );
 
     return localPath;
@@ -172,7 +196,7 @@ class LinuxUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
     this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
@@ -191,7 +215,7 @@ class WindowsUserData extends UserData {
   private readonly lines: string[] = [];
   private readonly onExitLines: string[] = [];
 
-  constructor() {
+  constructor(private readonly props: WindowsUserDataOptions = {}) {
     super();
   }
 
@@ -208,14 +232,14 @@ class WindowsUserData extends UserData {
       [...(this.renderOnExitLines()),
         ...this.lines,
         ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )].join('\n')
-    }</powershell>`;
+    }</powershell>${(this.props.persist ?? false) ? '<persist>true</persist>' : ''}`;
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop`,
+      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
     );
     return localPath;
   }
@@ -229,7 +253,7 @@ class WindowsUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
 
     this.addOnExitCommands(`cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`);
   }
@@ -274,5 +298,297 @@ class CustomUserData extends UserData {
 
   public addSignalOnExitCommand(): void {
     throw new Error('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+  }
+}
+
+/**
+ * Options when creating `MultipartBody`.
+ */
+export interface MultipartBodyOptions {
+
+  /**
+   * `Content-Type` header of this part.
+   *
+   * Some examples of content types:
+   * * `text/x-shellscript; charset="utf-8"` (shell script)
+   * * `text/cloud-boothook; charset="utf-8"` (shell script executed during boot phase)
+   *
+   * For Linux shell scripts use `text/x-shellscript`.
+   */
+  readonly contentType: string;
+
+  /**
+   * `Content-Transfer-Encoding` header specifying part encoding.
+   *
+   * @default undefined - body is not encoded
+   */
+  readonly transferEncoding?: string;
+
+  /**
+   * The body of message.
+   *
+   * @default undefined - body will not be added to part
+   */
+  readonly body?: string,
+}
+
+/**
+ * The base class for all classes which can be used as {@link MultipartUserData}.
+ */
+export abstract class MultipartBody {
+  /**
+   * Content type for shell scripts
+   */
+  public static readonly SHELL_SCRIPT = 'text/x-shellscript; charset="utf-8"';
+
+  /**
+   * Content type for boot hooks
+   */
+  public static readonly CLOUD_BOOTHOOK = 'text/cloud-boothook; charset="utf-8"';
+
+  /**
+   * Constructs the new `MultipartBody` wrapping existing `UserData`. Modification to `UserData` are reflected
+   * in subsequent renders of the part.
+   *
+   * For more information about content types see {@link MultipartBodyOptions.contentType}.
+   *
+   * @param userData user data to wrap into body part
+   * @param contentType optional content type, if default one should not be used
+   */
+  public static fromUserData(userData: UserData, contentType?: string): MultipartBody {
+    return new MultipartBodyUserDataWrapper(userData, contentType);
+  }
+
+  /**
+   * Constructs the raw `MultipartBody` using specified body, content type and transfer encoding.
+   *
+   * When transfer encoding is specified (typically as Base64), it's caller responsibility to convert body to
+   * Base64 either by wrapping with `Fn.base64` or by converting it by other converters.
+   */
+  public static fromRawBody(opts: MultipartBodyOptions): MultipartBody {
+    return new MultipartBodyRaw(opts);
+  }
+
+  public constructor() {
+  }
+
+  /**
+   * Render body part as the string.
+   *
+   * Subclasses should not add leading nor trailing new line characters (\r \n)
+   */
+  public abstract renderBodyPart(): string[];
+}
+
+/**
+ * The raw part of multi-part user data, which can be added to {@link MultipartUserData}.
+ */
+class MultipartBodyRaw extends MultipartBody {
+  public constructor(private readonly props: MultipartBodyOptions) {
+    super();
+  }
+
+  /**
+   * Render body part as the string.
+   */
+  public renderBodyPart(): string[] {
+    const result: string[] = [];
+
+    result.push(`Content-Type: ${this.props.contentType}`);
+
+    if (this.props.transferEncoding != null) {
+      result.push(`Content-Transfer-Encoding: ${this.props.transferEncoding}`);
+    }
+    // One line free after separator
+    result.push('');
+
+    if (this.props.body != null) {
+      result.push(this.props.body);
+      // The new line added after join will be consumed by encapsulating or closing boundary
+    }
+
+    return result;
+  }
+}
+
+/**
+ * Wrapper for `UserData`.
+ */
+class MultipartBodyUserDataWrapper extends MultipartBody {
+  private readonly contentType: string;
+
+  public constructor(private readonly userData: UserData, contentType?: string) {
+    super();
+
+    this.contentType = contentType || MultipartBody.SHELL_SCRIPT;
+  }
+
+  /**
+   * Render body part as the string.
+   */
+  public renderBodyPart(): string[] {
+    const result: string[] = [];
+
+    result.push(`Content-Type: ${this.contentType}`);
+    result.push('Content-Transfer-Encoding: base64');
+    result.push('');
+    result.push(Fn.base64(this.userData.render()));
+
+    return result;
+  }
+}
+
+/**
+ * Options for creating {@link MultipartUserData}
+ */
+export interface MultipartUserDataOptions {
+  /**
+   * The string used to separate parts in multipart user data archive (it's like MIME boundary).
+   *
+   * This string should contain [a-zA-Z0-9()+,-./:=?] characters only, and should not be present in any part, or in text content of archive.
+   *
+   * @default `+AWS+CDK+User+Data+Separator==`
+   */
+  readonly partsSeparator?: string;
+}
+
+/**
+ * Mime multipart user data.
+ *
+ * This class represents MIME multipart user data, as described in.
+ * [Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
+ *
+ */
+export class MultipartUserData extends UserData {
+  private static readonly USE_PART_ERROR = 'MultipartUserData only supports this operation if it has a default UserData. Call addUserDataPart with makeDefault=true.';
+  private static readonly BOUNDRY_PATTERN = '[^a-zA-Z0-9()+,-./:=?]';
+
+  private parts: MultipartBody[] = [];
+
+  private opts: MultipartUserDataOptions;
+
+  private defaultUserData?: UserData;
+
+  constructor(opts?: MultipartUserDataOptions) {
+    super();
+
+    let partsSeparator: string;
+
+    // Validate separator
+    if (opts?.partsSeparator != null) {
+      if (new RegExp(MultipartUserData.BOUNDRY_PATTERN).test(opts!.partsSeparator)) {
+        throw new Error(`Invalid characters in separator. Separator has to match pattern ${MultipartUserData.BOUNDRY_PATTERN}`);
+      } else {
+        partsSeparator = opts!.partsSeparator;
+      }
+    } else {
+      partsSeparator = '+AWS+CDK+User+Data+Separator==';
+    }
+
+    this.opts = {
+      partsSeparator: partsSeparator,
+    };
+  }
+
+  /**
+   * Adds a part to the list of parts.
+   */
+  public addPart(part: MultipartBody) {
+    this.parts.push(part);
+  }
+
+  /**
+   * Adds a multipart part based on a UserData object.
+   *
+   * If `makeDefault` is true, then the UserData added by this method
+   * will also be the target of calls to the `add*Command` methods on
+   * this MultipartUserData object.
+   *
+   * If `makeDefault` is false, then this is the same as calling:
+   *
+   * ```ts
+   * declare const multiPart: ec2.MultipartUserData;
+   * declare const userData: ec2.UserData;
+   * declare const contentType: string;
+   *
+   * multiPart.addPart(ec2.MultipartBody.fromUserData(userData, contentType));
+   * ```
+   *
+   * An undefined `makeDefault` defaults to either:
+   * - `true` if no default UserData has been set yet; or
+   * - `false` if there is no default UserData set.
+   */
+  public addUserDataPart(userData: UserData, contentType?: string, makeDefault?: boolean) {
+    this.addPart(MultipartBody.fromUserData(userData, contentType));
+    makeDefault = makeDefault ?? (this.defaultUserData === undefined ? true : false);
+    if (makeDefault) {
+      this.defaultUserData = userData;
+    }
+  }
+
+  public render(): string {
+    const boundary = this.opts.partsSeparator;
+    // Now build final MIME archive - there are few changes from MIME message which are accepted by cloud-init:
+    // - MIME RFC uses CRLF to separate lines - cloud-init is fine with LF \n only
+    // Note: new lines matters, matters a lot.
+    var resultArchive = new Array<string>();
+    resultArchive.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+    resultArchive.push('MIME-Version: 1.0');
+
+    // Add new line, the next one will be boundary (encapsulating or closing)
+    // so this line will count into it.
+    resultArchive.push('');
+
+    // Add parts - each part starts with boundary
+    this.parts.forEach(part => {
+      resultArchive.push(`--${boundary}`);
+      resultArchive.push(...part.renderBodyPart());
+    });
+
+    // Add closing boundary
+    resultArchive.push(`--${boundary}--`);
+    resultArchive.push(''); // Force new line at the end
+
+    return resultArchive.join('\n');
+  }
+
+  public addS3DownloadCommand(params: S3DownloadOptions): string {
+    if (this.defaultUserData) {
+      return this.defaultUserData.addS3DownloadCommand(params);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
+  }
+
+  public addExecuteFileCommand(params: ExecuteFileOptions): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addExecuteFileCommand(params);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
+  }
+
+  public addSignalOnExitCommand(resource: Resource): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addSignalOnExitCommand(resource);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
+  }
+
+  public addCommands(...commands: string[]): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addCommands(...commands);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
+  }
+
+  public addOnExitCommands(...commands: string[]): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addOnExitCommands(...commands);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 }

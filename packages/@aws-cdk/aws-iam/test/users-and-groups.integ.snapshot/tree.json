@@ -1,0 +1,274 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-iam-role-1": {
+        "id": "integ-iam-role-1",
+        "path": "integ-iam-role-1",
+        "children": {
+          "MyGroup": {
+            "id": "MyGroup",
+            "path": "integ-iam-role-1/MyGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/MyGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Group",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Group",
+              "version": "0.0.0"
+            }
+          },
+          "YourGroup": {
+            "id": "YourGroup",
+            "path": "integ-iam-role-1/YourGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/YourGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Group",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Group",
+              "version": "0.0.0"
+            }
+          },
+          "User1": {
+            "id": "User1",
+            "path": "integ-iam-role-1/User1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/User1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "groups": [
+                      {
+                        "Ref": "MyGroupCBA54B1B"
+                      },
+                      {
+                        "Ref": "YourGroup1005140B"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "User2": {
+            "id": "User2",
+            "path": "integ-iam-role-1/User2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/User2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "groups": [
+                      {
+                        "Ref": "MyGroupCBA54B1B"
+                      },
+                      {
+                        "Ref": "YourGroup1005140B"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "User3": {
+            "id": "User3",
+            "path": "integ-iam-role-1/User3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/User3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "groups": [
+                      {
+                        "Ref": "MyGroupCBA54B1B"
+                      },
+                      {
+                        "Ref": "YourGroup1005140B"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "User4": {
+            "id": "User4",
+            "path": "integ-iam-role-1/User4",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/User4/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "groups": [
+                      {
+                        "Ref": "MyGroupCBA54B1B"
+                      },
+                      {
+                        "Ref": "YourGroup1005140B"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "User5": {
+            "id": "User5",
+            "path": "integ-iam-role-1/User5",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/User5/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "groups": [
+                      {
+                        "Ref": "MyGroupCBA54B1B"
+                      },
+                      {
+                        "Ref": "YourGroup1005140B"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "MyPolicy": {
+            "id": "MyPolicy",
+            "path": "integ-iam-role-1/MyPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-role-1/MyPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "iam:*",
+                          "Effect": "Allow",
+                          "Resource": {
+                            "Fn::GetAtt": [
+                              "YourGroup1005140B",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "MyPolicy39D66CF6",
+                    "groups": [
+                      {
+                        "Ref": "MyGroupCBA54B1B"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Policy",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

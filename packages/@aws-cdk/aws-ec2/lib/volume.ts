@@ -2,15 +2,10 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names } from '@aws-cdk/core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 
 /**
  * Block device
@@ -19,7 +14,7 @@ export interface BlockDevice {
   /**
    * The device name exposed to the EC2 instance
    *
-   * @example '/dev/sdh', 'xvdh'
+   * For example, a value like `/dev/sdh`, `xvdh`.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
    */
@@ -28,8 +23,7 @@ export interface BlockDevice {
   /**
    * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
    *
-   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
-   *
+   * For example, a value like `BlockDeviceVolume.ebs(15)`, `BlockDeviceVolume.ephemeral(0)`.
    */
   readonly volume: BlockDeviceVolume;
 
@@ -90,6 +84,17 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    * @default false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+   *
+   * You have to ensure that the KMS CMK has the correct permissions to be used by the service launching the ec2 instances.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
+   *
+   * @default - If encrypted is true, the default aws/ebs KMS key will be used.
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**
@@ -109,7 +114,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
 /**
  * Properties of an EBS block device
  */
-export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions, EbsDeviceOptions {
   /**
    * The snapshot ID of the volume to use
    *
@@ -431,6 +436,13 @@ export interface VolumeProps {
    * @default None -- Required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS if omitted.
    */
   readonly iops?: number;
+
+  /**
+   * Policy to apply when the volume is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -504,7 +516,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -533,7 +545,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -605,6 +617,9 @@ export class Volume extends VolumeBase {
       snapshotId: props.snapshotId,
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
+    resource.applyRemovalPolicy(props.removalPolicy);
+
+    if (props.volumeName) Tags.of(resource).add('Name', props.volumeName);
 
     this.volumeId = resource.ref;
     this.availabilityZone = props.availabilityZone;

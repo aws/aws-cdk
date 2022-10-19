@@ -37,11 +37,11 @@ function heading {
 }
 
 function error {
-  printf "\e[91;5;81m$@\e[0m\n"
+  printf "\e[91m$@\e[0m\n"
 }
 
 function success {
-  printf "\e[32;5;81m$@\e[0m\n"
+  printf "\e[32m$@\e[0m\n"
 }
 
 function reset {

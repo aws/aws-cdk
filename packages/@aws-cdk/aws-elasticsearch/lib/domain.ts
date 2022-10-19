@@ -20,59 +20,100 @@ import * as perms from './perms';
  * Elasticsearch version
  */
 export class ElasticsearchVersion {
-  /** AWS Elasticsearch 1.5 */
+  /**
+   * AWS Elasticsearch 1.5
+   */
   public static readonly V1_5 = ElasticsearchVersion.of('1.5');
 
-  /** AWS Elasticsearch 2.3 */
+  /**
+   * AWS Elasticsearch 2.3
+   */
   public static readonly V2_3 = ElasticsearchVersion.of('2.3');
 
-  /** AWS Elasticsearch 5.1 */
+  /**
+   * AWS Elasticsearch 5.1
+   */
   public static readonly V5_1 = ElasticsearchVersion.of('5.1');
 
-  /** AWS Elasticsearch 5.3 */
+  /**
+   * AWS Elasticsearch 5.3
+   */
   public static readonly V5_3 = ElasticsearchVersion.of('5.3');
 
-  /** AWS Elasticsearch 5.5 */
+  /**
+   * AWS Elasticsearch 5.5
+   */
   public static readonly V5_5 = ElasticsearchVersion.of('5.5');
 
-  /** AWS Elasticsearch 5.6 */
+  /**
+   * AWS Elasticsearch 5.6
+   */
   public static readonly V5_6 = ElasticsearchVersion.of('5.6');
 
-  /** AWS Elasticsearch 6.0 */
+  /**
+   * AWS Elasticsearch 6.0
+   */
   public static readonly V6_0 = ElasticsearchVersion.of('6.0');
 
-  /** AWS Elasticsearch 6.2 */
+  /**
+   * AWS Elasticsearch 6.2
+   */
   public static readonly V6_2 = ElasticsearchVersion.of('6.2');
 
-  /** AWS Elasticsearch 6.3 */
+  /**
+   * AWS Elasticsearch 6.3
+   */
   public static readonly V6_3 = ElasticsearchVersion.of('6.3');
 
-  /** AWS Elasticsearch 6.4 */
+  /**
+   * AWS Elasticsearch 6.4
+   */
   public static readonly V6_4 = ElasticsearchVersion.of('6.4');
 
-  /** AWS Elasticsearch 6.5 */
+  /**
+   * AWS Elasticsearch 6.5
+   */
   public static readonly V6_5 = ElasticsearchVersion.of('6.5');
 
-  /** AWS Elasticsearch 6.7 */
+  /**
+   * AWS Elasticsearch 6.7
+   */
   public static readonly V6_7 = ElasticsearchVersion.of('6.7');
 
-  /** AWS Elasticsearch 6.8 */
+  /**
+   * AWS Elasticsearch 6.8
+   */
   public static readonly V6_8 = ElasticsearchVersion.of('6.8');
 
-  /** AWS Elasticsearch 7.1 */
+  /**
+   * AWS Elasticsearch 7.1
+   */
   public static readonly V7_1 = ElasticsearchVersion.of('7.1');
 
-  /** AWS Elasticsearch 7.4 */
+  /**
+   * AWS Elasticsearch 7.4
+   */
   public static readonly V7_4 = ElasticsearchVersion.of('7.4');
 
-  /** AWS Elasticsearch 7.7 */
+  /**
+   * AWS Elasticsearch 7.7
+   */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
-  /** AWS Elasticsearch 7.8 */
+  /**
+   * AWS Elasticsearch 7.8
+   */
   public static readonly V7_8 = ElasticsearchVersion.of('7.8');
 
-  /** AWS Elasticsearch 7.9 */
+  /**
+   * AWS Elasticsearch 7.9
+   */
   public static readonly V7_9 = ElasticsearchVersion.of('7.9');
+
+  /**
+   * AWS Elasticsearch 7.10
+   */
+  public static readonly V7_10 = ElasticsearchVersion.of('7.10');
 
   /**
    * Custom Elasticsearch version
@@ -90,12 +131,15 @@ export class ElasticsearchVersion {
 /**
  * Configures the capacity of the cluster such as the instance type and the
  * number of instances.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface CapacityConfig {
   /**
    * The number of instances to use for the master node.
    *
    * @default - no dedicated master nodes
+   * @deprecated use opensearchservice module instead
    */
   readonly masterNodes?: number;
 
@@ -107,6 +151,7 @@ export interface CapacityConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - r5.large.elasticsearch
+   * @deprecated use opensearchservice module instead
    */
   readonly masterNodeInstanceType?: string;
 
@@ -114,6 +159,7 @@ export interface CapacityConfig {
    * The number of data nodes (instances) to use in the Amazon ES domain.
    *
    * @default - 1
+   * @deprecated use opensearchservice module instead
    */
   readonly dataNodes?: number;
 
@@ -124,6 +170,7 @@ export interface CapacityConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - r5.large.elasticsearch
+   * @deprecated use opensearchservice module instead
    */
   readonly dataNodeInstanceType?: string;
 
@@ -131,6 +178,7 @@ export interface CapacityConfig {
    * The number of UltraWarm nodes (instances) to use in the Amazon ES domain.
    *
    * @default - no UltraWarm nodes
+   * @deprecated use opensearchservice module instead
    */
   readonly warmNodes?: number;
 
@@ -141,6 +189,7 @@ export interface CapacityConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - ultrawarm1.medium.elasticsearch
+   * @deprecated use opensearchservice module instead
    */
   readonly warmInstanceType?: string;
 
@@ -148,6 +197,8 @@ export interface CapacityConfig {
 
 /**
  * Specifies zone awareness configuration options.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface ZoneAwarenessConfig {
   /**
@@ -162,6 +213,7 @@ export interface ZoneAwarenessConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly enabled?: boolean;
 
@@ -170,6 +222,7 @@ export interface ZoneAwarenessConfig {
    * want the domain to use. Valid values are 2 and 3.
    *
    * @default - 2 if zone awareness is enabled.
+   * @deprecated use opensearchservice module instead
    */
   readonly availabilityZoneCount?: number;
 }
@@ -180,6 +233,8 @@ export interface ZoneAwarenessConfig {
  * [Configuring EBS-based Storage]
  * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
  * in the Amazon Elasticsearch Service Developer Guide.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface EbsOptions {
   /**
@@ -187,6 +242,7 @@ export interface EbsOptions {
    * Amazon ES domain.
    *
    * @default - true
+   * @deprecated use opensearchservice module instead
    */
   readonly enabled?: boolean;
 
@@ -196,6 +252,7 @@ export interface EbsOptions {
    * volume type.
    *
    * @default - iops are not set.
+   * @deprecated use opensearchservice module instead
    */
   readonly iops?: number;
 
@@ -208,6 +265,7 @@ export interface EbsOptions {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default 10
+   * @deprecated use opensearchservice module instead
    */
   readonly volumeSize?: number;
 
@@ -218,12 +276,15 @@ export interface EbsOptions {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default gp2
+   * @deprecated use opensearchservice module instead
    */
   readonly volumeType?: ec2.EbsDeviceVolumeType;
 }
 
 /**
  * Configures log settings for the domain.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface LoggingOptions {
   /**
@@ -231,6 +292,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly slowSearchLogEnabled?: boolean;
 
@@ -238,6 +300,7 @@ export interface LoggingOptions {
    * Log slow searches to this log group.
    *
    * @default - a new log group is created if slow search logging is enabled
+   * @deprecated use opensearchservice module instead
    */
   readonly slowSearchLogGroup?: logs.ILogGroup;
 
@@ -246,6 +309,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly slowIndexLogEnabled?: boolean;
 
@@ -253,6 +317,7 @@ export interface LoggingOptions {
    * Log slow indices to this log group.
    *
    * @default - a new log group is created if slow index logging is enabled
+   * @deprecated use opensearchservice module instead
    */
   readonly slowIndexLogGroup?: logs.ILogGroup;
 
@@ -261,6 +326,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly appLogEnabled?: boolean;
 
@@ -268,6 +334,7 @@ export interface LoggingOptions {
    * Log Elasticsearch application logs to this log group.
    *
    * @default - a new log group is created if app logging is enabled
+   * @deprecated use opensearchservice module instead
    */
   readonly appLogGroup?: logs.ILogGroup;
 
@@ -276,6 +343,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 6.7 or later and fine grained access control to be enabled.
    *
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly auditLogEnabled?: boolean;
 
@@ -283,6 +351,7 @@ export interface LoggingOptions {
    * Log Elasticsearch audit logs to this log group.
    *
    * @default - a new log group is created if audit logging is enabled
+   * @deprecated use opensearchservice module instead
    */
   readonly auditLogGroup?: logs.ILogGroup;
 }
@@ -291,12 +360,15 @@ export interface LoggingOptions {
  * Whether the domain should encrypt data at rest, and if so, the AWS Key
  * Management Service (KMS) key to use. Can only be used to create a new domain,
  * not update an existing one. Requires Elasticsearch version 5.1 or later.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface EncryptionAtRestOptions {
   /**
    * Specify true to enable encryption at rest.
    *
    * @default - encryption at rest is disabled.
+   * @deprecated use opensearchservice module instead
    */
   readonly enabled?: boolean;
 
@@ -304,6 +376,7 @@ export interface EncryptionAtRestOptions {
    * Supply if using KMS key for encryption at rest.
    *
    * @default - uses default aws/es KMS key.
+   * @deprecated use opensearchservice module instead
    */
   readonly kmsKey?: kms.IKey;
 }
@@ -311,10 +384,13 @@ export interface EncryptionAtRestOptions {
 /**
  * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
  * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html
+ * @deprecated use opensearchservice module instead
  */
 export interface CognitoOptions {
   /**
    * The Amazon Cognito identity pool ID that you want Amazon ES to use for Kibana authentication.
+   *
+   * @deprecated use opensearchservice module instead
    */
   readonly identityPoolId: string;
 
@@ -322,43 +398,22 @@ export interface CognitoOptions {
    * A role that allows Amazon ES to configure your user pool and identity pool. It must have the `AmazonESCognitoAccess` policy attached to it.
    *
    * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html#es-cognito-auth-prereq
+   * @deprecated use opensearchservice module instead
    */
   readonly role: iam.IRole;
 
   /**
    * The Amazon Cognito user pool ID that you want Amazon ES to use for Kibana authentication.
+   *
+   * @deprecated use opensearchservice module instead
    */
   readonly userPoolId: string;
 }
 
 /**
- * The virtual private cloud (VPC) configuration for the Amazon ES domain. For
- * more information, see [VPC Support for Amazon Elasticsearch Service
- * Domains](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html)
- * in the Amazon Elasticsearch Service Developer Guide.
- */
-export interface VpcOptions {
-  /**
-   * The list of security groups that are associated with the VPC endpoints
-   * for the domain. If you don't provide a security group ID, Amazon ES uses
-   * the default security group for the VPC. To learn more, see [Security Groups for your VPC]
-   * (https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html) in the Amazon VPC
-   * User Guide.
-   */
-  readonly securityGroups: ec2.ISecurityGroup[];
-
-  /**
-   * Provide one subnet for each Availability Zone that your domain uses. For
-   * example, you must specify three subnet IDs for a three Availability Zone
-   * domain. To learn more, see [VPCs and Subnets]
-   * (https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) in the
-   * Amazon VPC User Guide.
-   */
-  readonly subnets: ec2.ISubnet[];
-}
-
-/**
  * The minimum TLS version required for traffic to the domain.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export enum TLSSecurityPolicy {
   /** Cipher suite TLS 1.0 */
@@ -369,12 +424,15 @@ export enum TLSSecurityPolicy {
 
 /**
  * Specifies options for fine-grained access control.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface AdvancedSecurityOptions {
   /**
    * ARN for the master user. Only specify this or masterUserName, but not both.
    *
    * @default - fine-grained access control is disabled
+   * @deprecated use opensearchservice module instead
    */
   readonly masterUserArn?: string;
 
@@ -382,58 +440,71 @@ export interface AdvancedSecurityOptions {
    * Username for the master user. Only specify this or masterUserArn, but not both.
    *
    * @default - fine-grained access control is disabled
+   * @deprecated use opensearchservice module instead
    */
   readonly masterUserName?: string;
 
   /**
    * Password for the master user.
    *
-   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * You can use `SecretValue.unsafePlainText` to specify a password in plain text or
    * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
    * Secrets Manager.
    *
    * @default - A Secrets Manager generated password
+   * @deprecated use opensearchservice module instead
    */
   readonly masterUserPassword?: cdk.SecretValue;
 }
 
 /**
  * Configures a custom domain endpoint for the ES domain
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface CustomEndpointOptions {
   /**
    * The custom domain name to assign
+   *
+   * @deprecated use opensearchservice module instead
    */
   readonly domainName: string;
 
   /**
    * The certificate to use
    * @default - create a new one
+   * @deprecated use opensearchservice module instead
    */
   readonly certificate?: acm.ICertificate;
 
   /**
    * The hosted zone in Route53 to create the CNAME record in
    * @default - do not create a CNAME
+   * @deprecated use opensearchservice module instead
    */
   readonly hostedZone?: route53.IHostedZone;
 }
 
 /**
  * Properties for an AWS Elasticsearch Domain.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface DomainProps {
   /**
    * Domain Access policies.
    *
    * @default - No access policies.
+   * @deprecated use opensearchservice module instead
    */
   readonly accessPolicies?: iam.PolicyStatement[];
 
   /**
    * Additional options to specify for the Amazon ES domain.
    *
+   * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options
    * @default - no advanced options are specified
+   * @deprecated use opensearchservice module instead
    */
   readonly advancedOptions?: { [key: string]: (string) };
 
@@ -441,6 +512,7 @@ export interface DomainProps {
    * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
    *
    * @default - Cognito not used for authentication to Kibana.
+   * @deprecated use opensearchservice module instead
    */
   readonly cognitoKibanaAuth?: CognitoOptions;
 
@@ -448,6 +520,7 @@ export interface DomainProps {
    * Enforces a particular physical domain name.
    *
    * @default - A name will be auto-generated.
+   * @deprecated use opensearchservice module instead
    */
   readonly domainName?: string;
 
@@ -459,6 +532,7 @@ export interface DomainProps {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - 10 GiB General Purpose (SSD) volumes per node.
+   * @deprecated use opensearchservice module instead
    */
   readonly ebs?: EbsOptions;
 
@@ -466,6 +540,7 @@ export interface DomainProps {
    * The cluster capacity configuration for the Amazon ES domain.
    *
    * @default - 1 r5.large.elasticsearch data node; no dedicated master nodes.
+   * @deprecated use opensearchservice module instead
    */
   readonly capacity?: CapacityConfig;
 
@@ -473,11 +548,14 @@ export interface DomainProps {
    * The cluster zone awareness configuration for the Amazon ES domain.
    *
    * @default - no zone awareness (1 AZ)
+   * @deprecated use opensearchservice module instead
    */
   readonly zoneAwareness?: ZoneAwarenessConfig;
 
   /**
    * The Elasticsearch version that your domain will leverage.
+   *
+   * @deprecated use opensearchservice module instead
    */
   readonly version: ElasticsearchVersion;
 
@@ -485,6 +563,7 @@ export interface DomainProps {
    * Encryption at rest options for the cluster.
    *
    * @default - No encryption at rest
+   * @deprecated use opensearchservice module instead
    */
   readonly encryptionAtRest?: EncryptionAtRestOptions;
 
@@ -492,6 +571,7 @@ export interface DomainProps {
    * Configuration log publishing configuration options.
    *
    * @default - No logs are published
+   * @deprecated use opensearchservice module instead
    */
   readonly logging?: LoggingOptions;
 
@@ -500,6 +580,7 @@ export interface DomainProps {
    * Requires Elasticsearch version 6.0 or later.
    *
    * @default - Node to node encryption is not enabled.
+   * @deprecated use opensearchservice module instead
    */
   readonly nodeToNodeEncryption?: boolean;
 
@@ -509,23 +590,49 @@ export interface DomainProps {
    * versions below 5.3.
    *
    * @default - Hourly automated snapshots not used
+   * @deprecated use opensearchservice module instead
    */
   readonly automatedSnapshotStartHour?: number;
 
   /**
-   * The virtual private cloud (VPC) configuration for the Amazon ES domain. For
-   * more information, see [VPC Support for Amazon Elasticsearch Service
-   * Domains](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html)
-   * in the Amazon Elasticsearch Service Developer Guide.
+   * Place the domain inside this VPC.
    *
-   * @default - VPC not used
+   * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html
+   * @default - Domain is not placed in a VPC.
+   * @deprecated use opensearchservice module instead
    */
-  readonly vpcOptions?: VpcOptions;
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * The list of security groups that are associated with the VPC endpoints
+   * for the domain.
+   *
+   * Only used if `vpc` is specified.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
+   * @default - One new security group is created.
+   * @deprecated use opensearchservice module instead
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The specific vpc subnets the domain will be placed in. You must provide one subnet for each Availability Zone
+   * that your domain uses. For example, you must specify three subnet IDs for a three Availability Zone
+   * domain.
+   *
+   * Only used if `vpc` is specified.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
+   * @default - All private subnets.
+   * @deprecated use opensearchservice module instead
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection[];
 
   /**
    * True to require that all traffic to the domain arrive over HTTPS.
    *
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly enforceHttps?: boolean;
 
@@ -533,6 +640,7 @@ export interface DomainProps {
    * The minimum TLS version required for traffic to the domain.
    *
    * @default - TLSSecurityPolicy.TLS_1_0
+   * @deprecated use opensearchservice module instead
    */
   readonly tlsSecurityPolicy?: TLSSecurityPolicy;
 
@@ -543,6 +651,7 @@ export interface DomainProps {
    * enforced HTTPS.
    *
    * @default - fine-grained access control is disabled
+   * @deprecated use opensearchservice module instead
    */
   readonly fineGrainedAccessControl?: AdvancedSecurityOptions;
 
@@ -557,6 +666,7 @@ export interface DomainProps {
    * setting will cause a failure.
    *
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly useUnsignedBasicAuth?: boolean;
 
@@ -566,26 +676,39 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeelasticsearchdomain
    * @default - false
+   * @deprecated use opensearchservice module instead
    */
   readonly enableVersionUpgrade?: boolean;
+
+  /**
+   * Policy to apply when the domain is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   * @deprecated use opensearchservice module instead
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
 
   /**
    * To configure a custom domain configure these options
    *
    * If you specify a Route53 hosted zone it will create a CNAME record and use DNS validation for the certificate
    * @default - no custom domain endpoint will be configured
+   * @deprecated use opensearchservice module instead
    */
   readonly customEndpoint?: CustomEndpointOptions;
 }
 
 /**
  * An interface that represents an Elasticsearch domain - either created with the CDK, or an existing one.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface IDomain extends cdk.IResource {
   /**
    * Arn of the Elasticsearch domain.
    *
    * @attribute
+   * @deprecated use opensearchservice module instead
    */
   readonly domainArn: string;
 
@@ -593,6 +716,7 @@ export interface IDomain extends cdk.IResource {
    * Domain name of the Elasticsearch domain.
    *
    * @attribute
+   * @deprecated use opensearchservice module instead
    */
   readonly domainName: string;
 
@@ -600,6 +724,7 @@ export interface IDomain extends cdk.IResource {
    * Endpoint of the Elasticsearch domain.
    *
    * @attribute
+   * @deprecated use opensearchservice module instead
    */
   readonly domainEndpoint: string;
 
@@ -608,6 +733,7 @@ export interface IDomain extends cdk.IResource {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantRead(identity: iam.IGrantable): iam.Grant;
 
@@ -616,6 +742,7 @@ export interface IDomain extends cdk.IResource {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantWrite(identity: iam.IGrantable): iam.Grant;
 
@@ -624,6 +751,7 @@ export interface IDomain extends cdk.IResource {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant;
 
@@ -633,6 +761,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantIndexRead(index: string, identity: iam.IGrantable): iam.Grant;
 
@@ -642,6 +771,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantIndexWrite(index: string, identity: iam.IGrantable): iam.Grant;
 
@@ -651,6 +781,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantIndexReadWrite(index: string, identity: iam.IGrantable): iam.Grant;
 
@@ -660,6 +791,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantPathRead(path: string, identity: iam.IGrantable): iam.Grant;
 
@@ -669,6 +801,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant;
 
@@ -678,11 +811,14 @@ export interface IDomain extends cdk.IResource {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Domain.
+   *
+   * @deprecated use opensearchservice module instead
    */
   metric(metricName: string, props?: MetricOptions): Metric;
 
@@ -690,6 +826,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the time the cluster status is red.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricClusterStatusRed(props?: MetricOptions): Metric;
 
@@ -697,6 +834,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the time the cluster status is yellow.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricClusterStatusYellow(props?: MetricOptions): Metric;
 
@@ -704,6 +842,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the storage space of nodes in the cluster.
    *
    * @default minimum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricFreeStorageSpace(props?: MetricOptions): Metric;
 
@@ -711,13 +850,15 @@ export interface IDomain extends cdk.IResource {
    * Metric for the cluster blocking index writes.
    *
    * @default maximum over 1 minute
+   * @deprecated use opensearchservice module instead
    */
-  metricClusterIndexWriteBlocked(props?: MetricOptions): Metric;
+  metricClusterIndexWritesBlocked(props?: MetricOptions): Metric;
 
   /**
    * Metric for the number of nodes.
    *
    * @default minimum over 1 hour
+   * @deprecated use opensearchservice module instead
    */
   metricNodes(props?: MetricOptions): Metric;
 
@@ -725,6 +866,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for automated snapshot failures.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricAutomatedSnapshotFailure(props?: MetricOptions): Metric;
 
@@ -732,6 +874,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricCPUUtilization(props?: MetricOptions): Metric;
 
@@ -739,6 +882,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricJVMMemoryPressure(props?: MetricOptions): Metric;
 
@@ -746,6 +890,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for master CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricMasterCPUUtilization(props?: MetricOptions): Metric;
 
@@ -753,6 +898,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for master JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricMasterJVMMemoryPressure(props?: MetricOptions): Metric;
 
@@ -760,6 +906,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for KMS key errors.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricKMSKeyError(props?: MetricOptions): Metric;
 
@@ -767,6 +914,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for KMS key being inaccessible.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricKMSKeyInaccessible(props?: MetricOptions): Metric;
 
@@ -774,6 +922,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for number of searchable documents.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricSearchableDocuments(props?: MetricOptions): Metric;
 
@@ -781,6 +930,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for search latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricSearchLatency(props?: MetricOptions): Metric;
 
@@ -788,6 +938,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for indexing latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   metricIndexingLatency(props?: MetricOptions): Metric;
 }
@@ -806,6 +957,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -821,6 +973,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -836,6 +989,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -852,6 +1006,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantIndexRead(index: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -868,6 +1023,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantIndexWrite(index: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -884,6 +1040,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantIndexReadWrite(index: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -900,6 +1057,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantPathRead(path: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -915,6 +1073,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -930,6 +1089,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated use opensearchservice module instead
    */
   grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -941,14 +1101,16 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
   /**
    * Return the given named metric for this Domain.
+   *
+   * @deprecated use opensearchservice module instead
    */
   public metric(metricName: string, props?: MetricOptions): Metric {
     return new Metric({
       namespace: 'AWS/ES',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         DomainName: this.domainName,
-        ClientId: this.stack.account,
+        ClientId: this.env.account,
       },
       ...props,
     }).attachTo(this);
@@ -958,6 +1120,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the time the cluster status is red.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricClusterStatusRed(props?: MetricOptions): Metric {
     return this.metric('ClusterStatus.red', {
@@ -970,6 +1133,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the time the cluster status is yellow.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricClusterStatusYellow(props?: MetricOptions): Metric {
     return this.metric('ClusterStatus.yellow', {
@@ -982,6 +1146,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the storage space of nodes in the cluster.
    *
    * @default minimum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricFreeStorageSpace(props?: MetricOptions): Metric {
     return this.metric('FreeStorageSpace', {
@@ -994,9 +1159,10 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the cluster blocking index writes.
    *
    * @default maximum over 1 minute
+   * @deprecated use opensearchservice module instead
    */
-  public metricClusterIndexWriteBlocked(props?: MetricOptions): Metric {
-    return this.metric('ClusterIndexWriteBlocked', {
+  public metricClusterIndexWritesBlocked(props?: MetricOptions): Metric {
+    return this.metric('ClusterIndexWritesBlocked', {
       statistic: Statistic.MAXIMUM,
       period: cdk.Duration.minutes(1),
       ...props,
@@ -1007,6 +1173,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the number of nodes.
    *
    * @default minimum over 1 hour
+   * @deprecated use opensearchservice module instead
    */
   public metricNodes(props?: MetricOptions): Metric {
     return this.metric('Nodes', {
@@ -1020,6 +1187,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for automated snapshot failures.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricAutomatedSnapshotFailure(props?: MetricOptions): Metric {
     return this.metric('AutomatedSnapshotFailure', {
@@ -1032,6 +1200,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricCPUUtilization(props?: MetricOptions): Metric {
     return this.metric('CPUUtilization', {
@@ -1044,6 +1213,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricJVMMemoryPressure(props?: MetricOptions): Metric {
     return this.metric('JVMMemoryPressure', {
@@ -1056,6 +1226,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for master CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricMasterCPUUtilization(props?: MetricOptions): Metric {
     return this.metric('MasterCPUUtilization', {
@@ -1068,6 +1239,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for master JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricMasterJVMMemoryPressure(props?: MetricOptions): Metric {
     return this.metric('MasterJVMMemoryPressure', {
@@ -1080,6 +1252,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for KMS key errors.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricKMSKeyError(props?: MetricOptions): Metric {
     return this.metric('KMSKeyError', {
@@ -1092,6 +1265,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for KMS key being inaccessible.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricKMSKeyInaccessible(props?: MetricOptions): Metric {
     return this.metric('KMSKeyInaccessible', {
@@ -1104,6 +1278,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for number of searchable documents.
    *
    * @default maximum over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricSearchableDocuments(props?: MetricOptions): Metric {
     return this.metric('SearchableDocuments', {
@@ -1116,6 +1291,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for search latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricSearchLatency(props?: MetricOptions): Metric {
     return this.metric('SearchLatency', { statistic: 'p99', ...props });
@@ -1125,6 +1301,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for indexing latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated use opensearchservice module instead
    */
   public metricIndexingLatency(props?: MetricOptions): Metric {
     return this.metric('IndexingLatency', { statistic: 'p99', ...props });
@@ -1153,15 +1330,21 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
 /**
  * Reference to an Elasticsearch domain.
+ *
+ * @deprecated use opensearchservice module instead
  */
 export interface DomainAttributes {
   /**
    * The ARN of the Elasticsearch domain.
+   *
+   * @deprecated use opensearchservice module instead
    */
   readonly domainArn: string;
 
   /**
    * The domain endpoint of the Elasticsearch domain.
+   *
+   * @deprecated use opensearchservice module instead
    */
   readonly domainEndpoint: string;
 }
@@ -1169,14 +1352,17 @@ export interface DomainAttributes {
 
 /**
  * Provides an Elasticsearch domain.
+ *
+ * @deprecated use opensearchservice module instead
  */
-export class Domain extends DomainBase implements IDomain {
+export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Creates a Domain construct that represents an external domain via domain endpoint.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param domainEndpoint The domain's endpoint.
+   * @deprecated use opensearchservice module instead
    */
   public static fromDomainEndpoint(
     scope: Construct,
@@ -1203,28 +1389,42 @@ export class Domain extends DomainBase implements IDomain {
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param attrs A `DomainAttributes` object.
+   * @deprecated use opensearchservice module instead
    */
   public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
-    const domainName = extractNameFromEndpoint(domainEndpoint);
+    const domainName = cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName
+      ?? extractNameFromEndpoint(domainEndpoint);
 
     return new class extends DomainBase {
       public readonly domainArn = domainArn;
       public readonly domainName = domainName;
-      public readonly domainEndpoint = domainEndpoint;
+      public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '');
 
       constructor() { super(scope, id); }
     };
   }
 
+  /**
+   * @deprecated use opensearchservice module instead
+   */
   public readonly domainArn: string;
+
+  /**
+   * @deprecated use opensearchservice module instead
+   */
   public readonly domainName: string;
+
+  /**
+   * @deprecated use opensearchservice module instead
+   */
   public readonly domainEndpoint: string;
 
   /**
    * Log group that slow searches are logged to.
    *
    * @attribute
+   * @deprecated use opensearchservice module instead
    */
   public readonly slowSearchLogGroup?: logs.ILogGroup;
 
@@ -1232,6 +1432,7 @@ export class Domain extends DomainBase implements IDomain {
    * Log group that slow indices are logged to.
    *
    * @attribute
+   * @deprecated use opensearchservice module instead
    */
   public readonly slowIndexLogGroup?: logs.ILogGroup;
 
@@ -1239,6 +1440,7 @@ export class Domain extends DomainBase implements IDomain {
    * Log group that application logs are logged to.
    *
    * @attribute
+   * @deprecated use opensearchservice module instead
    */
   public readonly appLogGroup?: logs.ILogGroup;
 
@@ -1246,16 +1448,24 @@ export class Domain extends DomainBase implements IDomain {
    * Log group that audit logs are logged to.
    *
    * @attribute
+   * @deprecated use opensearchservice module instead
    */
   public readonly auditLogGroup?: logs.ILogGroup;
 
   /**
    * Master user password if fine grained access control is configured.
+   *
+   * @deprecated use opensearchservice module instead
    */
   public readonly masterUserPassword?: cdk.SecretValue;
 
 
   private readonly domain: CfnDomain;
+
+  private accessPolicy?: ElasticsearchAccessPolicy
+  private encryptionAtRestOptions?: EncryptionAtRestOptions
+
+  private readonly _connections: ec2.Connections | undefined;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id, {
@@ -1265,22 +1475,16 @@ export class Domain extends DomainBase implements IDomain {
     const defaultInstanceType = 'r5.large.elasticsearch';
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
-    const dedicatedMasterType =
-      props.capacity?.masterNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+    const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
-    const dedicatedMasterEnabled = dedicatedMasterCount > 0;
+    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount) ? true : dedicatedMasterCount > 0;
 
-    const instanceType =
-      props.capacity?.dataNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+    const instanceType = initializeInstanceType(defaultInstanceType, props.capacity?.dataNodeInstanceType);
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
-    const warmType =
-      props.capacity?.warmInstanceType?.toLowerCase() ??
-      warmDefaultInstanceType;
+    const warmType = initializeInstanceType(warmDefaultInstanceType, props.capacity?.warmInstanceType);
     const warmCount = props.capacity?.warmNodes ?? 0;
-    const warmEnabled = warmCount > 0;
+    const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
@@ -1293,17 +1497,29 @@ export class Domain extends DomainBase implements IDomain {
       props.zoneAwareness?.enabled ??
       props.zoneAwareness?.availabilityZoneCount != null;
 
-    // If VPC options are supplied ensure that the number of subnets matches the number AZ
-    if (props.vpcOptions != null && zoneAwarenessEnabled &&
-      new Set(props.vpcOptions?.subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount) {
-      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
-    };
 
-    if ([dedicatedMasterType, instanceType, warmType].some(t => !t.endsWith('.elasticsearch'))) {
+    let securityGroups: ec2.ISecurityGroup[] | undefined;
+    let subnets: ec2.ISubnet[] | undefined;
+
+    if (props.vpc) {
+      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]);
+      securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: `Security group for domain ${this.node.id}`,
+      })];
+      this._connections = new ec2.Connections({ securityGroups });
+    }
+
+    // If VPC options are supplied ensure that the number of subnets matches the number AZ
+    if (subnets && zoneAwarenessEnabled && new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount) {
+      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
+    }
+
+    if ([dedicatedMasterType, instanceType, warmType].some(t => (!cdk.Token.isUnresolved(t) && !t.endsWith('.elasticsearch')))) {
       throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
     }
 
-    if (!warmType.startsWith('ultrawarm')) {
+    if (!cdk.Token.isUnresolved(warmType) && !warmType.startsWith('ultrawarm')) {
       throw new Error('UltraWarm node instance type must start with "ultrawarm".');
     }
 
@@ -1338,7 +1554,7 @@ export class Domain extends DomainBase implements IDomain {
     const unsignedAccessPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
-      principals: [new iam.Anyone()],
+      principals: [new iam.AnyPrincipal()],
       resources: [cdk.Lazy.string({ produce: () => `${this.domainArn}/*` })],
     });
 
@@ -1388,20 +1604,15 @@ export class Domain extends DomainBase implements IDomain {
       return instanceTypes.some(isInstanceType);
     };
 
-    function isEveryInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.some(t => dedicatedMasterType.startsWith(t))
-        && instanceTypes.some(t => instanceType.startsWith(t));
+    function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
+      return instanceTypes.some(t => instanceType.startsWith(t));
     };
 
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
     if (elasticsearchVersionNum < 5.1) {
-      if (
-        props.logging?.slowIndexLogEnabled
-        || props.logging?.appLogEnabled
-        || props.logging?.slowSearchLogEnabled
-      ) {
-        throw new Error('Error and slow logs publishing requires Elasticsearch version 5.1 or later.');
+      if (props.logging?.appLogEnabled) {
+        throw new Error('Error logs publishing requires Elasticsearch version 5.1 or later.');
       }
       if (props.encryptionAtRest?.enabled) {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
@@ -1435,8 +1646,8 @@ export class Domain extends DomainBase implements IDomain {
 
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html
-    if (isInstanceType('i3') && ebsEnabled) {
-      throw new Error('I3 instance types do not support EBS storage volumes.');
+    if (isSomeInstanceType('i3', 'r6gd') && ebsEnabled) {
+      throw new Error('I3 and R6GD instance types do not support EBS storage volumes.');
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
@@ -1451,10 +1662,10 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
     }
 
-    // Only R3 and I3 support instance storage, per
+    // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
-    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3')) {
-      throw new Error('EBS volumes are required when using instance types other than r3 or i3.');
+    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd')) {
+      throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 
     // Fine-grained access control requires node-to-node encryption, encryption at rest,
@@ -1484,10 +1695,11 @@ export class Domain extends DomainBase implements IDomain {
     }
 
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
-    if (props.vpcOptions) {
+
+    if (securityGroups && subnets) {
       cfnVpcOptions = {
-        securityGroupIds: props.vpcOptions.securityGroups.map((sg) => sg.securityGroupId),
-        subnetIds: props.vpcOptions.subnets.map((subnet) => subnet.subnetId),
+        securityGroupIds: securityGroups.map((sg) => sg.securityGroupId),
+        subnetIds: subnets.map((subnet) => subnet.subnetId),
       };
     }
 
@@ -1523,9 +1735,9 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
-          new logs.LogGroup(this, 'AuditLogs', {
-            retention: logs.RetentionDays.ONE_MONTH,
-          });
+        new logs.LogGroup(this, 'AuditLogs', {
+          retention: logs.RetentionDays.ONE_MONTH,
+        });
 
       logGroups.push(this.auditLogGroup);
     };
@@ -1658,11 +1870,13 @@ export class Domain extends DomainBase implements IDomain {
           masterUserOptions: {
             masterUserArn: masterUserArn,
             masterUserName: masterUserName,
-            masterUserPassword: this.masterUserPassword?.toString(),
+            masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
           },
         }
         : undefined,
+      advancedOptions: props.advancedOptions,
     });
+    this.domain.applyRemovalPolicy(props.removalPolicy);
 
     if (props.enableVersionUpgrade) {
       this.domain.cfnOptions.updatePolicy = {
@@ -1673,7 +1887,21 @@ export class Domain extends DomainBase implements IDomain {
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
-    if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
+    if (props.domainName) {
+      if (!cdk.Token.isUnresolved(props.domainName)) {
+        // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
+        if (!props.domainName.match(/^[a-z0-9\-]+$/)) {
+          throw new Error(`Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`);
+        }
+        if (props.domainName.length < 3 || props.domainName.length > 28) {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`);
+        }
+        if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`);
+        }
+      }
+      this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
+    }
 
     this.domainName = this.getResourceNameAttribute(this.domain.ref);
 
@@ -1693,33 +1921,59 @@ export class Domain extends DomainBase implements IDomain {
       });
     }
 
-    const accessPolicyStatements: iam.PolicyStatement[] | undefined = unsignedBasicAuthEnabled
-      ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
-      : props.accessPolicies;
+    this.encryptionAtRestOptions = props.encryptionAtRest;
+    if (props.accessPolicies) {
+      this.addAccessPolicies(...props.accessPolicies);
+    }
+    if (unsignedBasicAuthEnabled) {
+      this.addAccessPolicies(unsignedAccessPolicy);
+    }
+  }
 
-    if (accessPolicyStatements != null) {
-      const accessPolicy = new ElasticsearchAccessPolicy(this, 'ESAccessPolicy', {
-        domainName: this.domainName,
-        domainArn: this.domainArn,
-        accessPolicies: accessPolicyStatements,
-      });
+  /**
+   * Manages network connections to the domain. This will throw an error in case the domain
+   * is not placed inside a VPC.
+   *
+   * @deprecated use opensearchservice module instead
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      throw new Error("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+    }
+    return this._connections;
+  }
 
-      if (props.encryptionAtRest?.kmsKey) {
+  /**
+   * Add policy statements to the domain access policy
+   *
+   * @deprecated use opensearchservice module instead
+   */
+  public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
+    if (accessPolicyStatements.length > 0) {
+      if (!this.accessPolicy) {
+        // Only create the custom resource after there are statements to set.
+        this.accessPolicy = new ElasticsearchAccessPolicy(this, 'ESAccessPolicy', {
+          domainName: this.domainName,
+          domainArn: this.domainArn,
+          accessPolicies: accessPolicyStatements,
+        });
 
-        // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
+        if (this.encryptionAtRestOptions?.kmsKey) {
+          // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
 
-        // these permissions are documented as required during domain creation.
-        // while not strictly documented for updates as well, it stands to reason that an update
-        // operation might require these in case the cluster uses a kms key.
-        // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
-        accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-          actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-          resources: [props.encryptionAtRest.kmsKey.keyArn],
-          effect: iam.Effect.ALLOW,
-        }));
+          // these permissions are documented as required during domain creation.
+          // while not strictly documented for updates as well, it stands to reason that an update
+          // operation might require these in case the cluster uses a kms key.
+          // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
+          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+            actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+            effect: iam.Effect.ALLOW,
+          }));
+        }
+      } else {
+        this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
       }
-
-      accessPolicy.node.addDependency(this.domain);
     }
   }
 }
@@ -1768,5 +2022,28 @@ function parseVersion(version: ElasticsearchVersion): number {
     }
   } catch (error) {
     throw new Error(`Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
+  }
+}
+
+function selectSubnets(vpc: ec2.IVpc, vpcSubnets: ec2.SubnetSelection[]): ec2.ISubnet[] {
+  const selected = [];
+  for (const selection of vpcSubnets) {
+    selected.push(...vpc.selectSubnets(selection).subnets);
+  }
+  return selected;
+}
+
+/**
+ * Initializes an instance type.
+ *
+ * @param defaultInstanceType Default instance type which is used if no instance type is provided
+ * @param instanceType Instance type
+ * @returns Instance type in lowercase (if provided) or default instance type
+ */
+function initializeInstanceType(defaultInstanceType: string, instanceType?: string): string {
+  if (instanceType) {
+    return cdk.Token.isUnresolved(instanceType) ? instanceType : instanceType.toLowerCase();
+  } else {
+    return defaultInstanceType;
   }
 }

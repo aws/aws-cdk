@@ -1,4 +1,4 @@
-import { ToolkitInfo } from '../../lib';
+import { ToolkitInfo } from '../../lib/api';
 import { errorWithCode, mockBootstrapStack, MockSdk } from '../util/mock-sdk';
 
 

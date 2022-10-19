@@ -69,7 +69,7 @@ export class FakeSts {
             _attributes: { xmlns: 'https://sts.amazonaws.com/doc/2011-06-15/' },
             Error: {
               Type: 'Sender',
-              Code: 'Error',
+              Code: e.code ?? 'Error',
               Message: e.message,
             },
             RequestId: '1',
@@ -158,6 +158,13 @@ export class FakeSts {
 
   private handleAssumeRole(mockRequest: MockRequest): Record<string, any> {
     const identity = this.identity(mockRequest);
+
+    const failureRequested = mockRequest.parsedBody.RoleArn.match(/<FAIL:([^>]+)>/);
+    if (failureRequested) {
+      const err = new Error(`STS failing by user request: ${failureRequested[1]}`);
+      (err as any).code = failureRequested[1];
+      throw err;
+    }
 
     this.assumedRoles.push({
       roleArn: mockRequest.parsedBody.RoleArn,

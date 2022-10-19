@@ -253,7 +253,7 @@ export class Evaluation<T> {
 
     function matchPattern(s: string, pattern: string) {
       if (pattern.endsWith('*')) {
-        const prefix = pattern.substr(0, pattern.length - 1);
+        const prefix = pattern.slice(0, -1);
         return s.startsWith(prefix);
       } else {
         return s === pattern;

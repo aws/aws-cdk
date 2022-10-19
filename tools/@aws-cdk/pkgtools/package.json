@@ -1,0 +1,54 @@
+{
+  "name": "@aws-cdk/pkgtools",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Tools for generating cross-package artifacts",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "tools/@aws-cdk/pkgtools"
+  },
+  "bin": {
+    "cdk-version": "bin/cdk-version",
+    "find-jsii-packages": "bin/find-jsii-packages"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/fs-extra": "^8.1.2",
+    "@types/yargs": "^15.0.14"
+  },
+  "dependencies": {
+    "fs-extra": "^9.1.0",
+    "yargs": "^16.2.0"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "ubergen": {
+    "exclude": true
+  }
+}

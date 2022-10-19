@@ -1,12 +1,12 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
-import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
-import { Stack } from '../stack';
 import { assertBound } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
+import { ISynthesisSession } from './types';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -24,16 +24,27 @@ const ASSETS_ECR_REPOSITORY_NAME = 'aws-cdk/assets';
 const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-name';
 
 /**
- * Use the original deployment environment
+ * Use the CDK classic way of referencing assets
  *
- * This deployment environment is restricted in cross-environment deployments,
- * CI/CD deployments, and will use up CloudFormation parameters in your template.
+ * This synthesizer will generate CloudFormation parameters for every referenced
+ * asset, and use the CLI's current credentials to deploy the stack.
+ *
+ * - It does not support cross-account deployment (the CLI must have credentials
+ *   to the account you are trying to deploy to).
+ * - It cannot be used with **CDK Pipelines**. To deploy using CDK Pipelines,
+ *   you must use the `DefaultStackSynthesizer`.
+ * - Each asset will take up a CloudFormation Parameter in your template. Keep in
+ *   mind that there is a maximum of 200 parameters in a CloudFormation template.
+ *   To use determinstic asset locations instead, use `CliCredentialsStackSynthesizer`.
+ *
+ * Be aware that your CLI credentials must be valid for the duration of the
+ * entire deployment. If you are using session credentials, make sure the
+ * session lifetime is long enough.
  *
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
 export class LegacyStackSynthesizer extends StackSynthesizer {
-  private stack?: Stack;
   private cycle = false;
 
   /**
@@ -47,16 +58,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
    */
   private readonly addedImageAssets = new Set<string>();
 
-  public bind(stack: Stack): void {
-    if (this.stack !== undefined) {
-      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
-    }
-    this.stack = stack;
-  }
-
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    assertBound(this.stack);
-
     // Backwards compatibility hack. We have a number of conflicting goals here:
     //
     // - We want put the actual logic in this class
@@ -75,15 +77,14 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.addFileAsset(asset);
+      const stack = this.boundStack;
+      return withoutDeprecationWarnings(() => stack.addFileAsset(asset));
     } finally {
       this.cycle = false;
     }
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    assertBound(this.stack);
-
     // See `addFileAsset` for explanation.
     // @deprecated: this can be removed for v2
     if (this.cycle) {
@@ -91,7 +92,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.addDockerImageAsset(asset);
+      const stack = this.boundStack;
+      return withoutDeprecationWarnings(() => stack.addDockerImageAsset(asset));
     } finally {
       this.cycle = false;
     }
@@ -101,19 +103,15 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
    * Synthesize the associated stack to the session
    */
   public synthesize(session: ISynthesisSession): void {
-    assertBound(this.stack);
-
-    this.synthesizeStackTemplate(this.stack, session);
+    this.synthesizeTemplate(session);
 
     // Just do the default stuff, nothing special
-    this.emitStackArtifact(this.stack, session);
+    this.emitArtifact(session);
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    assertBound(this.stack);
-
     // check if we have an override from context
-    const repositoryNameOverride = this.stack.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
+    const repositoryNameOverride = this.boundStack.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
     const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
     const imageTag = asset.sourceHash;
     const assetId = asset.sourceHash;
@@ -134,21 +132,21 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
         buildArgs: asset.dockerBuildArgs,
         target: asset.dockerBuildTarget,
         file: asset.dockerFile,
+        networkMode: asset.networkMode,
+        platform: asset.platform,
       };
 
-      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
+      this.boundStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
       this.addedImageAssets.add(assetId);
     }
 
     return {
-      imageUri: `${this.stack.account}.dkr.ecr.${this.stack.region}.${this.stack.urlSuffix}/${repositoryName}:${imageTag}`,
+      imageUri: `${this.boundStack.account}.dkr.ecr.${this.boundStack.region}.${this.boundStack.urlSuffix}/${repositoryName}:${imageTag}`,
       repositoryName,
     };
   }
 
   private doAddFileAsset(asset: FileAssetSource): FileAssetLocation {
-    assertBound(this.stack);
-
     let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
@@ -168,7 +166,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
         artifactHashParameter: params.artifactHashParameter.logicalId,
       };
 
-      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
+      this.boundStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;
@@ -180,18 +178,28 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     const s3Filename = Fn.select(1, Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, encodedKey));
     const objectKey = `${s3Prefix}${s3Filename}`;
 
-    const httpUrl = `https://s3.${this.stack.region}.${this.stack.urlSuffix}/${bucketName}/${objectKey}`;
+    const httpUrl = `https://s3.${this.boundStack.region}.${this.boundStack.urlSuffix}/${bucketName}/${objectKey}`;
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
 
     return { bucketName, objectKey, httpUrl, s3ObjectUrl, s3Url: httpUrl };
   }
 
   private get assetParameters() {
-    assertBound(this.stack);
+    assertBound(this.boundStack);
 
     if (!this._assetParameters) {
-      this._assetParameters = new Construct(this.stack, 'AssetParameters');
+      this._assetParameters = new Construct(this.boundStack, 'AssetParameters');
     }
     return this._assetParameters;
+  }
+}
+
+function withoutDeprecationWarnings<A>(block: () => A): A {
+  const orig = process.env.JSII_DEPRECATED;
+  process.env.JSII_DEPRECATED = 'quiet';
+  try {
+    return block();
+  } finally {
+    process.env.JSII_DEPRECATED = orig;
   }
 }

@@ -1,13 +1,12 @@
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAppsyncFunction } from './appsync-function';
 import { CfnResolver } from './appsync.generated';
+import { CachingConfig } from './caching-config';
+import { BASE_CACHING_KEYS } from './caching-key';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Basic properties for an AppSync resolver
@@ -40,6 +39,18 @@ export interface BaseResolverProps {
    * @default - No mapping template
    */
   readonly responseMappingTemplate?: MappingTemplate;
+  /**
+   * The caching configuration for this resolver
+   *
+   * @default - No caching configuration
+   */
+  readonly cachingConfig?: CachingConfig;
+  /**
+   * The maximum number of elements per batch, when using batch invoke
+   *
+   * @default - No max batch size
+   */
+  readonly maxBatchSize?: number;
 }
 
 /**
@@ -67,7 +78,7 @@ export interface ResolverProps extends ExtendedResolverProps {
 /**
  * An AppSync resolver
  */
-export class Resolver extends CoreConstruct {
+export class Resolver extends Construct {
   /**
    * the ARN of the resolver
    */
@@ -86,6 +97,17 @@ export class Resolver extends CoreConstruct {
       throw new Error(`Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`);
     }
 
+    if (props.cachingConfig?.ttl && (props.cachingConfig.ttl.toSeconds() < 1 || props.cachingConfig.ttl.toSeconds() > 3600)) {
+      throw new Error(`Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`);
+    }
+
+    if (props.cachingConfig?.cachingKeys) {
+      if (props.cachingConfig.cachingKeys.find(cachingKey =>
+        !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
+        throw new Error(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`);
+      }
+    }
+
     this.resolver = new CfnResolver(this, 'Resource', {
       apiId: props.api.apiId,
       typeName: props.typeName,
@@ -95,6 +117,8 @@ export class Resolver extends CoreConstruct {
       pipelineConfig: pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
+      cachingConfig: this.createCachingConfig(props.cachingConfig),
+      maxBatchSize: props.maxBatchSize,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
@@ -102,4 +126,12 @@ export class Resolver extends CoreConstruct {
     }
     this.arn = this.resolver.attrResolverArn;
   }
+
+  private createCachingConfig(config?: CachingConfig) {
+    return config ? {
+      cachingKeys: config.cachingKeys,
+      ttl: config.ttl?.toSeconds(),
+    } : undefined;
+  }
+
 }

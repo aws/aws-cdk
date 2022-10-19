@@ -43,10 +43,25 @@ export class LogGroupLogDestination implements IAccessLogDestination {
  */
 export class AccessLogField {
   /**
-   * The API owner's AWS account ID.
+   * The API callers AWS account ID.
+   * @deprecated Use `contextCallerAccountId` or `contextOwnerAccountId` instead
    */
   public static contextAccountId() {
     return '$context.identity.accountId';
+  }
+
+  /**
+   * The API callers AWS account ID.
+   */
+  public static contextCallerAccountId() {
+    return '$context.identity.accountId';
+  }
+
+  /**
+   * The API owner's AWS account ID.
+   */
+  public static contextOwnerAccountId() {
+    return '$context.accountId';
   }
 
   /**
@@ -226,6 +241,66 @@ export class AccessLogField {
    */
   public static contextIdentitySourceIp() {
     return '$context.identity.sourceIp';
+  }
+
+  /**
+   * The PEM-encoded client certificate that the client presented during mutual TLS authentication.
+   * Present when a client accesses an API by using a custom domain name that has mutual TLS enabled.
+   * Present only in access logs if mutual TLS authentication fails.
+   */
+
+  public static contextIdentityClientCertPem() {
+    return '$context.identity.clientCert.clientCertPem';
+  }
+
+  /**
+   * The distinguished name of the subject of the certificate that a client presents.
+   * Present when a client accesses an API by using a custom domain name that has mutual TLS enabled.
+   * Present only in access logs if mutual TLS authentication fails.
+   */
+
+  public static contextIdentityClientCertSubjectDN() {
+    return '$context.identity.clientCert.subjectDN';
+  }
+
+  /**
+   * The distinguished name of the issuer of the certificate that a client presents.
+   * Present when a client accesses an API by using a custom domain name that has mutual TLS enabled.
+   * Present only in access logs if mutual TLS authentication fails.
+   */
+
+  public static contextIdentityClientCertIssunerDN() {
+    return '$context.identity.clientCert.issuerDN';
+  }
+
+  /**
+   * The serial number of the certificate.
+   * Present when a client accesses an API by using a custom domain name that has mutual TLS enabled.
+   * Present only in access logs if mutual TLS authentication fails.
+   */
+
+  public static contextIdentityClientCertSerialNumber() {
+    return '$context.identity.clientCert.serialNumber';
+  }
+
+  /**
+   * The date before which the certificate is invalid.
+   * Present when a client accesses an API by using a custom domain name that has mutual TLS enabled.
+   * Present only in access logs if mutual TLS authentication fails.
+   */
+
+  public static contextIdentityClientCertValidityNotBefore() {
+    return '$context.identity.clientCert.validity.notBefore';
+  }
+
+  /**
+   * The date after which the certificate is invalid.
+   * Present when a client accesses an API by using a custom domain name that has mutual TLS enabled.
+   * Present only in access logs if mutual TLS authentication fails.
+   */
+
+  public static contextIdentityClientCertValidityNotAfter() {
+    return '$context.identity.clientCert.validity.notAfter';
   }
 
   /**
@@ -434,6 +509,121 @@ export class AccessLogField {
   public static contextStatus() {
     return '$context.status';
   }
+
+  /**
+   * The authorization error message.
+   */
+  public static contextAuthorizeError() {
+    return '$context.authorize.error';
+  }
+
+  /**
+   * The authorization latency in ms.
+   */
+  public static contextAuthorizeLatency() {
+    return '$context.authorize.latency';
+  }
+
+  /**
+   * The status code returned from an authorization attempt.
+   */
+  public static contextAuthorizeStatus() {
+    return '$context.authorize.status';
+  }
+
+  /**
+   * The error message returned from an authorizer.
+   */
+  public static contextAuthorizerError() {
+    return '$context.authorizer.error';
+  }
+
+  /**
+   * The status code returned from a Lambda authorizer.
+   */
+  public static contextAuthorizerIntegrationStatus() {
+    return '$context.authorizer.integrationStatus';
+  }
+
+  /**
+   * The authorizer latency in ms.
+   */
+  public static contextAuthorizerLatency() {
+    return '$context.authorizer.latency';
+  }
+
+  /**
+   * The AWS endpoint's request ID.
+   */
+  public static contextAuthorizerRequestId() {
+    return '$context.authorizer.requestId';
+  }
+
+  /**
+   * The status code returned from an authorizer.
+   */
+  public static contextAuthorizerStatus() {
+    return '$context.authorizer.status';
+  }
+
+  /**
+   * The error message returned from an authentication attempt.
+   */
+  public static contextAuthenticateError() {
+    return '$context.authenticate.error';
+  }
+
+  /**
+   * The authentication latency in ms.
+   */
+  public static contextAuthenticateLatency() {
+    return '$context.authenticate.latency';
+  }
+
+  /**
+   * The status code returned from an authentication attempt.
+   */
+  public static contextAuthenticateStatus() {
+    return '$context.authenticate.status';
+  }
+
+  /**
+   * The path for an API mapping that an incoming request matched.
+   * Applicable when a client uses a custom domain name to access an API. For example if a client sends a request to
+   * https://api.example.com/v1/orders/1234, and the request matches the API mapping with the path v1/orders, the value is v1/orders.
+   * @see https://docs.aws.amazon.com/en_jp/apigateway/latest/developerguide/rest-api-mappings.html
+   */
+  public static contextCustomDomainBasePathMatched() {
+    return '$context.customDomain.basePathMatched';
+  }
+
+  /**
+   * A string that contains an integration error message.
+   */
+  public static contextIntegrationErrorMessage() {
+    return '$context.integrationErrorMessage';
+  }
+
+  /**
+   * The error message returned from AWS WAF.
+   */
+  public static contextWafError() {
+    return '$context.waf.error';
+  }
+
+  /**
+   * The AWS WAF latency in ms.
+   */
+  public static contextWafLatency() {
+    return '$context.waf.latency';
+  }
+
+  /**
+   * The status code returned from AWS WAF.
+   */
+  public static contextWafStatus() {
+    return '$context.waf.status';
+  }
 }
 
 /**
@@ -486,15 +676,17 @@ export class AccessLogFormat {
    * Custom log format.
    * You can create any log format string. You can easily get the $ context variable by using the methods of AccessLogField.
    * @param format
-   * @example custom(JSON.stringify({
-   *  requestId: AccessLogField.contextRequestId(),
-   *  sourceIp: AccessLogField.contextIdentitySourceIp(),
-   *  method: AccessLogFiled.contextHttpMethod(),
-   *  userContext: {
-   *    sub: AccessLogField.contextAuthorizerClaims('sub'),
-   *    email: AccessLogField.contextAuthorizerClaims('email')
-   *  }
-   * }))
+   * @example
+   *
+   *  apigateway.AccessLogFormat.custom(JSON.stringify({
+   *      requestId: apigateway.AccessLogField.contextRequestId(),
+   *      sourceIp: apigateway.AccessLogField.contextIdentitySourceIp(),
+   *      method: apigateway.AccessLogField.contextHttpMethod(),
+   *      userContext: {
+   *        sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
+   *        email: apigateway.AccessLogField.contextAuthorizerClaims('email')
+   *      }
+   *   }))
    */
   public static custom(format: string): AccessLogFormat {
     return new AccessLogFormat(format);

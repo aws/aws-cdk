@@ -1,10 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { Duration, Stack, Token } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import { Template } from '@aws-cdk/assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Duration, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
-nodeunitShim({
-  'can add a vpn connection to a vpc with a vpn gateway'(test: Test) {
+describe('vpn', () => {
+  test('can add a vpn connection to a vpc with a vpn gateway', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -19,13 +19,13 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::CustomerGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       BgpAsn: 65001,
       IpAddress: '192.0.2.1',
       Type: 'ipsec.1',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
         Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
       },
@@ -34,12 +34,12 @@ nodeunitShim({
         Ref: 'VpcNetworkVpnGateway501295FA',
       },
       StaticRoutesOnly: false,
-    }));
+    });
 
-    test.done();
-  },
 
-  'with static routing'(test: Test) {
+  });
+
+  test('with static routing', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -57,7 +57,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
         Ref: 'VpcNetworkstaticCustomerGatewayAF2651CC',
       },
@@ -66,26 +66,26 @@ nodeunitShim({
         Ref: 'VpcNetworkVpnGateway501295FA',
       },
       StaticRoutesOnly: true,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::VPNConnectionRoute', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.10.0/24',
       VpnConnectionId: {
         Ref: 'VpcNetworkstaticE33EA98C',
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::VPNConnectionRoute', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.20.0/24',
       VpnConnectionId: {
         Ref: 'VpcNetworkstaticE33EA98C',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'with tunnel options'(test: Test) {
+  });
+
+  test('with tunnel options, using secret value', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -93,17 +93,15 @@ nodeunitShim({
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
-          tunnelOptions: [
-            {
-              preSharedKey: 'secretkey1234',
-              tunnelInsideCidr: '169.254.10.0/30',
-            },
-          ],
+          tunnelOptions: [{
+            preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+            tunnelInsideCidr: '169.254.10.0/30',
+          }],
         },
       },
     });
 
-    expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
         Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
       },
@@ -118,57 +116,89 @@ nodeunitShim({
           TunnelInsideCidr: '169.254.10.0/30',
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'fails when ip is invalid'(test: Test) {
+  testDeprecated('with tunnel options, using secret', () => {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+    new Vpc(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [{
+            preSharedKey: 'secretkey1234',
+            tunnelInsideCidr: '169.254.10.0/30',
+          }],
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
+      CustomerGatewayId: {
+        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
+      },
+      Type: 'ipsec.1',
+      VpnGatewayId: {
+        Ref: 'VpcNetworkVpnGateway501295FA',
+      },
+      StaticRoutesOnly: false,
+      VpnTunnelOptionsSpecifications: [
+        {
+          PreSharedKey: 'secretkey1234',
+          TunnelInsideCidr: '169.254.10.0/30',
+        },
+      ],
+    });
+  });
+
+  test('fails when ip is invalid', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    expect(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.256',
         },
       },
-    }), /`ip`.+IPv4/);
+    })).toThrow(/`ip`.+IPv4/);
 
-    test.done();
-  },
 
-  'fails when specifying more than two tunnel options'(test: Test) {
+  });
+
+  test('fails when specifying more than two tunnel options', () => {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+    expect(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
           tunnelOptions: [
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
           ],
         },
       },
-    }), /two.+`tunnelOptions`/);
+    })).toThrow(/two.+`tunnelOptions`/);
 
-    test.done();
-  },
 
-  'fails with duplicate tunnel inside cidr'(test: Test) {
+  });
+
+  test('fails with duplicate tunnel inside cidr', () => {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+    expect(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -182,16 +212,16 @@ nodeunitShim({
           ],
         },
       },
-    }), /`tunnelInsideCidr`.+both tunnels/);
+    })).toThrow(/`tunnelInsideCidr`.+both tunnels/);
 
-    test.done();
-  },
 
-  'fails when specifying an invalid pre-shared key'(test: Test) {
+  });
+
+  testDeprecated('fails when specifying an invalid pre-shared key', () => {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+    expect(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -202,16 +232,16 @@ nodeunitShim({
           ],
         },
       },
-    }), /`preSharedKey`/);
+    })).toThrow(/`preSharedKey`/);
 
-    test.done();
-  },
 
-  'fails when specifying a reserved tunnel inside cidr'(test: Test) {
+  });
+
+  test('fails when specifying a reserved tunnel inside cidr', () => {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+    expect(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -222,16 +252,16 @@ nodeunitShim({
           ],
         },
       },
-    }), /`tunnelInsideCidr`.+reserved/);
+    })).toThrow(/`tunnelInsideCidr`.+reserved/);
 
-    test.done();
-  },
 
-  'fails when specifying an invalid tunnel inside cidr'(test: Test) {
+  });
+
+  test('fails when specifying an invalid tunnel inside cidr', () => {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+    expect(() => new Vpc(stack, 'VpcNetwork', {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
@@ -242,12 +272,12 @@ nodeunitShim({
           ],
         },
       },
-    }), /`tunnelInsideCidr`.+size/);
+    })).toThrow(/`tunnelInsideCidr`.+size/);
 
-    test.done();
-  },
 
-  'can use metricTunnelState on a vpn connection'(test: Test) {
+  });
+
+  test('can use metricTunnelState on a vpn connection', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -260,7 +290,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(vpn.metricTunnelState()), {
+    expect(stack.resolve(vpn.metricTunnelState())).toEqual({
       dimensions: { VpnId: { Ref: 'VpcNetworkVpnA476C58D' } },
       namespace: 'AWS/VPN',
       metricName: 'TunnelState',
@@ -268,37 +298,79 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.done();
-  },
 
-  'can use metricAllTunnelDataOut'(test: Test) {
-    // GIVEN
+  });
+
+  test('can import a vpn connection from attributes', () => {
+
     const stack = new Stack();
 
-    // THEN
-    test.deepEqual(stack.resolve(VpnConnection.metricAllTunnelDataOut()), {
+    const vpn = VpnConnection.fromVpnConnectionAttributes(stack, 'Connection', {
+      vpnId: 'idv',
+      customerGatewayIp: 'ip',
+      customerGatewayId: 'idc',
+      customerGatewayAsn: 6500,
+    });
+
+    expect(vpn.vpnId).toEqual('idv');
+    expect(vpn.customerGatewayAsn).toEqual(6500);
+    expect(vpn.customerGatewayId).toEqual('idc');
+    expect(vpn.customerGatewayIp).toEqual('ip');
+
+    expect(stack.resolve(vpn.metricTunnelState())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelState',
+      period: Duration.minutes(5),
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(vpn.metricTunnelDataIn())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelDataIn',
+      period: Duration.minutes(5),
+      statistic: 'Sum',
+    });
+
+    expect(stack.resolve(vpn.metricTunnelDataOut())).toEqual({
+      dimensions: { VpnId: 'idv' },
       namespace: 'AWS/VPN',
       metricName: 'TunnelDataOut',
       period: Duration.minutes(5),
       statistic: 'Sum',
     });
 
-    test.done();
-  },
+  });
 
-  'fails when enabling vpnGateway without having subnets'(test: Test) {
+  test('can use metricAllTunnelDataOut', () => {
     // GIVEN
     const stack = new Stack();
 
-    test.throws(() => new Vpc(stack, 'VpcNetwork', {
+    // THEN
+    expect(stack.resolve(VpnConnection.metricAllTunnelDataOut())).toEqual({
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelDataOut',
+      period: Duration.minutes(5),
+      statistic: 'Sum',
+    });
+
+
+  });
+
+  test('fails when enabling vpnGateway without having subnets', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    expect(() => new Vpc(stack, 'VpcNetwork', {
       vpnGateway: true,
       subnetConfiguration: [],
-    }), /VPN gateway/);
+    })).toThrow(/VPN gateway/);
 
-    test.done();
-  },
 
-  'can add a vpn connection later to a vpc that initially had no subnets'(test: Test) {
+  });
+
+  test('can add a vpn connection later to a vpc that initially had no subnets', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -317,12 +389,12 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::CustomerGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       Type: 'ipsec.1',
-    }));
-    test.done();
-  },
-  'can add a vpn connection with a Token as customer gateway ip'(test:Test) {
+    });
+
+  });
+  test('can add a vpn connection with a Token as customer gateway ip', () => {
     // GIVEN
     const stack = new Stack();
     const token = Token.asAny('192.0.2.1');
@@ -337,9 +409,9 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::CustomerGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       IpAddress: '192.0.2.1',
-    }));
-    test.done();
-  },
+    });
+
+  });
 });

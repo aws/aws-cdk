@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -16,18 +15,9 @@ import * as tasks from '../../lib';
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-integ', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-integ');
 
-const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
-  isDefault: true,
-});
-
-const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+const cluster = new ecs.Cluster(stack, 'FargateCluster');
 
 // Build task definition
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {

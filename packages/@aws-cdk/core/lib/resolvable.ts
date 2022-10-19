@@ -1,4 +1,4 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
 import { TokenizedStringFragments } from './string-fragments';
@@ -18,14 +18,31 @@ export interface IResolveContext {
   readonly preparing: boolean;
 
   /**
+   * Path in the JSON document that is being constructed
+   */
+  readonly documentPath: string[];
+
+  /**
    * Resolve an inner object
    */
-  resolve(x: any): any;
+  resolve(x: any, options?: ResolveChangeContextOptions): any;
 
   /**
    * Use this postprocessor after the entire token structure has been resolved
    */
   registerPostProcessor(postProcessor: IPostProcessor): void;
+}
+
+/**
+ * Options that can be changed while doing a recursive resolve
+ */
+export interface ResolveChangeContextOptions {
+  /**
+   * Change the 'allowIntrinsicKeys' option
+   *
+   * @default - Unchanged
+   */
+  readonly allowIntrinsicKeys?: boolean;
 }
 
 /**
@@ -93,7 +110,6 @@ export interface ITokenResolver {
  *
  * Interface so it could potentially be exposed over jsii.
  *
- * @experimental
  */
 export interface IFragmentConcatenator {
   /**
@@ -118,7 +134,6 @@ export class StringConcat implements IFragmentConcatenator {
 /**
  * Default resolver implementation
  *
- * @experimental
  */
 export class DefaultTokenResolver implements ITokenResolver {
   constructor(private readonly concat: IFragmentConcatenator) {

@@ -1,8 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import { Construct, IConstruct } from 'constructs';
 import { App } from '../lib';
 import { IAspect, Aspects } from '../lib/aspect';
-import { Construct, IConstruct } from '../lib/construct-compat';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -25,19 +24,18 @@ class MyAspect implements IAspect {
   }
 }
 
-nodeunitShim({
-  'Aspects are invoked only once'(test: Test) {
+describe('aspect', () => {
+  test('Aspects are invoked only once', () => {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     Aspects.of(root).add(new VisitOnce());
     app.synth();
-    test.deepEqual(root.visitCounter, 1);
+    expect(root.visitCounter).toEqual(1);
     app.synth();
-    test.deepEqual(root.visitCounter, 1);
-    test.done();
-  },
+    expect(root.visitCounter).toEqual(1);
+  });
 
-  'Warn if an Aspect is added via another Aspect'(test: Test) {
+  test('Warn if an Aspect is added via another Aspect', () => {
     const app = new App();
     const root = new MyConstruct(app, 'MyConstruct');
     const child = new MyConstruct(root, 'ChildConstruct');
@@ -51,27 +49,24 @@ nodeunitShim({
       },
     });
     app.synth();
-    test.deepEqual(root.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-    test.deepEqual(root.node.metadata[0].data, 'We detected an Aspect was added via another Aspect, and will not be applied');
+    expect(root.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+    expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied');
     // warning is not added to child construct
-    test.equal(child.node.metadata.length, 0);
-    test.done();
-  },
+    expect(child.node.metadata.length).toEqual(0);
+  });
 
-  'Do not warn if an Aspect is added directly (not by another aspect)'(test: Test) {
+  test('Do not warn if an Aspect is added directly (not by another aspect)', () => {
     const app = new App();
     const root = new MyConstruct(app, 'Construct');
     const child = new MyConstruct(root, 'ChildConstruct');
     Aspects.of(root).add(new MyAspect());
     app.synth();
-    test.deepEqual(root.node.metadata[0].type, 'foo');
-    test.deepEqual(root.node.metadata[0].data, 'bar');
-    test.deepEqual(root.node.metadata[0].type, 'foo');
-    test.deepEqual(child.node.metadata[0].data, 'bar');
+    expect(root.node.metadata[0].type).toEqual('foo');
+    expect(root.node.metadata[0].data).toEqual('bar');
+    expect(child.node.metadata[0].type).toEqual('foo');
+    expect(child.node.metadata[0].data).toEqual('bar');
     // no warning is added
-    test.equal(root.node.metadata.length, 1);
-    test.equal(child.node.metadata.length, 1);
-    test.done();
-  },
-
+    expect(root.node.metadata.length).toEqual(1);
+    expect(child.node.metadata.length).toEqual(1);
+  });
 });

@@ -27,7 +27,7 @@ class VpcReservedPrivateSubnetStack extends cdk.Stack {
         },
         {
           name: 'private',
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           reserved: true,
         },
       ],

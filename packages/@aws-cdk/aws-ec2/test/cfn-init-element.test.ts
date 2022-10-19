@@ -206,6 +206,12 @@ describe('InitFile', () => {
     });
   });
 
+  test('empty content string throws error', () => {
+    expect(() => {
+      ec2.InitFile.fromString('/tmp/foo', '');
+    }).toThrow('InitFile /tmp/foo: cannot create empty file. Please supply at least one character of content.');
+  });
+
   test('symlink throws an error if mode is set incorrectly', () => {
     expect(() => {
       ec2.InitFile.symlink('/tmp/foo', '/tmp/bar', {
@@ -258,6 +264,9 @@ describe('InitFile', () => {
     const content = {
       version: '1234',
       secretsFile: '/tmp/secrets',
+      maxThreads: 15,
+      isEnabled: true,
+      floatNumber: 23.18,
     };
     const file = ec2.InitFile.fromObject('/tmp/foo', content);
 
@@ -270,6 +279,9 @@ describe('InitFile', () => {
         content: {
           version: '1234',
           secretsFile: '/tmp/secrets',
+          maxThreads: 15,
+          isEnabled: true,
+          floatNumber: 23.18,
         },
         owner: 'root',
         group: 'root',
@@ -658,7 +670,7 @@ describe('InitSource', () => {
 
   test('fromS3Object uses object URL', () => {
     // GIVEN
-    const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'MyBucket');
+    const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'mybucket');
     const source = ec2.InitSource.fromS3Object('/tmp/foo', bucket, 'myKey');
 
     // WHEN
@@ -666,7 +678,7 @@ describe('InitSource', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '/tmp/foo': expect.stringContaining('/MyBucket/myKey'),
+      '/tmp/foo': expect.stringContaining('/mybucket/myKey'),
     });
   });
 

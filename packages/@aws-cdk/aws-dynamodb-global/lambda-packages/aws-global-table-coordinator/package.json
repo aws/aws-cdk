@@ -1,5 +1,5 @@
 {
-  "name": "aws-global-lambda-coordinator",
+  "name": "@aws-cdk/aws-global-lambda-coordinator",
   "private": true,
   "version": "0.0.0",
   "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.",
@@ -12,7 +12,9 @@
     "test": "jest",
     "eslint": "eslint lib",
     "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
   },
   "keywords": [
     "aws",
@@ -28,15 +30,15 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "aws-sdk": "^2.596.0",
-    "aws-sdk-mock": "^5.1.0",
-    "eslint": "^7.20.0",
+    "aws-sdk-mock": "5.6.0",
+    "eslint": "^7.32.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.1.0",
-    "jest": "^26.6.3",
+    "jest": "^27.5.1",
     "lambda-tester": "^3.6.0",
-    "nock": "^13.0.7"
+    "nock": "^13.2.9"
   }
 }

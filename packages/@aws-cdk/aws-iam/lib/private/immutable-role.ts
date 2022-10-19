@@ -1,5 +1,5 @@
-import { ConcreteDependable, DependableTrait, Resource } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Resource } from '@aws-cdk/core';
+import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -29,16 +29,17 @@ export class ImmutableRole extends Resource implements IRole {
   public readonly roleName = this.role.roleName;
   public readonly stack = this.role.stack;
 
-  constructor(scope: Construct, id: string, private readonly role: IRole) {
+  constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
     super(scope, id, {
       account: role.env.account,
       region: role.env.region,
     });
 
     // implement IDependable privately
-    DependableTrait.implement(this, {
+    Dependable.implement(this, {
       dependencyRoots: [role],
     });
+    this.node.defaultChild = role.node.defaultChild;
   }
 
   public attachInlinePolicy(_policy: Policy): void {
@@ -54,8 +55,10 @@ export class ImmutableRole extends Resource implements IRole {
   }
 
   public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-    // Not really added, but for the purposes of consumer code pretend that it was.
-    return { statementAdded: true, policyDependable: new ConcreteDependable() };
+    // If we return `false`, the grants will try to add the statement to the resource
+    // (if possible).
+    const pretendSuccess = !this.addGrantsToResources;
+    return { statementAdded: pretendSuccess, policyDependable: new DependencyGroup() };
   }
 
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
@@ -64,5 +67,9 @@ export class ImmutableRole extends Resource implements IRole {
 
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
+  }
+
+  public grantAssumeRole(identity: IPrincipal): Grant {
+    return this.role.grantAssumeRole(identity);
   }
 }

@@ -5,6 +5,15 @@ import { Duration } from '@aws-cdk/core';
  */
 export interface IMetric {
   /**
+   * Any warnings related to this metric
+   *
+   * Should be attached to the consuming construct.
+   *
+   * @default - None
+   */
+  readonly warnings?: string[];
+
+  /**
    * Inspect the details of the metric object
    */
   toMetricConfig(): MetricConfig;
@@ -12,20 +21,22 @@ export interface IMetric {
   /**
    * Turn this metric object into an alarm configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toAlarmConfig(): MetricAlarmConfig;
 
   /**
    * Turn this metric object into a graph configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toGraphConfig(): MetricGraphConfig;
 }
 
 /**
  * Metric dimension
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html
  *
  */
 export interface Dimension {
@@ -205,7 +216,7 @@ export enum Unit {
   COUNT_PER_SECOND = 'Count/Second',
 
   /**
-   * No unit
+   * None
    */
   NONE = 'None'
 }
@@ -320,6 +331,20 @@ export interface MetricExpressionConfig {
    * How many seconds to aggregate over
    */
   readonly period: number;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   *
+   * @default - Deployment region.
+   */
+  readonly searchRegion?: string;
 }
 
 /**

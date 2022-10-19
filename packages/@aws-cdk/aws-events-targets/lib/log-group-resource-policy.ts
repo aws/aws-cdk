@@ -1,10 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties to configure a log group resource policy
@@ -29,7 +26,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
       statements: props.policyStatements,
     });
 
-    let policyName = props.policyName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) });
+    let policyName = props.policyName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) });
 
     super(scope, id, {
       resourceType: 'Custom::CloudwatchLogResourcePolicy',

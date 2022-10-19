@@ -1,0 +1,40 @@
+{
+  "name": "@aws-cdk/prlint",
+  "private": true,
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "conventional-commits-parser": "^3.2.4",
+    "fs-extra": "^9.1.0",
+    "glob": "^7.2.3"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/glob": "^7.2.0",
+    "@types/jest": "^27.5.2",
+    "jest": "^27.5.1",
+    "make-runnable": "^1.3.10",
+    "typescript": "~3.9.10"
+  },
+  "jest": {
+    "testMatch": [
+      "<rootDir>/test/**/?(*.)+(test).js"
+    ]
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "test": "jest",
+    "build+test": "npm run build && npm run test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "step-functions-restapi/DefaultTest": {
+      "stacks": [
+        "StepFunctionsRestApiDeploymentStack"
+      ],
+      "assertionStack": "step-functions-restapi/DefaultTest/DeployAssert"
+    }
+  }
+}

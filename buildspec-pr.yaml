@@ -10,8 +10,23 @@ phases:
       # this also takes care of launching the docker daemon.
       - /root/ecr-proxy/start.sh
 
+      # CodeBuild always runs as root, allow npm to operate as such
+      - npm config set unsafe-perm true
+
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
+
+      # Packing the mono-libraries (monocdk & aws-cdk-lib) can cause
+      # memory errors. Increasing this value allows our build to more consistently succeed
+      - (command -v sysctl || yum install -y procps-ng) && /sbin/sysctl -w vm.max_map_count=2251954
+  pre_build:
+    commands:
+      - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
-      - /bin/bash ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD
+      - /bin/bash ./build.sh
+      - /bin/bash ./scripts/transform.sh
+      # After compilation, run Rosetta (using the cache if available).
+      # This will print errors, and fail the build if there are compilation errors in any packages marked as 'strict'.
+      - /bin/bash ./scripts/run-rosetta.sh
+      - git diff-index --exit-code --ignore-space-at-eol --stat HEAD

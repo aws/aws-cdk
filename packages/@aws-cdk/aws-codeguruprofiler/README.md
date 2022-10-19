@@ -17,7 +17,7 @@ Amazon CodeGuru Profiler collects runtime performance data from your live applic
 
 Import to your project:
 
-```ts
+```ts nofixture
 import * as codeguruprofiler from '@aws-cdk/aws-codeguruprofiler';
 ```
 
@@ -27,11 +27,11 @@ Here's how to setup a profiling group and give your compute role permissions to 
 
 ```ts
 // The execution role of your application that publishes to the ProfilingGroup via CodeGuru Profiler Profiling Agent. (the following is merely an example)
-const publishAppRole = new Role(stack, 'PublishAppRole', {
-  assumedBy: new AccountRootPrincipal(),
+const publishAppRole = new iam.Role(this, 'PublishAppRole', {
+  assumedBy: new iam.AccountRootPrincipal(),
 });
 
-const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup');
+const profilingGroup = new codeguruprofiler.ProfilingGroup(this, 'MyProfilingGroup');
 profilingGroup.grantPublish(publishAppRole);
 ```
 
@@ -41,7 +41,7 @@ Code Guru Profiler supports multiple compute environments.
 They can be configured when creating a Profiling Group by using the `computePlatform` property:
 
 ```ts
-const profilingGroup = new ProfilingGroup(stack, 'MyProfilingGroup', {
-  computePlatform: ComputePlatform.AWS_LAMBDA,
+const profilingGroup = new codeguruprofiler.ProfilingGroup(this, 'MyProfilingGroup', {
+  computePlatform: codeguruprofiler.ComputePlatform.AWS_LAMBDA,
 });
 ```

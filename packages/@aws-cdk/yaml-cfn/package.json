@@ -1,5 +1,6 @@
 {
   "name": "@aws-cdk/yaml-cfn",
+  "deprecated": "This module is no longer supported and will be removed in a future release.",
   "version": "0.0.0",
   "description": "Utilities for handling CloudFormation-flavored YAML",
   "main": "lib/index.js",
@@ -36,18 +37,25 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Yaml.Cfn",
         "packageId": "Amazon.CDK.Yaml.Cfn",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.yaml-cfn",
         "module": "aws_cdk.yaml_cfn",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "build": "cdk-build",
@@ -60,34 +68,34 @@
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "dependencies": {
-    "yaml": "1.10.0"
+    "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.20",
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.5.2",
     "@types/yaml": "^1.9.7",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0"
+    "jest": "^27.5.1"
   },
   "bundledDependencies": [
     "yaml"
   ],
-  "cdk-build": {
-    "jest": true
-  },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awscdkio": {
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }

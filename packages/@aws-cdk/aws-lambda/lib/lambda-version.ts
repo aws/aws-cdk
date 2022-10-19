@@ -2,6 +2,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
+import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
@@ -29,6 +30,8 @@ export interface IVersion extends IFunction {
    * Defines an alias for this version.
    * @param aliasName The name of the alias
    * @param options Alias options
+   *
+   * @deprecated Calling `addAlias` on a `Version` object will cause the Alias to be replaced on every function update. Call `function.addAlias()` or `new Alias()` instead.
    */
   addAlias(aliasName: string, options?: AliasOptions): Alias;
 }
@@ -92,16 +95,17 @@ export interface VersionAttributes {
 }
 
 /**
- * A single newly-deployed version of a Lambda function.
+ * Tag the current state of a Function with a Version number
  *
- * This object exists to--at deploy time--query the "then-current" version of
- * the Lambda function that it refers to. This Version object can then be
- * used in `Alias` to refer to a particular deployment of a Lambda.
+ * Avoid using this resource directly. If you need a Version object, use
+ * `function.currentVersion` instead. That will add a Version object to your
+ * template, and make sure the Version is invalidated whenever the Function
+ * object changes. If you use the `Version` resource directly, you are
+ * responsible for making sure it is invalidated (by changing its
+ * logical ID) whenever necessary.
  *
- * This means that for every new update you deploy to your Lambda (using the
- * CDK and Aliases), you must always create a new Version object. In
- * particular, it must have a different name, so that a new resource is
- * created.
+ * Version resources can then be used in `Alias` resources to refer to a
+ * particular deployment of a Lambda.
  *
  * If you want to ensure that you're associating the right version with
  * the right deployment, specify the `codeSha256` property while
@@ -127,11 +131,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = versionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
+      public readonly architecture = lambda.architecture;
 
       protected readonly qualifier = version;
       protected readonly canCreatePermissions = this._isStackAccount();
 
-      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+      public addAlias(name: string, opts: AliasOptions = {}): Alias {
         return addAlias(this, this, name, opts);
       }
 
@@ -153,11 +158,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
+      public readonly architecture = attrs.lambda.architecture;
 
       protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = this._isStackAccount();
 
-      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+      public addAlias(name: string, opts: AliasOptions = {}): Alias {
         return addAlias(this, this, name, opts);
       }
 
@@ -175,6 +181,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly functionArn: string;
   public readonly functionName: string;
+  public readonly architecture: Architecture;
 
   protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
@@ -183,6 +190,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     super(scope, id);
 
     this.lambda = props.lambda;
+    this.architecture = props.lambda.architecture;
 
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
@@ -221,7 +229,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   }
 
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
-    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
+    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.lambda.functionName,
@@ -238,8 +246,9 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * Defines an alias for this version.
    * @param aliasName The name of the alias (e.g. "live")
    * @param options Alias options
+   * @deprecated Calling `addAlias` on a `Version` object will cause the Alias to be replaced on every function update. Call `function.addAlias()` or `new Alias()` instead.
    */
-  public addAlias(aliasName: string, options: AliasOptions = { }): Alias {
+  public addAlias(aliasName: string, options: AliasOptions = {}): Alias {
     return addAlias(this, this, aliasName, options);
   }
 

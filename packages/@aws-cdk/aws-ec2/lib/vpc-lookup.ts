@@ -48,4 +48,11 @@ export interface VpcLookupOptions {
    * @default aws-cdk:subnet-name
    */
   readonly subnetGroupNameTag?: string;
+
+  /**
+   * Optional to override inferred region
+   *
+   * @default Current stack's environment region
+   */
+  readonly region?: string;
 }

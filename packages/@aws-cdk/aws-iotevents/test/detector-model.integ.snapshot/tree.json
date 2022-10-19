@@ -1,0 +1,243 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "detector-model-test-stack": {
+        "id": "detector-model-test-stack",
+        "path": "detector-model-test-stack",
+        "children": {
+          "MyInput": {
+            "id": "MyInput",
+            "path": "detector-model-test-stack/MyInput",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "detector-model-test-stack/MyInput/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoTEvents::Input",
+                  "aws:cdk:cloudformation:props": {
+                    "inputDefinition": {
+                      "attributes": [
+                        {
+                          "jsonPath": "payload.deviceId"
+                        },
+                        {
+                          "jsonPath": "payload.temperature"
+                        }
+                      ]
+                    },
+                    "inputName": "test_input"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iotevents.CfnInput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iotevents.Input",
+              "version": "0.0.0"
+            }
+          },
+          "MyDetectorModel": {
+            "id": "MyDetectorModel",
+            "path": "detector-model-test-stack/MyDetectorModel",
+            "children": {
+              "DetectorModelRole": {
+                "id": "DetectorModelRole",
+                "path": "detector-model-test-stack/MyDetectorModel/DetectorModelRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "detector-model-test-stack/MyDetectorModel/DetectorModelRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iotevents.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "detector-model-test-stack/MyDetectorModel/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoTEvents::DetectorModel",
+                  "aws:cdk:cloudformation:props": {
+                    "detectorModelDefinition": {
+                      "initialStateName": "online",
+                      "states": [
+                        {
+                          "stateName": "online",
+                          "onEnter": {
+                            "events": [
+                              {
+                                "eventName": "test-event",
+                                "condition": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "currentInput(\"",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      "\") && $input.",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      ".payload.temperature == 31.5"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "onInput": {
+                            "events": [
+                              {
+                                "eventName": "test-input-event",
+                                "condition": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "$input.",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      ".payload.temperature == 31.6"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ],
+                            "transitionEvents": [
+                              {
+                                "eventName": "online_to_offline",
+                                "condition": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "$input.",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      ".payload.temperature == 12"
+                                    ]
+                                  ]
+                                },
+                                "nextState": "offline"
+                              }
+                            ]
+                          },
+                          "onExit": {
+                            "events": [
+                              {
+                                "eventName": "test-exit-event",
+                                "condition": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "$input.",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      ".payload.temperature == 31.7"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "stateName": "offline",
+                          "onInput": {
+                            "transitionEvents": [
+                              {
+                                "eventName": "offline_to_online",
+                                "condition": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "$input.",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      ".payload.temperature == 21"
+                                    ]
+                                  ]
+                                },
+                                "nextState": "online"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "MyDetectorModelDetectorModelRoleF2FB4D88",
+                        "Arn"
+                      ]
+                    },
+                    "detectorModelDescription": "test-detector-model-description",
+                    "detectorModelName": "test-detector-model",
+                    "evaluationMethod": "SERIAL",
+                    "key": "payload.deviceId"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iotevents.CfnDetectorModel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iotevents.DetectorModel",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

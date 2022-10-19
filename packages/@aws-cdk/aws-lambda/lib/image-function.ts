@@ -1,5 +1,7 @@
 import * as ecr from '@aws-cdk/aws-ecr';
+import { Platform } from '@aws-cdk/aws-ecr-assets';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { AssetImageCode, AssetImageCodeProps, EcrImageCode, EcrImageCodeProps, Code } from './code';
 import { Function, FunctionOptions } from './function';
 import { Handler } from './handler';
@@ -25,7 +27,6 @@ export abstract class DockerImageCode {
    * Use an existing ECR image as the Lambda code.
    * @param repository the ECR repository that the image is in
    * @param props properties to further configure the selected image
-   * @experimental
    */
   public static fromEcr(repository: ecr.IRepository, props?: EcrImageCodeProps): DockerImageCode {
     return {
@@ -39,12 +40,15 @@ export abstract class DockerImageCode {
    * Create an ECR image from the specified asset and bind it as the Lambda code.
    * @param directory the directory from which the asset must be created
    * @param props properties to further configure the selected image
-   * @experimental
    */
   public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}): DockerImageCode {
     return {
-      _bind() {
-        return new AssetImageCode(directory, props);
+      _bind(architecture?: Architecture) {
+        return new AssetImageCode(directory, {
+          // determine the platform from `architecture`.
+          ...architecture?.dockerPlatform ? { platform: Platform.custom(architecture.dockerPlatform) } : {},
+          ...props,
+        });
       },
     };
   }
@@ -53,7 +57,7 @@ export abstract class DockerImageCode {
    * Produce a `Code` instance from this `DockerImageCode`.
    * @internal
    */
-  public abstract _bind(): Code;
+  public abstract _bind(architecture?: Architecture): Code;
 }
 
 /**
@@ -65,7 +69,7 @@ export class DockerImageFunction extends Function {
       ...props,
       handler: Handler.FROM_IMAGE,
       runtime: Runtime.FROM_IMAGE,
-      code: props.code._bind(),
+      code: props.code._bind(props.architecture),
     });
   }
 }

@@ -1,4 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Node } from 'constructs';
 
 const DEPRECATIONS_SYMBOL = Symbol.for('@aws-cdk/core.deprecations');
@@ -15,8 +16,14 @@ export class Annotations {
     return new Annotations(scope);
   }
 
-  private constructor(private readonly scope: IConstruct) {
+  private readonly stackTraces: boolean;
 
+  private constructor(private readonly scope: IConstruct) {
+    const disableTrace =
+      scope.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
+      process.env.CDK_DISABLE_STACK_TRACE;
+
+    this.stackTraces = !disableTrace;
   }
 
   /**
@@ -44,7 +51,7 @@ export class Annotations {
 
   /**
    * Adds an { "error": <message> } metadata entry to this construct.
-   * The toolkit will fail synthesis when errors are reported.
+   * The toolkit will fail deployment of any stack that has errors reported against it.
    * @param message The error message.
    */
   public addError(message: string) {
@@ -89,7 +96,7 @@ export class Annotations {
    * @param message The message itself
    */
   private addMessage(level: string, message: string) {
-    Node.of(this.scope).addMetadata(level, message);
+    Node.of(this.scope).addMetadata(level, message, { stackTrace: this.stackTraces });
   }
 
   /**

@@ -1,6 +1,15 @@
-import { Resource, Tokenization } from '@aws-cdk/core';
+import { Tokenization, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { ImportedTaskDefinition } from '../base/_imported-task-definition';
+import {
+  CommonTaskDefinitionAttributes,
+  CommonTaskDefinitionProps,
+  Compatibility,
+  ITaskDefinition,
+  NetworkMode,
+  TaskDefinition,
+} from '../base/task-definition';
+import { RuntimePlatform } from '../runtime-platform';
 
 /**
  * The properties for a task definition.
@@ -21,6 +30,10 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * 4096 (4 vCPU) - Available memory values: Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB)
    *
+   * 8192 (8 vCPU) - Available memory values: Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB)
+   *
+   * 16384 (16 vCPU) - Available memory values: Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB)
+   *
    * @default 256
    */
   readonly cpu?: number;
@@ -39,15 +52,44 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB) - Available cpu values: 4096 (4 vCPU)
    *
+   * Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB) - Available cpu values: 8192 (8 vCPU)
+   *
+   * Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB) - Available cpu values: 16384 (16 vCPU)
+   *
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200 GiB.
+   *
+   * NOTE: This parameter is only supported for tasks hosted on AWS Fargate using platform version 1.4.0 or later.
+   *
+   * @default 20
+   */
+  readonly ephemeralStorageGiB?: number;
+
+  /**
+   * The operating system that your task definitions are running on.
+   *
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
  * The interface of a task definition run on a Fargate cluster.
  */
 export interface IFargateTaskDefinition extends ITaskDefinition {
+
+}
+
+/**
+ * Attributes used to import an existing Fargate task definition
+ */
+export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
 
 }
 
@@ -62,14 +104,23 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
    * Imports a task definition from the specified task definition ARN.
    */
   public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
-    class Import extends Resource implements IFargateTaskDefinition {
-      public readonly taskDefinitionArn = fargateTaskDefinitionArn;
-      public readonly compatibility = Compatibility.FARGATE;
-      public readonly isEc2Compatible = false;
-      public readonly isFargateCompatible = true;
-    }
+    return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: fargateTaskDefinitionArn });
+  }
 
-    return new Import(scope, id);
+  /**
+   * Import an existing Fargate task definition from its attributes
+   */
+  public static fromFargateTaskDefinitionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FargateTaskDefinitionAttributes,
+  ): IFargateTaskDefinition {
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: Compatibility.FARGATE,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**
@@ -79,6 +130,11 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   // NOTE: Until the fix to https://github.com/Microsoft/TypeScript/issues/26969 gets released,
   // we need to explicitly write the type here, as type deduction for enums won't lead to
   // the import being generated in the .d.ts file.
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   */
+  public readonly ephemeralStorageGiB?: number;
 
   /**
    * Constructs a new instance of the FargateTaskDefinition class.
@@ -91,5 +147,12 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
     });
+
+    // eslint-disable-next-line max-len
+    if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
+      throw new Error('Ephemeral storage size must be between 21GiB and 200GiB');
+    }
+
+    this.ephemeralStorageGiB = props.ephemeralStorageGiB;
   }
 }

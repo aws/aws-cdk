@@ -1,33 +1,30 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, Aws, Stack, Token } from '../lib';
 
-nodeunitShim({
-  'By default, environment region and account are not defined and resolve to intrinsics'(test: Test) {
+describe('environment', () => {
+  test('By default, environment region and account are not defined and resolve to intrinsics', () => {
     const stack = new Stack();
-    test.ok(Token.isUnresolved(stack.account));
-    test.ok(Token.isUnresolved(stack.region));
-    test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
-    test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
-    test.done();
-  },
+    expect(Token.isUnresolved(stack.account)).toEqual(true);
+    expect(Token.isUnresolved(stack.region)).toEqual(true);
+    expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
+    expect(stack.resolve(stack.region)).toEqual({ Ref: 'AWS::Region' });
 
-  'If only `env.region` or `env.account` are specified, Refs will be used for the other'(test: Test) {
+  });
+
+  test('If only `env.region` or `env.account` are specified, Refs will be used for the other', () => {
     const app = new App();
 
     const stack1 = new Stack(app, 'S1', { env: { region: 'only-region' } });
     const stack2 = new Stack(app, 'S2', { env: { account: 'only-account' } });
 
-    test.deepEqual(stack1.resolve(stack1.account), { Ref: 'AWS::AccountId' });
-    test.deepEqual(stack1.resolve(stack1.region), 'only-region');
+    expect(stack1.resolve(stack1.account)).toEqual({ Ref: 'AWS::AccountId' });
+    expect(stack1.resolve(stack1.region)).toEqual('only-region');
 
-    test.deepEqual(stack2.resolve(stack2.account), 'only-account');
-    test.deepEqual(stack2.resolve(stack2.region), { Ref: 'AWS::Region' });
+    expect(stack2.resolve(stack2.account)).toEqual('only-account');
+    expect(stack2.resolve(stack2.region)).toEqual({ Ref: 'AWS::Region' });
+  });
 
-    test.done();
-  },
-
-  'environment defaults': {
-    'if "env" is not specified, it implies account/region agnostic'(test: Test) {
+  describe('environment defaults', () => {
+    test('if "env" is not specified, it implies account/region agnostic', () => {
       // GIVEN
       const app = new App();
 
@@ -35,18 +32,16 @@ nodeunitShim({
       const stack = new Stack(app, 'stack');
 
       // THEN
-      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
-      test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
-      test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
+      expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
+      expect(stack.resolve(stack.region)).toEqual({ Ref: 'AWS::Region' });
+      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'unknown-region',
         name: 'aws://unknown-account/unknown-region',
       });
+    });
 
-      test.done();
-    },
-
-    'only region is set'(test: Test) {
+    test('only region is set', () => {
       // GIVEN
       const app = new App();
 
@@ -54,18 +49,16 @@ nodeunitShim({
       const stack = new Stack(app, 'stack', { env: { region: 'explicit-region' } });
 
       // THEN
-      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
-      test.deepEqual(stack.resolve(stack.region), 'explicit-region');
-      test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
+      expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
+      expect(stack.resolve(stack.region)).toEqual('explicit-region');
+      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'explicit-region',
         name: 'aws://unknown-account/explicit-region',
       });
+    });
 
-      test.done();
-    },
-
-    'both "region" and "account" are set'(test: Test) {
+    test('both "region" and "account" are set', () => {
       // GIVEN
       const app = new App();
 
@@ -78,18 +71,16 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(stack.resolve(stack.account), 'explicit-account');
-      test.deepEqual(stack.resolve(stack.region), 'explicit-region');
-      test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
+      expect(stack.resolve(stack.account)).toEqual('explicit-account');
+      expect(stack.resolve(stack.region)).toEqual('explicit-region');
+      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
         account: 'explicit-account',
         region: 'explicit-region',
         name: 'aws://explicit-account/explicit-region',
       });
+    });
 
-      test.done();
-    },
-
-    'token-account and token-region'(test: Test) {
+    test('token-account and token-region', () => {
       // GIVEN
       const app = new App();
 
@@ -102,18 +93,16 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
-      test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
-      test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
+      expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
+      expect(stack.resolve(stack.region)).toEqual({ Ref: 'AWS::Region' });
+      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'unknown-region',
         name: 'aws://unknown-account/unknown-region',
       });
+    });
 
-      test.done();
-    },
-
-    'token-account explicit region'(test: Test) {
+    test('token-account explicit region', () => {
       // GIVEN
       const app = new App();
 
@@ -126,15 +115,13 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
-      test.deepEqual(stack.resolve(stack.region), 'us-east-2');
-      test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
+      expect(stack.resolve(stack.account)).toEqual({ Ref: 'AWS::AccountId' });
+      expect(stack.resolve(stack.region)).toEqual('us-east-2');
+      expect(app.synth().getStackByName(stack.stackName).environment).toEqual({
         account: 'unknown-account',
         region: 'us-east-2',
         name: 'aws://unknown-account/us-east-2',
       });
-
-      test.done();
-    },
-  },
+    });
+  });
 });

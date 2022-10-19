@@ -31,7 +31,7 @@ describe('GlobIgnoreStrategy', () => {
     expect(strategyPermits(strategy, permits)).toEqual(permits);
   });
 
-  test('does not exclude whitelisted files', () => {
+  test('does not exclude allow listed files', () => {
     const strategy = IgnoreStrategy.glob('/tmp', ['*.ignored', '!important.*']);
     const permits = [
       '/tmp/some/important.ignored',
@@ -79,7 +79,7 @@ describe('GitIgnoreStrategy', () => {
     expect(strategyPermits(strategy, permits)).toEqual(permits);
   });
 
-  test('does not exclude whitelisted files', () => {
+  test('does not exclude allow listed files', () => {
     const strategy = IgnoreStrategy.git('/tmp', ['*.ignored', '!important.*']);
     const permits = [
       '/tmp/some/important.ignored',
@@ -114,7 +114,7 @@ describe('DockerIgnoreStrategy', () => {
     expect(strategyPermits(strategy, permits)).toEqual(permits);
   });
 
-  test('does not exclude whitelisted files', () => {
+  test('does not exclude allow listed files', () => {
     const strategy = IgnoreStrategy.docker('/tmp', ['*.ignored', '!important.*']);
     const permits = [
       '/tmp/some/important.ignored',

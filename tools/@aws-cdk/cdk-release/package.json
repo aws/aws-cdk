@@ -1,0 +1,69 @@
+{
+  "name": "@aws-cdk/cdk-release",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A tool for performing release-related tasks like version bumps, Changelog generation, etc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "tools/@aws-cdk/cdk-release"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/changelog-parser": "^2.8.1",
+    "@types/fs-extra": "^8.1.2",
+    "@types/jest": "^27.5.2",
+    "@types/yargs": "^15.0.14",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@lerna/project": "^4.0.0",
+    "changelog-parser": "^2.8.1",
+    "conventional-changelog": "^3.1.25",
+    "conventional-changelog-config-spec": "^2.1.0",
+    "conventional-changelog-preset-loader": "^2.3.4",
+    "conventional-changelog-writer": "^4.1.0",
+    "conventional-commits-parser": "^3.2.4",
+    "detect-indent": "^6.1.0",
+    "detect-newline": "^3.1.0",
+    "fs-extra": "^9.1.0",
+    "git-raw-commits": "^2.0.11",
+    "semver": "^7.3.8",
+    "stringify-package": "^1.0.1"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "changelog",
+    "bump",
+    "release",
+    "version"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "ubergen": {
+    "exclude": true
+  }
+}

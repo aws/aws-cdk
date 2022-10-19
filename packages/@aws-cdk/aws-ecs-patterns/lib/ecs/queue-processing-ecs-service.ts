@@ -1,4 +1,6 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '@aws-cdk/aws-ecs';
+import { FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -54,11 +56,34 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
   readonly memoryReservationMiB?: number;
 
   /**
+   * Gpu count for container in task definition. Set this if you want to use gpu based instances.
+   *
+   * @default - No GPUs assigned.
+   */
+  readonly gpuCount?: number;
+
+  /**
    * Optional name for the container added
    *
    * @default - QueueProcessingContainer
    */
   readonly containerName?: string;
+
+  /**
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
+   *
+   * @default - No constraints.
+   */
+  readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
+   *
+   * @default - No strategies.
+  */
+  readonly placementStrategies?: PlacementStrategy[];
 }
 
 /**
@@ -92,17 +117,21 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       cpu: props.cpu,
+      gpuCount: props.gpuCount,
       command: props.command,
       environment: this.environment,
       secrets: this.secrets,
       logging: this.logDriver,
     });
 
+    // The desiredCount should be removed from the fargate service when the feature flag is removed.
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;
+
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new Ec2Service(this, 'QueueProcessingService', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
@@ -110,7 +139,13 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
+      capacityProviderStrategies: props.capacityProviderStrategies,
+      enableExecuteCommand: props.enableExecuteCommand,
+      placementConstraints: props.placementConstraints,
+      placementStrategies: props.placementStrategies,
     });
+
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
   }

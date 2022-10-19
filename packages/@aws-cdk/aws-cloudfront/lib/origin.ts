@@ -1,9 +1,6 @@
 import { Duration, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The failover configuration used for Origin Groups,
@@ -51,17 +48,9 @@ export interface IOrigin {
 }
 
 /**
- * Properties to define an Origin.
+ * Options to define an Origin.
  */
-export interface OriginProps {
-  /**
-   * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
-   * Must begin, but not end, with '/' (e.g., '/production/images').
-   *
-   * @default '/'
-   */
-  readonly originPath?: string;
-
+export interface OriginOptions {
   /**
    * The number of seconds that CloudFront waits when trying to establish a connection to the origin.
    * Valid values are 1-10 seconds, inclusive.
@@ -83,6 +72,35 @@ export interface OriginProps {
    * @default {}
    */
   readonly customHeaders?: Record<string, string>;
+
+  /**
+   * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html
+   *
+   * @default - origin shield not enabled
+   */
+  readonly originShieldRegion?: string;
+
+  /**
+   * A unique identifier for the origin. This value must be unique within the distribution.
+   *
+   * @default - an originid will be generated for you
+   */
+  readonly originId?: string;
+}
+
+/**
+ * Properties to define an Origin.
+ */
+export interface OriginProps extends OriginOptions {
+  /**
+   * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
+   * Must begin, but not end, with '/' (e.g., '/production/images').
+   *
+   * @default '/'
+   */
+  readonly originPath?: string;
 }
 
 /**
@@ -106,16 +124,21 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionTimeout?: Duration;
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
+  private readonly originShieldRegion?: string
+  private readonly originId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
+    validateCustomHeaders(props.customHeaders);
 
     this.domainName = domainName;
     this.originPath = this.validateOriginPath(props.originPath);
     this.connectionTimeout = props.connectionTimeout;
     this.connectionAttempts = props.connectionAttempts;
     this.customHeaders = props.customHeaders;
+    this.originShieldRegion = props.originShieldRegion;
+    this.originId = props.originId;
   }
 
   /**
@@ -132,13 +155,14 @@ export abstract class OriginBase implements IOrigin {
     return {
       originProperty: {
         domainName: this.domainName,
-        id: options.originId,
+        id: this.originId ?? options.originId,
         originPath: this.originPath,
         connectionAttempts: this.connectionAttempts,
         connectionTimeout: this.connectionTimeout?.toSeconds(),
         originCustomHeaders: this.renderCustomHeaders(),
         s3OriginConfig,
         customOriginConfig,
+        originShield: this.renderOriginShield(this.originShieldRegion),
       },
     };
   }
@@ -169,8 +193,17 @@ export abstract class OriginBase implements IOrigin {
     if (originPath === undefined) { return undefined; }
     let path = originPath;
     if (!path.startsWith('/')) { path = '/' + path; }
-    if (path.endsWith('/')) { path = path.substr(0, path.length - 1); }
+    if (path.endsWith('/')) { path = path.slice(0, -1); }
     return path;
+  }
+
+  /**
+   * Takes origin shield region and converts to CfnDistribution.OriginShieldProperty
+   */
+  private renderOriginShield(originShieldRegion?: string): CfnDistribution.OriginShieldProperty | undefined {
+    return originShieldRegion
+      ? { enabled: true, originShieldRegion }
+      : undefined;
   }
 }
 
@@ -182,5 +215,36 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
   if (!Number.isInteger(value) || value < min || value > max) {
     const seconds = isDuration ? ' seconds' : '';
     throw new Error(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
+  }
+}
+
+/**
+ * Throws an error if custom header assignment is prohibited by CloudFront.
+ * @link: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html#add-origin-custom-headers-denylist
+ */
+function validateCustomHeaders(customHeaders?: Record<string, string>) {
+  if (!customHeaders || Object.entries(customHeaders).length === 0) { return; }
+  const customHeaderKeys = Object.keys(customHeaders);
+  const prohibitedHeaderKeys = [
+    'Cache-Control', 'Connection', 'Content-Length', 'Cookie', 'Host', 'If-Match', 'If-Modified-Since', 'If-None-Match', 'If-Range', 'If-Unmodified-Since',
+    'Max-Forwards', 'Pragma', 'Proxy-Authorization', 'Proxy-Connection', 'Range', 'Request-Range', 'TE', 'Trailer', 'Transfer-Encoding', 'Upgrade', 'Via',
+    'X-Real-Ip',
+  ];
+  const prohibitedHeaderKeyPrefixes = [
+    'X-Amz-', 'X-Edge-',
+  ];
+
+  const prohibitedHeadersKeysMatches = customHeaderKeys.filter(customKey => {
+    return prohibitedHeaderKeys.map((prohibitedKey) => prohibitedKey.toLowerCase()).includes(customKey.toLowerCase());
+  });
+  const prohibitedHeaderPrefixMatches = customHeaderKeys.filter(customKey => {
+    return prohibitedHeaderKeyPrefixes.some(prohibitedKeyPrefix => customKey.toLowerCase().startsWith(prohibitedKeyPrefix.toLowerCase()));
+  });
+
+  if (prohibitedHeadersKeysMatches.length !== 0) {
+    throw new Error(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
+  }
+  if (prohibitedHeaderPrefixMatches.length !== 0) {
+    throw new Error(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
   }
 }

@@ -10,10 +10,6 @@ import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.
  */
@@ -45,7 +41,9 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -100,6 +98,13 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    * @default - default portMapping registered as target group and attached to the first defined listener
    */
   readonly targetGroups?: NetworkTargetProps[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -184,6 +189,13 @@ export interface NetworkLoadBalancedTaskImageProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
@@ -261,19 +273,29 @@ export interface NetworkTargetProps {
 /**
  * The base class for NetworkMultipleTargetGroupsEc2Service and NetworkMultipleTargetGroupsFargateService classes.
  */
-export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstruct {
+export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
    */
   public readonly desiredCount: number;
 
   /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service, if one is not provided.
+   */
+  public readonly internalDesiredCount?: number;
+
+  /**
    * The Network Load Balancer for the service.
+   * @deprecated - Use `loadBalancers` instead.
    */
   public readonly loadBalancer: NetworkLoadBalancer;
 
   /**
    * The listener for the service.
+   * @deprecated - Use `listeners` instead.
    */
   public readonly listener: NetworkListener;
 
@@ -283,10 +305,18 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstru
   public readonly cluster: ICluster;
 
   protected logDriver?: LogDriver;
-  protected listeners = new Array<NetworkListener>();
-  protected targetGroups = new Array<NetworkTargetGroup>();
-
-  private loadBalancers = new Array<NetworkLoadBalancer>();
+  /**
+   * The listeners of the service.
+   */
+  public readonly listeners = new Array<NetworkListener>();
+  /**
+   * The target groups of the service.
+   */
+  public readonly targetGroups = new Array<NetworkTargetGroup>();
+  /**
+   * The load balancers of the service.
+   */
+  public readonly loadBalancers = new Array<NetworkLoadBalancer>();
 
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsServiceBase class.
@@ -297,7 +327,10 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstru
     this.validateInput(props);
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+
     this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
+
     if (props.taskImageOptions) {
       this.logDriver = this.createLogDriver(props.taskImageOptions.enableLogging, props.taskImageOptions.logDriver);
     }
@@ -354,7 +387,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstru
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
     for (const targetProps of targets) {
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
-        port: 80,
+        port: targetProps.containerPort ?? 80,
         targets: [
           service.loadBalancerTarget({
             containerName: container.containerName,

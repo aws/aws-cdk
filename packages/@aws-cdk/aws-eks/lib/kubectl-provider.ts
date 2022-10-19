@@ -5,13 +5,12 @@ import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
+/**
+ * Properties for a KubectlProvider
+ */
 export interface KubectlProviderProps {
   /**
    * The cluster to control.
@@ -19,15 +18,69 @@ export interface KubectlProviderProps {
   readonly cluster: ICluster;
 }
 
-export class KubectlProvider extends NestedStack {
+/**
+ * Kubectl Provider Attributes
+ */
+export interface KubectlProviderAttributes {
+  /**
+   * The kubectl provider lambda arn
+   */
+  readonly functionArn: string;
 
+  /**
+   * The IAM role to assume in order to perform kubectl operations against this cluster.
+   */
+  readonly kubectlRoleArn: string;
+
+  /**
+   * The IAM execution role of the handler. This role must be able to assume kubectlRoleArn
+   */
+  readonly handlerRole: iam.IRole;
+}
+
+/**
+ * Imported KubectlProvider that can be used in place of the default one created by CDK
+ */
+export interface IKubectlProvider extends IConstruct {
+  /**
+   * The custom resource provider's service token.
+   */
+  readonly serviceToken: string;
+
+  /**
+   * The IAM role to assume in order to perform kubectl operations against this cluster.
+   */
+  readonly roleArn: string;
+
+  /**
+   * The IAM execution role of the handler.
+   */
+  readonly handlerRole: iam.IRole;
+}
+
+/**
+ * Implementation of Kubectl Lambda
+ */
+export class KubectlProvider extends NestedStack implements IKubectlProvider {
+
+  /**
+   * Take existing provider or create new based on cluster
+   *
+   * @param scope Construct
+   * @param cluster k8s cluster
+   */
   public static getOrCreate(scope: Construct, cluster: ICluster) {
     // if this is an "owned" cluster, it has a provider associated with it
     if (cluster instanceof Cluster) {
       return cluster._attachKubectlResourceScope(scope);
     }
 
-    // if this is an imported cluster, we need to provision a custom resource provider in this stack
+    // if this is an imported cluster, it maybe has a predefined kubectl provider?
+    if (cluster.kubectlProvider) {
+      return cluster.kubectlProvider;
+    }
+
+    // if this is an imported cluster and there is no kubectl provider defined, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
     const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
     const stack = Stack.of(scope);
@@ -37,6 +90,17 @@ export class KubectlProvider extends NestedStack {
     }
 
     return provider;
+  }
+
+  /**
+   * Import an existing provider
+   *
+   * @param scope Construct
+   * @param id an id of resource
+   * @param attrs attributes for the provider
+   */
+  public static fromKubectlProviderAttributes(scope: Construct, id: string, attrs: KubectlProviderAttributes): IKubectlProvider {
+    return new ImportedKubectlProvider(scope, id, attrs);
   }
 
   /**
@@ -55,7 +119,7 @@ export class KubectlProvider extends NestedStack {
   public readonly handlerRole: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
-    super(scope as CoreConstruct, id);
+    super(scope, id);
 
     const cluster = props.cluster;
 
@@ -77,6 +141,7 @@ export class KubectlProvider extends NestedStack {
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
       environment: cluster.kubectlEnvironment,
+      role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
@@ -99,6 +164,11 @@ export class KubectlProvider extends NestedStack {
       resources: [cluster.clusterArn],
     }));
 
+    // For OCI helm chart authorization.
+    this.handlerRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+    );
+
     // allow this handler to assume the kubectl role
     cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
 
@@ -106,10 +176,37 @@ export class KubectlProvider extends NestedStack {
       onEventHandler: handler,
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
+      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
 
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
 
+}
+
+class ImportedKubectlProvider extends Construct implements IKubectlProvider {
+
+  /**
+   * The custom resource provider's service token.
+   */
+  public readonly serviceToken: string;
+
+  /**
+   * The IAM role to assume in order to perform kubectl operations against this cluster.
+   */
+  public readonly roleArn: string;
+
+  /**
+   * The IAM execution role of the handler.
+   */
+  public readonly handlerRole: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: KubectlProviderAttributes) {
+    super(scope, id);
+
+    this.serviceToken = props.functionArn;
+    this.roleArn = props.kubectlRoleArn;
+    this.handlerRole = props.handlerRole;
+  }
 }

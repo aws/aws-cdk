@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -20,7 +20,7 @@ describe('stacks', () => {
   test('creates a custom resource and supporting resources in main stack', () => {
     new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [{
           Action: 'sts:AssumeRole',
@@ -39,25 +39,25 @@ describe('stacks', () => {
           Statement: [{
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/EdgeFunctionArn*']],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/cdk/EdgeFunctionArn/*']],
             },
             Action: ['ssm:GetParameter'],
           }],
         },
       }],
     });
-    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: '__entrypoint__.handler',
       Role: {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825', 'Arn'],
       },
     });
-    expect(stack).toHaveResource('Custom::CrossRegionStringParameterReader', {
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossRegionStringParameterReader', {
       ServiceToken: {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnMyFn',
+      ParameterName: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
 
@@ -66,7 +66,7 @@ describe('stacks', () => {
 
     const fnStack = getFnStack();
 
-    expect(fnStack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(fnStack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -86,19 +86,19 @@ describe('stacks', () => {
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
       ],
     });
-    expect(fnStack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Function', {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRoleF3016589', 'Arn'] },
-      Runtime: 'nodejs12.x',
+      Runtime: 'nodejs14.x',
     });
-    expect(fnStack).toHaveResource('AWS::Lambda::Version', {
+    Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn6F8F742F' },
     });
-    expect(fnStack).toHaveResource('AWS::SSM::Parameter', {
+    Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Type: 'String',
-      Value: { Ref: 'MyFnCurrentVersion309B29FC29686ce94039b6e08d1645be854b3ac9' },
-      Name: 'EdgeFunctionArnMyFn',
+      Value: { Ref: 'MyFnCurrentVersion309B29FC565d8e08ba88650b100357cd5eaf4bbb' },
+      Name: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
 
@@ -128,7 +128,7 @@ describe('stacks', () => {
     });
     new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -148,13 +148,13 @@ describe('stacks', () => {
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
       ],
     });
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRole3F9D41E1', 'Arn'] },
-      Runtime: 'nodejs12.x',
+      Runtime: 'nodejs14.x',
     });
-    expect(stack).toHaveResource('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn223608AD' },
     });
   });
@@ -164,7 +164,7 @@ describe('stacks', () => {
     new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
-    expect(fnStack).toCountResources('AWS::Lambda::Function', 2);
+    Template.fromStack(fnStack).resourceCountIs('AWS::Lambda::Function', 2);
   });
 
   test('can set the stack id for each function', () => {
@@ -174,9 +174,9 @@ describe('stacks', () => {
     new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps(fn2StackId));
 
     const fn1Stack = app.node.findChild(fn1StackId) as cdk.Stack;
-    expect(fn1Stack).toCountResources('AWS::Lambda::Function', 1);
+    Template.fromStack(fn1Stack).resourceCountIs('AWS::Lambda::Function', 1);
     const fn2Stack = app.node.findChild(fn2StackId) as cdk.Stack;
-    expect(fn2Stack).toCountResources('AWS::Lambda::Function', 1);
+    Template.fromStack(fn2Stack).resourceCountIs('AWS::Lambda::Function', 1);
   });
 
   test('cross-region stack supports defining functions within stages', () => {
@@ -188,20 +188,41 @@ describe('stacks', () => {
 
     new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
-    // Because 'expect(stack)' doesn't work correctly for stacks in nested assemblies
-    const stackArtifact = stage.synth().getStackArtifact(stack.artifactId);
-    expect(stackArtifact).toHaveResourceLike('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: '__entrypoint__.handler',
       Role: {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825', 'Arn'],
       },
     });
-    expect(stackArtifact).toHaveResource('Custom::CrossRegionStringParameterReader', {
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossRegionStringParameterReader', {
       ServiceToken: {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnMyFn',
+      ParameterName: '/cdk/EdgeFunctionArn/testregion/Stage/Stack/MyFn',
+    });
+  });
+
+  test('a single EdgeFunction used in multiple stacks creates mutiple stacks in us-east-1', () => {
+    const firstStack = new cdk.Stack(app, 'FirstStack', {
+      env: { account: '111111111111', region: 'testregion' },
+    });
+    const secondStack = new cdk.Stack(app, 'SecondStack', {
+      env: { account: '111111111111', region: 'testregion' },
+    });
+    new cloudfront.experimental.EdgeFunction(firstStack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeFunction(secondStack, 'MyFn', defaultEdgeFunctionProps());
+
+    // Two stacks in us-east-1
+    const firstFnStack = app.node.findChild(`edge-lambda-stack-${firstStack.node.addr}`) as cdk.Stack;
+    const secondFnStack = app.node.findChild(`edge-lambda-stack-${secondStack.node.addr}`) as cdk.Stack;
+
+    // Two SSM parameters
+    Template.fromStack(firstFnStack).hasResourceProperties('AWS::SSM::Parameter', {
+      Name: '/cdk/EdgeFunctionArn/testregion/FirstStack/MyFn',
+    });
+    Template.fromStack(secondFnStack).hasResourceProperties('AWS::SSM::Parameter', {
+      Name: '/cdk/EdgeFunctionArn/testregion/SecondStack/MyFn',
     });
   });
 });
@@ -212,9 +233,20 @@ test('addAlias() creates alias in function stack', () => {
   fn.addAlias('MyCurrentAlias');
 
   const fnStack = getFnStack();
-  expect(fnStack).toHaveResourceLike('AWS::Lambda::Alias', {
+  Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Alias', {
     Name: 'MyCurrentAlias',
   });
+});
+
+test('mutliple aliases with the same name can be added to the same stack', () => {
+  const fn1 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
+  const fn2 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
+  fn1.addAlias('live');
+  fn2.addAlias('live');
+
+  const fnStack = getFnStack();
+  Template.fromStack(fnStack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(fnStack).resourceCountIs('AWS::Lambda::Alias', 2);
 });
 
 test('addPermission() creates permissions in function stack', () => {
@@ -226,7 +258,7 @@ test('addPermission() creates permissions in function stack', () => {
   });
 
   const fnStack = getFnStack();
-  expect(fnStack).toHaveResourceLike('AWS::Lambda::Permission', {
+  Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     Principal: '123456789012',
   });
@@ -264,11 +296,21 @@ test('cross-region stack supports new-style synthesis with assets', () => {
   expect(() => app.synth()).not.toThrow();
 });
 
+test('SSM parameter name is sanitized to remove disallowed characters', () => {
+  new cloudfront.experimental.EdgeFunction(stack, 'My Bad#Fn$Name-With.Bonus', defaultEdgeFunctionProps());
+
+  const fnStack = getFnStack();
+
+  Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
+    Name: '/cdk/EdgeFunctionArn/testregion/Stack/My_Bad_Fn_Name-With.Bonus',
+  });
+});
+
 function defaultEdgeFunctionProps(stackId?: string) {
   return {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     stackId: stackId,
   };
 }

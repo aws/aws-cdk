@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -24,7 +18,7 @@ will first upload all the assets to S3, and only then deploy the stacks. The S3
 locations of the uploaded assets will be passed in as CloudFormation Parameters
 to the relevant stacks.
 
-The following JavaScript example defines an directory asset which is archived as
+The following JavaScript example defines a directory asset which is archived as
 a .zip file and uploaded to S3 during deployment.
 
 [Example of a ZipDirectoryAsset](./test/integ.assets.directory.lit.ts)
@@ -52,7 +46,7 @@ In the following example, the various asset attributes are exported as stack out
 IAM roles, users or groups which need to be able to read assets in runtime will should be
 granted IAM permissions. To do that use the `asset.grantRead(principal)` method:
 
-The following examples grants an IAM group read permissions on an asset:
+The following example grants an IAM group read permissions on an asset:
 
 [Example of granting read access to an asset](./test/integ.assets.permissions.lit.ts)
 
@@ -88,8 +82,8 @@ The following example uses custom asset bundling to convert a markdown file to h
 
 [Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
 
-The bundling docker image (`image`) can either come from a registry (`BundlingDockerImage.fromRegistry`)
-or it can be built from a `Dockerfile` located inside your project (`BundlingDockerImage.fromAsset`).
+The bundling docker image (`image`) can either come from a registry (`DockerImage.fromRegistry`)
+or it can be built from a `Dockerfile` located inside your project (`DockerImage.fromBuild`).
 
 You can set the `CDK_DOCKER` environment variable in order to provide a custom
 docker program to execute. This may sometime be needed when building in
@@ -101,20 +95,23 @@ method `tryBundle()` which should return `true` if local bundling was performed.
 If `false` is returned, docker bundling will be done:
 
 ```ts
+class MyBundle implements ILocalBundling {
+  public tryBundle(outputDir: string, options: BundlingOptions) {
+    const canRunLocally = true // replace with actual logic
+    if (canRunLocally) {
+      // perform local bundling here
+      return true;
+    }
+    return false; 
+  }
+}
+
 new assets.Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
-    local: {
-      tryBundle(outputDir: string, options: BundlingOptions) {
-        if (canRunLocally) {
-          // perform local bundling here
-          return true;
-        }
-        return false;
-      },
-    },
+    local: new MyBundle(),
     // Docker bundling fallback
-    image: BundlingDockerImage.fromRegistry('alpine'),
+    image: DockerImage.fromRegistry('alpine'),
     entrypoint: ['/bin/sh', '-c'],
     command: ['bundle'],
   },
@@ -123,6 +120,49 @@ new assets.Asset(this, 'BundledAsset', {
 
 Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
+
+If the bundling output contains a single archive file (zip or jar) it will be
+uploaded to S3 as-is and will not be zipped. Otherwise the contents of the
+output directory will be zipped and the zip file will be uploaded to S3. This
+is the default behavior for `bundling.outputType` (`BundlingOutput.AUTO_DISCOVER`).
+
+Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
+
+```ts
+const asset = new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    image: DockerImage.fromRegistry('alpine'),
+    command: ['command-that-produces-an-archive.sh'],
+    outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
+  },
+});
+```
+
+Use `BundlingOutput.ARCHIVED` if the bundling output contains a single archive file and
+you don't want it to be zipped.
+
+### Docker options
+
+Depending on your build environment, you may need to pass certain docker options to the `docker run` command that bundles assets. 
+This can be done using [BundlingOptions](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.BundlingOptions.html) properties.
+
+Some optional properties to pass to the docker bundling
+
+```ts
+const asset = new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    image: ambda.Runtime.PYTHON_3_9.bundlingImage,,
+    command: [
+      'bash', '-c',
+      'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
+    ],
+    securityOpt: 'no-new-privileges:true', // https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt
+    network: 'host', //https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network
+  },
+});
+```
 
 ## CloudFormation Resource Metadata
 

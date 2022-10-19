@@ -16,7 +16,7 @@ const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 const metricA = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesVisible',
-  dimensions: { QueueName: queue.getAtt('QueueName') },
+  dimensionsMap: { QueueName: queue.getAtt('QueueName').toString() },
   period: cdk.Duration.seconds(10),
   label: 'Visible Messages',
 });
@@ -24,7 +24,7 @@ const metricA = new cloudwatch.Metric({
 const metricB = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesNotVisible',
-  dimensions: { QueueName: queue.getAtt('QueueName') },
+  dimensionsMap: { QueueName: queue.getAtt('QueueName').toString() },
   period: cdk.Duration.seconds(30),
   label: 'NotVisible Messages',
 });
@@ -57,6 +57,13 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   left: [sumExpression],
   right: [metricA, metricB],
   leftAnnotations: [alarm.toAnnotation()],
+}));
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  title: 'Percentage of messages in each queue as pie chart',
+  left: [metricA, metricB],
+  view: cloudwatch.GraphWidgetView.PIE,
+  setPeriodToTimeRange: true,
 }));
 
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({

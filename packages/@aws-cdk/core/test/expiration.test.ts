@@ -1,49 +1,40 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Duration, Expiration } from '../lib';
 
-nodeunitShim({
-  'from string'(test: Test) {
+describe('expiration', () => {
+  test('from string', () => {
     const date = new Date('Sun, 26 Jan 2020 00:53:20 GMT');
-    test.equal(Expiration.fromString('Sun, 26 Jan 2020 00:53:20 GMT').date.getDate(), date.getDate());
-    test.done();
-  },
+    expect(Expiration.fromString('Sun, 26 Jan 2020 00:53:20 GMT').date.getDate()).toEqual(date.getDate());
+  });
 
-  'at specified date'(test: Test) {
+  test('at specified date', () => {
     const date = new Date('Sun, 26 Jan 2020 00:53:20 GMT');
-    test.equal(Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString(), 'Sun, 26 Jan 2020 00:53:20 GMT');
-    test.equal(Expiration.atDate(new Date(1580000000000)).date.toUTCString(), 'Sun, 26 Jan 2020 00:53:20 GMT');
-    test.equal(Expiration.atDate(new Date(date)).date.toUTCString(), 'Sun, 26 Jan 2020 00:53:20 GMT');
-    test.done();
-  },
+    expect(Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+    expect(Expiration.atDate(new Date(1580000000000)).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+    expect(Expiration.atDate(new Date(date)).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  });
 
-  'at time stamp'(test: Test) {
-    test.equal(Expiration.atDate(new Date(1580000000000)).date.toUTCString(), 'Sun, 26 Jan 2020 00:53:20 GMT');
-    test.done();
-  },
+  test('at time stamp', () => {
+    expect(Expiration.atDate(new Date(1580000000000)).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  });
 
-  'after'(test: Test) {
-    test.ok(Math.abs(new Date(Expiration.after(Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) < 15000);
-    test.done();
-  },
+  test('after', () => {
+    expect(Math.abs(new Date(Expiration.after(Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) < 15000).toBeDefined();
+  });
 
-  'toEpoch returns correct value'(test: Test) {
+  test('toEpoch returns correct value', () => {
     const date = new Date('Sun, 26 Jan 2020 00:53:20 GMT');
-    test.equal(Expiration.atDate(date).toEpoch(), 1580000000);
-    test.done();
-  },
+    expect(Expiration.atDate(date).toEpoch()).toEqual(1580000000);
+  });
 
-  'isBefore'(test: Test) {
+  test('isBefore', () => {
     const expire = Expiration.after(Duration.days(2));
-    test.ok(!expire.isBefore(Duration.days(1)));
-    test.ok(expire.isBefore(Duration.days(3)));
-    test.done();
-  },
+    expect(expire.isBefore(Duration.days(1))).toEqual(false);
+    expect(expire.isBefore(Duration.days(3))).toEqual(true);
+  });
 
-  'isAfter'(test: Test) {
+  test('isAfter', () => {
     const expire = Expiration.after(Duration.days(2));
-    test.ok(expire.isAfter(Duration.days(1)));
-    test.ok(!expire.isAfter(Duration.days(3)));
-    test.done();
-  },
-
+    expect(expire.isAfter(Duration.days(1))).toEqual(true);
+    expect(expire.isAfter(Duration.days(3))).toEqual(false);
+  });
 });

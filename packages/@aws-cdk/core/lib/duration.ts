@@ -1,4 +1,4 @@
-import { Token } from './token';
+import { Token, Tokenization } from './token';
 
 /**
  * Represents a length of time.
@@ -62,7 +62,7 @@ export class Duration {
   /**
    * Parse a period formatted according to the ISO 8601 standard
    *
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    * @param duration an ISO-formtted duration to be parsed.
    * @returns the parsed `Duration`.
    */
@@ -105,8 +105,17 @@ export class Duration {
    */
   public plus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const total = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
-    return new Duration(total, targetUnit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
+  }
+
+  /**
+   * Substract two Durations together
+   */
+  public minus(rhs: Duration): Duration {
+    const targetUnit = finestUnit(this.unit, rhs.unit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) - convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
   }
 
   /**
@@ -158,7 +167,7 @@ export class Duration {
    * Return an ISO 8601 representation of this period
    *
    * @returns a string starting with 'P' describing the period
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    */
   public toIsoString(): string {
     if (this.amount === 0) { return 'PT0S'; }
@@ -181,7 +190,7 @@ export class Duration {
    * Return an ISO 8601 representation of this period
    *
    * @returns a string starting with 'P' describing the period
-   * @see https://www.iso.org/fr/standard/70907.html
+   * @see https://www.iso.org/standard/70907.html
    * @deprecated Use `toIsoString()` instead.
    */
   public toISOString(): string {
@@ -211,17 +220,13 @@ export class Duration {
   }
 
   /**
-   * Returns a string representation of this `Duration` that is also a Token that cannot be successfully resolved. This
-   * protects users against inadvertently stringifying a `Duration` object, when they should have called one of the
-   * `to*` methods instead.
+   * Returns a string representation of this `Duration`
+   *
+   * This is is never the right function to use when you want to use the `Duration`
+   * object in a template. Use `toSeconds()`, `toMinutes()`, `toDays()`, etc. instead.
    */
   public toString(): string {
-    return Token.asString(
-      () => {
-        throw new Error('Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead');
-      },
-      { displayHint: `${this.amount} ${this.unit.label}` },
-    );
+    return `Duration.${this.unit.label}(${this.amount})`;
   }
 
   /**
@@ -251,6 +256,28 @@ export class Duration {
       ret.push([millis, TimeUnit.Milliseconds]);
     }
     return ret;
+  }
+
+  /**
+   * Checks if duration is a token or a resolvable object
+   */
+  public isUnresolved() {
+    return Token.isUnresolved(this.amount);
+  }
+
+  /**
+   * Returns unit of the duration
+   */
+  public unitLabel() {
+    return this.unit.label;
+  }
+
+  /**
+   * Returns stringified number of duration
+   */
+  public formatTokenToNumber(): string {
+    const number = Tokenization.stringifyNumber(this.amount);
+    return `${number} ${this.unit.label}`;
   }
 }
 
@@ -286,13 +313,16 @@ class TimeUnit {
 }
 
 function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
-  if (fromUnit.inMillis === toUnit.inMillis) { return amount; }
-  const multiplier = fromUnit.inMillis / toUnit.inMillis;
-
-  if (Token.isUnresolved(amount)) {
-    throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
+  if (fromUnit.inMillis === toUnit.inMillis) {
+    if (integral && !Token.isUnresolved(amount) && !Number.isInteger(amount)) {
+      throw new Error(`${amount} must be a whole number of ${toUnit}.`);
+    }
+    return amount;
   }
-  const value = amount * multiplier;
+  if (Token.isUnresolved(amount)) {
+    throw new Error(`Duration must be specified as 'Duration.${toUnit}()' here since its value comes from a token and cannot be converted (got Duration.${fromUnit})`);
+  }
+  const value = (amount * fromUnit.inMillis) / toUnit.inMillis;
   if (!Number.isInteger(value) && integral) {
     throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
   }

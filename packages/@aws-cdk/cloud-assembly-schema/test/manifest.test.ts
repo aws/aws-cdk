@@ -71,6 +71,31 @@ test('manifest load fails on higher minor version', () => {
   }
 });
 
+test('manifest load doesnt fail if version checking is disabled, and unknown properties are added', () => {
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'schema-tests'));
+  const manifestFile = path.join(outdir, 'manifest.json');
+  const newVersion = semver.inc(Manifest.version(), 'major');
+  expect(newVersion).toBeTruthy();
+
+  const assemblyManifest: AssemblyManifest = {
+    version: newVersion!,
+    artifacts: {
+      SomeArtifact: {
+        type: 'aws:cloudformation:stack',
+        thisPropertyWillNeverBeInTheManifest: 'i_hope',
+      } as any,
+      UnknownArtifact: {
+        type: 'unknown-artifact-type',
+      } as any,
+    },
+  };
+
+  // can't use saveAssemblyManifest because it will force the correct version
+  fs.writeFileSync(manifestFile, JSON.stringify(assemblyManifest));
+
+  Manifest.loadAssemblyManifest(manifestFile, { skipVersionCheck: true, skipEnumCheck: true });
+});
+
 // once we start introducing patch version bumps that are considered
 // non breaking, this test can be removed.
 test('manifest load fails on higher patch version', () => {

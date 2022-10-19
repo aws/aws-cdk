@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -28,7 +28,7 @@ describe('testing InterfaceType properties', () => {
     const out = 'interface baseTest {\n  id: ID\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -46,7 +46,7 @@ describe('testing InterfaceType properties', () => {
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -65,10 +65,10 @@ describe('testing InterfaceType properties', () => {
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::Resolver', 0);
   });
 
   test('Interface Type can be a Graphql Type', () => {
@@ -84,7 +84,7 @@ describe('testing InterfaceType properties', () => {
     const out = 'type Test {\n  test: baseTest\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -108,7 +108,7 @@ describe('testing InterfaceType properties', () => {
     const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -133,10 +133,10 @@ describe('testing InterfaceType properties', () => {
     const out = 'interface Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::Resolver', 0);
   });
 
   test('appsync fails addField with InterfaceType missing fieldName', () => {

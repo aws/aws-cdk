@@ -15,7 +15,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const region = process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION;
+    const region = this.region;
 
     const outputBucket = new s3.Bucket(this, 'JobOutputBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -72,9 +72,9 @@ class GlueDataBrewJobStack extends cdk.Stack {
 
     const dataset = new databrew.CfnDataset(this, 'DataBrew Dataset', {
       input: {
-        S3InputDefinition: {
-          Bucket: `databrew-public-datasets-${region}`,
-          Key: 'votes.csv',
+        s3InputDefinition: {
+          bucket: `databrew-public-datasets-${region}`,
+          key: 'votes.csv',
         },
       },
       name: 'dataset-1',

@@ -37,24 +37,24 @@ For more information on **AWS Batch** visit the [AWS Docs for Batch](https://doc
 
 ## Compute Environment
 
-At the core of AWS Batch is the compute environment. All batch jobs are processed within a compute environment, which uses resource like OnDemand or Spot EC2 instances.
+At the core of AWS Batch is the compute environment. All batch jobs are processed within a compute environment, which uses resource like OnDemand/Spot EC2 instances or Fargate.
 
 In **MANAGED** mode, AWS will handle the provisioning of compute resources to accommodate the demand. Otherwise, in **UNMANAGED** mode, you will need to manage the provisioning of those resources.
 
 Below is an example of each available type of compute environment:
 
 ```ts
-const defaultVpc = new ec2.Vpc(this, 'VPC');
+declare const vpc: ec2.Vpc;
 
 // default is managed
-const awsManagedEnvironment = new batch.ComputeEnvironment(stack, 'AWS-Managed-Compute-Env', {
+const awsManagedEnvironment = new batch.ComputeEnvironment(this, 'AWS-Managed-Compute-Env', {
   computeResources: {
-    vpc
+    vpc,
   }
 });
 
-const customerManagedEnvironment = new batch.ComputeEnvironment(stack, 'Customer-Managed-Compute-Env', {
-  managed: false // unmanaged environment
+const customerManagedEnvironment = new batch.ComputeEnvironment(this, 'Customer-Managed-Compute-Env', {
+  managed: false, // unmanaged environment
 });
 ```
 
@@ -65,10 +65,41 @@ It is possible to have AWS Batch submit spotfleet requests for obtaining compute
 ```ts
 const vpc = new ec2.Vpc(this, 'VPC');
 
-const spotEnvironment = new batch.ComputeEnvironment(stack, 'MySpotEnvironment', {
+const spotEnvironment = new batch.ComputeEnvironment(this, 'MySpotEnvironment', {
   computeResources: {
     type: batch.ComputeResourceType.SPOT,
     bidPercentage: 75, // Bids for resources at 75% of the on-demand price
+    vpc,
+  },
+});
+```
+
+### Compute Environments and Security Groups
+
+Compute Environments implement the `IConnectable` interface, which means you can use
+connections on other CDK resources to manipulate the security groups and allow access.
+
+For example, allowing a Compute Environment to access an EFS filesystem:
+
+```ts
+import * as efs from '@aws-cdk/aws-efs';
+
+declare const fileSystem: efs.FileSystem;
+declare const computeEnvironment: batch.ComputeEnvironment;
+
+fileSystem.connections.allowDefaultPortFrom(computeEnvironment);
+```
+
+### Fargate Compute Environment
+
+It is possible to have AWS Batch submit jobs to be run on Fargate compute resources. Below is an example of how this can be done:
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC');
+
+const fargateSpotEnvironment = new batch.ComputeEnvironment(this, 'MyFargateEnvironment', {
+  computeResources: {
+    type: batch.ComputeResourceType.FARGATE_SPOT,
     vpc,
   },
 });
@@ -114,17 +145,20 @@ const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
         ebs: {
           encrypted: true,
           volumeSize: 100,
-          volumeType: 'gp2'
-        }
-      }
-    ]
-  }
+          volumeType: 'gp2',
+        },
+      },
+    ],
+  },
 });
 ```
 
-and use it:
+And provide `launchTemplateName`:
 
 ```ts
+declare const vpc: ec2.Vpc;
+declare const myLaunchTemplate: ec2.CfnLaunchTemplate;
+
 const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     launchTemplate: {
@@ -133,6 +167,60 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
     vpc,
   },
   computeEnvironmentName: 'MyStorageCapableComputeEnvironment',
+});
+```
+
+Or provide `launchTemplateId` instead:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const myLaunchTemplate: ec2.CfnLaunchTemplate;
+
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    launchTemplate: {
+      launchTemplateId: myLaunchTemplate.ref as string,
+    },
+    vpc,
+  },
+  computeEnvironmentName: 'MyStorageCapableComputeEnvironment',
+});
+```
+
+Note that if your launch template explicitly specifies network interfaces,
+for example to use an Elastic Fabric Adapter, you must use those security groups rather
+than allow the `ComputeEnvironment` to define them.  This is done by setting
+`useNetworkInterfaceSecurityGroups` in the launch template property of the environment.
+For example:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const efaSecurityGroup = new ec2.SecurityGroup(this, 'EFASecurityGroup', {
+  vpc,
+});
+
+const launchTemplateEFA = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateName: 'LaunchTemplateName',
+  launchTemplateData: {
+    networkInterfaces: [{
+      deviceIndex: 0,
+      subnetId: vpc.privateSubnets[0].subnetId,
+      interfaceType: 'efa',
+      groups: [efaSecurityGroup.securityGroupId],
+    }],
+  },
+});
+
+const computeEnvironmentEFA = new batch.ComputeEnvironment(this, 'EFAComputeEnv', {
+  managed: true,
+  computeResources: {
+    vpc,
+    launchTemplate: {
+      launchTemplateName: launchTemplateEFA.launchTemplateName as string,
+      useNetworkInterfaceSecurityGroups: true,
+    },
+  },
 });
 ```
 
@@ -148,11 +236,12 @@ const computeEnv = batch.ComputeEnvironment.fromComputeEnvironmentArn(this, 'imp
 
 ### Change the baseline AMI of the compute resources
 
-Ocassionally, you will need to deviate from the default processing AMI.
+Occasionally, you will need to deviate from the default processing AMI.
 
 ECS Optimized Amazon Linux 2 example:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     image: new ecs.EcsOptimizedAmi({
@@ -166,11 +255,12 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
 Custom based AMI example:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     image: ec2.MachineImage.genericLinux({
       "[aws-region]": "[ami-ID]",
-    })
+    }),
     vpc,
   }
 });
@@ -181,12 +271,13 @@ const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
 Jobs are always submitted to a specific queue. This means that you have to create a queue before you can start submitting jobs. Each queue is mapped to at least one (and no more than three) compute environment. When the job is scheduled for execution, AWS Batch will select the compute environment based on ordinal priority and available capacity in each environment.
 
 ```ts
-const jobQueue = new batch.JobQueue(stack, 'JobQueue', {
+declare const computeEnvironment: batch.ComputeEnvironment;
+const jobQueue = new batch.JobQueue(this, 'JobQueue', {
   computeEnvironments: [
     {
       // Defines a collection of compute resources to handle assigned batch jobs
       computeEnvironment,
-      // Order determines the allocation order for jobs (i.e. Lower means higher preferance for job assignment)
+      // Order determines the allocation order for jobs (i.e. Lower means higher preference for job assignment)
       order: 1,
     },
   ],
@@ -198,13 +289,20 @@ const jobQueue = new batch.JobQueue(stack, 'JobQueue', {
 Sometimes you might have jobs that are more important than others, and when submitted, should take precedence over the existing jobs. To achieve this, you can create a priority based execution strategy, by assigning each queue its own priority:
 
 ```ts
-const highPrioQueue = new batch.JobQueue(stack, 'JobQueue', {
-  computeEnvironments: sharedComputeEnvs,
+declare const sharedComputeEnvs: batch.ComputeEnvironment;
+const highPrioQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [{
+    computeEnvironment: sharedComputeEnvs,
+    order: 1,
+  }],
   priority: 2,
 });
 
-const lowPrioQueue = new batch.JobQueue(stack, 'JobQueue', {
-  computeEnvironments: sharedComputeEnvs,
+const lowPrioQueue = new batch.JobQueue(this, 'JobQueue', {
+  computeEnvironments: [{
+    computeEnvironment: sharedComputeEnvs,
+    order: 1,
+  }],
   priority: 1,
 });
 ```
@@ -226,9 +324,11 @@ const jobQueue = batch.JobQueue.fromJobQueueArn(this, 'imported-job-queue', 'arn
 A Batch Job definition helps AWS Batch understand important details about how to run your application in the scope of a Batch Job. This involves key information like resource requirements, what containers to run, how the compute environment should be prepared, and more. Below is a simple example of how to create a job definition:
 
 ```ts
-const repo = ecr.Repository.fromRepositoryName(stack, 'batch-job-repo', 'todo-list');
+import * as ecr from '@aws-cdk/aws-ecr';
 
-new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
+const repo = ecr.Repository.fromRepositoryName(this, 'batch-job-repo', 'todo-list');
+
+new batch.JobDefinition(this, 'batch-job-def-from-ecr', {
   container: {
     image: new ecs.EcrImage(repo, 'latest'),
   },
@@ -240,7 +340,7 @@ new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
 Below is an example of how you can create a Batch Job Definition from a local Docker application.
 
 ```ts
-new batch.JobDefinition(stack, 'batch-job-def-from-local', {
+new batch.JobDefinition(this, 'batch-job-def-from-local', {
   container: {
     // todo-list is a directory containing a Dockerfile to build the application
     image: ecs.ContainerImage.fromAsset('../todo-list'),
@@ -253,19 +353,40 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
 You can provide custom log driver and its configuration for the container.
 
 ```ts
-new batch.JobDefinition(stack, 'job-def', {
+import * as ssm from '@aws-cdk/aws-ssm';
+
+new batch.JobDefinition(this, 'job-def', {
   container: {
     image: ecs.EcrImage.fromRegistry('docker/whalesay'),
     logConfiguration: {
       logDriver: batch.LogDriver.AWSLOGS,
       options: { 'awslogs-region': 'us-east-1' },
       secretOptions: [
-        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
+        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(this, 'parameter', 'xyz')),
       ],
     },
   },
 });
 ```
+
+### Using the secret on secrets manager
+
+You can set the environment variables from secrets manager.
+
+```ts
+const dbSecret = new secretsmanager.Secret(this, 'secret');
+
+new batch.JobDefinition(this, 'batch-job-def-secrets', {
+  container: {
+    image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+    secrets: {
+      PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
+    },
+  },
+});
+```
+
+It is common practice to invoke other AWS services from within AWS Batch jobs (e.g. using the AWS SDK). For this reason, the AWS_ACCOUNT and AWS_REGION environments are always provided by default to the JobDefinition construct with the values inferred from the current context. You can always overwrite them by setting these environment variables explicitly though.
 
 ### Importing an existing Job Definition
 
@@ -288,8 +409,8 @@ Below is an example:
 
 ```ts
 // Without revision
-const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition');
+const job1 = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition');
 
 // With revision
-const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition:3');
+const job2 = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition:3');
 ```

@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-python-project/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-function-project"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-project/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonprojectDefaultTestDeployAssert35F9254C"
+    }
+  }
+}

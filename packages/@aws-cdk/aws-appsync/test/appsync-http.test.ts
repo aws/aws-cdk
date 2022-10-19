@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -24,7 +24,7 @@ describe('Http Data Source configuration', () => {
     api.addHttpDataSource('ds', endpoint);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       Name: 'ds',
     });
@@ -37,7 +37,7 @@ describe('Http Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       Name: 'custom',
     });
@@ -51,7 +51,7 @@ describe('Http Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       Name: 'custom',
       Description: 'custom description',
@@ -70,7 +70,7 @@ describe('Http Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       Name: 'custom',
       Description: 'custom description',
@@ -103,7 +103,7 @@ describe('Http Data Source configuration', () => {
 
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -176,7 +176,7 @@ describe('adding http data source from imported api', () => {
     importedApi.addHttpDataSource('ds', endpoint);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -191,7 +191,7 @@ describe('adding http data source from imported api', () => {
     importedApi.addHttpDataSource('ds', endpoint);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'HTTP',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

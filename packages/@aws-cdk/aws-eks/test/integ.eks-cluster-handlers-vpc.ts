@@ -1,12 +1,12 @@
-/// !cdk-integ pragma:ignore-assets
-import { App } from '@aws-cdk/core';
+/// !cdk-integ pragma:disable-update-workflow
+import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
-import { TestStack } from './util';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 
-class EksAllHandlersInVpcStack extends TestStack {
+class EksAllHandlersInVpcStack extends Stack {
 
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -20,6 +20,9 @@ class EksAllHandlersInVpcStack extends TestStack {
 
 const app = new App();
 
-new EksAllHandlersInVpcStack(app, 'aws-cdk-eks-handlers-in-vpc-test');
+const stack = new EksAllHandlersInVpcStack(app, 'aws-cdk-eks-handlers-in-vpc-test');
+new integ.IntegTest(app, 'aws-cdk-eks-handlers-in-vpc', {
+  testCases: [stack],
+});
 
 app.synth();

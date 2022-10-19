@@ -98,7 +98,7 @@ export interface TrailProps {
   readonly snsTopic?: sns.ITopic;
 
   /**
-   * The name of the trail. We recoomend customers do not set an explicit name.
+   * The name of the trail. We recommend customers do not set an explicit name.
    *
    * @default - AWS CloudFormation generated name.
    */
@@ -115,6 +115,18 @@ export interface TrailProps {
    * @default - if not supplied a bucket will be created with all the correct permisions
    */
   readonly bucket?: s3.IBucket;
+
+  /**
+   * Specifies whether the trail is applied to all accounts in an organization in AWS Organizations, or only for the current AWS account.
+   *
+   * If this is set to true then the current account _must_ be the management account. If it is not, then CloudFormation will throw an error.
+   *
+   * If this is set to true and the current account is a management account for an organization in AWS Organizations, the trail will be created in all AWS accounts that belong to the organization.
+   * If this is set to false, the trail will remain in the current AWS account but be deleted from all member accounts in the organization.
+   *
+   * @default - false
+   */
+  readonly isOrganizationTrail?: boolean
 }
 
 /**
@@ -209,7 +221,7 @@ export class Trail extends Resource {
 
     const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
-    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED });
+    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED, enforceSSL: true });
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.s3bucket.bucketArn],
@@ -246,7 +258,7 @@ export class Trail extends Resource {
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPolicy(new iam.PolicyStatement({
+      logsRole.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
         resources: [this.logGroup.logGroupArn],
       }));
@@ -285,6 +297,7 @@ export class Trail extends Resource {
       cloudWatchLogsRoleArn: logsRole?.roleArn,
       snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
+      isOrganizationTrail: props.isOrganizationTrail,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
@@ -334,6 +347,7 @@ export class Trail extends Resource {
         values: dataResourceValues,
       }],
       includeManagementEvents: options.includeManagementEvents,
+      excludeManagementEventSources: options.excludeManagementEventSources,
       readWriteType: options.readWriteType,
     });
   }
@@ -424,6 +438,28 @@ export interface AddEventSelectorOptions {
    * @default true
    */
   readonly includeManagementEvents?: boolean;
+
+  /**
+   * An optional list of service event sources from which you do not want management events to be logged on your trail.
+   *
+   * @default []
+   */
+  readonly excludeManagementEventSources?: ManagementEventSources[];
+}
+
+/**
+ * Types of management event sources that can be excluded
+ */
+export enum ManagementEventSources {
+  /**
+   * AWS Key Management Service (AWS KMS) events
+   */
+  KMS = 'kms.amazonaws.com',
+
+  /**
+   * Data API events
+   */
+  RDS_DATA_API = 'rdsdata.amazonaws.com',
 }
 
 /**
@@ -457,6 +493,7 @@ export enum DataResourceType {
 
 interface EventSelector {
   readonly includeManagementEvents?: boolean;
+  readonly excludeManagementEventSources?: string[];
   readonly readWriteType?: ReadWriteType;
   readonly dataResources?: EventSelectorData[];
 }

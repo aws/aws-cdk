@@ -1,8 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Construct } from 'constructs';
+import { Construct } from 'constructs';
 import { Alias } from './alias';
+import { KeyLookupOptions } from './key-lookup';
 import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
 
@@ -92,6 +94,12 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
+  }
+
   /**
    * Defines a new alias for the key.
    */
@@ -121,12 +129,6 @@ abstract class KeyBase extends Resource implements IKey {
 
     this.policy.addStatements(statement);
     return { statementAdded: true, policyDependable: this.policy };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
@@ -201,35 +203,27 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
     const grantPrincipal = grantee.grantPrincipal;
-    if (!(grantPrincipal instanceof Construct)) {
+    if (!isConstruct(grantPrincipal)) {
       return undefined;
     }
     // this logic should only apply to newly created
     // (= not imported) resources
-    if (!this.principalIsANewlyCreatedResource(grantPrincipal)) {
+    if (!Resource.isOwnedResource(grantPrincipal)) {
       return undefined;
     }
-    // return undefined;
     const keyStack = Stack.of(this);
     const granteeStack = Stack.of(grantPrincipal);
     if (keyStack === granteeStack) {
       return undefined;
     }
+
     return granteeStack.dependencies.includes(keyStack)
       ? granteeStack.account
       : undefined;
   }
 
-  private principalIsANewlyCreatedResource(principal: IConstruct): boolean {
-    // yes, this sucks
-    // this is just a temporary stopgap to stem the bleeding while we work on a proper fix
-    return principal instanceof iam.Role ||
-      principal instanceof iam.User ||
-      principal instanceof iam.Group;
-  }
-
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!(grantee instanceof Construct)) {
+    if (!isConstruct(grantee)) {
       return false;
     }
     const bucketStack = Stack.of(this);
@@ -238,13 +232,92 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(grantee instanceof Construct)) {
+    if (!isConstruct(grantee)) {
       return false;
     }
     const bucketStack = Stack.of(this);
     const identityStack = Stack.of(grantee);
     return bucketStack.account !== identityStack.account;
   }
+}
+
+/**
+ * The key spec, represents the cryptographic configuration of keys.
+ */
+export enum KeySpec {
+  /**
+   * The default key spec.
+   *
+   * Valid usage: ENCRYPT_DECRYPT
+   */
+  SYMMETRIC_DEFAULT = 'SYMMETRIC_DEFAULT',
+
+  /**
+   * RSA with 2048 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_2048 = 'RSA_2048',
+
+  /**
+   * RSA with 3072 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_3072 = 'RSA_3072',
+
+  /**
+   * RSA with 4096 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_4096 = 'RSA_4096',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-256 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P256 = 'ECC_NIST_P256',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-384 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P384 = 'ECC_NIST_P384',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-512 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P521 = 'ECC_NIST_P521',
+
+  /**
+   * Standards for Efficient Cryptography 2, Section 2.4.1, ECDSA signature on the Koblitz curve.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_SECG_P256K1 = 'ECC_SECG_P256K1',
+}
+
+/**
+ * The key usage, represents the cryptographic operations of keys.
+ */
+export enum KeyUsage {
+  /**
+   * Encryption and decryption.
+   */
+  ENCRYPT_DECRYPT = 'ENCRYPT_DECRYPT',
+
+  /**
+   * Signing and verification
+   */
+  SIGN_VERIFY = 'SIGN_VERIFY',
 }
 
 /**
@@ -283,9 +356,29 @@ export interface KeyProps {
   readonly enabled?: boolean;
 
   /**
+   * The cryptographic configuration of the key. The valid value depends on usage of the key.
+   *
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeySpec.SYMMETRIC_DEFAULT
+   */
+  readonly keySpec?: KeySpec;
+
+  /**
+   * The cryptographic operations for which the key can be used.
+   *
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeyUsage.ENCRYPT_DECRYPT
+   */
+  readonly keyUsage?: KeyUsage;
+
+  /**
    * Custom policy document to attach to the KMS key.
    *
-   * NOTE - If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * NOTE - If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
    * this policy will *override* the default key policy and become the only key policy for the key. If the
    * feature flag is not set, this policy will be appended to the default key policy.
    *
@@ -322,12 +415,12 @@ export interface KeyProps {
    * to how it works for other AWS resources). This matches the default behavior
    * when creating KMS keys via the API or console.
    *
-   * If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
    * this flag will always be treated as 'true' and does not need to be explicitly set.
    *
-   * @default - false, unless the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set.
+   * @default - false, unless the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
-   * @deprecated redundant with the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag
+   * @deprecated redundant with the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag
    */
   readonly trustAccountIdentities?: boolean;
 
@@ -371,19 +464,124 @@ export class Key extends KeyBase {
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
 
-      constructor(keyId: string) {
-        super(scope, id);
+      constructor(keyId: string, props: ResourceProps = {}) {
+        super(scope, id, props);
 
         this.keyId = keyId;
       }
     }
 
-    const keyResourceName = Stack.of(scope).parseArn(keyArn).resourceName;
+    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
       throw new Error(`KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
     }
 
-    return new Import(keyResourceName);
+    return new Import(keyResourceName, {
+      environmentFromArn: keyArn,
+    });
+  }
+
+  /**
+   * Create a mutable {@link IKey} based on a low-level {@link CfnKey}.
+   * This is most useful when combined with the cloudformation-include module.
+   * This method is different than {@link fromKeyArn()} because the {@link IKey}
+   * returned from this method is mutable;
+   * meaning, calling any mutating methods on it,
+   * like {@link IKey.addToResourcePolicy()},
+   * will actually be reflected in the resulting template,
+   * as opposed to the object returned from {@link fromKeyArn()},
+   * on which calling those methods would have no effect.
+   */
+  public static fromCfnKey(cfnKey: CfnKey): IKey {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnKey';
+
+    // if fromCfnKey() was already called on this cfnKey,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the keyPolicy property of the L1 below)
+    const existing = cfnKey.node.tryFindChild(id);
+    if (existing) {
+      return <IKey>existing;
+    }
+
+    let keyPolicy: iam.PolicyDocument;
+    try {
+      keyPolicy = iam.PolicyDocument.fromJson(cfnKey.keyPolicy);
+    } catch (e) {
+      // If the KeyPolicy contains any CloudFormation functions,
+      // PolicyDocument.fromJson() throws an exception.
+      // In that case, because we would have to effectively make the returned IKey immutable,
+      // throw an exception suggesting to use the other importing methods instead.
+      // We might make this parsing logic smarter later,
+      // but let's start by erroring out.
+      throw new Error('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+        'This makes it impossible to create a mutable IKey from that Policy. ' +
+        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey');
+    }
+
+    // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
+    cfnKey.keyPolicy = Lazy.any({ produce: () => keyPolicy.toJSON() });
+
+    return new class extends KeyBase {
+      public readonly keyArn = cfnKey.attrArn;
+      public readonly keyId = cfnKey.ref;
+      protected readonly policy = keyPolicy;
+      protected readonly trustAccountIdentities = false;
+    }(cfnKey, id);
+  }
+
+  /**
+   * Import an existing Key by querying the AWS environment this stack is deployed to.
+   *
+   * This function only needs to be used to use Keys not defined in your CDK
+   * application. If you are looking to share a Key between stacks, you can
+   * pass the `Key` object between stacks and use it as normal. In addition,
+   * it's not necessary to use this method if an interface accepts an `IKey`.
+   * In this case, `Alias.fromAliasName()` can be used which returns an alias
+   * that extends `IKey`.
+   *
+   * Calling this method will lead to a lookup when the CDK CLI is executed.
+   * You can therefore not use any values that will only be available at
+   * CloudFormation execution time (i.e., Tokens).
+   *
+   * The Key information will be cached in `cdk.context.json` and the same Key
+   * will be used on future runs. To refresh the lookup, you will have to
+   * evict the value from the cache using the `cdk context` command. See
+   * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+   */
+  public static fromLookup(scope: Construct, id: string, options: KeyLookupOptions): IKey {
+    class Import extends KeyBase {
+      public readonly keyArn: string;
+      public readonly keyId: string;
+      protected readonly policy?: iam.PolicyDocument | undefined = undefined;
+      // defaulting true: if we are importing the key the key policy is
+      // undefined and impossible to change here; this means updating identity
+      // policies is really the only option
+      protected readonly trustAccountIdentities: boolean = true;
+
+      constructor(keyId: string, keyArn: string) {
+        super(scope, id);
+
+        this.keyId = keyId;
+        this.keyArn = keyArn;
+      }
+    }
+    if (Token.isUnresolved(options.aliasName)) {
+      throw new Error('All arguments to Key.fromLookup() must be concrete (no Tokens)');
+    }
+
+    const attributes: cxapi.KeyContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.KEY_PROVIDER,
+      props: {
+        aliasName: options.aliasName,
+      } as cxschema.KeyContextQuery,
+      dummyValue: {
+        keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+      },
+    }).value;
+
+    return new Import(attributes.keyId,
+      Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
   }
 
   public readonly keyArn: string;
@@ -393,6 +591,27 @@ export class Key extends KeyBase {
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
+
+    const denyLists = {
+      [KeyUsage.ENCRYPT_DECRYPT]: [
+        KeySpec.ECC_NIST_P256,
+        KeySpec.ECC_NIST_P384,
+        KeySpec.ECC_NIST_P521,
+        KeySpec.ECC_SECG_P256K1,
+      ],
+      [KeyUsage.SIGN_VERIFY]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+      ],
+    };
+    const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
+    const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
+    if (denyLists[keyUsage].includes(keySpec)) {
+      throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
+    }
+
+    if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
+      throw new Error('key rotation cannot be enabled on asymmetric keys');
+    }
 
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
@@ -428,6 +647,8 @@ export class Key extends KeyBase {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
+      keySpec: props.keySpec,
+      keyUsage: props.keyUsage,
       keyPolicy: this.policy,
       pendingWindowInDays: pendingWindowInDays,
     });
@@ -471,7 +692,7 @@ export class Key extends KeyBase {
    * Grants the account admin privileges -- not full account access -- plus the GenerateDataKey action.
    * The GenerateDataKey action was added for interop with S3 in https://github.com/aws/aws-cdk/issues/3458.
    *
-   * This policy is discouraged and deprecated by the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag.
+   * This policy is discouraged and deprecated by the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag.
    *
    * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
    * @deprecated
@@ -503,4 +724,21 @@ export class Key extends KeyBase {
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
+}
+
+/**
+ * Whether the given object is a Construct
+ *
+ * Normally we'd do `x instanceof Construct`, but that is not robust against
+ * multiple copies of the `constructs` library on disk. This can happen
+ * when upgrading and downgrading between v2 and v1, and in the use of CDK
+ * Pipelines is going to an error that says "Can't use Pipeline/Pipeline/Role in
+ * a cross-environment fashion", which is very confusing.
+ */
+function isConstruct(x: any): x is Construct {
+  const sym = Symbol.for('constructs.Construct.node');
+  return (typeof x === 'object' && x &&
+    (x instanceof Construct // happy fast case
+    || !!(x as any).node // constructs v10
+    || !!(x as any)[sym])); // constructs v3
 }

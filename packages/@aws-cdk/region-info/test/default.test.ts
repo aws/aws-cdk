@@ -5,12 +5,12 @@ const urlSuffix = '.nowhere.null';
 
 describe('servicePrincipal', () => {
   for (const suffix of ['', '.amazonaws.com', '.amazonaws.com.cn']) {
-    for (const service of ['states']) {
+    for (const service of ['codedeploy', 'states']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.amazonaws.com`);
       });
     }
-    for (const service of ['codedeploy', 'logs']) {
+    for (const service of ['logs']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.${urlSuffix}`);
       });
@@ -46,5 +46,39 @@ describe('servicePrincipal', () => {
     test(`Exceptions: ${service}.amazonaws.com is us-iso-east-1`, () => {
       expect(Default.servicePrincipal(`${service}.amazonaws.com`, 'us-iso-east-1', 'c2s.ic.gov')).toBe(`${service}.c2s.ic.gov`);
     });
+  }
+
+  for (const cnRegion of ['cn-north-1', 'cn-northwest-1']) {
+    test(`Exceptions: codedeploy in ${cnRegion}`, () => {
+      expect(Default.servicePrincipal('codedeploy', cnRegion, 'amazonaws.com.cn')).toBe(`codedeploy.${cnRegion}.amazonaws.com.cn`);
+    });
+  }
+});
+
+
+describe('spot-check some service principals', () => {
+  test('ssm', () => {
+    // SSM has advertised in its documentation that it is regional after a certain point, but that
+    // documentation only applies to SSM Inventory, not SSM Automation. Plus, there is no need for
+    // a different service principal, as all accounts are (at least currently) included in the global
+    // one.
+    expectServicePrincipals('ssm.amazonaws.com', {
+      'us-east-1': 'ssm.amazonaws.com',
+      'eu-north-1': 'ssm.amazonaws.com',
+      'ap-east-1': 'ssm.amazonaws.com',
+      'eu-south-1': 'ssm.amazonaws.com',
+    });
+  });
+
+  test('EMR', () => {
+    expectServicePrincipals('elasticmapreduce.amazonaws.com', {
+      'us-east-1': 'elasticmapreduce.amazonaws.com',
+      'cn-north-1': 'elasticmapreduce.EXTENSION', // amazonaws.com.cn in China
+      'us-iso-east-1': 'elasticmapreduce.amazonaws.com',
+    });
+  });
+
+  function expectServicePrincipals(principal: string, regionMap: Record<string, string>) {
+    expect(Object.fromEntries(Object.keys(regionMap).map(reg => [reg, Default.servicePrincipal(principal, reg, 'EXTENSION')]))).toEqual(regionMap);
   }
 });

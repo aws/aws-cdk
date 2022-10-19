@@ -23,13 +23,84 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+## Job
+
+A `Job` encapsulates a script that connects to data sources, processes them, and then writes output to a data target.
+
+There are 3 types of jobs supported by AWS Glue: Spark ETL, Spark Streaming, and Python Shell jobs.
+
+The `glue.JobExecutable` allows you to specify the type of job, the language to use and the code assets required by the job.
+
+`glue.Code` allows you to refer to the different code assets required by the job, either from an existing S3 location or from a local file path.
+
+### Spark Jobs
+
+These jobs run in an Apache Spark environment managed by AWS Glue.
+
+#### ETL Jobs
+
+An ETL job processes data in batches using Apache Spark.
+
+```ts
+declare const bucket: s3.Bucket;
+new glue.Job(this, 'ScalaSparkEtlJob', {
+  executable: glue.JobExecutable.scalaEtl({
+    glueVersion: glue.GlueVersion.V2_0,
+    script: glue.Code.fromBucket(bucket, 'src/com/example/HelloWorld.scala'),
+    className: 'com.example.HelloWorld',
+    extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
+  }),
+  description: 'an example Scala ETL job',
+});
+```
+
+#### Streaming Jobs
+
+A Streaming job is similar to an ETL job, except that it performs ETL on data streams. It uses the Apache Spark Structured Streaming framework. Some Spark job features are not available to streaming ETL jobs.
+
+```ts
+new glue.Job(this, 'PythonSparkStreamingJob', {
+  executable: glue.JobExecutable.pythonStreaming({
+    glueVersion: glue.GlueVersion.V2_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+  }),
+  description: 'an example Python Streaming job',
+});
+```
+
+### Python Shell Jobs
+
+A Python shell job runs Python scripts as a shell and supports a Python version that depends on the AWS Glue version you are using.
+This can be used to schedule and run tasks that don't require an Apache Spark environment. Currently, three flavors are supported:
+
+* PythonVersion.TWO (2.7; EOL)
+* PythonVersion.THREE (3.6)
+* PythonVersion.THREE_NINE (3.9)
+
+```ts
+declare const bucket: s3.Bucket;
+new glue.Job(this, 'PythonShellJob', {
+  executable: glue.JobExecutable.pythonShell({
+    glueVersion: glue.GlueVersion.V1_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script: glue.Code.fromBucket(bucket, 'script.py'),
+  }),
+  description: 'an example Python Shell job',
+});
+```
+
+See [documentation](https://docs.aws.amazon.com/glue/latest/dg/add-job.html) for more information on adding jobs in Glue.
+
 ## Connection
 
 A `Connection` allows Glue jobs, crawlers and development endpoints to access certain types of data stores. For example, to create a network connection to connect to a data source within a VPC:
 
 ```ts
-new glue.Connection(stack, 'MyConnection', {
-  connectionType: glue.ConnectionTypes.NETWORK,
+declare const securityGroup: ec2.SecurityGroup;
+declare const subnet: ec2.Subnet;
+new glue.Connection(this, 'MyConnection', {
+  type: glue.ConnectionType.NETWORK,
   // The security groups granting AWS Glue inbound access to the data source within the VPC
   securityGroups: [securityGroup],
   // The VPC subnet which contains the data source
@@ -37,26 +108,34 @@ new glue.Connection(stack, 'MyConnection', {
 });
 ```
 
+For RDS `Connection` by JDBC, it is recommended to manage credentials using AWS Secrets Manager. To use Secret, specify `SECRET_ID` in `properties` like the following code. Note that in this case, the subnet must have a route to the AWS Secrets Manager VPC endpoint or to the AWS Secrets Manager endpoint through a NAT gateway.
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const subnet: ec2.Subnet;
+declare const db: rds.DatabaseCluster;
+new glue.Connection(this, "RdsConnection", {
+  type: glue.ConnectionType.JDBC,
+  securityGroups: [securityGroup],
+  subnet,
+  properties: {
+    JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
+    JDBC_ENFORCE_SSL: "false",
+    SECRET_ID: db.secret!.secretName,
+  },
+});
+```
+
 If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
 
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
-
-## Database
-
-A `Database` is a logical grouping of `Tables` in the Glue Catalog.
-
-```ts
-new glue.Database(stack, 'MyDatabase', {
-  databaseName: 'my_database'
-});
-```
 
 ## SecurityConfiguration
 
 A `SecurityConfiguration` is a set of security properties that can be used by AWS Glue to encrypt data at rest.
 
 ```ts
-new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
+new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
   securityConfigurationName: 'name',
   cloudWatchEncryption: {
     mode: glue.CloudWatchEncryptionMode.KMS,
@@ -73,7 +152,8 @@ new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
 By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key for each encryption config, for example, for CloudWatch encryption:
 
 ```ts
-new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
+declare const key: kms.Key;
+new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
   securityConfigurationName: 'name',
   cloudWatchEncryption: {
     mode: glue.CloudWatchEncryptionMode.KMS,
@@ -84,13 +164,23 @@ new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
 
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
 
+## Database
+
+A `Database` is a logical grouping of `Tables` in the Glue Catalog.
+
+```ts
+new glue.Database(this, 'MyDatabase', {
+  databaseName: 'my_database',
+});
+```
 
 ## Table
 
 A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
 
 ```ts
-new glue.Table(stack, 'MyTable', {
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
   database: myDatabase,
   tableName: 'my_table',
   columns: [{
@@ -98,45 +188,126 @@ new glue.Table(stack, 'MyTable', {
     type: glue.Schema.STRING,
   }, {
     name: 'col2',
-    type: glue.Schema.array(Schema.STRING),
+    type: glue.Schema.array(glue.Schema.STRING),
     comment: 'col2 is an array of strings' // comment is optional
   }],
-  dataFormat: glue.DataFormat.JSON
+  dataFormat: glue.DataFormat.JSON,
 });
 ```
 
 By default, a S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `s3Prefix`:
 
 ```ts
-new glue.Table(stack, 'MyTable', {
+declare const myBucket: s3.Bucket;
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
   bucket: myBucket,
-  s3Prefix: 'my-table/'
-  ...
+  s3Prefix: 'my-table/',
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
 });
 ```
 
 By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
 
-### Partitions
+### Partition Keys
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
 
 ```ts
-new glue.Table(stack, 'MyTable', {
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
   database: myDatabase,
   tableName: 'my_table',
   columns: [{
     name: 'col1',
-    type: glue.Schema.STRING
+    type: glue.Schema.STRING,
   }],
   partitionKeys: [{
     name: 'year',
-    type: glue.Schema.SMALL_INT
+    type: glue.Schema.SMALL_INT,
   }, {
     name: 'month',
-    type: glue.Schema.SMALL_INT
+    type: glue.Schema.SMALL_INT,
   }],
-  dataFormat: glue.DataFormat.JSON
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+### Partition Indexes
+
+Another way to improve query performance is to specify partition indexes. If no partition indexes are
+present on the table, AWS Glue loads all partitions of the table and filters the loaded partitions using
+the query expression. The query takes more time to run as the number of partitions increase. With an
+index, the query will try to fetch a subset of the partitions instead of loading all partitions of the
+table.
+
+The keys of a partition index must be a subset of the partition keys of the table. You can have a
+maximum of 3 partition indexes per table. To specify a partition index, you can use the `partitionIndexes`
+property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'year',
+    type: glue.Schema.SMALL_INT,
+  }, {
+    name: 'month',
+    type: glue.Schema.SMALL_INT,
+  }],
+  partitionIndexes: [{
+    indexName: 'my-index', // optional
+    keyNames: ['year'],
+  }], // supply up to 3 indexes
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Alternatively, you can call the `addPartitionIndex()` function on a table:
+
+```ts
+declare const myTable: glue.Table;
+myTable.addPartitionIndex({
+  indexName: 'my-index',
+  keyNames: ['year'],
+});
+```
+
+### Partition Filtering
+
+If you have a table with a large number of partitions that grows over time, consider using AWS Glue partition indexing and filtering.
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+    database: myDatabase,
+    tableName: 'my_table',
+    columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+    }],
+    partitionKeys: [{
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+    }, {
+        name: 'month',
+        type: glue.Schema.SMALL_INT,
+    }],
+    dataFormat: glue.DataFormat.JSON,
+    enablePartitionFiltering: true,
 });
 ```
 
@@ -148,52 +319,98 @@ You can enable encryption on a Table's data:
 * [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
 
 ```ts
-new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.S3_MANAGED
-  ...
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.S3_MANAGED,
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
 });
 ```
 
 * [Kms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`) with an AWS KMS Key managed by the account owner.
 
 ```ts
+declare const myDatabase: glue.Database;
 // KMS key is created automatically
-new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.KMS
-  ...
+new glue.Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.KMS,
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
 });
 
 // with an explicit KMS key
-new glue.Table(stack, 'MyTable', {
+new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS,
-  encryptionKey: new kms.Key(stack, 'MyKey')
-  ...
+  encryptionKey: new kms.Key(this, 'MyKey'),
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
 });
 ```
 
 * [KmsManaged](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`), like `Kms`, except with an AWS KMS Key managed by the AWS Key Management Service.
 
 ```ts
-new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.KMS_MANAGED
-  ...
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.KMS_MANAGED,
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
 });
 ```
 
 * [ClientSideKms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (`CSE-KMS`) with an AWS KMS Key managed by the account owner.
 
 ```ts
+declare const myDatabase: glue.Database;
 // KMS key is created automatically
-new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.CLIENT_SIDE_KMS
-  ...
+new glue.Table(this, 'MyTable', {
+  encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
 });
 
 // with an explicit KMS key
-new glue.Table(stack, 'MyTable', {
+new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-  encryptionKey: new kms.Key(stack, 'MyKey')
-  ...
+  encryptionKey: new kms.Key(this, 'MyKey'),
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
 });
 ```
 
@@ -204,30 +421,35 @@ new glue.Table(stack, 'MyTable', {
 A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
 
 ```ts
-new glue.Table(stack, 'MyTable', {
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
   columns: [{
     name: 'primitive_column',
-    type: glue.Schema.STRING
+    type: glue.Schema.STRING,
   }, {
     name: 'array_column',
     type: glue.Schema.array(glue.Schema.INTEGER),
-    comment: 'array<integer>'
+    comment: 'array<integer>',
   }, {
     name: 'map_column',
     type: glue.Schema.map(
       glue.Schema.STRING,
       glue.Schema.TIMESTAMP),
-    comment: 'map<string,string>'
+    comment: 'map<string,string>',
   }, {
     name: 'struct_column',
     type: glue.Schema.struct([{
       name: 'nested_column',
       type: glue.Schema.DATE,
-      comment: 'nested comment'
+      comment: 'nested comment',
     }]),
-    comment: "struct<nested_column:date COMMENT 'nested comment'>"
+    comment: "struct<nested_column:date COMMENT 'nested comment'>",
   }],
-  ...
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  dataFormat: glue.DataFormat.JSON,
+});  
 ```
 
 ### Primitives

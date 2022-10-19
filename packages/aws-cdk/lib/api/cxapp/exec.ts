@@ -1,10 +1,14 @@
 import * as childProcess from 'child_process';
+import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { debug } from '../../logging';
+import * as semver from 'semver';
+import { debug, warning } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
+import { loadTree, some } from '../../tree';
+import { splitBySize } from '../../util/objects';
 import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
 
@@ -40,11 +44,15 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
 
-  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['*'];
+  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
-  env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
+
+  const build = config.settings.get(['build']);
+  if (build) {
+    await exec(build);
+  }
 
   const app = config.settings.get(['app']);
   if (!app) {
@@ -63,7 +71,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }
-  await fs.mkdirp(outdir);
+  try {
+    await fs.mkdirp(outdir);
+  } catch (error) {
+    throw new Error(`Could not create output directory ${outdir} (${error.message})`);
+  }
 
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
@@ -74,9 +86,28 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('env:', env);
 
-  await exec();
+  const envVariableSizeLimit = os.platform() === 'win32' ? 32760 : 131072;
+  const [smallContext, overflow] = splitBySize(context, spaceAvailableForContext(env, envVariableSizeLimit));
 
-  return createAssembly(outdir);
+  // Store the safe part in the environment variable
+  env[cxapi.CONTEXT_ENV] = JSON.stringify(smallContext);
+
+  // If there was any overflow, write it to a temporary file
+  let contextOverflowLocation;
+  if (Object.keys(overflow ?? {}).length > 0) {
+    const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    contextOverflowLocation = path.join(contextDir, 'context-overflow.json');
+    fs.writeJSONSync(contextOverflowLocation, overflow);
+    env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextOverflowLocation;
+  }
+
+  await exec(commandLine.join(' '));
+
+  const assembly = createAssembly(outdir);
+
+  contextOverflowCleanup(contextOverflowLocation, assembly);
+
+  return assembly;
 
   function createAssembly(appDir: string) {
     try {
@@ -91,7 +122,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     }
   }
 
-  async function exec() {
+  async function exec(commandAndArgs: string) {
     return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
       //
@@ -103,7 +134,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
-      const proc = childProcess.spawn(commandLine[0], commandLine.slice(1), {
+      const proc = childProcess.spawn(commandAndArgs, {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,
         shell: true,
@@ -205,4 +236,34 @@ async function guessExecutable(commandLine: string[]) {
     }
   }
   return commandLine;
+}
+
+function contextOverflowCleanup(location: string | undefined, assembly: cxapi.CloudAssembly) {
+  if (location) {
+    fs.removeSync(path.dirname(location));
+
+    const tree = loadTree(assembly);
+    const frameworkDoesNotSupportContextOverflow = some(tree, node => {
+      const fqn = node.constructInfo?.fqn;
+      const version = node.constructInfo?.version;
+      return (fqn === 'aws-cdk-lib.App' && version != null && semver.lte(version, '2.38.0'))
+        || fqn === '@aws-cdk/core.App'; // v1
+    });
+
+    // We're dealing with an old version of the framework here. It is unaware of the temporary
+    // file, which means that it will ignore the context overflow.
+    if (frameworkDoesNotSupportContextOverflow) {
+      warning('Part of the context could not be sent to the application. Please update the AWS CDK library to the latest version.');
+    }
+  }
+}
+
+function spaceAvailableForContext(env: { [key: string]: string }, limit: number) {
+  const size = (value: string) => value != null ? Buffer.byteLength(value) : 0;
+
+  const usedSpace = Object.entries(env)
+    .map(([k, v]) => k === cxapi.CONTEXT_ENV ? size(k) : size(k) + size(v))
+    .reduce((a, b) => a + b, 0);
+
+  return Math.max(0, limit - usedSpace);
 }

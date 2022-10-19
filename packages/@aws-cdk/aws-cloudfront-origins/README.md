@@ -18,9 +18,6 @@ An S3 bucket can be added as an origin. If the bucket is configured as a website
 documents.
 
 ```ts
-import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as origins from '@aws-cdk/aws-cloudfront-origins';
-
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
@@ -33,6 +30,21 @@ CloudFront's redirect and error handling will be used. In the latter case, the O
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly. Alternatively, a custom origin access identity can be passed to the S3 origin in the properties.
 
+### Adding Custom Headers
+
+You can configure CloudFront to add custom headers to the requests that it sends to your origin. These custom headers enable you to send and gather information from your origin that you don’t get with typical viewer requests. These headers can even be customized for each origin. CloudFront supports custom headers for both for custom and Amazon S3 origins.
+
+```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket, {
+    customHeaders: {
+      Foo: 'bar',
+    },
+  })},
+});
+```
+
 ## ELBv2 Load Balancer
 
 An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In order for a load balancer to serve as an origin, it must be publicly
@@ -42,12 +54,12 @@ accessible (`internetFacing` is true). Both Application and Network load balance
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
-const vpc = new ec2.Vpc(...);
+declare const vpc: ec2.Vpc;
 // Create an application load balancer in a VPC. 'internetFacing' must be 'true'
 // for CloudFront to access the load balancer and use it as an origin.
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true
+  internetFacing: true,
 });
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.LoadBalancerV2Origin(lb) },
@@ -57,12 +69,21 @@ new cloudfront.Distribution(this, 'myDist', {
 The origin can also be customized to respond on different ports, have different connection properties, etc.
 
 ```ts
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+
+declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
   connectionTimeout: Duration.seconds(5),
+  readTimeout: Duration.seconds(45),
+  keepaliveTimeout: Duration.seconds(45),
   protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
 });
 ```
+
+Note that the `readTimeout` and `keepaliveTimeout` properties can extend their values over 60 seconds only if a limit increase request for CloudFront origin response timeout
+quota has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time. Consider that this value is
+still limited to a maximum value of 180 seconds, which is a hard limit for that quota.
 
 ## From an HTTP endpoint
 
@@ -85,6 +106,7 @@ CloudFront automatically switches to the secondary origin.
 You achieve that behavior in the CDK using the `OriginGroup` class:
 
 ```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: new origins.OriginGroup({
@@ -96,3 +118,17 @@ new cloudfront.Distribution(this, 'myDist', {
   },
 });
 ```
+
+## From an API Gateway REST API
+
+Origins can be created from an API Gateway REST API. It is recommended to use a
+[regional API](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html) in this case.
+
+```ts
+declare const api: apigateway.RestApi;
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.RestApiOrigin(api) },
+});
+```
+
+The origin path will automatically be set as the stage name.

@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDBSubnetGroup } from './rds.generated';
 
@@ -72,12 +72,17 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
   constructor(scope: Construct, id: string, props: SubnetGroupProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE });
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
 
     // Using 'Default' as the resource id for historical reasons (usage from `Instance` and `Cluster`).
     const subnetGroup = new CfnDBSubnetGroup(this, 'Default', {
       dbSubnetGroupDescription: props.description,
-      dbSubnetGroupName: props.subnetGroupName,
+      // names are actually stored by RDS changed to lowercase on the server side,
+      // and not lowercasing them in CloudFormation means things like { Ref }
+      // do not work correctly
+      dbSubnetGroupName: Token.isUnresolved(props.subnetGroupName)
+        ? props.subnetGroupName
+        : props.subnetGroupName?.toLowerCase(),
       subnetIds,
     });
 

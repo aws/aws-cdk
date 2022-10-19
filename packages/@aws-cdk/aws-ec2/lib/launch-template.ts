@@ -192,6 +192,23 @@ export interface LaunchTemplateSpotOptions {
 };
 
 /**
+ * The state of token usage for your instance metadata requests.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
+ */
+export enum LaunchTemplateHttpTokens {
+  /**
+   * If the state is optional, you can choose to retrieve instance metadata with or without a signed token header on your request.
+   */
+  OPTIONAL = 'optional',
+  /**
+   * If the state is required, you must send a signed token header with any instance metadata retrieval requests. In this state,
+   * retrieving the IAM role credentials always returns the version 2.0 credentials; the version 1.0 credentials are not available.
+   */
+  REQUIRED = 'required',
+}
+
+/**
  * Properties of a LaunchTemplate.
  */
 export interface LaunchTemplateProps {
@@ -332,6 +349,59 @@ export interface LaunchTemplateProps {
    * @default No security group is assigned.
    */
   readonly securityGroup?: ISecurityGroup;
+
+  /**
+   * Whether IMDSv2 should be required on launched instances.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
+
+  /**
+   * Enables or disables the HTTP metadata endpoint on your instances.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpendpoint
+   *
+   * @default true
+   */
+  readonly httpEndpoint?: boolean;
+
+  /**
+   * Enables or disables the IPv6 endpoint for the instance metadata service.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpprotocolipv6
+   *
+   * @default true
+   */
+  readonly httpProtocolIpv6?: boolean;
+
+  /**
+   * The desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
+   *
+   * @default 1
+   */
+  readonly httpPutResponseHopLimit?: number;
+
+  /**
+   * The state of token usage for your instance metadata requests.  The default state is `optional` if not specified. However,
+   * if requireImdsv2 is true, the state must be `required`.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
+   *
+   * @default LaunchTemplateHttpTokens.OPTIONAL
+   */
+  readonly httpTokens?: LaunchTemplateHttpTokens;
+
+  /**
+   * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-instancemetadatatags
+   *
+   * @default false
+   */
+  readonly instanceMetadataTags?: boolean;
 }
 
 /**
@@ -438,6 +508,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   public readonly osType?: OperatingSystemType;
 
   /**
+   * The AMI ID of the image to use
+   *
+   * @attribute
+   */
+  public readonly imageId?: string;
+
+  /**
    * IAM Role assumed by instances that are launched from this template.
    *
    * @attribute
@@ -450,6 +527,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * @attribute
    */
   public readonly userData?: UserData;
+
+  /**
+   * Type of instance to launch.
+   *
+   * @attribute
+   */
+  public readonly instanceType?: InstanceType;
 
   // =============================================
   //   Private/protected data members
@@ -481,6 +565,12 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     if (spotDuration !== undefined && (spotDuration < 1 || spotDuration > 6)) {
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#fixed-duration-spot-instances
       Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
+    }
+
+    // Basic validation of the provided httpPutResponseHopLimit
+    if (props.httpPutResponseHopLimit !== undefined && (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
+      // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
+      Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
     }
 
     this.role = props.role;
@@ -516,7 +606,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
     if (imageConfig) {
       this.osType = imageConfig.osType;
+      this.imageId = imageConfig.imageId;
     }
+
+    this.instanceType = props.instanceType;
 
     let marketOptions: any = undefined;
     if (props?.spotOptions) {
@@ -537,6 +630,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     this.tags = new TagManager(TagType.KEY_VALUE, 'AWS::EC2::LaunchTemplate');
+
     const tagsToken = Lazy.any({
       produce: () => {
         if (this.tags.hasTags()) {
@@ -554,6 +648,27 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
             },
             {
               resourceType: 'volume',
+              tags: lowerCaseRenderedTags,
+            },
+          ];
+        }
+        return undefined;
+      },
+    });
+
+    const ltTagsToken = Lazy.any({
+      produce: () => {
+        if (this.tags.hasTags()) {
+          const renderedTags = this.tags.renderTags();
+          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
+            return {
+              key: tag.Key,
+              value: tag.Value,
+            };
+          });
+          return [
+            {
+              resourceType: 'launch-template',
               tags: lowerCaseRenderedTags,
             },
           ];
@@ -591,6 +706,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         securityGroupIds: securityGroupsToken,
         tagSpecifications: tagsToken,
         userData: userDataToken,
+        metadataOptions: this.renderMetadataOptions(props),
 
         // Fields not yet implemented:
         // ==========================
@@ -615,9 +731,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // Also not implemented in Instance L2
         // licenseSpecifications: undefined,
 
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions
-        // metadataOptions: undefined,
-
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-tagspecifications
         // Should be implemented via the Tagging aspect in CDK core. Complication will be that this tagging interface is very unique to LaunchTemplates.
         // tagSpecification: undefined
@@ -629,6 +742,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // placement: undefined,
 
       },
+      tagSpecifications: ltTagsToken,
     });
 
     Tags.of(this).add(NAME_TAG, this.node.path);
@@ -639,6 +753,32 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
   }
 
+  private renderMetadataOptions(props: LaunchTemplateProps) {
+    let requireMetadataOptions = false;
+    // if requireImdsv2 is true, httpTokens must be required.
+    if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
+      Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
+    }
+    if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
+      props.httpTokens !== undefined || props.instanceMetadataTags !== undefined || props.requireImdsv2 === true) {
+      requireMetadataOptions = true;
+    }
+    if (requireMetadataOptions) {
+      return {
+        httpEndpoint: props.httpEndpoint === true ? 'enabled' :
+          props.httpEndpoint === false ? 'disabled' : undefined,
+        httpProtocolIpv6: props.httpProtocolIpv6 === true ? 'enabled' :
+          props.httpProtocolIpv6 === false ? 'disabled' : undefined,
+        httpPutResponseHopLimit: props.httpPutResponseHopLimit,
+        httpTokens: props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
+        instanceMetadataTags: props.instanceMetadataTags === true ? 'enabled' :
+          props.instanceMetadataTags === false ? 'disabled' : undefined,
+      };
+    } else {
+      return undefined;
+    }
+  }
+
   /**
    * Allows specifying security group connections for the instance.
    *
@@ -646,7 +786,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new Error('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when contructing it.');
+      throw new Error('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.');
     }
     return this._connections;
   }

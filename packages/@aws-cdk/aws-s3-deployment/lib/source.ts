@@ -1,11 +1,15 @@
+import * as fs from 'fs';
+import { join, dirname } from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { FileSystem, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { renderData } from './render-data';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
+/**
+ * Source information.
+ */
 export interface SourceConfig {
   /**
    * The source bucket to deploy from.
@@ -16,6 +20,12 @@ export interface SourceConfig {
    * An S3 object key in the source bucket that points to a zip file.
    */
   readonly zipObjectKey: string;
+
+  /**
+   * A set of markers to substitute in the source content.
+   * @default - no markers
+   */
+  readonly markers?: Record<string, any>;
 }
 
 /**
@@ -47,11 +57,16 @@ export interface ISource {
  *     Source.bucket(bucket, key)
  *     Source.asset('/local/path/to/directory')
  *     Source.asset('/local/path/to/a/file.zip')
+ *     Source.data('hello/world/file.txt', 'Hello, world!')
+ *     Source.data('config.json', { baz: topic.topicArn })
  *
  */
 export class Source {
   /**
    * Uses a .zip file stored in an S3 bucket as the source for the destination bucket contents.
+   *
+   * Make sure you trust the producer of the archive.
+   *
    * @param bucket The S3 Bucket
    * @param zipObjectKey The S3 object key of the zip file with contents
    */
@@ -70,6 +85,10 @@ export class Source {
 
   /**
    * Uses a local asset as the deployment source.
+   *
+   * If the local asset is a .zip archive, make sure you trust the
+   * producer of the archive.
+   *
    * @param path The path to a local .zip file or a directory
    */
   public static asset(path: string, options?: s3_assets.AssetOptions): ISource {
@@ -96,6 +115,52 @@ export class Source {
           bucket: asset.bucket,
           zipObjectKey: asset.s3ObjectKey,
         };
+      },
+    };
+  }
+
+  /**
+   * Deploys an object with the specified string contents into the bucket. The
+   * content can include deploy-time values (such as `snsTopic.topicArn`) that
+   * will get resolved only during deployment.
+   *
+   * To store a JSON object use `Source.jsonData()`.
+   *
+   * @param objectKey The destination S3 object key (relative to the root of the
+   * S3 deployment).
+   * @param data The data to be stored in the object.
+   */
+  public static data(objectKey: string, data: string): ISource {
+    return {
+      bind: (scope: Construct, context?: DeploymentSourceContext) => {
+        const workdir = FileSystem.mkdtemp('s3-deployment');
+        const outputPath = join(workdir, objectKey);
+        const rendered = renderData(scope, data);
+        fs.mkdirSync(dirname(outputPath), { recursive: true });
+        fs.writeFileSync(outputPath, rendered.text);
+        const asset = this.asset(workdir).bind(scope, context);
+        return {
+          bucket: asset.bucket,
+          zipObjectKey: asset.zipObjectKey,
+          markers: rendered.markers,
+        };
+      },
+    };
+  }
+
+  /**
+   * Deploys an object with the specified JSON object into the bucket. The
+   * object can include deploy-time values (such as `snsTopic.topicArn`) that
+   * will get resolved only during deployment.
+   *
+   * @param objectKey The destination S3 object key (relative to the root of the
+   * S3 deployment).
+   * @param obj A JSON object.
+   */
+  public static jsonData(objectKey: string, obj: any): ISource {
+    return {
+      bind: (scope: Construct, context?: DeploymentSourceContext) => {
+        return Source.data(objectKey, Stack.of(scope).toJsonString(obj)).bind(scope, context);
       },
     };
   }

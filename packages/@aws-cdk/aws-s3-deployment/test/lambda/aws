@@ -15,13 +15,24 @@ import shutil
 
 scriptdir=os.path.dirname(os.path.realpath(__file__))
 
-# if "cp" is called with a local destination, copy a test zip file to the destination or 
-if sys.argv[2] == "cp" and not sys.argv[4].startswith("s3://"):
+# if "cp" is called to contents, copy a test zip file to contents
+if sys.argv[2] == "cp" and sys.argv[4].endswith("/contents"):
+    shutil.copy(os.path.join(scriptdir, 'test.zip'), sys.argv[4])
+    sys.argv[4] = "/tmp/contents"
+# else if "cp" is called with a local destination, copy a test zip file to the destination
+elif sys.argv[2] == "cp" and not sys.argv[4].startswith("s3://"):
     shutil.copyfile(os.path.join(scriptdir, 'test.zip'), sys.argv[4])
     sys.argv[4] = "archive.zip"
 
 if sys.argv[2] == "sync":
-    sys.argv[4 if '--delete' in sys.argv else 3] = "contents.zip"
+    contentsIdx = 3
+    if '--include' in sys.argv:
+      contentsIdx += sys.argv.count("--include") * 2
+    if '--exclude' in sys.argv:
+      contentsIdx += sys.argv.count("--exclude") * 2
+    if '--delete' in sys.argv:
+      contentsIdx += 1
+    sys.argv[contentsIdx] = "contents.zip"
 
 with open("./aws.out", "a") as myfile:
     myfile.write(json.dumps(sys.argv[1:]) + "\n")

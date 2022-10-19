@@ -10,9 +10,23 @@ import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+/**
+ * Specify the secret's version id or version stage
+ */
+export interface SecretVersionInfo {
+  /**
+   * version id of the secret
+   *
+   * @default - use default version id
+   */
+  readonly versionId?: string;
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
+  readonly versionStage?: string;
+}
 
 /**
  * A secret environment variable.
@@ -48,6 +62,25 @@ export abstract class Secret {
   }
 
   /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param versionInfo the version information to reference the secret
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+    return {
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
    * The ARN of the secret
    */
   public abstract readonly arn: string;
@@ -76,6 +109,13 @@ export interface ContainerDefinitionOptions {
    * TODO: Update these to specify using classes of IContainerImage
    */
   readonly image: ContainerImage;
+
+  /**
+   * The name of the container.
+   *
+   * @default - id of node associated with ContainerDefinition.
+   */
+  readonly containerName?: string;
 
   /**
    * The command that is passed to the container.
@@ -288,6 +328,27 @@ export interface ContainerDefinitionOptions {
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
+
+  /**
+   * The port mappings to add to the container definition.
+   * @default - No ports are mapped.
+   */
+  readonly portMappings?: PortMapping[];
+
+  /**
+   * The inference accelerators referenced by the container.
+   * @default - No inference accelerators assigned.
+   */
+  readonly inferenceAcceleratorResources?: string[];
+
+  /**
+   * A list of namespaced kernel parameters to set in the container.
+   *
+   * @default - No system controls are set.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-systemcontrol.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
+   */
+  readonly systemControls?: SystemControl[];
 }
 
 /**
@@ -305,7 +366,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends CoreConstruct {
+export class ContainerDefinition extends Construct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -345,7 +406,7 @@ export class ContainerDefinition extends CoreConstruct {
    * stopped. If the essential parameter of a container is marked as false, then its
    * failure does not affect the rest of the containers in a task.
    *
-   * If this parameter isomitted, a container is assumed to be essential.
+   * If this parameter is omitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
 
@@ -375,10 +436,14 @@ export class ContainerDefinition extends CoreConstruct {
   public readonly logDriverConfig?: LogDriverConfig;
 
   /**
-   * Whether this container definition references a specific JSON field of a secret
-   * stored in Secrets Manager.
+   * The name of the image referenced by this container.
    */
-  public readonly referencesSecretJsonField?: boolean;
+  public readonly imageName: string;
+
+  /**
+   * The inference accelerators referenced by this container.
+   */
+  private readonly inferenceAcceleratorResources: string[] = [];
 
   /**
    * The configured container links
@@ -387,7 +452,9 @@ export class ContainerDefinition extends CoreConstruct {
 
   private readonly imageConfig: ContainerImageConfig;
 
-  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+  private readonly secrets: CfnTaskDefinition.SecretProperty[] = [];
+
+  private readonly environment: { [key: string]: string };
 
   /**
    * Constructs a new instance of the ContainerDefinition class.
@@ -403,25 +470,25 @@ export class ContainerDefinition extends CoreConstruct {
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
-    this.containerName = this.node.id;
+    this.containerName = props.containerName ?? this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
+    this.imageName = this.imageConfig.imageName;
+
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
     }
 
     if (props.secrets) {
-      this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
-        if (secret.hasField) {
-          this.referencesSecretJsonField = true;
-        }
-        secret.grantRead(this.taskDefinition.obtainExecutionRole());
-        this.secrets.push({
-          name,
-          valueFrom: secret.arn,
-        });
+        this.addSecret(name, secret);
       }
+    }
+
+    if (props.environment) {
+      this.environment = { ...props.environment };
+    } else {
+      this.environment = {};
     }
 
     if (props.environmentFiles) {
@@ -433,6 +500,14 @@ export class ContainerDefinition extends CoreConstruct {
     }
 
     props.taskDefinition._linkContainer(this);
+
+    if (props.portMappings) {
+      this.addPortMappings(...props.portMappings);
+    }
+
+    if (props.inferenceAcceleratorResources) {
+      this.addInferenceAcceleratorResource(...props.inferenceAcceleratorResources);
+    }
   }
 
   /**
@@ -507,6 +582,39 @@ export class ContainerDefinition extends CoreConstruct {
   }
 
   /**
+   * This method adds an environment variable to the container.
+   */
+  public addEnvironment(name: string, value: string) {
+    this.environment[name] = value;
+  }
+
+  /**
+   * This method adds a secret as environment variable to the container.
+   */
+  public addSecret(name: string, secret: Secret) {
+    secret.grantRead(this.taskDefinition.obtainExecutionRole());
+
+    this.secrets.push({
+      name,
+      valueFrom: secret.arn,
+    });
+  }
+
+  /**
+   * This method adds one or more resources to the container.
+   */
+  public addInferenceAcceleratorResource(...inferenceAcceleratorResources: string[]) {
+    this.inferenceAcceleratorResources.push(...inferenceAcceleratorResources.map(resource => {
+      for (const inferenceAccelerator of this.taskDefinition.inferenceAccelerators) {
+        if (resource === inferenceAccelerator.deviceName) {
+          return resource;
+        }
+      }
+      throw new Error(`Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`);
+    }));
+  }
+
+  /**
    * This method adds one or more ulimits to the container.
    */
   public addUlimits(...ulimits: Ulimit[]) {
@@ -546,6 +654,19 @@ export class ContainerDefinition extends CoreConstruct {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Whether this container definition references a specific JSON field of a secret
+   * stored in Secrets Manager.
+   */
+  public get referencesSecretJsonField(): boolean | undefined {
+    for (const secret of this.secrets) {
+      if (secret.valueFrom.endsWith('::')) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -614,14 +735,16 @@ export class ContainerDefinition extends CoreConstruct {
       volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
-      secrets: this.secrets,
+      environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
+      secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
-      resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
+      resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
+        renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
     };
   }
 }
@@ -685,7 +808,7 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
   return ret;
 }
 
-function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[] {
+function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
   const ret = [];
   for (const environmentFile of environmentFiles) {
     const s3Location = environmentFile.s3Location;
@@ -696,7 +819,7 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 
     ret.push({
       type: environmentFile.fileType,
-      value: `arn:aws:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+      value: `arn:${partition}:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
     });
   }
   return ret;
@@ -732,12 +855,22 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   return hcCommand.concat(cmd);
 }
 
-function renderResourceRequirements(gpuCount: number): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
-  if (gpuCount === 0) { return undefined; }
-  return [{
-    type: 'GPU',
-    value: gpuCount.toString(),
-  }];
+function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
+CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+  const ret = [];
+  for (const resource of inferenceAcceleratorResources) {
+    ret.push({
+      type: 'InferenceAccelerator',
+      value: resource,
+    });
+  }
+  if (gpuCount > 0) {
+    ret.push({
+      type: 'GPU',
+      value: gpuCount.toString(),
+    });
+  }
+  return ret;
 }
 
 /**
@@ -982,4 +1115,26 @@ function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty 
     sourceContainer: vf.sourceContainer,
     readOnly: vf.readOnly,
   };
+}
+
+/**
+ * Kernel parameters to set in the container
+ */
+export interface SystemControl {
+  /**
+   * The namespaced kernel parameter for which to set a value.
+   */
+  readonly namespace: string;
+
+  /**
+   * The value for the namespaced kernel parameter specified in namespace.
+   */
+  readonly value: string;
+}
+
+function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinition.SystemControlProperty[] {
+  return systemControls.map(sc => ({
+    namespace: sc.namespace,
+    value: sc.value,
+  }));
 }

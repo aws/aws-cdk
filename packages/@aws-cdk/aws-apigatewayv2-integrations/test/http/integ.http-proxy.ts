@@ -1,7 +1,7 @@
 import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { HttpProxyIntegration, LambdaProxyIntegration } from '../../lib';
+import { HttpUrlIntegration, HttpLambdaIntegration } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -16,9 +16,7 @@ const stack = new Stack(app, 'integ-http-proxy');
 const lambdaEndpoint = lambdaProxyEndpoint(stack);
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyApi', {
-  defaultIntegration: new HttpProxyIntegration({
-    url: lambdaEndpoint.url!,
-  }),
+  defaultIntegration: new HttpUrlIntegration('DefaultIntegration', lambdaEndpoint.url!),
 });
 
 new CfnOutput(stack, 'Endpoint', {
@@ -27,14 +25,12 @@ new CfnOutput(stack, 'Endpoint', {
 
 function lambdaProxyEndpoint(s: Stack): HttpApi {
   const handler = new lambda.Function(s, 'AlwaysSuccess', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "success" }; };'),
   });
 
   return new HttpApi(s, 'LambdaProxyApi', {
-    defaultIntegration: new LambdaProxyIntegration({
-      handler,
-    }),
+    defaultIntegration: new HttpLambdaIntegration('DefaultIntegration', handler),
   });
 }

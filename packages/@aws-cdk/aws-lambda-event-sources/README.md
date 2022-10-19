@@ -24,12 +24,14 @@ sources regardless of the underlying mechanism they use.
 The following code sets up a lambda function with an SQS queue event source -
 
 ```ts
-const fn = new lambda.Function(this, 'MyFunction', { /* ... */ });
+import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
+declare const fn: lambda.Function;
 const queue = new sqs.Queue(this, 'MyQueue');
-const eventSource = fn.addEventSource(new SqsEventSource(queue));
+const eventSource = new SqsEventSource(queue);
+fn.addEventSource(eventSource);
 
-const eventSourceId = eventSource.eventSourceId;
+const eventSourceId = eventSource.eventSourceMappingId;
 ```
 
 The `eventSourceId` property contains the event source id. This will be a
@@ -53,20 +55,23 @@ behavior:
 * __receiveMessageWaitTime__: Will determine [long
   poll](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)
   duration. The default value is 20 seconds.
+* __batchSize__: Determines how many records are buffered before invoking your lambda function.
+* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __enabled__: If the SQS event source mapping should be enabled. The default is true.
 
 ```ts
-import * as sqs from '@aws-cdk/aws-sqs';
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
-import { Duration } from '@aws-cdk/core';
 
 const queue = new sqs.Queue(this, 'MyQueue', {
-  visibilityTimeout: Duration.seconds(30)      // default,
-  receiveMessageWaitTime: Duration.seconds(20) // default
+  visibilityTimeout: Duration.seconds(30),      // default,
+  receiveMessageWaitTime: Duration.seconds(20), // default
 });
+declare const fn: lambda.Function;
 
-lambda.addEventSource(new SqsEventSource(queue, {
+fn.addEventSource(new SqsEventSource(queue, {
   batchSize: 10, // default
+  maxBatchingWindow: Duration.minutes(5),
+  reportBatchItemFailures: true, // default to false
 }));
 ```
 
@@ -85,11 +90,12 @@ Amazon S3 to publish and which Lambda function to invoke.
 import * as s3 from '@aws-cdk/aws-s3';
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 
-const bucket = new s3.Bucket(...);
+const bucket = new s3.Bucket(this, 'mybucket');
+declare const fn: lambda.Function;
 
-lambda.addEventSource(new S3EventSource(bucket, {
+fn.addEventSource(new S3EventSource(bucket, {
   events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
-  filters: [ { prefix: 'subdir/' } ] // optional
+  filters: [ { prefix: 'subdir/' } ], // optional
 }));
 ```
 
@@ -115,12 +121,13 @@ Accounts](https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html).
 import * as sns from '@aws-cdk/aws-sns';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
-const topic = new sns.Topic(...);
+declare const topic: sns.Topic;
 const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-lambda.addEventSource(new SnsEventSource(topic, {
-  filterPolicy: { ... },
-  deadLetterQueue: deadLetterQueue
+declare const fn: lambda.Function;
+fn.addEventSource(new SnsEventSource(topic, {
+  filterPolicy: { },
+  deadLetterQueue: deadLetterQueue,
 }));
 ```
 
@@ -142,34 +149,31 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
+* __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
 * __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as sqs from '@aws-cdk/aws-sqs';
 import { DynamoEventSource, SqsDlq } from '@aws-cdk/aws-lambda-event-sources';
 
-const table = new dynamodb.Table(..., {
-  partitionKey: ...,
-  stream: dynamodb.StreamViewType.NEW_IMAGE // make sure stream is configured
-});
+declare const table: dynamodb.Table;
 
 const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-const function = new lambda.Function(...);
-function.addEventSource(new DynamoEventSource(table, {
+declare const fn: lambda.Function;
+fn.addEventSource(new DynamoEventSource(table, {
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
   batchSize: 5,
   bisectBatchOnError: true,
   onFailure: new SqsDlq(deadLetterQueue),
-  retryAttempts: 10
+  retryAttempts: 10,
 }));
 ```
 
@@ -186,26 +190,96 @@ behavior:
 
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated.
+* __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
 * __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures.
 * __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
-* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __startingPosition__: Will determine where to being consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp. Note that 'AT_TIMESTAMP' is only supported for Amazon Kinesis streams.
+* __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
+* __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const stream = new kinesis.Stream(this, 'MyStream');
 
+declare const myFunction: lambda.Function;
 myFunction.addEventSource(new KinesisEventSource(stream, {
   batchSize: 100, // default
-  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
 }));
 ```
+
+## Kafka
+
+You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster.
+
+The following code sets up Amazon MSK as an event source for a lambda function. Credentials will need to be configured to access the
+MSK cluster, as described in [Username/Password authentication](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html).
+
+```ts
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { ManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// The secret that allows access to your MSK cluster
+// You still have to make sure that it is associated with your cluster as described in the documentation
+const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic: topic,
+  secret: secret,
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+}));
+```
+
+The following code sets up a self managed Kafka cluster as an event source. Username and password based authentication
+will need to be set up as described in [Managing access and permissions](https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret).
+
+```ts
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { SelfManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+// The list of Kafka brokers
+const bootstrapServers = ['kafka-broker:9092'];
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// The secret that allows access to your self hosted Kafka cluster
+declare const secret: Secret;
+
+// (Optional) The secret containing the root CA certificate that your Kafka brokers use for TLS encryption
+declare const encryption: Secret;
+
+// (Optional) The consumer group id to use when connecting to the Kafka broker. If omitted the UUID of the event source mapping will be used.
+const consumerGroupId: "my-consumer-group-id";
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: bootstrapServers,
+  topic: topic,
+  consumerGroupId: consumerGroupId,
+  secret: secret,
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  encryption: encryption // optional
+}));
+```
+
+If your self managed Kafka cluster is only reachable via VPC also configure `vpc` `vpcSubnets` and `securityGroup`.
 
 ## Roadmap
 

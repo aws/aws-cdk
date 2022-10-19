@@ -1,7 +1,8 @@
-import '@aws-cdk/assert/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as apigw from '../lib';
 
 describe('api definition', () => {
@@ -31,14 +32,14 @@ describe('api definition', () => {
 
   describe('apigateway.ApiDefinition.fromAsset', () => {
     test('happy case', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new cdk.Stack(app);
       const config = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')).bind(stack);
       expect(config.inlineDefinition).toBeUndefined();
       expect(config.s3Location).toBeDefined();
       expect(stack.resolve(config.s3Location!.bucket)).toEqual({
         Ref: 'AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29',
       });
-
     });
 
     test('fails if a directory is given for an asset', () => {
@@ -52,7 +53,7 @@ describe('api definition', () => {
 
     test('only one Asset object gets created even if multiple functions use the same AssetApiDefinition', () => {
       // GIVEN
-      const app = new cdk.App();
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new cdk.Stack(app, 'MyStack');
       const directoryAsset = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml'));
 
@@ -71,6 +72,22 @@ describe('api definition', () => {
 
       // API1 has an asset, API2 does not
       expect(synthesized.assets.length).toEqual(1);
+    });
+
+    test('asset metadata added to RestApi resource that contains Asset Api Definition', () => {
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+      const assetApiDefinition = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml'));
+      new apigw.SpecRestApi(stack, 'API', {
+        apiDefinition: assetApiDefinition,
+      });
+
+      Template.fromStack(stack).hasResource('AWS::ApiGateway::RestApi', {
+        Metadata: {
+          'aws:asset:path': 'asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml',
+          'aws:asset:property': 'BodyS3Location',
+        },
+      });
 
     });
   });

@@ -1,8 +1,9 @@
-import { ICfnConditionExpression } from './cfn-condition';
+import { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
+import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
@@ -127,7 +128,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
-    if (!Token.isUnresolved(array)) {
+    if (!Token.isUnresolved(index) && !Token.isUnresolved(array) && !array.some(Token.isUnresolved)) {
       return array[index];
     }
 
@@ -267,12 +268,12 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
+  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
       throw new Error('Fn.conditionAnd() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
   }
@@ -284,7 +285,7 @@ export class Fn {
    * @param rhs A value of any type that you want to compare.
    * @returns an FnCondition token
    */
-  public static conditionEquals(lhs: any, rhs: any): ICfnConditionExpression {
+  public static conditionEquals(lhs: any, rhs: any): ICfnRuleConditionExpression {
     return new FnEquals(lhs, rhs);
   }
 
@@ -303,7 +304,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnConditionExpression {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnRuleConditionExpression {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -314,7 +315,7 @@ export class Fn {
    * or false.
    * @returns an FnCondition token
    */
-  public static conditionNot(condition: ICfnConditionExpression): ICfnConditionExpression {
+  public static conditionNot(condition: ICfnConditionExpression): ICfnRuleConditionExpression {
     return new FnNot(condition);
   }
 
@@ -326,12 +327,12 @@ export class Fn {
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
-  public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
+  public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
       throw new Error('Fn.conditionOr() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
   }
@@ -343,7 +344,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static conditionContains(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionContains(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnContains(listOfStrings, value);
   }
 
@@ -354,7 +355,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -369,7 +370,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnConditionExpression {
+  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnRuleConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -410,6 +411,37 @@ export class Fn {
    */
   public static valueOfAll(parameterType: string, attribute: string): string[] {
     return Token.asList(new FnValueOfAll(parameterType, attribute));
+  }
+
+  /**
+   * The `Fn::ToJsonString` intrinsic function converts an object or array to its
+   * corresponding JSON string.
+   *
+   * @param object The object or array to stringify
+   */
+  public static toJsonString(object: any): string {
+    // short-circut if object is not a token
+    if (!Token.isUnresolved(object)) {
+      return JSON.stringify(object);
+    }
+    return new FnToJsonString(object).toString();
+  }
+
+  /**
+   * The intrinsic function `Fn::Length` returns the number of elements within an array
+   * or an intrinsic function that returns an array.
+   *
+   * @param array The array you want to return the number of elements from
+   */
+  public static len(array: any): number {
+    // short-circut if array is not a token
+    if (!Token.isUnresolved(array)) {
+      if (!Array.isArray(array)) {
+        throw new Error('Fn.length() needs an array');
+      }
+      return array.length;
+    }
+    return Token.asNumber(new FnLength(array));
   }
 
   private constructor() { }
@@ -604,7 +636,8 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
+class FnConditionBase extends Intrinsic implements ICfnRuleConditionExpression {
+  readonly disambiguator = true;
   constructor(type: string, value: any) {
     super({ [type]: value });
   }
@@ -825,6 +858,62 @@ class FnJoin implements IResolvable {
   private resolveValues(context: IResolveContext) {
     const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
+  }
+}
+
+/**
+ * The `Fn::ToJsonString` intrinsic function converts an object or array to its
+ * corresponding JSON string.
+ */
+class FnToJsonString implements IResolvable {
+  public readonly creationStack: string[];
+
+  private readonly object: any;
+
+  constructor(object: any) {
+    this.object = object;
+    this.creationStack = captureStackTrace();
+  }
+
+  public resolve(context: IResolveContext): any {
+    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    return { 'Fn::ToJsonString': this.object };
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: 'Fn::ToJsonString' });
+  }
+
+  public toJSON() {
+    return '<Fn::ToJsonString>';
+  }
+}
+
+/**
+ * The intrinsic function `Fn::Length` returns the number of elements within an array
+ * or an intrinsic function that returns an array.
+ */
+class FnLength implements IResolvable {
+  public readonly creationStack: string[];
+
+  private readonly array: any;
+
+  constructor(array: any) {
+    this.array = array;
+    this.creationStack = captureStackTrace();
+  }
+
+  public resolve(context: IResolveContext): any {
+    Stack.of(context.scope).addTransform('AWS::LanguageExtensions');
+    return { 'Fn::Length': this.array };
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: 'Fn::Length' });
+  }
+
+  public toJSON() {
+    return '<Fn::Length>';
   }
 }
 

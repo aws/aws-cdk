@@ -1,8 +1,9 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnElement, Stack } from '@aws-cdk/core';
+import * as sqs from '@aws-cdk/aws-sqs';
+import { CfnElement, Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as targets from '../../lib';
 
@@ -66,7 +67,7 @@ describe('CodePipeline event target', () => {
       });
 
       test("adds the pipeline's ARN and role to the targets of the rule", () => {
-        expect(stack).to(haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
               Arn: pipelineArn,
@@ -74,11 +75,11 @@ describe('CodePipeline event target', () => {
               RoleArn: { 'Fn::GetAtt': ['PipelineEventsRole46BEEA7C', 'Arn'] },
             },
           ],
-        }));
+        });
       });
 
       test("creates a policy that has StartPipeline permissions on the pipeline's ARN", () => {
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -89,7 +90,122 @@ describe('CodePipeline event target', () => {
             ],
             Version: '2012-10-17',
           },
+        });
+      });
+    });
+
+    describe('with retry policy and dead letter queue', () => {
+      test('adds retry attempts and maxEventAge to the target configuration', () => {
+        // WHEN
+        let queue = new sqs.Queue(stack, 'dlq');
+
+        rule.addTarget(new targets.CodePipeline(pipeline, {
+          retryAttempts: 2,
+          maxEventAge: Duration.hours(2),
+          deadLetterQueue: queue,
         }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+          ScheduleExpression: 'rate(1 minute)',
+          State: 'ENABLED',
+          Targets: [
+            {
+              Arn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':codepipeline:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':',
+                    {
+                      Ref: 'PipelineC660917D',
+                    },
+                  ],
+                ],
+              },
+              DeadLetterConfig: {
+                Arn: {
+                  'Fn::GetAtt': [
+                    'dlq09C78ACC',
+                    'Arn',
+                  ],
+                },
+              },
+              Id: 'Target0',
+              RetryPolicy: {
+                MaximumEventAgeInSeconds: 7200,
+                MaximumRetryAttempts: 2,
+              },
+              RoleArn: {
+                'Fn::GetAtt': [
+                  'PipelineEventsRole46BEEA7C',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        });
+      });
+
+      test('adds 0 retry attempts to the target configuration', () => {
+        // WHEN
+        rule.addTarget(new targets.CodePipeline(pipeline, {
+          retryAttempts: 0,
+        }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+          ScheduleExpression: 'rate(1 minute)',
+          State: 'ENABLED',
+          Targets: [
+            {
+              Arn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':codepipeline:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':',
+                    {
+                      Ref: 'PipelineC660917D',
+                    },
+                  ],
+                ],
+              },
+              Id: 'Target0',
+              RetryPolicy: {
+                MaximumRetryAttempts: 0,
+              },
+              RoleArn: {
+                'Fn::GetAtt': [
+                  'PipelineEventsRole46BEEA7C',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        });
       });
     });
 
@@ -107,14 +223,14 @@ describe('CodePipeline event target', () => {
       });
 
       test("points at the given event role in the rule's targets", () => {
-        expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
               Arn: pipelineArn,
               RoleArn: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
             },
           ],
-        }));
+        });
       });
     });
   });

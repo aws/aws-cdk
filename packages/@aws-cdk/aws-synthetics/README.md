@@ -36,45 +36,44 @@ The Hitchhikers Guide to the Galaxy
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
 
 ```ts
-import * as synthetics from '@aws-cdk/aws-synthetics';
-
 const canary = new synthetics.Canary(this, 'MyCanary', {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
-  test: Test.custom({
+  test: synthetics.Test.custom({
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  environmentVariables: {
+    stage: 'prod',
+  },
 });
 ```
 
 The following is an example of an `index.js` file which exports the `handler` function:
 
 ```js
-var synthetics = require('Synthetics');
+const synthetics = require('Synthetics');
 const log = require('SyntheticsLogger');
 
 const pageLoadBlueprint = async function () {
+  // Configure the stage of the API using environment variables
+  const url = `https://api.example.com/${process.env.stage}/user/books/topbook/`;
 
-    // INSERT URL here
-    const URL = "https://api.example.com/user/books/topbook/";
-
-    let page = await synthetics.getPage();
-    const response = await page.goto(URL, {waitUntil: 'domcontentloaded', timeout: 30000});
-    //Wait for page to render.
-    //Increase or decrease wait time based on endpoint being monitored.
-    await page.waitFor(15000);
-    // This will take a screenshot that will be included in test output artifacts
-    await synthetics.takeScreenshot('loaded', 'loaded');
-    let pageTitle = await page.title();
-    log.info('Page title: ' + pageTitle);
-    if (response.status() !== 200) {
-        throw "Failed to load page!";
-    }
+  const page = await synthetics.getPage();
+  const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  // Wait for page to render. Increase or decrease wait time based on endpoint being monitored.
+  await page.waitFor(15000);
+  // This will take a screenshot that will be included in test output artifacts.
+  await synthetics.takeScreenshot('loaded', 'loaded');
+  const pageTitle = await page.title();
+  log.info('Page title: ' + pageTitle);
+  if (response.status() !== 200) {
+    throw 'Failed to load page!';
+  }
 };
 
 exports.handler = async () => {
-    return await pageLoadBlueprint();
+  return await pageLoadBlueprint();
 };
 ```
 
@@ -87,6 +86,29 @@ The canary will automatically produce a CloudWatch Dashboard:
 The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core) (for nodejs based one) and Chromium.
 
 To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
+
+
+### Canary Schedule
+
+You can specify the schedule on which a canary runs by providing a
+[`Schedule`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-synthetics.Schedule.html)
+object to the `schedule` property.
+
+Configure a run rate of up to 60 minutes with `Schedule.rate`:
+
+```ts
+const schedule = synthetics.Schedule.rate(Duration.minutes(5)); // Runs every 5 minutes.
+```
+
+You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html) with `Schedule.cron`:
+
+```ts
+const schedule = synthetics.Schedule.cron({
+  hour: '0,8,16', // Run at 12am, 8am, 4pm UTC every day
+});
+```
+
+If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
 
 ### Configuring the Canary Script
 
@@ -102,34 +124,36 @@ Using the `Code` class static initializers:
 
 ```ts
 // To supply the code inline:
-const canary = new Canary(this, 'MyCanary', {
-  test: Test.custom({
+new synthetics.Canary(this, 'Inline Canary', {
+  test: synthetics.Test.custom({
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
 });
 
 // To supply the code from your local filesystem:
-const canary = new Canary(this, 'MyCanary', {
-  test: Test.custom({
+new synthetics.Canary(this, 'Asset Canary', {
+  test: synthetics.Test.custom({
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
 });
 
 // To supply the code from a S3 bucket:
-const canary = new Canary(this, 'MyCanary', {
-  test: Test.custom({
+import * as s3 from '@aws-cdk/aws-s3';
+const bucket = new s3.Bucket(this, 'Code Bucket');
+new synthetics.Canary(this, 'Bucket Canary', {
+  test: synthetics.Test.custom({
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
 });
 ```
 
-> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure:
+> **Note:** Synthetics have a specified folder structure for canaries. For Node scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
 > ```plaintext
 > canary/
@@ -138,7 +162,42 @@ const canary = new Canary(this, 'MyCanary', {
 >         ├── <filename>.js
 > ```
 >
+>
+> For Python scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
+>
+> ```plaintext
+> canary/
+> ├── python/
+>     ├── <filename>.py
+> ```
+>
 > See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
+
+### Running a canary on a VPC
+
+You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html). 
+This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in. 
+This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+new synthetics.Canary(this, 'Vpc Canary', {
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
+  vpc,
+});
+```
+
+> **Note:** By default, the Synthetics runtime needs access to the S3 and CloudWatch APIs, which will fail in a private subnet without internet access enabled (e.g. an isolated subnnet).
+>
+> Ensure that the Canary is placed in a VPC either with internet connectivity or with VPC Endpoints for S3 and CloudWatch enabled and configured.
+>
+> See [Synthetics VPC docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html).
 
 ### Alarms
 
@@ -151,6 +210,9 @@ You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by 
 Create an alarm that tracks the canary metric:
 
 ```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+declare const canary: synthetics.Canary;
 new cloudwatch.Alarm(this, 'CanaryAlarm', {
   metric: canary.metricSuccessPercent(),
   evaluationPeriods: 2,
@@ -158,7 +220,3 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
-
-### Future Work
-
-- Add blueprints to the Test class [#9613](https://github.com/aws/aws-cdk/issues/9613#issue-677134857).

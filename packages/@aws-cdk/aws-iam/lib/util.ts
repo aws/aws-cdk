@@ -4,6 +4,8 @@ import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
+export const LITERAL_STRING_KEY = 'LiteralString';
+
 export function undefinedIfEmpty(f: () => string[]): string[] {
   return Lazy.list({
     produce: () => {
@@ -67,10 +69,21 @@ export class AttachedPolicies {
 
 /**
  * Merge two dictionaries that represent IAM principals
+ *
+ * Does an in-place merge.
  */
 export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
-  for (const key of Object.keys(source)) {
-    target[key] = target[key] || [];
+  // If one represents a literal string, the other one must be empty
+  const sourceKeys = Object.keys(source);
+  const targetKeys = Object.keys(target);
+
+  if ((LITERAL_STRING_KEY in source && targetKeys.some(k => k !== LITERAL_STRING_KEY)) ||
+    (LITERAL_STRING_KEY in target && sourceKeys.some(k => k !== LITERAL_STRING_KEY))) {
+    throw new Error(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
+  }
+
+  for (const key of sourceKeys) {
+    target[key] = target[key] ?? [];
 
     let value = source[key];
     if (!Array.isArray(value)) {
@@ -123,4 +136,8 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
   public toString(): string {
     return Token.asString(this);
   }
+}
+
+export function sum(xs: number[]) {
+  return xs.reduce((a, b) => a + b, 0);
 }

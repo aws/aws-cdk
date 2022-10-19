@@ -1,12 +1,11 @@
-import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
 import { Asset } from '../lib/asset';
 
 const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');
@@ -16,6 +15,7 @@ test('simple use case', () => {
   const app = new cdk.App({
     context: {
       [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
     },
   });
   const stack = new cdk.Stack(app, 'MyStack');
@@ -48,7 +48,11 @@ test('simple use case', () => {
 });
 
 test('verify that the app resolves tokens in metadata', () => {
-  const app = new cdk.App();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
   const stack = new cdk.Stack(app, 'my-stack');
   const dirPath = path.resolve(__dirname, 'sample-asset-directory');
 
@@ -72,14 +76,19 @@ test('verify that the app resolves tokens in metadata', () => {
 });
 
 test('"file" assets', () => {
-  const stack = new cdk.Stack();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  const stack = new cdk.Stack(app);
   const filePath = path.join(__dirname, 'file-asset.txt');
   new Asset(stack, 'MyAsset', { path: filePath });
   const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // synthesize first so "prepare" is called
-  const template = SynthUtils.synthesize(stack).template;
+  const template = Template.fromStack(stack);
 
   expect(stack.resolve(entry!.data)).toEqual({
     path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
@@ -92,12 +101,21 @@ test('"file" assets', () => {
   });
 
   // verify that now the template contains parameters for this asset
-  expect(template.Parameters.AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A.Type).toBe('String');
-  expect(template.Parameters.AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35.Type).toBe('String');
+  expect(template.findParameters('AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A')
+    .AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A.Type)
+    .toBe('String');
+  expect(template.findParameters('AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35')
+    .AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35.Type)
+    .toBe('String');
 });
 
 test('"readers" or "grantRead" can be used to grant read permissions on the asset to a principal', () => {
-  const stack = new cdk.Stack();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'MyUser');
   const group = new iam.Group(stack, 'MyGroup');
 
@@ -108,7 +126,7 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
 
   asset.grantRead(group);
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -200,12 +218,13 @@ test('addResourceMetadata can be used to add CFN metadata to resources', () => {
   asset.addResourceMetadata(resource, 'PropName');
 
   // THEN
-  expect(stack).toHaveResource('My::Resource::Type', {
+  Template.fromStack(stack).hasResource('My::Resource::Type', {
     Metadata: {
       'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     },
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
 test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT is defined', () => {
@@ -219,12 +238,13 @@ test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT 
   asset.addResourceMetadata(resource, 'PropName');
 
   // THEN
-  expect(stack).not.toHaveResource('My::Resource::Type', {
+  Template.fromStack(stack).hasResource('My::Resource::Type', Match.not({
     Metadata: {
       'aws:asset:path': SAMPLE_ASSET_DIR,
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     },
-  }, ResourcePart.CompleteDefinition);
+  }));
 });
 
 test('nested assemblies share assets: legacy synth edition', () => {
@@ -270,7 +290,7 @@ test('nested assemblies share assets: default synth edition', () => {
 
   // Read the asset manifests to verify the file paths
   for (const stageName of ['Stage1', 'Stage2']) {
-    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isAssetManifestArtifact)[0];
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
     const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     expect(manifest.files[SAMPLE_ASSET_HASH].source).toEqual({
@@ -348,9 +368,10 @@ describe('staging', () => {
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
 
-    const template = SynthUtils.synthesize(stack).template;
-    expect(template.Resources.MyResource.Metadata).toEqual({
+    const template = Template.fromStack(stack);
+    expect(template.findResources('My::Resource::Type').MyResource.Metadata).toEqual({
       'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     });
   });
@@ -374,16 +395,21 @@ describe('staging', () => {
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
 
-    const template = SynthUtils.synthesize(stack).template;
-    expect(template.Resources.MyResource.Metadata).toEqual({
+    const template = Template.fromStack(stack);
+    expect(template.findResources('My::Resource::Type').MyResource.Metadata).toEqual({
       'aws:asset:path': SAMPLE_ASSET_DIR,
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     });
   });
 
   test('cdk metadata points to staged asset', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
     const stack = new cdk.Stack(app, 'stack');
     new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
@@ -402,8 +428,4 @@ function mkdtempSync() {
 
 function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
   return x instanceof cxapi.CloudFormationStackArtifact;
-}
-
-function isAssetManifestArtifact(x: any): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
 }

@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
 
@@ -23,6 +22,38 @@ describe('Parallel State', () => {
             { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
             { StartAt: 'Branch 2', States: { 'Branch 2': { Type: 'Pass', End: true } } },
           ],
+        },
+      },
+    });
+  });
+
+  test('State Machine With Parallel State and ResultSelector', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parallel = new stepfunctions.Parallel(stack, 'Parallel State', {
+      resultSelector: {
+        buz: 'buz',
+        baz: stepfunctions.JsonPath.stringAt('$.baz'),
+      },
+    });
+    parallel.branch(new stepfunctions.Pass(stack, 'Branch 1'));
+
+    // THEN
+    expect(render(parallel)).toStrictEqual({
+      StartAt: 'Parallel State',
+      States: {
+        'Parallel State': {
+          Type: 'Parallel',
+          End: true,
+          Branches: [
+            { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
+          ],
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
         },
       },
     });

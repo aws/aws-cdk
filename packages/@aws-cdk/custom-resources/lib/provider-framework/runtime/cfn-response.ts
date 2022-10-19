@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import * as url from 'url';
 import { httpRequest } from './outbound';
-import { log } from './util';
+import { log, withRetries } from './util';
 
 export const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED';
 export const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
@@ -38,7 +38,12 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
   const responseBody = JSON.stringify(json);
 
   const parsedUrl = url.parse(event.ResponseURL);
-  await httpRequest({
+
+  const retryOptions = {
+    attempts: 5,
+    sleep: 1000,
+  };
+  await withRetries(retryOptions, httpRequest)({
     hostname: parsedUrl.hostname,
     path: parsedUrl.path,
     method: 'PUT',
@@ -84,7 +89,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
         } else {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
-          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`);
+          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify({ ...event, ResponseURL: '...' })}`);
         }
       }
 

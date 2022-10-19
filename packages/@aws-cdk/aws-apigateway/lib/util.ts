@@ -16,7 +16,7 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
     throw new Error(`Method options path must start with '/': ${originalPath}`);
   }
 
-  const path = originalPath.substr(1); // trim trailing '/'
+  const path = originalPath.slice(1); // trim trailing '/'
 
   const components = path.split('/');
 
@@ -60,7 +60,7 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
 
   if (action) {
     if (actionParams) {
-      action += '&' + formatUrl({ query: actionParams }).substr(1);
+      action += '&' + formatUrl({ query: actionParams }).slice(1);
     }
 
     return {
@@ -75,6 +75,12 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
 export function validateInteger(property: number | undefined, messagePrefix: string) {
   if (property && !Number.isInteger(property)) {
     throw new Error(`${messagePrefix} should be an integer`);
+  }
+}
+
+export function validateDouble(property: number | undefined, messagePrefix: string) {
+  if (property && isNaN(property) && isNaN(parseFloat(property.toString()))) {
+    throw new Error(`${messagePrefix} should be an double`);
   }
 }
 
@@ -95,7 +101,6 @@ export class JsonSchemaMapper {
   private static readonly SchemaPropsWithPrefix: { [key: string]: string } = {
     schema: '$schema',
     ref: '$ref',
-    id: '$id',
   };
   // The value indicates whether direct children should be key-mapped.
   private static readonly SchemaPropsWithUserDefinedChildren: { [key: string]: boolean } = {

@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { HttpOrigin } from '../lib';
@@ -31,6 +30,7 @@ test('Renders minimal example with just a domain name', () => {
 
 test('renders an example with all available props', () => {
   const origin = new HttpOrigin('www.example.com', {
+    originId: 'MyCustomOrigin',
     originPath: '/app',
     connectionTimeout: Duration.seconds(5),
     connectionAttempts: 2,
@@ -45,7 +45,7 @@ test('renders an example with all available props', () => {
   const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
   expect(originBindConfig.originProperty).toEqual({
-    id: 'StackOrigin029E19582',
+    id: 'MyCustomOrigin',
     domainName: 'www.example.com',
     originPath: '/app',
     connectionTimeout: 5,
@@ -69,28 +69,46 @@ test('renders an example with all available props', () => {
 
 test.each([
   Duration.seconds(0),
-  Duration.seconds(0.5),
-  Duration.seconds(60.5),
-  Duration.seconds(61),
+  Duration.seconds(181),
   Duration.minutes(5),
-])('validates readTimeout is an integer between 1 and 60 seconds', (readTimeout) => {
+])('validates readTimeout is an integer between 1 and 180 seconds - out of bounds', (readTimeout) => {
   expect(() => {
     new HttpOrigin('www.example.com', {
       readTimeout,
     });
-  }).toThrow(`readTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
+  }).toThrow(`readTimeout: Must be an int between 1 and 180 seconds (inclusive); received ${readTimeout.toSeconds()}.`);
+});
+
+test.each([
+  Duration.seconds(0.5),
+  Duration.seconds(60.5),
+])('validates readTimeout is an integer between 1 and 180 seconds - not an int', (readTimeout) => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      readTimeout,
+    });
+  }).toThrow(/must be a whole number of/);
 });
 
 test.each([
   Duration.seconds(0),
-  Duration.seconds(0.5),
-  Duration.seconds(60.5),
-  Duration.seconds(61),
+  Duration.seconds(181),
   Duration.minutes(5),
-])('validates keepaliveTimeout is an integer between 1 and 60 seconds', (keepaliveTimeout) => {
+])('validates keepaliveTimeout is an integer between 1 and 180 seconds - out of bounds', (keepaliveTimeout) => {
   expect(() => {
     new HttpOrigin('www.example.com', {
       keepaliveTimeout,
     });
-  }).toThrow(`keepaliveTimeout: Must be an int between 1 and 60 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
+  }).toThrow(`keepaliveTimeout: Must be an int between 1 and 180 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}.`);
+});
+
+test.each([
+  Duration.seconds(0.5),
+  Duration.seconds(60.5),
+])('validates keepaliveTimeout is an integer between 1 and 180 seconds - not an int', (keepaliveTimeout) => {
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      keepaliveTimeout,
+    });
+  }).toThrow(/must be a whole number of/);
 });

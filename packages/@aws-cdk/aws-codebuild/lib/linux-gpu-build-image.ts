@@ -1,18 +1,13 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as core from '@aws-cdk/core';
-import { FactName, RegionInfo } from '@aws-cdk/region-info';
+import { FactName } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import {
   BuildEnvironment, BuildImageBindOptions, BuildImageConfig, ComputeType, IBindableBuildImage, IBuildImage,
   ImagePullPrincipalType, IProject,
 } from './project';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
-
-const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
 
 /**
  * A CodeBuild GPU image running Linux.
@@ -91,39 +86,55 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     return new LinuxGpuBuildImage(repositoryName, tag, account);
   }
 
+
+  /**
+   * Returns a GPU image running Linux from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new LinuxGpuBuildImage(repository.repositoryName, tag, repository.env.account);
+  }
+
   public readonly type = 'LINUX_GPU_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
-  public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
+  public readonly imageId: string;
 
-  private readonly accountExpression: string;
+  private _imageAccount?: string;
 
   private constructor(private readonly repositoryName: string, tag: string, private readonly account: string | undefined) {
-    this.accountExpression = account ?? core.Fn.findInMap(mappingName, core.Aws.REGION, 'repositoryAccount');
-    this.imageId = `${this.accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
+    const imageAccount = account ?? core.Lazy.string({
+      produce: () => {
+        if (this._imageAccount === undefined) {
+          throw new Error('Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
+        }
+        return this._imageAccount;
+      },
+    });
+
+    // The value of imageId below *should* have been `Lazy.stringValue(() => repository.repositoryUriForTag(this.tag))`,
+    // but we can't change that anymore because someone somewhere might at this point have written code
+    // to do `image.imageId.includes('pytorch')` and changing this to a full-on token would break them.
+    this.imageId = `${imageAccount}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
   }
 
   public bind(scope: Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
-    if (!this.account) {
-      const scopeStack = core.Stack.of(scope);
-      // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
-      // Because of that, use a (singleton) Mapping to find the correct account
-      if (!scopeStack.node.tryFindChild(mappingName)) {
-        const mapping: { [k1: string]: { [k2: string]: any } } = {};
-        // get the accounts from the region-info module
-        const region2Accounts = RegionInfo.regionMap(FactName.DLC_REPOSITORY_ACCOUNT);
-        for (const [region, account] of Object.entries(region2Accounts)) {
-          mapping[region] = { repositoryAccount: account };
-        }
-        new core.CfnMapping(scopeStack, mappingName, { mapping });
-      }
-    }
-
+    const account = this.account ?? core.Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT);
     const repository = ecr.Repository.fromRepositoryAttributes(scope, 'AwsDlcRepositoryCodeBuild', {
       repositoryName: this.repositoryName,
-      repositoryArn: ecr.Repository.arnForLocalRepository(this.repositoryName, scope, this.accountExpression),
+      repositoryArn: ecr.Repository.arnForLocalRepository(this.repositoryName, scope, account),
     });
+
     repository.grantPull(project);
+
+    this._imageAccount = account;
 
     return {
     };

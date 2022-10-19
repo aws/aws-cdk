@@ -1,106 +1,93 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnResource, Construct, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { CfnResource, Stack } from '../lib';
 import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
 
-nodeunitShim({
-  'capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase'(test: Test) {
+describe('util', () => {
+  test('capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase', () => {
     const c = new Stack();
 
-    test.equal(capitalizePropertyNames(c, undefined), undefined);
-    test.equal(capitalizePropertyNames(c, 12), 12);
-    test.equal(capitalizePropertyNames(c, 'hello'), 'hello');
-    test.deepEqual(capitalizePropertyNames(c, ['hello', 88]), ['hello', 88]);
-    test.deepEqual(capitalizePropertyNames(c,
-      { Hello: 'world', hey: 'dude' }),
-    { Hello: 'world', Hey: 'dude' });
-    test.deepEqual(capitalizePropertyNames(c,
-      [1, 2, { three: 3 }]),
-    [1, 2, { Three: 3 }]);
-    test.deepEqual(capitalizePropertyNames(c,
-      { Hello: 'world', recursive: { foo: 123, there: { another: ['hello', { world: 123 }] } } }),
-    { Hello: 'world', Recursive: { Foo: 123, There: { Another: ['hello', { World: 123 }] } } });
+    expect(capitalizePropertyNames(c, undefined)).toEqual(undefined);
+    expect(capitalizePropertyNames(c, 12)).toEqual(12);
+    expect(capitalizePropertyNames(c, 'hello')).toEqual('hello');
+    expect(capitalizePropertyNames(c, ['hello', 88])).toEqual(['hello', 88]);
+    expect(capitalizePropertyNames(c,
+      { Hello: 'world', hey: 'dude' })).toEqual(
+      { Hello: 'world', Hey: 'dude' });
+    expect(capitalizePropertyNames(c,
+      [1, 2, { three: 3 }])).toEqual(
+      [1, 2, { Three: 3 }]);
+    expect(capitalizePropertyNames(c,
+      { Hello: 'world', recursive: { foo: 123, there: { another: ['hello', { world: 123 }] } } })).toEqual(
+      { Hello: 'world', Recursive: { Foo: 123, There: { Another: ['hello', { World: 123 }] } } });
 
     // make sure tokens are resolved and result is also capitalized
-    test.deepEqual(capitalizePropertyNames(c,
-      { hello: { resolve: () => ({ foo: 'bar' }) }, world: new SomeToken() }),
-    { Hello: { Foo: 'bar' }, World: 100 });
+    expect(capitalizePropertyNames(c,
+      { hello: { resolve: () => ({ foo: 'bar' }) }, world: new SomeToken() })).toEqual(
+      { Hello: { Foo: 'bar' }, World: 100 });
+  });
 
-    test.done();
-  },
-
-  ignoreEmpty: {
-
-    '[]'(test: Test) {
+  describe('ignoreEmpty', () => {
+    test('[]', () => {
       const stack = new Stack();
-      test.strictEqual(stack.resolve(ignoreEmpty([])), undefined);
-      test.done();
-    },
+      expect(stack.resolve(ignoreEmpty([]))).toEqual(undefined);
+    });
 
-    '{}'(test: Test) {
+    test('{}', () => {
       const stack = new Stack();
-      test.strictEqual(stack.resolve(ignoreEmpty({})), undefined);
-      test.done();
-    },
+      expect(stack.resolve(ignoreEmpty({}))).toEqual(undefined);
+    });
 
-    'undefined/null'(test: Test) {
+    test('undefined/null', () => {
       const stack = new Stack();
-      test.strictEqual(stack.resolve(ignoreEmpty(undefined)), undefined);
-      test.strictEqual(stack.resolve(ignoreEmpty(null)), null);
-      test.done();
-    },
+      expect(stack.resolve(ignoreEmpty(undefined))).toEqual(undefined);
+      expect(stack.resolve(ignoreEmpty(null))).toEqual(null);
+    });
 
-    'primitives'(test: Test) {
+    test('primitives', () => {
       const stack = new Stack();
-      test.strictEqual(stack.resolve(ignoreEmpty(12)), 12);
-      test.strictEqual(stack.resolve(ignoreEmpty('12')), '12');
-      test.done();
-    },
+      expect(stack.resolve(ignoreEmpty(12))).toEqual(12);
+      expect(stack.resolve(ignoreEmpty('12'))).toEqual('12');
+    });
 
-    'non-empty arrays/objects'(test: Test) {
+    test('non-empty arrays/objects', () => {
       const stack = new Stack();
-      test.deepEqual(stack.resolve(ignoreEmpty([1, 2, 3, undefined])), [1, 2, 3]); // undefined array values is cleaned up by "resolve"
-      test.deepEqual(stack.resolve(ignoreEmpty({ o: 1, b: 2, j: 3 })), { o: 1, b: 2, j: 3 });
-      test.done();
-    },
+      expect(stack.resolve(ignoreEmpty([1, 2, 3, undefined]))).toEqual([1, 2, 3]); // undefined array values is cleaned up by "resolve"
+      expect(stack.resolve(ignoreEmpty({ o: 1, b: 2, j: 3 }))).toEqual({ o: 1, b: 2, j: 3 });
+    });
 
-    'resolve first'(test: Test) {
+    test('resolve first', () => {
       const stack = new Stack();
-      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => 123 } })), { xoo: 123 });
-      test.strictEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => undefined } })), undefined);
-      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [] } })), { xoo: [] });
-      test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [undefined, undefined] } })), { xoo: [] });
-      test.done();
-    },
-  },
+      expect(stack.resolve(ignoreEmpty({ xoo: { resolve: () => 123 } }))).toEqual({ xoo: 123 });
+      expect(stack.resolve(ignoreEmpty({ xoo: { resolve: () => undefined } }))).toEqual(undefined);
+      expect(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [] } }))).toEqual({ xoo: [] });
+      expect(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [undefined, undefined] } }))).toEqual({ xoo: [] });
+    });
+  });
 
-  filterUnderined: {
-    'is null-safe (aka treats null and undefined the same)'(test: Test) {
-      test.deepEqual(filterUndefined({ 'a null': null, 'a not null': true }), { 'a not null': true });
-      test.done();
-    },
+  describe('filterUnderined', () => {
+    test('is null-safe (aka treats null and undefined the same)', () => {
+      expect(filterUndefined({ 'a null': null, 'a not null': true })).toEqual({ 'a not null': true });
+    });
 
-    'removes undefined, but leaves the rest'(test: Test) {
-      test.deepEqual(filterUndefined({ 'an undefined': undefined, 'yes': true }), { yes: true });
-      test.done();
-    },
-  },
+    test('removes undefined, but leaves the rest', () => {
+      expect(filterUndefined({ 'an undefined': undefined, 'yes': true })).toEqual({ yes: true });
+    });
+  });
 
-  'pathToTopLevelStack returns the array of stacks that lead to a stack'(test: Test) {
+  test('pathToTopLevelStack returns the array of stacks that lead to a stack', () => {
     const a = new Stack(undefined, 'a');
     const aa = new Nested(a, 'aa');
     const aaa = new Nested(aa, 'aaa');
 
-    test.deepEqual(path(aaa), ['a', 'aa', 'aaa']);
-    test.deepEqual(path(aa), ['a', 'aa']);
-    test.deepEqual(path(a), ['a']);
-    test.done();
-
+    expect(path(aaa)).toEqual(['a', 'aa', 'aaa']);
+    expect(path(aa)).toEqual(['a', 'aa']);
+    expect(path(a)).toEqual(['a']);
     function path(s: Stack) {
       return pathToTopLevelStack(s).map(x => x.node.id);
     }
-  },
+  });
 
-  'findCommonStack returns the lowest common stack between two stacks or undefined'(test: Test) {
+  test('findCommonStack returns the lowest common stack between two stacks or undefined', () => {
     const a = new Stack(undefined, 'a');
     const aa = new Nested(a, 'aa');
     const ab = new Nested(a, 'ab');
@@ -112,29 +99,27 @@ nodeunitShim({
     const ba = new Nested(b, 'ba');
     const baa = new Nested(ba, 'baa');
 
-    test.equal(lca(a, b), undefined);
-    test.equal(lca(aa, ab), 'a');
-    test.equal(lca(ab, aa), 'a');
-    test.equal(lca(aa, aba), 'a');
-    test.equal(lca(aba, aa), 'a');
-    test.equal(lca(ab, aba), 'ab');
-    test.equal(lca(aba, ab), 'ab');
-    test.equal(lca(aba, aba), 'aba');
-    test.equal(lca(aa, aa), 'aa');
-    test.equal(lca(a, aaa), 'a');
-    test.equal(lca(aaa, aab), 'aa');
-    test.equal(lca(aaa, b), undefined);
-    test.equal(lca(aaa, ba), undefined);
-    test.equal(lca(baa, ba), 'ba');
-
-    test.done();
+    expect(lca(a, b)).toEqual(undefined);
+    expect(lca(aa, ab)).toEqual('a');
+    expect(lca(ab, aa)).toEqual('a');
+    expect(lca(aa, aba)).toEqual('a');
+    expect(lca(aba, aa)).toEqual('a');
+    expect(lca(ab, aba)).toEqual('ab');
+    expect(lca(aba, ab)).toEqual('ab');
+    expect(lca(aba, aba)).toEqual('aba');
+    expect(lca(aa, aa)).toEqual('aa');
+    expect(lca(a, aaa)).toEqual('a');
+    expect(lca(aaa, aab)).toEqual('aa');
+    expect(lca(aaa, b)).toEqual(undefined);
+    expect(lca(aaa, ba)).toEqual(undefined);
+    expect(lca(baa, ba)).toEqual('ba');
 
     function lca(s1: Stack, s2: Stack) {
       const res = findLastCommonElement(pathToTopLevelStack(s1), pathToTopLevelStack(s2));
       if (!res) { return undefined; }
       return res.node.id;
     }
-  },
+  });
 });
 
 class SomeToken {

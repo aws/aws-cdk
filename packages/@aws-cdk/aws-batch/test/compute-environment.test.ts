@@ -1,13 +1,12 @@
 import { throws } from 'assert';
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
 
-describe('Batch Compute Evironment', () => {
+describe('Batch Compute Environment', () => {
   let expectedManagedDefaultComputeProps: any;
   let defaultServiceRole: any;
 
@@ -71,13 +70,199 @@ describe('Batch Compute Evironment', () => {
         });
       });
     });
-
     test('should deny if creating a managed environment with no provided compute resource props', () => {
       // THEN
       throws(() => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
           managed: true,
+        });
+      });
+    });
+    test('should fail setting launch template with name and id', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {
+              launchTemplateName: 'test-template-name',
+              launchTemplateId: 'test-template-id',
+            },
+          },
+        });
+      });
+    });
+    test('should fail setting launch template missing both template name or id', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {},
+          },
+        });
+      });
+    });
+  });
+  describe('using fargate resources', () => {
+    test('should deny setting bid percentage', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            bidPercentage: -1,
+          },
+        });
+      });
+    });
+    test('should deny setting allocation strategy', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            allocationStrategy: batch.AllocationStrategy.BEST_FIT,
+          },
+        });
+      });
+    });
+    test('should deny setting desired vCPUs', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            desiredvCpus: 1,
+          },
+        });
+      });
+    });
+    test('should deny setting min vCPUs', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            minvCpus: 1,
+          },
+        });
+      });
+    });
+    test('should deny setting image', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            image: ec2.MachineImage.latestAmazonLinux(),
+          },
+        });
+      });
+    });
+    test('should deny setting instance types', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            instanceTypes: [],
+          },
+        });
+      });
+    });
+    test('should deny setting EC2 key pair', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            ec2KeyPair: 'test',
+          },
+        });
+      });
+    });
+    test('should deny setting instance role', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            instanceRole: 'test',
+          },
+        });
+      });
+    });
+    test('should deny setting launch template', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            launchTemplate: {
+              launchTemplateName: 'test-template',
+            },
+          },
+        });
+      });
+    });
+    test('should deny setting placement group', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            placementGroup: 'test',
+          },
+        });
+      });
+    });
+    test('should deny setting spot fleet role', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+            spotFleetRole: iam.Role.fromRoleArn(stack, 'test-role-arn', 'test-role'),
+          },
         });
       });
     });
@@ -96,7 +281,7 @@ describe('Batch Compute Evironment', () => {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
         Type: 'MANAGED',
         ...expectedManagedDefaultComputeProps({
           Type: batch.ComputeResourceType.SPOT,
@@ -117,7 +302,7 @@ describe('Batch Compute Evironment', () => {
             ],
           },
         }),
-      }, ResourcePart.Properties));
+      });
     });
 
     describe('with a bid percentage', () => {
@@ -167,10 +352,7 @@ describe('Batch Compute Evironment', () => {
           },
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
-          image: new ecs.EcsOptimizedAmi({
-            generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-            hardwareType: ecs.AmiHardwareType.STANDARD,
-          }),
+          image: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD),
           instanceRole: new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
             roles: [new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -193,7 +375,7 @@ describe('Batch Compute Evironment', () => {
           ],
           type: batch.ComputeResourceType.ON_DEMAND,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.PRIVATE,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           },
         } as batch.ComputeResources,
         enabled: false,
@@ -203,7 +385,7 @@ describe('Batch Compute Evironment', () => {
       new batch.ComputeEnvironment(stack, 'test-compute-env', props);
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
         ComputeEnvironmentName: 'my-test-compute-env',
         Type: 'MANAGED',
         State: 'DISABLED',
@@ -254,7 +436,7 @@ describe('Batch Compute Evironment', () => {
           },
           Type: 'EC2',
         },
-      }, ResourcePart.Properties));
+      });
     });
 
     describe('with no allocation strategy specified', () => {
@@ -268,7 +450,7 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           Type: 'MANAGED',
           ServiceRole: {
             'Fn::GetAtt': [
@@ -276,7 +458,7 @@ describe('Batch Compute Evironment', () => {
               'Arn',
             ],
           },
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -320,12 +502,12 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...defaultServiceRole,
           ...expectedManagedDefaultComputeProps({
             MinvCpus: 0,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -340,11 +522,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             MaxvCpus: 256,
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -359,8 +541,8 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::Batch::ComputeEnvironment'));
-        expect(stack).to(haveResource('AWS::IAM::Role'));
+        Template.fromStack(stack).resourceCountIs('AWS::Batch::ComputeEnvironment', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
       });
     });
 
@@ -375,11 +557,11 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             InstanceTypes: ['optimal'],
           }),
-        }, ResourcePart.Properties));
+        });
       });
     });
 
@@ -394,12 +576,111 @@ describe('Batch Compute Evironment', () => {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
             Type: batch.ComputeResourceType.ON_DEMAND,
           }),
-        }, ResourcePart.Properties));
+        });
+      });
+    });
+
+    describe('without useNetworkInterfaceSecurityGroups', () => {
+      test('should not have securityGroups', () => {
+        // THEN
+        throws(() => {
+          // WHEN
+          new batch.ComputeEnvironment(stack, 'test-compute-env', {
+            managed: true,
+            computeResources: {
+              vpc,
+              launchTemplate: {
+                useNetworkInterfaceSecurityGroups: true,
+                launchTemplateName: 'dummyname',
+              },
+              securityGroups: [],
+            },
+          });
+        });
+      });
+
+      test('should not have a SecurityGroupIds output', () => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'efa-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {
+              useNetworkInterfaceSecurityGroups: true,
+              launchTemplateName: 'dummyname',
+            },
+          },
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties(
+          'AWS::Batch::ComputeEnvironment', {
+            ComputeResources: {
+              SecurityGroupIds: Match.absent(),
+            },
+          },
+        );
+      });
+    });
+
+    describe('connectable functions', () => {
+      test('ec2 ingress rule', () => {
+        const computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+          },
+        });
+
+        const sg1 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+        const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [sg1] }));
+
+        somethingConnectable.connections.allowFrom(computeEnvironment, ec2.Port.tcp(12345), 'connect to me');
+
+        Template.fromStack(stack).hasResourceProperties
+        ('AWS::EC2::SecurityGroupIngress', {
+          GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
+          IpProtocol: 'tcp',
+          Description: 'connect to me',
+          SourceSecurityGroupId: { 'Fn::GetAtt': ['testcomputeenvResourceSecurityGroup7615BA87', 'GroupId'] },
+          FromPort: 12345,
+          ToPort: 12345,
+        });
+      });
+
+      test('fargate ingress rule', () => {
+        const computeEnvironment = new batch.ComputeEnvironment(stack, 'test-fargate-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+          },
+        });
+
+        const sg1 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+        const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [sg1] }));
+
+        somethingConnectable.connections.allowFrom(computeEnvironment, ec2.Port.tcp(12345), 'connect to me');
+
+        Template.fromStack(stack).hasResourceProperties
+        ('AWS::EC2::SecurityGroupIngress', {
+          GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
+          IpProtocol: 'tcp',
+          Description: 'connect to me',
+          SourceSecurityGroupId: { 'Fn::GetAtt': ['testfargateenvResourceSecurityGroup66A2FC03', 'GroupId'] },
+          FromPort: 12345,
+          ToPort: 12345,
+        });
       });
     });
   });
 });
+
+class SomethingConnectable implements ec2.IConnectable {
+  constructor(public readonly connections: ec2.Connections) {
+  }
+}

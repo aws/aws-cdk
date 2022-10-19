@@ -1,4 +1,4 @@
-/// !cdk-integ * pragma:ignore-assets
+/// !cdk-integ *
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
@@ -16,7 +16,6 @@ class TestStack extends Stack {
       bucket,
       objectKey: 'second.txt',
       contents: 'Hello, world, 1980!',
-      public: true,
     });
 
     const file2 = new S3File(this, 'file2', {

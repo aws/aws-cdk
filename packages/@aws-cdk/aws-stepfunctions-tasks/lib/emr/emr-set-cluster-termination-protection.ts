@@ -7,7 +7,6 @@ import { integrationResourceArn } from '../private/task-utils';
 /**
  * Properties for EmrSetClusterTerminationProtection
  *
- * @experimental
  */
 export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps {
   /**
@@ -24,7 +23,6 @@ export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBa
 /**
  * A Step Functions Task to to set Termination Protection on an EMR Cluster.
  *
- * @experimental
  */
 export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
 

@@ -5,7 +5,6 @@ import { Token } from '../token';
 /**
  * Customization properties for an Intrinsic token
  *
- * @experimental
  */
 export interface IntrinsicProps {
   /**
@@ -24,7 +23,6 @@ export interface IntrinsicProps {
  *
  * This class will disappear in a future release and should not be used.
  *
- * @experimental
  */
 export class Intrinsic implements IResolvable {
   /**
@@ -56,6 +54,17 @@ export class Intrinsic implements IResolvable {
    */
   public toString(): string {
     return Token.asString(this);
+  }
+
+  /**
+   * Convert an instance of this Token to a string list
+   *
+   * This method will be called implicitly by language runtimes if the object
+   * is embedded into a list. We treat it the same as an explicit
+   * stringification.
+   */
+  public toStringList(): string[] {
+    return Token.asList(this);
   }
 
   /**

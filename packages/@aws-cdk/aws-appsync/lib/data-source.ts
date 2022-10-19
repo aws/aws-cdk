@@ -1,18 +1,16 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
+import { IDomain as IElasticsearchDomain } from '@aws-cdk/aws-elasticsearch';
 import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { IDomain as IOpenSearchDomain } from '@aws-cdk/aws-opensearchservice';
+import { IServerlessCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { IResolvable, Lazy, Stack } from '@aws-cdk/core';
+import { IResolvable, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base properties for an AppSync datasource
@@ -63,11 +61,18 @@ export interface ExtendedDataSourceProps {
    */
   readonly dynamoDbConfig?: CfnDataSource.DynamoDBConfigProperty | IResolvable;
   /**
-   * configuration for Elasticsearch Datasource
+   * configuration for Elasticsearch data source
    *
+   * @deprecated - use `openSearchConfig`
    * @default - No config
    */
   readonly elasticsearchConfig?: CfnDataSource.ElasticsearchConfigProperty | IResolvable;
+  /**
+   * configuration for OpenSearch data source
+   *
+   * @default - No config
+   */
+  readonly openSearchServiceConfig?: CfnDataSource.OpenSearchServiceConfigProperty | IResolvable;
   /**
    * configuration for HTTP Datasource
    *
@@ -91,7 +96,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends CoreConstruct {
+export abstract class BaseDataSource extends Construct {
   /**
    * the name of the data source
    */
@@ -110,10 +115,12 @@ export abstract class BaseDataSource extends CoreConstruct {
     if (extended.type !== 'NONE') {
       this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
     }
-    const name = props.name ?? id;
+    // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
+    const name = (props.name ?? id);
+    const supportedName = Token.isUnresolved(name) ? name : name.replace(/[\W]+/g, '');
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
-      name: name,
+      name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
@@ -126,7 +133,11 @@ export abstract class BaseDataSource extends CoreConstruct {
    * creates a new resolver for this datasource and API using the given properties
    */
   public createResolver(props: BaseResolverProps): Resolver {
-    return this.api.createResolver({ dataSource: this, ...props });
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this.api,
+      dataSource: this,
+      ...props,
+    });
   }
 
   /**
@@ -205,7 +216,7 @@ export class DynamoDbDataSource extends BackedDataSource {
       type: 'AMAZON_DYNAMODB',
       dynamoDbConfig: {
         tableName: props.table.tableName,
-        awsRegion: props.table.stack.region,
+        awsRegion: props.table.env.region,
         useCallerCredentials: props.useCallerCredentials,
       },
     });
@@ -299,9 +310,9 @@ export class LambdaDataSource extends BackedDataSource {
  */
 export interface RdsDataSourceProps extends BackedDataSourceProps {
   /**
-   * The database cluster to call to interact with this data source
+   * The serverless cluster to call to interact with this data source
    */
-  readonly databaseCluster: IDatabaseCluster;
+  readonly serverlessCluster: IServerlessCluster;
   /**
    * The secret containing the credentials for the database
    */
@@ -323,12 +334,12 @@ export class RdsDataSource extends BackedDataSource {
       type: 'RELATIONAL_DATABASE',
       relationalDatabaseConfig: {
         rdsHttpEndpointConfig: {
-          awsRegion: props.databaseCluster.stack.region,
+          awsRegion: props.serverlessCluster.env.region,
           dbClusterIdentifier: Lazy.string({
             produce: () => {
               return Stack.of(this).formatArn({
                 service: 'rds',
-                resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
+                resource: `cluster:${props.serverlessCluster.clusterIdentifier}`,
               });
             },
           }),
@@ -340,17 +351,19 @@ export class RdsDataSource extends BackedDataSource {
     });
     const clusterArn = Stack.of(this).formatArn({
       service: 'rds',
-      resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
+      resource: `cluster:${props.serverlessCluster.clusterIdentifier}`,
     });
     props.secretStore.grantRead(this);
 
     // Change to grant with RDS grant becomes implemented
+
+    props.serverlessCluster.grantDataApiAccess(this);
+
     Grant.addToPrincipal({
       grantee: this,
       actions: [
         'rds-data:DeleteItems',
         'rds-data:ExecuteSql',
-        'rds-data:ExecuteStatement',
         'rds-data:GetItems',
         'rds-data:InsertItems',
         'rds-data:UpdateItems',
@@ -358,5 +371,63 @@ export class RdsDataSource extends BackedDataSource {
       resourceArns: [clusterArn, `${clusterArn}:*`],
       scope: this,
     });
+  }
+}
+
+/**
+ * Properties for the Elasticsearch Data Source
+ *
+ * @deprecated - use `OpenSearchDataSourceProps` with `OpenSearchDataSource`
+ */
+export interface ElasticsearchDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The elasticsearch domain containing the endpoint for the data source
+   */
+  readonly domain: IElasticsearchDomain;
+}
+
+/**
+ * An Appsync datasource backed by Elasticsearch
+ *
+ * @deprecated - use `OpenSearchDataSource`
+ */
+export class ElasticsearchDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: ElasticsearchDataSourceProps) {
+    super(scope, id, props, {
+      type: 'AMAZON_ELASTICSEARCH',
+      elasticsearchConfig: {
+        awsRegion: props.domain.env.region,
+        endpoint: `https://${props.domain.domainEndpoint}`,
+      },
+    });
+
+    props.domain.grantReadWrite(this);
+  }
+}
+
+/**
+ * Properties for the OpenSearch Data Source
+ */
+export interface OpenSearchDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The OpenSearch domain containing the endpoint for the data source
+   */
+  readonly domain: IOpenSearchDomain;
+}
+
+/**
+ * An Appsync datasource backed by OpenSearch
+ */
+export class OpenSearchDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: OpenSearchDataSourceProps) {
+    super(scope, id, props, {
+      type: 'AMAZON_OPENSEARCH_SERVICE',
+      openSearchServiceConfig: {
+        awsRegion: props.domain.env.region,
+        endpoint: `https://${props.domain.domainEndpoint}`,
+      },
+    });
+
+    props.domain.grantReadWrite(this);
   }
 }

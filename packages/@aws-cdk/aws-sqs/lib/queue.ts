@@ -1,5 +1,6 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
@@ -87,12 +88,12 @@ export interface QueueProps {
    * Be aware that encryption is not available in all regions, please see the docs
    * for current availability details.
    *
-   * @default Unencrypted
+   * @default SQS_MANAGED (SSE-SQS) for newly created queues
    */
   readonly encryption?: QueueEncryption;
 
   /**
-   * External KMS master key to use for queue encryption.
+   * External KMS key to use for queue encryption.
    *
    * Individual messages will be encrypted using data keys. The data keys in
    * turn will be encrypted using this key, and reused for a maximum of
@@ -137,6 +138,46 @@ export interface QueueProps {
    * @default false
    */
   readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * For high throughput for FIFO queues, specifies whether message deduplication
+   * occurs at the message group or queue level.
+   *
+   * (Only applies to FIFO queues.)
+   *
+   * @default DeduplicationScope.QUEUE
+   */
+  readonly deduplicationScope?: DeduplicationScope;
+
+  /**
+   * For high throughput for FIFO queues, specifies whether the FIFO queue
+   * throughput quota applies to the entire queue or per message group.
+   *
+   * (Only applies to FIFO queues.)
+   *
+   * @default FifoThroughputLimit.PER_QUEUE
+   */
+  readonly fifoThroughputLimit?: FifoThroughputLimit;
+
+  /**
+   * Policy to apply when the queue is removed from the stack
+   *
+   * Even though queues are technically stateful, their contents are transient and it
+   * is common to add and remove Queues while rearchitecting your application. The
+   * default is therefore `DESTROY`. Change it to `RETAIN` if the messages are so
+   * valuable that accidentally losing them would be unacceptable.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enforce encryption of data in transit.
+   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-security-best-practices.html#enforce-encryption-data-in-transit
+   *
+   * @default false
+   */
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -164,9 +205,9 @@ export enum QueueEncryption {
   UNENCRYPTED = 'NONE',
 
   /**
-   * Server-side KMS encryption with a master key managed by SQS.
+   * Server-side KMS encryption with a KMS key managed by SQS.
    */
-  KMS_MANAGED = 'MANAGED',
+  KMS_MANAGED = 'KMS_MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
@@ -174,6 +215,42 @@ export enum QueueEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Server-side encryption key managed by SQS (SSE-SQS).
+   *
+   * To learn more about SSE-SQS on Amazon SQS, please visit the
+   * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
+   */
+  SQS_MANAGED = 'SQS_MANAGED'
+}
+
+/**
+ * What kind of deduplication scope to apply
+ */
+export enum DeduplicationScope {
+  /**
+   * Deduplication occurs at the message group level
+   */
+  MESSAGE_GROUP = 'messageGroup',
+  /**
+   * Deduplication occurs at the message queue level
+   */
+  QUEUE = 'queue',
+}
+
+/**
+ * Whether the FIFO queue throughput quota applies to the entire queue or per message group
+ */
+export enum FifoThroughputLimit {
+  /**
+   * Throughput quota applies per queue
+   */
+  PER_QUEUE = 'perQueue',
+  /**
+   * Throughput quota applies per message group id
+   */
+  PER_MESSAGE_GROUP_ID = 'perMessageGroupId',
 }
 
 /**
@@ -197,7 +274,7 @@ export class Queue extends QueueBase {
    */
   public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
     const stack = Stack.of(scope);
-    const parsedArn = stack.parseArn(attrs.queueArn);
+    const parsedArn = stack.splitArn(attrs.queueArn, ArnFormat.NO_RESOURCE_NAME);
     const queueName = attrs.queueName || parsedArn.resource;
     const queueUrl = attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
@@ -208,9 +285,28 @@ export class Queue extends QueueBase {
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
-      public readonly fifo = queueName.endsWith('.fifo') ? true : false;
+      public readonly fifo: boolean = this.determineFifo();
 
       protected readonly autoCreatePolicy = false;
+
+      /**
+       * Determine fifo flag based on queueName and fifo attribute
+       */
+      private determineFifo(): boolean {
+        if (Token.isUnresolved(this.queueArn)) {
+          return attrs.fifo || false;
+        } else {
+          if (typeof attrs.fifo !== 'undefined') {
+            if (attrs.fifo && !queueName.endsWith('.fifo')) {
+              throw new Error("FIFO queue names must end in '.fifo'");
+            }
+            if (!attrs.fifo && queueName.endsWith('.fifo')) {
+              throw new Error("Non-FIFO queue name may not end in '.fifo'");
+            }
+          }
+          return queueName.endsWith('.fifo') ? true : false;
+        }
+      }
     }
 
     return new Import(scope, id);
@@ -240,6 +336,11 @@ export class Queue extends QueueBase {
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
    */
   public readonly fifo: boolean;
+
+  /**
+   * If this queue is configured with a dead-letter queue, this is the dead-letter queue settings.
+   */
+  public readonly deadLetterQueue?: DeadLetterQueue;
 
   protected readonly autoCreatePolicy = true;
 
@@ -273,6 +374,7 @@ export class Queue extends QueueBase {
       receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
+    queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
       service: 'sqs',
@@ -281,16 +383,29 @@ export class Queue extends QueueBase {
     this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
+    this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
-      let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
+      let encryption = props.encryption;
+
+      if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
+        throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
+      }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (encryption === QueueEncryption.UNENCRYPTED) {
+      if (!encryption) {
         return { encryptionProps: {} };
+      }
+
+      if (encryption === QueueEncryption.UNENCRYPTED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: false,
+          },
+        };
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
@@ -316,7 +431,20 @@ export class Queue extends QueueBase {
         };
       }
 
+      if (encryption === QueueEncryption.SQS_MANAGED) {
+        return {
+          encryptionProps: {
+            sqsManagedSseEnabled: true,
+          },
+        };
+      }
+
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
+    }
+
+    // Enforce encryption of data in transit
+    if (props.enforceSSL) {
+      this.enforceSSLStatement();
     }
   }
 
@@ -329,6 +457,8 @@ export class Queue extends QueueBase {
     const queueName = props.queueName;
     if (typeof fifoQueue === 'undefined' && queueName && !Token.isUnresolved(queueName) && queueName.endsWith('.fifo')) { fifoQueue = true; }
     if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) { fifoQueue = true; }
+    if (typeof fifoQueue === 'undefined' && props.deduplicationScope) { fifoQueue = true; }
+    if (typeof fifoQueue === 'undefined' && props.fifoThroughputLimit) { fifoQueue = true; }
 
     // If we have a name, see that it agrees with the FIFO setting
     if (typeof queueName === 'string') {
@@ -344,19 +474,48 @@ export class Queue extends QueueBase {
       throw new Error('Content-based deduplication can only be defined for FIFO queues');
     }
 
+    if (props.deduplicationScope && !fifoQueue) {
+      throw new Error('Deduplication scope can only be defined for FIFO queues');
+    }
+
+    if (props.fifoThroughputLimit && !fifoQueue) {
+      throw new Error('FIFO throughput limit can only be defined for FIFO queues');
+    }
+
     return {
       contentBasedDeduplication: props.contentBasedDeduplication,
+      deduplicationScope: props.deduplicationScope,
+      fifoThroughputLimit: props.fifoThroughputLimit,
       fifoQueue,
     };
+  }
+
+  /**
+   * Adds an iam statement to enforce encryption of data in transit.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['sqs:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [this.queueArn],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
   }
 }
 
 interface FifoProps {
   readonly fifoQueue?: boolean;
   readonly contentBasedDeduplication?: boolean;
+  readonly deduplicationScope?: DeduplicationScope;
+  readonly fifoThroughputLimit?: FifoThroughputLimit;
 }
 
 interface EncryptionProps {
   readonly kmsMasterKeyId?: string;
   readonly kmsDataKeyReusePeriodSeconds?: number;
+  readonly sqsManagedSseEnabled?: boolean;
 }

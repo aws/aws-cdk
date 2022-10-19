@@ -4,13 +4,12 @@ import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as entrypoint from '../../lib/custom-resource-provider/nodejs-entrypoint';
 
-nodeunitShim({
-  'handler return value is sent back to cloudformation as a success response': {
+describe('nodejs entrypoint', () => {
+  describe('handler return value is sent back to cloudformation as a success response', () => {
 
-    async 'physical resource id (ref)'(test: Test) {
+    test('physical resource id (ref)', async () => {
       // GIVEN
       const createEvent = makeEvent({ RequestType: 'Create' });
 
@@ -18,12 +17,12 @@ nodeunitShim({
       const response = await invokeHandler(createEvent, async _ => ({ PhysicalResourceId: 'returned-from-handler' }));
 
       // THEN
-      test.deepEqual(response.Status, 'SUCCESS');
-      test.deepEqual(response.PhysicalResourceId, 'returned-from-handler');
-      test.done();
-    },
+      expect(response.Status).toEqual('SUCCESS');
+      expect(response.PhysicalResourceId).toEqual('returned-from-handler');
 
-    async 'data (attributes)'(test: Test) {
+    });
+
+    test('data (attributes)', async () => {
       // GIVEN
       const createEvent = makeEvent({ RequestType: 'Create' });
 
@@ -40,18 +39,18 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(response.Status, 'SUCCESS');
-      test.deepEqual(response.PhysicalResourceId, '<RequestId>', 'physical id defaults to request id');
-      test.deepEqual(response.Data, {
+      expect(response.Status).toEqual('SUCCESS');
+      expect(response.PhysicalResourceId).toEqual('<RequestId>');
+      expect(response.Data).toEqual({
         Attribute1: 'hello',
         Attribute2: {
           Foo: 1111,
         },
       });
-      test.done();
-    },
 
-    async 'no echo'(test: Test) {
+    });
+
+    test('no echo', async () => {
       // GIVEN
       const createEvent = makeEvent({ RequestType: 'Create' });
 
@@ -59,12 +58,12 @@ nodeunitShim({
       const response = await invokeHandler(createEvent, async _ => ({ NoEcho: true }));
 
       // THEN
-      test.deepEqual(response.Status, 'SUCCESS');
-      test.deepEqual(response.NoEcho, true);
-      test.done();
-    },
+      expect(response.Status).toEqual('SUCCESS');
+      expect(response.NoEcho).toEqual(true);
 
-    async 'reason'(test: Test) {
+    });
+
+    test('reason', async () => {
       // GIVEN
       const createEvent = makeEvent({ RequestType: 'Create' });
 
@@ -72,13 +71,13 @@ nodeunitShim({
       const response = await invokeHandler(createEvent, async _ => ({ Reason: 'hello, reason' }));
 
       // THEN
-      test.deepEqual(response.Status, 'SUCCESS');
-      test.deepEqual(response.Reason, 'hello, reason');
-      test.done();
-    },
-  },
+      expect(response.Status).toEqual('SUCCESS');
+      expect(response.Reason).toEqual('hello, reason');
 
-  async 'an error thrown by the handler is sent as a failure response to cloudformation'(test: Test) {
+    });
+  });
+
+  test('an error thrown by the handler is sent as a failure response to cloudformation', async () => {
     // GIVEN
     const createEvent = makeEvent({ RequestType: 'Create' });
 
@@ -88,7 +87,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(response, {
+    expect(response).toEqual({
       Status: 'FAILED',
       Reason: 'this is an error',
       StackId: '<StackId>',
@@ -97,10 +96,10 @@ nodeunitShim({
       LogicalResourceId: '<LogicalResourceId>',
     });
 
-    test.done();
-  },
 
-  async 'physical resource id cannot be changed in DELETE'(test: Test) {
+  });
+
+  test('physical resource id cannot be changed in DELETE', async () => {
     // GIVEN
     const event = makeEvent({ RequestType: 'Delete' });
 
@@ -110,7 +109,7 @@ nodeunitShim({
     }));
 
     // THEN
-    test.deepEqual(response, {
+    expect(response).toEqual({
       Status: 'FAILED',
       Reason: 'DELETE: cannot change the physical resource ID from "undefined" to "Changed" during deletion',
       StackId: '<StackId>',
@@ -119,10 +118,10 @@ nodeunitShim({
       LogicalResourceId: '<LogicalResourceId>',
     });
 
-    test.done();
-  },
 
-  async 'DELETE after CREATE is ignored with success'(test: Test) {
+  });
+
+  test('DELETE after CREATE is ignored with success', async () => {
     // GIVEN
     const event = makeEvent({
       RequestType: 'Delete',
@@ -131,11 +130,11 @@ nodeunitShim({
 
     // WHEN
     const response = await invokeHandler(event, async _ => {
-      test.ok(false, 'handler should not be called');
+      throw new Error('handler should not be called');
     });
 
     // THEN
-    test.deepEqual(response, {
+    expect(response).toEqual({
       Status: 'SUCCESS',
       Reason: 'SUCCESS',
       StackId: '<StackId>',
@@ -144,9 +143,7 @@ nodeunitShim({
       LogicalResourceId: '<LogicalResourceId>',
     });
 
-    test.done();
-
-  },
+  });
 });
 
 function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): AWSLambda.CloudFormationCustomResourceEvent {
@@ -189,7 +186,7 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
     actualResponse = responseBody;
   };
 
-  await entrypoint.handler(req);
+  await entrypoint.handler(req, {} as AWSLambda.Context);
   if (!actualResponse) {
     throw new Error('no response sent to cloudformation');
   }

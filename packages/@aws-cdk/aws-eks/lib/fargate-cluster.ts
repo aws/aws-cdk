@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
-import { FargateProfileOptions } from './fargate-profile';
+import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 
 /**
  * Configuration props for EKS Fargate.
@@ -23,6 +23,11 @@ export interface FargateClusterProps extends ClusterOptions {
  * `addFargateProfile`.
  */
 export class FargateCluster extends Cluster {
+  /**
+   * Fargate Profile that was created with the cluster.
+   */
+  public readonly defaultProfile: FargateProfile;
+
   constructor(scope: Construct, id: string, props: FargateClusterProps) {
     super(scope, id, {
       ...props,
@@ -31,7 +36,7 @@ export class FargateCluster extends Cluster {
       version: props.version,
     });
 
-    this.addFargateProfile(
+    this.defaultProfile = this.addFargateProfile(
       props.defaultProfile?.fargateProfileName ?? (props.defaultProfile ? 'custom' : 'default'),
       props.defaultProfile ?? {
         selectors: [

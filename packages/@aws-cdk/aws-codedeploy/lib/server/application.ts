@@ -1,7 +1,7 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApplication } from '../codedeploy.generated';
-import { arnForApplication } from '../utils';
+import { arnForApplication, validateName } from '../utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to EC2/on-premise instances.
@@ -75,7 +75,10 @@ export class ServerApplication extends Resource implements IServerApplication {
       service: 'codedeploy',
       resource: 'application',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }
+
 }

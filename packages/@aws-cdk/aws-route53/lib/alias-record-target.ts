@@ -1,3 +1,4 @@
+import { IHostedZone } from './hosted-zone-ref';
 import { IRecordSet } from './record-set';
 
 /**
@@ -8,7 +9,7 @@ export interface IAliasRecordTarget {
   /**
    * Return hosted zone ID and DNS name, usable for Route53 alias targets
    */
-  bind(record: IRecordSet): AliasRecordTargetConfig;
+  bind(record: IRecordSet, zone?: IHostedZone): AliasRecordTargetConfig;
 }
 
 /**

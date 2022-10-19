@@ -1,7 +1,8 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
+import { AssetStaging, BundlingOptions as CdkBundlingOptions, DockerImage } from '@aws-cdk/core';
+import { Packaging, DependenciesFile } from './packaging';
+import { BundlingOptions } from './types';
 
 /**
  * Dependency files to exclude from the asset hash.
@@ -16,81 +17,102 @@ export const BUNDLER_DEPENDENCIES_CACHE = '/var/dependencies';
 /**
  * Options for bundling
  */
-export interface BundlingOptions {
+export interface BundlingProps extends BundlingOptions {
   /**
    * Entry path
    */
   readonly entry: string;
 
   /**
-   * The runtime of the lambda function
+   * The runtime environment.
    */
-  readonly runtime: lambda.Runtime;
+  readonly runtime: Runtime;
 
   /**
-   * Output path suffix ('python' for a layer, '.' otherwise)
+   * The system architecture of the lambda function
+   *
+   * @default Architecture.X86_64
    */
-  readonly outputPathSuffix: string;
+  readonly architecture?: Architecture;
+
+  /**
+   * Whether or not the bundling process should be skipped
+   *
+   * @default - Does not skip bundling
+   */
+  readonly skip?: boolean;
 }
 
 /**
  * Produce bundled Lambda asset code
  */
-export function bundle(options: BundlingOptions): lambda.AssetCode {
-  const { entry, runtime, outputPathSuffix } = options;
+export class Bundling implements CdkBundlingOptions {
+  public static bundle(options: BundlingProps): AssetCode {
+    return Code.fromAsset(options.entry, {
+      assetHash: options.assetHash,
+      assetHashType: options.assetHashType,
+      exclude: DEPENDENCY_EXCLUDES,
+      bundling: options.skip ? undefined : new Bundling(options),
+    });
+  }
 
-  const hasDeps = hasDependencies(entry);
+  public readonly image: DockerImage;
+  public readonly command: string[];
+  public readonly environment?: { [key: string]: string };
 
-  const depsCommand = chain([
-    hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}` : '',
-    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}`,
-  ]);
-
-  // Determine which dockerfile to use. When dependencies are present, we use a
-  // Dockerfile that can create a cacheable layer. We can't use this Dockerfile
-  // if there aren't dependencies or the Dockerfile will complain about missing
-  // sources.
-  const dockerfile = hasDeps
-    ? 'Dockerfile.dependencies'
-    : 'Dockerfile';
-
-  const image = cdk.BundlingDockerImage.fromAsset(entry, {
-    buildArgs: {
-      IMAGE: runtime.bundlingDockerImage.image,
-    },
-    file: path.join(__dirname, dockerfile),
-  });
-
-  return lambda.Code.fromAsset(entry, {
-    assetHashType: cdk.AssetHashType.BUNDLE,
-    exclude: DEPENDENCY_EXCLUDES,
-    bundling: {
+  constructor(props: BundlingProps) {
+    const {
+      entry,
+      runtime,
+      architecture = Architecture.X86_64,
+      outputPathSuffix = '',
       image,
-      command: ['bash', '-c', depsCommand],
-    },
-  });
+      poetryIncludeHashes,
+    } = props;
+
+    const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
+
+    const bundlingCommands = this.createBundlingCommand({
+      entry,
+      inputDir: AssetStaging.BUNDLING_INPUT_DIR,
+      outputDir: outputPath,
+      poetryIncludeHashes,
+    });
+
+    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
+      buildArgs: {
+        ...props.buildArgs,
+        IMAGE: runtime.bundlingImage.image,
+      },
+      platform: architecture.dockerPlatform,
+    });
+    this.command = ['bash', '-c', chain(bundlingCommands)];
+    this.environment = props.environment;
+  }
+
+  private createBundlingCommand(options: BundlingCommandOptions): string[] {
+    const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes);
+    let bundlingCommands: string[] = [];
+    bundlingCommands.push(`cp -rTL ${options.inputDir}/ ${options.outputDir}`);
+    bundlingCommands.push(`cd ${options.outputDir}`);
+    bundlingCommands.push(packaging.exportCommand ?? '');
+    if (packaging.dependenciesFile) {
+      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+    }
+    return bundlingCommands;
+  }
+}
+
+interface BundlingCommandOptions {
+  readonly entry: string;
+  readonly inputDir: string;
+  readonly outputDir: string;
+  readonly poetryIncludeHashes?: boolean;
 }
 
 /**
- * Checks to see if the `entry` directory contains a type of dependency that
- * we know how to install.
+ * Chain commands
  */
-export function hasDependencies(entry: string): boolean {
-  if (fs.existsSync(path.join(entry, 'Pipfile'))) {
-    return true;
-  }
-
-  if (fs.existsSync(path.join(entry, 'poetry.lock'))) {
-    return true;
-  }
-
-  if (fs.existsSync(path.join(entry, 'requirements.txt'))) {
-    return true;
-  }
-
-  return false;
-}
-
 function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
 }

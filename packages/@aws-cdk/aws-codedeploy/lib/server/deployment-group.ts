@@ -4,10 +4,11 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration, validateName } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
@@ -269,7 +270,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       physicalName: props.deploymentGroupName,
     });
 
-    this.application = props.application || new ServerApplication(this, 'Application');
+    this.application = props.application || new ServerApplication(this, 'Application', {
+      applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
@@ -309,8 +312,10 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       service: 'codedeploy',
       resource: 'deploymentgroup',
       resourceName: `${this.application.applicationName}/${this.physicalName}`,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
   }
 
   /**
@@ -354,7 +359,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           'if [ -z "$PKG_CMD" ]; then',
           'PKG_CMD=apt-get',
           'else',
-          'PKG=CMD=yum',
+          'PKG_CMD=yum',
           'fi',
           '$PKG_CMD update -y',
           'set +e', // make sure we don't exit on the next command failing (we check its exit code below)
@@ -364,7 +369,11 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           'if [ $RUBY2_INSTALL -ne 0 ]; then',
           '$PKG_CMD install -y ruby',
           'fi',
-          '$PKG_CMD install -y awscli',
+          'AWS_CLI_PACKAGE_NAME=awscli',
+          'if [ "$PKG_CMD" = "yum" ]; then',
+          'AWS_CLI_PACKAGE_NAME=aws-cli',
+          'fi',
+          '$PKG_CMD install -y $AWS_CLI_PACKAGE_NAME',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
           `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,

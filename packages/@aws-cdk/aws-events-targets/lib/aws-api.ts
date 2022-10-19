@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Annotations } from '@aws-cdk/core';
 import { metadata } from './sdk-api-metadata.generated';
 import { addLambdaPermission } from './util';
 
@@ -82,12 +83,16 @@ export class AwsApi implements events.IRuleTarget {
    */
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
     const handler = new lambda.SingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'aws-api-handler')),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'aws-api-handler'), {
+        exclude: ['*.ts'],
+      }),
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
       lambdaPurpose: 'AWS',
     });
+
+    checkServiceExists(this.props.service, handler);
 
     if (this.props.policyStatement) {
       handler.addToRolePolicy(this.props.policyStatement);
@@ -110,11 +115,22 @@ export class AwsApi implements events.IRuleTarget {
     };
 
     return {
-      id: '',
       arn: handler.functionArn,
       input: events.RuleTargetInput.fromObject(input),
       targetResource: handler,
     };
+  }
+}
+
+/**
+ * Check if the given service exists in the AWS SDK. If not, a warning will be raised.
+ * @param service Service name
+ */
+function checkServiceExists(service: string, handler: lambda.SingletonFunction) {
+  const sdkService = awsSdkMetadata[service.toLowerCase()];
+  if (!sdkService) {
+    Annotations.of(handler).addWarning(`Service ${service} does not exist in the AWS SDK. Check the list of available \
+services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html`);
   }
 }
 

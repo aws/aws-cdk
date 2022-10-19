@@ -1,24 +1,31 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
-export class PhysicalResourceIdReference {
+export class PhysicalResourceIdReference implements cdk.IResolvable {
+  public readonly creationStack: string[] = cdk.captureStackTrace();
+
   /**
    * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
    */
   public toJSON() {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+
+  public resolve(_: cdk.IResolveContext): any {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+
+  public toString(): string {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 }
@@ -118,8 +125,33 @@ export interface AwsSdkCall {
    * Example for ECS / updateService: 'service.deploymentConfiguration.maximumPercent'
    *
    * @default - return all data
+   *
+   * @deprecated use outputPaths instead
    */
   readonly outputPath?: string;
+
+  /**
+   * Restrict the data returned by the custom resource to specific paths in
+   * the API response. Use this to limit the data returned by the custom
+   * resource if working with API calls that could potentially result in custom
+   * response objects exceeding the hard limit of 4096 bytes.
+   *
+   * Example for ECS / updateService: ['service.deploymentConfiguration.maximumPercent']
+   *
+   * @default - return all data
+   */
+  readonly outputPaths?: string[];
+
+  /**
+   * Used for running the SDK calls in underlying lambda with a different role
+   * Can be used primarily for cross-account requests to for example connect
+   * hostedzone with a shared vpc
+   *
+   * Example for Route53 / associateVPCWithHostedZone
+   *
+   * @default - run without assuming role
+   */
+  readonly assumedRoleArn?: string;
 }
 
 /**
@@ -163,6 +195,13 @@ export class AwsCustomResourcePolicy {
    * Generate IAM Policy Statements from the configured SDK calls.
    *
    * Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).
+   *
+   * This policy generator assumes the IAM policy name has the same name as the API
+   * call. This is true in 99% of cases, but there are exceptions (for example,
+   * S3's `PutBucketLifecycleConfiguration` requires
+   * `s3:PutLifecycleConfiguration` permissions, Lambda's `Invoke` requires
+   * `lambda:InvokeFunction` permissions). Use `fromStatements` if you want to
+   * do a call that requires different IAM action names.
    *
    * @param options options for the policy generation
    */
@@ -222,13 +261,19 @@ export interface AwsCustomResourceProps {
    * to note the that function's role will eventually accumulate the
    * permissions/grants from all resources.
    *
+   * Note that a policy must be specified if `role` is not provided, as
+   * by default a new role is created which requires policy changes to access
+   * resources.
+   *
+   * @default - no policy added
+   *
    * @see Policy.fromStatements
    * @see Policy.fromSdkCalls
    */
-  readonly policy: AwsCustomResourcePolicy;
+  readonly policy?: AwsCustomResourcePolicy;
 
   /**
-   * The execution role for the Lambda function implementing this custom
+   * The execution role for the singleton Lambda function implementing this custom
    * resource provider. This role will apply to all `AwsCustomResource`
    * instances in the stack. The role must be assumable by the
    * `lambda.amazonaws.com` service principal.
@@ -238,14 +283,14 @@ export interface AwsCustomResourceProps {
   readonly role?: iam.IRole;
 
   /**
-   * The timeout for the Lambda function implementing this custom resource.
+   * The timeout for the singleton Lambda function implementing this custom resource.
    *
    * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
 
   /**
-   * The number of days log events of the Lambda function implementing
+   * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
    * @default logs.RetentionDays.INFINITE
@@ -263,22 +308,41 @@ export interface AwsCustomResourceProps {
   readonly installLatestAwsSdk?: boolean;
 
   /**
-   * A name for the Lambda function implementing this custom resource.
+   * A name for the singleton Lambda function implementing this custom resource.
+   * The function name will remain the same after the first AwsCustomResource is created in a stack.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the function's name. For more information, see Name Type.
    */
   readonly functionName?: string;
+
+  /**
+   * The vpc to provision the lambda function in.
+   *
+   * @default - the function is not provisioned inside a vpc.
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets from the VPC to place the lambda function in.
+   *
+   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+   * requires a NAT gateway, so picking Public subnets is not allowed.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
 /**
- * Defines a custom resource that is materialized using specific AWS API calls.
+ * Defines a custom resource that is materialized using specific AWS API calls. These calls are created using
+ * a singleton Lambda function.
  *
  * Use this to bridge any gap that might exist in the CloudFormation Coverage.
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
-export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
+export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
 
@@ -304,6 +368,10 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       throw new Error('At least `onCreate`, `onUpdate` or `onDelete` must be specified.');
     }
 
+    if (!props.role && !props.policy) {
+      throw new Error('At least one of `policy` or `role` (or both) must be specified.');
+    }
+
     for (const call of [props.onCreate, props.onUpdate]) {
       if (call && !call.physicalResourceId) {
         throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
@@ -316,20 +384,17 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       }
     }
 
-    if (props.onCreate?.parameters) {
-      const flattenedOnCreateParams = flatten(JSON.parse(JSON.stringify(props.onCreate.parameters)));
-      for (const param in flattenedOnCreateParams) {
-        if (flattenedOnCreateParams[param] === PHYSICAL_RESOURCE_ID_REFERENCE) {
-          throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
-        }
-      }
+    if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
+      throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
     }
 
     this.props = props;
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'runtime')),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
+        exclude: ['*.ts'],
+      }),
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
@@ -337,50 +402,61 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       role: props.role,
       logRetention: props.logRetention,
       functionName: props.functionName,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    // Create the policy statements for the custom resource function role, or use the user-provided ones
-    const statements = [];
-    if (props.policy.statements.length !== 0) {
-      // Use custom statements provided by the user
-      for (const statement of props.policy.statements) {
-        statements.push(statement);
-      }
-    } else {
-      // Derive statements from AWS SDK calls
-      for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call) {
-          const statement = new iam.PolicyStatement({
-            actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: props.policy.resources,
-          });
-          statements.push(statement);
-        }
-      }
-    }
-    const policy = new iam.Policy(this, 'CustomResourcePolicy', {
-      statements: statements,
-    });
-    if (provider.role !== undefined) {
-      policy.attachToRole(provider.role);
-    }
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
       properties: {
-        create: create && encodeBooleans(create),
-        update: props.onUpdate && encodeBooleans(props.onUpdate),
-        delete: props.onDelete && encodeBooleans(props.onDelete),
+        create: create && this.encodeJson(create),
+        update: props.onUpdate && this.encodeJson(props.onUpdate),
+        delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
 
-    // If the policy was deleted first, then the function might lose permissions to delete the custom resource
-    // This is here so that the policy doesn't get removed before onDelete is called
-    this.customResource.node.addDependency(policy);
+    // Create the policy statements for the custom resource function role, or use the user-provided ones
+    if (props.policy) {
+      const statements = [];
+      if (props.policy.statements.length !== 0) {
+        // Use custom statements provided by the user
+        for (const statement of props.policy.statements) {
+          statements.push(statement);
+        }
+      } else {
+        // Derive statements from AWS SDK calls
+        for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+          if (call && call.assumedRoleArn == null) {
+            const statement = new iam.PolicyStatement({
+              actions: [awsSdkToIamAction(call.service, call.action)],
+              resources: props.policy.resources,
+            });
+            statements.push(statement);
+          } else if (call && call.assumedRoleArn != null) {
+            const statement = new iam.PolicyStatement({
+              actions: ['sts:AssumeRole'],
+              resources: [call.assumedRoleArn],
+            });
+            statements.push(statement);
+          }
+        }
+      }
+      const policy = new iam.Policy(this, 'CustomResourcePolicy', {
+        statements: statements,
+      });
+      if (provider.role !== undefined) {
+        policy.attachToRole(provider.role);
+      }
+
+      // If the policy was deleted first, then the function might lose permissions to delete the custom resource
+      // This is here so that the policy doesn't get removed before onDelete is called
+      this.customResource.node.addDependency(policy);
+    }
   }
 
   /**
@@ -418,6 +494,9 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
     return this.customResource.getAttString(dataPath);
   }
 
+  private encodeJson(obj: any) {
+    return cdk.Lazy.uncachedString({ produce: () => cdk.Stack.of(this).toJsonString(obj) });
+  }
 }
 
 /**
@@ -440,6 +519,30 @@ let getAwsSdkMetadata = (() => {
 })();
 
 /**
+ * Returns true if `obj` includes a `PhysicalResourceIdReference` in one of the
+ * values.
+ * @param obj Any object.
+ */
+function includesPhysicalResourceIdRef(obj: any | undefined) {
+  if (obj === undefined) {
+    return false;
+  }
+
+  let foundRef = false;
+
+  // we use JSON.stringify as a way to traverse all values in the object.
+  JSON.stringify(obj, (_, v) => {
+    if (v === PHYSICAL_RESOURCE_ID_REFERENCE) {
+      foundRef = true;
+    }
+
+    return v;
+  });
+
+  return foundRef;
+}
+
+/**
  * Transform SDK service/action to IAM action using metadata from aws-sdk module.
  * Example: CloudWatchLogs with putRetentionPolicy => logs:PutRetentionPolicy
  *
@@ -451,20 +554,4 @@ function awsSdkToIamAction(service: string, action: string): string {
   const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
-}
-
-/**
- * Encodes booleans as special strings
- */
-function encodeBooleans(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case true:
-        return 'TRUE:BOOLEAN';
-      case false:
-        return 'FALSE:BOOLEAN';
-      default:
-        return v;
-    }
-  });
 }

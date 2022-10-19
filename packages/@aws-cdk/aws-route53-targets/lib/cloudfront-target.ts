@@ -1,6 +1,7 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
-import { Aws, CfnMapping, IConstruct, Stack } from '@aws-cdk/core';
+import { Aws, CfnMapping, Stack } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 
 /**
  * Use a CloudFront Distribution as an alias record target
@@ -40,10 +41,10 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
   constructor(private readonly distribution: cloudfront.IDistribution) {
   }
 
-  public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {
       hostedZoneId: CloudFrontTarget.getHostedZoneId(this.distribution),
-      dnsName: this.distribution.domainName,
+      dnsName: this.distribution.distributionDomainName,
     };
   }
 }

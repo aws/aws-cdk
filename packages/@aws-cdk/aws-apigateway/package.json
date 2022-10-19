@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-apigateway",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::ApiGateway",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,18 +18,25 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGateway",
         "packageId": "Amazon.CDK.AWS.APIGateway",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-apigateway",
         "module": "aws_cdk.aws_apigateway",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -40,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -49,14 +57,15 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::ApiGateway",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "keywords": [
     "aws",
@@ -71,11 +80,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "pkglint": "0.0.0"
+    "@aws-cdk/integ-tests": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
@@ -88,9 +100,11 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -104,12 +118,14 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nyc": {
     "exclude": [
@@ -117,6 +133,11 @@
       "test/**",
       "lib/*.generated.js",
       "lib/apigatewayv2.js"
+    ]
+  },
+  "pkglint": {
+    "exclude": [
+      "no-experimental-dependencies"
     ]
   },
   "awslint": {
@@ -320,6 +341,7 @@
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaRestApi.restApiName",
       "from-method:@aws-cdk/aws-apigateway.Stage",
       "resource-attribute:@aws-cdk/aws-apigateway.ApiKey.apiKeyId",
+      "resource-attribute:@aws-cdk/aws-apigateway.GatewayResponse.gatewayResponseId",
       "resource-attribute:@aws-cdk/aws-apigateway.RateLimitedApiKey.apiKeyId"
     ]
   },

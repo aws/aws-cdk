@@ -1,179 +1,239 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Lazy, Stack, Token } from '../lib';
 
-nodeunitShim({
-  'negative amount'(test: Test) {
-    test.throws(() => Duration.seconds(-1), /negative/);
+describe('duration', () => {
+  test('negative amount', () => {
+    expect(() => Duration.seconds(-1)).toThrow(/negative/);
+  });
 
-    test.done();
-  },
+  test('can stringify', () => {
+    expect(`${Duration.hours(1)}`).toEqual('Duration.hours(1)');
+  });
 
-  'unresolved amount'(test: Test) {
+  test('unresolved amount', () => {
     const stack = new Stack();
     const lazyDuration = Duration.seconds(Token.asNumber({ resolve: () => 1337 }));
-    test.equals(stack.resolve(lazyDuration.toSeconds()), 1337);
-    test.throws(
-      () => stack.resolve(lazyDuration.toMinutes()),
-      /Unable to perform time unit conversion on un-resolved token/,
+    expect(stack.resolve(lazyDuration.toSeconds())).toEqual(1337);
+    expect(
+      () => stack.resolve(lazyDuration.toMinutes())).toThrow(
+      /Duration must be specified as 'Duration.minutes\(\)' here/,
     );
+  });
 
-    test.done();
-  },
-
-  'Duration in seconds'(test: Test) {
+  test('Duration in seconds', () => {
     const duration = Duration.seconds(300);
 
-    test.equal(duration.toSeconds(), 300);
-    test.equal(duration.toMinutes(), 5);
-    test.throws(() => duration.toDays(), /'300 seconds' cannot be converted into a whole number of days/);
-    floatEqual(test, duration.toDays({ integral: false }), 300 / 86_400);
+    expect(duration.toSeconds()).toEqual(300);
+    expect(duration.toMinutes()).toEqual(5);
+    expect(() => duration.toDays()).toThrow(/'300 seconds' cannot be converted into a whole number of days/);
+    floatEqual(duration.toDays({ integral: false }), 300 / 86_400);
 
-    test.equal(Duration.seconds(60 * 60 * 24).toDays(), 1);
+    expect(Duration.seconds(60 * 60 * 24).toDays()).toEqual(1);
+  });
 
-    test.done();
-  },
-
-  'Duration in minutes'(test: Test) {
+  test('Duration in minutes', () => {
     const duration = Duration.minutes(5);
 
-    test.equal(duration.toSeconds(), 300);
-    test.equal(duration.toMinutes(), 5);
-    test.throws(() => duration.toDays(), /'5 minutes' cannot be converted into a whole number of days/);
-    floatEqual(test, duration.toDays({ integral: false }), 300 / 86_400);
+    expect(duration.toSeconds()).toEqual(300);
+    expect(duration.toMinutes()).toEqual(5);
+    expect(() => duration.toDays()).toThrow(/'5 minutes' cannot be converted into a whole number of days/);
+    floatEqual(duration.toDays({ integral: false }), 300 / 86_400);
 
-    test.equal(Duration.minutes(60 * 24).toDays(), 1);
+    expect(Duration.minutes(60 * 24).toDays()).toEqual(1);
+  });
 
-    test.done();
-  },
-
-  'Duration in hours'(test: Test) {
+  test('Duration in hours', () => {
     const duration = Duration.hours(5);
 
-    test.equal(duration.toSeconds(), 18_000);
-    test.equal(duration.toMinutes(), 300);
-    test.throws(() => duration.toDays(), /'5 hours' cannot be converted into a whole number of days/);
-    floatEqual(test, duration.toDays({ integral: false }), 5 / 24);
+    expect(duration.toSeconds()).toEqual(18_000);
+    expect(duration.toMinutes()).toEqual(300);
+    expect(() => duration.toDays()).toThrow(/'5 hours' cannot be converted into a whole number of days/);
+    floatEqual(duration.toDays({ integral: false }), 5 / 24);
 
-    test.equal(Duration.hours(24).toDays(), 1);
+    expect(Duration.hours(24).toDays()).toEqual(1);
+  });
 
-    test.done();
-  },
-
-  'seconds to milliseconds'(test: Test) {
+  test('seconds to milliseconds', () => {
     const duration = Duration.seconds(5);
 
-    test.equal(duration.toMilliseconds(), 5_000);
+    expect(duration.toMilliseconds()).toEqual(5_000);
+  });
 
-    test.done();
-  },
-
-  'Duration in days'(test: Test) {
+  test('Duration in days', () => {
     const duration = Duration.days(1);
 
-    test.equal(duration.toSeconds(), 86_400);
-    test.equal(duration.toMinutes(), 1_440);
-    test.equal(duration.toDays(), 1);
+    expect(duration.toSeconds()).toEqual(86_400);
+    expect(duration.toMinutes()).toEqual(1_440);
+    expect(duration.toDays()).toEqual(1);
+  });
 
-    test.done();
-  },
+  testDeprecated('toISOString', () => {
+    expect(Duration.millis(0).toISOString()).toEqual('PT0S');
+    expect(Duration.seconds(0).toISOString()).toEqual('PT0S');
+    expect(Duration.minutes(0).toISOString()).toEqual('PT0S');
+    expect(Duration.hours(0).toISOString()).toEqual('PT0S');
+    expect(Duration.days(0).toISOString()).toEqual('PT0S');
 
-  'toISOString'(test: Test) {
-    test.equal(Duration.millis(0).toISOString(), 'PT0S');
-    test.equal(Duration.seconds(0).toISOString(), 'PT0S');
-    test.equal(Duration.minutes(0).toISOString(), 'PT0S');
-    test.equal(Duration.hours(0).toISOString(), 'PT0S');
-    test.equal(Duration.days(0).toISOString(), 'PT0S');
+    expect(Duration.millis(5).toISOString()).toEqual('PT0.005S');
+    expect(Duration.seconds(5).toISOString()).toEqual('PT5S');
+    expect(Duration.minutes(5).toISOString()).toEqual('PT5M');
+    expect(Duration.hours(5).toISOString()).toEqual('PT5H');
+    expect(Duration.days(5).toISOString()).toEqual('P5D');
 
-    test.equal(Duration.millis(5).toISOString(), 'PT0.005S');
-    test.equal(Duration.seconds(5).toISOString(), 'PT5S');
-    test.equal(Duration.minutes(5).toISOString(), 'PT5M');
-    test.equal(Duration.hours(5).toISOString(), 'PT5H');
-    test.equal(Duration.days(5).toISOString(), 'P5D');
+    expect(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toISOString()).toEqual('P1DT1H1M1S');
+  });
 
-    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toISOString(), 'P1DT1H1M1S');
+  test('toIsoString', () => {
+    expect(Duration.millis(0).toIsoString()).toEqual('PT0S');
+    expect(Duration.seconds(0).toIsoString()).toEqual('PT0S');
+    expect(Duration.minutes(0).toIsoString()).toEqual('PT0S');
+    expect(Duration.hours(0).toIsoString()).toEqual('PT0S');
+    expect(Duration.days(0).toIsoString()).toEqual('PT0S');
 
-    test.done();
-  },
+    expect(Duration.millis(5).toIsoString()).toEqual('PT0.005S');
+    expect(Duration.seconds(5).toIsoString()).toEqual('PT5S');
+    expect(Duration.minutes(5).toIsoString()).toEqual('PT5M');
+    expect(Duration.hours(5).toIsoString()).toEqual('PT5H');
+    expect(Duration.days(5).toIsoString()).toEqual('P5D');
 
-  'toIsoString'(test: Test) {
-    test.equal(Duration.millis(0).toIsoString(), 'PT0S');
-    test.equal(Duration.seconds(0).toIsoString(), 'PT0S');
-    test.equal(Duration.minutes(0).toIsoString(), 'PT0S');
-    test.equal(Duration.hours(0).toIsoString(), 'PT0S');
-    test.equal(Duration.days(0).toIsoString(), 'PT0S');
+    expect(Duration.seconds(65).toIsoString()).toEqual('PT1M5S');
+    expect(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString()).toEqual('P1DT1H1M1S');
+  });
 
-    test.equal(Duration.millis(5).toIsoString(), 'PT0.005S');
-    test.equal(Duration.seconds(5).toIsoString(), 'PT5S');
-    test.equal(Duration.minutes(5).toIsoString(), 'PT5M');
-    test.equal(Duration.hours(5).toIsoString(), 'PT5H');
-    test.equal(Duration.days(5).toIsoString(), 'P5D');
+  test('parse', () => {
+    expect(Duration.parse('PT0S').toSeconds()).toEqual(0);
+    expect(Duration.parse('PT0M').toSeconds()).toEqual(0);
+    expect(Duration.parse('PT0H').toSeconds()).toEqual(0);
+    expect(Duration.parse('P0D').toSeconds()).toEqual(0);
 
-    test.equal(Duration.seconds(65).toIsoString(), 'PT1M5S');
-    test.equal(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString(), 'P1DT1H1M1S');
+    expect(Duration.parse('PT5S').toSeconds()).toEqual(5);
+    expect(Duration.parse('PT5M').toSeconds()).toEqual(300);
+    expect(Duration.parse('PT5H').toSeconds()).toEqual(18_000);
+    expect(Duration.parse('P5D').toSeconds()).toEqual(432_000);
 
-    test.done();
-  },
+    expect(Duration.parse('P1DT1H1M1S').toSeconds()).toEqual(1 + 60 * (1 + 60 * (1 + 24)));
+  });
 
-  'parse'(test: Test) {
-    test.equal(Duration.parse('PT0S').toSeconds(), 0);
-    test.equal(Duration.parse('PT0M').toSeconds(), 0);
-    test.equal(Duration.parse('PT0H').toSeconds(), 0);
-    test.equal(Duration.parse('P0D').toSeconds(), 0);
-
-    test.equal(Duration.parse('PT5S').toSeconds(), 5);
-    test.equal(Duration.parse('PT5M').toSeconds(), 300);
-    test.equal(Duration.parse('PT5H').toSeconds(), 18_000);
-    test.equal(Duration.parse('P5D').toSeconds(), 432_000);
-
-    test.equal(Duration.parse('P1DT1H1M1S').toSeconds(), 1 + 60 * (1 + 60 * (1 + 24)));
-
-    test.done();
-  },
-
-  'reject illegal parses'(test: Test) {
+  test('reject illegal parses', () => {
     const err = 'Not a valid ISO duration';
-    test.throws(() => {
+    expect(() => {
       Duration.parse('PT1D');
-    }, err);
+    }).toThrow(err);
 
-    test.throws(() => {
+    expect(() => {
       Duration.parse('P5S');
-    }, err);
+    }).toThrow(err);
+  });
 
-    test.done();
-  },
+  test('to human string', () => {
+    expect(Duration.minutes(0).toHumanString()).toEqual('0 minutes');
+    expect(Duration.minutes(Lazy.number({ produce: () => 5 })).toHumanString()).toEqual('<token> minutes');
 
-  'to human string'(test: Test) {
-    test.equal(Duration.minutes(0).toHumanString(), '0 minutes');
-    test.equal(Duration.minutes(Lazy.number({ produce: () => 5 })).toHumanString(), '<token> minutes');
+    expect(Duration.days(1).toHumanString()).toEqual('1 day');
+    expect(Duration.hours(1).toHumanString()).toEqual('1 hour');
+    expect(Duration.minutes(1).toHumanString()).toEqual('1 minute');
+    expect(Duration.seconds(1).toHumanString()).toEqual('1 second');
+    expect(Duration.millis(1).toHumanString()).toEqual('1 milli');
 
-    test.equal(Duration.minutes(10).toHumanString(), '10 minutes');
-    test.equal(Duration.minutes(1).toHumanString(), '1 minute');
+    expect(Duration.minutes(10).toHumanString()).toEqual('10 minutes');
 
-    test.equal(Duration.minutes(62).toHumanString(), '1 hour 2 minutes');
+    expect(Duration.minutes(62).toHumanString()).toEqual('1 hour 2 minutes');
 
-    test.equal(Duration.seconds(3666).toHumanString(), '1 hour 1 minute');
+    expect(Duration.seconds(3666).toHumanString()).toEqual('1 hour 1 minute');
 
-    test.equal(Duration.millis(3000).toHumanString(), '3 seconds');
-    test.equal(Duration.millis(3666).toHumanString(), '3 seconds 666 millis');
+    expect(Duration.millis(3000).toHumanString()).toEqual('3 seconds');
+    expect(Duration.millis(3666).toHumanString()).toEqual('3 seconds 666 millis');
 
-    test.equal(Duration.millis(3.6).toHumanString(), '3.6 millis');
+    expect(Duration.millis(3.6).toHumanString()).toEqual('3.6 millis');
+  });
 
-    test.done();
-  },
+  test('add two durations', () => {
+    expect(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(90).toSeconds());
+    expect(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }))
+      .toEqual(Duration.seconds(90).toMinutes({ integral: false }));
+  });
 
-  'add two durations'(test: Test) {
-    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds(), Duration.seconds(90).toSeconds());
-    test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }), Duration.seconds(90).toMinutes({ integral: false }));
+  test('subtract two durations', () => {
+    expect(Duration.minutes(1).minus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(30).toSeconds());
+    expect(Duration.minutes(1).minus(Duration.seconds(30)).toMinutes({ integral: false }))
+      .toEqual(Duration.seconds(30).toMinutes({ integral: false }));
+  });
 
-    test.done();
-  },
+  test('get unit label from duration', () => {
+    expect(Duration.minutes(Lazy.number({ produce: () => 10 })).unitLabel()).toEqual('minutes');
+    expect(Duration.minutes(62).unitLabel()).toEqual('minutes');
+    expect(Duration.seconds(10).unitLabel()).toEqual('seconds');
+    expect(Duration.millis(1).unitLabel()).toEqual('millis');
+    expect(Duration.hours(1000).unitLabel()).toEqual('hours');
+    expect(Duration.days(2).unitLabel()).toEqual('days');
+  });
+
+  test('format number token to number', () => {
+    const stack = new Stack();
+    const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 10 }));
+    expect(stack.resolve(lazyDuration.formatTokenToNumber())).toEqual('10 minutes');
+    expect(Duration.hours(10).formatTokenToNumber()).toEqual('10 hours');
+    expect(Duration.days(5).formatTokenToNumber()).toEqual('5 days');
+  });
+
+  test('duration is unresolved', () => {
+    const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 10 }));
+    expect(lazyDuration.isUnresolved()).toEqual(true);
+    expect(Duration.hours(10).isUnresolved()).toEqual(false);
+  });
 });
 
-function floatEqual(test: Test, actual: number, expected: number) {
-  test.ok(
+describe('integral flag checks', () => {
+  test('convert fractional minutes to minutes', () => {
+    expect(() => {
+      Duration.minutes(0.5).toMinutes();
+    }).toThrow(/must be a whole number of/);
+  });
+
+  test('convert fractional minutes to minutes - integral: false', () => {
+    expect(Duration.minutes(5.5).toMinutes({ integral: false })).toEqual(5.5);
+  });
+
+  test('convert whole minutes to minutes', () => {
+    expect(Duration.minutes(5).toMinutes()).toEqual(5);
+  });
+
+  test('convert fractional minutes to fractional seconds', () => {
+    expect(() => {
+      Duration.minutes(9/8).toSeconds();
+    }).toThrow(/cannot be converted into a whole number of/);
+  });
+
+  test('convert fractional minutes to fractional seconds - integral: false', () => {
+    expect(Duration.minutes(9/8).toSeconds({ integral: false })).toEqual(67.5);
+  });
+
+  test('convert fractional minutes to whole seconds', () => {
+    expect(Duration.minutes(5/4).toSeconds({ integral: false })).toEqual(75);
+  });
+
+  test('convert whole minutes to whole seconds', () => {
+    expect(Duration.minutes(10).toSeconds({ integral: false })).toEqual(600);
+  });
+
+  test('convert seconds to fractional minutes', () => {
+    expect(() => {
+      Duration.seconds(45).toMinutes();
+    }).toThrow(/cannot be converted into a whole number of/);
+  });
+
+  test('convert seconds to fractional minutes - integral: false', () => {
+    expect(Duration.seconds(45).toMinutes({ integral: false })).toEqual(0.75);
+  });
+
+  test('convert seconds to whole minutes', () => {
+    expect(Duration.seconds(120).toMinutes()).toEqual(2);
+  });
+});
+
+function floatEqual(actual: number, expected: number) {
+  expect(
     // Floats are subject to rounding errors up to Number.ESPILON
     actual >= expected - Number.EPSILON && actual <= expected + Number.EPSILON,
-    `${actual} == ${expected}`,
-  );
+  ).toEqual(true);
 }

@@ -1,22 +1,113 @@
+import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
+import { HeaderMatch } from './header-match';
+import { HttpRouteMethod } from './http-route-method';
+import { HttpGatewayRoutePathMatch } from './http-route-path-match';
+import { validateGrpcMatchArrayLength, validateGrpcGatewayRouteMatch } from './private/utils';
+import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+/**
+ * Configuration for gateway route host name match.
+ */
+export interface GatewayRouteHostnameMatchConfig {
+  /**
+   * GatewayRoute CFN configuration for host name match.
+   */
+  readonly hostnameMatch: CfnGatewayRoute.GatewayRouteHostnameMatchProperty;
+}
 
 /**
- * The criterion for determining a request match for this GatewayRoute
+ * Used to generate host name matching methods.
+ */
+export abstract class GatewayRouteHostnameMatch {
+  /**
+   * The value of the host name must match the specified value exactly.
+   *
+   * @param name The exact host name to match on
+   */
+  public static exactly(name: string): GatewayRouteHostnameMatch {
+    return new GatewayRouteHostnameMatchImpl({ exact: name });
+  }
+
+  /**
+   * The value of the host name with the given name must end with the specified characters.
+   *
+   * @param suffix The specified ending characters of the host name to match on
+   */
+  public static endsWith(suffix: string): GatewayRouteHostnameMatch {
+    return new GatewayRouteHostnameMatchImpl({ suffix });
+  }
+
+  /**
+   * Returns the gateway route host name match configuration.
+   */
+  public abstract bind(scope: Construct): GatewayRouteHostnameMatchConfig;
+}
+
+class GatewayRouteHostnameMatchImpl extends GatewayRouteHostnameMatch {
+  constructor(
+    private readonly matchProperty: CfnGatewayRoute.GatewayRouteHostnameMatchProperty,
+  ) {
+    super();
+  }
+
+  bind(_scope: Construct): GatewayRouteHostnameMatchConfig {
+    return {
+      hostnameMatch: this.matchProperty,
+    };
+  }
+}
+
+/**
+ * The criterion for determining a request match for this GatewayRoute.
  */
 export interface HttpGatewayRouteMatch {
   /**
-   * Specifies the path to match requests with.
-   * This parameter must always start with /, which by itself matches all requests to the virtual service name.
-   * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
-   * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   * Specify how to match requests based on the 'path' part of their URL.
+   *
+   * @default - matches requests with any path
    */
-  readonly prefixPath: string;
+  readonly path?: HttpGatewayRoutePathMatch;
+
+  /**
+   * Specifies the client request headers to match on. All specified headers
+   * must match for the gateway route to match.
+   *
+   * @default - do not match on headers
+   */
+  readonly headers?: HeaderMatch[];
+
+  /**
+   * The gateway route host name to be matched on.
+   *
+   * @default - do not match on host name
+   */
+  readonly hostname?: GatewayRouteHostnameMatch;
+
+  /**
+   * The method to match on.
+   *
+   * @default - do not match on method
+   */
+  readonly method?: HttpRouteMethod;
+
+  /**
+   * The query parameters to match on.
+   * All specified query parameters must match for the route to match.
+   *
+   * @default - do not match on query parameters
+   */
+  readonly queryParameters?: QueryParameterMatch[];
+
+  /**
+   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When `false`, retains the original hostname from the request.
+   *
+   * @default true
+   */
+  readonly rewriteRequestHostname?: boolean;
 }
 
 /**
@@ -24,19 +115,59 @@ export interface HttpGatewayRouteMatch {
  */
 export interface GrpcGatewayRouteMatch {
   /**
-   * The fully qualified domain name for the service to match from the request
+   * Create service name based gRPC gateway route match.
+   *
+   * @default - no matching on service name
    */
-  readonly serviceName: string;
+  readonly serviceName?: string;
+
+  /**
+   * Create host name based gRPC gateway route match.
+   *
+   * @default - no matching on host name
+   */
+  readonly hostname?: GatewayRouteHostnameMatch;
+
+  /**
+   * Create metadata based gRPC gateway route match.
+   * All specified metadata must match for the route to match.
+   *
+   * @default - no matching on metadata
+   */
+  readonly metadata?: HeaderMatch[];
+
+  /**
+   * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
+   * When `false`, retains the original hostname from the request.
+   *
+   * @default true
+   */
+  readonly rewriteRequestHostname?: boolean;
+}
+
+/**
+ * Base options for all gateway route specs.
+ */
+export interface CommonGatewayRouteSpecOptions {
+  /**
+   * The priority for the gateway route. When a Virtual Gateway has multiple gateway routes, gateway route match
+   * is performed in the order of specified value, where 0 is the highest priority,
+   * and first matched gateway route is selected.
+   *
+   * @default - no particular priority
+   */
+  readonly priority?: number;
 }
 
 /**
  * Properties specific for HTTP Based GatewayRoutes
  */
-export interface HttpGatewayRouteSpecOptions {
+export interface HttpGatewayRouteSpecOptions extends CommonGatewayRouteSpecOptions {
   /**
-   * The criterion for determining a request match for this GatewayRoute
+   * The criterion for determining a request match for this GatewayRoute.
+   * When path match is defined, this may optionally determine the path rewrite configuration.
    *
-   * @default - matches on '/'
+   * @default - matches any path and automatically rewrites the path to '/'
    */
   readonly match?: HttpGatewayRouteMatch;
 
@@ -47,9 +178,9 @@ export interface HttpGatewayRouteSpecOptions {
 }
 
 /**
- * Properties specific for a GRPC GatewayRoute
+ * Properties specific for a gRPC GatewayRoute
  */
-export interface GrpcGatewayRouteSpecOptions {
+export interface GrpcGatewayRouteSpecOptions extends CommonGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
@@ -85,6 +216,15 @@ export interface GatewayRouteSpecConfig {
    * @default - no grpc spec
    */
   readonly grpcSpecConfig?: CfnGatewayRoute.GrpcGatewayRouteProperty;
+
+  /**
+   * The priority for the gateway route. When a Virtual Gateway has multiple gateway routes, gateway route match
+   * is performed in the order of specified value, where 0 is the highest priority,
+   * and first matched gateway route is selected.
+   *
+   * @default - no particular priority
+   */
+  readonly priority?: number;
 }
 
 /**
@@ -110,7 +250,7 @@ export abstract class GatewayRouteSpec {
   }
 
   /**
-   * Creates an GRPC Based GatewayRoute
+   * Creates an gRPC Based GatewayRoute
    *
    * @param options - no grpc gateway route
    */
@@ -126,11 +266,6 @@ export abstract class GatewayRouteSpec {
 }
 
 class HttpGatewayRouteSpec extends GatewayRouteSpec {
-  /**
-   * The criterion for determining a request match for this GatewayRoute.
-   *
-   * @default - matches on '/'
-   */
   readonly match?: HttpGatewayRouteMatch;
 
   /**
@@ -142,22 +277,31 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    * Type of route you are creating
    */
   readonly routeType: Protocol;
+  readonly priority?: number;
 
   constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
     this.routeTarget = options.routeTarget;
     this.routeType = protocol;
     this.match = options.match;
+    this.priority = options.priority;
   }
 
-  public bind(_scope: Construct): GatewayRouteSpecConfig {
-    const prefixPath = this.match ? this.match.prefixPath : '/';
-    if (prefixPath[0] != '/') {
-      throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
-    }
+  public bind(scope: Construct): GatewayRouteSpecConfig {
+    const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(scope);
+    const rewriteRequestHostname = this.match?.rewriteRequestHostname;
+
+    const prefixPathRewrite = pathMatchConfig.prefixPathRewrite;
+    const wholePathRewrite = pathMatchConfig.wholePathRewrite;
+
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
-        prefix: prefixPath,
+        prefix: pathMatchConfig.prefixPathMatch,
+        path: pathMatchConfig.wholePathMatch,
+        hostname: this.match?.hostname?.bind(scope).hostnameMatch,
+        method: this.match?.method,
+        headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
+        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
       },
       action: {
         target: {
@@ -165,9 +309,21 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
+        rewrite: rewriteRequestHostname !== undefined || prefixPathRewrite || wholePathRewrite
+          ? {
+            hostname: rewriteRequestHostname === undefined
+              ? undefined
+              : {
+                defaultTargetHostname: rewriteRequestHostname? 'ENABLED' : 'DISABLED',
+              },
+            prefix: prefixPathRewrite,
+            path: wholePathRewrite,
+          }
+          : undefined,
       },
     };
     return {
+      priority: this.priority,
       httpSpecConfig: this.routeType === Protocol.HTTP ? httpConfig : undefined,
       http2SpecConfig: this.routeType === Protocol.HTTP2 ? httpConfig : undefined,
     };
@@ -175,38 +331,50 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
 }
 
 class GrpcGatewayRouteSpec extends GatewayRouteSpec {
-  /**
-   * The criterion for determining a request match for this GatewayRoute.
-   *
-   * @default - no default
-   */
   readonly match: GrpcGatewayRouteMatch;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
+  readonly priority?: number;
 
   constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
     this.match = options.match;
     this.routeTarget = options.routeTarget;
+    this.priority = options.priority;
   }
 
-  public bind(_scope: Construct): GatewayRouteSpecConfig {
+  public bind(scope: Construct): GatewayRouteSpecConfig {
+    const metadataMatch = this.match.metadata;
+
+    validateGrpcGatewayRouteMatch(this.match);
+    validateGrpcMatchArrayLength(metadataMatch);
+
     return {
       grpcSpecConfig: {
+        match: {
+          serviceName: this.match.serviceName,
+          hostname: this.match.hostname?.bind(scope).hostnameMatch,
+          metadata: metadataMatch?.map(metadata => metadata.bind(scope).headerMatch),
+        },
         action: {
           target: {
             virtualService: {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
           },
-        },
-        match: {
-          serviceName: this.match.serviceName,
+          rewrite: this.match.rewriteRequestHostname === undefined
+            ? undefined
+            : {
+              hostname: {
+                defaultTargetHostname: this.match.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
+              },
+            },
         },
       },
+      priority: this.priority,
     };
   }
 }

@@ -1,26 +1,32 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { arrayWith, ResourcePart, stringLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ec2 from '../lib';
+import { stringLike } from './util';
 
 let app: App;
 let stack: Stack;
 let instanceRole: iam.Role;
 let resource: CfnResource;
 let linuxUserData: ec2.UserData;
+let signalResource: CfnResource;
 
 function resetState() {
   resetStateWithSynthesizer();
 }
 
 function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
-  app = new App();
+  app = new App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
   stack = new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
     synthesizer: customSynthesizer,
@@ -29,6 +35,9 @@ function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
     assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   });
   resource = new CfnResource(stack, 'Resource', {
+    type: 'CDK::Test::Resource',
+  });
+  signalResource = new CfnResource(stack, 'SignalResource', {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
@@ -135,11 +144,7 @@ describe('userdata', () => {
     );
   });
 
-  test('linux userdata contains right commands', () => {
-    // WHEN
-    simpleInit.attach(resource, linuxOptions());
-
-    // THEN
+  function linuxUserDataTest(signalLogicalId: string) {
     const lines = linuxUserData.render().split('\n');
     expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
     expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
@@ -147,7 +152,71 @@ describe('userdata', () => {
     expectLine(lines, cmdArg('cfn-init', '-c default'));
     expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
     expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${signalLogicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $?'));
+    expectLine(lines, cmdArg('cat', 'cfn-init.log'));
+    expectLine(lines, /fingerprint/);
+  }
+
+  function windowsUserDataTest(
+    windowsUserData: ec2.UserData,
+    signalLogicalId: string,
+  ) {
+    const lines = windowsUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${signalLogicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $LASTEXITCODE'));
+    expectLine(lines, cmdArg('type', 'cfn-init.log'));
+    expectLine(lines, /fingerprint/);
+  }
+
+  test('linux userdata contains right commands', () => {
+    // WHEN
+    simpleInit.attach(resource, linuxOptions());
+
+    // THEN
+    linuxUserDataTest(resource.logicalId);
+  });
+
+  test('linux userdata contains right commands with different signal resource', () => {
+    // WHEN
+    simpleInit.attach(resource, {
+      ...linuxOptions(),
+      signalResource,
+    });
+
+    // THEN
+    linuxUserDataTest(signalResource.logicalId);
+  });
+
+  test('linux userdata contains right commands when url and role included', () => {
+    // WHEN
+    simpleInit.attach(resource, {
+      platform: ec2.OperatingSystemType.LINUX,
+      instanceRole,
+      includeUrl: true,
+      includeRole: true,
+      userData: linuxUserData,
+    });
+
+    // THEN
+    const lines = linuxUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole.roleName}`));
+    expectLine(lines, cmdArg('cfn-init', `--url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
     expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole.roleName}`));
+    expectLine(lines, cmdArg('cfn-init', `--url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`));
     expectLine(lines, cmdArg('cfn-signal', '-e $?'));
     expectLine(lines, cmdArg('cat', 'cfn-init.log'));
     expectLine(lines, /fingerprint/);
@@ -164,17 +233,22 @@ describe('userdata', () => {
     });
 
     // THEN
-    const lines = windowsUserData.render().split('\n');
-    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg('cfn-init', '-c default'));
-    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg('cfn-signal', '-e $LASTEXITCODE'));
-    expectLine(lines, cmdArg('type', 'cfn-init.log'));
-    expectLine(lines, /fingerprint/);
+    windowsUserDataTest(windowsUserData, resource.logicalId);
+  });
+
+  test('Windows userdata contains right commands with different signal resource', () => {
+    // WHEN
+    const windowsUserData = ec2.UserData.forWindows();
+
+    simpleInit.attach(resource, {
+      platform: ec2.OperatingSystemType.WINDOWS,
+      instanceRole,
+      userData: windowsUserData,
+      signalResource,
+    });
+
+    // THEN
+    windowsUserDataTest(windowsUserData, signalResource.logicalId);
   });
 
   test('ignoreFailures disables result code reporting', () => {
@@ -236,7 +310,7 @@ const ASSET_STATEMENT = {
         'arn:',
         { Ref: 'AWS::Partition' },
         ':s3:::',
-        { Ref: stringLike('AssetParameter*S3Bucket*') },
+        { Ref: stringLike(/AssetParameter.*S3Bucket.*/) },
       ]],
     },
     {
@@ -244,7 +318,7 @@ const ASSET_STATEMENT = {
         'arn:',
         { Ref: 'AWS::Partition' },
         ':s3:::',
-        { Ref: stringLike('AssetParameter*S3Bucket*') },
+        { Ref: stringLike(/AssetParameter.*S3Bucket.*/) },
         '/*',
       ]],
     },
@@ -269,9 +343,9 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(ASSET_STATEMENT),
+        Statement: Match.arrayWith([ASSET_STATEMENT]),
         Version: '2012-10-17',
       },
     });
@@ -285,10 +359,10 @@ describe('assets n buckets', () => {
                   'https://s3.testregion.',
                   { Ref: 'AWS::URLSuffix' },
                   '/',
-                  { Ref: stringLike('AssetParameters*') },
+                  { Ref: stringLike(/AssetParameters.*/) },
                   '/',
-                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
-                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
+                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
                 ]],
               },
             },
@@ -300,7 +374,7 @@ describe('assets n buckets', () => {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
           ],
         },
       },
@@ -323,9 +397,9 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(ASSET_STATEMENT),
+        Statement: Match.arrayWith([ASSET_STATEMENT]),
         Version: '2012-10-17',
       },
     });
@@ -338,10 +412,10 @@ describe('assets n buckets', () => {
                 'https://s3.testregion.',
                 { Ref: 'AWS::URLSuffix' },
                 '/',
-                { Ref: stringLike('AssetParameters*') },
+                { Ref: stringLike(/AssetParameters.*/) },
                 '/',
-                { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
-                { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
+                { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
               ]],
             },
           },
@@ -352,7 +426,7 @@ describe('assets n buckets', () => {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
           ],
         },
       },
@@ -369,16 +443,16 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith({
+        Statement: Match.arrayWith([{
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.js']] },
           ],
-        }),
+        }]),
         Version: '2012-10-17',
       },
     });
@@ -412,16 +486,16 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith({
+        Statement: Match.arrayWith([{
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.zip']] },
           ],
-        }),
+        }]),
         Version: '2012-10-17',
       },
     });
@@ -459,9 +533,9 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: [
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
-          ],
+          buckets: Match.arrayWith([
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
+          ]),
         },
       },
     });
@@ -484,10 +558,10 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: arrayWith(
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
+          buckets: Match.arrayWith([
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
             'my-bucket',
-          ),
+          ]),
         },
       },
     });
@@ -563,9 +637,9 @@ function linuxOptions() {
 }
 
 function expectMetadataLike(pattern: any) {
-  expect(stack).toHaveResourceLike('CDK::Test::Resource', {
+  Template.fromStack(stack).hasResource('CDK::Test::Resource', {
     Metadata: pattern,
-  }, ResourcePart.CompleteDefinition);
+  });
 }
 
 function expectLine(lines: string[], re: RegExp) {
@@ -598,7 +672,7 @@ class SingletonLocationSythesizer extends DefaultStackSynthesizer {
   public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
     const httpUrl = 'https://MyBucket.s3.amazonaws.com/MyAsset';
     return {
-      bucketName: 'MyAssetBucket',
+      bucketName: 'myassetbucket',
       objectKey: 'MyAssetFile',
       httpUrl,
       s3ObjectUrl: httpUrl,

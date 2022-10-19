@@ -1,4 +1,4 @@
-import { Construct } from './construct-compat';
+import { Construct } from 'constructs';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -137,7 +137,7 @@ export class ValidationResult {
     if (!this.isSuccess) {
       let message = this.errorTree();
       // The first letter will be lowercase, so uppercase it for a nicer error message
-      message = message.substr(0, 1).toUpperCase() + message.substr(1);
+      message = message.slice(0, 1).toUpperCase() + message.slice(1);
       throw new CfnSynthesisError(message);
     }
   }
@@ -205,7 +205,7 @@ export type Validator = (x: any) => ValidationResult;
  */
 export function canInspect(x: any) {
   // Note: using weak equality on purpose, we also want to catch undefined
-  return (x != null && !isCloudFormationIntrinsic(x));
+  return (x != null && !isCloudFormationIntrinsic(x) && !isCloudFormationDynamicReference(x));
 }
 
 // CloudFormation validators for primitive types
@@ -382,7 +382,16 @@ function isCloudFormationIntrinsic(x: any) {
   const keys = Object.keys(x);
   if (keys.length !== 1) { return false; }
 
-  return keys[0] === 'Ref' || keys[0].substr(0, 4) === 'Fn::';
+  return keys[0] === 'Ref' || keys[0].slice(0, 4) === 'Fn::';
+}
+
+/**
+ * Check whether the indicated value is a CloudFormation dynamic reference.
+ *
+ * CloudFormation dynamic references take the format: '{{resolve:service-name:reference-key}}'
+ */
+function isCloudFormationDynamicReference(x: any) {
+  return (typeof x === 'string' && x.startsWith('{{resolve:') && x.endsWith('}}'));
 }
 
 // Cannot be public because JSII gets confused about es5.d.ts

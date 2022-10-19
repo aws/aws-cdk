@@ -14,9 +14,7 @@ const listener = lb.addListener('listener', { port: 80 });
 listener.addTargets('target', { port: 80 });
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpNlbIntegration({
-    listener,
-  }),
+  defaultIntegration: new HttpNlbIntegration('DefaultIntegration', listener),
 });
 
 new CfnOutput(stack, 'Endpoint', {

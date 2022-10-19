@@ -3,7 +3,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct as CompatConstruct, ContextProvider, Fn, IResource, Resource, Stack, Token,
+  ContextProvider, Fn, IResource, Resource, Stack, Token,
+  Tokenization,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
@@ -134,8 +135,16 @@ export interface StringParameterProps extends ParameterOptions {
    * The type of the string parameter
    *
    * @default ParameterType.STRING
+   * @deprecated - type will always be 'String'
    */
   readonly type?: ParameterType;
+
+  /**
+   * The data type of the parameter, such as `text` or `aws:ec2:image`.
+   *
+   * @default ParameterDataType.TEXT
+   */
+  readonly dataType?: ParameterDataType;
 }
 
 /**
@@ -192,7 +201,74 @@ abstract class ParameterBase extends Resource implements IParameter {
 }
 
 /**
+ * The type of CFN SSM Parameter
+ *
+ * Using specific types can be helpful in catching invalid values
+ * at the start of creating or updating a stack. CloudFormation validates
+ * the values against existing values in the account.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types
+ */
+export enum ParameterValueType {
+  /**
+   * String
+   */
+  STRING = 'String',
+
+  /**
+   * An Availability Zone, such as us-west-2a.
+   */
+  AWS_EC2_AVAILABILITYZONE_NAME = 'AWS::EC2::AvailabilityZone::Name',
+
+  /**
+   * An Amazon EC2 image ID, such as ami-0ff8a91507f77f867.
+   */
+  AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
+
+  /**
+   * An Amazon EC2 instance ID, such as i-1e731a32.
+   */
+  AWS_EC2_INSTANCE_ID = 'AWS::EC2::Instance::Id',
+
+  /**
+   * An Amazon EC2 key pair name.
+   */
+  AWS_EC2_KEYPAIR_KEYNAME = 'AWS::EC2::KeyPair::KeyName',
+
+  /**
+   * An EC2-Classic or default VPC security group name, such as my-sg-abc.
+   */
+  AWS_EC2_SECURITYGROUP_GROUPNAME = 'AWS::EC2::SecurityGroup::GroupName',
+
+  /**
+   * A security group ID, such as sg-a123fd85.
+   */
+  AWS_EC2_SECURITYGROUP_ID = 'AWS::EC2::SecurityGroup::Id',
+
+  /**
+   * A subnet ID, such as subnet-123a351e.
+   */
+  AWS_EC2_SUBNET_ID = 'AWS::EC2::Subnet::Id',
+
+  /**
+   * An Amazon EBS volume ID, such as vol-3cdd3f56.
+   */
+  AWS_EC2_VOLUME_ID = 'AWS::EC2::Volume::Id',
+
+  /**
+   * A VPC ID, such as vpc-a123baa3.
+   */
+  AWS_EC2_VPC_ID = 'AWS::EC2::VPC::Id',
+
+  /**
+   * An Amazon Route 53 hosted zone ID, such as Z23YXV4OVPL04A.
+   */
+  AWS_ROUTE53_HOSTEDZONE_ID = 'AWS::Route53::HostedZone::Id',
+}
+
+/**
  * SSM parameter type
+ * @deprecated these types are no longer used
  */
 export enum ParameterType {
   /**
@@ -201,7 +277,9 @@ export enum ParameterType {
   STRING = 'String',
   /**
    * Secure String
+   *
    * Parameter Store uses an AWS Key Management Service (KMS) customer master key (CMK) to encrypt the parameter value.
+   * Parameters of type SecureString cannot be created directly from a CDK application.
    */
   SECURE_STRING = 'SecureString',
   /**
@@ -212,6 +290,20 @@ export enum ParameterType {
    * An Amazon EC2 image ID, such as ami-0ff8a91507f77f867
    */
   AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
+}
+
+/**
+ * SSM parameter data type
+ */
+export enum ParameterDataType {
+  /**
+   * Text
+   */
+  TEXT = 'text',
+  /**
+   * Aws Ec2 Image
+   */
+  AWS_EC2_IMAGE = 'aws:ec2:image',
 }
 
 /**
@@ -278,8 +370,55 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
    * The type of the string parameter
    *
    * @default ParameterType.STRING
+   * @deprecated - use valueType instead
    */
   readonly type?: ParameterType;
+
+  /**
+   * The type of the string parameter value
+   *
+   * Using specific types can be helpful in catching invalid values
+   * at the start of creating or updating a stack. CloudFormation validates
+   * the values against existing values in the account.
+   *
+   * Note - if you want to allow values from different AWS accounts, use
+   * ParameterValueType.STRING
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types
+   *
+   * @default ParameterValueType.STRING
+   */
+  readonly valueType?: ParameterValueType;
+}
+
+/**
+ * Attributes for parameters of string list type.
+ *
+ * @see ParameterType
+ */
+export interface ListParameterAttributes extends CommonStringParameterAttributes {
+  /**
+   * The version number of the value you wish to retrieve.
+   *
+   * @default The latest version will be retrieved.
+   */
+  readonly version?: number;
+
+  /**
+   * The type of the string list parameter value.
+   *
+   * Using specific types can be helpful in catching invalid values
+   * at the start of creating or updating a stack. CloudFormation validates
+   * the values against existing values in the account.
+   *
+   * Note - if you want to allow values from different AWS accounts, use
+   * ParameterValueType.STRING
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types
+   *
+   * @default ParameterValueType.STRING
+   */
+  readonly elementType?: ParameterValueType;
 }
 
 /**
@@ -287,9 +426,11 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
  */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
-   * The version number of the value you wish to retrieve. This is required for secure strings.
+   * The version number of the value you wish to retrieve.
+   *
+   * @default - AWS CloudFormation uses the latest version of the parameter
    */
-  readonly version: number;
+  readonly version?: number;
 
   /**
    * The encryption key that is used to encrypt this parameter
@@ -303,6 +444,12 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
 /**
  * Creates a new String SSM Parameter.
  * @resource AWS::SSM::Parameter
+ *
+ * @example
+ * const ssmParameter = new ssm.StringParameter(this, 'mySsmParameter', {
+ *    parameterName: 'mySsmParameter',
+ *    stringValue: 'mySsmParameterValue',
+ * });
  */
 export class StringParameter extends ParameterBase implements IStringParameter {
 
@@ -320,17 +467,20 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     if (!attrs.parameterName) {
       throw new Error('parameterName cannot be an empty string');
     }
+    if (attrs.type && ![ParameterType.STRING, ParameterType.AWS_EC2_IMAGE_ID].includes(attrs.type)) {
+      throw new Error(`fromStringParameterAttributes does not support ${attrs.type}. Please use ParameterType.STRING or ParameterType.AWS_EC2_IMAGE_ID`);
+    }
 
-    const type = attrs.type || ParameterType.STRING;
+    const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
 
     const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
-      : new CfnParameter(scope as CompatConstruct, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString()
+      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
       public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
-      public readonly parameterType = type;
+      public readonly parameterType = ParameterType.STRING; // this is the type returned by CFN @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#aws-resource-ssm-parameter-return-values
       public readonly stringValue = stringValue;
     }
 
@@ -341,7 +491,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Imports a secure string parameter from the SSM parameter store.
    */
   public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${attrs.version}`).toString();
+    const version = attrs.version ? Tokenization.stringifyNumber(attrs.version) : '';
+    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${version}`).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -361,7 +512,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
    */
-  public static valueFromLookup(scope: CompatConstruct, parameterName: string): string {
+  public static valueFromLookup(scope: Construct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
@@ -378,7 +529,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
   public static valueForStringParameter(scope: Construct, parameterName: string, version?: number): string {
-    return StringParameter.valueForTypedStringParameter(scope, parameterName, ParameterType.STRING, version);
+    return StringParameter.valueForTypedStringParameterV2(scope, parameterName, ParameterValueType.STRING, version);
   }
 
   /**
@@ -388,7 +539,29 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param type The type of the SSM parameter.
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
+  public static valueForTypedStringParameterV2(scope: Construct, parameterName: string, type = ParameterValueType.STRING, version?: number): string {
+    const stack = Stack.of(scope);
+    const id = makeIdentityForImportedValue(parameterName);
+    const exists = stack.node.tryFindChild(id) as IStringParameter;
+
+    if (exists) { return exists.stringValue; }
+
+    return this.fromStringParameterAttributes(stack, id, { parameterName, version, valueType: type }).stringValue;
+  }
+
+  /**
+   * Returns a token that will resolve (during deployment) to the string value of an SSM string parameter.
+   * @param scope Some scope within a stack
+   * @param parameterName The name of the SSM parameter.
+   * @param type The type of the SSM parameter.
+   * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
+   * @deprecated - use valueForTypedStringParameterV2 instead
+   */
   public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = ParameterType.STRING, version?: number): string {
+    if (type === ParameterType.STRING_LIST) {
+      throw new Error('valueForTypedStringParameter does not support STRING_LIST, '
+        +'use valueForTypedListParameter instead');
+    }
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
@@ -403,6 +576,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param scope Some scope within a stack
    * @param parameterName The name of the SSM parameter
    * @param version The parameter version (required for secure strings)
+   * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version.
    */
   public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
     const stack = Stack.of(scope);
@@ -427,12 +601,14 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
-    if (this.physicalName.length > 2048) {
-      throw new Error('Name cannot be longer than 2048 characters.');
-    }
+    validateParameterName(this.physicalName);
 
     if (props.description && props.description?.length > 1024) {
       throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
+    if (props.type && props.type === ParameterType.AWS_EC2_IMAGE_ID) {
+      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
@@ -441,6 +617,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       name: this.physicalName,
       tier: props.tier,
       type: props.type || ParameterType.STRING,
+      dataType: props.dataType,
       value: props.stringValue,
     });
 
@@ -476,6 +653,49 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     return new Import(scope, id);
   }
 
+  /**
+   * Imports an external string list parameter with name and optional version.
+   */
+  public static fromListParameterAttributes(scope: Construct, id: string, attrs: ListParameterAttributes): IStringListParameter {
+    if (!attrs.parameterName) {
+      throw new Error('parameterName cannot be an empty string');
+    }
+
+    const type = attrs.elementType ?? ParameterValueType.STRING;
+    const valueType = `List<${type}>`;
+
+    const stringValue = attrs.version
+      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toStringList()
+      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${valueType}>`, default: attrs.parameterName }).valueAsList;
+
+    class Import extends ParameterBase {
+      public readonly parameterName = attrs.parameterName;
+      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
+      public readonly parameterType = valueType; // it doesn't really matter what this is since a CfnParameter can only be `String | StringList`
+      public readonly stringListValue = stringValue;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Returns a token that will resolve (during deployment) to the list value of an SSM StringList parameter.
+   * @param scope Some scope within a stack
+   * @param parameterName The name of the SSM parameter.
+   * @param type the type of the SSM list parameter
+   * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
+   */
+  public static valueForTypedListParameter(scope: Construct, parameterName: string, type = ParameterValueType.STRING, version?: number): string[] {
+    const stack = Stack.of(scope);
+    const id = makeIdentityForImportedValue(parameterName);
+    const exists = stack.node.tryFindChild(id) as IStringListParameter;
+
+    if (exists) { return exists.stringListValue; }
+
+    return this.fromListParameterAttributes(stack, id, { parameterName, elementType: type, version }).stringListValue;
+  }
+
+
   public readonly parameterArn: string;
   public readonly parameterName: string;
   public readonly parameterType: string;
@@ -494,9 +714,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
-    if (this.physicalName.length > 2048) {
-      throw new Error('Name cannot be longer than 2048 characters.');
-    }
+    validateParameterName(this.physicalName);
 
     if (props.description && props.description?.length > 1024) {
       throw new Error('Description cannot be longer than 1024 characters.');
@@ -542,4 +760,14 @@ function _assertValidValue(value: string, allowedPattern: string): void {
 
 function makeIdentityForImportedValue(parameterName: string) {
   return `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
+}
+
+function validateParameterName(parameterName: string) {
+  if (Token.isUnresolved(parameterName)) { return; }
+  if (parameterName.length > 2048) {
+    throw new Error('name cannot be longer than 2048 characters.');
+  }
+  if (!parameterName.match(/^[\/\w.-]+$/)) {
+    throw new Error(`name must only contain letters, numbers, and the following 4 symbols .-_/; got ${parameterName}`);
+  }
 }

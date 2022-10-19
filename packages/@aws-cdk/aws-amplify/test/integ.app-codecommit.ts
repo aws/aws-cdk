@@ -15,7 +15,7 @@ class TestStack extends Stack {
       sourceCodeProvider: new amplify.CodeCommitSourceCodeProvider({ repository }),
     });
 
-    amplifyApp.addBranch('master');
+    amplifyApp.addBranch('main');
   }
 }
 

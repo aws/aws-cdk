@@ -282,6 +282,63 @@ export class ManagedRule extends RuleNew {
 }
 
 /**
+ * The source of the event, such as an AWS service,
+ * that triggers AWS Config to evaluate your AWS resources.
+ */
+enum EventSource {
+
+  /* from aws.config */
+  AWS_CONFIG = 'aws.config',
+
+}
+
+/**
+ * The type of notification that triggers AWS Config to run an evaluation for a rule.
+ */
+enum MessageType {
+
+  /**
+   * Triggers an evaluation when AWS Config delivers a configuration item as a result of a resource change.
+   */
+  CONFIGURATION_ITEM_CHANGE_NOTIFICATION = 'ConfigurationItemChangeNotification',
+
+  /**
+   * Triggers an evaluation when AWS Config delivers an oversized configuration item.
+   */
+  OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION = 'OversizedConfigurationItemChangeNotification',
+
+  /**
+   * Triggers a periodic evaluation at the frequency specified for MaximumExecutionFrequency.
+   */
+  SCHEDULED_NOTIFICATION = 'ScheduledNotification',
+
+  /**
+   * Triggers a periodic evaluation when AWS Config delivers a configuration snapshot.
+   */
+  CONFIGURATION_SNAPSHOT_DELIVERY_COMPLETED = 'ConfigurationSnapshotDeliveryCompleted',
+}
+
+/**
+ * Construction properties for a CustomRule.
+ */
+interface SourceDetail {
+  /**
+   * The source of the event, such as an AWS service,
+   * that triggers AWS Config to evaluate your AWS resources.
+   *
+   */
+  readonly eventSource: EventSource;
+  /**
+   * The frequency at which you want AWS Config to run evaluations for a custom rule with a periodic trigger.
+   */
+  readonly maximumExecutionFrequency?: MaximumExecutionFrequency;
+  /**
+   * The type of notification that triggers AWS Config to run an evaluation for a rule.
+   */
+  readonly messageType: MessageType;
+}
+
+/**
  * Construction properties for a CustomRule.
  */
 export interface CustomRuleProps extends RuleProps {
@@ -331,30 +388,30 @@ export class CustomRule extends RuleNew {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
     }
 
-    const sourceDetails: any[] = [];
+    const sourceDetails: SourceDetail[] = [];
     this.ruleScope = props.ruleScope;
-
     if (props.configurationChanges) {
       sourceDetails.push({
-        eventSource: 'aws.config',
-        messageType: 'ConfigurationItemChangeNotification',
+        eventSource: EventSource.AWS_CONFIG,
+        messageType: MessageType.CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
       });
       sourceDetails.push({
-        eventSource: 'aws.config',
-        messageType: 'OversizedConfigurationItemChangeNotification',
+        eventSource: EventSource.AWS_CONFIG,
+        messageType: MessageType.OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
       });
     }
 
     if (props.periodic) {
       sourceDetails.push({
-        eventSource: 'aws.config',
+        eventSource: EventSource.AWS_CONFIG,
         maximumExecutionFrequency: props.maximumExecutionFrequency,
-        messageType: 'ScheduledNotification',
+        messageType: MessageType.SCHEDULED_NOTIFICATION,
       });
     }
 
     props.lambdaFunction.addPermission('Permission', {
       principal: new iam.ServicePrincipal('config.amazonaws.com'),
+      sourceAccount: this.env.account,
     });
 
     if (props.lambdaFunction.role) {
@@ -387,6 +444,88 @@ export class CustomRule extends RuleNew {
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;
     }
+  }
+}
+
+/**
+ * Construction properties for a CustomPolicy.
+ */
+export interface CustomPolicyProps extends RuleProps {
+  /**
+   * The policy definition containing the logic for your AWS Config Custom Policy rule.
+   */
+  readonly policyText: string;
+
+  /**
+   * The boolean expression for enabling debug logging for your AWS Config Custom Policy rule.
+   *
+   * @default false
+   */
+  readonly enableDebugLog?: boolean;
+}
+
+/**
+ * A new custom policy.
+ *
+ * @resource AWS::Config::ConfigRule
+ */
+export class CustomPolicy extends RuleNew {
+  /** @attribute */
+  public readonly configRuleName: string;
+
+  /** @attribute */
+  public readonly configRuleArn: string;
+
+  /** @attribute */
+  public readonly configRuleId: string;
+
+  /** @attribute */
+  public readonly configRuleComplianceType: string;
+
+  constructor(scope: Construct, id: string, props: CustomPolicyProps) {
+    super(scope, id, {
+      physicalName: props.configRuleName,
+    });
+
+    if (!props.policyText || [...props.policyText].length === 0) {
+      throw new Error('Policy Text cannot be empty.');
+    }
+    if ( [...props.policyText].length > 10000 ) {
+      throw new Error('Policy Text is limited to 10,000 characters or less.');
+    }
+
+    const sourceDetails: SourceDetail[] = [];
+    this.ruleScope = props.ruleScope;
+
+    sourceDetails.push({
+      eventSource: EventSource.AWS_CONFIG,
+      messageType: MessageType.CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
+    });
+    sourceDetails.push({
+      eventSource: EventSource.AWS_CONFIG,
+      messageType: MessageType.OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
+    });
+    const rule = new CfnConfigRule(this, 'Resource', {
+      configRuleName: this.physicalName,
+      description: props.description,
+      inputParameters: props.inputParameters,
+      scope: Lazy.any({ produce: () => renderScope(this.ruleScope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      source: {
+        owner: 'CUSTOM_POLICY',
+        sourceDetails,
+        customPolicyDetails: {
+          enableDebugLogDelivery: props.enableDebugLog,
+          policyRuntime: 'guard-2.x.x',
+          policyText: props.policyText,
+        },
+      },
+    });
+
+    this.configRuleName = rule.ref;
+    this.configRuleArn = rule.attrArn;
+    this.configRuleId = rule.attrConfigRuleId;
+    this.configRuleComplianceType = rule.attrComplianceType;
+    this.isCustomWithChanges = true;
   }
 }
 
@@ -683,6 +822,13 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_INSTANCE_MANAGED_BY_SSM = 'EC2_INSTANCE_MANAGED_BY_SSM';
   /**
+   * Checks if an Amazon Elastic Compute Cloud (Amazon EC2) instance has an Identity and Access
+   * Management (IAM) profile attached to it. This rule is NON_COMPLIANT if no IAM profile is
+   * attached to the Amazon EC2 instance.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-profile-attached.html
+   */
+  public static readonly EC2_INSTANCE_PROFILE_ATTACHED = 'EC2_INSTANCE_PROFILE_ATTACHED';
+  /**
    * Checks whether Amazon Elastic Compute Cloud (Amazon EC2) instances have a public IP association.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-no-public-ip.html
    */
@@ -775,6 +921,16 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-imdsv2-check.html
    */
   public static readonly EC2_IMDSV2_CHECK = 'EC2_IMDSV2_CHECK';
+  /**
+   * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running the oldest supported version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-oldest-supported-version.html
+   */
+  public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
+  /**
+    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
+    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
+    */
+  public static readonly EKS_CLUSTER_SUPPORTED_VERSION = 'EKS_CLUSTER_SUPPORTED_VERSION';
   /**
    * Checks whether Amazon Elastic Kubernetes Service (Amazon EKS) endpoint is not publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-endpoint-no-public-access.html
@@ -1129,6 +1285,13 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS';
   /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible. This rule is
+   * NON_COMPLIANT if an Amazon S3 bucket is not listed in the excludedPublicBuckets parameter and bucket level
+   * settings are public.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-level-public-access-prohibited.html
+   */
+  public static readonly S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED = 'S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED';
+  /**
    * Checks that the Amazon Simple Storage Service bucket policy does not allow
    * blocked bucket-level and object-level actions on resources in the bucket
    * for principals from other AWS accounts.
@@ -1293,6 +1456,8 @@ export class ResourceType {
   public static readonly EC2_EIP = new ResourceType('AWS::EC2::EIP');
   /** EC2 instance */
   public static readonly EC2_INSTANCE = new ResourceType('AWS::EC2::Instance');
+  /** EC2 Network Interface */
+  public static readonly EC2_NETWORK_INTERFACE = new ResourceType('AWS::EC2::NetworkInterface');
   /** EC2 security group */
   public static readonly EC2_SECURITY_GROUP = new ResourceType('AWS::EC2::SecurityGroup');
   /** EC2 NAT gateway */
@@ -1301,16 +1466,60 @@ export class ResourceType {
   public static readonly EC2_EGRESS_ONLY_INTERNET_GATEWAY = new ResourceType('AWS::EC2::EgressOnlyInternetGateway');
   /** EC2 flow log */
   public static readonly EC2_FLOW_LOG = new ResourceType('AWS::EC2::FlowLog');
+  /** EC2 transit gateway */
+  public static readonly EC2_TRANSIT_GATEWAY = new ResourceType('AWS::EC2::TransitGateway');
+  /** EC2 transit gateway attachment */
+  public static readonly EC2_TRANSIT_GATEWAY_ATTACHMENT = new ResourceType('AWS::EC2::TransitGatewayAttachment');
+  /** EC2 transit gateway route table */
+  public static readonly EC2_TRANSIT_GATEWAY_ROUTE_TABLE = new ResourceType('AWS::EC2::TransitGatewayRouteTable');
   /** EC2 VPC endpoint */
   public static readonly EC2_VPC_ENDPOINT = new ResourceType('AWS::EC2::VPCEndpoint');
   /** EC2 VPC endpoint service */
   public static readonly EC2_VPC_ENDPOINT_SERVICE = new ResourceType('AWS::EC2::VPCEndpointService');
   /** EC2 VPC peering connection */
   public static readonly EC2_VPC_PEERING_CONNECTION = new ResourceType('AWS::EC2::VPCPeeringConnection');
+  /** EC2 registered HA instance */
+  public static readonly EC2_REGISTERED_HA_INSTANCE = new ResourceType('AWS::EC2::RegisteredHAInstance');
+  /** EC2 launch template */
+  public static readonly EC2_LAUNCH_TEMPLATE = new ResourceType('AWS::EC2::LaunchTemplate');
+  /** EC2 Network Insights Access Scope Analysis */
+  public static readonly EC2_NETWORK_INSIGHTS_ACCESS_SCOPE_ANALYSIS = new ResourceType('AWS::EC2::NetworkInsightsAccessScopeAnalysis');
+  /** Amazon ECR repository */
+  public static readonly ECR_REPOSITORY = new ResourceType('AWS::ECR::Repository');
+  /** Amazon ECR public repository */
+  public static readonly ECR_PUBLIC_REPOSITORY = new ResourceType('AWS::ECR::PublicRepository');
+  /** Amazon ECS cluster */
+  public static readonly ECS_CLUSTER = new ResourceType('AWS::ECS::Cluster');
+  /** Amazon ECS task definition */
+  public static readonly ECS_TASK_DEFINITION = new ResourceType('AWS::ECS::TaskDefinition');
+  /** Amazon ECS service */
+  public static readonly ECS_SERVICE = new ResourceType('AWS::ECS::Service');
+  /** Amazon EFS file system */
+  public static readonly EFS_FILE_SYSTEM = new ResourceType('AWS::EFS::FileSystem');
+  /** Amazon EFS access point */
+  public static readonly EFS_ACCESS_POINT = new ResourceType('AWS::EFS::AccessPoint');
+  /** Amazon Elastic Kubernetes Service cluster */
+  public static readonly EKS_CLUSTER = new ResourceType('AWS::EKS::Cluster');
+  /** Amazon EMR security configuration */
+  public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType('AWS::EMR::SecurityConfiguration');
+  /** Amazon GuardDuty detector */
+  public static readonly GUARDDUTY_DETECTOR = new ResourceType('AWS::GuardDuty::Detector');
+  /** Amazon GuardDuty Threat Intel Set */
+  public static readonly GUARDDUTY_THREAT_INTEL_SET = new ResourceType('AWS::GuardDuty::ThreatIntelSet');
+  /** Amazon GuardDuty IP Set */
+  public static readonly GUARDDUTY_IP_SET = new ResourceType(' AWS::GuardDuty::IPSet');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
+  /** Amazon OpenSearch domain */
+  public static readonly OPENSEARCH_DOMAIN = new ResourceType('AWS::OpenSearch::Domain');
   /** Amazon QLDB ledger */
   public static readonly QLDB_LEDGER = new ResourceType('AWS::QLDB::Ledger');
+  /** Amazon Kinesis stream */
+  public static readonly KINESIS_STREAM = new ResourceType('AWS::Kinesis::Stream');
+  /** Amazon Kinesis stream consumer */
+  public static readonly KINESIS_STREAM_CONSUMER = new ResourceType('AWS::Kinesis::StreamConsumer');
+  /** Amazon MSK cluster */
+  public static readonly MSK_CLUSTER = new ResourceType('AWS::MSK::Cluster');
   /** Amazon Redshift cluster */
   public static readonly REDSHIFT_CLUSTER = new ResourceType('AWS::Redshift::Cluster');
   /** Amazon Redshift cluster parameter group */
@@ -1337,18 +1546,36 @@ export class ResourceType {
   public static readonly RDS_DB_CLUSTER = new ResourceType('AWS::RDS::DBCluster');
   /** Amazon RDS database cluster snapshot */
   public static readonly RDS_DB_CLUSTER_SNAPSHOT = new ResourceType('AWS::RDS::DBClusterSnapshot');
+  /** Amazon Route53 resolver resolver endpoint */
+  public static readonly ROUTE53_RESOLVER_RESOLVER_ENDPOINT = new ResourceType('AWS::Route53Resolver::ResolverEndpoint');
+  /** Amazon Route53 resolver resolver rule */
+  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE = new ResourceType('AWS::Route53Resolver::ResolverRule');
+  /** Amazon Route53 resolver resolver rule association */
+  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE_ASSOCIATION = new ResourceType('AWS::Route53Resolver::ResolverRuleAssociation');
   /** Amazon SQS queue */
   public static readonly SQS_QUEUE = new ResourceType('AWS::SQS::Queue');
   /** Amazon SNS topic */
   public static readonly SNS_TOPIC = new ResourceType('AWS::SNS::Topic');
   /** Amazon S3 bucket */
   public static readonly S3_BUCKET = new ResourceType('AWS::S3::Bucket');
+  /** Amazon SageMaker code repository */
+  public static readonly SAGEMAKER_CODE_REPOSITORY = new ResourceType('AWS::SageMaker::CodeRepository');
+  /** Amazon SageMaker model */
+  public static readonly SAGEMAKER_MODEL = new ResourceType('AWS::SageMaker::Model');
+  /** Amazon SageMaker notebook instance */
+  public static readonly SAGEMAKER_NOTEBOOK_INSTANCE = new ResourceType('AWS::SageMaker::NotebookInstance');
+  /** Amazon SageMaker workteam */
+  public static readonly SAGEMAKER_WORKTEAM = new ResourceType('AWS::SageMaker::Workteam');
+  /** Amazon SES Configuration Set */
+  public static readonly SES_CONFIGURATION_SET = new ResourceType('AWS::SES::ConfigurationSet');
+  /** Amazon SES Contact List */
+  public static readonly SES_CONTACT_LIST = new ResourceType('AWS::SES::ContactList');
   /** Amazon S3 account public access block */
   public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType('AWS::S3::AccountPublicAccessBlock');
   /** Amazon EC2 customer gateway */
   public static readonly EC2_CUSTOMER_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
   /** Amazon EC2 internet gateway */
-  public static readonly EC2_INTERNET_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
+  public static readonly EC2_INTERNET_GATEWAY = new ResourceType('AWS::EC2::InternetGateway');
   /** Amazon EC2 network ACL */
   public static readonly EC2_NETWORK_ACL = new ResourceType('AWS::EC2::NetworkAcl');
   /** Amazon EC2 route table */
@@ -1369,22 +1596,78 @@ export class ResourceType {
   public static readonly AUTO_SCALING_POLICY = new ResourceType('AWS::AutoScaling::ScalingPolicy');
   /** AWS Auto Scaling scheduled action */
   public static readonly AUTO_SCALING_SCHEDULED_ACTION = new ResourceType('AWS::AutoScaling::ScheduledAction');
+  /** Amazon WorkSpaces connection alias */
+  public static readonly WORKSPACES_CONNECTION_ALIAS = new ResourceType('AWS::WorkSpaces::ConnectionAlias');
+  /** Amazon WorkSpaces workSpace */
+  public static readonly WORKSPACES_WORKSPACE = new ResourceType('AWS::WorkSpaces::Workspace');
+  /** AWS AppConfig application */
+  public static readonly APPCONFIG_APPLICATION = new ResourceType('AWS::AppConfig::Application');
+  /** AWS AppSync GraphQL Api */
+  public static readonly APPSYNC_GRAPHQL_API = new ResourceType('AWS::AppSync::GraphQLApi');
+  /** AWS Backup backup plan */
+  public static readonly BACKUP_BACKUP_PLAN = new ResourceType('AWS::Backup::BackupPlan');
+  /** AWS Backup backup selection */
+  public static readonly BACKUP_BACKUP_SELECTION = new ResourceType('AWS::Backup::BackupSelection');
+  /** AWS Backup backup vault */
+  public static readonly BACKUP_BACKUP_VAULT = new ResourceType('AWS::Backup::BackupVault');
+  /** AWS Backup backup recovery point */
+  public static readonly BACKUP_RECOVERY_POINT = new ResourceType('AWS::Backup::RecoveryPoint');
+  /** AWS Batch job queue */
+  public static readonly BATCH_JOB_QUEUE = new ResourceType('AWS::Batch::JobQueue');
+  /** AWS Batch compute environment */
+  public static readonly BATCH_COMPUTE_ENVIRONMENT = new ResourceType('AWS::Batch::ComputeEnvironment');
   /** AWS Certificate manager certificate */
   public static readonly ACM_CERTIFICATE = new ResourceType('AWS::ACM::Certificate');
   /** AWS CloudFormation stack */
   public static readonly CLOUDFORMATION_STACK = new ResourceType('AWS::CloudFormation::Stack');
   /** AWS CloudTrail trail */
   public static readonly CLOUDTRAIL_TRAIL = new ResourceType('AWS::CloudTrail::Trail');
+  /** AWS Cloud Map(ServiceDiscovery) service */
+  public static readonly SERVICEDISCOVERY_SERVICE = new ResourceType('AWS::ServiceDiscovery::Service');
+  /** AWS Cloud Map(ServiceDiscovery) Public Dns Namespace */
+  public static readonly SERVICEDISCOVERY_PUBLIC_DNS_NAMESPACE = new ResourceType('AWS::ServiceDiscovery::PublicDnsNamespace');
   /** AWS CodeBuild project */
   public static readonly CODEBUILD_PROJECT = new ResourceType('AWS::CodeBuild::Project');
+  /** AWS CodeDeploy application */
+  public static readonly CODEDEPLOY_APPLICATION = new ResourceType('AWS::CodeDeploy::Application');
+  /** AWS CodeDeploy deployment config */
+  public static readonly CODEDEPLOY_DEPLOYMENT_CONFIG = new ResourceType('AWS::CodeDeploy::DeploymentConfig');
+  /** AWS CodeDeploy deployment group */
+  public static readonly CODEDEPLOY_DEPLOYMENT_GROUP = new ResourceType('AWS::CodeDeploy::DeploymentGroup');
   /** AWS CodePipeline pipeline */
   public static readonly CODEPIPELINE_PIPELINE = new ResourceType('AWS::CodePipeline::Pipeline');
+  /** AWS Config resource compliance */
+  public static readonly CONFIG_RESOURCE_COMPLIANCE = new ResourceType('AWS::Config::ResourceCompliance');
+  /** AWS Config conformance pack compliance */
+  public static readonly CONFIG_CONFORMANCE_PACK_COMPLIANCE = new ResourceType('AWS::Config::ConformancePackCompliance');
+  /** AWS DMS event subscription */
+  public static readonly DMS_EVENT_SUBSCRIPTION = new ResourceType('AWS::DMS::EventSubscription');
+  /** AWS DMS replication subnet group */
+  public static readonly DMS_REPLICATION_SUBNET_GROUP = new ResourceType('AWS::DMS::ReplicationSubnetGroup');
+  /** AWS DataSync location SMB */
+  public static readonly DATASYNC_LOCATION_SMB = new ResourceType('AWS::DataSync::LocationSMB');
+  /** AWS DataSync location FSx Lustre */
+  public static readonly DATASYNC_LOCATION_FSX_LUSTRE = new ResourceType('AWS::DataSync::LocationFSxLustre');
+  /** AWS DataSync location S3 */
+  public static readonly DATASYNC_LOCATION_S3 = new ResourceType('AWS::DataSync::LocationS3');
+  /** AWS DataSync location EFS */
+  public static readonly DATASYNC_LOCATION_EFS = new ResourceType('AWS::DataSync::LocationEFS');
+  /** AWS DataSync task */
+  public static readonly DATASYNC_TASK = new ResourceType('AWS::DataSync::Task');
+  /** AWS DataSync location NFS */
+  public static readonly DATASYNC_LOCATION_NFS = new ResourceType('AWS::DataSync::LocationNFS');
   /** AWS Elastic Beanstalk (EB) application */
   public static readonly ELASTIC_BEANSTALK_APPLICATION = new ResourceType('AWS::ElasticBeanstalk::Application');
   /** AWS Elastic Beanstalk (EB) application version */
   public static readonly ELASTIC_BEANSTALK_APPLICATION_VERSION = new ResourceType('AWS::ElasticBeanstalk::ApplicationVersion');
   /** AWS Elastic Beanstalk (EB) environment */
   public static readonly ELASTIC_BEANSTALK_ENVIRONMENT = new ResourceType('AWS::ElasticBeanstalk::Environment');
+  /** AWS GlobalAccelerator listener */
+  public static readonly GLOBALACCELERATOR_LISTENER = new ResourceType('AWS::GlobalAccelerator::Listener');
+  /** AWS GlobalAccelerator endpoint group */
+  public static readonly GLOBALACCELERATOR_ENDPOINT_GROUP = new ResourceType('AWS::GlobalAccelerator::EndpointGroup');
+  /** AWS GlobalAccelerator accelerator */
+  public static readonly GLOBALACCELERATOR_ACCELERATOR = new ResourceType('AWS::GlobalAccelerator::Accelerator');
   /** AWS IAM user */
   public static readonly IAM_USER = new ResourceType('AWS::IAM::User');
   /** AWS IAM group */
@@ -1393,6 +1676,8 @@ export class ResourceType {
   public static readonly IAM_ROLE = new ResourceType('AWS::IAM::Role');
   /** AWS IAM policy */
   public static readonly IAM_POLICY = new ResourceType('AWS::IAM::Policy');
+  /** AWS IAM AccessAnalyzer analyzer */
+  public static readonly IAM_ACCESSANALYZER_ANALYZER = new ResourceType('AWS::AccessAnalyzer::Analyzer');
   /** AWS KMS Key */
   public static readonly KMS_KEY = new ResourceType('AWS::KMS::Key');
   /** AWS Lambda function */
@@ -1410,6 +1695,10 @@ export class ResourceType {
   public static readonly SHIELD_PROTECTION = new ResourceType('AWS::Shield::Protection');
   /** AWS Shield regional protection */
   public static readonly SHIELD_REGIONAL_PROTECTION = new ResourceType('AWS::ShieldRegional::Protection');
+  /** AWS StepFunctions activity */
+  public static readonly STEPFUNCTIONS_ACTIVITY = new ResourceType('AWS::StepFunctions::Activity');
+  /** AWS StepFunctions state machine */
+  public static readonly STEPFUNCTIONS_STATE_MACHINE = new ResourceType('AWS::StepFunctions::StateMachine');
   /** AWS Systems Manager managed instance inventory */
   public static readonly SYSTEMS_MANAGER_MANAGED_INSTANCE_INVENTORY = new ResourceType('AWS::SSM::ManagedInstanceInventory');
   /** AWS Systems Manager patch compliance */
@@ -1440,12 +1729,18 @@ export class ResourceType {
   public static readonly WAFV2_RULE_GROUP = new ResourceType('AWS::WAFv2::RuleGroup');
   /** AWS WAFv2 managed rule set */
   public static readonly WAFV2_MANAGED_RULE_SET = new ResourceType('AWS::WAFv2::ManagedRuleSet');
+  /** AWS WAFv2 ip set */
+  public static readonly WAFV2_IP_SET = new ResourceType('AWS::WAFv2::IPSet');
+  /** AWS WAFv2 regex pattern set */
+  public static readonly WAFV2_REGEX_PATTERN_SET = new ResourceType('AWS::WAFv2::RegexPatternSet');
   /** AWS X-Ray encryption configuration */
   public static readonly XRAY_ENCRYPTION_CONFIGURATION = new ResourceType('AWS::XRay::EncryptionConfig');
   /** AWS ELB classic load balancer */
   public static readonly ELB_LOAD_BALANCER = new ResourceType('AWS::ElasticLoadBalancing::LoadBalancer');
   /** AWS ELBv2 network load balancer or AWS ELBv2 application load balancer */
   public static readonly ELBV2_LOAD_BALANCER = new ResourceType('AWS::ElasticLoadBalancingV2::LoadBalancer');
+  /** AWS ELBv2 application load balancer listener */
+  public static readonly ELBV2_LISTENER = new ResourceType('AWS::ElasticLoadBalancingV2::Listener');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {

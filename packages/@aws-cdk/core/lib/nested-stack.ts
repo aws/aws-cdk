@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
@@ -8,21 +9,17 @@ import { CfnStack } from './cloudformation.generated';
 import { Duration } from './duration';
 import { Lazy } from './lazy';
 import { Names } from './names';
+import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
 /**
  * Initialization props for the `NestedStack` construct.
  *
- * @experimental
  */
 export interface NestedStackProps {
   /**
@@ -60,6 +57,24 @@ export interface NestedStackProps {
    * @default - notifications are not sent for this stack.
    */
   readonly notificationArns?: string[];
+
+  /**
+   * Policy to apply when the nested stack is removed
+   *
+   * The default is `Destroy`, because all Removal Policies of resources inside the
+   * Nested Stack should already have been set correctly. You normally should
+   * not need to set this value.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * A description of the stack.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -78,7 +93,6 @@ export interface NestedStackProps {
  * nested stack will automatically be translated to stack parameters and
  * outputs.
  *
- * @experimental
  */
 export class NestedStack extends Stack {
 
@@ -105,12 +119,12 @@ export class NestedStack extends Stack {
     super(scope, id, {
       env: { account: parentStack.account, region: parentStack.region },
       synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
+      description: props.description,
     });
 
     this._parentStack = parentStack;
 
-    // @deprecate: remove this in v2.0 (redundent)
-    const parentScope = new CoreConstruct(scope, id + '.NestedStack');
+    const parentScope = new Construct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
@@ -126,8 +140,10 @@ export class NestedStack extends Stack {
       notificationArns: props.notificationArns,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
+    this.resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.nestedStackResource = this.resource;
+    this.node.defaultChild = this.resource;
 
     // context-aware stack name: if resolved from within this stack, return AWS::StackName
     // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource
@@ -144,8 +160,8 @@ export class NestedStack extends Stack {
    * - If this is referenced from the parent stack, it will return a token that parses the name from the stack ID.
    * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackName" }`
    *
+   * Example value: `mystack-mynestedstack-sggfrhxhum7w`
    * @attribute
-   * @example mystack-mynestedstack-sggfrhxhum7w
    */
   public get stackName() {
     return this._contextualStackName;
@@ -158,8 +174,8 @@ export class NestedStack extends Stack {
    * - If this is referenced from the parent stack, it will return `{ "Ref": "LogicalIdOfNestedStackResource" }`.
    * - If this is referenced from the context of the nested stack, it will return `{ "Ref": "AWS::StackId" }`
    *
+   * Example value: `arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786`
    * @attribute
-   * @example "arn:aws:cloudformation:us-east-2:123456789012:stack/mystack-mynestedstack-sggfrhxhum7w/f449b250-b969-11e0-a185-5081d0136786"
    */
   public get stackId() {
     return this._contextualStackId;
@@ -193,14 +209,26 @@ export class NestedStack extends Stack {
       return false;
     }
 
+    // When adding tags to nested stack, the tags need to be added to all the resources in
+    // in nested stack, which is handled by the `tags` property, But to tag the
+    //  tags have to be added in the parent stack CfnStack resource. The CfnStack resource created
+    // by this class dont share the same TagManager as that of the one exposed by the `tag` property of the
+    //  class, all the tags need to be copied to the CfnStack resource before synthesizing the resource.
+    // See https://github.com/aws/aws-cdk/pull/19128
+    Object.entries(this.tags.tagValues()).forEach(([key, value]) => {
+      this.resource.tags.setTag(key, value);
+    });
+
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
-    const templateLocation = this._parentStack.addFileAsset({
+    const templateLocation = this._parentStack.synthesizer.addFileAsset({
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
     });
+
+    this.addResourceMetadata(this.resource, 'TemplateURL');
 
     // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
     // be resolved as cross-stack references like any other (see "multi" tests).
@@ -218,6 +246,18 @@ export class NestedStack extends Stack {
         }
       },
     });
+  }
+
+  private addResourceMetadata(resource: CfnResource, resourceProperty: string) {
+    if (!this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    // tell tools such as SAM CLI that the "TemplateURL" property of this resource
+    // points to the nested stack template for local emulation
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.templateFile;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 }
 

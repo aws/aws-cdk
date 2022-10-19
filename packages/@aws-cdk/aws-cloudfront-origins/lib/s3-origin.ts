@@ -2,23 +2,13 @@ import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { HttpOrigin } from './http-origin';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties to use to customize an S3 Origin.
  */
-export interface S3OriginProps {
-  /**
-   * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
-   * Must begin, but not end, with '/' (e.g., '/production/images').
-   *
-   * @default '/'
-   */
-  readonly originPath?: string;
+export interface S3OriginProps extends cloudfront.OriginProps {
   /**
    * An optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
    *
@@ -80,21 +70,20 @@ class S3BucketOrigin extends cloudfront.OriginBase {
       this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
       });
-
-      // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
-      // Only GetObject is needed to retrieve objects for the distribution.
-      // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
-      // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
-      this.bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [this.bucket.arnForObjects('*')],
-        actions: ['s3:GetObject'],
-        principals: [this.originAccessIdentity.grantPrincipal],
-      }));
     }
+    // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
+    // Only GetObject is needed to retrieve objects for the distribution.
+    // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+    // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
+    this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+      resources: [this.bucket.arnForObjects('*')],
+      actions: ['s3:GetObject'],
+      principals: [this.originAccessIdentity.grantPrincipal],
+    }));
     return super.bind(scope, options);
   }
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
-    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityName}` };
+    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
   }
 }

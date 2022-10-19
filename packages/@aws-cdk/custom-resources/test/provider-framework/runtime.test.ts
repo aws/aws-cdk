@@ -18,7 +18,10 @@ outbound.httpRequest = mocks.httpRequestMock;
 outbound.invokeFunction = mocks.invokeFunctionMock;
 outbound.startExecution = mocks.startExecutionMock;
 
+const invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
+
 beforeEach(() => mocks.setup());
+afterEach(() => invokeFunctionSpy.mockClear());
 
 test('async flow: isComplete returns true only after 3 times', async () => {
   let isCompleteCalls = 0;
@@ -169,6 +172,23 @@ describe('PhysicalResourceId', () => {
     });
   });
 
+  test('UPDATE: can override the physical ID with the actual on isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'TemporaryPhysicalId' });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true, PhysicalResourceId: 'NewPhysicalId' });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Update',
+      PhysicalResourceId: 'CurrentPhysicalId',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      PhysicalResourceId: 'NewPhysicalId',
+    });
+  });
+
   test('DELETE: cannot change the physical resource ID during a delete', async () => {
     // GIVEN
     mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'NewPhysicalId' });
@@ -230,6 +250,61 @@ test('if there is no user-defined "isComplete", the waiter will not be triggered
   expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
 });
 
+describe('NoEcho', () => {
+  test('with onEvent', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+  });
+
+  test('with isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+    mocks.isCompleteImplMock = async () => ({
+      Data: {
+        Also: 'Confidential',
+      },
+      IsComplete: true,
+    });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      Data: {
+        Very: 'Sensitive',
+        Also: 'Confidential',
+      },
+      NoEcho: true,
+    });
+  });
+});
+
 test('fails if user handler returns a non-object response', async () => {
   // GIVEN
   mocks.stringifyPayload = false;
@@ -272,6 +347,41 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
     expectCloudFormationSuccess();
   });
 
+});
+
+describe('ResponseURL is passed to user function', () => {
+  test('for onEvent', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expect(invokeFunctionSpy).toHaveBeenCalledTimes(1);
+    expect(invokeFunctionSpy).toBeCalledWith(expect.objectContaining({
+      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+    }));
+  });
+
+  test('for isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expect(invokeFunctionSpy).toHaveBeenCalledTimes(2);
+    expect(invokeFunctionSpy).toHaveBeenLastCalledWith(expect.objectContaining({
+      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+    }));
+  });
 });
 
 // -----------------------------------------------------------------------------------------------------------------------

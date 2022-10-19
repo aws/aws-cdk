@@ -1,9 +1,7 @@
+import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
+import { CfnTaskDefinition } from '../ecs.generated';
 import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The base class for log drivers.
@@ -19,7 +17,7 @@ export abstract class LogDriver {
   /**
    * Called when the log driver is configured on a container
    */
-  public abstract bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): LogDriverConfig;
+  public abstract bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig;
 }
 
 /**
@@ -48,4 +46,10 @@ export interface LogDriverConfig {
    * The configuration options to send to the log driver.
    */
   readonly options?: { [key: string]: string };
+
+  /**
+   * The secrets to pass to the log configuration.
+   * @default - No secret options provided.
+   */
+  readonly secretOptions?: CfnTaskDefinition.SecretProperty[];
 }

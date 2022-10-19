@@ -1,17 +1,16 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
 import { FileSystem } from '../../lib/fs';
 
-nodeunitShim({
-  'tearDown'(callback: any) {
+describe('fs', () => {
+  afterEach(() => {
     sinon.restore();
-    callback();
-  },
 
-  'tmpdir returns a real path and is cached'(test: Test) {
+  });
+
+  test('tmpdir returns a real path and is cached', () => {
     // Create symlink that points to /tmp
     const symlinkTmp = path.join(__dirname, 'tmp-link');
     fs.symlinkSync(os.tmpdir(), symlinkTmp);
@@ -19,32 +18,32 @@ nodeunitShim({
     // Now stub os.tmpdir() to return this link instead of /tmp
     const tmpdirStub = sinon.stub(os, 'tmpdir').returns(symlinkTmp);
 
-    test.ok(path.isAbsolute(FileSystem.tmpdir));
+    expect(path.isAbsolute(FileSystem.tmpdir)).toEqual(true);
 
     const p = path.join(FileSystem.tmpdir, 'tmpdir-test.txt');
     fs.writeFileSync(p, 'tmpdir-test');
 
-    test.equal(p, fs.realpathSync(p));
-    test.equal(fs.readFileSync(p, 'utf8'), 'tmpdir-test');
+    expect(p).toEqual(fs.realpathSync(p));
+    expect(fs.readFileSync(p, 'utf8')).toEqual('tmpdir-test');
 
     // check that tmpdir() is called either 0 times (in which case it was
     // proabably cached from before) or once (for this test).
-    test.ok(tmpdirStub.callCount < 2);
+    expect(tmpdirStub.callCount).toBeLessThan(2);
 
     fs.unlinkSync(p);
     fs.unlinkSync(symlinkTmp);
 
-    test.done();
-  },
 
-  'mkdtemp creates a temporary directory in the system temp'(test: Test) {
+  });
+
+  test('mkdtemp creates a temporary directory in the system temp', () => {
     const tmpdir = FileSystem.mkdtemp('cdk-mkdtemp-');
 
-    test.equal(path.dirname(tmpdir), FileSystem.tmpdir);
-    test.ok(fs.existsSync(tmpdir));
+    expect(path.dirname(tmpdir)).toEqual(FileSystem.tmpdir);
+    expect(fs.existsSync(tmpdir)).toEqual(true);
 
     fs.rmdirSync(tmpdir);
 
-    test.done();
-  },
+
+  });
 });

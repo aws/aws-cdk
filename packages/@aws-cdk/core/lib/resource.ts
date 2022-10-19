@@ -1,15 +1,18 @@
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { IConstruct, Construct as CoreConstruct } from './construct-compat';
-
-import { Construct } from 'constructs';
-import { ArnComponents } from './arn';
+import { ArnComponents, ArnFormat } from './arn';
+import { CfnResource } from './cfn-resource';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
+import { Reference } from './reference';
+import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
-import { Reference } from './reference';
+
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { Construct, IConstruct } from 'constructs';
+
+const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
 
 /**
  * Represents the environment a given resource lives in.
@@ -54,6 +57,19 @@ export interface IResource extends IConstruct {
    * that might be different than the stack they were imported into.
    */
   readonly env: ResourceEnvironment;
+
+  /**
+   * Apply the given removal policy to this resource
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   */
+  applyRemovalPolicy(policy: RemovalPolicy): void;
 }
 
 /**
@@ -86,12 +102,38 @@ export interface ResourceProps {
    * @default - the resource is in the same region as the stack it belongs to
    */
   readonly region?: string;
+
+  /**
+   * ARN to deduce region and account from
+   *
+   * The ARN is parsed and the account and region are taken from the ARN.
+   * This should be used for imported resources.
+   *
+   * Cannot be supplied together with either `account` or `region`.
+   *
+   * @default - take environment from `account`, `region` parameters, or use Stack environment.
+   */
+  readonly environmentFromArn?: string;
 }
 
 /**
  * A construct which represents an AWS resource.
  */
-export abstract class Resource extends CoreConstruct implements IResource {
+export abstract class Resource extends Construct implements IResource {
+  /**
+   * Check whether the given construct is a Resource
+   */
+  public static isResource(construct: IConstruct): construct is Resource {
+    return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
+  }
+
+  /**
+   * Returns true if the construct was created by CDK, and false otherwise
+   */
+  public static isOwnedResource(construct: IConstruct): boolean {
+    return construct.node.defaultChild ? CfnResource.isCfnResource(construct.node.defaultChild) : false;
+  }
+
   public readonly stack: Stack;
   public readonly env: ResourceEnvironment;
 
@@ -105,7 +147,6 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * - a concrete name generated automatically during synthesis, in
    *   cross-environment scenarios.
    *
-   * @experimental
    */
   protected readonly physicalName: string;
 
@@ -115,10 +156,21 @@ export abstract class Resource extends CoreConstruct implements IResource {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
 
+    if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
+      throw new Error(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`);
+    }
+
+    Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
+
     this.stack = Stack.of(this);
+
+    const parsedArn = props.environmentFromArn ?
+      // Since we only want the region and account, NO_RESOURE_NAME is good enough
+      this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
+      : undefined;
     this.env = {
-      account: props.account ?? this.stack.account,
-      region: props.region ?? this.stack.region,
+      account: props.account ?? parsedArn?.account ?? this.stack.account,
+      region: props.region ?? parsedArn?.region ?? this.stack.region,
     };
 
     let physicalName = props.physicalName;
@@ -165,6 +217,25 @@ export abstract class Resource extends CoreConstruct implements IResource {
     }
   }
 
+  /**
+   * Apply the given removal policy to this resource
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy) {
+    const child = this.node.defaultChild;
+    if (!child || !CfnResource.isCfnResource(child)) {
+      throw new Error('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.');
+    }
+    child.applyRemovalPolicy(policy);
+  }
+
   protected generatePhysicalName(): string {
     return generatePhysicalName(this);
   }
@@ -179,7 +250,6 @@ export abstract class Resource extends CoreConstruct implements IResource {
    *
    * @param nameAttr The CFN attribute which resolves to the resource's name.
    * Commonly this is the resource's `ref`.
-   * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
     return mimicReference(nameAttr, {
@@ -212,7 +282,6 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * reference `this.physicalName` somewhere within the ARN in order for
    * cross-environment references to work.
    *
-   * @experimental
    */
   protected getResourceArnAttribute(arnAttr: string, arnComponents: ArnComponents) {
     return mimicReference(arnAttr, {

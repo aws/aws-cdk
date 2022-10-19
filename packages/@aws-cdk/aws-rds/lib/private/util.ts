@@ -1,13 +1,11 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { CfnDeletionPolicy, CfnResource, RemovalPolicy } from '@aws-cdk/core';
+import { RemovalPolicy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
-import { Credentials } from '../props';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { CommonRotationUserOptions, Credentials } from '../props';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
@@ -31,14 +29,14 @@ export interface DatabaseS3ImportExportProps {
  * Validates the S3 import/export props and returns the import/export roles, if any.
  * If `combineRoles` is true, will reuse the import role for export (or vice versa) if possible.
  *
- * Notably, `combineRoles` is (by default) set to true for instances, but false for clusters.
+ * Notably, `combineRoles` is set to true for instances, but false for clusters.
  * This is because the `combineRoles` functionality is most applicable to instances and didn't exist
  * for the initial clusters implementation. To maintain backwards compatibility, it is set to false for clusters.
  */
 export function setupS3ImportExport(
   scope: Construct,
   props: DatabaseS3ImportExportProps,
-  combineRoles?: boolean): { s3ImportRole?: iam.IRole, s3ExportRole?: iam.IRole } {
+  combineRoles: boolean): { s3ImportRole?: iam.IRole, s3ExportRole?: iam.IRole } {
 
   let s3ImportRole = props.s3ImportRole;
   let s3ExportRole = props.s3ExportRole;
@@ -76,17 +74,6 @@ export function engineDescription(engine: IEngine) {
   return engine.engineType + (engine.engineVersion?.fullVersion ? `-${engine.engineVersion.fullVersion}` : '');
 }
 
-export function applyRemovalPolicy(cfnDatabase: CfnResource, removalPolicy?: RemovalPolicy): void {
-  if (!removalPolicy) {
-    // the default DeletionPolicy is 'Snapshot', which is fine,
-    // but we should also make it 'Snapshot' for UpdateReplace policy
-    cfnDatabase.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-  } else {
-    // just apply whatever removal policy the customer explicitly provided
-    cfnDatabase.applyRemovalPolicy(removalPolicy);
-  }
-}
-
 /**
  * By default, deletion protection is disabled.
  * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN
@@ -105,11 +92,13 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
     renderedCredentials = Credentials.fromSecret(
       new DatabaseSecret(scope, 'Secret', {
         username: renderedCredentials.username,
+        secretName: renderedCredentials.secretName,
         encryptionKey: renderedCredentials.encryptionKey,
         excludeCharacters: renderedCredentials.excludeCharacters,
         // if username must be referenced as a string we can safely replace the
         // secret when customization options are changed without risking a replacement
         replaceOnPasswordCriteriaChanges: credentials?.usernameAsString,
+        replicaRegions: renderedCredentials.replicaRegions,
       }),
       // pass username if it must be referenced as a string
       credentials?.usernameAsString ? renderedCredentials.username : undefined,
@@ -117,4 +106,40 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
   }
 
   return renderedCredentials;
+}
+
+/**
+ * The RemovalPolicy that should be applied to a "helper" resource, if the base resource has the given removal policy
+ *
+ * - For Clusters, this determines the RemovalPolicy for Instances/SubnetGroups.
+ * - For Instances, this determines the RemovalPolicy for SubnetGroups.
+ *
+ * If the basePolicy is:
+ *
+ *  DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)
+ *  RETAIN              -> RETAIN  (anything else will lose data or fail to deploy)
+ *  (undefined)         -> DESTROY (base policy is assumed to be SNAPSHOT)
+ */
+export function helperRemovalPolicy(basePolicy?: RemovalPolicy): RemovalPolicy {
+  return basePolicy === RemovalPolicy.RETAIN
+    ? RemovalPolicy.RETAIN
+    : RemovalPolicy.DESTROY;
+}
+
+/**
+ * Return a given value unless it's the same as another value
+ */
+export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
+  return value === suppressValue ? undefined : value;
+}
+
+/**
+ * Applies defaults for rotation options
+ */
+export function applyDefaultRotationOptions(options: CommonRotationUserOptions, defaultvpcSubnets?: ec2.SubnetSelection): CommonRotationUserOptions {
+  return {
+    excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
+    vpcSubnets: defaultvpcSubnets,
+    ...options,
+  };
 }

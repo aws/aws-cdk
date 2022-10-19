@@ -10,16 +10,30 @@ phases:
       # this also takes care of launching the docker daemon.
       - /root/ecr-proxy/start.sh
 
+      # CodeBuild always runs as root, allow npm to operate as such
+      - npm config set unsafe-perm true
+
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
+
+      # Packing the mono-libraries (monocdk & aws-cdk-lib) can cause
+      # memory errors. Increasing this value allows our build to more consistently succeed
+      - /sbin/sysctl -w vm.max_map_count=2251954
+  pre_build:
+    commands:
+      - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
+      - /bin/bash ./scripts/transform.sh
   post_build:
     commands:
+      # Short-circuit: Don't run pack if the above build failed.
+      - '[ ${CODEBUILD_BUILD_SUCCEEDING:-0} -eq 1 ] || exit 1'
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
+      - /bin/bash ./scripts/cache-store.sh
 artifacts:
   files:
     - "**/*"

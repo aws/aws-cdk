@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "executionRoleAlbFargateTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-fargate-execrole"
+      ],
+      "assertionStack": "executionRoleAlbFargateTest/DefaultTest/DeployAssert"
+    }
+  }
+}

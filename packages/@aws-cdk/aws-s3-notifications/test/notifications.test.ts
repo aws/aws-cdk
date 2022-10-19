@@ -1,5 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -13,7 +12,7 @@ test('bucket without notifications', () => {
 
   new s3.Bucket(stack, 'MyBucket');
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyBucketF68F3FF0': {
         'Type': 'AWS::S3::Bucket',
@@ -24,6 +23,35 @@ test('bucket without notifications', () => {
   });
 });
 
+test('notifications can be added to imported buckets', () => {
+
+  const stack = new cdk.Stack();
+
+  const bucket = s3.Bucket.fromBucketName(stack, 'MyBucket', 'mybucket');
+  const topic = new sns.Topic(stack, 'MyTopic');
+
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
+
+  Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+    ServiceToken: { 'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'] },
+    BucketName: 'mybucket',
+    Managed: false,
+    NotificationConfiguration: {
+      'TopicConfigurations': [
+        {
+          'Events': [
+            's3:ObjectCreated:*',
+          ],
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+        },
+      ],
+    },
+  });
+
+});
+
 test('when notification are added, a custom resource is provisioned + a lambda handler for it', () => {
   const stack = new cdk.Stack();
 
@@ -32,9 +60,9 @@ test('when notification are added, a custom resource is provisioned + a lambda h
 
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 
-  expect(stack).toHaveResource('AWS::S3::Bucket');
-  expect(stack).toHaveResource('AWS::Lambda::Function', { Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' });
-  expect(stack).toHaveResource('Custom::S3BucketNotifications');
+  Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' });
+  Template.fromStack(stack).resourceCountIs('Custom::S3BucketNotifications', 1);
 });
 
 test('when notification are added, you can tag the lambda', () => {
@@ -47,12 +75,12 @@ test('when notification are added, you can tag the lambda', () => {
 
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 
-  expect(stack).toHaveResource('AWS::S3::Bucket');
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Tags: [{ Key: 'Lambda', Value: 'AreTagged' }],
     Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
   });
-  expect(stack).toHaveResource('Custom::S3BucketNotifications');
+  Template.fromStack(stack).resourceCountIs('Custom::S3BucketNotifications', 1);
 });
 
 test('bucketNotificationTarget is not called during synthesis', () => {
@@ -66,7 +94,7 @@ test('bucketNotificationTarget is not called during synthesis', () => {
 
   bucket.addObjectCreatedNotification(new s3n.SnsDestination(topic));
 
-  expect(stack).toHaveResourceLike('AWS::SNS::TopicPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
     'Topics': [
       {
         'Ref': 'TopicBFC7AF6E',
@@ -93,6 +121,7 @@ test('bucketNotificationTarget is not called during synthesis', () => {
           'Resource': {
             'Ref': 'TopicBFC7AF6E',
           },
+          'Sid': '0',
         },
       ],
       'Version': '2012-10-17',
@@ -130,7 +159,7 @@ test('subscription types', () => {
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaTarget);
   bucket.addObjectRemovedNotification(topicTarget, { prefix: 'prefix' });
 
-  expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+  Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
     'ServiceToken': {
       'Fn::GetAtt': [
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
@@ -198,7 +227,7 @@ test('multiple subscriptions of the same type', () => {
     }),
   });
 
-  expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+  Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
     'ServiceToken': {
       'Fn::GetAtt': [
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
@@ -239,7 +268,7 @@ test('prefix/suffix filters', () => {
 
   bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, { bind: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
 
-  expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+  Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
     'ServiceToken': {
       'Fn::GetAtt': [
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
@@ -291,11 +320,12 @@ test('a notification destination can specify a set of dependencies that must be 
 
   bucket.addObjectCreatedNotification(dest);
 
-  expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
+  expect(Template.fromStack(stack).findResources('Custom::S3BucketNotifications').BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',
     Properties: {
       ServiceToken: { 'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'] },
       BucketName: { Ref: 'Bucket83908E77' },
+      Managed: true,
       NotificationConfiguration: { QueueConfigurations: [{ Events: ['s3:ObjectCreated:*'], QueueArn: 'arn' }] },
     },
     DependsOn: ['Dependent'],
@@ -306,7 +336,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailPutObject contains the Bucket ARN itself when path is undefined', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
@@ -314,7 +344,7 @@ describe('CloudWatch Events', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
           'aws.s3',
@@ -333,7 +363,7 @@ describe('CloudWatch Events', () => {
                     {
                       'Ref': 'AWS::Partition',
                     },
-                    ':s3:::MyBucket',
+                    ':s3:::mybucket',
                   ],
                 ],
               },
@@ -348,7 +378,7 @@ describe('CloudWatch Events', () => {
   test("onCloudTrailPutObject contains the path when it's provided", () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
@@ -357,7 +387,7 @@ describe('CloudWatch Events', () => {
       paths: ['my/path.zip'],
     });
 
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
           'aws.s3',
@@ -376,7 +406,7 @@ describe('CloudWatch Events', () => {
                     {
                       'Ref': 'AWS::Partition',
                     },
-                    ':s3:::MyBucket/my/path.zip',
+                    ':s3:::mybucket/my/path.zip',
                   ],
                 ],
               },
@@ -391,7 +421,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailWriteObject matches on events CompleteMultipartUpload, CopyObject, and PutObject', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
@@ -399,7 +429,7 @@ describe('CloudWatch Events', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
           'aws.s3',
@@ -419,7 +449,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailWriteObject matches on the requestParameter bucketName when the path is not provided', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
@@ -427,7 +457,7 @@ describe('CloudWatch Events', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
           'aws.s3',
@@ -446,7 +476,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailWriteObject matches on the requestParameters bucketName and key when the path is provided', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
@@ -455,7 +485,7 @@ describe('CloudWatch Events', () => {
       paths: ['my/path.zip'],
     });
 
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'EventPattern': {
         'source': [
           'aws.s3',

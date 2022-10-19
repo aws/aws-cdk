@@ -24,3 +24,6 @@ jest.config.js
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
+!*.lit.ts
+**/*.integ.snapshot
+**/*.integ.snapshot

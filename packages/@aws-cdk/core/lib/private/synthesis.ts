@@ -1,13 +1,24 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as constructs from 'constructs';
+import { IConstruct } from 'constructs';
 import { Annotations } from '../annotations';
 import { Aspects, IAspect } from '../aspect';
-import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
 import { Stack } from '../stack';
+import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
+
+/**
+ * Options for `synthesize()`
+ */
+export interface SynthesisOptions extends StageSynthesisOptions {
+  /**
+   * The output directory into which to synthesize the cloud assembly.
+   * @default - creates a temporary directory
+   */
+  readonly outdir?: string;
+}
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -16,9 +27,6 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   invokeAspects(root);
 
   injectMetadataResources(root);
-
-  // This is mostly here for legacy purposes as the framework itself does not use prepare anymore.
-  prepareTree(root);
 
   // resolve references
   prepareApp(root);
@@ -36,9 +44,35 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
-  synthesizeTree(root, builder);
+  synthesizeTree(root, builder, options.validateOnSynthesis);
 
   return builder.buildAssembly();
+}
+
+const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
+
+/**
+ * Interface for constructs that want to do something custom during synthesis
+ *
+ * This feature is intended for use by official AWS CDK libraries only; 3rd party
+ * library authors and CDK users should not use this function.
+ */
+export interface ICustomSynthesis {
+  /**
+   * Called when the construct is synthesized
+   */
+  onSynthesize(session: ISynthesisSession): void;
+}
+
+export function addCustomSynthesis(construct: IConstruct, synthesis: ICustomSynthesis): void {
+  Object.defineProperty(construct, CUSTOM_SYNTHESIS_SYM, {
+    value: synthesis,
+    enumerable: false,
+  });
+}
+
+function getCustomSynthesis(construct: IConstruct): ICustomSynthesis | undefined {
+  return (construct as any)[CUSTOM_SYNTHESIS_SYM];
 }
 
 /**
@@ -68,11 +102,11 @@ function invokeAspects(root: IConstruct) {
   let nestedAspectWarning = false;
   recurse(root, []);
 
-  function recurse(construct: IConstruct, inheritedAspects: constructs.IAspect[]) {
+  function recurse(construct: IConstruct, inheritedAspects: IAspect[]) {
     const node = construct.node;
     const aspects = Aspects.of(construct);
-    const allAspectsHere = [...inheritedAspects ?? [], ...aspects.aspects];
-    const nodeAspectsCount = aspects.aspects.length;
+    const allAspectsHere = [...inheritedAspects ?? [], ...aspects.all];
+    const nodeAspectsCount = aspects.all.length;
     for (const aspect of allAspectsHere) {
       let invoked = invokedByPath[node.path];
       if (!invoked) {
@@ -85,7 +119,7 @@ function invokeAspects(root: IConstruct) {
 
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
-      if (!nestedAspectWarning && nodeAspectsCount !== aspects.aspects.length) {
+      if (!nestedAspectWarning && nodeAspectsCount !== aspects.all.length) {
         Annotations.of(construct).addWarning('We detected an Aspect was added via another Aspect, and will not be applied');
         nestedAspectWarning = true;
       }
@@ -100,15 +134,6 @@ function invokeAspects(root: IConstruct) {
       }
     }
   }
-}
-
-/**
- * Prepare all constructs in the given construct tree in post-order.
- *
- * Stop at Assembly boundaries.
- */
-function prepareTree(root: IConstruct) {
-  visit(root, 'post', construct => construct.onPrepare());
 }
 
 /**
@@ -131,7 +156,7 @@ function injectMetadataResources(root: IConstruct) {
   visit(root, 'post', construct => {
     if (!Stack.isStack(construct) || !construct._versionReportingEnabled) { return; }
 
-    // Because of https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assert/lib/synth-utils.ts#L74
+    // Because of https://github.com/aws/aws-cdk/blob/main/packages/assert-internal/lib/synth-utils.ts#L74
     // synthesize() may be called more than once on a stack in unit tests, and the below would break
     // if we execute it a second time. Guard against the constructs already existing.
     const CDKMetadata = 'CDKMetadata';
@@ -146,23 +171,28 @@ function injectMetadataResources(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
+function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
   visit(root, 'post', construct => {
     const session = {
       outdir: builder.outdir,
       assembly: builder,
+      validateOnSynth,
     };
 
     if (Stack.isStack(construct)) {
       construct.synthesizer.synthesize(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
+    } else {
+      const custom = getCustomSynthesis(construct);
+      custom?.onSynthesize(session);
     }
-
-    // this will soon be deprecated and removed in 2.x
-    // see https://github.com/aws/aws-cdk-rfcs/issues/192
-    construct.onSynthesize(session);
   });
+}
+
+interface ValidationError {
+  readonly message: string;
+  readonly source: IConstruct;
 }
 
 /**
@@ -172,8 +202,8 @@ function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
   visit(root, 'pre', construct => {
-    for (const message of construct.onValidate()) {
-      errors.push({ message, source: construct as unknown as Construct });
+    for (const message of construct.node.validate()) {
+      errors.push({ message, source: construct });
     }
   });
 
@@ -186,9 +216,9 @@ function validateTree(root: IConstruct) {
 /**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
-function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstructMethods) => void) {
+function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
   if (order === 'pre') {
-    cb(root as IProtectedConstructMethods);
+    cb(root);
   }
 
   for (const child of root.node.children) {
@@ -197,28 +227,6 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
   }
 
   if (order === 'post') {
-    cb(root as IProtectedConstructMethods);
+    cb(root);
   }
-}
-
-/**
- * Interface which provides access to special methods of Construct
- *
- * @experimental
- */
-interface IProtectedConstructMethods extends IConstruct {
-  /**
-   * Method that gets called when a construct should synthesize itself to an assembly
-   */
-  onSynthesize(session: constructs.ISynthesisSession): void;
-
-  /**
-   * Method that gets called to validate a construct
-   */
-  onValidate(): string[];
-
-  /**
-   * Method that gets called to prepare a construct
-   */
-  onPrepare(): void;
 }

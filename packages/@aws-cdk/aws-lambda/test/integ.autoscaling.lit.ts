@@ -1,5 +1,6 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cdk from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
 
 /**
@@ -14,10 +15,10 @@ class TestStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'MyLambda', {
       code: new lambda.InlineCode('exports.handler = async () => { console.log(\'hello world\'); };'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'integ-test');
+    const version = fn.currentVersion;
 
     const alias = new lambda.Alias(this, 'Alias', {
       aliasName: 'prod',
@@ -48,6 +49,10 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestStack(app, 'aws-lambda-autoscaling');
+const stack = new TestStack(app, 'aws-lambda-autoscaling');
+
+// Changes the function description when the feature flag is present
+// to validate the changed function hash.
+cdk.Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
 
 app.synth();

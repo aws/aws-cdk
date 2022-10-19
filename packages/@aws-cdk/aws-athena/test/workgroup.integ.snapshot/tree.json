@@ -1,0 +1,58 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-athena-workgroup-tags": {
+        "id": "aws-cdk-athena-workgroup-tags",
+        "path": "aws-cdk-athena-workgroup-tags",
+        "children": {
+          "AthenaWorkgroup": {
+            "id": "AthenaWorkgroup",
+            "path": "aws-cdk-athena-workgroup-tags/AthenaWorkgroup",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::WorkGroup",
+              "aws:cdk:cloudformation:props": {
+                "name": "HelloWorld",
+                "description": "A WorkGroup",
+                "recursiveDeleteOption": true,
+                "state": "ENABLED",
+                "tags": [
+                  {
+                    "key": "key1",
+                    "value": "value1"
+                  },
+                  {
+                    "key": "key2",
+                    "value": "value2"
+                  }
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-athena.CfnWorkGroup",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

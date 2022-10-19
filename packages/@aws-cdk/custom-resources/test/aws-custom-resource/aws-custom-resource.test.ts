@@ -1,4 +1,5 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -33,8 +34,8 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
-    'Create': {
+  Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+    'Create': JSON.stringify({
       'service': 'CloudWatchLogs',
       'action': 'putRetentionPolicy',
       'parameters': {
@@ -44,18 +45,18 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       'physicalResourceId': {
         'id': 'loggroup',
       },
-    },
-    'Delete': {
+    }),
+    'Delete': JSON.stringify({
       'service': 'CloudWatchLogs',
       'action': 'deleteRetentionPolicy',
       'parameters': {
         'logGroupName': '/aws/lambda/loggroup',
       },
-    },
+    }),
     'InstallLatestAwsSdk': true,
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     'PolicyDocument': {
       'Statement': [
         {
@@ -95,8 +96,8 @@ test('onCreate defaults to onUpdate', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::S3PutObject', {
-    'Create': {
+  Template.fromStack(stack).hasResourceProperties('Custom::S3PutObject', {
+    'Create': JSON.stringify({
       'service': 's3',
       'action': 'putObject',
       'parameters': {
@@ -107,8 +108,8 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
-    },
-    'Update': {
+    }),
+    'Update': JSON.stringify({
       'service': 's3',
       'action': 'putObject',
       'parameters': {
@@ -119,7 +120,7 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
-    },
+    }),
   });
 });
 
@@ -148,7 +149,7 @@ test('with custom policyStatements', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     'PolicyDocument': {
       'Statement': [
         {
@@ -185,7 +186,7 @@ test('fails when no physical resource method is specified', () => {
   })).toThrow(/`physicalResourceId`/);
 });
 
-test('encodes booleans', () => {
+test('booleans are encoded in the stringified parameters object', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -207,20 +208,20 @@ test('encodes booleans', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::ServiceAction', {
-    'Create': {
+  Template.fromStack(stack).hasResourceProperties('Custom::ServiceAction', {
+    'Create': JSON.stringify({
       'service': 'service',
       'action': 'action',
       'parameters': {
-        'trueBoolean': 'TRUE:BOOLEAN',
+        'trueBoolean': true,
         'trueString': 'true',
-        'falseBoolean': 'FALSE:BOOLEAN',
+        'falseBoolean': false,
         'falseString': 'false',
       },
       'physicalResourceId': {
         'id': 'id',
       },
-    },
+    }),
   });
 });
 
@@ -263,21 +264,21 @@ test('encodes physical resource id reference', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::ServiceAction', {
-    'Create': {
+  Template.fromStack(stack).hasResourceProperties('Custom::ServiceAction', {
+    'Create': JSON.stringify({
       'service': 'service',
       'action': 'action',
       'parameters': {
-        'trueBoolean': 'TRUE:BOOLEAN',
+        'trueBoolean': true,
         'trueString': 'true',
-        'falseBoolean': 'FALSE:BOOLEAN',
+        'falseBoolean': false,
         'falseString': 'false',
         'physicalResourceIdReference': 'PHYSICAL:RESOURCEID:',
       },
       'physicalResourceId': {
         'id': 'id',
       },
-    },
+    }),
   });
 });
 
@@ -296,7 +297,7 @@ test('timeout defaults to 2 minutes', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Timeout: 120,
   });
 });
@@ -317,7 +318,7 @@ test('can specify timeout', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Timeout: 900,
   });
 });
@@ -340,7 +341,7 @@ test('implements IGrantable', () => {
   // WHEN
   role.grantPassRole(customResource.grantPrincipal);
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -376,11 +377,11 @@ test('can use existing role', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: 'arn:aws:iam::123456789012:role/CoolRole',
   });
 
-  expect(stack).not.toHaveResource('AWS::IAM::Role');
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
 });
 
 test('getData', () => {
@@ -524,21 +525,21 @@ test('getDataString', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     Create: {
-      service: 'service',
-      action: 'action',
-      parameters: {
-        a: {
-          'Fn::GetAtt': [
-            'AwsSdk155B91071',
-            'Data',
-          ],
-        },
-      },
-      physicalResourceId: {
-        'id': 'id',
-      },
+      'Fn::Join': [
+        '',
+        [
+          '{"service":"service","action":"action","parameters":{"a":"',
+          {
+            'Fn::GetAtt': [
+              'AwsSdk155B91071',
+              'Data',
+            ],
+          },
+          '"},"physicalResourceId":{"id":"id"}}',
+        ],
+      ],
     },
   });
 });
@@ -559,7 +560,7 @@ test('can specify log retention', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::LogRetention', {
+  Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
     LogGroupName: {
       'Fn::Join': [
         '',
@@ -591,7 +592,7 @@ test('disable AWS SDK installation', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     'InstallLatestAwsSdk': false,
   });
 });
@@ -612,7 +613,7 @@ test('can specify function name', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     FunctionName: 'my-cool-function',
   });
 });
@@ -640,7 +641,7 @@ test('separate policies per custom resource', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -652,7 +653,7 @@ test('separate policies per custom resource', () => {
       Version: '2012-10-17',
     },
   });
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -664,4 +665,249 @@ test('separate policies per custom resource', () => {
       Version: '2012-10-17',
     },
   });
+});
+
+test('tokens can be used as dictionary keys', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const dummy = new cdk.CfnResource(stack, 'MyResource', {
+    type: 'AWS::My::Resource',
+  });
+
+  // WHEN
+  new AwsCustomResource(stack, 'Custom1', {
+    onCreate: {
+      service: 'service1',
+      action: 'action1',
+      physicalResourceId: PhysicalResourceId.of('id1'),
+      parameters: {
+        [dummy.ref]: {
+          Foo: 1234,
+          Bar: dummy.getAtt('Foorz'),
+        },
+      },
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
+    Create: {
+      'Fn::Join': [
+        '',
+        [
+          '{"service":"service1","action":"action1","physicalResourceId":{"id":"id1"},"parameters":{"',
+          {
+            'Ref': 'MyResource',
+          },
+          '":{"Foo":1234,"Bar":"',
+          {
+            'Fn::GetAtt': [
+              'MyResource',
+              'Foorz',
+            ],
+          },
+          '"}}}',
+        ],
+      ],
+    },
+  });
+});
+
+test('assumedRoleArn adds statement for sts:assumeRole', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      assumedRoleArn: 'roleArn',
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Resource: 'roleArn',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('fails when at least one of policy or role is not specified', () => {
+  const stack = new cdk.Stack();
+  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
+    onUpdate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+      parameters: {
+        param: 'param',
+      },
+    },
+  })).toThrow(/`policy`.+`role`/);
+});
+
+test('can provide no policy if using existing role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/CoolRole');
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    role,
+  });
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+});
+
+test('can specify VPC', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestVpc');
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SubnetIds: stack.resolve(vpc.privateSubnets.map(subnet => subnet.subnetId)),
+    },
+  });
+});
+
+test('specifying public subnets results in a synthesis error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestVpc');
+
+  // THEN
+  expect(() => {
+    new AwsCustomResource(stack, 'AwsSdk', {
+      onCreate: {
+        service: 'service',
+        action: 'action',
+        physicalResourceId: PhysicalResourceId.of('id'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+  }).toThrow(/Lambda Functions in a public subnet/);
+});
+
+test('not specifying vpcSubnets when only public subnets exist on a VPC results in an error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestPublicOnlyVpc', {
+    subnetConfiguration: [{ name: 'public', subnetType: ec2.SubnetType.PUBLIC }],
+  });
+
+  // THEN
+  expect(() => {
+    new AwsCustomResource(stack, 'AwsSdk', {
+      onCreate: {
+        service: 'service',
+        action: 'action',
+        physicalResourceId: PhysicalResourceId.of('id'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      vpc,
+    });
+  }).toThrow(/Lambda Functions in a public subnet/);
+});
+
+test('vpcSubnets filter is not required when only isolated subnets exist', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestPrivateOnlyVpc', {
+    subnetConfiguration: [
+      { name: 'test1private', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      { name: 'test2private', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    ],
+  });
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SubnetIds: stack.resolve(vpc.isolatedSubnets.map(subnet => subnet.subnetId)),
+    },
+  });
+});
+
+test('vpcSubnets filter is not required for the default VPC configuration', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'TestVpc');
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SubnetIds: stack.resolve(vpc.privateSubnets.map(subnet => subnet.subnetId)),
+    },
+  });
+});
+
+test('vpcSubnets without vpc results in an error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+  })).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
 });

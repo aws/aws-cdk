@@ -222,6 +222,22 @@ describe('DynamoAttributeValue', () => {
     });
   });
 
+  test('from list with json path', () => {
+    // GIVEN
+    const m = '$.path';
+    // WHEN
+    const attribute = tasks.DynamoAttributeValue.listFromJsonPath(
+      sfn.JsonPath.stringAt(m),
+    );
+
+    // THEN
+    expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
+      attributeValue: {
+        'L.$': m,
+      },
+    });
+  });
+
   test('from null', () => {
     // WHEN
     const attribute = tasks.DynamoAttributeValue.fromNull(true);

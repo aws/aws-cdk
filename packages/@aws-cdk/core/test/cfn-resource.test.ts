@@ -1,9 +1,12 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as core from '../lib';
+import { getWarnings } from './util';
 
-nodeunitShim({
-  '._toCloudFormation': {
-    'does not call renderProperties with an undefined value'(test: Test) {
+describe('cfn resource', () => {
+  describe('._toCloudFormation', () => {
+    test('does not call renderProperties with an undefined value', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
@@ -11,22 +14,18 @@ nodeunitShim({
       let called = false;
       (resource as any).renderProperties = (val: any) => {
         called = true;
-        test.notEqual(val, null);
+        expect(val).not.toBeNull();
       };
 
-      test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-        Resources: {
-          DefaultResource: {
-            Type: 'Test::Resource::Fake',
-          },
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
         },
       });
-      test.ok(called, 'renderProperties must be called called');
+      expect(called).toEqual(true);
+    });
 
-      test.done();
-    },
-
-    'renders "Properties" for a resource that has only properties set to "false"'(test: Test) {
+    test('renders "Properties" for a resource that has only properties set to "false"', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       new core.CfnResource(stack, 'Resource', {
@@ -36,22 +35,108 @@ nodeunitShim({
         },
       });
 
-      test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-        Resources: {
-          Resource: {
-            Type: 'Test::Resource::Fake',
-            Properties: {
-              FakeProperty: false,
-            },
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        Resource: {
+          Type: 'Test::Resource::Fake',
+          Properties: {
+            FakeProperty: false,
           },
         },
       });
+    });
+  });
 
-      test.done();
-    },
-  },
+  describe('snapshot removal policy', () => {
+    const supportedResources = [
+      'AWS::EC2::Volume',
+      'AWS::ElastiCache::CacheCluster',
+      'AWS::ElastiCache::ReplicationGroup',
+      'AWS::Neptune::DBCluster',
+      'AWS::RDS::DBCluster',
+      'AWS::RDS::DBInstance',
+      'AWS::Redshift::Cluster',
+    ];
 
-  'applyRemovalPolicy default includes Update policy'(test: Test) {
+    test.each(supportedResources) (
+      'works as expected when used on supported resources (old behavior)', (resourceType) => {
+        // GIVEN
+        const app = new core.App();
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test.each(supportedResources) (
+      'works as expected when used on supported resources (under feature flag)', (resourceType) => {
+        // GIVEN
+        const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test('warns on unsupported resources (without feature flag)', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // WHEN
+      resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+      // THEN
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          path: '/Default/Resource',
+          message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored.',
+        },
+      ]);
+    });
+
+    test('fails on unsupported resources (under feature flag)', () => {
+      // GIVEN
+      const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // THEN
+      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError('AWS::Lambda::Function does not support snapshot removal policy');
+    });
+  });
+
+  test('applyRemovalPolicy default includes Update policy', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -61,20 +146,16 @@ nodeunitShim({
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain',
-        },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       },
     });
+  });
 
-    test.done();
-  },
-
-  'can switch off updating Update policy'(test: Test) {
+  test('can switch off updating Update policy', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -86,19 +167,15 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-        },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
       },
     });
+  });
 
-    test.done();
-  },
-
-  'can add metadata'(test: Test) {
+  test('can add metadata', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -108,21 +185,17 @@ nodeunitShim({
     resource.addMetadata('Beep', 'Boop');
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          Metadata: {
-            Beep: 'Boop',
-          },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        Metadata: {
+          Beep: 'Boop',
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'can read metadata'(test: Test) {
+  test('can read metadata', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -131,11 +204,9 @@ nodeunitShim({
 
     // THEN
     expect(resource.getMetadata('Beep')).toEqual('Boop');
+  });
 
-    test.done();
-  },
-
-  'subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included'(test: Test) {
+  test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
     // GIVEN
     class HiddenCfnResource extends core.CfnResource {
       protected shouldSynthesize() {
@@ -145,7 +216,7 @@ nodeunitShim({
 
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
-    const subtree = new core.Construct(stack, 'subtree');
+    const subtree = new Construct(stack, 'subtree');
 
     // WHEN
     new HiddenCfnResource(subtree, 'R1', { type: 'Foo::R1' });
@@ -155,41 +226,53 @@ nodeunitShim({
     r2.node.addDependency(subtree);
 
     // THEN - only R2 is synthesized
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: { R2: { Type: 'Foo::R2' } },
-
-      // No DependsOn!
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      R2: {
+        Type: 'Foo::R2',
+        // No DependsOn!
+      },
     });
+  });
 
-    test.done();
-  },
-
-  'CfnResource cannot be created outside Stack'(test: Test) {
+  test('CfnResource cannot be created outside Stack', () => {
     const app = new core.App();
-    test.throws(() => {
+    expect(() => {
       new core.CfnResource(app, 'Resource', {
         type: 'Some::Resource',
       });
-    }, /should be created in the scope of a Stack, but no Stack found/);
-
-
-    test.done();
-  },
+    }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
+  });
 
   /**
    * Stages start a new scope, which does not count as a Stack anymore
    */
-  'CfnResource cannot be in Stage in Stack'(test: Test) {
+  test('CfnResource cannot be in Stage in Stack', () => {
     const app = new core.App();
     const stack = new core.Stack(app, 'Stack');
     const stage = new core.Stage(stack, 'Stage');
-    test.throws(() => {
+    expect(() => {
       new core.CfnResource(stage, 'Resource', {
         type: 'Some::Resource',
       });
-    }, /should be created in the scope of a Stack, but no Stack found/);
+    }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
+  });
 
+  test('CfnResource has logical ID metadata with stack trace attached', () => {
+    process.env.CDK_DEBUG = '1';
+    try {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack');
+      const res = new core.CfnResource(stack, 'SomeCfnResource', {
+        type: 'Some::Resource',
+      });
 
-    test.done();
-  },
+      // THEN
+      const metadata = res.node.metadata.find(m => m.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
+      expect(metadata).toBeDefined();
+      expect(metadata?.trace).toBeDefined();
+      expect(metadata?.trace?.length).toBeGreaterThan(0);
+    } finally {
+      delete process.env.CDK_DEBUG;
+    }
+  });
 });

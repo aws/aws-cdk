@@ -1,7 +1,6 @@
 /**
  * This build file has two purposes:
- *   1. It adds a dependency on each @aws-cdk/aws-xyz package with L1s to this package,
- *     similarly to how deps.js does for decdk.
+ *   1. It adds a dependency on each @aws-cdk/aws-xyz package with L1s to this package.
  *   2. It generates the file cfn-types-2-classes.json that contains a mapping
  *     between the CloudFormation type and the fully-qualified name of the L1 class,
  *     used in the logic of the CfnInclude class.
@@ -29,6 +28,8 @@ async function main() {
 
   for (const constructLibraryDir of constructLibrariesDirs) {
     const absConstructLibraryDir = path.resolve(constructLibrariesRoot, constructLibraryDir);
+    if (!fs.statSync(absConstructLibraryDir).isDirectory()) { continue; } // .DS_Store
+
     const libraryPackageJson = require(path.join(absConstructLibraryDir, 'package.json'));
 
     const libraryDependencyVersion = dependencies[libraryPackageJson.name];

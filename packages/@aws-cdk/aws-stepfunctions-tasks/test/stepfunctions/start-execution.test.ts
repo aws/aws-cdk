@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { StepFunctionsStartExecution } from '../../lib/stepfunctions/start-execution';
@@ -85,7 +85,7 @@ test('Execute State Machine - Run Job', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -214,4 +214,56 @@ test('Execute State Machine - Wait For Task Token - Missing Task Token', () => {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
   }).toThrow('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.');
+});
+
+test('Execute State Machine - Associate With Parent - Input Provided', () => {
+  const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
+    stateMachine: child,
+    input: sfn.TaskInput.fromObject({
+      token: sfn.JsonPath.taskToken,
+    }),
+    associateWithParent: true,
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definition: task,
+  });
+
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      Input: {
+        'token.$': '$$.Task.Token',
+        'AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$': '$$.Execution.Id',
+      },
+    },
+  });
+});
+
+test('Execute State Machine - Associate With Parent - Input Not Provided', () => {
+  const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
+    stateMachine: child,
+    associateWithParent: true,
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definition: task,
+  });
+
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      Input: {
+        'AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$': '$$.Execution.Id',
+      },
+    },
+  });
+});
+
+test('Execute State Machine - Associate With Parent - Incorrect Input Type', () => {
+  expect(() => {
+    new StepFunctionsStartExecution(stack, 'ChildTask', {
+      stateMachine: child,
+      associateWithParent: true,
+      input: sfn.TaskInput.fromText('{ "token.$": "$$.Task.Token" }'),
+    });
+  }).toThrow('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.');
 });

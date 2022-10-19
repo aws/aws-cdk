@@ -4,12 +4,89 @@ import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
+/**
+ * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/API_SourceAccessConfiguration.html#SSS-Type-SourceAccessConfiguration-Type
+ */
+export class SourceAccessConfigurationType {
+
+  /**
+   * (MQ) The Secrets Manager secret that stores your broker credentials.
+   */
+  public static readonly BASIC_AUTH = new SourceAccessConfigurationType('BASIC_AUTH');
+
+  /**
+   * The subnets associated with your VPC. Lambda connects to these subnets to fetch data from your Self-Managed Apache Kafka cluster.
+   */
+  public static readonly VPC_SUBNET = new SourceAccessConfigurationType('VPC_SUBNET');
+
+  /**
+   * The VPC security group used to manage access to your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly VPC_SECURITY_GROUP = new SourceAccessConfigurationType('VPC_SECURITY_GROUP');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-256 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_256_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_256_AUTH');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-512 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
+
+  /**
+   * The Secrets Manager ARN of your secret key containing the certificate chain (X.509 PEM), private key (PKCS#8 PEM),
+   * and private key password (optional) used for mutual TLS authentication of your MSK/Apache Kafka brokers.
+   */
+  public static readonly CLIENT_CERTIFICATE_TLS_AUTH = new SourceAccessConfigurationType('CLIENT_CERTIFICATE_TLS_AUTH');
+
+  /**
+   * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
+   */
+  public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
+
+  /** A custom source access configuration property */
+  public static of(name: string): SourceAccessConfigurationType {
+    return new SourceAccessConfigurationType(name);
+  }
+
+  /**
+   * The key to use in `SourceAccessConfigurationProperty.Type` property in CloudFormation
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html#cfn-lambda-eventsourcemapping-sourceaccessconfiguration-type
+   */
+  public readonly type: string;
+
+  private constructor(type: string) {
+    this.type = type;
+  }
+}
+
+/**
+ * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
+ */
+export interface SourceAccessConfiguration {
+  /**
+   * The type of authentication protocol or the VPC components for your event source. For example: "SASL_SCRAM_512_AUTH".
+   */
+  readonly type: SourceAccessConfigurationType,
+  /**
+   * The value for your chosen configuration in type.
+   * For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
+   * The exact string depends on the type.
+   * @see SourceAccessConfigurationType
+   */
+  readonly uri: string
+}
+
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
+   *
+   * @default - not set if using a self managed Kafka cluster, throws an error otherwise
    */
-  readonly eventSourceArn: string;
+  readonly eventSourceArn?: string;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -19,7 +96,7 @@ export interface EventSourceMappingOptions {
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
    * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
-   * Both the default and maximum for Amazon SQS are 10 messages.
+   * The default for Amazon SQS is 10 messages. For standard SQS queues, the maximum is 10,000. For FIFO SQS queues, the maximum is 10.
    */
   readonly batchSize?: number;
 
@@ -50,9 +127,25 @@ export interface EventSourceMappingOptions {
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
+   * @default - no starting position
    */
   readonly startingPosition?: StartingPosition;
+
+  /**
+   * The time from which to start reading, in Unix time seconds.
+   *
+   * @default - no timestamp
+   */
+  readonly startingPositionTimestamp?: number;
+
+  /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -101,6 +194,52 @@ export interface EventSourceMappingOptions {
    * @default - no topic
    */
   readonly kafkaTopic?: string;
+
+  /**
+   * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-windows
+   *
+   * Valid Range: 0 - 15 minutes
+   *
+   * @default - None
+   */
+  readonly tumblingWindow?: cdk.Duration;
+
+  /**
+   * A list of host and port pairs that are the addresses of the Kafka brokers in a self managed "bootstrap" Kafka cluster
+   * that a Kafka client connects to initially to bootstrap itself.
+   * They are in the format `abc.example.com:9096`.
+   *
+   * @default - none
+   */
+  readonly kafkaBootstrapServers?: string[]
+
+  /**
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-amazonmanagedkafkaeventsourceconfig.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+   *
+   * @default - none
+   */
+  readonly kafkaConsumerGroupId?: string
+
+
+  /**
+   * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
+   *
+   * @default - none
+   */
+  readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
+
+  /**
+   * Add filter criteria to Event Source
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   *
+   * @default - none
+   */
+  readonly filters?: Array<{[key: string]: any}>
 }
 
 /**
@@ -154,6 +293,18 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
+    if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
+      throw new Error('Either eventSourceArn or kafkaBootstrapServers must be set');
+    }
+
+    if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
+      throw new Error('eventSourceArn and kafkaBootstrapServers are mutually exclusive');
+    }
+
+    if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
+      throw new Error('kafkaBootStrapServers must not be empty if set');
+    }
+
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
@@ -174,6 +325,21 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
     });
 
+    if (props.tumblingWindow && !cdk.Token.isUnresolved(props.tumblingWindow) && props.tumblingWindow.toSeconds() > 900) {
+      throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
+    }
+
+    if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
+      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.kafkaConsumerGroupId) {
+      this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
+    }
 
     let destinationConfig;
 
@@ -183,6 +349,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       };
     }
 
+    let selfManagedEventSource;
+    if (props.kafkaBootstrapServers) {
+      selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
+    }
+
+    let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
+
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
@@ -191,13 +364,33 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      startingPositionTimestamp: props.startingPositionTimestamp,
+      functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
+      tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
+      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+      selfManagedEventSource,
+      filterCriteria: props.filters ? { filters: props.filters }: undefined,
+      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
+      amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
+  }
+
+  private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {
+    if (kafkaConsumerGroupId.length > 200 ||kafkaConsumerGroupId.length < 1) {
+      throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+    }
+
+    const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
+    const patternMatch = regex.exec(kafkaConsumerGroupId);
+    if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
+      throw new Error('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+    }
   }
 }
 
@@ -217,4 +410,11 @@ export enum StartingPosition {
    * always read the most recent data in the shard
    */
   LATEST = 'LATEST',
+
+  /**
+   * Start reading from a position defined by a time stamp.
+   * Only supported for Amazon Kinesis streams, otherwise an error will occur.
+   * If supplied, `startingPositionTimestamp` must also be set.
+   */
+  AT_TIMESTAMP = 'AT_TIMESTAMP',
 }

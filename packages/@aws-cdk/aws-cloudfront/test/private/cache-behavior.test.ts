@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import { AllowedMethods, CachedMethods, CachePolicy, KeyGroup, LambdaEdgeEventType, OriginRequestPolicy, PublicKey, ViewerProtocolPolicy } from '../../lib';

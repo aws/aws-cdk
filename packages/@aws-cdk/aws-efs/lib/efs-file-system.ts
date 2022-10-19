@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { ArnFormat, FeatureFlags, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -35,6 +37,19 @@ export enum LifecyclePolicy {
    * After 90 days of not being accessed.
    */
   AFTER_90_DAYS = 'AFTER_90_DAYS'
+}
+
+/**
+ * EFS Out Of Infrequent Access Policy, if a file is accessed given times, it will move back to primary
+ * storage class.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-lifecyclepolicy.html#cfn-efs-filesystem-lifecyclepolicy-transitiontoprimarystorageclass
+ */
+export enum OutOfInfrequentAccessPolicy {
+  /**
+   * After 1 access
+   */
+  AFTER_1_ACCESS = 'AFTER_1_ACCESS'
 }
 
 /**
@@ -89,10 +104,22 @@ export interface IFileSystem extends ec2.IConnectable, IResource {
   readonly fileSystemId: string;
 
   /**
+   * The ARN of the file system.
+   *
+   * @attribute
+   */
+  readonly fileSystemArn: string;
+
+  /**
    * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
    */
   readonly mountTargetsAvailable: IDependable;
 
+  /**
+   * Grant the actions defined in actions to the given grantee
+   * on this File System resource.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -122,7 +149,8 @@ export interface FileSystemProps {
   /**
    * Defines if the data at rest in the file system is encrypted or not.
    *
-   * @default false
+   * @default - If your application has the '@aws-cdk/aws-efs:defaultEncryptionAtRest' feature flag set, the default is true, otherwise, the default is false.
+   * @link https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
    */
   readonly encrypted?: boolean;
 
@@ -147,6 +175,13 @@ export interface FileSystemProps {
    */
   readonly lifecyclePolicy?: LifecyclePolicy;
 
+  /**
+   * A policy used by EFS lifecycle management to transition files from Infrequent Access (IA) storage class to
+   * primary storage class.
+   *
+   * @default - None. EFS will not transition files from IA storage to primary storage.
+   */
+  readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -198,8 +233,53 @@ export interface FileSystemAttributes {
 
   /**
    * The File System's ID.
+   *
+   * @default - determined based on fileSystemArn
    */
-  readonly fileSystemId: string;
+  readonly fileSystemId?: string;
+
+  /**
+   * The File System's Arn.
+   *
+   * @default - determined based on fileSystemId
+   */
+  readonly fileSystemArn?: string;
+}
+
+abstract class FileSystemBase extends Resource implements IFileSystem {
+  /**
+   * The security groups/rules used to allow network connections to the file system.
+   */
+  public abstract readonly connections: ec2.Connections;
+
+  /**
+  * @attribute
+  */
+  public abstract readonly fileSystemId: string;
+  /**
+  * @attribute
+  */
+  public abstract readonly fileSystemArn: string;
+
+  /**
+   * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
+   */
+  public abstract readonly mountTargetsAvailable: IDependable;
+
+  /**
+   * Grant the actions defined in actions to the given grantee
+   * on this File System resource.
+   *
+   * @param grantee Principal to grant right to
+   * @param actions The actions to grant
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: actions,
+      resourceArns: [this.fileSystemArn],
+    });
+  }
 }
 
 /**
@@ -212,7 +292,7 @@ export interface FileSystemAttributes {
  *
  * @resource AWS::EFS::FileSystem
  */
-export class FileSystem extends Resource implements IFileSystem {
+export class FileSystem extends FileSystemBase {
   /**
    * The default port File System listens on.
    */
@@ -234,10 +314,14 @@ export class FileSystem extends Resource implements IFileSystem {
    * @attribute
    */
   public readonly fileSystemId: string;
+  /**
+   * @attribute
+   */
+  public readonly fileSystemArn: string;
 
   public readonly mountTargetsAvailable: IDependable;
 
-  private readonly _mountTargetsAvailable = new ConcreteDependable();
+  private readonly _mountTargetsAvailable = new DependencyGroup();
 
   /**
    * Constructor for creating a new EFS FileSystem.
@@ -249,10 +333,26 @@ export class FileSystem extends Resource implements IFileSystem {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
+    // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
+    // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
+    const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
+      cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
+
+    // LifecyclePolicies is an array of lists containing a single policy
+    let lifecyclePolicies = [];
+
+    if (props.lifecyclePolicy) {
+      lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
+    }
+
+    if (props.outOfInfrequentAccessPolicy) {
+      lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
+    }
+
     const filesystem = new CfnFileSystem(this, 'Resource', {
-      encrypted: props.encrypted,
+      encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
-      lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
+      lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
@@ -261,6 +361,8 @@ export class FileSystem extends Resource implements IFileSystem {
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
+    this.fileSystemArn = filesystem.attrArn;
+
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
@@ -301,7 +403,7 @@ export class FileSystem extends Resource implements IFileSystem {
   }
 }
 
-class ImportedFileSystem extends Resource implements IFileSystem {
+class ImportedFileSystem extends FileSystemBase {
   /**
    * The security groups/rules used to allow network connections to the file system.
    */
@@ -313,6 +415,11 @@ class ImportedFileSystem extends Resource implements IFileSystem {
   public readonly fileSystemId: string;
 
   /**
+   * @attribute
+   */
+  public readonly fileSystemArn: string;
+
+  /**
    * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
    */
   public readonly mountTargetsAvailable: IDependable;
@@ -320,13 +427,29 @@ class ImportedFileSystem extends Resource implements IFileSystem {
   constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
     super(scope, id);
 
-    this.fileSystemId = attrs.fileSystemId;
+    if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
+      throw new Error('One of fileSystemId or fileSystemArn, but not both, must be provided.');
+    }
+
+    this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
+      service: 'elasticfilesystem',
+      resource: 'file-system',
+      resourceName: attrs.fileSystemId,
+    });
+
+    const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    if (!parsedArn.resourceName) {
+      throw new Error(`Invalid FileSystem Arn ${this.fileSystemArn}`);
+    }
+
+    this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;
 
     this.connections = new ec2.Connections({
       securityGroups: [attrs.securityGroup],
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    this.mountTargetsAvailable = new ConcreteDependable();
+    this.mountTargetsAvailable = new DependencyGroup();
   }
 }

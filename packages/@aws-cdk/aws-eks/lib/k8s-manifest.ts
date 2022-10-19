@@ -1,11 +1,8 @@
 import { CustomResource, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { AlbScheme } from './alb-controller';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
 
@@ -44,6 +41,23 @@ export interface KubernetesManifestOptions {
    * @default false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Automatically detect `Ingress` resources in the manifest and annotate them so they
+   * are picked up by an ALB Ingress Controller.
+   *
+   * @default false
+   */
+  readonly ingressAlb?: boolean;
+
+  /**
+   * Specify the ALB scheme that should be applied to `Ingress` resources.
+   * Only applicable if `ingressAlb` is set to `true`.
+   *
+   * @default AlbScheme.INTERNAL
+   */
+  readonly ingressAlbScheme?: AlbScheme;
+
 }
 
 /**
@@ -100,7 +114,7 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
  *
  * Applies/deletes the manifest using `kubectl`.
  */
-export class KubernetesManifest extends CoreConstruct {
+export class KubernetesManifest extends Construct {
   /**
    * The CloudFormation reosurce type.
    */
@@ -117,7 +131,11 @@ export class KubernetesManifest extends CoreConstruct {
       ? this.injectPruneLabel(props.manifest)
       : undefined;
 
-    new CustomResource(this, 'Resource', {
+    if (props.ingressAlb ?? false) {
+      this.injectIngressAlbAnnotations(props.manifest, props.ingressAlbScheme ?? AlbScheme.INTERNAL);
+    }
+
+    const customResource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: KubernetesManifest.RESOURCE_TYPE,
       properties: {
@@ -132,6 +150,8 @@ export class KubernetesManifest extends CoreConstruct {
         SkipValidation: props.skipValidation,
       },
     });
+
+    this.node.defaultChild = customResource.node.defaultChild;
   }
 
   /**
@@ -166,5 +186,30 @@ export class KubernetesManifest extends CoreConstruct {
     }
 
     return pruneLabel;
+  }
+
+  /**
+   * Inject the necessary ingress annontations if possible (and requested).
+   *
+   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/
+   */
+  private injectIngressAlbAnnotations(manifest: Record<string, any>[], scheme: AlbScheme) {
+
+    for (const resource of manifest) {
+
+      // skip resource if it's not an object or if it does not have a "kind"
+      if (typeof(resource) !== 'object' || !resource.kind) {
+        continue;
+      }
+
+      if (resource.kind === 'Ingress') {
+        resource.metadata.annotations = {
+          'kubernetes.io/ingress.class': 'alb',
+          'alb.ingress.kubernetes.io/scheme': scheme,
+          ...resource.metadata.annotations,
+        };
+      }
+    }
+
   }
 }

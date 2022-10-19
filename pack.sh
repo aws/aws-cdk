@@ -4,7 +4,7 @@
 # later read by bundle-beta.sh.
 set -eu
 export PATH=$PWD/node_modules/.bin:$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}"
 root=$PWD
 
 # Get version and changelog file name (these require that .versionrc.json would have been generated)
@@ -36,20 +36,12 @@ function lerna_scopes() {
   done
 }
 
-# Compile examples with respect to "decdk" directory, as all packages will
-# be symlinked there so they can all be included.
-echo "Extracting code samples" >&2
-node --experimental-worker $(which $ROSETTA) \
-  --compile \
-  --output samples.tabl.json \
-  --directory packages/decdk \
-  $(cat $TMPDIR/jsii.txt)
+scripts/run-rosetta.sh --infuse --pkgs-from $TMPDIR/jsii.txt
 
 # Jsii packaging (all at once using jsii-pacmak)
 echo "Packaging jsii modules" >&2
 $PACMAK \
   --verbose \
-  --rosetta-tablet samples.tabl.json \
   $(cat $TMPDIR/jsii.txt)
 
 # Non-jsii packaging, which means running 'package' in every individual
@@ -61,6 +53,16 @@ lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --st
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do
   echo "Merging ${dir} into ${distdir}" >&2
   rsync -a $dir/ ${distdir}/
+done
+
+# Record the dependency order of NPM packages into a file
+# (This file will be opportunistically used during publishing)
+#
+# Manually sort 'aws-cdk' to the end, as the 'cdk init' command has implicit dependencies
+# on other packages (that should not appear in 'package.json' and so
+# there is no way to tell lerna about these).
+for dir in $(lerna ls --toposort -p | grep -v packages/aws-cdk) $PWD/packages/aws-cdk; do
+  (cd $dir/dist/js && ls >> ${distdir}/js/npm-publish-order.txt) || true
 done
 
 # Remove a JSII aggregate POM that may have snuk past
@@ -82,8 +84,12 @@ cat > ${distdir}/build.json <<HERE
 }
 HERE
 
-# copy CHANGELOG.md to dist/ for github releases
+# copy CHANGELOG.md and RELEASE_NOTES.md to dist/ for github releases
 cp ${changelog_file} ${distdir}/CHANGELOG.md
+# Release notes are not available for bump candidate builds.
+if ! ${BUMP_CANDIDATE:-false}; then
+  cp RELEASE_NOTES.md ${distdir}/RELEASE_NOTES.md
+fi
 
 # defensive: make sure our artifacts don't use the version marker (this means
 # that "pack" will always fails when building in a dev environment)

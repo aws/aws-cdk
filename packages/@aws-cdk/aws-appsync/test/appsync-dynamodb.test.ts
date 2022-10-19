@@ -1,8 +1,9 @@
-import '@aws-cdk/assert/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as db from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import { KeyCondition } from '../lib';
 
 function joined(str: string): string {
   return str.replace(/\s+/g, '');
@@ -36,7 +37,7 @@ describe('DynamoDb Data Source configuration', () => {
     api.addDynamoDbDataSource('ds', table);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'ds',
     });
@@ -49,7 +50,7 @@ describe('DynamoDb Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'custom',
     });
@@ -63,7 +64,7 @@ describe('DynamoDb Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'custom',
       Description: 'custom description',
@@ -80,6 +81,24 @@ describe('DynamoDb Data Source configuration', () => {
 });
 
 describe('DynamoDB Mapping Templates', () => {
+  test('read consistency option for dynamoDbScanTable should render correctly', () => {
+    const template = appsync.MappingTemplate.dynamoDbScanTable(true);
+    const rendered = joined(template.renderTemplate());
+    expect(rendered).toStrictEqual('{\"version\":\"2017-02-28\",\"operation\":\"Scan\",\"consistentRead\":true}');
+  });
+
+  test('read consistency option for dynamoDbGetItem should render correctly', () => {
+    const template = appsync.MappingTemplate.dynamoDbGetItem('id', 'id', true);
+    const rendered = joined(template.renderTemplate());
+    expect(rendered).toStrictEqual('{\"version\":\"2017-02-28\",\"operation\":\"GetItem\",\"consistentRead\":true,\"key\":{\"id\":$util.dynamodb.toDynamoDBJson($ctx.args.id)}}');
+  });
+
+  test('read consistency option for dynamoDbQuery should render correctly', () => {
+    const template = appsync.MappingTemplate.dynamoDbQuery(KeyCondition.eq('order', 'order'), 'orderIndex', true);
+    const rendered = joined(template.renderTemplate());
+    expect(rendered).toStrictEqual('{\"version\":\"2017-02-28\",\"operation\":\"Query\",\"consistentRead\":true,\"index\":\"orderIndex\",\"query\":{\"expression\":\"#order=:order\",\"expressionNames\":{\"#order\":\"order\"},\"expressionValues\":{\":order\":$util.dynamodb.toDynamoDBJson($ctx.args.order)}}}');
+  });
+
   test('PutItem projecting all', () => {
     const template = appsync.MappingTemplate.dynamoDbPutItem(
       appsync.PrimaryKey.partition('id').is('id'),
@@ -166,7 +185,7 @@ describe('adding DynamoDb data source from imported api', () => {
     importedApi.addDynamoDbDataSource('ds', table);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -181,7 +200,7 @@ describe('adding DynamoDb data source from imported api', () => {
     importedApi.addDynamoDbDataSource('ds', table);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

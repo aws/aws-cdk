@@ -1,19 +1,19 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
+} from '@aws-cdk/aws-ecs';
+import {
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -78,7 +78,9 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -88,7 +90,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - No certificate associated with the load balancer, if using
    * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
-   * created for the load balancer's specified domain name.
+   * created for the load balancer's specified domain name if a domain name
+   * and domain zone are specified.
    */
   readonly certificate?: ICertificate;
 
@@ -104,13 +107,20 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * The protocol for connections from clients to the load balancer.
    * The load balancer port is determined from the protocol (port 80 for
-   * HTTP, port 443 for HTTPS).  A domain name and zone must be also be
-   * specified if using HTTPS.
+   * HTTP, port 443 for HTTPS).  If HTTPS, either a certificate or domain
+   * name and domain zone must also be specified.
    *
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -179,6 +189,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly listenerPort?: number;
 
   /**
+   * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
+   *
+   * @default - The recommended elastic load balancing security policy
+   */
+  readonly sslPolicy?: SslPolicy;
+
+  /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
@@ -224,6 +241,42 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Name of the load balancer
+   *
+   * @default - Automatically generated name.
+   */
+  readonly loadBalancerName?: string;
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The load balancer idle timeout, in seconds. Can be between 1 and 4000 seconds
+   *
+   * @default - CloudFormation sets idle timeout to 60 seconds
+   */
+  readonly idleTimeout?: Duration;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -305,17 +358,32 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
-export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
+export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
    */
   public readonly desiredCount: number;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service if one is not provided.
+   */
+  public readonly internalDesiredCount?: number;
 
   /**
    * The Application Load Balancer for the service.
@@ -365,16 +433,27 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
+
     this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
+    if (props.idleTimeout) {
+      const idleTimeout = props.idleTimeout.toSeconds();
+      if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
+        throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
+      }
+    }
+
     const lbProps = {
       vpc: this.cluster.vpc,
+      loadBalancerName: props.loadBalancerName,
       internetFacing,
+      idleTimeout: props.idleTimeout,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
@@ -390,23 +469,26 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const targetProps: AddApplicationTargetsProps = {
       protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
+      protocolVersion: props.protocolVersion,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
+      sslPolicy: props.sslPolicy,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
-      if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
-        throw new Error('A domain name and zone is required when using the HTTPS protocol');
-      }
 
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
+        if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
+          throw new Error('A domain name and zone is required when using the HTTPS protocol');
+        }
+
         this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
           validation: CertificateValidation.fromDns(props.domainZone),
@@ -469,7 +551,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);

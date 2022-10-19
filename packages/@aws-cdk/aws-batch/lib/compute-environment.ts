@@ -1,12 +1,12 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**
  * Property to specify if the compute environment
- * uses On-Demand or SpotFleet compute resources.
+ * uses On-Demand, SpotFleet, Fargate, or Fargate Spot compute resources.
  */
 export enum ComputeResourceType {
   /**
@@ -18,6 +18,20 @@ export enum ComputeResourceType {
    * Resources will be EC2 SpotFleet resources.
    */
   SPOT = 'SPOT',
+
+  /**
+   * Resources will be Fargate resources.
+   */
+  FARGATE = 'FARGATE',
+
+  /**
+   * Resources will be Fargate Spot resources.
+   *
+   * Fargate Spot uses spare capacity in the AWS cloud to run your fault-tolerant,
+   * time-flexible jobs at up to a 70% discount. If AWS needs the resources back,
+   * jobs running on Fargate Spot will be interrupted with two minutes of notification.
+   */
+  FARGATE_SPOT = 'FARGATE_SPOT',
 }
 
 /**
@@ -52,15 +66,36 @@ export enum AllocationStrategy {
  */
 export interface LaunchTemplateSpecification {
   /**
-   * The Launch template name
+   * The Launch template ID. Mutually exclusive with `launchTemplateName`.
+   *
+   * @default - no launch template id provided
    */
-  readonly launchTemplateName: string;
+  readonly launchTemplateId?: string;
+  /**
+   * The Launch template name. Mutually exclusive with `launchTemplateId`
+   *
+   * @default - no launch template name provided
+   */
+  readonly launchTemplateName?: string;
   /**
    * The launch template version to be used (optional).
    *
    * @default - the default version of the launch template
    */
   readonly version?: string;
+  /**
+   * Use security groups defined in the launch template network interfaces
+   *
+   * In some cases, such as specifying Elastic Fabric Adapters,
+   * network interfaces must be used to specify security groups.  This
+   * parameter tells the Compute Environment construct that this is your
+   * intention, and stops it from creating its own security groups.  This
+   * parameter is mutually exclusive with securityGroups in the Compute
+   * Environment
+   *
+   * @default - false
+   */
+  readonly useNetworkInterfaceSecurityGroups?: boolean;
 }
 
 /**
@@ -116,9 +151,11 @@ export interface ComputeResources {
   readonly instanceTypes?: ec2.InstanceType[];
 
   /**
-   * The EC2 security group(s) associated with instances launched in the compute environment.
+   * Up to 5 EC2 security group(s) associated with instances launched in the compute environment.
    *
-   * @default - AWS default security group.
+   * This parameter is mutually exclusive with launchTemplate.useNetworkInterfaceSecurityGroups
+   *
+   * @default - Create a single default security group.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -135,7 +172,7 @@ export interface ComputeResources {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * The type of compute environment: ON_DEMAND or SPOT.
+   * The type of compute environment: ON_DEMAND, SPOT, FARGATE, or FARGATE_SPOT.
    *
    * @default ON_DEMAND
    */
@@ -301,7 +338,7 @@ export interface IComputeEnvironment extends IResource {
  *
  * Defines a batch compute environment to run batch jobs on.
  */
-export class ComputeEnvironment extends Resource implements IComputeEnvironment {
+export class ComputeEnvironment extends Resource implements IComputeEnvironment, ec2.IConnectable {
   /**
    * Fetches an existing batch compute environment by its amazon resource name.
    *
@@ -311,7 +348,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    */
   public static fromComputeEnvironmentArn(scope: Construct, id: string, computeEnvironmentArn: string): IComputeEnvironment {
     const stack = Stack.of(scope);
-    const computeEnvironmentName = stack.parseArn(computeEnvironmentArn).resourceName!;
+    const computeEnvironmentName = stack.splitArn(computeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends Resource implements IComputeEnvironment {
       public readonly computeEnvironmentArn = computeEnvironmentArn;
@@ -335,49 +372,64 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    */
   public readonly computeEnvironmentName: string;
 
+  /**
+   * Connections for this compute environment.
+   */
+  public readonly connections: ec2.Connections;
+
   constructor(scope: Construct, id: string, props: ComputeEnvironmentProps = { enabled: true, managed: true }) {
     super(scope, id, {
       physicalName: props.computeEnvironmentName,
     });
 
-    this.validateProps(props);
+    const isFargate = ComputeResourceType.FARGATE === props.computeResources?.type
+      || ComputeResourceType.FARGATE_SPOT === props.computeResources?.type;;
+
+    this.validateProps(props, isFargate);
 
     const spotFleetRole = this.getSpotFleetRole(props);
     let computeResources: CfnComputeEnvironment.ComputeResourcesProperty | undefined;
 
+    const useLaunchTemplateNetworkInterface = props.computeResources?.launchTemplate?.useNetworkInterfaceSecurityGroups ? true : false;
+
+    this.connections = this.buildConnections(useLaunchTemplateNetworkInterface, props.computeResources?.vpc, props.computeResources?.securityGroups);
+
     // Only allow compute resources to be set when using MANAGED type
     if (props.computeResources && this.isManaged(props)) {
+
       computeResources = {
-        allocationStrategy: props.computeResources.allocationStrategy
-         || (
-           props.computeResources.type === ComputeResourceType.SPOT
-             ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
-             : AllocationStrategy.BEST_FIT
-         ),
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,
         ec2KeyPair: props.computeResources.ec2KeyPair,
         imageId: props.computeResources.image && props.computeResources.image.getImage(this).imageId,
-        instanceRole: props.computeResources.instanceRole
-          ? props.computeResources.instanceRole
-          : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
-            roles: [new iam.Role(this, 'Ecs-Instance-Role', {
-              assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-              managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
-              ],
-            }).roleName],
-          }).attrArn,
-        instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
         launchTemplate: props.computeResources.launchTemplate,
         maxvCpus: props.computeResources.maxvCpus || 256,
-        minvCpus: props.computeResources.minvCpus || 0,
         placementGroup: props.computeResources.placementGroup,
-        securityGroupIds: this.buildSecurityGroupIds(props.computeResources.vpc, props.computeResources.securityGroups),
+        securityGroupIds: this.getSecurityGroupIds(useLaunchTemplateNetworkInterface),
         spotIamFleetRole: spotFleetRole?.roleArn,
         subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
         tags: props.computeResources.computeResourcesTags,
         type: props.computeResources.type || ComputeResourceType.ON_DEMAND,
+        ...(!isFargate ? {
+          allocationStrategy: props.computeResources.allocationStrategy
+            || (
+              props.computeResources.type === ComputeResourceType.SPOT
+                ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
+                : AllocationStrategy.BEST_FIT
+            ),
+          instanceRole: props.computeResources.instanceRole
+            ? props.computeResources.instanceRole
+            : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
+              roles: [new iam.Role(this, 'Ecs-Instance-Role', {
+                assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+                managedPolicies: [
+                  iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
+                ],
+              }).roleName],
+            }).attrArn,
+          instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
+          minvCpus: props.computeResources.minvCpus || 0,
+        } : {}),
       };
     }
 
@@ -414,7 +466,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
   /**
    * Validates the properties provided for a new batch compute environment.
    */
-  private validateProps(props: ComputeEnvironmentProps) {
+  private validateProps(props: ComputeEnvironmentProps, isFargate: boolean) {
     if (props === undefined) {
       return;
     }
@@ -427,41 +479,119 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       throw new Error('computeResources is missing but required on a managed compute environment');
     }
 
-    // Setting a bid percentage is only allowed on SPOT resources +
-    // Cannot use SPOT_CAPACITY_OPTIMIZED when using ON_DEMAND
     if (props.computeResources) {
-      if (props.computeResources.type === ComputeResourceType.ON_DEMAND) {
-        // VALIDATE FOR ON_DEMAND
+      if (isFargate) {
+        // VALIDATE FOR FARGATE
 
-        // Bid percentage is not allowed
+        // Bid percentage cannot be set for Fargate evnvironments
         if (props.computeResources.bidPercentage !== undefined) {
-          throw new Error('Setting the bid percentage is only allowed for SPOT type resources on a batch compute environment');
+          throw new Error('Bid percentage must not be set for Fargate compute environments');
         }
 
-        // SPOT_CAPACITY_OPTIMIZED allocation is not allowed
-        if (props.computeResources.allocationStrategy && props.computeResources.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED) {
-          throw new Error('The SPOT_CAPACITY_OPTIMIZED allocation strategy is only allowed if the environment is a SPOT type compute environment');
+        // Allocation strategy cannot be set for Fargate evnvironments
+        if (props.computeResources.allocationStrategy !== undefined) {
+          throw new Error('Allocation strategy must not be set for Fargate compute environments');
+        }
+
+        // Desired vCPUs cannot be set for Fargate evnvironments
+        if (props.computeResources.desiredvCpus !== undefined) {
+          throw new Error('Desired vCPUs must not be set for Fargate compute environments');
+        }
+
+        // Image ID cannot be set for Fargate evnvironments
+        if (props.computeResources.image !== undefined) {
+          throw new Error('Image must not be set for Fargate compute environments');
+        }
+
+        // Instance types cannot be set for Fargate evnvironments
+        if (props.computeResources.instanceTypes !== undefined) {
+          throw new Error('Instance types must not be set for Fargate compute environments');
+        }
+
+        // EC2 key pair cannot be set for Fargate evnvironments
+        if (props.computeResources.ec2KeyPair !== undefined) {
+          throw new Error('EC2 key pair must not be set for Fargate compute environments');
+        }
+
+        // Instance role cannot be set for Fargate evnvironments
+        if (props.computeResources.instanceRole !== undefined) {
+          throw new Error('Instance role must not be set for Fargate compute environments');
+        }
+
+        // Launch template cannot be set for Fargate evnvironments
+        if (props.computeResources.launchTemplate !== undefined) {
+          throw new Error('Launch template must not be set for Fargate compute environments');
+        }
+
+        // Min vCPUs cannot be set for Fargate evnvironments
+        if (props.computeResources.minvCpus !== undefined) {
+          throw new Error('Min vCPUs must not be set for Fargate compute environments');
+        }
+
+        // Placement group cannot be set for Fargate evnvironments
+        if (props.computeResources.placementGroup !== undefined) {
+          throw new Error('Placement group must not be set for Fargate compute environments');
+        }
+
+        // Spot fleet role cannot be set for Fargate evnvironments
+        if (props.computeResources.spotFleetRole !== undefined) {
+          throw new Error('Spot fleet role must not be set for Fargate compute environments');
         }
       } else {
-        // VALIDATE FOR SPOT
+        // VALIDATE FOR ON_DEMAND AND SPOT
+        if (props.computeResources.minvCpus) {
+          // minvCpus cannot be less than 0
+          if (props.computeResources.minvCpus < 0) {
+            throw new Error('Minimum vCpus for a batch compute environment cannot be less than 0');
+          }
 
-        // Bid percentage must be from 0 - 100
-        if (props.computeResources.bidPercentage !== undefined &&
-          (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
-          throw new Error('Bid percentage can only be a value between 0 and 100');
+          // minvCpus cannot exceed max vCpus
+          if (props.computeResources.maxvCpus &&
+            props.computeResources.minvCpus > props.computeResources.maxvCpus) {
+            throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
+          }
         }
-      }
 
-      if (props.computeResources.minvCpus) {
-        // minvCpus cannot be less than 0
-        if (props.computeResources.minvCpus < 0) {
-          throw new Error('Minimum vCpus for a batch compute environment cannot be less than 0');
+        // Check if both launchTemplateId and launchTemplateName are provided
+        if (props.computeResources.launchTemplate &&
+          (props.computeResources.launchTemplate.launchTemplateId && props.computeResources.launchTemplate.launchTemplateName)) {
+          throw new Error('You must specify either the launch template ID or launch template name in the request, but not both.');
         }
 
-        // minvCpus cannot exceed max vCpus
-        if (props.computeResources.maxvCpus &&
-          props.computeResources.minvCpus > props.computeResources.maxvCpus) {
-          throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
+        // Check if both launchTemplateId and launchTemplateName are missing
+        if (props.computeResources.launchTemplate &&
+          (!props.computeResources.launchTemplate.launchTemplateId && !props.computeResources.launchTemplate.launchTemplateName)) {
+          throw new Error('You must specify either the launch template ID or launch template name in the request.');
+        }
+
+        // useNetworkInterfaceSecurityGroups cannot have securityGroups defined
+        if (props.computeResources.launchTemplate?.useNetworkInterfaceSecurityGroups &&
+            props.computeResources.securityGroups ) {
+          throw new Error('securityGroups cannot be specified if launchTemplate useNetworkInterfaceSecurityGroups is active');
+        }
+
+        // Setting a bid percentage is only allowed on SPOT resources +
+        // Cannot use SPOT_CAPACITY_OPTIMIZED when using ON_DEMAND
+        if (props.computeResources.type === ComputeResourceType.ON_DEMAND) {
+          // VALIDATE FOR ON_DEMAND
+
+          // Bid percentage is not allowed
+          if (props.computeResources.bidPercentage !== undefined) {
+            throw new Error('Setting the bid percentage is only allowed for SPOT type resources on a batch compute environment');
+          }
+
+          // SPOT_CAPACITY_OPTIMIZED allocation is not allowed
+          if (props.computeResources.allocationStrategy && props.computeResources.allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED) {
+            throw new Error('The SPOT_CAPACITY_OPTIMIZED allocation strategy is only allowed if the environment is a SPOT type compute environment');
+          }
+        } else if (props.computeResources.type === ComputeResourceType.SPOT) {
+          // VALIDATE FOR SPOT
+
+          // Bid percentage must be from 0 - 100
+          if (props.computeResources.bidPercentage !== undefined &&
+            (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
+            throw new Error('Bid percentage can only be a value between 0 and 100');
+          }
         }
       }
     }
@@ -477,14 +607,29 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     return instanceTypes.map((type: ec2.InstanceType) => type.toString());
   }
 
-  private buildSecurityGroupIds(vpc: ec2.IVpc, securityGroups?: ec2.ISecurityGroup[]): string[] | undefined {
-    if (securityGroups === undefined) {
-      return [
-        new ec2.SecurityGroup(this, 'Resource-Security-Group', { vpc }).securityGroupId,
-      ];
+  private buildConnections(useLaunchTemplateNetworkInterface: boolean, vpc?: ec2.IVpc, securityGroups?:ec2.ISecurityGroup[]): ec2.Connections {
+
+    if (vpc === undefined || useLaunchTemplateNetworkInterface ) {
+      return new ec2.Connections({});
     }
 
-    return securityGroups.map((group: ec2.ISecurityGroup) => group.securityGroupId);
+    if (securityGroups === undefined) {
+      return new ec2.Connections({
+        securityGroups: [
+          new ec2.SecurityGroup(this, 'Resource-Security-Group', { vpc }),
+        ],
+      });
+    }
+    return new ec2.Connections({ securityGroups });
+  };
+
+  private getSecurityGroupIds(useLaunchTemplateInterface: boolean): string[] | undefined {
+    if (this.connections === undefined ||
+      useLaunchTemplateInterface ) {
+      return undefined;
+    }
+
+    return this.connections.securityGroups.map((group: ec2.ISecurityGroup) => group.securityGroupId);
   }
 
   /**
@@ -503,7 +648,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         return props.computeResources.spotFleetRole;
       } else if (props.computeResources.type === ComputeResourceType.SPOT) {
         return iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role',
-          `arn:${this.stack.partition}:iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
+          `arn:${this.stack.partition}:iam::${this.env.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
       }
     }
 

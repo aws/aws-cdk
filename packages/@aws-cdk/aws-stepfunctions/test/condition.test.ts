@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import * as stepfunctions from '../lib';
 
 describe('Condition Variables', () => {

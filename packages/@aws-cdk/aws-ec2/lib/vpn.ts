@@ -1,6 +1,6 @@
 import * as net from 'net';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import {
   CfnCustomerGateway,
@@ -13,6 +13,7 @@ import { IVpc, SubnetSelection } from './vpc';
 export interface IVpnConnection extends IResource {
   /**
    * The id of the VPN connection.
+   * @attribute VpnConnectionId
    */
   readonly vpnId: string;
 
@@ -45,13 +46,25 @@ export interface IVpnGateway extends IResource {
 
 export interface VpnTunnelOption {
   /**
-   * The pre-shared key (PSK) to establish initial authentication between the virtual
-   * private gateway and customer gateway. Allowed characters are alphanumeric characters
-   * and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).
+   * The pre-shared key (PSK) to establish initial authentication between the
+   * virtual private gateway and customer gateway. Allowed characters are
+   * alphanumeric characters period `.` and underscores `_`. Must be between 8
+   * and 64 characters in length and cannot start with zero (0).
+   *
+   * @default an Amazon generated pre-shared key
+   * @deprecated Use `preSharedKeySecret` instead
+   */
+  readonly preSharedKey?: string;
+
+  /**
+   * The pre-shared key (PSK) to establish initial authentication between the
+   * virtual private gateway and customer gateway. Allowed characters are
+   * alphanumeric characters period `.` and underscores `_`. Must be between 8
+   * and 64 characters in length and cannot start with zero (0).
    *
    * @default an Amazon generated pre-shared key
    */
-  readonly preSharedKey?: string;
+  readonly preSharedKeySecret?: SecretValue;
 
   /**
    * The range of inside IP addresses for the tunnel. Any specified CIDR blocks must be
@@ -165,12 +178,71 @@ export class VpnGateway extends Resource implements IVpnGateway {
     this.gatewayId = vpnGW.ref;
   }
 }
+
+/**
+ * Attributes of an imported VpnConnection.
+ */
+export interface VpnConnectionAttributes {
+
+  /**
+   * The id of the VPN connection.
+   */
+  readonly vpnId: string;
+
+  /**
+   * The id of the customer gateway.
+   */
+  readonly customerGatewayId: string;
+
+  /**
+   * The ip address of the customer gateway.
+   */
+  readonly customerGatewayIp: string;
+
+  /**
+   * The ASN of the customer gateway.
+   */
+  readonly customerGatewayAsn: number;
+
+}
+
+/**
+ * Base class for Vpn connections.
+ */
+export abstract class VpnConnectionBase extends Resource implements IVpnConnection {
+
+  public abstract readonly vpnId: string;
+  public abstract readonly customerGatewayId: string;
+  public abstract readonly customerGatewayIp: string;
+  public abstract readonly customerGatewayAsn: number;
+
+}
+
 /**
  * Define a VPN Connection
  *
  * @resource AWS::EC2::VPNConnection
  */
-export class VpnConnection extends Resource implements IVpnConnection {
+export class VpnConnection extends VpnConnectionBase {
+
+  /**
+   * Import a VPN connection by supplying all attributes directly
+   */
+  public static fromVpnConnectionAttributes(scope: Construct, id: string, attrs: VpnConnectionAttributes): IVpnConnection {
+
+    class Import extends VpnConnectionBase {
+
+      public readonly vpnId: string = attrs.vpnId;
+      public readonly customerGatewayId: string = attrs.customerGatewayId;
+      public readonly customerGatewayIp: string = attrs.customerGatewayIp;
+      public readonly customerGatewayAsn: number = attrs.customerGatewayAsn;
+
+    }
+
+    return new Import(scope, id);
+
+  }
+
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */
@@ -252,6 +324,10 @@ export class VpnConnection extends Resource implements IVpnConnection {
       }
 
       props.tunnelOptions.forEach((options, index) => {
+        if (options.preSharedKey && options.preSharedKeySecret) {
+          throw new Error("Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.");
+        }
+
         if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
           /* eslint-disable max-len */
           throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
@@ -276,7 +352,10 @@ export class VpnConnection extends Resource implements IVpnConnection {
       customerGatewayId: customerGateway.ref,
       staticRoutesOnly: props.staticRoutes ? true : false,
       vpnGatewayId: props.vpc.vpnGatewayId,
-      vpnTunnelOptionsSpecifications: props.tunnelOptions,
+      vpnTunnelOptionsSpecifications: props.tunnelOptions?.map(t => ({
+        preSharedKey: t.preSharedKeySecret?.unsafeUnwrap() ?? t.preSharedKey,
+        tunnelInsideCidr: t.tunnelInsideCidr,
+      })),
     });
 
     this.vpnId = vpnConnection.ref;

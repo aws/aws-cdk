@@ -20,7 +20,7 @@ const kmsKey = new kms.Key(stack, 'DbSecurity');
 
 const cluster = new DatabaseCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.AURORA,
-  credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6') }),
+  credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   instanceProps: {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
     vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },

@@ -15,7 +15,7 @@ Amazon EventBridge delivers a near real-time stream of system events that
 describe changes in AWS resources. For example, an AWS CodePipeline emits the
 [State
 Change](https://docs.aws.amazon.com/eventbridge/latest/userguide/event-types.html#codepipeline-event-type)
-event when the pipeline changes it's state.
+event when the pipeline changes its state.
 
 * __Events__: An event indicates a change in your AWS environment. AWS resources
   can generate events when their state changes. For example, Amazon EC2
@@ -59,6 +59,9 @@ For example, to define an rule that triggers a CodeBuild project build when a
 commit is pushed to the "master" branch of a CodeCommit repository:
 
 ```ts
+declare const repo: codecommit.Repository;
+declare const project: codebuild.Project;
+
 const onCommitRule = repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
   branches: ['master']
@@ -73,6 +76,9 @@ topic target which formats a human-readable message for the commit.
 For example, this adds an SNS topic as a target:
 
 ```ts
+declare const onCommitRule: events.Rule;
+declare const topic: sns.Topic;
+
 onCommitRule.addTarget(new targets.SnsTopic(topic, {
   message: events.RuleTargetInput.fromText(
     `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`
@@ -80,16 +86,63 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+Or using an Object:
+
+```ts
+declare const onCommitRule: events.Rule;
+declare const topic: sns.Topic;
+
+onCommitRule.addTarget(new targets.SnsTopic(topic, {
+  message: events.RuleTargetInput.fromObject(
+    {
+      DataType: `custom_${events.EventField.fromPath('$.detail-type')}`
+    }
+  )
+}));
+```
+
+To define a pattern, use the matcher API, which provides a number of factory methods to declare different logical predicates. For example, to match all S3 events for objects larger than 1024 bytes, stored using one of the storage classes Glacier, Glacier IR or Deep Archive and coming from any region other than the AWS GovCloud ones:
+
+```ts
+const rule = new events.Rule(this, 'rule', {
+  eventPattern: {
+    detail: {
+      object: {
+        // Matchers may appear at any level
+        size: events.Match.greaterThan(1024),
+      },
+
+      // 'OR' condition
+      'source-storage-class': events.Match.anyOf(
+        events.Match.prefix("GLACIER"), 
+        events.Match.exactString('DEEP_ARCHIVE'),
+      ),
+    },
+
+    // If you prefer, you can use a low level array of strings, as directly consumed by EventBridge
+    source: ['aws.s3'],
+
+    region: events.Match.anythingButPrefix('us-gov'),
+  },
+});
+```
+
 ## Scheduling
 
 You can configure a Rule to run on a schedule (cron or rate).
+Rate must be specified in minutes, hours or days.
 
 The following example runs a task every day at 4am:
 
-```ts
+```ts fixture=basic
 import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
-...
+import { Cluster, TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Role } from '@aws-cdk/aws-iam';
+
+declare const cluster: Cluster;
+declare const taskDefinition: TaskDefinition;
+declare const role: Role;
 
 const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role });
 
@@ -102,8 +155,12 @@ new Rule(this, 'ScheduleRule', {
 If you want to specify Fargate platform version, set `platformVersion` in EcsTask's props like the following example:
 
 ```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const role: iam.Role;
+
 const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
-const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role, platformVersion });
+const ecsTaskTarget = new targets.EcsTask({ cluster, taskDefinition, role, platformVersion });
 ```
 
 ## Event Targets
@@ -122,12 +179,14 @@ The following targets are supported:
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
 * `targets.BatchJob`: Queue an AWS Batch Job
 * `targets.AwsApi`: Make an AWS API call
+* `targets.ApiGateway`: Invoke an AWS API Gateway
+* `targets.ApiDestination`: Make an call to an external destination
 
-### Cross-account targets
+### Cross-account and cross-region targets
 
-It's possible to have the source of the event and a target in separate AWS accounts:
+It's possible to have the source of the event and a target in separate AWS accounts and regions:
 
-```ts
+```ts nofixture
 import { App, Stack } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
@@ -135,9 +194,12 @@ import * as targets from '@aws-cdk/aws-events-targets';
 
 const app = new App();
 
-const stack1 = new Stack(app, 'Stack1', { env: { account: account1, region: 'us-east-1' } });
+const account1 = '11111111111';
+const account2 = '22222222222';
+
+const stack1 = new Stack(app, 'Stack1', { env: { account: account1, region: 'us-west-1' } });
 const repo = new codecommit.Repository(stack1, 'Repository', {
-  // ...
+  repositoryName: 'myrepository',
 });
 
 const stack2 = new Stack(app, 'Stack2', { env: { account: account2, region: 'us-east-1' } });
@@ -158,8 +220,40 @@ In this situation, the CDK will wire the 2 accounts together:
   to the event bus of the target account in the given region,
   and make sure its deployed before the source stack
 
-**Note**: while events can span multiple accounts, they _cannot_ span different regions
-(that is an EventBridge, not CDK, limitation).
-
 For more information, see the
 [AWS documentation on cross-account events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html).
+
+## Archiving
+
+It is possible to archive all or some events sent to an event bus. It is then possible to [replay these events](https://aws.amazon.com/blogs/aws/new-archive-and-replay-events-with-amazon-eventbridge/).
+
+```ts
+const bus = new events.EventBus(this, 'bus', {
+  eventBusName: 'MyCustomEventBus'
+});
+
+bus.archive('MyArchive', {
+  archiveName: 'MyCustomEventBusArchive',
+  description: 'MyCustomerEventBus Archive',
+  eventPattern: {
+    account: [Stack.of(this).account],
+  },
+  retention: Duration.days(365),
+});
+```
+
+## Granting PutEvents to an existing EventBus
+
+To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn`, `EventBus.fromEventBusAttributes`
+or `EventBus.fromEventBusName` factory method.
+
+Then, you can use the `grantPutEventsTo` method to grant `event:PutEvents` to the eventBus.
+
+```ts
+declare const lambdaFunction: lambda.Function;
+
+const eventBus = events.EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:aws:events:us-east-1:111111111:event-bus/my-event-bus');
+
+// now you can just call methods on the eventbus
+eventBus.grantPutEventsTo(lambdaFunction);
+```

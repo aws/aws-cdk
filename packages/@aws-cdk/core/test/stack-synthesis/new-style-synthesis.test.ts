@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, Aws, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -13,18 +14,18 @@ const CFN_CONTEXT = {
 
 let app: App;
 let stack: Stack;
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('new style synthesis', () => {
+  beforeEach(() => {
     app = new App({
       context: {
         [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
       },
     });
     stack = new Stack(app, 'Stack');
-    cb();
-  },
 
-  'stack template is in asset manifest'(test: Test) {
+  });
+
+  test('stack template is in asset manifest', () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
@@ -38,16 +39,16 @@ nodeunitShim({
 
     const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
-    test.ok(manifestArtifact);
+    expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     const firstFile = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
 
-    test.deepEqual(firstFile, {
+    expect(firstFile).toEqual({
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
         'current_account-current_region': {
@@ -58,32 +59,35 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'version check is added to template'(test: Test) {
+  });
+
+  test('version check is added to both template and manifest artifact', () => {
     // GIVEN
     new CfnResource(stack, 'Resource', {
       type: 'Some::Resource',
     });
 
     // THEN
-    const template = app.synth().getStackByName('Stack').template;
-    test.deepEqual(template?.Parameters?.BootstrapVersion?.Type, 'AWS::SSM::Parameter::Value<String>');
-    test.deepEqual(template?.Parameters?.BootstrapVersion?.Default, '/cdk-bootstrap/hnb659fds/version');
+    const asm = app.synth();
+    const manifestArtifact = getAssetManifest(asm);
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(6);
+
+    const template = asm.getStackByName('Stack').template;
+    expect(template?.Parameters?.BootstrapVersion?.Type).toEqual('AWS::SSM::Parameter::Value<String>');
+    expect(template?.Parameters?.BootstrapVersion?.Default).toEqual('/cdk-bootstrap/hnb659fds/version');
+    expect(template?.Parameters?.BootstrapVersion?.Description).toContain(cxapi.SSMPARAM_NO_INVALIDATE);
 
     const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
-    test.deepEqual(assertions.length, 1);
-    test.deepEqual(assertions[0].Assert, {
+    expect(assertions.length).toEqual(1);
+    expect(assertions[0].Assert).toEqual({
       'Fn::Not': [
-        { 'Fn::Contains': [['1', '2', '3'], { Ref: 'BootstrapVersion' }] },
+        { 'Fn::Contains': [['1', '2', '3', '4', '5'], { Ref: 'BootstrapVersion' }] },
       ],
     });
+  });
 
-    test.done();
-  },
-
-  'version check is not added to template if disabled'(test: Test) {
+  test('version check is not added to template if disabled', () => {
     // GIVEN
     stack = new Stack(app, 'Stack2', {
       synthesizer: new DefaultStackSynthesizer({
@@ -96,12 +100,97 @@ nodeunitShim({
 
     // THEN
     const template = app.synth().getStackByName('Stack2').template;
-    test.equal(template?.Rules?.CheckBootstrapVersion, undefined);
+    expect(template?.Rules?.CheckBootstrapVersion).toEqual(undefined);
 
-    test.done();
-  },
 
-  'add file asset'(test: Test) {
+  });
+
+  test('customize version parameter', () => {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        bootstrapStackVersionSsmParameter: 'stack-version-parameter',
+      }),
+    });
+
+    mystack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'file-asset-hash',
+    });
+
+    // THEN
+    const asm = myapp.synth();
+    const manifestArtifact = getAssetManifest(asm);
+
+    // THEN - the asset manifest has an SSM parameter entry
+    expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('stack-version-parameter');
+  });
+
+  test('contains asset but not requiring a specific version parameter', () => {
+    // GIVEN
+    class BootstraplessStackSynthesizer extends DefaultStackSynthesizer {
+
+
+      /**
+       * Synthesize the associated bootstrap stack to the session.
+       */
+      public synthesize(session: ISynthesisSession): void {
+        this.synthesizeTemplate(session);
+        session.assembly.addArtifact('FAKE_ARTIFACT_ID', {
+          type: ArtifactType.ASSET_MANIFEST,
+          properties: {
+            file: 'FAKE_ARTIFACT_ID.json',
+          },
+        });
+        this.emitArtifact(session, {
+          additionalDependencies: ['FAKE_ARTIFACT_ID'],
+        });
+      }
+    }
+
+    const myapp = new App();
+
+    // WHEN
+    new Stack(myapp, 'mystack', {
+      synthesizer: new BootstraplessStackSynthesizer(),
+    });
+
+    // THEN
+    const asm = myapp.synth();
+    const manifestArtifact = getAssetManifest(asm);
+
+    // THEN - the asset manifest should not define a required bootstrap stack version
+    expect(manifestArtifact.requiresBootstrapStackVersion).toEqual(undefined);
+  });
+
+  test('generates missing context with the lookup role ARN as one of the missing context properties', () => {
+    // GIVEN
+    stack = new Stack(app, 'Stack2', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
+    });
+    ContextProvider.getValue(stack, {
+      provider: cxschema.ContextProvider.VPC_PROVIDER,
+      props: {},
+      dummyValue: undefined,
+    }).value;
+
+    // THEN
+    const assembly = app.synth();
+    expect(assembly.manifest.missing![0].props.lookupRoleArn).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
+
+
+  });
+
+  test('add file asset', () => {
     // WHEN
     const location = stack.synthesizer.addFileAsset({
       fileName: __filename,
@@ -110,16 +199,16 @@ nodeunitShim({
     });
 
     // THEN - we have a fixed asset location with region placeholders
-    test.equals(evalCFN(location.bucketName), 'cdk-hnb659fds-assets-the_account-the_region');
-    test.equals(evalCFN(location.s3Url), 'https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.js');
+    expect(evalCFN(location.bucketName)).toEqual('cdk-hnb659fds-assets-the_account-the_region');
+    expect(evalCFN(location.s3Url)).toEqual('https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.js');
 
     // THEN - object key contains source hash somewhere
-    test.ok(location.objectKey.indexOf('abcdef') > -1);
+    expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
 
-    test.done();
-  },
 
-  'add docker image asset'(test: Test) {
+  });
+
+  test('add docker image asset', () => {
     // WHEN
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: '.',
@@ -127,13 +216,13 @@ nodeunitShim({
     });
 
     // THEN - we have a fixed asset location with region placeholders
-    test.equals(evalCFN(location.repositoryName), 'cdk-hnb659fds-container-assets-the_account-the_region');
-    test.equals(evalCFN(location.imageUri), 'the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
+    expect(evalCFN(location.repositoryName)).toEqual('cdk-hnb659fds-container-assets-the_account-the_region');
+    expect(evalCFN(location.imageUri)).toEqual('the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
 
-    test.done();
-  },
 
-  'synthesis'(test: Test) {
+  });
+
+  test('synthesis', () => {
     // GIVEN
     stack.synthesizer.addFileAsset({
       fileName: __filename,
@@ -152,8 +241,8 @@ nodeunitShim({
     const manifestArtifact = getAssetManifest(asm);
     const manifest = readAssetManifest(manifestArtifact);
 
-    test.equals(Object.keys(manifest.files || {}).length, 2);
-    test.equals(Object.keys(manifest.dockerImages || {}).length, 1);
+    expect(Object.keys(manifest.files || {}).length).toEqual(2);
+    expect(Object.keys(manifest.dockerImages || {}).length).toEqual(1);
 
     // THEN - the asset manifest has an SSM parameter entry
     expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('/cdk-bootstrap/hnb659fds/version');
@@ -161,20 +250,20 @@ nodeunitShim({
     // THEN - every artifact has an assumeRoleArn
     for (const file of Object.values(manifest.files ?? {})) {
       for (const destination of Object.values(file.destinations)) {
-        test.deepEqual(destination.assumeRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}');
+        expect(destination.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}');
       }
     }
 
     for (const file of Object.values(manifest.dockerImages ?? {})) {
       for (const destination of Object.values(file.destinations)) {
-        test.deepEqual(destination.assumeRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}');
+        expect(destination.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}');
       }
     }
 
-    test.done();
-  },
 
-  'customize publishing resources'(test: Test) {
+  });
+
+  test('customize publishing resources', () => {
     // GIVEN
     const myapp = new App();
 
@@ -206,25 +295,44 @@ nodeunitShim({
     const asm = myapp.synth();
     const manifest = readAssetManifest(getAssetManifest(asm));
 
-    test.deepEqual(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region'], {
+    expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
       objectKey: 'file-asset-hash.js',
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });
 
-    test.deepEqual(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'], {
+    expect(manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
       repositoryName: 'image-ecr-repository',
       imageTag: 'docker-asset-hash',
       assumeRoleArn: 'image:role:arn',
       assumeRoleExternalId: 'image-external-id',
     });
 
-    test.done();
-  },
+
+  });
+
+  test('customize deploy role externalId', () => {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        deployRoleExternalId: 'deploy-external-id',
+      }),
+    });
+
+    // THEN
+    const asm = myapp.synth();
+
+    const stackArtifact = asm.getStackByName(mystack.stackName);
+    expect(stackArtifact.assumeRoleExternalId).toEqual('deploy-external-id');
 
 
-  'synthesis with bucketPrefix'(test: Test) {
+  });
+
+  test('synthesis with bucketPrefix', () => {
     // GIVEN
     const myapp = new App();
 
@@ -254,7 +362,7 @@ nodeunitShim({
     const manifest = readAssetManifest(getAssetManifest(asm));
 
     // THEN
-    test.deepEqual(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region'], {
+    expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
       objectKey: '000000000000/file-asset-hash-with-prefix.js',
       assumeRoleArn: 'file:role:arn',
@@ -263,22 +371,46 @@ nodeunitShim({
 
     const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://file-asset-bucket/000000000000/${templateHash}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://file-asset-bucket/000000000000/${templateHash}`);
 
-    test.done();
-  },
 
-  'cannot use same synthesizer for multiple stacks'(test: Test) {
+  });
+
+  test('synthesis with dockerPrefix', () => {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack-dockerPrefix', {
+      synthesizer: new DefaultStackSynthesizer({
+        dockerTagPrefix: 'test-prefix-',
+      }),
+    });
+
+    mystack.synthesizer.addDockerImageAsset({
+      directoryName: 'some-folder',
+      sourceHash: 'docker-asset-hash',
+    });
+
+    const asm = myapp.synth();
+
+    // THEN
+    const manifest = readAssetManifest(getAssetManifest(asm));
+    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'].imageTag;
+    expect(imageTag).toEqual('test-prefix-docker-asset-hash');
+  });
+
+  test('cannot use same synthesizer for multiple stacks', () => {
     // GIVEN
     const synthesizer = new DefaultStackSynthesizer();
 
     // WHEN
     new Stack(app, 'Stack2', { synthesizer });
-    test.throws(() => {
+    expect(() => {
       new Stack(app, 'Stack3', { synthesizer });
-    }, /A StackSynthesizer can only be used for one Stack/);
-    test.done();
-  },
+    }).toThrow(/A StackSynthesizer can only be used for one Stack/);
+
+  });
 });
 
 test('get an exception when using tokens for parameters', () => {

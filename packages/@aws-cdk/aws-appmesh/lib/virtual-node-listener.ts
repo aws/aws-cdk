@@ -1,12 +1,12 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-import { validateHealthChecks } from './private/utils';
-import { HealthCheck, Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
-import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { HealthCheck } from './health-checks';
+import { ListenerTlsOptions } from './listener-tls-options';
+import { ConnectionPoolConfig, renderListenerTlsOptions } from './private/utils';
+import {
+  GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
+  HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
+} from './shared-interfaces';
 
 /**
  * Properties for a VirtualNode listener
@@ -41,19 +41,48 @@ interface VirtualNodeListenerCommonOptions {
    *
    * @default - none
    */
-  readonly tlsCertificate?: TlsCertificate;
+  readonly tls?: ListenerTlsOptions;
+
+  /**
+   * Represents the configuration for enabling outlier detection
+   *
+   * @default - none
+   */
+  readonly outlierDetection?: OutlierDetection;
 }
 
-/**
- * Represent the HTTP Node Listener prorperty
- */
-export interface HttpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
+interface CommonHttpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**
    * Timeout for HTTP protocol
    *
    * @default - None
    */
   readonly timeout?: HttpTimeout;
+}
+
+/**
+ * Represent the HTTP Node Listener prorperty
+ */
+export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
+
+  /**
+   * Connection pool for http listeners
+   *
+   * @default - None
+   */
+  readonly connectionPool?: HttpConnectionPool;
+}
+
+/**
+ * Represent the HTTP2 Node Listener prorperty
+ */
+export interface Http2VirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
+  /**
+   * Connection pool for http2 listeners
+   *
+   * @default - None
+   */
+  readonly connectionPool?: Http2ConnectionPool;
 }
 
 /**
@@ -66,6 +95,13 @@ export interface GrpcVirtualNodeListenerOptions extends VirtualNodeListenerCommo
    * @default - None
    */
   readonly timeout?: GrpcTimeout;
+
+  /**
+   * Connection pool for http listeners
+   *
+   * @default - None
+   */
+  readonly connectionPool?: GrpcConnectionPool;
 }
 
 /**
@@ -78,6 +114,13 @@ export interface TcpVirtualNodeListenerOptions extends VirtualNodeListenerCommon
    * @default - None
    */
   readonly timeout?: TcpTimeout;
+
+  /**
+   * Connection pool for http listeners
+   *
+   * @default - None
+   */
+  readonly connectionPool?: TcpConnectionPool;
 }
 
 /**
@@ -88,35 +131,38 @@ export abstract class VirtualNodeListener {
    * Returns an HTTP Listener for a VirtualNode
    */
   public static http(props: HttpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.HTTP, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+    return new VirtualNodeListenerImpl(Protocol.HTTP, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
+      props.connectionPool);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualNode
    */
-  public static http2(props: HttpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.HTTP2, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+  public static http2(props: Http2VirtualNodeListenerOptions = {}): VirtualNodeListener {
+    return new VirtualNodeListenerImpl(Protocol.HTTP2, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
+      props.connectionPool);
   }
 
   /**
    * Returns an GRPC Listener for a VirtualNode
    */
   public static grpc(props: GrpcVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.GRPC, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+    return new VirtualNodeListenerImpl(Protocol.GRPC, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
+      props.connectionPool);
   }
 
   /**
    * Returns an TCP Listener for a VirtualNode
    */
   public static tcp(props: TcpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.TCP, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+    return new VirtualNodeListenerImpl(Protocol.TCP, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
+      props.connectionPool);
   }
 
   /**
    * Binds the current object when adding Listener to a VirtualNode
    */
   public abstract bind(scope: Construct): VirtualNodeListenerConfig;
-
 }
 
 class VirtualNodeListenerImpl extends VirtualNodeListener {
@@ -124,57 +170,24 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly healthCheck: HealthCheck | undefined,
     private readonly timeout: HttpTimeout | undefined,
     private readonly port: number = 8080,
-    private readonly tlsCertificate: TlsCertificate | undefined) { super(); }
+    private readonly tls: ListenerTlsOptions | undefined,
+    private readonly outlierDetection: OutlierDetection | undefined,
+    private readonly connectionPool: ConnectionPoolConfig | undefined) { super(); }
 
   public bind(scope: Construct): VirtualNodeListenerConfig {
-    const tlsConfig = this.tlsCertificate?.bind(scope);
     return {
       listener: {
         portMapping: {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck) : undefined,
+        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualNodeHealthCheck,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
-        tls: tlsConfig ? this.renderTls(tlsConfig) : undefined,
+        tls: renderListenerTlsOptions(scope, this.tls),
+        outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,
+        connectionPool: this.connectionPool ? this.renderConnectionPool(this.connectionPool) : undefined,
       },
     };
-  }
-
-  /**
-   * Renders the TLS config for a listener
-   */
-  private renderTls(tlsCertificateConfig: TlsCertificateConfig): CfnVirtualNode.ListenerTlsProperty {
-    return {
-      certificate: tlsCertificateConfig.tlsCertificate,
-      mode: tlsCertificateConfig.tlsMode.toString(),
-    };
-  }
-
-  private renderHealthCheck(hc: HealthCheck): CfnVirtualNode.HealthCheckProperty | undefined {
-    if (hc === undefined) { return undefined; }
-
-    if (hc.protocol === Protocol.TCP && hc.path) {
-      throw new Error('The path property cannot be set with Protocol.TCP');
-    }
-
-    if (hc.protocol === Protocol.GRPC && hc.path) {
-      throw new Error('The path property cannot be set with Protocol.GRPC');
-    }
-
-    const healthCheck: CfnVirtualNode.HealthCheckProperty = {
-      healthyThreshold: hc.healthyThreshold || 2,
-      intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-      path: hc.path || (hc.protocol === Protocol.HTTP ? '/' : undefined),
-      port: hc.port || this.port,
-      protocol: hc.protocol || this.protocol,
-      timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
-      unhealthyThreshold: hc.unhealthyThreshold || 2,
-    };
-
-    validateHealthChecks(healthCheck);
-
-    return healthCheck;
   }
 
   private renderTimeout(timeout: HttpTimeout): CfnVirtualNode.ListenerTimeoutProperty {
@@ -191,5 +204,29 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
       },
     });
   }
-}
 
+  private renderOutlierDetection(outlierDetection: OutlierDetection): CfnVirtualNode.OutlierDetectionProperty {
+    return {
+      baseEjectionDuration: {
+        unit: 'ms',
+        value: outlierDetection.baseEjectionDuration.toMilliseconds(),
+      },
+      interval: {
+        unit: 'ms',
+        value: outlierDetection.interval.toMilliseconds(),
+      },
+      maxEjectionPercent: outlierDetection.maxEjectionPercent,
+      maxServerErrors: outlierDetection.maxServerErrors,
+    };
+  }
+
+  private renderConnectionPool(connectionPool: ConnectionPoolConfig): CfnVirtualNode.VirtualNodeConnectionPoolProperty {
+    return ({
+      [this.protocol]: {
+        maxRequests: connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
+        maxConnections: connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
+        maxPendingRequests: connectionPool?.maxPendingRequests !== undefined ? connectionPool.maxPendingRequests : undefined,
+      },
+    });
+  }
+}

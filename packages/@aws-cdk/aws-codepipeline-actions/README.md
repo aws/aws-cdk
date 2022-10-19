@@ -11,7 +11,7 @@
 
 This package contains Actions that can be used in a CodePipeline.
 
-```ts
+```ts nofixture
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 ```
@@ -23,10 +23,8 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 To use a CodeCommit Repository in a CodePipeline:
 
 ```ts
-import * as codecommit from '@aws-cdk/aws-codecommit';
-
 const repo = new codecommit.Repository(this, 'Repo', {
-  // ...
+  repositoryName: 'MyRepo',
 });
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
@@ -49,6 +47,7 @@ You can specify the role object in eventRole property.
 
 ```ts
 const eventRole = iam.Role.fromRoleArn(this, 'Event-role', 'roleArn');
+declare const repo: codecommit.Repository;
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'CodeCommit',
   repository: repo,
@@ -61,6 +60,8 @@ If you want to clone the entire CodeCommit repository (only available for CodeBu
 you can set the `codeBuildCloneOutput` property to `true`:
 
 ```ts
+declare const project: codebuild.PipelineProject;
+declare const repo: codecommit.Repository;
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'CodeCommit',
@@ -80,15 +81,22 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
 The CodeCommit source action emits variables:
 
 ```ts
+declare const project: codebuild.PipelineProject;
+declare const repo: codecommit.Repository;
+const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
-  // ...
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: sourceOutput,
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
 });
 
 // later:
 
 new codepipeline_actions.CodeBuildAction({
-  // ...
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
   environmentVariables: {
     COMMIT_ID: {
       value: sourceAction.variables.commitId,
@@ -107,20 +115,21 @@ If you want to use a GitHub repository as the source, you must create:
   with the value of the **GitHub Access Token**. Pick whatever name you want (for example `my-github-token`).
   This token can be stored either as Plaintext or as a Secret key/value.
   If you stored the token as Plaintext,
-  set `cdk.SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`.
+  set `SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`.
   If you stored it as a Secret key/value,
-  you must set `cdk.SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
+  you must set `SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
 
 To use GitHub as the source of a CodePipeline:
 
 ```ts
 // Read the secret from Secrets Manager
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
+  oauthToken: SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
 });
@@ -133,15 +142,24 @@ pipeline.addStage({
 The GitHub source action emits variables:
 
 ```ts
+declare const sourceOutput: codepipeline.Artifact;
+declare const project: codebuild.PipelineProject;
+
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
-  // ...
+  actionName: 'Github_Source',
+  output: sourceOutput,
+  owner: 'my-owner',
+  repo: 'my-repo',
+  oauthToken: SecretValue.secretsManager('my-github-token'),
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
 });
 
 // later:
 
 new codepipeline_actions.CodeBuildAction({
-  // ...
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
   environmentVariables: {
     COMMIT_URL: {
       value: sourceAction.variables.commitUrl,
@@ -168,7 +186,7 @@ the connection has already been created.
 
 ```ts
 const sourceOutput = new codepipeline.Artifact();
-const sourceAction = new codepipeline_actions.BitBucketSourceAction({
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
   actionName: 'BitBucket_Source',
   owner: 'aws',
   repo: 'aws-cdk',
@@ -177,17 +195,43 @@ const sourceAction = new codepipeline_actions.BitBucketSourceAction({
 });
 ```
 
-**Note**: as this feature is still in Beta in CodePipeline,
-the above class `BitBucketSourceAction` is experimental -
-we reserve the right to make breaking changes to it.
+You can also use the `CodeStarConnectionsSourceAction` to connect to GitHub, in the same way
+(you just have to select GitHub as the source when creating the connection in the console).
+
+Similarly to `GitHubSourceAction`, `CodeStarConnectionsSourceAction` also emits the variables:
+
+```ts
+declare const project: codebuild.Project;
+
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'BitBucket_Source',
+  owner: 'aws',
+  repo: 'aws-cdk',
+  output: sourceOutput,
+  connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+  variablesNamespace: 'SomeSpace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
+  environmentVariables: {
+    COMMIT_ID: {
+      value: sourceAction.variables.commitId,
+    },
+  },
+});
+```
 
 ### AWS S3 Source
 
 To use an S3 Bucket as a source in CodePipeline:
 
 ```ts
-import * as s3 from '@aws-cdk/aws-s3';
-
 const sourceBucket = new s3.Bucket(this, 'MyBucket', {
   versioned: true, // a Bucket used as a source in CodePipeline must be versioned
 });
@@ -230,9 +274,14 @@ You can do it through the CDK:
 ```ts
 import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
+declare const sourceBucket: s3.Bucket;
+const sourceOutput = new codepipeline.Artifact();
 const key = 'some/key.zip';
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
-trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
+trail.addS3EventSelector([{
+  bucket: sourceBucket,
+  objectPrefix: key,
+}], {
   readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY,
 });
 const sourceAction = new codepipeline_actions.S3SourceAction({
@@ -247,15 +296,23 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
 The S3 source action emits variables:
 
 ```ts
+const key = 'some/key.zip';
+declare const sourceBucket: s3.Bucket;
+const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.S3SourceAction({
-  // ...
+  actionName: 'S3Source',
+  bucketKey: key,
+  bucket: sourceBucket,
+  output: sourceOutput,
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
 });
 
 // later:
-
+declare const project: codebuild.PipelineProject;
 new codepipeline_actions.CodeBuildAction({
-  // ...
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
   environmentVariables: {
     VERSION_ID: {
       value: sourceAction.variables.versionId,
@@ -271,6 +328,7 @@ To use an ECR Repository as a source in a Pipeline:
 ```ts
 import * as ecr from '@aws-cdk/aws-ecr';
 
+declare const ecrRepository: ecr.Repository;
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.EcrSourceAction({
@@ -288,15 +346,23 @@ pipeline.addStage({
 The ECR source action emits variables:
 
 ```ts
+import * as ecr from '@aws-cdk/aws-ecr';
+
+const sourceOutput = new codepipeline.Artifact();
+declare const ecrRepository: ecr.Repository;
 const sourceAction = new codepipeline_actions.EcrSourceAction({
-  // ...
+  actionName: 'Source',
+  output: sourceOutput,
+  repository: ecrRepository,
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
 });
 
 // later:
-
+declare const project: codebuild.PipelineProject;
 new codepipeline_actions.CodeBuildAction({
-  // ...
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
   environmentVariables: {
     IMAGE_URI: {
       value: sourceAction.variables.imageUri,
@@ -312,9 +378,7 @@ new codepipeline_actions.CodeBuildAction({
 Example of a CodeBuild Project used in a Pipeline, alongside CodeCommit:
 
 ```ts
-import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as codecommit from '@aws-cdk/aws-codecommit';
-
+declare const project: codebuild.PipelineProject;
 const repository = new codecommit.Repository(this, 'MyRepository', {
   repositoryName: 'MyRepository',
 });
@@ -331,7 +395,8 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   project,
   input: sourceOutput,
   outputs: [new codepipeline.Artifact()], // optional
-  executeBatchBuild: true // optional, defaults to false
+  executeBatchBuild: true, // optional, defaults to false
+  combineBatchBuildArtifacts: true, // optional, defaults to false
 });
 
 new codepipeline.Pipeline(this, 'MyPipeline', {
@@ -353,6 +418,8 @@ if you want a `Test` Action instead,
 override the `type` property:
 
 ```ts
+declare const project: codebuild.PipelineProject;
+const sourceOutput = new codepipeline.Artifact();
 const testAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'IntegrationTest',
   project,
@@ -370,12 +437,14 @@ properties of the `Project` class, you need to use the `extraInputs` and
 Actions. Example:
 
 ```ts
+declare const repository1: codecommit.Repository;
 const sourceOutput1 = new codepipeline.Artifact();
 const sourceAction1 = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'Source1',
   repository: repository1,
   output: sourceOutput1,
 });
+declare const repository2: codecommit.Repository;
 const sourceOutput2 = new codepipeline.Artifact('source2');
 const sourceAction2 = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'Source2',
@@ -383,6 +452,7 @@ const sourceAction2 = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput2,
 });
 
+declare const project: codebuild.PipelineProject;
 const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Build',
   project,
@@ -444,6 +514,7 @@ in the 'exported-variables' subsection of the 'env' section.
 Example:
 
 ```ts
+const sourceOutput = new codepipeline.Artifact();
 const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Build1',
   input: sourceOutput,
@@ -466,9 +537,11 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
 });
 
 // later:
-
+declare const project: codebuild.PipelineProject;
 new codepipeline_actions.CodeBuildAction({
-  // ...
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
   environmentVariables: {
     MyVar: {
       value: buildAction.variable('MY_VAR'),
@@ -495,7 +568,7 @@ or outside the CDK (in the CodePipeline AWS Console, for example),
 you can import it:
 
 ```ts
-const jenkinsProvider = codepipeline_actions.JenkinsProvider.import(this, 'JenkinsProvider', {
+const jenkinsProvider = codepipeline_actions.JenkinsProvider.fromJenkinsProviderAttributes(this, 'JenkinsProvider', {
   providerName: 'MyJenkinsProvider',
   serverUrl: 'http://my-jenkins.com:8080',
   version: '2', // optional, default: '1'
@@ -511,6 +584,7 @@ With a `JenkinsProvider`,
 we can create a Jenkins Action:
 
 ```ts
+declare const jenkinsProvider: codepipeline_actions.JenkinsProvider;
 const buildAction = new codepipeline_actions.JenkinsAction({
   actionName: 'JenkinsBuild',
   jenkinsProvider: jenkinsProvider,
@@ -533,7 +607,7 @@ directly from a CodeCommit repository, with a manual approval step in between to
 See [the AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline.html)
 for more details about using CloudFormation in CodePipeline.
 
-#### Actions defined by this package
+#### Actions for updating individual CloudFormation Stacks
 
 This package contains the following CloudFormation actions:
 
@@ -545,6 +619,57 @@ This package contains the following CloudFormation actions:
   to manually verify the changes that are being staged, or if you want to separate the people (or system) preparing the
   changes from the people (or system) applying the changes.
 * **CloudFormationExecuteChangeSetAction** - Execute a change set prepared previously.
+
+#### Actions for deploying CloudFormation StackSets to multiple accounts
+
+You can use CloudFormation StackSets to deploy the same CloudFormation template to multiple
+accounts in a managed way. If you use AWS Organizations, StackSets can be deployed to
+all accounts in a particular Organizational Unit (OU), and even automatically to new
+accounts as soon as they are added to a particular OU. For more information, see
+the [Working with StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html)
+section of the CloudFormation developer guide.
+
+The actions available for updating StackSets are:
+
+* **CloudFormationDeployStackSetAction** - Create or update a CloudFormation StackSet directly from the pipeline, optionally
+  immediately create and update Stack Instances as well.
+* **CloudFormationDeployStackInstancesAction** - Update outdated Stack Instaces using the current version of the StackSet.
+
+Here's an example of using both of these actions:
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+declare const sourceOutput: codepipeline.Artifact;
+
+pipeline.addStage({
+  stageName: 'DeployStackSets',
+  actions: [
+    // First, update the StackSet itself with the newest template
+    new codepipeline_actions.CloudFormationDeployStackSetAction({
+      actionName: 'UpdateStackSet',
+      runOrder: 1,
+      stackSetName: 'MyStackSet',
+      template: codepipeline_actions.StackSetTemplate.fromArtifactPath(sourceOutput.atPath('template.yaml')),
+
+      // Change this to 'StackSetDeploymentModel.organizations()' if you want to deploy to OUs
+      deploymentModel: codepipeline_actions.StackSetDeploymentModel.selfManaged(),
+      // This deploys to a set of accounts
+      stackInstances: codepipeline_actions.StackInstances.inAccounts(['111111111111'], ['us-east-1', 'eu-west-1']),
+    }),
+
+    // Afterwards, update/create additional instances in other accounts
+    new codepipeline_actions.CloudFormationDeployStackInstancesAction({
+      actionName: 'AddMoreInstances',
+      runOrder: 2,
+      stackSetName: 'MyStackSet',
+      stackInstances: codepipeline_actions.StackInstances.inAccounts(
+        ['222222222222', '333333333333'],
+        ['us-east-1', 'eu-west-1']
+      ),
+    }),
+  ],
+});
+```
 
 #### Lambda deployed through CodePipeline
 
@@ -563,8 +688,12 @@ If you want to update stacks in a different account,
 pass the `account` property when creating the action:
 
 ```ts
+const sourceOutput = new codepipeline.Artifact();
 new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-  // ...
+  actionName: 'CloudFormationCreateUpdate',
+  stackName: 'MyStackName',
+  adminPermissions: true,
+  templatePath: sourceOutput.atPath('template.yaml'),
   account: '123456789012',
 });
 ```
@@ -581,15 +710,20 @@ and the action will operate in the same account the role belongs to:
 import { PhysicalName } from '@aws-cdk/core';
 
 // in stack for account 123456789012...
+declare const otherAccountStack: Stack;
 const actionRole = new iam.Role(otherAccountStack, 'ActionRole', {
-  assumedBy: new iam.AccountPrincipal(pipelineAccount),
+  assumedBy: new iam.AccountPrincipal('123456789012'),
   // the role has to have a physical name set
   roleName: PhysicalName.GENERATE_IF_NEEDED,
 });
 
 // in the pipeline stack...
+const sourceOutput = new codepipeline.Artifact();
 new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-  // ...
+  actionName: 'CloudFormationCreateUpdate',
+  stackName: 'MyStackName',
+  adminPermissions: true,
+  templatePath: sourceOutput.atPath('template.yaml'),
   role: actionRole, // this action will be cross-account as well
 });
 ```
@@ -601,14 +735,13 @@ new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 To use CodeDeploy for EC2/on-premise deployments in a Pipeline:
 
 ```ts
-import * as codedeploy from '@aws-cdk/aws-codedeploy';
-
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
   pipelineName: 'MyPipeline',
 });
 
 // add the source and build Stages to the Pipeline...
-
+const buildOutput = new codepipeline.Artifact();
+declare const deploymentGroup: codedeploy.ServerDeploymentGroup;
 const deployAction = new codepipeline_actions.CodeDeployServerDeployAction({
   actionName: 'CodeDeploy',
   input: buildOutput,
@@ -626,19 +759,19 @@ To use CodeDeploy for blue-green Lambda deployments in a Pipeline:
 
 ```ts
 const lambdaCode = lambda.Code.fromCfnParameters();
-const func = new lambda.Function(lambdaStack, 'Lambda', {
+const func = new lambda.Function(this, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 // used to make sure each CDK synthesis produces a different Version
-const version = func.addVersion('NewVersion');
-const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
+const version = func.currentVersion;
+const alias = new lambda.Alias(this, 'LambdaAlias', {
   aliasName: 'Prod',
   version,
 });
 
-new codedeploy.LambdaDeploymentGroup(lambdaStack, 'DeploymentGroup', {
+new codedeploy.LambdaDeploymentGroup(this, 'DeploymentGroup', {
   alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
 });
@@ -655,6 +788,11 @@ CodePipeline can deploy an ECS service.
 The deploy Action receives one input Artifact which contains the [image definition file]:
 
 ```ts
+import * as ecs from '@aws-cdk/aws-ecs';
+
+declare const service: ecs.FargateService;
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const buildOutput = new codepipeline.Artifact();
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',
   actions: [
@@ -669,7 +807,7 @@ const deployStage = pipeline.addStage({
       // use the `imageFile` property,
       // and leave out the `input` property
       imageFile: buildOutput.atPath('imageDef.json'),
-      deploymentTimeout: cdk.Duration.minutes(60), // optional, default is 60 minutes
+      deploymentTimeout: Duration.minutes(60), // optional, default is 60 minutes
     }),
   ],
 });
@@ -677,10 +815,43 @@ const deployStage = pipeline.addStage({
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
+#### Deploying ECS applications to existing services
+
+CodePipeline can deploy to an existing ECS service which uses the
+[ECS service ARN format that contains the Cluster name](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids).
+This also works if the service is in a different account and/or region than the pipeline:
+
+```ts
+import * as ecs from '@aws-cdk/aws-ecs';
+
+const service = ecs.BaseService.fromServiceArnWithCluster(this, 'EcsService',
+  'arn:aws:ecs:us-east-1:123456789012:service/myClusterName/myServiceName'
+);
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const buildOutput = new codepipeline.Artifact();
+// add source and build stages to the pipeline as usual...
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [
+    new codepipeline_actions.EcsDeployAction({
+      actionName: 'DeployAction',
+      service: service,
+      input: buildOutput,
+    }),
+  ],
+});
+```
+
+When deploying across accounts, especially in a CDK Pipelines self-mutating pipeline,
+it is recommended to provide the `role` property to the `EcsDeployAction`.
+The Role will need to have permissions assigned to it for ECS deployment.
+See [the CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services)
+for the permissions needed.
+
 #### Deploying ECS applications stored in a separate source code repository
 
 The idiomatic CDK way of deploying an ECS application is to have your Dockerfiles and your CDK code in the same source code repository,
-leveraging [Docker Assets])(https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
+leveraging [Docker Assets](https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
 and use the [CDK Pipelines module](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html).
 
 However, if you want to deploy a Docker application whose source code is kept in a separate version control repository than the CDK code,
@@ -694,12 +865,12 @@ Here's an example:
 To use an S3 Bucket as a deployment target in CodePipeline:
 
 ```ts
-const targetBucket = new s3.Bucket(this, 'MyBucket', {});
+const sourceOutput = new codepipeline.Artifact();
+const targetBucket = new s3.Bucket(this, 'MyBucket');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const deployAction = new codepipeline_actions.S3DeployAction({
   actionName: 'S3Deploy',
-  stage: deployStage,
   bucket: targetBucket,
   input: sourceOutput,
 });
@@ -717,9 +888,8 @@ and use the AWS CLI to invalidate the cache:
 
 ```ts
 // Create a Cloudfront Web Distribution
-const distribution = new cloudfront.Distribution(this, `Distribution`, {
-  // ...
-});
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+declare const distribution: cloudfront.Distribution;
 
 // Create the build project that will invalidate the cache
 const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidateProject`, {
@@ -749,19 +919,21 @@ invalidateBuildProject.addToRolePolicy(new iam.PolicyStatement({
 }));
 
 // Create the pipeline (here only the S3 deploy and Invalidate cache build)
+const deployBucket = new s3.Bucket(this, 'DeployBucket');
+const deployInput = new codepipeline.Artifact();
 new codepipeline.Pipeline(this, 'Pipeline', {
   stages: [
     // ...
     {
       stageName: 'Deploy',
       actions: [
-        new codepipelineActions.S3DeployAction({
+        new codepipeline_actions.S3DeployAction({
           actionName: 'S3Deploy',
           bucket: deployBucket,
           input: deployInput,
           runOrder: 1,
         }),
-        new codepipelineActions.CodeBuildAction({
+        new codepipeline_actions.CodeBuildAction({
           actionName: 'InvalidateCache',
           project: invalidateBuildProject,
           input: deployInput,
@@ -773,17 +945,40 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 });
 ```
 
+### Elastic Beanstalk Deployment
+
+To deploy an Elastic Beanstalk Application in CodePipeline:
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const targetBucket = new s3.Bucket(this, 'MyBucket');
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployAction = new codepipeline_actions.ElasticBeanstalkDeployAction({
+  actionName: 'ElasticBeanstalkDeploy',
+  input: sourceOutput,
+  environmentName: 'envName',
+  applicationName: 'appName',
+});
+
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [deployAction],
+});
+```
+
 ### Alexa Skill
 
 You can deploy to Alexa using CodePipeline with the following Action:
 
 ```ts
 // Read the secrets from ParameterStore
-const clientId = cdk.SecretValue.secretsManager('AlexaClientId');
-const clientSecret = cdk.SecretValue.secretsManager('AlexaClientSecret');
-const refreshToken = cdk.SecretValue.secretsManager('AlexaRefreshToken');
+const clientId = SecretValue.secretsManager('AlexaClientId');
+const clientSecret = SecretValue.secretsManager('AlexaClientSecret');
+const refreshToken = SecretValue.secretsManager('AlexaRefreshToken');
 
 // Add deploy action
+const sourceOutput = new codepipeline.Artifact();
 new codepipeline_actions.AlexaSkillDeployAction({
   actionName: 'DeploySkill',
   runOrder: 1,
@@ -798,20 +993,22 @@ new codepipeline_actions.AlexaSkillDeployAction({
 If you need manifest overrides you can specify them as `parameterOverridesArtifact` in the action:
 
 ```ts
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
-
 // Deploy some CFN change set and store output
 const executeOutput = new codepipeline.Artifact('CloudFormation');
 const executeChangeSetAction = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
   actionName: 'ExecuteChangesTest',
   runOrder: 2,
-  stackName,
-  changeSetName,
+  stackName: 'MyStack',
+  changeSetName: 'MyChangeSet',
   outputFileName: 'overrides.json',
   output: executeOutput,
 });
 
 // Provide CFN output as manifest overrides
+const clientId = SecretValue.secretsManager('AlexaClientId');
+const clientSecret = SecretValue.secretsManager('AlexaClientSecret');
+const refreshToken = SecretValue.secretsManager('AlexaRefreshToken');
+const sourceOutput = new codepipeline.Artifact();
 new codepipeline_actions.AlexaSkillDeployAction({
   actionName: 'DeploySkill',
   runOrder: 1,
@@ -826,24 +1023,16 @@ new codepipeline_actions.AlexaSkillDeployAction({
 
 ### AWS Service Catalog
 
-You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
+You can deploy a CloudFormation template to an existing Service Catalog product with the following Action:
 
 ```ts
-new codepipeline.Pipeline(this, 'Pipeline', {
-      stages: [
-          {
-            stageName: 'ServiceCatalogDeploy',
-            actions: [
-            new codepipeline_actions.ServiceCatalogDeployAction({
-                actionName: 'ServiceCatalogDeploy',
-                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
-                productVersionName: "Version - " + Date.now.toString,
-                productType: "CLOUD_FORMATION_TEMPLATE",
-                productVersionDescription: "This is a version from the pipeline with a new description.",
-                productId: "prod-XXXXXXXX",
-            }),
-          },
-        ],
+const cdkBuildOutput = new codepipeline.Artifact();
+const serviceCatalogDeployAction = new codepipeline_actions.ServiceCatalogDeployActionBeta1({
+  actionName: 'ServiceCatalogDeploy',
+  templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+  productVersionName: "Version - " + Date.now.toString,
+  productVersionDescription: "This is a version from the pipeline with a new description.",
+  productId: "prod-XXXXXXXX",
 });
 ```
 
@@ -854,6 +1043,10 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
 
 ```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const approveStage = pipeline.addStage({ stageName: 'Approve' });
 const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
   actionName: 'Approve',
   notificationTopic: new sns.Topic(this, 'Topic'), // optional
@@ -872,13 +1065,27 @@ but `notifyEmails` were,
 a new SNS Topic will be created
 (and accessible through the `notificationTopic` property of the Action).
 
+If you want to grant a principal permissions to approve the changes,
+you can invoke the method `grantManualApproval` passing it a `IGrantable`:
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const approveStage = pipeline.addStage({ stageName: 'Approve' });
+const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
+  actionName: 'Approve',
+});
+approveStage.addAction(manualApprovalAction);
+
+const role = iam.Role.fromRoleArn(this, 'Admin', Arn.format({ service: 'iam', resource: 'role', resourceName: 'Admin' }, this));
+manualApprovalAction.grantManualApproval(role);
+```
+
 ### AWS Lambda
 
 This module contains an Action that allows you to invoke a Lambda function in a Pipeline:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
+declare const fn: lambda.Function;
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
@@ -894,7 +1101,9 @@ The Lambda Action can have up to 5 inputs,
 and up to 5 outputs:
 
 ```ts
-
+declare const fn: lambda.Function;
+const sourceOutput = new codepipeline.Artifact();
+const buildOutput = new codepipeline.Artifact();
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   inputs: [
@@ -905,7 +1114,26 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
     new codepipeline.Artifact('Out1'),
     new codepipeline.Artifact('Out2'),
   ],
-  lambda: fn
+  lambda: fn,
+});
+```
+
+The Lambda Action supports custom user parameters that pipeline
+will pass to the Lambda function:
+
+```ts
+declare const fn: lambda.Function;
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
+  actionName: 'Lambda',
+  lambda: fn,
+  userParameters: {
+    foo: 'bar',
+    baz: 'qux',
+  },
+  // OR
+  userParametersString: 'my-parameter-string',
 });
 ```
 
@@ -916,12 +1144,10 @@ API with the `outputVariables` property filled with the map of variables
 Example:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
         const AWS = require('aws-sdk');
@@ -941,9 +1167,12 @@ const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
 });
 
 // later:
-
+declare const project: codebuild.PipelineProject;
+const sourceOutput = new codepipeline.Artifact();
 new codepipeline_actions.CodeBuildAction({
-  // ...
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
   environmentVariables: {
     MyVar: {
       value: lambdaInvokeAction.variable('MY_VAR'),
@@ -960,14 +1189,13 @@ on how to write a Lambda function invoked from CodePipeline.
 This module contains an Action that allows you to invoke a Step Function in a Pipeline:
 
 ```ts
-import * as stepfunction from '@aws-cdk/aws-stepfunctions';
-
+import * as stepfunctions from '@aws-cdk/aws-stepfunctions';
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const startState = new stepfunction.Pass(stack, 'StartState');
-const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+const startState = new stepfunctions.Pass(this, 'StartState');
+const simpleStateMachine  = new stepfunctions.StateMachine(this, 'SimpleStateMachine', {
   definition: startState,
 });
-const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+const stepFunctionAction = new codepipeline_actions.StepFunctionInvokeAction({
   actionName: 'Invoke',
   stateMachine: simpleStateMachine,
   stateMachineInput: codepipeline_actions.StateMachineInput.literal({ IsHelloWorldExample: true }),
@@ -982,15 +1210,15 @@ The `StateMachineInput` can be created with one of 2 static factory methods:
 `literal`, which takes an arbitrary map as its only argument, or `filePath`:
 
 ```ts
-import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+import * as stepfunctions from '@aws-cdk/aws-stepfunctions';
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const inputArtifact = new codepipeline.Artifact();
-const startState = new stepfunction.Pass(stack, 'StartState');
-const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+const startState = new stepfunctions.Pass(this, 'StartState');
+const simpleStateMachine  = new stepfunctions.StateMachine(this, 'SimpleStateMachine', {
   definition: startState,
 });
-const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+const stepFunctionAction = new codepipeline_actions.StepFunctionInvokeAction({
   actionName: 'Invoke',
   stateMachine: simpleStateMachine,
   stateMachineInput: codepipeline_actions.StateMachineInput.filePath(inputArtifact.atPath('assets/input.json')),

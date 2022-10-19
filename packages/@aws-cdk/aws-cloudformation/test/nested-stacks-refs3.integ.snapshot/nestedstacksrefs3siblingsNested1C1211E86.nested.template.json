@@ -1,0 +1,17 @@
+{
+ "Resources": {
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
+  }
+ },
+ "Outputs": {
+  "nestedstacksrefs3siblingsNested1MyTopic12458558TopicName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyTopic86869434",
+     "TopicName"
+    ]
+   }
+  }
+ }
+}

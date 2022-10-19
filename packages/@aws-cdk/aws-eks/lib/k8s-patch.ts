@@ -3,10 +3,6 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for KubernetesPatch
  */
@@ -71,7 +67,7 @@ export enum PatchType {
  * Kubernetes resource.
  * @see https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/
  */
-export class KubernetesPatch extends CoreConstruct {
+export class KubernetesPatch extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesPatchProps) {
     super(scope, id);
 

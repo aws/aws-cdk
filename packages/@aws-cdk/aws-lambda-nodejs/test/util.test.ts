@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
-import * as os from 'os';
+import * as fs from 'fs';
 import * as path from 'path';
-import { callsites, exec, extractDependencies, findUp, getEsBuildVersion } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -30,6 +30,49 @@ describe('findUp', () => {
 
   test('Starting at a relative path', () => {
     expect(findUp('util.test.ts', 'test/integ-handlers')).toMatch(/aws-lambda-nodejs\/test\/util.test.ts$/);
+  });
+});
+
+describe('findUpMultiple', () => {
+  test('Starting at process.cwd()', () => {
+    const files = findUpMultiple(['README.md', 'package.json']);
+    expect(files).toHaveLength(2);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/README\.md$/);
+    expect(files[1]).toMatch(/aws-lambda-nodejs\/package\.json$/);
+  });
+
+  test('Non existing files', () => {
+    expect(findUpMultiple(['non-existing-file.unknown', 'non-existing-file.unknown2'])).toEqual([]);
+  });
+
+  test('Existing and non existing files', () => {
+    const files = findUpMultiple(['non-existing-file.unknown', 'README.md']);
+    expect(files).toHaveLength(1);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/README\.md$/);
+  });
+
+  test('Starting at a specific path', () => {
+    const files = findUpMultiple(['util.test.ts', 'function.test.ts'], path.join(__dirname, 'integ-handlers'));
+    expect(files).toHaveLength(2);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
+    expect(files[1]).toMatch(/aws-lambda-nodejs\/test\/function\.test\.ts$/);
+  });
+
+  test('Non existing files starting at a non existing relative path', () => {
+    expect(findUpMultiple(['not-to-be-found.txt', 'not-to-be-found2.txt'], 'non-existing/relative/path')).toEqual([]);
+  });
+
+  test('Starting at a relative path', () => {
+    const files = findUpMultiple(['util.test.ts', 'function.test.ts'], 'test/integ-handlers');
+    expect(files).toHaveLength(2);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
+    expect(files[1]).toMatch(/aws-lambda-nodejs\/test\/function\.test\.ts$/);
+  });
+
+  test('Files on multiple levels', () => {
+    const files = findUpMultiple(['README.md', 'util.test.ts'], path.join(__dirname, 'integ-handlers'));
+    expect(files).toHaveLength(1);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
   });
 });
 
@@ -120,71 +163,54 @@ describe('extractDependencies', () => {
       ['unknown'],
     )).toThrow(/Cannot extract version for module 'unknown'/);
   });
+
+  test('with file dependency', () => {
+    const pkgPath = path.join(__dirname, 'package-file.json');
+    fs.writeFileSync(pkgPath, JSON.stringify({
+      dependencies: {
+        'my-module': 'file:../../core',
+      },
+    }));
+
+    expect(extractDependencies(pkgPath, ['my-module'])).toEqual({
+      'my-module': expect.stringMatching(/packages\/@aws-cdk\/core/),
+    });
+
+    fs.unlinkSync(pkgPath);
+  });
 });
 
-describe('getEsBuildVersion', () => {
-  test('returns the version', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('version'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    expect(getEsBuildVersion()).toBe('version');
-    expect(spawnSyncMock).toHaveBeenCalledWith('npx', ['--no-install', 'esbuild', '--version']);
-
-    spawnSyncMock.mockRestore();
-  });
-
-  test('returns undefined on non zero status', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 127, // status error
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    expect(getEsBuildVersion()).toBeUndefined();
-
-    spawnSyncMock.mockRestore();
-  });
-
-  test('returns undefined on error', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      error: new Error('bad error'),
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    expect(getEsBuildVersion()).toBeUndefined();
-
-    spawnSyncMock.mockRestore();
-  });
-
-  test('Windows', () => {
-    const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('version'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
-
-    expect(getEsBuildVersion()).toBe('version');
-    expect(spawnSyncMock).toHaveBeenCalledWith('npx.cmd', expect.any(Array));
-
-    spawnSyncMock.mockRestore();
-    osPlatformMock.mockRestore();
+describe('getTsconfigCompilerOptions', () => {
+  test('should extract compiler options and returns as string', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig.json');
+    const compilerOptions = getTsconfigCompilerOptions(tsconfig);
+    expect(compilerOptions).toEqual([
+      '--alwaysStrict',
+      '--charset utf8',
+      '--declaration',
+      '--declarationMap false',
+      '--experimentalDecorators',
+      '--incremental false',
+      '--inlineSourceMap',
+      '--inlineSources',
+      '--lib es2020',
+      '--module CommonJS',
+      '--newLine lf',
+      '--noEmitOnError',
+      '--noFallthroughCasesInSwitch',
+      '--noImplicitAny',
+      '--noImplicitReturns',
+      '--noImplicitThis',
+      '--noUnusedLocals',
+      '--noUnusedParameters',
+      '--outDir ./',
+      '--resolveJsonModule',
+      '--rootDir ./',
+      '--strict',
+      '--strictNullChecks',
+      '--strictPropertyInitialization',
+      '--stripInternal false',
+      '--target ES2020',
+    ].join(' '));
   });
 });

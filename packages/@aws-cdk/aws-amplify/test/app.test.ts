@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import { SecretValue, Stack } from '@aws-cdk/core';
@@ -15,9 +15,9 @@ test('create an app connected to a GitHub repository', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
-    buildSpec: codebuild.BuildSpec.fromObject({
+    buildSpec: codebuild.BuildSpec.fromObjectToYaml({
       version: '1.0',
       frontend: {
         phases: {
@@ -32,9 +32,9 @@ test('create an app connected to a GitHub repository', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     Name: 'App',
-    BuildSpec: '{\n  \"version\": \"1.0\",\n  \"frontend\": {\n    \"phases\": {\n      \"build\": {\n        \"commands\": [\n          \"npm run build\"\n        ]\n      }\n    }\n  }\n}',
+    BuildSpec: 'version: \"1.0\"\nfrontend:\n  phases:\n    build:\n      commands:\n        - npm run build\n',
     IAMServiceRole: {
       'Fn::GetAtt': [
         'AppRole1AF9B530',
@@ -43,9 +43,12 @@ test('create an app connected to a GitHub repository', () => {
     },
     OauthToken: 'secret',
     Repository: 'https://github.com/aws/aws-cdk',
+    BasicAuthConfig: {
+      EnableBasicAuth: false,
+    },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -67,7 +70,7 @@ test('create an app connected to a GitLab repository', () => {
     sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     buildSpec: codebuild.BuildSpec.fromObject({
       version: '1.0',
@@ -84,7 +87,7 @@ test('create an app connected to a GitLab repository', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     Name: 'App',
     BuildSpec: '{\n  \"version\": \"1.0\",\n  \"frontend\": {\n    \"phases\": {\n      \"build\": {\n        \"commands\": [\n          \"npm run build\"\n        ]\n      }\n    }\n  }\n}',
     IAMServiceRole: {
@@ -97,7 +100,7 @@ test('create an app connected to a GitLab repository', () => {
     Repository: 'https://gitlab.com/aws/aws-cdk',
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -122,7 +125,7 @@ test('create an app connected to a CodeCommit repository', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     IAMServiceRole: {
       'Fn::GetAtt': [
         'AppRole1AF9B530',
@@ -147,7 +150,7 @@ test('create an app connected to a CodeCommit repository', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -191,13 +194,13 @@ test('with basic auth from credentials', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
-    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.plainText('password')),
+    basicAuth: amplify.BasicAuth.fromCredentials('username', SecretValue.unsafePlainText('password')),
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     BasicAuthConfig: {
       EnableBasicAuth: true,
       Password: 'password',
@@ -212,13 +215,13 @@ test('with basic auth from generated password', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     basicAuth: amplify.BasicAuth.fromGeneratedPassword('username'),
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     BasicAuthConfig: {
       EnableBasicAuth: true,
       Password: {
@@ -237,7 +240,7 @@ test('with basic auth from generated password', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       GenerateStringKey: 'password',
       SecretStringTemplate: '{\"username\":\"username\"}',
@@ -251,7 +254,7 @@ test('with env vars', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     environmentVariables: {
       key1: 'value1',
@@ -260,7 +263,7 @@ test('with env vars', () => {
   app.addEnvironment('key2', 'value2');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     EnvironmentVariables: [
       {
         Name: 'key1',
@@ -280,7 +283,7 @@ test('with custom rules', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     customRules: [
       {
@@ -297,7 +300,7 @@ test('with custom rules', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     CustomRules: [
       {
         Source: '/source1',
@@ -319,13 +322,13 @@ test('with SPA redirect', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     customRules: [amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT],
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     CustomRules: [
       {
         Source: '</^[^.]+$/>',
@@ -342,7 +345,7 @@ test('with auto branch creation', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     autoBranchCreation: {
       environmentVariables: {
@@ -353,8 +356,11 @@ test('with auto branch creation', () => {
   app.addAutoBranchEnvironment('key2', 'value2');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     AutoBranchCreationConfig: {
+      BasicAuthConfig: {
+        EnableBasicAuth: false,
+      },
       EnableAutoBranchCreation: true,
       EnableAutoBuild: true,
       EnablePullRequestPreview: true,
@@ -378,13 +384,61 @@ test('with auto branch deletion', () => {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
       repository: 'aws-cdk',
-      oauthToken: SecretValue.plainText('secret'),
+      oauthToken: SecretValue.unsafePlainText('secret'),
     }),
     autoBranchDeletion: true,
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::App', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     EnableBranchAutoDeletion: true,
+  });
+});
+
+test('with custom headers', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    customResponseHeaders: [
+      {
+        pattern: '*.json',
+        headers: {
+          'custom-header-name-1': 'custom-header-value-1',
+          'custom-header-name-2': 'custom-header-value-2',
+        },
+      },
+      {
+        pattern: '/path/*',
+        headers: {
+          'custom-header-name-1': 'custom-header-value-2',
+        },
+      },
+      {
+        pattern: '/with-tokens/*',
+        headers: {
+          'x-custom': `${'hello'.repeat(10)}${Stack.of(stack).urlSuffix} `,
+        },
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    CustomHeaders: {
+      'Fn::Join': [
+        '',
+        [
+          'customHeaders:\n  - pattern: "*.json"\n    headers:\n      - key: "custom-header-name-1"\n        value: "custom-header-value-1"\n      - key: "custom-header-name-2"\n        value: "custom-header-value-2"\n  - pattern: "/path/*"\n    headers:\n      - key: "custom-header-name-1"\n        value: "custom-header-value-2"\n  - pattern: "/with-tokens/*"\n    headers:\n      - key: "x-custom"\n        value: "hellohellohellohellohellohellohellohellohellohello',
+          {
+            Ref: 'AWS::URLSuffix',
+          },
+          ' "\n',
+        ],
+      ],
+    },
   });
 });

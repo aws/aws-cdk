@@ -1,4 +1,5 @@
-import { IResource, Resource, Duration } from '@aws-cdk/core';
+import { IResource, Resource, Duration, Stack, SecretValue } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -158,6 +159,12 @@ export class OAuthScope {
  */
 export class UserPoolClientIdentityProvider {
   /**
+   * Allow users to sign in using 'Sign In With Apple'.
+   * A `UserPoolIdentityProviderApple` must be attached to the user pool.
+   */
+  public static readonly APPLE = new UserPoolClientIdentityProvider('SignInWithApple');
+
+  /**
    * Allow users to sign in using 'Facebook Login'.
    * A `UserPoolIdentityProviderFacebook` must be attached to the user pool.
    */
@@ -226,7 +233,7 @@ export interface UserPoolClientOptions {
   readonly disableOAuth?: boolean;
 
   /**
-   * OAuth settings for this to client to interact with the app.
+   * OAuth settings for this client to interact with the app.
    * An error is thrown when this is specified and `disableOAuth` is set.
    * @default - see defaults in `OAuthSettings`. meaningless if `disableOAuth` is set.
    */
@@ -237,7 +244,7 @@ export interface UserPoolClientOptions {
    * user does not exist in the user pool (false), or whether it returns
    * another type of error that doesn't reveal the user's absence.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html
-   * @default true for new stacks
+   * @default false
    */
   readonly preventUserExistenceErrors?: boolean;
 
@@ -287,6 +294,13 @@ export interface UserPoolClientOptions {
    * @default - all standard and custom attributes
    */
   readonly writeAttributes?: ClientAttributes;
+
+  /**
+   * Enable token revocation for this client.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html#enable-token-revocation
+   * @default true for new user pool clients
+   */
+  readonly enableTokenRevocation?: boolean;
 }
 
 /**
@@ -308,24 +322,39 @@ export interface IUserPoolClient extends IResource {
    * @attribute
    */
   readonly userPoolClientId: string;
+
+  /**
+   * The generated client secret. Only available if the "generateSecret" props is set to true
+   * @attribute
+   */
+  readonly userPoolClientSecret: SecretValue;
 }
 
 /**
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource implements IUserPoolClient {
+
   /**
    * Import a user pool client given its id.
    */
   public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
+      get userPoolClientSecret(): SecretValue {
+        throw new Error('UserPool Client Secret is not available for imported Clients');
+      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly userPoolClientId: string;
+
+  private _generateSecret?: boolean;
+  private readonly userPool: IUserPool;
+  private _userPoolClientSecret?: SecretValue;
+
   /**
    * The OAuth flows enabled for this client.
    */
@@ -361,6 +390,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    this._generateSecret = props.generateSecret;
+    this.userPool = props.userPool;
+
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
@@ -375,6 +407,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       supportedIdentityProviders: this.configureIdentityProviders(props),
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
+      enableTokenRevocation: props.enableTokenRevocation,
     });
     this.configureTokenValidity(resource, props);
 
@@ -393,8 +426,43 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return this._userPoolClientName;
   }
 
+  public get userPoolClientSecret(): SecretValue {
+    if (!this._generateSecret) {
+      throw new Error(
+        'userPoolClientSecret is available only if generateSecret is set to true.',
+      );
+    }
+
+    // Create the Custom Resource that assists in resolving the User Pool Client secret
+    // just once, no matter how many times this method is called
+    if (!this._userPoolClientSecret) {
+      this._userPoolClientSecret = SecretValue.resourceAttribute(new AwsCustomResource(
+        this,
+        'DescribeCognitoUserPoolClient',
+        {
+          resourceType: 'Custom::DescribeCognitoUserPoolClient',
+          onCreate: {
+            region: Stack.of(this).region,
+            service: 'CognitoIdentityServiceProvider',
+            action: 'describeUserPoolClient',
+            parameters: {
+              UserPoolId: this.userPool.userPoolId,
+              ClientId: this.userPoolClientId,
+            },
+            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+          },
+          policy: AwsCustomResourcePolicy.fromSdkCalls({
+            resources: [this.userPool.userPoolArn],
+          }),
+        },
+      ).getResponseField('UserPoolClient.ClientSecret'));
+    }
+
+    return this._userPoolClientSecret;
+  }
+
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
-    if (!props.authFlows) return undefined;
+    if (!props.authFlows || Object.keys(props.authFlows).length === 0) return undefined;
 
     const authFlows: string[] = [];
     if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
@@ -403,13 +471,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
 
     // refreshToken should always be allowed if authFlows are present
-    if (authFlows.length > 0) {
-      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
-    }
+    authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
 
-    if (authFlows.length === 0) {
-      return undefined;
-    }
     return authFlows;
   }
 

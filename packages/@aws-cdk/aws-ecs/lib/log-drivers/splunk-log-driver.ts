@@ -1,12 +1,9 @@
 import { SecretValue } from '@aws-cdk/core';
-import { ContainerDefinition } from '../container-definition';
+import { Construct } from 'constructs';
+import { ContainerDefinition, Secret } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
-import { ensureInRange, renderCommonLogDriverOptions, stringifyOptions } from './utils';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { ensureInRange, renderCommonLogDriverOptions, renderLogDriverSecretOptions, stringifyOptions } from './utils';
 
 /**
  * Log Message Format
@@ -25,8 +22,23 @@ export enum SplunkLogFormat {
 export interface SplunkLogDriverProps extends BaseLogDriverProps {
   /**
    * Splunk HTTP Event Collector token.
+   *
+   * The splunk-token is added to the Options property of the Log Driver Configuration. So the secret value will be resolved and
+   * viewable in plain text in the console.
+   *
+   * Please provide at least one of `token` or `secretToken`.
+   * @deprecated Use {@link SplunkLogDriverProps.secretToken} instead.
+   * @default - token not provided.
    */
-  readonly token: SecretValue;
+  readonly token?: SecretValue;
+
+  /**
+   * Splunk HTTP Event Collector token (Secret).
+   *
+   * The splunk-token is added to the SecretOptions property of the Log Driver Configuration. So the secret value will not be
+   * resolved or viewable as plain text.
+   */
+  readonly secretToken: Secret;
 
   /**
    * Path to your Splunk Enterprise, self-service Splunk Cloud instance, or Splunk
@@ -121,6 +133,9 @@ export class SplunkLogDriver extends LogDriver {
   constructor(private readonly props: SplunkLogDriverProps) {
     super();
 
+    if (!props.token && !props.secretToken) {
+      throw new Error('Please provide either token or secretToken.');
+    }
     if (props.gzipLevel) {
       ensureInRange(props.gzipLevel, -1, 9);
     }
@@ -129,24 +144,27 @@ export class SplunkLogDriver extends LogDriver {
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+    const options = stringifyOptions({
+      'splunk-token': this.props.token?.unsafeUnwrap(), // Safe usage
+      'splunk-url': this.props.url,
+      'splunk-source': this.props.source,
+      'splunk-sourcetype': this.props.sourceType,
+      'splunk-index': this.props.index,
+      'splunk-capath': this.props.caPath,
+      'splunk-caname': this.props.caName,
+      'splunk-insecureskipverify': this.props.insecureSkipVerify,
+      'splunk-format': this.props.format,
+      'splunk-verify-connection': this.props.verifyConnection,
+      'splunk-gzip': this.props.gzip,
+      'splunk-gzip-level': this.props.gzipLevel,
+      ...renderCommonLogDriverOptions(this.props),
+    });
+
     return {
       logDriver: 'splunk',
-      options: stringifyOptions({
-        'splunk-token': this.props.token,
-        'splunk-url': this.props.url,
-        'splunk-source': this.props.source,
-        'splunk-sourcetype': this.props.sourceType,
-        'splunk-index': this.props.index,
-        'splunk-capath': this.props.caPath,
-        'splunk-caname': this.props.caName,
-        'splunk-insecureskipverify': this.props.insecureSkipVerify,
-        'splunk-format': this.props.format,
-        'splunk-verify-connection': this.props.verifyConnection,
-        'splunk-gzip': this.props.gzip,
-        'splunk-gzip-level': this.props.gzipLevel,
-        ...renderCommonLogDriverOptions(this.props),
-      }),
+      options,
+      secretOptions: this.props.secretToken && renderLogDriverSecretOptions({ 'splunk-token': this.props.secretToken }, _containerDefinition.taskDefinition),
     };
   }
 }

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -18,10 +18,33 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
+          Value: 'true',
+        },
+      ],
+    });
+  });
+
+  test('Enable preserve_client_ip attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      preserveClientIp: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'preserve_client_ip.enabled',
           Value: 'true',
         },
       ],
@@ -41,10 +64,33 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
+          Value: 'false',
+        },
+      ],
+    });
+  });
+
+  test('Disable preserve_client_ip attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      preserveClientIp: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'preserve_client_ip.enabled',
           Value: 'false',
         },
       ],
@@ -61,7 +107,7 @@ describe('tests', () => {
       protocol: elbv2.Protocol.UDP,
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Protocol: 'UDP',
     });
   });
@@ -75,22 +121,9 @@ describe('tests', () => {
       port: 80,
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Protocol: 'TCP',
     });
-  });
-
-  test('Throws error for unacceptable protocol', () => {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-
-    expect(() => {
-      new elbv2.NetworkTargetGroup(stack, 'Group', {
-        vpc,
-        port: 80,
-        protocol: elbv2.Protocol.HTTPS,
-      });
-    }).toThrow();
   });
 
   test('Throws error for invalid health check interval', () => {
@@ -111,42 +144,365 @@ describe('tests', () => {
     }).toThrow(/Health check interval '5' not supported. Must be one of the following values '10,30'./);
   });
 
-  test('Throws error for invalid health check protocol', () => {
+  test('targetGroupName unallowed: more than 32 characters', () => {
+    // GIVEN
     const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
+    // WHEN
     new elbv2.NetworkTargetGroup(stack, 'Group', {
       vpc,
       port: 80,
-      healthCheck: {
-        protocol: elbv2.Protocol.UDP,
-      },
+      targetGroupName: 'a'.repeat(33),
     });
 
+    // THEN
     expect(() => {
       app.synth();
-    }).toThrow(/Health check protocol 'UDP' is not supported. Must be one of \[HTTP, HTTPS, TCP\]/);
+    }).toThrow('Target group name: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" can have a maximum of 32 characters.');
   });
 
-  test('Throws error for health check path property when protocol does not support it', () => {
+  test('targetGroupName unallowed: starts with hyphen', () => {
+    // GIVEN
     const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
+    // WHEN
     new elbv2.NetworkTargetGroup(stack, 'Group', {
       vpc,
       port: 80,
-      healthCheck: {
+      targetGroupName: '-myTargetGroup',
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Target group name: "-myTargetGroup" must not begin or end with a hyphen.');
+  });
+
+  test('targetGroupName unallowed: ends with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      targetGroupName: 'myTargetGroup-',
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Target group name: "myTargetGroup-" must not begin or end with a hyphen.');
+  });
+
+  test('targetGroupName unallowed: unallowed characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      targetGroupName: 'my target group',
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Target group name: "my target group" must contain only alphanumeric characters or hyphens.');
+  });
+
+  test('Disable deregistration_delay.connection_termination.enabled attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      connectionTermination: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'deregistration_delay.connection_termination.enabled',
+          Value: 'false',
+        },
+      ],
+    });
+  });
+
+  test('Enable deregistration_delay.connection_termination.enabled attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      connectionTermination: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'deregistration_delay.connection_termination.enabled',
+          Value: 'true',
+        },
+      ],
+    });
+  });
+
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `healthCheck` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS, TCP]`);
+    });
+
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS, TCP]`);
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
+    'Does not throw validation error, when `healthCheck` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
+    'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
+    'Does not throw a validation error, when `healthCheck` has `protocol` set to %s and `interval` is equal to `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          interval: cdk.Duration.seconds(10),
+          timeout: cdk.Duration.seconds(10),
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
+    'Does not throw a validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is equal to `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        interval: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(10),
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error,`healthCheck` has `protocol` set to %s and `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          path: '/my-path',
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`'${protocol}' health checks do not support the path property. Must be one of [HTTP, HTTPS]`);
+    });
+
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and  `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
         path: '/my-path',
-        protocol: elbv2.Protocol.TCP,
-      },
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`'${protocol}' health checks do not support the path property. Must be one of [HTTP, HTTPS]`);
     });
 
-    expect(() => {
-      app.synth();
-    }).toThrow(/'TCP' health checks do not support the path property. Must be one of \[HTTP, HTTPS\]/);
-  });
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Does not throw validation error, when `healthCheck` has `protocol` set to %s and `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          path: '/my-path',
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s and `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        path: '/my-path',
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
 
   test('Throws error for invalid health check healthy threshold', () => {
     const app = new cdk.App();
@@ -264,5 +620,66 @@ describe('tests', () => {
     // THEN
     expect(() => targetGroup.metricHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
     expect(() => targetGroup.metricUnHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
+  });
+
+  test('imported targetGroup has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTg = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myNlbTargetGroup/73e2d6bc24d8a067',
+    });
+
+    // THEN
+    expect(importedTg.targetGroupName).toEqual('myNlbTargetGroup');
+  });
+
+  test('imported targetGroup with imported ARN has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTgArn = cdk.Fn.importValue('ImportTargetGroupArn');
+    const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: importedTgArn,
+    });
+    new cdk.CfnOutput(stack, 'TargetGroupOutput', {
+      value: importedTg.targetGroupName,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasOutput('TargetGroupOutput', {
+      Value: {
+        'Fn::Select': [
+          // myNlbTargetGroup
+          1,
+          {
+            'Fn::Split': [
+              // [targetgroup, myNlbTargetGroup, 73e2d6bc24d8a067]
+              '/',
+              {
+                'Fn::Select': [
+                  // targetgroup/myNlbTargetGroup/73e2d6bc24d8a067
+                  5,
+                  {
+                    'Fn::Split': [
+                      // [arn, aws, elasticloadbalancing, us-west-2, 123456789012, targetgroup/myNlbTargetGroup/73e2d6bc24d8a067]
+                      ':',
+                      {
+                        // arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myNlbTargetGroup/73e2d6bc24d8a067
+                        'Fn::ImportValue': 'ImportTargetGroupArn',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
   });
 });

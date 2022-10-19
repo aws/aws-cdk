@@ -1,17 +1,7 @@
-import {
-  arrayWith,
-  expect as cdkExpect,
-  haveResource,
-  haveResourceLike,
-  ResourcePart,
-} from '@aws-cdk/assert';
-import {
-  AccountRootPrincipal,
-  Role,
-} from '@aws-cdk/aws-iam';
+import { Match, Template } from '@aws-cdk/assertions';
+import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -31,17 +21,26 @@ describe('volume', () => {
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
       size: cdk.Size.gibibytes(8),
+      volumeName: 'MyVolume',
     });
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
       VolumeType: 'gp2',
-    }, ResourcePart.Properties));
+      Tags: [
+        {
+          Key: 'Name',
+          Value: 'MyVolume',
+        },
+      ],
+    });
 
-
+    Template.fromStack(stack).hasResource('AWS::EC2::Volume', {
+      DeletionPolicy: 'Retain',
+    });
   });
 
   test('fromVolumeAttributes', () => {
@@ -62,7 +61,6 @@ describe('volume', () => {
     expect(volume.volumeId).toEqual(volumeId);
     expect(volume.availabilityZone).toEqual(availabilityZone);
     expect(volume.encryptionKey).toEqual(encryptionKey);
-
   });
 
   test('tagged volume', () => {
@@ -77,7 +75,7 @@ describe('volume', () => {
     cdk.Tags.of(volume).add('TagKey', 'TagValue');
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
@@ -86,9 +84,7 @@ describe('volume', () => {
         Key: 'TagKey',
         Value: 'TagValue',
       }],
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('autoenableIO', () => {
@@ -103,11 +99,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       AutoEnableIO: true,
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('encryption', () => {
@@ -122,11 +116,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Encrypted: true,
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('encryption with kms', () => {
@@ -143,7 +135,7 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Encrypted: true,
       KmsKeyId: {
         'Fn::GetAtt': [
@@ -151,96 +143,56 @@ describe('volume', () => {
           'Arn',
         ],
       },
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
-        Statement: [
-          {},
-          {
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
+        Statement: Match.arrayWith([{
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Resource: '*',
+          Action: [
+            'kms:DescribeKey',
+            'kms:GenerateDataKeyWithoutPlainText',
+          ],
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:',
+                    'ec2.',
                     {
-                      Ref: 'AWS::Partition',
+                      Ref: 'AWS::Region',
                     },
-                    ':iam::',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':root',
+                    '.amazonaws.com',
                   ],
                 ],
               },
-            },
-            Resource: '*',
-            Action: [
-              'kms:DescribeKey',
-              'kms:GenerateDataKeyWithoutPlainText',
-            ],
-            Condition: {
-              StringEquals: {
-                'kms:ViaService': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'ec2.',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      '.amazonaws.com',
-                    ],
-                  ],
-                },
-                'kms:CallerAccount': {
-                  Ref: 'AWS::AccountId',
-                },
+              'kms:CallerAccount': {
+                Ref: 'AWS::AccountId',
               },
             },
           },
-        ],
+        }]),
       },
-    }));
-
-
-  });
-
-  // only enable for legacy behaviour
-  // see https://github.com/aws/aws-cdk/issues/12962
-  testLegacyBehavior('encryption with kms from snapshot', cdk.App, (app) => {
-    // GIVEN
-    const stack = new cdk.Stack(app);
-    const encryptionKey = new kms.Key(stack, 'Key');
-
-    // WHEN
-    new Volume(stack, 'Volume', {
-      availabilityZone: 'us-east-1a',
-      size: cdk.Size.gibibytes(500),
-      encrypted: true,
-      encryptionKey,
-      snapshotId: 'snap-1234567890',
     });
-
-    // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
-      KeyPolicy: {
-        Statement: [
-          {},
-          {
-            Action: [
-              'kms:DescribeKey',
-              'kms:GenerateDataKeyWithoutPlainText',
-              'kms:ReEncrypt*',
-            ],
-          },
-        ],
-      },
-    }));
-
-
   });
 
   test('iops', () => {
@@ -256,12 +208,10 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Iops: 500,
       VolumeType: 'io1',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('multi-attach', () => {
@@ -278,11 +228,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       MultiAttachEnabled: true,
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('snapshotId', () => {
@@ -296,11 +244,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       SnapshotId: 'snap-00000000',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('volume: standard', () => {
@@ -315,11 +261,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'standard',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('volume: io1', () => {
@@ -335,11 +279,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'io1',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('volume: io2', () => {
@@ -355,11 +297,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'io2',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('volume: gp2', () => {
@@ -374,11 +314,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'gp2',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('volume: gp3', () => {
@@ -393,11 +331,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'gp3',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('volume: st1', () => {
@@ -412,11 +348,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'st1',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('volume: sc1', () => {
@@ -431,11 +365,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       VolumeType: 'sc1',
-    }, ResourcePart.Properties));
-
-
+    });
   });
 
   test('grantAttachVolume to any instance', () => {
@@ -451,7 +383,7 @@ describe('volume', () => {
     volume.grantAttachVolume(role);
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -504,17 +436,13 @@ describe('volume', () => {
           ],
         }],
       },
-    }));
-
+    });
   });
 
   describe('grantAttachVolume to any instance with encryption', () => {
-
-    // This exact assertions here are only applicable when 'aws-kms:defaultKeyPolicies' feature flag is disabled.
-    // See subsequent test case for the updated behaviour
-    testLegacyBehavior('legacy', cdk.App, (app) => {
+    test('with default key policies', () => {
       // GIVEN
-      const stack = new cdk.Stack(app);
+      const stack = new cdk.Stack();
       const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
       const encryptionKey = new kms.Key(stack, 'Key');
       const volume = new Volume(stack, 'Volume', {
@@ -528,70 +456,9 @@ describe('volume', () => {
       volume.grantAttachVolume(role);
 
       // THEN
-      cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
-        KeyPolicy: {
-          Statement: [
-            {},
-            {},
-            {
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::GetAtt': [
-                    'Role1ABCC5F0',
-                    'Arn',
-                  ],
-                },
-              },
-              Action: 'kms:CreateGrant',
-              Condition: {
-                Bool: {
-                  'kms:GrantIsForAWSResource': true,
-                },
-                StringEquals: {
-                  'kms:ViaService': {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'ec2.',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        '.amazonaws.com',
-                      ],
-                    ],
-                  },
-                  'kms:GrantConstraintType': 'EncryptionContextSubset',
-                },
-              },
-              Resource: '*',
-            },
-          ],
-        },
-      }));
-
-
-    });
-
-    testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { '@aws-cdk/aws-kms:defaultKeyPolicies': true }, cdk.App, (app) => {
-      // GIVEN
-      const stack = new cdk.Stack(app);
-      const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
-      const encryptionKey = new kms.Key(stack, 'Key');
-      const volume = new Volume(stack, 'Volume', {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(8),
-        encrypted: true,
-        encryptionKey,
-      });
-
-      // WHEN
-      volume.grantAttachVolume(role);
-
-      // THEN
-      cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: arrayWith({
+          Statement: Match.arrayWith([{
             Effect: 'Allow',
             Action: 'kms:CreateGrant',
             Condition: {
@@ -620,13 +487,10 @@ describe('volume', () => {
                 'Arn',
               ],
             },
-          }),
+          }]),
         },
-      }));
-
-
+      });
     });
-
   });
 
   test('grantAttachVolume to any instance with KMS.fromKeyArn() encryption', () => {
@@ -662,46 +526,41 @@ describe('volume', () => {
     volume.grantAttachVolume(role);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [
-          {},
-          {
-            Effect: 'Allow',
-            Action: 'kms:CreateGrant',
-            Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+        Statement: Match.arrayWith([{
+          Effect: 'Allow',
+          Action: 'kms:CreateGrant',
+          Resource: {
+            'Fn::GetAtt': [
+              'Key961B73FD',
+              'Arn',
+            ],
+          },
+          Condition: {
+            Bool: {
+              'kms:GrantIsForAWSResource': true,
             },
-            Condition: {
-              Bool: {
-                'kms:GrantIsForAWSResource': true,
-              },
-              StringEquals: {
-                'kms:ViaService': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'ec2.',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      '.amazonaws.com',
-                    ],
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'ec2.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
                   ],
-                },
-                'kms:GrantConstraintType': 'EncryptionContextSubset',
+                ],
               },
+              'kms:GrantConstraintType': 'EncryptionContextSubset',
             },
           },
-        ],
+        }]),
       },
-    }));
-
-
+    });
   });
 
   test('grantAttachVolume to specific instances', () => {
@@ -730,66 +589,61 @@ describe('volume', () => {
     volume.grantAttachVolume(role, [instance1, instance2]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
           Action: 'ec2:AttachVolume',
           Effect: 'Allow',
-          Resource: [
-            {},
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':instance/',
-                  {
-                    Ref: 'Instance14BC3991D',
-                  },
-                ],
+          Resource: Match.arrayWith([{
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/',
+                {
+                  Ref: 'Instance14BC3991D',
+                },
               ],
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':instance/',
-                  {
-                    Ref: 'Instance255F35265',
-                  },
-                ],
+            ],
+          },
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/',
+                {
+                  Ref: 'Instance255F35265',
+                },
               ],
-            },
-          ],
+            ],
+          }]),
         }],
       },
-    }));
-
-
+    });
   });
 
   test('grantAttachVolume to instance self', () => {
@@ -811,35 +665,32 @@ describe('volume', () => {
     volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
           Action: 'ec2:AttachVolume',
           Effect: 'Allow',
-          Resource: [
-            {},
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':instance/*',
-                ],
+          Resource: Match.arrayWith([{
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/*',
               ],
-            },
-          ],
+            ],
+          }]),
           Condition: {
             'ForAnyValue:StringEquals': {
               'ec2:ResourceTag/VolumeGrantAttach-B2376B2BDA': 'b2376b2bda65cb40f83c290dd844c4aa',
@@ -847,26 +698,21 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantAttach-B2376B2BDA',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
-      Tags: [
-        {},
-        {
-          Key: 'VolumeGrantAttach-B2376B2BDA',
-          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
-        },
-      ],
-    }, ResourcePart.Properties));
-
-
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      Tags: Match.arrayWith([{
+        Key: 'VolumeGrantAttach-B2376B2BDA',
+        Value: 'b2376b2bda65cb40f83c290dd844c4aa',
+      }]),
+    });
   });
 
   test('grantAttachVolume to instance self with suffix', () => {
@@ -888,35 +734,32 @@ describe('volume', () => {
     volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance], 'TestSuffix');
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
           Action: 'ec2:AttachVolume',
           Effect: 'Allow',
-          Resource: [
-            {},
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':instance/*',
-                ],
+          Resource: Match.arrayWith([{
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/*',
               ],
-            },
-          ],
+            ],
+          }]),
           Condition: {
             'ForAnyValue:StringEquals': {
               'ec2:ResourceTag/VolumeGrantAttach-TestSuffix': 'b2376b2bda65cb40f83c290dd844c4aa',
@@ -924,25 +767,21 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantAttach-TestSuffix',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
-      Tags: [
-        {},
-        {
-          Key: 'VolumeGrantAttach-TestSuffix',
-          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
-        },
-      ],
-    }, ResourcePart.Properties));
-
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      Tags: Match.arrayWith([{
+        Key: 'VolumeGrantAttach-TestSuffix',
+        Value: 'b2376b2bda65cb40f83c290dd844c4aa',
+      }]),
+    });
   });
 
   test('grantDetachVolume to any instance', () => {
@@ -958,7 +797,7 @@ describe('volume', () => {
     volume.grantDetachVolume(role);
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -1011,8 +850,7 @@ describe('volume', () => {
           ],
         }],
       },
-    }));
-
+    });
   });
 
   test('grantDetachVolume from specific instance', () => {
@@ -1041,66 +879,61 @@ describe('volume', () => {
     volume.grantDetachVolume(role, [instance1, instance2]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
           Action: 'ec2:DetachVolume',
           Effect: 'Allow',
-          Resource: [
-            {},
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':instance/',
-                  {
-                    Ref: 'Instance14BC3991D',
-                  },
-                ],
+          Resource: Match.arrayWith([{
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/',
+                {
+                  Ref: 'Instance14BC3991D',
+                },
               ],
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':instance/',
-                  {
-                    Ref: 'Instance255F35265',
-                  },
-                ],
+            ],
+          },
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/',
+                {
+                  Ref: 'Instance255F35265',
+                },
               ],
-            },
-          ],
+            ],
+          }]),
         }],
       },
-    }));
-
-
+    });
   });
 
   test('grantDetachVolume from instance self', () => {
@@ -1122,35 +955,32 @@ describe('volume', () => {
     volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
           Action: 'ec2:DetachVolume',
           Effect: 'Allow',
-          Resource: [
-            {},
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':instance/*',
-                ],
+          Resource: Match.arrayWith([{
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/*',
               ],
-            },
-          ],
+            ],
+          }]),
           Condition: {
             'ForAnyValue:StringEquals': {
               'ec2:ResourceTag/VolumeGrantDetach-B2376B2BDA': 'b2376b2bda65cb40f83c290dd844c4aa',
@@ -1158,26 +988,21 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantDetach-B2376B2BDA',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
-      Tags: [
-        {},
-        {
-          Key: 'VolumeGrantDetach-B2376B2BDA',
-          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
-        },
-      ],
-    }, ResourcePart.Properties));
-
-
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      Tags: Match.arrayWith([{
+        Key: 'VolumeGrantDetach-B2376B2BDA',
+        Value: 'b2376b2bda65cb40f83c290dd844c4aa',
+      }]),
+    });
   });
 
   test('grantDetachVolume from instance self with suffix', () => {
@@ -1199,14 +1024,13 @@ describe('volume', () => {
     volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance], 'TestSuffix');
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
           Action: 'ec2:DetachVolume',
           Effect: 'Allow',
-          Resource: [
-            {},
+          Resource: Match.arrayWith([
             {
               'Fn::Join': [
                 '',
@@ -1227,7 +1051,7 @@ describe('volume', () => {
                 ],
               ],
             },
-          ],
+          ]),
           Condition: {
             'ForAnyValue:StringEquals': {
               'ec2:ResourceTag/VolumeGrantDetach-TestSuffix': 'b2376b2bda65cb40f83c290dd844c4aa',
@@ -1235,25 +1059,21 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantDetach-TestSuffix',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
-      Tags: [
-        {},
-        {
-          Key: 'VolumeGrantDetach-TestSuffix',
-          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
-        },
-      ],
-    }, ResourcePart.Properties));
-
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      Tags: Match.arrayWith([{
+        Key: 'VolumeGrantDetach-TestSuffix',
+        Value: 'b2376b2bda65cb40f83c290dd844c4aa',
+      }]),
+    });
   });
 
   test('validation fromVolumeAttributes', () => {
@@ -1290,7 +1110,6 @@ describe('volume', () => {
         availabilityZone: 'us-east-1a',
       });
     }).toThrow('`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
-
   });
 
   test('validation required props', () => {
@@ -1348,8 +1167,6 @@ describe('volume', () => {
         encryptionKey: key,
       });
     }).not.toThrow();
-
-
   });
 
   test('validation snapshotId', () => {
@@ -1387,8 +1204,6 @@ describe('volume', () => {
         snapshotId: 'snap-1234 ', // trailing extra character(s)
       });
     }).toThrow('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
-
-
   });
 
   test('validation iops', () => {
@@ -1511,8 +1326,6 @@ describe('volume', () => {
         });
       }).toThrow(/iops has a maximum ratio of/);
     }
-
-
   });
 
   test('validation multi-attach', () => {
@@ -1556,8 +1369,6 @@ describe('volume', () => {
         }).toThrow(/multi-attach is supported exclusively/);
       }
     }
-
-
   });
 
   test('validation size in range', () => {
@@ -1624,8 +1435,5 @@ describe('volume', () => {
         });
       }).toThrow(/volumes must be between/);
     }
-
-
   });
-
 });

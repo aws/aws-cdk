@@ -1,12 +1,11 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnResource, Lazy, Stack } from '../lib';
 import { CfnJson } from '../lib/cfn-json';
 import { CfnUtilsResourceType } from '../lib/private/cfn-utils-provider/consts';
 import { handler } from '../lib/private/cfn-utils-provider/index';
 
-nodeunitShim({
+describe('cfn json', () => {
 
-  'resolves to a fn::getatt'(test: Test) {
+  test('resolves to a fn::getatt', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'test');
@@ -23,15 +22,13 @@ nodeunitShim({
     const template = app.synth().getStackArtifact(stack.artifactId).template;
 
     // input is stringified
-    test.deepEqual(template.Resources.MyCfnJson248769BB.Properties.Value, '{"hello":1234,"world":{"bar":1234}}');
+    expect(template.Resources.MyCfnJson248769BB.Properties.Value).toEqual('{"hello":1234,"world":{"bar":1234}}');
 
     // output is basically an Fn::GetAtt
-    test.deepEqual(stack.resolve(json), { 'Fn::GetAtt': ['MyCfnJson248769BB', 'Value'] });
+    expect(stack.resolve(json)).toEqual({ 'Fn::GetAtt': ['MyCfnJson248769BB', 'Value'] });
+  });
 
-    test.done();
-  },
-
-  'tokens and intrinsics can be used freely in keys or values'(test: Test) {
+  test('tokens and intrinsics can be used freely in keys or values', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'test');
@@ -50,13 +47,12 @@ nodeunitShim({
     // THEN
     const template = app.synth().getStackArtifact(stack.artifactId).template;
 
-    test.deepEqual(template.Resources.MyCfnJson248769BB.Properties.Value, {
+    expect(template.Resources.MyCfnJson248769BB.Properties.Value).toEqual({
       'Fn::Join': ['', ['{"', { Ref: 'Other' }, '":1234,"world":{"bar":"this is a I am lazy"}}']],
     });
-    test.done();
-  },
+  });
 
-  'JSON.stringify() will return the CFN-stringified value to avoid circular references'(test: Test) {
+  test('JSON.stringify() will return the CFN-stringified value to avoid circular references', () => {
     // GIVEN
     const stack = new Stack();
     const res = new CfnResource(stack, 'MyResource', { type: 'Foo' });
@@ -70,15 +66,13 @@ nodeunitShim({
     const str = JSON.stringify(cfnjson);
 
     // THEN
-    test.ok(typeof(str) === 'string');
-    test.deepEqual(stack.resolve(str), {
+    expect(typeof(str)).toEqual('string');
+    expect(stack.resolve(str)).toEqual({
       'Fn::Join': ['', ['"{"ref=', { Ref: 'MyResource' }, '":"this is a I am lazy"}"']],
     });
+  });
 
-    test.done();
-  },
-
-  async 'resource provider simply parses json and reflects back as an attribute'(test: Test) {
+  test('resource provider simply parses json and reflects back as an attribute', async () => {
     const input = { foo: 1234 };
     const response = await handler({
       ResourceType: CfnUtilsResourceType.CFN_JSON,
@@ -86,7 +80,6 @@ nodeunitShim({
         Value: JSON.stringify(input),
       },
     } as any);
-    test.deepEqual(input, response.Data.Value);
-    test.done();
-  },
+    expect(input).toEqual(response.Data.Value);
+  });
 });

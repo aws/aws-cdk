@@ -1,9 +1,8 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cdk from '../lib';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'chain conditions'(test: Test) {
+describe('condition', () => {
+  test('chain conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const param = new cdk.CfnParameter(stack, 'Param1', { type: 'String' });
@@ -17,7 +16,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Parameters: { Param1: { Type: 'String' } },
       Conditions: {
         Condition1: { 'Fn::Equals': ['a', 'b'] },
@@ -32,11 +31,9 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'condition expressions can be embedded as strings'(test: Test) {
+  test('condition expressions can be embedded as strings', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const propValue: string = cdk.Fn.conditionIf('Cond', 'A', 'B').toString();
@@ -50,8 +47,8 @@ nodeunitShim({
     });
 
     // THEN
-    test.ok(cdk.Token.isUnresolved(propValue));
-    test.deepEqual(toCloudFormation(stack), {
+    expect(cdk.Token.isUnresolved(propValue)).toEqual(true);
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         MyResource: {
           Type: 'AWS::Foo::Bar',
@@ -61,6 +58,5 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
+  });
 });

@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Bucket, StorageClass } from '../lib';
 
-nodeunitShim({
-  'Bucket with expiration days'(test: Test) {
+describe('rules', () => {
+  test('Bucket with expiration days', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -16,19 +15,17 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
           Status: 'Enabled',
         }],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Can use addLifecycleRule() to add a lifecycle rule'(test: Test) {
+  test('Can use addLifecycleRule() to add a lifecycle rule', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -39,19 +36,17 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
           Status: 'Enabled',
         }],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Bucket with expiration date'(test: Test) {
+  test('Bucket with expiration date', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -63,19 +58,17 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationDate: '2018-01-01T00:00:00',
           Status: 'Enabled',
         }],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Bucket with transition rule'(test: Test) {
+  test('Bucket with transition rule', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -90,7 +83,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           Transitions: [{
@@ -100,23 +93,21 @@ nodeunitShim({
           Status: 'Enabled',
         }],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Noncurrent rule on nonversioned bucket fails'(test: Test) {
+  test('Noncurrent rule on nonversioned bucket fails', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN: Fail because of lack of versioning
-    test.throws(() => {
+    expect(() => {
       new Bucket(stack, 'Bucket1', {
         lifecycleRules: [{
           noncurrentVersionExpiration: Duration.days(10),
         }],
       });
-    });
+    }).toThrow();
 
     // WHEN: Succeeds because versioning is enabled
     new Bucket(stack, 'Bucket2', {
@@ -125,7 +116,203 @@ nodeunitShim({
         noncurrentVersionExpiration: Duration.days(10),
       }],
     });
+  });
 
-    test.done();
-  },
+  test('Bucket with expiredObjectDeleteMarker', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        expiredObjectDeleteMarker: true,
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          ExpiredObjectDeleteMarker: true,
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
+  test('Noncurrent transistion rule with versions to retain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Noncurrent version to retain available
+    new Bucket(stack, 'Bucket1', {
+      versioned: true,
+      lifecycleRules: [{
+        noncurrentVersionExpiration: Duration.days(10),
+        noncurrentVersionTransitions: [
+          {
+            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+            transitionAfter: Duration.days(10),
+            noncurrentVersionsToRetain: 1,
+          },
+        ],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+          },
+          NoncurrentVersionTransitions: [
+            {
+              NewerNoncurrentVersions: 1,
+              StorageClass: 'GLACIER_IR',
+              TransitionInDays: 10,
+            },
+          ],
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
+  test('Noncurrent transistion rule without versions to retain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Noncurrent version to retain not set
+    new Bucket(stack, 'Bucket1', {
+      versioned: true,
+      lifecycleRules: [{
+        noncurrentVersionExpiration: Duration.days(10),
+        noncurrentVersionTransitions: [
+          {
+            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+            transitionAfter: Duration.days(10),
+          },
+        ],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+          },
+          NoncurrentVersionTransitions: [
+            {
+              StorageClass: 'GLACIER_IR',
+              TransitionInDays: 10,
+            },
+          ],
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
+  test('Noncurrent expiration rule with versions to retain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Noncurrent version to retain available
+    new Bucket(stack, 'Bucket1', {
+      versioned: true,
+      lifecycleRules: [{
+        noncurrentVersionExpiration: Duration.days(10),
+        noncurrentVersionsToRetain: 1,
+        noncurrentVersionTransitions: [
+          {
+            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+            transitionAfter: Duration.days(10),
+          },
+        ],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+            NewerNoncurrentVersions: 1,
+          },
+          NoncurrentVersionTransitions: [
+            {
+              StorageClass: 'GLACIER_IR',
+              TransitionInDays: 10,
+            },
+          ],
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
+  test('Noncurrent expiration rule without versions to retain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN: Noncurrent version to retain not set
+    new Bucket(stack, 'Bucket1', {
+      versioned: true,
+      lifecycleRules: [{
+        noncurrentVersionExpiration: Duration.days(10),
+        noncurrentVersionTransitions: [
+          {
+            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+            transitionAfter: Duration.days(10),
+          },
+        ],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          NoncurrentVersionExpiration: {
+            NoncurrentDays: 10,
+          },
+          NoncurrentVersionTransitions: [
+            {
+              StorageClass: 'GLACIER_IR',
+              TransitionInDays: 10,
+            },
+          ],
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
+  test('Bucket with object size rules', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        objectSizeLessThan: 0,
+        objectSizeGreaterThan: 0,
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          ObjectSizeLessThan: 0,
+          ObjectSizeGreaterThan: 0,
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
 });

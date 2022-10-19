@@ -17,23 +17,42 @@ Destinations can be added by specifying the `onFailure` or `onSuccess` props whe
 The following destinations are supported
 
 * Lambda function
-* SQS queue
+* SQS queue - Only standard SQS queues are supported for failure destinations, FIFO queues are not supported.
 * SNS topic
 * EventBridge event bus
 
-Example with a SNS topic for sucessful invocations:
+Example with a SNS topic for successful invocations:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as destinations from '@aws-cdk/aws-lambda-destinations';
+// An sns topic for successful invocations of a lambda function
 import * as sns from '@aws-cdk/aws-sns';
 
 const myTopic = new sns.Topic(this, 'Topic');
 
 const myFn = new lambda.Function(this, 'Fn', {
-  // other props
-  onSuccess: new destinations.SnsDestination(myTopic)
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  // sns topic for successful invocations
+  onSuccess: new destinations.SnsDestination(myTopic),
 })
+```
+
+Example with a SQS queue for unsuccessful invocations:
+
+```ts
+// An sqs queue for unsuccessful invocations of a lambda function
+import * as sqs from '@aws-cdk/aws-sqs';
+
+const deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');
+
+const myFn = new lambda.Function(this, 'Fn', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('// your code'),
+  // sqs queue for unsuccessful invocations
+  onFailure: new destinations.SqsDestination(deadLetterQueue),
+});
 ```
 
 See also [Configuring Destinations for Asynchronous Invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-destinations).
@@ -71,27 +90,27 @@ In case of failure, the record contains the reason and error object:
 
 ```json
 {
-    "version": "1.0",
-    "timestamp": "2019-11-24T21:52:47.333Z",
-    "requestContext": {
-        "requestId": "8ea123e4-1db7-4aca-ad10-d9ca1234c1fd",
-        "functionArn": "arn:aws:lambda:sa-east-1:123456678912:function:event-destinations:$LATEST",
-        "condition": "RetriesExhausted",
-        "approximateInvokeCount": 3
-    },
-    "requestPayload": {
-        "Success": false
-    },
-    "responseContext": {
-        "statusCode": 200,
-        "executedVersion": "$LATEST",
-        "functionError": "Handled"
-    },
-    "responsePayload": {
-        "errorMessage": "Failure from event, Success = false, I am failing!",
-        "errorType": "Error",
-        "stackTrace": [ "exports.handler (/var/task/index.js:18:18)" ]
-    }
+  "version": "1.0",
+  "timestamp": "2019-11-24T21:52:47.333Z",
+  "requestContext": {
+    "requestId": "8ea123e4-1db7-4aca-ad10-d9ca1234c1fd",
+    "functionArn": "arn:aws:lambda:sa-east-1:123456678912:function:event-destinations:$LATEST",
+    "condition": "RetriesExhausted",
+    "approximateInvokeCount": 3
+  },
+  "requestPayload": {
+    "Success": false
+  },
+  "responseContext": {
+    "statusCode": 200,
+    "executedVersion": "$LATEST",
+    "functionError": "Handled"
+  },
+  "responsePayload": {
+    "errorMessage": "Failure from event, Success = false, I am failing!",
+    "errorType": "Error",
+    "stackTrace": [ "exports.handler (/var/task/index.js:18:18)" ]
+  }
 }
 ```
 
@@ -112,18 +131,17 @@ The `responseOnly` option of `LambdaDestination` allows to auto-extract the resp
 invocation record:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as destinations from '@aws-cdk/aws-lambda-destinations';
-
-const destinationFn = new lambda.Function(this, 'Destination', {
-  // props
-});
+// Auto-extract response payload with a lambda destination
+declare const destinationFn: lambda.Function;
 
 const sourceFn = new lambda.Function(this, 'Source', {
-  // other props
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  // auto-extract on success
   onSuccess: new destinations.LambdaDestination(destinationFn, {
-    responseOnly: true // auto-extract
-  });
+    responseOnly: true,
+  }),
 })
 ```
 

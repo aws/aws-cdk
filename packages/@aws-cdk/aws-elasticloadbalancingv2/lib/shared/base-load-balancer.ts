@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
@@ -52,16 +53,18 @@ export interface ILoadBalancerV2 extends IResource {
   /**
    * The canonical hosted zone ID of this load balancer
    *
+   * Example value: `Z2P70J7EXAMPLE`
+   *
    * @attribute
-   * @example Z2P70J7EXAMPLE
    */
   readonly loadBalancerCanonicalHostedZoneId: string;
 
   /**
    * The DNS name of this load balancer
    *
+   * Example value: `my-load-balancer-424835706.us-west-2.elb.amazonaws.com`
+   *
    * @attribute
-   * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
    */
   readonly loadBalancerDnsName: string;
 }
@@ -141,40 +144,45 @@ export abstract class BaseLoadBalancer extends Resource {
   /**
    * The canonical hosted zone ID of this load balancer
    *
+   * Example value: `Z2P70J7EXAMPLE`
+   *
    * @attribute
-   * @example Z2P70J7EXAMPLE
    */
   public readonly loadBalancerCanonicalHostedZoneId: string;
 
   /**
    * The DNS name of this load balancer
    *
+   * Example value: `my-load-balancer-424835706.us-west-2.elb.amazonaws.com`
+   *
    * @attribute
-   * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
    */
   public readonly loadBalancerDnsName: string;
 
   /**
    * The full name of this load balancer
    *
+   * Example value: `app/my-load-balancer/50dc6c495c0c9188`
+   *
    * @attribute
-   * @example app/my-load-balancer/50dc6c495c0c9188
    */
   public readonly loadBalancerFullName: string;
 
   /**
    * The name of this load balancer
    *
+   * Example value: `my-load-balancer`
+   *
    * @attribute
-   * @example my-load-balancer
    */
   public readonly loadBalancerName: string;
 
   /**
    * The ARN of this load balancer
    *
+   * Example value: `arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188`
+   *
    * @attribute
-   * @example arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
    */
   public readonly loadBalancerArn: string;
 
@@ -185,8 +193,11 @@ export abstract class BaseLoadBalancer extends Resource {
 
   /**
    * The VPC this load balancer has been created in.
+   *
+   * This property is always defined (not `null` or `undefined`) for sub-classes of `BaseLoadBalancer`.
    */
-  public readonly vpc: ec2.IVpc;
+  public readonly vpc?: ec2.IVpc;
+
   /**
    * Attributes set on this load balancer
    */
@@ -224,6 +235,8 @@ export abstract class BaseLoadBalancer extends Resource {
     this.loadBalancerName = resource.attrLoadBalancerName;
     this.loadBalancerArn = resource.ref;
     this.loadBalancerSecurityGroups = resource.attrSecurityGroups;
+
+    this.node.addValidation({ validate: this.validateLoadBalancer.bind(this) });
   }
 
   /**
@@ -233,6 +246,7 @@ export abstract class BaseLoadBalancer extends Resource {
    * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
+    prefix = prefix || '';
     this.setAttribute('access_logs.s3.enabled', 'true');
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
@@ -247,8 +261,27 @@ export abstract class BaseLoadBalancer extends Resource {
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
     }
 
-    prefix = prefix || '';
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
     bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + '/' : '')}AWSLogs/${Stack.of(this).account}/*`);
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
+        ],
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
+      }),
+    );
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetBucketAcl'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [bucket.bucketArn],
+      }),
+    );
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
@@ -268,5 +301,28 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   public removeAttribute(key: string) {
     this.setAttribute(key, undefined);
+  }
+
+  protected validateLoadBalancer(): string[] {
+    const ret = new Array<string>();
+
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html#cfn-elasticloadbalancingv2-loadbalancer-name
+    const loadBalancerName = this.physicalName;
+    if (!Token.isUnresolved(loadBalancerName) && loadBalancerName !== undefined) {
+      if (loadBalancerName.length > 32) {
+        ret.push(`Load balancer name: "${loadBalancerName}" can have a maximum of 32 characters.`);
+      }
+      if (loadBalancerName.startsWith('internal-')) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must not begin with "internal-".`);
+      }
+      if (loadBalancerName.startsWith('-') || loadBalancerName.endsWith('-')) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must not begin or end with a hyphen.`);
+      }
+      if (!/^[0-9a-z-]+$/i.test(loadBalancerName)) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must contain only alphanumeric characters or hyphens.`);
+      }
+    }
+
+    return ret;
   }
 }

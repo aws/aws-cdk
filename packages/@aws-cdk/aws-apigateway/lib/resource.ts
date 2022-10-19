@@ -4,7 +4,7 @@ import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
-import { Method, MethodOptions } from './method';
+import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
 
 export interface IResource extends IResourceBase {
@@ -282,12 +282,12 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // prepare responseParams
 
     const integrationResponseParams: { [p: string]: string } = { };
-    const methodReponseParams: { [p: string]: boolean } = { };
+    const methodResponseParams: { [p: string]: boolean } = { };
 
     for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
       integrationResponseParams[key] = value;
-      methodReponseParams[key] = true;
+      methodResponseParams[key] = true;
     }
 
     return this.addMethod('OPTIONS', new MockIntegration({
@@ -296,8 +296,14 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
         { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
       ],
     }), {
+      authorizer: {
+        authorizerId: '',
+        authorizationType: AuthorizationType.NONE,
+      },
+      apiKeyRequired: false,
+      authorizationType: AuthorizationType.NONE,
       methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodReponseParams },
+        { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
       ],
     });
 
@@ -311,8 +317,8 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
       const template = new Array<string>();
 
-      template.push('#set($origin = $input.params("Origin"))');
-      template.push('#if($origin == "") #set($origin = $input.params("origin")) #end');
+      template.push('#set($origin = $input.params().header.get("Origin"))');
+      template.push('#if($origin == "") #set($origin = $input.params().header.get("origin")) #end');
 
       const condition = origins.map(o => `$origin.matches("${o}")`).join(' || ');
 
@@ -348,7 +354,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       }
 
       // trim trailing "/"
-      return this.resourceForPath(path.substr(1));
+      return this.resourceForPath(path.slice(1));
     }
 
     const parts = path.split('/');
@@ -544,11 +550,11 @@ export class ProxyResource extends Resource {
 function validateResourcePathPart(part: string) {
   // strip {} which indicate this is a parameter
   if (part.startsWith('{') && part.endsWith('}')) {
-    part = part.substr(1, part.length - 2);
+    part = part.slice(1, -1);
 
     // proxy resources are allowed to end with a '+'
     if (part.endsWith('+')) {
-      part = part.substr(0, part.length - 1);
+      part = part.slice(0, -1);
     }
   }
 

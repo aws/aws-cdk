@@ -1,5 +1,7 @@
-import { Resource, Stack } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
 import { Integration, IntegrationConfig } from './integration';
@@ -9,6 +11,7 @@ import { IModel } from './model';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
 import { IRestApi, RestApi, RestApiBase } from './restapi';
+import { IStage } from './stage';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {
@@ -74,15 +77,18 @@ export interface MethodOptions {
    *
    * @example
    *
+   *     declare const api: apigateway.RestApi;
+   *     declare const userLambda: lambda.Function;
+   *
    *     const userModel: apigateway.Model = api.addModel('UserModel', {
    *         schema: {
-   *             type: apigateway.JsonSchemaType.OBJECT
+   *             type: apigateway.JsonSchemaType.OBJECT,
    *             properties: {
    *                 userId: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 },
    *                 name: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 }
    *             },
    *             required: ['userId']
@@ -165,6 +171,8 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
+  private methodResponses: MethodResponse[];
+
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
@@ -178,7 +186,7 @@ export class Method extends Resource {
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
     const authorizer = options.authorizer || defaultMethodOptions.authorizer;
-    const authorizerId = authorizer?.authorizerId;
+    const authorizerId = authorizer?.authorizerId ? authorizer.authorizerId : undefined;
 
     const authorizationTypeOption = options.authorizationType || defaultMethodOptions.authorizationType;
     const authorizationType = authorizer?.authorizationType || authorizationTypeOption || AuthorizationType.NONE;
@@ -193,6 +201,8 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
+    this.methodResponses = options.methodResponses ?? [];
+
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
 
@@ -206,7 +216,7 @@ export class Method extends Resource {
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(bindResult),
-      methodResponses: this.renderMethodResponses(options.methodResponses),
+      methodResponses: Lazy.any({ produce: () => this.renderMethodResponses(this.methodResponses) }, { omitEmptyArray: true }),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
       authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
@@ -264,6 +274,13 @@ export class Method extends Resource {
     return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
   }
 
+  /**
+   * Add a method response to this method
+   */
+  public addMethodResponse(methodResponse: MethodResponse): void {
+    this.methodResponses.push(methodResponse);
+  }
+
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
     const options = bindResult.options ?? {};
     let credentials;
@@ -272,7 +289,7 @@ export class Method extends Resource {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // eslint-disable-next-line max-len
-      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 
     return {
@@ -289,6 +306,7 @@ export class Method extends Resource {
       connectionType: options.connectionType,
       connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
       credentials,
+      timeoutInMillis: options.timeout?.toMilliseconds(),
     };
   }
 
@@ -342,12 +360,106 @@ export class Method extends Resource {
     }
 
     if (options.requestValidatorOptions) {
-      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
+      const validator = (this.api as RestApi).addRequestValidator('validator', options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 
     // For backward compatibility
     return options.requestValidator?.requestValidatorId;
+  }
+
+  /**
+   * Returns the given named metric for this API method
+   */
+  public metric(metricName: string, stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensionsMap: { ApiName: this.api.restApiName, Method: this.httpMethod, Resource: this.resource.path, Stage: stage.stageName },
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricClientError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, stage, props);
+  }
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricServerError(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, stage, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the API cache in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricCacheHitCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, stage, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the backend in a given period,
+   * when API caching is enabled.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricCacheMissCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, stage, props);
+  }
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - sample count over 5 minutes
+   */
+  public metricCount(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.countSum, stage, {
+      statistic: 'SampleCount',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - average over 5 minutes.
+   */
+  public metricIntegrationLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, stage, props);
+  }
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - average over 5 minutes.
+   */
+  public metricLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.latencyAverage, stage, props);
+  }
+
+  private cannedMetric(fn: (dims: {
+    ApiName: string;
+    Method: string;
+    Resource: string;
+    Stage: string;
+  }) => cloudwatch.MetricProps, stage: IStage, props?: cloudwatch.MetricOptions) {
+    return new cloudwatch.Metric({
+      ...fn({ ApiName: this.api.restApiName, Method: this.httpMethod, Resource: this.resource.path, Stage: stage.stageName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

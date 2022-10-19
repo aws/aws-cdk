@@ -4,18 +4,18 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import * as minimatch from 'minimatch';
-import { AssetHashType, AssetOptions } from './assets';
-import { BundlingOptions } from './bundling';
+import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
+import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
+import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
+const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
+
+const ASSET_SALT_CONTEXT_KEY = '@aws-cdk/core:assetHashSalt';
 
 /**
  * A previously staged asset
@@ -30,6 +30,16 @@ interface StagedAsset {
    * The hash we used previously
    */
   readonly assetHash: string;
+
+  /**
+   * The packaging of the asset
+   */
+  readonly packaging: FileAssetPackaging,
+
+  /**
+   * Whether this asset is an archive
+   */
+  readonly isArchive: boolean;
 }
 
 /**
@@ -60,16 +70,14 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class AssetStaging extends CoreConstruct {
+export class AssetStaging extends Construct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
-   * @experimental
    */
   public static readonly BUNDLING_INPUT_DIR = '/asset-input';
 
   /**
    * The directory inside the bundling container into which the bundled output should be written.
-   * @experimental
    */
   public static readonly BUNDLING_OUTPUT_DIR = '/asset-output';
 
@@ -78,6 +86,7 @@ export class AssetStaging extends CoreConstruct {
    */
   public static clearAssetHashCache() {
     this.assetCache.clear();
+    clearLargeFileFingerprintCache();
   }
 
   /**
@@ -124,6 +133,16 @@ export class AssetStaging extends CoreConstruct {
    */
   public readonly assetHash: string;
 
+  /**
+   * How this asset should be packaged.
+   */
+  public readonly packaging: FileAssetPackaging;
+
+  /**
+   * Whether this asset is an archive (zip or jar).
+   */
+  public readonly isArchive: boolean;
+
   private readonly fingerprintOptions: FingerprintOptions;
 
   private readonly hashType: AssetHashType;
@@ -138,11 +157,24 @@ export class AssetStaging extends CoreConstruct {
 
   private readonly cacheKey: string;
 
+  private readonly sourceStats: fs.Stats;
+
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
+    const salt = this.node.tryGetContext(ASSET_SALT_CONTEXT_KEY);
+
     this.sourcePath = path.resolve(props.sourcePath);
-    this.fingerprintOptions = props;
+    this.fingerprintOptions = {
+      ...props,
+      extraHash: props.extraHash || salt ? `${props.extraHash ?? ''}${salt ?? ''}` : undefined,
+    };
+
+    if (!fs.existsSync(this.sourcePath)) {
+      throw new Error(`Cannot find asset at ${this.sourcePath}`);
+    }
+
+    this.sourceStats = fs.statSync(this.sourcePath);
 
     const outdir = Stage.of(this)?.assetOutdir;
     if (!outdir) {
@@ -160,8 +192,7 @@ export class AssetStaging extends CoreConstruct {
     let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
-      const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      skip = !bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern));
+      skip = !Stack.of(this).bundlingRequired;
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
@@ -192,6 +223,8 @@ export class AssetStaging extends CoreConstruct {
     this.stagedPath = staged.stagedPath;
     this.absoluteStagedPath = staged.stagedPath;
     this.assetHash = staged.assetHash;
+    this.packaging = staged.packaging;
+    this.isArchive = staged.isArchive;
   }
 
   /**
@@ -246,10 +279,20 @@ export class AssetStaging extends CoreConstruct {
     const assetHash = this.calculateHash(this.hashType);
     const stagedPath = this.stagingDisabled
       ? this.sourcePath
-      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
+      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
+
+    if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
+      throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
+    }
 
     this.stageAsset(this.sourcePath, stagedPath, 'copy');
-    return { assetHash, stagedPath };
+
+    return {
+      assetHash,
+      stagedPath,
+      packaging: this.sourceStats.isDirectory() ? FileAssetPackaging.ZIP_DIRECTORY : FileAssetPackaging.FILE,
+      isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase()),
+    };
   }
 
   /**
@@ -258,6 +301,10 @@ export class AssetStaging extends CoreConstruct {
    * Optionally skip, in which case we pretend we did something but we don't really.
    */
   private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
+    if (!this.sourceStats.isDirectory()) {
+      throw new Error(`Asset ${this.sourcePath} is expected to be a directory when bundling`);
+    }
+
     if (skip) {
       // We should have bundled, but didn't to save time. Still pretend to have a hash.
       // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
@@ -270,6 +317,8 @@ export class AssetStaging extends CoreConstruct {
       return {
         assetHash: this.calculateHash(hashType, bundling),
         stagedPath: this.sourcePath,
+        packaging: FileAssetPackaging.ZIP_DIRECTORY,
+        isArchive: true,
       };
     }
 
@@ -281,12 +330,31 @@ export class AssetStaging extends CoreConstruct {
     const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
     this.bundle(bundling, bundleDir);
 
-    // Calculate assetHash afterwards if we still must
-    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundleDir);
-    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash));
+    // Check bundling output content and determine if we will need to archive
+    const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
+    const bundledAsset = determineBundledAsset(bundleDir, bundlingOutputType);
 
-    this.stageAsset(bundleDir, stagedPath, 'move');
-    return { assetHash, stagedPath };
+    // Calculate assetHash afterwards if we still must
+    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
+
+    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
+
+    this.stageAsset(bundledAsset.path, stagedPath, 'move');
+
+    // If bundling produced a single archive file we "touch" this file in the bundling
+    // directory after it has been moved to the staging directory. This way if bundling
+    // is skipped because the bundling directory already exists we can still determine
+    // the correct packaging type.
+    if (bundledAsset.packaging === FileAssetPackaging.FILE) {
+      fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+    }
+
+    return {
+      assetHash,
+      stagedPath,
+      packaging: bundledAsset.packaging,
+      isArchive: true, // bundling always produces an archive
+    };
   }
 
   /**
@@ -320,10 +388,9 @@ export class AssetStaging extends CoreConstruct {
     }
 
     // Copy file/directory to staging directory
-    const stat = fs.statSync(sourcePath);
-    if (stat.isFile()) {
+    if (this.sourceStats.isFile()) {
       fs.copyFileSync(sourcePath, targetPath);
-    } else if (stat.isDirectory()) {
+    } else if (this.sourceStats.isDirectory()) {
       fs.mkdirSync(targetPath);
       FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
     } else {
@@ -365,16 +432,6 @@ export class AssetStaging extends CoreConstruct {
     // Chmod the bundleDir to full access.
     fs.chmodSync(bundleDir, 0o777);
 
-    let user: string;
-    if (options.user) {
-      user = options.user;
-    } else { // Default to current user
-      const userInfo = os.userInfo();
-      user = userInfo.uid !== -1 // uid is -1 on Windows
-        ? `${userInfo.uid}:${userInfo.gid}`
-        : '1000:1000';
-    }
-
     // Always mount input and output dir
     const volumes = [
       {
@@ -394,12 +451,24 @@ export class AssetStaging extends CoreConstruct {
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
+        let user: string;
+        if (options.user) {
+          user = options.user;
+        } else { // Default to current user
+          const userInfo = os.userInfo();
+          user = userInfo.uid !== -1 // uid is -1 on Windows
+            ? `${userInfo.uid}:${userInfo.gid}`
+            : '1000:1000';
+        }
+
         options.image.run({
           command: options.command,
           user,
           volumes,
           environment: options.environment,
+          entrypoint: options.entrypoint,
           workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+          securityOpt: options.securityOpt ?? '',
         });
       }
     } catch (err) {
@@ -502,3 +571,72 @@ function sortObject(object: { [key: string]: any }): { [key: string]: any } {
   }
   return ret;
 }
+
+/**
+ * Returns the single archive file of a directory or undefined
+ */
+function singleArchiveFile(directory: string): string | undefined {
+  if (!fs.existsSync(directory)) {
+    throw new Error(`Directory ${directory} does not exist.`);
+  }
+
+  if (!fs.statSync(directory).isDirectory()) {
+    throw new Error(`${directory} is not a directory.`);
+  }
+
+  const content = fs.readdirSync(directory);
+  if (content.length === 1) {
+    const file = path.join(directory, content[0]);
+    const extension = getExtension(content[0]).toLowerCase();
+    if (fs.statSync(file).isFile() && ARCHIVE_EXTENSIONS.includes(extension)) {
+      return file;
+    }
+  }
+
+  return undefined;
+}
+
+interface BundledAsset {
+  path: string,
+  packaging: FileAssetPackaging,
+  extension?: string
+}
+
+/**
+ * Returns the bundled asset to use based on the content of the bundle directory
+ * and the type of output.
+ */
+function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): BundledAsset {
+  const archiveFile = singleArchiveFile(bundleDir);
+
+  // auto-discover means that if there is an archive file, we take it as the
+  // bundle, otherwise, we will archive here.
+  if (outputType === BundlingOutput.AUTO_DISCOVER) {
+    outputType = archiveFile ? BundlingOutput.ARCHIVED : BundlingOutput.NOT_ARCHIVED;
+  }
+
+  switch (outputType) {
+    case BundlingOutput.NOT_ARCHIVED:
+      return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
+    case BundlingOutput.ARCHIVED:
+      if (!archiveFile) {
+        throw new Error('Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`');
+      }
+      return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
+  }
+}
+
+/**
+* Return the extension name of a source path
+*
+* Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
+*/
+function getExtension(source: string): string {
+  for ( const ext of ARCHIVE_EXTENSIONS ) {
+    if (source.toLowerCase().endsWith(ext)) {
+      return ext;
+    };
+  };
+
+  return path.extname(source);
+};

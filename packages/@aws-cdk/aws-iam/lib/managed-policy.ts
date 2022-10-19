@@ -1,4 +1,4 @@
-import { IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack, Arn, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
@@ -151,21 +151,18 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    * For this managed policy, you only need to know the name to be able to use it.
    *
    * Some managed policy names start with "service-role/", some start with
-   * "job-function/", and some don't start with anything. Do include the
+   * "job-function/", and some don't start with anything. Include the
    * prefix when constructing this object.
    */
   public static fromAwsManagedPolicyName(managedPolicyName: string): IManagedPolicy {
     class AwsManagedPolicy implements IManagedPolicy {
-      public readonly managedPolicyArn = Lazy.uncachedString({
-        produce(ctx: IResolveContext) {
-          return Stack.of(ctx.scope).formatArn({
-            service: 'iam',
-            region: '', // no region for managed policy
-            account: 'aws', // the account for a managed policy is 'aws'
-            resource: 'policy',
-            resourceName: managedPolicyName,
-          });
-        },
+      public readonly managedPolicyArn = Arn.format({
+        partition: Aws.PARTITION,
+        service: 'iam',
+        region: '', // no region for managed policy
+        account: 'aws', // the account for a managed policy is 'aws'
+        resource: 'policy',
+        resourceName: managedPolicyName,
       });
     }
     return new AwsManagedPolicy();
@@ -247,13 +244,15 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
     }
 
     // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
-    this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).parseArn(resource.ref, '/').resourceName!);
+    this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
     this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
       region: '', // IAM is global in each partition
       service: 'iam',
       resource: 'policy',
       resourceName: this.physicalName,
     });
+
+    this.node.addValidation({ validate: () => this.validateManagedPolicy() });
   }
 
   /**
@@ -287,7 +286,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
     this.groups.push(group);
   }
 
-  protected validate(): string[] {
+  private validateManagedPolicy(): string[] {
     const result = new Array<string>();
 
     // validate that the policy document is not empty

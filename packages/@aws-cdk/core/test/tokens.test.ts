@@ -1,38 +1,34 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
-import { createTokenDouble, extractTokenDouble } from '../lib/private/encoding';
+import { CfnResource, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
+import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRINGIFIED_NUMBER_PATTERN } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
 import { evaluateCFN } from './evaluate-cfn';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
-nodeunitShim({
-  'resolve a plain old object should just return the object'(test: Test) {
+describe('tokens', () => {
+  test('resolve a plain old object should just return the object', () => {
     const obj = { PlainOldObject: 123, Array: [1, 2, 3] };
-    test.deepEqual(resolve(obj), obj);
-    test.done();
-  },
+    expect(resolve(obj)).toEqual(obj);
+  });
 
-  'if a value is an object with a token value, it will be evaluated'(test: Test) {
+  test('if a value is an object with a token value, it will be evaluated', () => {
     const obj = {
       RegularValue: 'hello',
       LazyValue: new Intrinsic('World'),
     };
 
-    test.deepEqual(resolve(obj), {
+    expect(resolve(obj)).toEqual({
       RegularValue: 'hello',
       LazyValue: 'World',
     });
+  });
 
-    test.done();
-  },
-
-  'tokens are evaluated anywhere in the object tree'(test: Test) {
+  test('tokens are evaluated anywhere in the object tree', () => {
     const obj = new Promise1();
     const actual = resolve({ Obj: obj });
 
-    test.deepEqual(actual, {
+    expect(actual).toEqual({
       Obj: [
         {
           Data: {
@@ -50,15 +46,13 @@ nodeunitShim({
         },
       ],
     });
+  });
 
-    test.done();
-  },
-
-  'tokens are evaluated recursively'(test: Test) {
+  test('tokens are evaluated recursively', () => {
     const obj = new Promise1();
     const actual = resolve(new Intrinsic({ Obj: obj }));
 
-    test.deepEqual(actual, {
+    expect(actual).toEqual({
       Obj: [
         {
           Data: {
@@ -76,13 +70,11 @@ nodeunitShim({
         },
       ],
     });
+  });
 
-    test.done();
-  },
-
-  'empty arrays or objects are kept'(test: Test) {
-    test.deepEqual(resolve({ }), { });
-    test.deepEqual(resolve([]), []);
+  test('empty arrays or objects are kept', () => {
+    expect(resolve({ })).toEqual({ });
+    expect(resolve([])).toEqual([]);
 
     const obj = {
       Prop1: 1234,
@@ -98,7 +90,7 @@ nodeunitShim({
       },
     };
 
-    test.deepEqual(resolve(obj), {
+    expect(resolve(obj)).toEqual({
       Prop1: 1234,
       Prop2: { },
       Prop3: [],
@@ -111,45 +103,38 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'if an object has a "resolve" property that is not a function, it is not considered a token'(test: Test) {
-    test.deepEqual(resolve({ a_token: { resolve: () => 78787 } }), { a_token: 78787 });
-    test.deepEqual(resolve({ not_a_token: { resolve: 12 } }), { not_a_token: { resolve: 12 } });
-    test.done();
-  },
+  test('if an object has a "resolve" property that is not a function, it is not considered a token', () => {
+    expect(resolve({ a_token: { resolve: () => 78787 } })).toEqual({ a_token: 78787 });
+    expect(resolve({ not_a_token: { resolve: 12 } })).toEqual({ not_a_token: { resolve: 12 } });
+  });
 
   // eslint-disable-next-line max-len
-  'if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")'(test: Test) {
-    test.deepEqual(resolve({ prop: new DataType() }), { prop: { foo: 12, goo: 'hello' } });
-    test.done();
-  },
+  test('if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")', () => {
+    expect(resolve({ prop: new DataType() })).toEqual({ prop: { foo: 12, goo: 'hello' } });
+  });
 
-  'isToken(obj) can be used to determine if an object is a token'(test: Test) {
-    test.ok(isResolvableObject({ resolve: () => 123 }));
-    test.ok(isResolvableObject({ a: 1, b: 2, resolve: () => 'hello' }));
-    test.ok(!isResolvableObject({ a: 1, b: 2, resolve: 3 }));
-    test.done();
-  },
+  test('isToken(obj) can be used to determine if an object is a token', () => {
+    expect(isResolvableObject({ resolve: () => 123 })).toEqual(true);
+    expect(isResolvableObject({ a: 1, b: 2, resolve: () => 'hello' })).toEqual(true);
+    expect(isResolvableObject({ a: 1, b: 2, resolve: 3 })).toEqual(false);
+  });
 
-  'Token can be used to create tokens that contain a constant value'(test: Test) {
-    test.equal(resolve(new Intrinsic(12)), 12);
-    test.equal(resolve(new Intrinsic('hello')), 'hello');
-    test.deepEqual(resolve(new Intrinsic(['hi', 'there'])), ['hi', 'there']);
-    test.done();
-  },
+  test('Token can be used to create tokens that contain a constant value', () => {
+    expect(resolve(new Intrinsic(12))).toEqual(12);
+    expect(resolve(new Intrinsic('hello'))).toEqual('hello');
+    expect(resolve(new Intrinsic(['hi', 'there']))).toEqual(['hi', 'there']);
+  });
 
-  'resolving leaves a Date object in working order'(test: Test) {
+  test('resolving leaves a Date object in working order', () => {
     const date = new Date('2000-01-01');
     const resolved = resolve(date);
 
-    test.equal(date.toString(), resolved.toString());
-    test.done();
-  },
+    expect(date.toString()).toEqual(resolved.toString());
+  });
 
-  'tokens can be stringified and evaluated to conceptual value'(test: Test) {
+  test('tokens can be stringified and evaluated to conceptual value', () => {
     // GIVEN
     const token = new Intrinsic('woof woof');
 
@@ -158,20 +143,18 @@ nodeunitShim({
     const resolved = resolve(stringified);
 
     // THEN
-    test.deepEqual(evaluateCFN(resolved), 'The dog says: woof woof');
-    test.done();
-  },
+    expect(evaluateCFN(resolved)).toEqual('The dog says: woof woof');
+  });
 
-  'tokens stringification can be reversed'(test: Test) {
+  test('tokens stringification can be reversed', () => {
     // GIVEN
     const token = new Intrinsic('woof woof');
 
     // THEN
-    test.equal(token, Tokenization.reverseString(`${token}`).firstToken);
-    test.done();
-  },
+    expect(token).toEqual(Tokenization.reverseString(`${token}`).firstToken);
+  });
 
-  'Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join'(test: Test) {
+  test('Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join', () => {
     // GIVEN
     const token = new Intrinsic( ({ woof: 'woof' }));
 
@@ -180,13 +163,12 @@ nodeunitShim({
     const resolved = resolve(stringified);
 
     // THEN
-    test.deepEqual(resolved, {
+    expect(resolved).toEqual({
       'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]],
     });
-    test.done();
-  },
+  });
 
-  'Doubly nested strings evaluate correctly in scalar context'(test: Test) {
+  test('Doubly nested strings evaluate correctly in scalar context', () => {
     // GIVEN
     const token1 = new Intrinsic( 'world');
     const token2 = new Intrinsic( `hello ${token1}`);
@@ -196,13 +178,11 @@ nodeunitShim({
     const resolved2 = resolve(token2);
 
     // THEN
-    test.deepEqual(evaluateCFN(resolved1), 'hello world');
-    test.deepEqual(evaluateCFN(resolved2), 'hello world');
+    expect(evaluateCFN(resolved1)).toEqual('hello world');
+    expect(evaluateCFN(resolved2)).toEqual('hello world');
+  });
 
-    test.done();
-  },
-
-  'integer Tokens can be stringified and evaluate to conceptual value'(test: Test) {
+  test('integer Tokens can be stringified and evaluate to conceptual value', () => {
     // GIVEN
     for (const token of tokensThatResolveTo(1)) {
       // WHEN
@@ -210,12 +190,11 @@ nodeunitShim({
       const resolved = resolve(stringified);
 
       // THEN
-      test.deepEqual(evaluateCFN(resolved), 'the number is 1');
+      expect(evaluateCFN(resolved)).toEqual('the number is 1');
     }
-    test.done();
-  },
+  });
 
-  'intrinsic Tokens can be stringified and evaluate to conceptual value'(test: Test) {
+  test('intrinsic Tokens can be stringified and evaluate to conceptual value', () => {
     // GIVEN
     for (const bucketName of tokensThatResolveTo({ Ref: 'MyBucket' })) {
       // WHEN
@@ -223,26 +202,22 @@ nodeunitShim({
 
       // THEN
       const context = { MyBucket: 'TheName' };
-      test.equal(evaluateCFN(resolved, context), 'my bucket is named TheName');
+      expect(evaluateCFN(resolved, context)).toEqual('my bucket is named TheName');
     }
+  });
 
-    test.done();
-  },
-
-  'tokens resolve properly in initial position'(test: Test) {
+  test('tokens resolve properly in initial position', () => {
     // GIVEN
     for (const token of tokensThatResolveTo('Hello')) {
       // WHEN
       const resolved = resolve(`${token} world`);
 
       // THEN
-      test.equal(evaluateCFN(resolved), 'Hello world');
+      expect(evaluateCFN(resolved)).toEqual('Hello world');
     }
+  });
 
-    test.done();
-  },
-
-  'side-by-side Tokens resolve correctly'(test: Test) {
+  test('side-by-side Tokens resolve correctly', () => {
     // GIVEN
     for (const token1 of tokensThatResolveTo('Hello ')) {
       for (const token2 of tokensThatResolveTo('world')) {
@@ -250,14 +225,12 @@ nodeunitShim({
         const resolved = resolve(`${token1}${token2}`);
 
         // THEN
-        test.equal(evaluateCFN(resolved), 'Hello world');
+        expect(evaluateCFN(resolved)).toEqual('Hello world');
       }
     }
+  });
 
-    test.done();
-  },
-
-  'tokens can be used in hash keys but must resolve to a string'(test: Test) {
+  test('tokens can be used in hash keys but must resolve to a string', () => {
     // GIVEN
     const token = new Intrinsic( 'I am a string');
 
@@ -267,11 +240,10 @@ nodeunitShim({
     };
 
     // THEN
-    test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
-    test.done();
-  },
+    expect(resolve(s)).toEqual({ 'I am a string': 'boom I am a string' });
+  });
 
-  'tokens can be nested in hash keys'(test: Test) {
+  test('tokens can be nested in hash keys', () => {
     // GIVEN
     const token = new Intrinsic(Lazy.string({ produce: () => Lazy.string({ produce: (() => 'I am a string') }) }));
 
@@ -281,11 +253,10 @@ nodeunitShim({
     };
 
     // THEN
-    test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
-    test.done();
-  },
+    expect(resolve(s)).toEqual({ 'I am a string': 'boom I am a string' });
+  });
 
-  'Function passed to Lazy.uncachedString() is evaluated multiple times'(test: Test) {
+  test('Function passed to Lazy.uncachedString() is evaluated multiple times', () => {
     // GIVEN
     let counter = 0;
     const counterString = Lazy.uncachedString({ produce: () => `${++counter}` });
@@ -293,11 +264,9 @@ nodeunitShim({
     // THEN
     expect(resolve(counterString)).toEqual('1');
     expect(resolve(counterString)).toEqual('2');
+  });
 
-    test.done();
-  },
-
-  'Function passed to Lazy.string() is only evaluated once'(test: Test) {
+  test('Function passed to Lazy.string() is only evaluated once', () => {
     // GIVEN
     let counter = 0;
     const counterString = Lazy.string({ produce: () => `${++counter}` });
@@ -305,11 +274,9 @@ nodeunitShim({
     // THEN
     expect(resolve(counterString)).toEqual('1');
     expect(resolve(counterString)).toEqual('1');
+  });
 
-    test.done();
-  },
-
-  'Uncached tokens returned by cached tokens are still evaluated multiple times'(test: Test) {
+  test('Uncached tokens returned by cached tokens are still evaluated multiple times', () => {
     // Check that nested token returns aren't accidentally fully resolved by the
     // first resolution. On every evaluation, Tokens referenced inside the
     // structure should be given a chance to be either cached or uncached.
@@ -330,11 +297,9 @@ nodeunitShim({
     expect(resolve(counterString2)).toEqual('->3');
     expect(resolve(counterString2)).toEqual('->4');
     expect(resolve(counterObject)).toEqual({ finalCount: '5' });
+  });
 
-    test.done();
-  },
-
-  'tokens can be nested and concatenated in hash keys'(test: Test) {
+  test('tokens can be nested and concatenated in hash keys', () => {
     // GIVEN
     const innerToken = new Intrinsic( 'toot');
     const token = new Intrinsic( `${innerToken} the woot`);
@@ -345,11 +310,10 @@ nodeunitShim({
     };
 
     // THEN
-    test.deepEqual(resolve(s), { 'toot the woot': 'boom chicago' });
-    test.done();
-  },
+    expect(resolve(s)).toEqual({ 'toot the woot': 'boom chicago' });
+  });
 
-  'can find nested tokens in hash keys'(test: Test) {
+  test('can find nested tokens in hash keys', () => {
     // GIVEN
     const innerToken = new Intrinsic( 'toot');
     const token = new Intrinsic( `${innerToken} the woot`);
@@ -361,12 +325,11 @@ nodeunitShim({
 
     // THEN
     const tokens = findTokens(new Stack(), () => s);
-    test.ok(tokens.some(t => t === innerToken), 'Cannot find innerToken');
-    test.ok(tokens.some(t => t === token), 'Cannot find token');
-    test.done();
-  },
+    expect(tokens.some(t => t === innerToken)).toEqual(true);
+    expect(tokens.some(t => t === token)).toEqual(true);
+  });
 
-  'fails if token in a hash key resolves to a non-string'(test: Test) {
+  test('fails if token in a hash key resolves to a non-string', () => {
     // GIVEN
     const token = new Intrinsic({ Ref: 'Other' });
 
@@ -376,12 +339,11 @@ nodeunitShim({
     };
 
     // THEN
-    test.throws(() => resolve(s), 'is used as the key in a map so must resolve to a string, but it resolves to:');
-    test.done();
-  },
+    expect(() => resolve(s)).toThrow('is used as the key in a map so must resolve to a string, but it resolves to:');
+  });
 
-  'list encoding': {
-    'can encode Token to string and resolve the encoding'(test: Test) {
+  describe('list encoding', () => {
+    test('can encode Token to string and resolve the encoding', () => {
       // GIVEN
       const token = new Intrinsic({ Ref: 'Other' });
 
@@ -391,14 +353,12 @@ nodeunitShim({
       };
 
       // THEN
-      test.deepEqual(resolve(struct), {
+      expect(resolve(struct)).toEqual({
         XYZ: { Ref: 'Other' },
       });
+    });
 
-      test.done();
-    },
-
-    'cannot add to encoded list'(test: Test) {
+    test('cannot add to encoded list', () => {
       // GIVEN
       const token = new Intrinsic({ Ref: 'Other' });
 
@@ -407,14 +367,12 @@ nodeunitShim({
       encoded.push('hello');
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         resolve(encoded);
-      }, /Cannot add elements to list token/);
+      }).toThrow(/Cannot add elements to list token/);
+    });
 
-      test.done();
-    },
-
-    'cannot add to strings in encoded list'(test: Test) {
+    test('cannot add to strings in encoded list', () => {
       // GIVEN
       const token = new Intrinsic({ Ref: 'Other' });
 
@@ -423,14 +381,12 @@ nodeunitShim({
       encoded[0] += 'hello';
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         resolve(encoded);
-      }, /concatenate strings in/);
+      }).toThrow(/concatenate strings in/);
+    });
 
-      test.done();
-    },
-
-    'can pass encoded lists to FnSelect'(test: Test) {
+    test('can pass encoded lists to FnSelect', () => {
       // GIVEN
       const encoded: string[] = Token.asList(new Intrinsic({ Ref: 'Other' }));
 
@@ -438,14 +394,12 @@ nodeunitShim({
       const struct = Fn.select(1, encoded);
 
       // THEN
-      test.deepEqual(resolve(struct), {
+      expect(resolve(struct)).toEqual({
         'Fn::Select': [1, { Ref: 'Other' }],
       });
+    });
 
-      test.done();
-    },
-
-    'can pass encoded lists to FnJoin'(test: Test) {
+    test('can pass encoded lists to FnJoin', () => {
       // GIVEN
       const encoded: string[] = Token.asList(new Intrinsic({ Ref: 'Other' }));
 
@@ -453,14 +407,12 @@ nodeunitShim({
       const struct = Fn.join('/', encoded);
 
       // THEN
-      test.deepEqual(resolve(struct), {
+      expect(resolve(struct)).toEqual({
         'Fn::Join': ['/', { Ref: 'Other' }],
       });
+    });
 
-      test.done();
-    },
-
-    'can pass encoded lists to FnJoin, even if join is stringified'(test: Test) {
+    test('can pass encoded lists to FnJoin, even if join is stringified', () => {
       // GIVEN
       const encoded: string[] = Token.asList(new Intrinsic({ Ref: 'Other' }));
 
@@ -468,33 +420,28 @@ nodeunitShim({
       const struct = Fn.join('/', encoded).toString();
 
       // THEN
-      test.deepEqual(resolve(struct), {
+      expect(resolve(struct)).toEqual({
         'Fn::Join': ['/', { Ref: 'Other' }],
       });
+    });
 
-      test.done();
-    },
-
-    'detect and error when list token values are illegally extracted'(test: Test) {
+    test('detect and error when list token values are illegally extracted', () => {
       // GIVEN
       const encoded: string[] = Token.asList({ Ref: 'Other' });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         resolve({ value: encoded[0] });
-      }, /Found an encoded list/);
+      }).toThrow(/Found an encoded list/);
+    });
+  });
 
-      test.done();
-    },
-  },
+  describe('number encoding', () => {
+    test('basic integer encoding works', () => {
+      expect(16).toEqual(extractTokenDouble(createTokenDouble(16)));
+    });
 
-  'number encoding': {
-    'basic integer encoding works'(test: Test) {
-      test.equal(16, extractTokenDouble(createTokenDouble(16)));
-      test.done();
-    },
-
-    'arbitrary integers can be encoded, stringified, and recovered'(test: Test) {
+    test('arbitrary integers can be encoded, stringified, and recovered', () => {
       for (let i = 0; i < 100; i++) {
         // We can encode all numbers up to 2^48-1
         const x = Math.floor(Math.random() * (Math.pow(2, 48) - 1));
@@ -503,38 +450,83 @@ nodeunitShim({
         // Roundtrip through JSONification
         const roundtripped = JSON.parse(JSON.stringify({ theNumber: encoded })).theNumber;
         const decoded = extractTokenDouble(roundtripped);
-        test.equal(decoded, x, `Fail roundtrip encoding of ${x}`);
+        expect(decoded).toEqual(x);
       }
+    });
 
-      test.done();
-    },
+    test('arbitrary numbers are correctly detected as not being tokens', () => {
+      expect(undefined).toEqual(extractTokenDouble(0));
+      expect(undefined).toEqual(extractTokenDouble(1243));
+      expect(undefined).toEqual(extractTokenDouble(4835e+532));
+    });
 
-    'arbitrary numbers are correctly detected as not being tokens'(test: Test) {
-      test.equal(undefined, extractTokenDouble(0));
-      test.equal(undefined, extractTokenDouble(1243));
-      test.equal(undefined, extractTokenDouble(4835e+532));
-
-      test.done();
-    },
-
-    'can number-encode and resolve Token objects'(test: Test) {
+    test('can number-encode and resolve Token objects', () => {
       // GIVEN
       const x = new Intrinsic( 123);
 
       // THEN
       const encoded = Token.asNumber(x);
-      test.equal(false, isResolvableObject(encoded), 'encoded number does not test as token');
-      test.equal(true, Token.isUnresolved(encoded), 'encoded number does not test as token');
+      expect(false).toEqual(isResolvableObject(encoded));
+      expect(true).toEqual(Token.isUnresolved(encoded));
 
       // THEN
       const resolved = resolve({ value: encoded });
-      test.deepEqual(resolved, { value: 123 });
+      expect(resolved).toEqual({ value: 123 });
+    });
 
-      test.done();
-    },
-  },
+    test('Tokens are still reversible after having been encoded multiple times', () => {
+      // GIVEN
+      const original = new Intrinsic(123);
 
-  'stack trace is captured at token creation'(test: Test) {
+      // WHEN
+      let x: any = original;
+      x = Token.asString(x);
+      x = Token.asNumber(x);
+      x = Token.asList(x);
+      x = Token.asString(x);
+
+      // THEN
+      expect(Tokenization.reverse(x)).toBe(original);
+    });
+
+    test('regex detects all stringifications of encoded tokens', () => {
+      expect(stringContainsNumberTokens(`${createTokenDouble(0)}`)).toBeTruthy();
+      expect(stringContainsNumberTokens(`${createTokenDouble(Math.pow(2, 48) - 1)}`)).toBeTruthy(); // MAX_ENCODABLE_INTEGER
+      expect(stringContainsNumberTokens('1234')).toBeFalsy();
+    });
+
+    test('check that the first N encoded numbers can be detected', () => {
+      const re = new RegExp(STRINGIFIED_NUMBER_PATTERN);
+      // Ran this up to 1 million offline
+      for (let i = 0; i < 1000; i++) {
+        expect(`${createTokenDouble(i)}`).toMatch(re);
+      }
+    });
+
+    test('handle stringified number token', () => {
+      // GIVEN
+      const tok = `the answer is: ${Lazy.number({ produce: () => 86 })}`;
+
+      // THEN
+      expect(resolve({ value: `${tok}` })).toEqual({
+        value: 'the answer is: 86',
+      });
+    });
+
+    test('handle stringified number reference', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Resource', { type: 'My::Resource' });
+      // GIVEN
+      const tok = `the answer is: ${Token.asNumber(res.ref)}`;
+
+      // THEN
+      expect(resolve({ value: `${tok}` })).toEqual({
+        value: { 'Fn::Join': ['', ['the answer is: ', { Ref: 'Resource' }]] },
+      });
+    });
+  });
+
+  test('`stack trace is captured at token creati`on', () => {
     function fn1() {
       function fn2() {
         class ExposeTrace extends Intrinsic {
@@ -552,12 +544,12 @@ nodeunitShim({
     const previousValue = reEnableStackTraceCollection();
     const token = fn1();
     restoreStackTraceColection(previousValue);
-    test.ok(token.creationTrace.find(x => x.includes('fn1')));
-    test.ok(token.creationTrace.find(x => x.includes('fn2')));
-    test.done();
-  },
+    expect(token.creationTrace.find(x => x.includes('fn1'))).toBeDefined();
+    expect(token.creationTrace.find(x => x.includes('fn2'))).toBeDefined();
 
-  'newError returns an error with the creation stack trace'(test: Test) {
+  });
+
+  test('newError returns an error with the creation stack trace', () => {
     function fn1() {
       function fn2() {
         function fn3() {
@@ -577,13 +569,10 @@ nodeunitShim({
     const previousValue = reEnableStackTraceCollection();
     const token = fn1();
     restoreStackTraceColection(previousValue);
-    test.throws(() => token.throwError('message!'), /Token created:/);
-    test.done();
-  },
+    expect(() => token.throwError('message!')).toThrow(/Token created:/);
+  });
 
-  'type coercion': (() => {
-    const tests: any = { };
-
+  describe('type coercion', () => {
     const inputs = [
       'a string',
       1234,
@@ -601,56 +590,45 @@ nodeunitShim({
       // THEN
       const expected = input;
 
-      tests[`${input}<string>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.asNumber(new Intrinsic(stringToken))), expected);
-        test.done();
-      };
+      test(`${input}<string>.toNumber()`, () => {
+        expect(resolve(Token.asNumber(new Intrinsic(stringToken)))).toEqual(expected);
+      });
 
-      tests[`${input}<list>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.asNumber(new Intrinsic(listToken))), expected);
-        test.done();
-      };
+      test(`${input}<list>.toNumber()`, () => {
+        expect(resolve(Token.asNumber(new Intrinsic(listToken)))).toEqual(expected);
+      });
 
-      tests[`${input}<number>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.asNumber(new Intrinsic(numberToken))), expected);
-        test.done();
-      };
+      test(`${input}<number>.toNumber()`, () => {
+        expect(resolve(Token.asNumber(new Intrinsic(numberToken)))).toEqual(expected);
+      });
 
-      tests[`${input}<string>.toString()`] = (test: Test) => {
-        test.deepEqual(resolve(new Intrinsic(stringToken).toString()), expected);
-        test.done();
-      };
+      test(`${input}<string>.toString()`, () => {
+        expect(resolve(new Intrinsic(stringToken).toString())).toEqual(expected);
+      });
 
-      tests[`${input}<list>.toString()`] = (test: Test) => {
-        test.deepEqual(resolve(new Intrinsic(listToken).toString()), expected);
-        test.done();
-      };
+      test(`${input}<list>.toString()`, () => {
+        expect(resolve(new Intrinsic(listToken).toString())).toEqual(expected);
+      });
 
-      tests[`${input}<number>.toString()`] = (test: Test) => {
-        test.deepEqual(resolve(new Intrinsic(numberToken).toString()), expected);
-        test.done();
-      };
+      test(`${input}<number>.toString()`, () => {
+        expect(resolve(new Intrinsic(numberToken).toString())).toEqual(expected);
+      });
 
-      tests[`${input}<string>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.asList(new Intrinsic(stringToken))), expected);
-        test.done();
-      };
+      test(`${input}<string>.toList()`, () => {
+        expect(resolve(Token.asList(new Intrinsic(stringToken)))).toEqual(expected);
+      });
 
-      tests[`${input}<list>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.asList(new Intrinsic(listToken))), expected);
-        test.done();
-      };
+      test(`${input}<list>.toList()`, () => {
+        expect(resolve(Token.asList(new Intrinsic(listToken)))).toEqual(expected);
+      });
 
-      tests[`${input}<number>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.asList(new Intrinsic(numberToken))), expected);
-        test.done();
-      };
+      test(`${input}<number>.toList()`, () => {
+        expect(resolve(Token.asList(new Intrinsic(numberToken)))).toEqual(expected);
+      });
     }
+  });
 
-    return tests;
-  })(),
-
-  'creation stack is attached to errors emitted during resolve with CDK_DEBUG=true'(test: Test) {
+  test('creation stack is attached to errors emitted during resolve with CDK_DEBUG=true', () => {
     function showMeInTheStackTrace() {
       return Lazy.string({ produce: () => { throw new Error('fooError'); } });
     }
@@ -663,18 +641,17 @@ nodeunitShim({
     try {
       resolve(x);
     } catch (e) {
-      message = e.message;
+      message = (e as Error).message;
     } finally {
       process.env.CDK_DEBUG = previousValue;
     }
 
-    test.ok(message && message.includes('showMeInTheStackTrace'));
-    test.done();
-  },
+    expect(message && message.includes('showMeInTheStackTrace')).toEqual(true);
+  });
 
-  'creation stack is omitted without CDK_DEBUG=true'(test: Test) {
+  test('creation stack is omitted without CDK_DEBUG=true', () => {
     function showMeInTheStackTrace() {
-      return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
+      return Lazy.string({ produce: () => { throw new Error('fooError'); } });
     }
 
     const previousValue = process.env.CDK_DEBUG;
@@ -685,59 +662,52 @@ nodeunitShim({
     try {
       resolve(x);
     } catch (e) {
-      message = e.message;
+      message = (e as Error).message;
     } finally {
       process.env.CDK_DEBUG = previousValue;
     }
 
-    test.ok(message && message.includes('Execute again with CDK_DEBUG=true'));
-    test.done();
-  },
+    expect(message && message.includes('Execute again with CDK_DEBUG=true')).toEqual(true);
+  });
 
-  'stringifyNumber': {
-    'converts number to string'(test: Test) {
-      test.equal(Tokenization.stringifyNumber(100), '100');
-      test.done();
-    },
+  describe('stringifyNumber', () => {
+    test('converts number to string', () => {
+      expect(Tokenization.stringifyNumber(100)).toEqual('100');
+    });
 
-    'converts tokenized number to string'(test: Test) {
-      test.equal(resolve(Tokenization.stringifyNumber({
+    test('converts tokenized number to string', () => {
+      expect(resolve(Tokenization.stringifyNumber({
         resolve: () => 100,
-      } as any)), '100');
-      test.done();
-    },
+      } as any))).toEqual('100');
+    });
 
-    'string remains the same'(test: Test) {
-      test.equal(Tokenization.stringifyNumber('123' as any), '123');
-      test.done();
-    },
+    test('string remains the same', () => {
+      expect(Tokenization.stringifyNumber('123' as any)).toEqual('123');
+    });
 
-    'Ref remains the same'(test: Test) {
+    test('Ref remains the same', () => {
       const val = { Ref: 'SomeLogicalId' };
-      test.deepEqual(Tokenization.stringifyNumber(val as any), val);
-      test.done();
-    },
+      expect(Tokenization.stringifyNumber(val as any)).toEqual(val);
+    });
 
-    'lazy Ref remains the same'(test: Test) {
+    test('lazy Ref remains the same', () => {
       const resolvedVal = { Ref: 'SomeLogicalId' };
       const tokenizedVal = Lazy.any({
         produce: () => resolvedVal,
       });
       const res = Tokenization.stringifyNumber(tokenizedVal as any) as any;
-      test.notDeepEqual(res, resolvedVal);
-      test.deepEqual(resolve(res), resolvedVal);
-      test.done();
-    },
+      expect(res).not.toEqual(resolvedVal);
+      expect(resolve(res)).toEqual(resolvedVal);
+    });
 
-    'tokenized Ref remains the same'(test: Test) {
+    test('tokenized Ref remains the same', () => {
       const resolvedVal = { Ref: 'SomeLogicalId' };
       const tokenizedVal = Token.asNumber(resolvedVal);
       const res = Tokenization.stringifyNumber(tokenizedVal) as any;
-      test.notDeepEqual(res, resolvedVal);
-      test.deepEqual(resolve(res), resolvedVal);
-      test.done();
-    },
-  },
+      expect(res).not.toEqual(resolvedVal);
+      expect(resolve(res)).toEqual(resolvedVal);
+    });
+  });
 });
 
 class Promise2 implements IResolvable {
@@ -794,3 +764,4 @@ function tokensThatResolveTo(value: any): Token[] {
 function resolve(x: any) {
   return new Stack().resolve(x);
 }
+

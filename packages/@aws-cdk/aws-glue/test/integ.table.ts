@@ -81,13 +81,18 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   database,
   tableName: 'my_encrypted_table',
   columns,
-  partitionKeys: [{
-    name: 'year',
-    type: glue.Schema.SMALL_INT,
-  }],
+  partitionKeys,
   dataFormat: glue.DataFormat.JSON,
   encryption: glue.TableEncryption.KMS,
   encryptionKey: new kms.Key(stack, 'MyKey'),
+});
+
+new glue.Table(stack, 'MyPartitionFilteredTable', {
+  database,
+  tableName: 'partition_filtered_table',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  enablePartitionFiltering: true,
 });
 
 const user = new iam.User(stack, 'MyUser');

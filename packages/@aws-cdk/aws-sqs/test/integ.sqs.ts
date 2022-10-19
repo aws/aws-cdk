@@ -1,7 +1,8 @@
 import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import { Key } from '@aws-cdk/aws-kms';
 import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { Queue, QueueEncryption } from '../lib';
+import * as integ from '@aws-cdk/integ-tests';
+import { DeduplicationScope, FifoThroughputLimit, Queue, QueueEncryption } from '../lib';
 
 const app = new App();
 
@@ -16,6 +17,18 @@ const fifo = new Queue(stack, 'FifoQueue', {
   fifo: true,
   encryptionMasterKey: new Key(stack, 'EncryptionKey', { removalPolicy: RemovalPolicy.DESTROY }),
 });
+const highThroughputFifo = new Queue(stack, 'HighThroughputFifoQueue', {
+  fifo: true,
+  fifoThroughputLimit: FifoThroughputLimit.PER_MESSAGE_GROUP_ID,
+  deduplicationScope: DeduplicationScope.MESSAGE_GROUP,
+});
+const sqsManagedEncryptedQueue = new Queue(stack, 'SqsManagedEncryptedQueue', {
+  encryption: QueueEncryption.SQS_MANAGED,
+});
+const unencryptedQueue = new Queue(stack, 'UnencryptedQueue', {
+  encryption: QueueEncryption.UNENCRYPTED,
+});
+const ssl = new Queue(stack, 'SSLQueue', { enforceSSL: true });
 
 const role = new Role(stack, 'Role', {
   assumedBy: new AccountRootPrincipal(),
@@ -24,7 +37,15 @@ const role = new Role(stack, 'Role', {
 dlq.grantConsumeMessages(role);
 queue.grantConsumeMessages(role);
 fifo.grantConsumeMessages(role);
+highThroughputFifo.grantConsumeMessages(role);
+sqsManagedEncryptedQueue.grantConsumeMessages(role);
+unencryptedQueue.grantConsumeMessages(role);
+ssl.grantConsumeMessages(role);
 
 new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
+
+new integ.IntegTest(app, 'SqsTest', {
+  testCases: [stack],
+});
 
 app.synth();

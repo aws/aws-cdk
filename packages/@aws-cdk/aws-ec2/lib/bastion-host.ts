@@ -2,8 +2,9 @@ import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
 import { CfnOutput, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AmazonLinuxGeneration, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
+import { CloudFormationInit } from './cfn-init';
 import { Connections } from './connections';
-import { IInstance, Instance } from './instance';
+import { ApplyCloudFormationInitOptions, IInstance, Instance } from './instance';
 import { AmazonLinuxCpuType, IMachineImage, MachineImage } from './machine-image';
 import { IPeer } from './peer';
 import { Port } from './port';
@@ -14,7 +15,7 @@ import { IVpc, SubnetSelection } from './vpc';
 /**
  * Properties of the bastion host
  *
- * @experimental
+ *
  */
 export interface BastionHostLinuxProps {
 
@@ -80,6 +81,29 @@ export interface BastionHostLinuxProps {
    * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
+
+  /**
+   * Apply the given CloudFormation Init configuration to the instance at startup
+   *
+   * @default - no CloudFormation init
+   */
+  readonly init?: CloudFormationInit;
+
+  /**
+   * Use the given options for applying CloudFormation Init
+   *
+   * Describes the configsets to use and the timeout to wait
+   *
+   * @default - default options
+   */
+  readonly initOptions?: ApplyCloudFormationInitOptions;
+
+  /**
+   * Whether IMDSv2 should be required on this instance
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -90,7 +114,7 @@ export interface BastionHostLinuxProps {
  *
  * You can also configure this bastion host to allow connections via SSH
  *
- * @experimental
+ *
  * @resource AWS::EC2::Instance
  */
 export class BastionHostLinux extends Resource implements IInstance {
@@ -130,14 +154,17 @@ export class BastionHostLinux extends Resource implements IInstance {
    * @attribute
    */
   public readonly instancePrivateDnsName: string;
+
   /**
    * @attribute
    */
   public readonly instancePrivateIp: string;
+
   /**
    * @attribute
    */
   public readonly instancePublicDnsName: string;
+
   /**
    * @attribute
    */
@@ -159,6 +186,9 @@ export class BastionHostLinux extends Resource implements IInstance {
       }),
       vpcSubnets: props.subnetSelection ?? {},
       blockDevices: props.blockDevices ?? undefined,
+      init: props.init,
+      initOptions: props.initOptions,
+      requireImdsv2: props.requireImdsv2 ?? false,
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [

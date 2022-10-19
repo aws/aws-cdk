@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "9271c99fa7fd8d6ae26202fec69aaabba91d343b835d6cdc41a76f14fb6462d9": {
+      "source": {
+        "path": "integ-cognito.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9271c99fa7fd8d6ae26202fec69aaabba91d343b835d6cdc41a76f14fb6462d9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -4,10 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Represents the Lambda Handler Code.
@@ -55,6 +52,32 @@ export abstract class Code {
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
+  }
+
+  /**
+   * Loads the function code from an asset created by a Docker build.
+   *
+   * By default, the asset is expected to be located at `/asset` in the
+   * image.
+   *
+   * @param path The path to the directory containing the Docker file
+   * @param options Docker build options
+   */
+  public static fromDockerBuild(path: string, options: DockerBuildAssetOptions = {}): AssetCode {
+    let imagePath = options.imagePath ?? '/asset/.';
+
+    // ensure imagePath ends with /. to copy the **content** at this path
+    if (imagePath.endsWith('/')) {
+      imagePath = `${imagePath}.`;
+    } else if (!imagePath.endsWith('/.')) {
+      imagePath = `${imagePath}/.`;
+    }
+
+    const assetPath = cdk.DockerImage
+      .fromBuild(path, options)
+      .cp(imagePath, options.outputPath);
+
+    return new AssetCode(assetPath);
   }
 
   /**
@@ -176,6 +199,14 @@ export interface CodeImageConfig {
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
   readonly entrypoint?: string[];
+
+  /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
 }
 
 /**
@@ -207,7 +238,7 @@ export class S3Code extends Code {
 }
 
 /**
- * Lambda code from an inline string (limited to 4KiB).
+ * Lambda code from an inline string.
  */
 export class InlineCode extends Code {
   public readonly isInline = true;
@@ -217,10 +248,6 @@ export class InlineCode extends Code {
 
     if (code.length === 0) {
       throw new Error('Lambda inline code cannot be empty');
-    }
-
-    if (code.length > 4096) {
-      throw new Error('Lambda source is too large, must be <= 4096 but is ' + code.length);
     }
   }
 
@@ -410,10 +437,25 @@ export interface EcrImageCodeProps {
   readonly entrypoint?: string[];
 
   /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
+
+  /**
    * The image tag to use when pulling the image from ECR.
    * @default 'latest'
+   * @deprecated use `tagOrDigest`
    */
   readonly tag?: string;
+
+  /**
+   * The image tag or digest to use when pulling the image from ECR (digests must start with `sha256:`).
+   * @default 'latest'
+   */
+  readonly tagOrDigest?: string;
 }
 
 /**
@@ -431,9 +473,10 @@ export class EcrImageCode extends Code {
 
     return {
       image: {
-        imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
+        imageUri: this.repository.repositoryUriForTagOrDigest(this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
+        workingDirectory: this.props.workingDirectory,
       },
     };
   }
@@ -459,6 +502,14 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
   readonly entrypoint?: string[];
+
+  /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
 }
 
 /**
@@ -466,25 +517,64 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
  */
 export class AssetImageCode extends Code {
   public readonly isInline: boolean = false;
+  private asset?: ecr_assets.DockerImageAsset;
 
   constructor(private readonly directory: string, private readonly props: AssetImageCodeProps) {
     super();
   }
 
   public bind(scope: Construct): CodeConfig {
-    const asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
-      directory: this.directory,
-      ...this.props,
-    });
-
-    asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
+    // If the same AssetImageCode is used multiple times, retain only the first instantiation.
+    if (!this.asset) {
+      this.asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
+        directory: this.directory,
+        ...this.props,
+      });
+      this.asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
+    } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
+      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.');
+    }
 
     return {
       image: {
-        imageUri: asset.imageUri,
+        imageUri: this.asset.imageUri,
         entrypoint: this.props.entrypoint,
         cmd: this.props.cmd,
+        workingDirectory: this.props.workingDirectory,
       },
     };
   }
+
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+    if (!this.asset) {
+      throw new Error('bindToResource() must be called after bind()');
+    }
+
+    const resourceProperty = options.resourceProperty || 'Code.ImageUri';
+
+    // https://github.com/aws/aws-cdk/issues/14593
+    this.asset.addResourceMetadata(resource, resourceProperty);
+  }
+}
+
+/**
+ * Options when creating an asset from a Docker build.
+ */
+export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
+  /**
+   * The path in the Docker image where the asset is located after the build
+   * operation.
+   *
+   * @default /asset
+   */
+  readonly imagePath?: string;
+
+  /**
+   * The path on the local filesystem where the asset will be copied
+   * using `docker cp`.
+   *
+   * @default - a unique temporary directory in the system temp directory
+   */
+  readonly outputPath?: string;
 }

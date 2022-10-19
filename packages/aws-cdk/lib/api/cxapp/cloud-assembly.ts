@@ -1,7 +1,14 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
-import * as minimatch from 'minimatch';
+import * as chalk from 'chalk';
+import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
+import { flatten } from '../../util';
+import { versionNumber } from '../../version';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const minimatch = require('minimatch');
+
 
 export enum DefaultSelection {
   /**
@@ -16,7 +23,13 @@ export enum DefaultSelection {
   OnlySingle = 'single',
 
   /**
-   * If no selectors are provided, returns all stacks in the app.
+   * Returns all stacks in the main (top level) assembly only.
+   */
+  MainAssembly = 'main',
+
+  /**
+   * If no selectors are provided, returns all stacks in the app,
+   * including stacks inside nested assemblies.
    */
   AllStacks = 'all',
 }
@@ -55,6 +68,22 @@ export enum ExtendedStackSelection {
 }
 
 /**
+ * A specification of which stacks should be selected
+ */
+export interface StackSelector {
+  /**
+   * Whether all stacks at the top level assembly should
+   * be selected and nothing else
+   */
+  allTopLevel?: boolean,
+
+  /**
+   * A list of patterns to match the stack hierarchical ids
+   */
+  patterns: string[],
+}
+
+/**
  * A single Cloud Assembly and the operations we do on it to deploy the artifacts inside
  */
 export class CloudAssembly {
@@ -67,67 +96,103 @@ export class CloudAssembly {
     this.directory = assembly.directory;
   }
 
-  public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<StackCollection> {
-    selectors = selectors.filter(s => s != null); // filter null/undefined
-    selectors = [...new Set(selectors)]; // make them unique
+  public async selectStacks(selector: StackSelector, options: SelectStacksOptions): Promise<StackCollection> {
+    const asm = this.assembly;
+    const topLevelStacks = asm.stacks;
+    const stacks = semver.major(asm.version) < 10 ? asm.stacks : asm.stacksRecursively;
+    const allTopLevel = selector.allTopLevel ?? false;
+    const patterns = sanitizePatterns(selector.patterns);
 
-    const stacks = this.assembly.stacks;
     if (stacks.length === 0) {
       throw new Error('This app contains no stacks');
     }
 
-    if (selectors.length === 0) {
-      switch (options.defaultBehavior) {
-        case DefaultSelection.AllStacks:
-          return new StackCollection(this, stacks);
-        case DefaultSelection.None:
-          return new StackCollection(this, []);
-        case DefaultSelection.OnlySingle:
-          if (stacks.length === 1) {
-            return new StackCollection(this, stacks);
-          } else {
-            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
-              `Stacks: ${stacks.map(x => x.id).join(' ')}`);
-          }
-        default:
-          throw new Error(`invalid default behavior: ${options.defaultBehavior}`);
+    if (allTopLevel) {
+      return this.selectTopLevelStacks(stacks, topLevelStacks, options.extend);
+    } else if (patterns.length > 0) {
+      return this.selectMatchingStacks(stacks, patterns, options.extend);
+    } else {
+      return this.selectDefaultStacks(stacks, topLevelStacks, options.defaultBehavior);
+    }
+  }
+
+  private selectTopLevelStacks(stacks: cxapi.CloudFormationStackArtifact[],
+    topLevelStacks: cxapi.CloudFormationStackArtifact[],
+    extend: ExtendedStackSelection = ExtendedStackSelection.None): StackCollection {
+    if (topLevelStacks.length > 0) {
+      return this.extendStacks(topLevelStacks, stacks, extend);
+    } else {
+      throw new Error('No stack found in the main cloud assembly. Use "list" to print manifest');
+    }
+  }
+
+  private selectMatchingStacks(stacks: cxapi.CloudFormationStackArtifact[],
+    patterns: string[],
+    extend: ExtendedStackSelection = ExtendedStackSelection.None): StackCollection {
+
+    // cli tests use this to ensure tests do not depend on legacy behavior
+    // (otherwise they will fail in v2)
+    const disableLegacy = process.env.CXAPI_DISABLE_SELECT_BY_ID === '1';
+
+    const matchingPattern = (pattern: string) => (stack: cxapi.CloudFormationStackArtifact) => {
+      if (minimatch(stack.hierarchicalId, pattern)) {
+        return true;
+      } else if (!disableLegacy && stack.id === pattern && semver.major(versionNumber()) < 2) {
+        warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', chalk.bold(stack.id), chalk.bold(stack.hierarchicalId));
+        warning('Run "cdk ls" to see a list of all stack identifiers');
+        return true;
       }
-    }
+      return false;
+    };
 
-    const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
-    for (const stack of stacks) {
-      allStacks.set(stack.id, stack);
-    }
+    const matchedStacks = flatten(patterns.map(pattern => stacks.filter(matchingPattern(pattern))));
 
-    // For every selector argument, pick stacks from the list.
-    const selectedStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
-    for (const pattern of selectors) {
-      let found = false;
+    return this.extendStacks(matchedStacks, stacks, extend);
+  }
 
-      for (const stack of stacks) {
-        if (minimatch(stack.id, pattern) && !selectedStacks.has(stack.id)) {
-          selectedStacks.set(stack.id, stack);
-          found = true;
+  private selectDefaultStacks(stacks: cxapi.CloudFormationStackArtifact[],
+    topLevelStacks: cxapi.CloudFormationStackArtifact[],
+    defaultSelection: DefaultSelection) {
+    switch (defaultSelection) {
+      case DefaultSelection.MainAssembly:
+        return new StackCollection(this, topLevelStacks);
+      case DefaultSelection.AllStacks:
+        return new StackCollection(this, stacks);
+      case DefaultSelection.None:
+        return new StackCollection(this, []);
+      case DefaultSelection.OnlySingle:
+        if (topLevelStacks.length === 1) {
+          return new StackCollection(this, topLevelStacks);
+        } else {
+          throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
+          `Stacks: ${stacks.map(x => x.hierarchicalId).join(' · ')}`);
         }
-      }
+      default:
+        throw new Error(`invalid default behavior: ${defaultSelection}`);
+    }
+  }
 
-      if (!found) {
-        throw new Error(`No stack found matching '${pattern}'. Use "list" to print manifest`);
-      }
+  private extendStacks(matched: cxapi.CloudFormationStackArtifact[],
+    all: cxapi.CloudFormationStackArtifact[],
+    extend: ExtendedStackSelection = ExtendedStackSelection.None) {
+    const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
+    for (const stack of all) {
+      allStacks.set(stack.hierarchicalId, stack);
     }
 
-    const extend = options.extend || ExtendedStackSelection.None;
+    const index = indexByHierarchicalId(matched);
+
     switch (extend) {
       case ExtendedStackSelection.Downstream:
-        includeDownstreamStacks(selectedStacks, allStacks);
+        includeDownstreamStacks(index, allStacks);
         break;
       case ExtendedStackSelection.Upstream:
-        includeUpstreamStacks(selectedStacks, allStacks);
+        includeUpstreamStacks(index, allStacks);
         break;
     }
 
     // Filter original array because it is in the right order
-    const selectedList = stacks.filter(s => selectedStacks.has(s.id));
+    const selectedList = all.filter(s => index.has(s.hierarchicalId));
 
     return new StackCollection(this, selectedList);
   }
@@ -170,6 +235,14 @@ export class StackCollection {
     const arts = [...this.stackArtifacts];
     arts.reverse();
     return new StackCollection(this.assembly, arts);
+  }
+
+  public filter(predicate: (art: cxapi.CloudFormationStackArtifact) => boolean): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.filter(predicate));
+  }
+
+  public concat(other: StackCollection): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.concat(other.stackArtifacts));
   }
 
   /**
@@ -238,6 +311,16 @@ export interface MetadataMessageOptions {
   strict?: boolean;
 }
 
+function indexByHierarchicalId(stacks: cxapi.CloudFormationStackArtifact[]): Map<string, cxapi.CloudFormationStackArtifact> {
+  const result = new Map<string, cxapi.CloudFormationStackArtifact>();
+
+  for (const stack of stacks) {
+    result.set(stack.hierarchicalId, stack);
+  }
+
+  return result;
+}
+
 /**
  * Calculate the transitive closure of stack dependents.
  *
@@ -263,7 +346,7 @@ function includeDownstreamStacks(
   } while (madeProgress);
 
   if (added.length > 0) {
-    print('Including depending stacks: %s', colors.bold(added.join(', ')));
+    print('Including depending stacks: %s', chalk.bold(added.join(', ')));
   }
 }
 
@@ -282,7 +365,7 @@ function includeUpstreamStacks(
 
     for (const stack of selectedStacks.values()) {
       // Select an additional stack if it's not selected yet and a dependency of a selected stack (and exists, obviously)
-      for (const dependencyId of stack.dependencies.map(x => x.id)) {
+      for (const dependencyId of stack.dependencies.map(x => x.manifest.displayName ?? x.id)) {
         if (!selectedStacks.has(dependencyId) && allStacks.has(dependencyId)) {
           added.push(dependencyId);
           selectedStacks.set(dependencyId, allStacks.get(dependencyId)!);
@@ -293,6 +376,12 @@ function includeUpstreamStacks(
   }
 
   if (added.length > 0) {
-    print('Including dependency stacks: %s', colors.bold(added.join(', ')));
+    print('Including dependency stacks: %s', chalk.bold(added.join(', ')));
   }
+}
+
+function sanitizePatterns(patterns: string[]): string[] {
+  let sanitized = patterns.filter(s => s != null); // filter null/undefined
+  sanitized = [...new Set(sanitized)]; // make them unique
+  return sanitized;
 }

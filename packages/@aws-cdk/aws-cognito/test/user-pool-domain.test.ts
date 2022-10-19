@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { CfnParameter, Stack } from '@aws-cdk/core';
 import { UserPool, UserPoolDomain } from '../lib';
@@ -21,7 +21,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolDomain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
       UserPoolId: stack.resolve(pool.userPoolId),
       Domain: 'test-domain.example.com',
       CustomDomainConfig: {
@@ -44,7 +44,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolDomain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
       UserPoolId: stack.resolve(pool.userPoolId),
       Domain: 'cognito-domain-prefix',
     });
@@ -124,8 +124,8 @@ describe('User Pool Client', () => {
       ],
     });
 
-    expect(stack).toHaveResource('Custom::UserPoolCloudFrontDomainName');
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).resourceCountIs('Custom::UserPoolCloudFrontDomainName', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: 'cognito-idp:DescribeUserPoolDomain',
@@ -161,7 +161,63 @@ describe('User Pool Client', () => {
 
     // THEN
     expect(client.domainName).toEqual('domain-name-1');
-    expect(stack).not.toHaveResource('AWS::Cognito::UserPoolDomain');
+    Template.fromStack(stack).resourceCountIs('AWS::Cognito::UserPoolDomain', 0);
+  });
+
+  describe('baseUrl', () => {
+    test('returns the expected standard URL', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+
+      // WHEN
+      const baseUrl = domain.baseUrl();
+
+      // THEN
+      expect(stack.resolve(baseUrl)).toEqual({
+        'Fn::Join': [
+          '', [
+            'https://',
+            { Ref: 'PoolDomainCFC71F56' },
+            '.auth.',
+            { Ref: 'AWS::Region' },
+            '.amazoncognito.com',
+          ],
+        ],
+      });
+    });
+
+    test('returns the expected FIPS-compliant endpoint URL', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+
+      // WHEN
+      const baseUrl = domain.baseUrl({ fips: true });
+
+      // THEN
+      expect(stack.resolve(baseUrl)).toEqual({
+        'Fn::Join': [
+          '', [
+            'https://',
+            { Ref: 'PoolDomainCFC71F56' },
+            '.auth-fips.',
+            { Ref: 'AWS::Region' },
+            '.amazoncognito.com',
+          ],
+        ],
+      });
+    });
   });
 
   describe('signInUrl', () => {

@@ -18,5 +18,10 @@ nyc.config.js
 lib/sdk-api-metadata.json
 !.eslintrc.js
 !jest.config.js
+!build-tools/*.js
 
 junit.xml
+!**/*.integ.snapshot/**/asset.*/*.js
+!**/*.integ.snapshot/**/asset.*/*.d.ts
+
+!**/*.integ.snapshot/**/asset.*/**

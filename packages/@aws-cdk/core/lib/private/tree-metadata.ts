@@ -2,26 +2,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
+import { Construct, IConstruct } from 'constructs';
 import { Annotations } from '../annotations';
-import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
+import { ISynthesisSession } from '../stack-synthesizers';
 import { IInspectable, TreeInspector } from '../tree';
+import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
 
 const FILE_PATH = 'tree.json';
-
-/**
- * Symbol for accessing jsii runtime information
- *
- * Introduced in jsii 1.19.0, cdk 1.90.0.
- */
-const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
 /**
  * Construct that is automatically attached to the top-level `App`.
  * This generates, as part of synthesis, a file containing the construct tree and the metadata for each node in the tree.
  * The output is in a tree format so as to preserve the construct hierarchy.
  *
- * @experimental
  */
 export class TreeMetadata extends Construct {
   constructor(scope: Construct) {
@@ -48,14 +42,12 @@ export class TreeMetadata extends Construct {
         .filter((child) => child !== undefined)
         .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
 
-      const jsiiRuntimeInfo = Object.getPrototypeOf(construct).constructor[JSII_RUNTIME_SYMBOL];
-
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
-        constructInfo: constructInfoFromRuntimeInfo(jsiiRuntimeInfo),
+        constructInfo: constructInfoFromConstruct(construct),
       };
 
       lookup[node.path] = node;
@@ -96,16 +88,6 @@ export class TreeMetadata extends Construct {
   }
 }
 
-function constructInfoFromRuntimeInfo(jsiiRuntimeInfo: any): ConstructInfo | undefined {
-  if (typeof jsiiRuntimeInfo === 'object'
-    && jsiiRuntimeInfo !== null
-    && typeof jsiiRuntimeInfo.fqn === 'string'
-    && typeof jsiiRuntimeInfo.version === 'string') {
-    return { fqn: jsiiRuntimeInfo.fqn, version: jsiiRuntimeInfo.version };
-  }
-  return undefined;
-}
-
 interface Node {
   readonly id: string;
   readonly path: string;
@@ -116,12 +98,4 @@ interface Node {
    * Information on the construct class that led to this node, if available
    */
   readonly constructInfo?: ConstructInfo;
-}
-
-/**
- * Source information on a construct (class fqn and version)
- */
-interface ConstructInfo {
-  readonly fqn: string;
-  readonly version: string;
 }

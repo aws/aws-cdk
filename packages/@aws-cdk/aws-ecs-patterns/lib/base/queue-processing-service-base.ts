@@ -1,13 +1,13 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -53,7 +53,10 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the minScalingCapacity is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
+   * @deprecated - Use `minScalingCapacity` or a literal object instead.
    */
   readonly desiredTaskCount?: number;
 
@@ -95,13 +98,24 @@ export interface QueueProcessingServiceBaseProps {
    * The maximum number of times that a message can be received by consumers.
    * When this value is exceeded for a message the message will be automatically sent to the Dead Letter Queue.
    *
+   * If the queue construct is specified, maxReceiveCount should be omitted.
    * @default 3
    */
   readonly maxReceiveCount?: number;
 
   /**
+   * Timeout of processing a single message. After dequeuing, the processor has this much time to handle the message and delete it from the queue
+   * before it becomes visible again for dequeueing by another processor. Values must be between 0 and (12 hours).
+   *
+   * If the queue construct is specified, visibilityTimeout should be omitted.
+   * @default Duration.seconds(30)
+   */
+  readonly visibilityTimeout?: Duration;
+
+  /**
    * The number of seconds that Dead Letter Queue retains a message.
    *
+   * If the queue construct is specified, retentionPeriod should be omitted.
    * @default Duration.days(14)
    */
   readonly retentionPeriod?: Duration;
@@ -109,9 +123,16 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * Maximum capacity to scale to.
    *
-   * @default (desiredTaskCount * 2)
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is (desiredTaskCount * 2); if true, the default is 2.
    */
   readonly maxScalingCapacity?: number
+
+  /**
+   * Minimum capacity to scale to.
+   *
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is the desiredTaskCount; if true, the default is 1.
+   */
+  readonly minScalingCapacity?: number
 
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
@@ -178,12 +199,34 @@ export interface QueueProcessingServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
  * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services.
  */
-export abstract class QueueProcessingServiceBase extends CoreConstruct {
+export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The SQS queue that the service will process from
    */
@@ -214,6 +257,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
 
   /**
    * The minimum number of tasks to run.
+   * @deprecated - Use `minCapacity` instead.
    */
   public readonly desiredCount: number;
 
@@ -221,6 +265,11 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
    * The maximum number of instances for autoscaling to scale up to.
    */
   public readonly maxCapacity: number;
+
+  /**
+   * The minimum number of instances for autoscaling to scale down to.
+   */
+  public readonly minCapacity: number;
 
   /**
    * The scaling interval for autoscaling based off an SQS Queue size.
@@ -242,6 +291,10 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
+    if (props.queue && (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)) {
+      const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(prop => props.hasOwnProperty(prop));
+      throw new Error(`${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`);
+    }
     // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
       this.sqsQueue = props.queue;
@@ -250,6 +303,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
         retentionPeriod: props.retentionPeriod || Duration.days(14),
       });
       this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
+        visibilityTimeout: props.visibilityTimeout,
         deadLetterQueue: {
           queue: this.deadLetterQueue,
           maxReceiveCount: props.maxReceiveCount || 3,
@@ -272,9 +326,21 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
     this.secrets = props.secrets;
 
-    // Determine the desired task count (minimum) and maximum scaling capacity
     this.desiredCount = props.desiredTaskCount ?? 1;
-    this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+
+    // Determine the desired task count (minimum) and maximum scaling capacity
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
+      this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
+      this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+    } else {
+      if (props.desiredTaskCount != null) {
+        this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
+        this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+      } else {
+        this.minCapacity = props.minScalingCapacity ?? 1;
+        this.maxCapacity = props.maxScalingCapacity || 2;
+      }
+    }
 
     if (!this.desiredCount && !this.maxCapacity) {
       throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
@@ -290,7 +356,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
    * @param service the ECS/Fargate service for which to apply the autoscaling rules to
    */
   protected configureAutoscalingForService(service: BaseService) {
-    const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.desiredCount });
+    const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
     scalingTarget.scaleOnCpuUtilization('CpuScaling', {
       targetUtilizationPercent: 50,
     });

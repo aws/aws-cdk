@@ -1,5 +1,5 @@
 import * as events from '@aws-cdk/aws-events';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Token } from '@aws-cdk/core';
 import { IBackupVault } from './vault';
 
 /**
@@ -58,6 +58,50 @@ export interface BackupPlanRuleProps {
    * common vault for the plan will be created
    */
   readonly backupVault?: IBackupVault;
+
+  /**
+   * Enables continuous backup and point-in-time restores (PITR).
+   *
+   * Property `deleteAfter` defines the retention period for the backup. It is mandatory if PITR is enabled.
+   * If no value is specified, the retention period is set to 35 days which is the maximum retention period supported by PITR.
+   *
+   * Property `moveToColdStorageAfter` must not be specified because PITR does not support this option.
+   *
+   * @default false
+   */
+  readonly enableContinuousBackup?: boolean;
+
+  /**
+   * Copy operations to perform on recovery points created by this rule
+   *
+   * @default - no copy actions
+   */
+  readonly copyActions?: BackupPlanCopyActionProps[];
+}
+
+/**
+ * Properties for a BackupPlanCopyAction
+ */
+export interface BackupPlanCopyActionProps {
+  /**
+   * Destination Vault for recovery points to be copied into
+   */
+  readonly destinationBackupVault: IBackupVault;
+
+  /**
+   * Specifies the duration after creation that a copied recovery point is deleted from the destination vault.
+   * Must be at least 90 days greater than `moveToColdStorageAfter`, if specified.
+   *
+   * @default - recovery point is never deleted
+   */
+  readonly deleteAfter?: Duration;
+
+  /**
+   * Specifies the duration after creation that a copied recovery point is moved to cold storage.
+   *
+   * @default - recovery point is never moved to cold storage
+   */
+  readonly moveToColdStorageAfter?: Duration;
 }
 
 /**
@@ -146,15 +190,50 @@ export class BackupPlanRule {
     });
   }
 
+  /**
+   * Properties of BackupPlanRule
+   */
+  public readonly props: BackupPlanRuleProps
+
   /** @param props Rule properties */
-  constructor(public readonly props: BackupPlanRuleProps) {
+  constructor(props: BackupPlanRuleProps) {
     if (props.deleteAfter && props.moveToColdStorageAfter &&
-        props.deleteAfter.toSeconds() < props.moveToColdStorageAfter.toSeconds()) {
+      props.deleteAfter.toDays() < props.moveToColdStorageAfter.toDays()) {
       throw new Error('`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
 
     if (props.scheduleExpression && !/^cron/.test(props.scheduleExpression.expressionString)) {
       throw new Error('`scheduleExpression` must be of type `cron`');
     }
+
+    const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
+
+    if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
+      throw new Error('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
+    }
+
+    if (props.enableContinuousBackup && props.deleteAfter &&
+      (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
+      throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
+    }
+
+    if (props.copyActions && props.copyActions.length > 0) {
+      props.copyActions.forEach(copyAction => {
+        if (copyAction.deleteAfter && !Token.isUnresolved(copyAction.deleteAfter) &&
+          copyAction.moveToColdStorageAfter && !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
+          copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
+          throw new Error([
+            '\'deleteAfter\' must at least 90 days later than corresponding \'moveToColdStorageAfter\'',
+            `received 'deleteAfter: ${copyAction.deleteAfter.toDays()}' and 'moveToColdStorageAfter: ${copyAction.moveToColdStorageAfter.toDays()}'`,
+          ].join('\n'));
+        }
+      });
+    }
+
+    this.props = {
+      ...props,
+      deleteAfter,
+    };
+
   }
 }

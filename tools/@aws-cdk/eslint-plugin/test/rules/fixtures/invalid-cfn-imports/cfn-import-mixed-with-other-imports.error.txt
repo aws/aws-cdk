@@ -1,0 +1,1 @@
+To allow rewriting imports when generating v2 experimental packages, import of `CfnCluster` must be separate from import of `Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType`, and imported from its specific .generated location.

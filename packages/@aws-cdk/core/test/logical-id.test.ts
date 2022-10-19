@@ -1,12 +1,13 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnElement, CfnResource, Construct, Stack } from '../lib';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
+import { App, CfnElement, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /**
  * These tests are executed once (for specific ID schemes)
  */
-nodeunitShim({
-  'if the naming scheme uniquifies with a hash we can have the same concatenated identifier'(test: Test) {
+describe('logical id', () => {
+  test('if the naming scheme uniquifies with a hash we can have the same concatenated identifier', () => {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack');
 
@@ -18,11 +19,9 @@ nodeunitShim({
     new CfnResource(AB, 'C', { type: 'Resource' });
 
     // THEN: no exception
+  });
 
-    test.done();
-  },
-
-  'special case: if the resource is top-level, a hash is not added'(test: Test) {
+  test('special case: if the resource is top-level, a hash is not added', () => {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack');
 
@@ -32,14 +31,12 @@ nodeunitShim({
     const r3 = new CfnResource(stack, '*y-'.repeat(255), { type: 'Resource' }); // non-alpha are filtered out (yes, I know it might conflict)
 
     // THEN
-    test.equal(stack.resolve(r.logicalId), 'MyAwesomeness');
-    test.equal(stack.resolve(r2.logicalId), 'x'.repeat(255));
-    test.equal(stack.resolve(r3.logicalId), 'y'.repeat(255));
+    expect(stack.resolve(r.logicalId)).toEqual('MyAwesomeness');
+    expect(stack.resolve(r2.logicalId)).toEqual('x'.repeat(255));
+    expect(stack.resolve(r3.logicalId)).toEqual('y'.repeat(255));
+  });
 
-    test.done();
-  },
-
-  'if resource is top-level and logical id is longer than allowed, it is trimmed with a hash'(test: Test) {
+  test('if resource is top-level and logical id is longer than allowed, it is trimmed with a hash', () => {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack');
 
@@ -47,11 +44,10 @@ nodeunitShim({
     const r = new CfnResource(stack, 'x'.repeat(256), { type: 'Resource' });
 
     // THEN
-    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + 'C7A139A2');
-    test.done();
-  },
+    expect(stack.resolve(r.logicalId)).toEqual('x'.repeat(240) + 'C7A139A2');
+  });
 
-  'Logical IDs can be renamed at the stack level'(test: Test) {
+  test('Logical IDs can be renamed at the stack level', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -62,12 +58,10 @@ nodeunitShim({
 
     // THEN
     const template = toCloudFormation(stack);
-    test.ok('Renamed' in template.Resources);
+    expect('Renamed' in template.Resources).toEqual(true);
+  });
 
-    test.done();
-  },
-
-  'Renames for objects that don\'t exist fail'(test: Test) {
+  test('Renames for objects that don\'t exist fail', () => {
     // GIVEN
     const stack = new Stack();
     new Construct(stack, 'Parent');
@@ -76,12 +70,10 @@ nodeunitShim({
     stack.renameLogicalId('DOESNOTEXIST', 'Renamed');
 
     // THEN
-    test.throws(() => toCloudFormation(stack));
+    expect(() => toCloudFormation(stack)).toThrow();
+  });
 
-    test.done();
-  },
-
-  'ID Renames that collide with existing IDs should fail'(test: Test) {
+  test('ID Renames that collide with existing IDs should fail', () => {
     // GIVEN
     const stack = new Stack();
     stack.renameLogicalId('ParentThingResource1916E7808', 'ParentThingResource2F19948CB');
@@ -92,11 +84,10 @@ nodeunitShim({
     new CfnResource(parent, 'ThingResource2', { type: 'AWS::TAAS::Thing' });
 
     // THEN
-    test.throws(() => toCloudFormation(stack), /Two objects have been assigned the same Logical ID/);
-    test.done();
-  },
+    expect(() => toCloudFormation(stack)).toThrow(/Two objects have been assigned the same Logical ID/);
+  });
 
-  'hashed naming scheme filters constructs named "Resource" from the human portion'(test: Test) {
+  test('hashed naming scheme filters constructs named "Resource" from the human portion', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -109,18 +100,16 @@ nodeunitShim({
 
     // THEN
     const template = toCloudFormation(stack);
-    test.deepEqual(template, {
+    expect(template).toEqual({
       Resources: {
         ParentChildHeyThere35220347: {
           Type: 'AWS::TAAS::Thing',
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'can transparently wrap constructs using "Default" id'(test: Test) {
+  test('can transparently wrap constructs using "Default" id', () => {
     // GIVEN
     const stack1 = new Stack();
     const parent1 = new Construct(stack1, 'Parent');
@@ -129,7 +118,7 @@ nodeunitShim({
 
     // AND
     const theId1 = Object.keys(template1.Resources)[0];
-    test.equal('AWS::TAAS::Thing', template1.Resources[theId1].Type);
+    expect('AWS::TAAS::Thing').toEqual(template1.Resources[theId1].Type);
 
     // WHEN
     const stack2 = new Stack();
@@ -139,33 +128,29 @@ nodeunitShim({
     const template2 = toCloudFormation(stack1);
 
     const theId2 = Object.keys(template2.Resources)[0];
-    test.equal('AWS::TAAS::Thing', template2.Resources[theId2].Type);
+    expect('AWS::TAAS::Thing').toEqual(template2.Resources[theId2].Type);
 
     // THEN: same ID, same object
-    test.equal(theId1, theId2);
+    expect(theId1).toEqual(theId2);
+  });
 
-    test.done();
-  },
-
-  'non-alphanumeric characters are removed from the human part of the logical ID'(test: Test) {
+  test('non-alphanumeric characters are removed from the human part of the logical ID', () => {
     const val1 = logicalForElementInPath(['Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.']);
     const val2 = logicalForElementInPath(['Foobar', 'B00m', 'HelloWorld', 'HorrayHorray']);
 
     // same human part, different hash
-    test.deepEqual(val1, 'FoobarB00mHelloWorldHorrayHorray640E99FB');
-    test.deepEqual(val2, 'FoobarB00mHelloWorldHorrayHorray744334FD');
-    test.done();
-  },
+    expect(val1).toEqual('FoobarB00mHelloWorldHorrayHorray640E99FB');
+    expect(val2).toEqual('FoobarB00mHelloWorldHorrayHorray744334FD');
+  });
 
-  'non-alphanumeric characters are removed even if the ID has only one component'(test: Test) {
+  test('non-alphanumeric characters are removed even if the ID has only one component', () => {
     const val1 = logicalForElementInPath(['Foo-bar']);
 
     // same human part, different hash
-    test.deepEqual(val1, 'Foobar');
-    test.done();
-  },
+    expect(val1).toEqual('Foobar');
+  });
 
-  'empty identifiers are not allowed'(test: Test) {
+  test('empty identifiers are not allowed', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -173,11 +158,10 @@ nodeunitShim({
     new CfnResource(stack, '.', { type: 'R' });
 
     // THEN
-    test.throws(() => toCloudFormation(stack), /Logical ID must adhere to the regular expression/);
-    test.done();
-  },
+    expect(() => toCloudFormation(stack)).toThrow(/Logical ID must adhere to the regular expression/);
+  });
 
-  'too large identifiers are truncated yet still remain unique'(test: Test) {
+  test('too large identifiers are truncated yet still remain unique', () => {
     // GIVEN
     const stack = new Stack();
     const A = new Construct(stack, generateString(100));
@@ -192,14 +176,12 @@ nodeunitShim({
     const C2 = new CfnResource(B, firstPart + generateString(40), { type: 'Resource' });
 
     // THEN
-    test.ok(C1.logicalId.length <= 255);
-    test.ok(C2.logicalId.length <= 255);
-    test.notEqual(C1, C2);
+    expect(C1.logicalId.length).toBeLessThanOrEqual(255);
+    expect(C2.logicalId.length).toBeLessThanOrEqual(255);
+    expect(C1).not.toEqual(C2);
+  });
 
-    test.done();
-  },
-
-  'Refs and dependencies will correctly reflect renames done at the stack level'(test: Test) {
+  test('Refs and dependencies will correctly reflect renames done at the stack level', () => {
     // GIVEN
     const stack = new Stack();
     stack.renameLogicalId('OriginalName', 'NewName');
@@ -212,7 +194,7 @@ nodeunitShim({
     c2.node.addDependency(c1);
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         NewName: { Type: 'R1' },
         Construct2: {
@@ -222,11 +204,9 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'customize logical id allocation behavior by overriding `Stack.allocateLogicalId`'(test: Test) {
+  test('customize logical id allocation behavior by overriding `Stack.allocateLogicalId`', () => {
     class MyStack extends Stack {
       protected allocateLogicalId(element: CfnElement): string {
         if (element.node.id === 'A') { return 'LogicalIdOfA'; }
@@ -235,7 +215,12 @@ nodeunitShim({
       }
     }
 
-    const stack = new MyStack();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack = new MyStack(app);
     new CfnResource(stack, 'A', { type: 'Type::Of::A' });
     const group = new Construct(stack, 'Group');
     new CfnResource(group, 'B', { type: 'Type::Of::B' });
@@ -246,17 +231,16 @@ nodeunitShim({
     const c = new CfnResource(stack, 'B', { type: 'Type::Of::C' });
     c.overrideLogicalId('TheC');
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: {
         LogicalIdOfA: { Type: 'Type::Of::A' },
         BoomBoomB: { Type: 'Type::Of::B' },
         TheC: { Type: 'Type::Of::C' },
       },
     });
-    test.done();
-  },
+  });
 
-  'detects duplicate logical IDs in the same Stack caused by overrideLogicalId'(test: Test) {
+  test('detects duplicate logical IDs in the same Stack caused by overrideLogicalId', () => {
     const stack = new Stack();
     const resource1 = new CfnResource(stack, 'A', { type: 'Type::Of::A' });
     const resource2 = new CfnResource(stack, 'B', { type: 'Type::Of::B' });
@@ -264,12 +248,10 @@ nodeunitShim({
     resource1.overrideLogicalId('C');
     resource2.overrideLogicalId('C');
 
-    test.throws(() => {
+    expect(() => {
       toCloudFormation(stack);
-    }, /section 'Resources' already contains 'C'/);
-
-    test.done();
-  },
+    }).toThrow(/section 'Resources' already contains 'C'/);
+  });
 });
 
 function generateString(chars: number) {
