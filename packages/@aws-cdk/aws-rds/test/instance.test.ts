@@ -321,6 +321,20 @@ describe('instance', () => {
     });
   });
 
+  test('instance with dualstack network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.DUAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'DUAL',
+    });
+  });
+
   describe('DatabaseInstanceFromSnapshot', () => {
     test('create an instance from snapshot', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
