@@ -8,20 +8,20 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.interfaces",
+        "package": "software.amazon.awscdk.shared.interfaces",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-interfaces"
+          "artifactId": "cdk-shared-interfaces"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Interfaces",
+        "namespace": "Amazon.CDK.Shared.Interfaces",
         "packageId": "Amazon.CDK.Interfaces",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.interfaces",
-        "module": "aws_cdk.interfaces",
+        "distName": "aws-cdk.shared-interfaces",
+        "module": "aws_cdk.shared_interfaces",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -40,7 +40,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/interfaces"
+    "directory": "packages/@aws-cdk/shared-interfaces"
   },
   "scripts": {
     "build": "cdk-build",
