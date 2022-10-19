@@ -498,8 +498,6 @@ describe('rule', () => {
       },
     });
   });
-});
-  
   test('create a 0 charactor policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
