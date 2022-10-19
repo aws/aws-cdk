@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "EcsDeploymentConfigTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codedeploy-ecs-config"
+      ],
+      "assertionStack": "EcsDeploymentConfigTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsDeploymentConfigTestDefaultTestDeployAssertA6573788"
+    }
+  }
+}
