@@ -78,6 +78,15 @@ class Test extends cdk.Stack {
         },
       ],
     });
+
+    const testDeploy = new apigateway.Deployment(this, 'TestDeployment', {
+      api,
+      retainDeployments: false,
+    });
+    const testStage = new apigateway.Stage(this, 'TestStage', {
+      deployment: testDeploy,
+    });
+    testStage.addApiKey('MyTestApiKey');
   }
 }
 

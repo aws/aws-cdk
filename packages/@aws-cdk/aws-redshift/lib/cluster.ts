@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -8,6 +7,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
+import * as path from 'path';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
@@ -362,6 +362,15 @@ export interface ClusterProps {
    * @default false
    */
   readonly rebootForParameterChanges?: boolean
+
+  /**
+   * If this flag is set, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC).
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-routing.html
+   *
+   * @default - false
+   */
+  readonly enhancedVpcRouting?: boolean
 }
 
 /**
@@ -560,6 +569,7 @@ export class Cluster extends ClusterBase {
       encrypted: props.encrypted ?? true,
       classic: props.classicResizing,
       elasticIp: props.elasticIp,
+      enhancedVpcRouting: props.enhancedVpcRouting,
     });
 
     this.cluster.applyRemovalPolicy(removalPolicy, {
