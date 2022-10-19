@@ -1,0 +1,342 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.129"
+        }
+      },
+      "ProfilingGroupTestStack": {
+        "id": "ProfilingGroupTestStack",
+        "path": "ProfilingGroupTestStack",
+        "children": {
+          "ProfilingGroupWithExplicitlySetName": {
+            "id": "ProfilingGroupWithExplicitlySetName",
+            "path": "ProfilingGroupTestStack/ProfilingGroupWithExplicitlySetName",
+            "children": {
+              "ProfilingGroup": {
+                "id": "ProfilingGroup",
+                "path": "ProfilingGroupTestStack/ProfilingGroupWithExplicitlySetName/ProfilingGroup",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeGuruProfiler::ProfilingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "profilingGroupName": "ExplicitlySetName"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codeguruprofiler.CfnProfilingGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codeguruprofiler.ProfilingGroup",
+              "version": "0.0.0"
+            }
+          },
+          "ProfilingGroupWithImplicitlySetName": {
+            "id": "ProfilingGroupWithImplicitlySetName",
+            "path": "ProfilingGroupTestStack/ProfilingGroupWithImplicitlySetName",
+            "children": {
+              "ProfilingGroup": {
+                "id": "ProfilingGroup",
+                "path": "ProfilingGroupTestStack/ProfilingGroupWithImplicitlySetName/ProfilingGroup",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeGuruProfiler::ProfilingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "profilingGroupName": "ProfilingGroupTestStackProfilingGroupWithImplicitlySetName98463923"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codeguruprofiler.CfnProfilingGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codeguruprofiler.ProfilingGroup",
+              "version": "0.0.0"
+            }
+          },
+          "PublishAppRole": {
+            "id": "PublishAppRole",
+            "path": "ProfilingGroupTestStack/PublishAppRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ProfilingGroupTestStack/PublishAppRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "ProfilingGroupTestStack/PublishAppRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ProfilingGroupTestStack/PublishAppRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "codeguru-profiler:ConfigureAgent",
+                                "codeguru-profiler:PostAgentProfile"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "ProfilingGroupWithExplicitlySetNameProfilingGroup20552EAE",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "ProfilingGroupWithImplicitlySetNameProfilingGroup21CDF1FC",
+                                    "Arn"
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "PublishAppRoleDefaultPolicyCA1E15C3",
+                        "roles": [
+                          {
+                            "Ref": "PublishAppRole9FEBD682"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedProfilingGroupWithExplicitlySetName": {
+            "id": "ImportedProfilingGroupWithExplicitlySetName",
+            "path": "ProfilingGroupTestStack/ImportedProfilingGroupWithExplicitlySetName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedProfilingGroupWithImplicitlySetName": {
+            "id": "ImportedProfilingGroupWithImplicitlySetName",
+            "path": "ProfilingGroupTestStack/ImportedProfilingGroupWithImplicitlySetName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ExplicitlySetProfilingGroupName": {
+            "id": "ExplicitlySetProfilingGroupName",
+            "path": "ProfilingGroupTestStack/ExplicitlySetProfilingGroupName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ImplicitlySetProfilingGroupName": {
+            "id": "ImplicitlySetProfilingGroupName",
+            "path": "ProfilingGroupTestStack/ImplicitlySetProfilingGroupName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "test": {
+        "id": "test",
+        "path": "test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.129"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "test/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallCloudFormationdescribeStacks": {
+                    "id": "AwsApiCallCloudFormationdescribeStacks",
+                    "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.129"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.129"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

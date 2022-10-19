@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "test/DefaultTest": {
+      "stacks": [
+        "ProfilingGroupTestStack"
+      ],
+      "assertionStack": "test/DefaultTest/DeployAssert",
+      "assertionStackName": "testDefaultTestDeployAssert4D02624A"
+    }
+  }
+}
