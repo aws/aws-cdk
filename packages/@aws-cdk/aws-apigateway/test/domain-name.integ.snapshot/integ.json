@@ -1,0 +1,13 @@
+{
+  "enableLookups": true,
+  "version": "21.0.0",
+  "testCases": {
+    "domain-name-mapping-test/DefaultTest": {
+      "stacks": [
+        "integ-apigw-domain-name-mapping"
+      ],
+      "assertionStack": "domain-name-mapping-test/DefaultTest/DeployAssert",
+      "assertionStackName": "domainnamemappingtestDefaultTestDeployAssert4FFC8047"
+    }
+  }
+}
