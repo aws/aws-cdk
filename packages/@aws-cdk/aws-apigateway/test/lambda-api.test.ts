@@ -270,6 +270,66 @@ describe('lambda api', () => {
     });
   });
 
+  test('LambdaRestApi defines a REST API with CORS enabled and defaultMethodOptions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.IAM,
+      },
+      defaultCorsPreflightOptions: {
+        allowOrigins: ['https://aws.amazon.com'],
+        allowMethods: ['GET', 'PUT'],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'OPTIONS',
+      ResourceId: { Ref: 'lambdarestapiproxyE3AE07E3' },
+      AuthorizationType: 'NONE',
+      AuthorizerId: Match.absent(),
+      ApiKeyRequired: Match.absent(),
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
+              'method.response.header.Vary': "'Origin'",
+              'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
+            },
+            StatusCode: '204',
+          },
+        ],
+        RequestTemplates: {
+          'application/json': '{ statusCode: 200 }',
+        },
+        Type: 'MOCK',
+      },
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Vary': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+          },
+          StatusCode: '204',
+        },
+      ],
+    });
+  });
+
   test('LambdaRestApi allows passing GENERATE_IF_NEEDED as the physical name', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "apigw-token-auth/DefaultTest": {
+      "stacks": [
+        "TokenAuthorizerInteg"
+      ],
+      "assertionStack": "apigw-token-auth/DefaultTest/DeployAssert",
+      "assertionStackName": "apigwtokenauthDefaultTestDeployAssert2CF60E05"
+    }
+  }
+}
