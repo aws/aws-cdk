@@ -31,6 +31,8 @@ RUN \
 # Ensure all users can write to poetry cache
     chmod -R 777 /tmp/poetry-cache && \
 # pipenv 2022.4.8 is the last version with Python 3.6 support
-    pip install pipenv==2022.4.8 poetry
+    pip install pipenv==2022.4.8 poetry && \
+# Ensure no temporary files remain in the caches
+    rm -rf /tmp/pip-cache/* /tmp/poetry-cache/*
 
 CMD [ "python" ]
