@@ -323,7 +323,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly TRANSCRIBE = new InterfaceVpcEndpointAwsService('transcribe');
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
   public static readonly SECURITYHUB = new InterfaceVpcEndpointAwsService('securityhub');
-  public static readonly EMAIL_SMTP = new InterfaceVpcEndpointAwsService('email-smtp', '', 587);
+  public static readonly EMAIL_SMTP = new InterfaceVpcEndpointAwsService('email-smtp');
 
   /**
    * The name of the service. e.g. com.amazonaws.us-east-1.ecs
