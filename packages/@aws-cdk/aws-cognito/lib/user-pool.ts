@@ -980,6 +980,7 @@ export class UserPool extends UserPoolBase {
     fn.addPermission(`${capitalize}Cognito`, {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: Lazy.string({ produce: () => this.userPoolArn }),
+      scope: this,
     });
   }
 
