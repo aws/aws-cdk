@@ -91,23 +91,26 @@ export class ProductStackHistory extends Construct {
 
   public allVersions(): CloudFormationProductVersion[] {
     const productVersions: CloudFormationProductVersion[] = [];
+    const currentVersion = this.currentVersion();
+    productVersions.push(currentVersion);
     const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
-    const files = fs.readdirSync(productStackSnapshotDirectory);
-    for (const file of files) {
-      const templateFilePath = path.join(productStackSnapshotDirectory, file);
-      if (!fs.statSync(templateFilePath).isDirectory()) {
-        InputValidator.validateProductStackHistorySnapshotFile(file);
-        const versionName = file.split('.')[2];
-        const version = {
-          cloudFormationTemplate: CloudFormationTemplate.fromAsset(templateFilePath),
-          productVersionName: versionName,
-          description: this.props.description,
-        };
-        productVersions.push(version);
+    if (fs.existsSync(productStackSnapshotDirectory)) {
+      const files = fs.readdirSync(productStackSnapshotDirectory);
+      for (const file of files) {
+        const templateFilePath = path.join(productStackSnapshotDirectory, file);
+        if (!fs.statSync(templateFilePath).isDirectory()) {
+          InputValidator.validateProductStackHistorySnapshotFile(file);
+          const versionName = file.split('.')[2];
+          const version = {
+            cloudFormationTemplate: CloudFormationTemplate.fromAsset(templateFilePath),
+            productVersionName: versionName,
+            description: this.props.description,
+          };
+          if (!(versionName == currentVersion.productVersionName)) {
+            productVersions.push(version);
+          }
+        }
       }
-    }
-    if (productVersions.length == 0) {
-      throw new Error(`Templates cannot be found in directory: ${productStackSnapshotDirectory}`);
     }
     return productVersions;
   }

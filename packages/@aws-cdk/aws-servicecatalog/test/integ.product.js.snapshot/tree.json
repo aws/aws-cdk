@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.95"
+          "version": "10.1.129"
         }
       },
       "integ-servicecatalog-product": {
@@ -176,32 +176,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Template6bed81df40a7": {
-                "id": "Template6bed81df40a7",
-                "path": "integ-servicecatalog-product/TestProduct/Template6bed81df40a7",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "integ-servicecatalog-product/TestProduct/Template6bed81df40a7/Stage",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product/TestProduct/Template6bed81df40a7/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-servicecatalog-product/TestProduct/Resource",
@@ -249,11 +223,7 @@
                       {
                         "name": "v1",
                         "disableTemplateValidation": false,
-                        "info": {
-                          "LoadTemplateFromURL": {
-                            "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74f4271f8bece0682bee0b51f5634cf812cc69c6815f5cfb7b9bfb7f8e9e2262.json"
-                          }
-                        }
+                        "info": {}
                       }
                     ]
                   }

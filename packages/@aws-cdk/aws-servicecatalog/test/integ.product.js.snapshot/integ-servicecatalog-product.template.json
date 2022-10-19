@@ -57,7 +57,7 @@
       "DisableTemplateValidation": false,
       "Info": {
        "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74f4271f8bece0682bee0b51f5634cf812cc69c6815f5cfb7b9bfb7f8e9e2262.json"
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
        }
       },
       "Name": "v1"
