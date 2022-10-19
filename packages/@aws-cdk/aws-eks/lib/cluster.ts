@@ -347,7 +347,7 @@ export interface ClusterAttributes {
    * /opt/kubectl/kubectl
    * ```
    *
-   * @default - a default layer with Kubectl 1.20.
+   * @default - a default layer with Kubectl 1.20 and helm 3.8.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 
