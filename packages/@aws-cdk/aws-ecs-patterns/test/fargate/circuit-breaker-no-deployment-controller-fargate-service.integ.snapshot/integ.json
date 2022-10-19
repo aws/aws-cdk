@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "circuitBreakerNoDeploymentControllerFargateTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-circuit-breaker-no-dc"
+      ],
+      "assertionStack": "circuitBreakerNoDeploymentControllerFargateTest/DefaultTest/DeployAssert",
+      "assertionStackName": "circuitBreakerNoDeploymentControllerFargateTestDefaultTestDeployAssert62C03B9E"
+    }
+  }
+}
