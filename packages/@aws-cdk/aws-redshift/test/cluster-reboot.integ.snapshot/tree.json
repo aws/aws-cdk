@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.123"
+          "version": "10.1.129"
         }
       },
       "aws-cdk-redshift-cluster-create": {
@@ -1759,7 +1759,7 @@
                 "path": "aws-cdk-redshift-reboot-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.123"
+                  "version": "10.1.129"
                 }
               },
               "DeployAssert": {
