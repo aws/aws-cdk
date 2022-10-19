@@ -21,34 +21,42 @@ export class Template {
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
+   * @param templateParsingOptions Optional param to configure template parsing behavior, such as disregarding circular
+   * dependencies.
    */
-  public static fromStack(stack: Stack): Template {
-    return new Template(toTemplate(stack));
+  public static fromStack(stack: Stack, templateParsingOptions?: TemplateParsingOptions): Template {
+    return new Template(toTemplate(stack), templateParsingOptions);
   }
 
   /**
    * Base your assertions from an existing CloudFormation template formatted as an in-memory
    * JSON object.
    * @param template the CloudFormation template formatted as a nested set of records
+   * @param templateParsingOptions Optional param to configure template parsing behavior, such as disregarding circular
+   * dependencies.
    */
-  public static fromJSON(template: { [key: string] : any }): Template {
-    return new Template(template);
+  public static fromJSON(template: { [key: string] : any }, templateParsingOptions?: TemplateParsingOptions): Template {
+    return new Template(template, templateParsingOptions);
   }
 
   /**
    * Base your assertions from an existing CloudFormation template formatted as a
    * JSON string.
    * @param template the CloudFormation template in
+   * @param templateParsingOptions Optional param to configure template parsing behavior, such as disregarding circular
+   * dependencies.
    */
-  public static fromString(template: string): Template {
-    return new Template(JSON.parse(template));
+  public static fromString(template: string, templateParsingOptions?: TemplateParsingOptions): Template {
+    return new Template(JSON.parse(template), templateParsingOptions);
   }
 
   private readonly template: TemplateType;
 
-  private constructor(template: { [key: string]: any }) {
+  private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
     this.template = template as TemplateType;
-    checkTemplateForCyclicDependencies(this.template);
+    if (!templateParsingOptions?.skipCyclicalDependenciesCheck ?? true) {
+      checkTemplateForCyclicDependencies(this.template);
+    }
   }
 
   /**
@@ -241,6 +249,20 @@ export class Template {
       ].join('\n'));
     }
   }
+}
+
+/**
+ * Options to configure template parsing behavior, such as disregarding circular
+ * dependencies.
+ */
+export interface TemplateParsingOptions {
+  /**
+   * If set to true, will skip checking for cyclical / circular dependencies. Should be set to false other than for
+   * templates that are valid despite containing cycles, such as unprocessed transform stacks.
+   *
+   * @default false
+   */
+  readonly skipCyclicalDependenciesCheck?: boolean;
 }
 
 function toTemplate(stack: Stack): any {
