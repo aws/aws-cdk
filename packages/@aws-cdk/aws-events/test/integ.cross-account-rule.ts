@@ -1,7 +1,14 @@
 /// !cdk-integ *
 import { App, Arn, CfnResource, Stack } from '@aws-cdk/core';
-import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
 import { Rule, IRuleTarget } from '../lib';
+
+/**
+ * Basic idea for this test is to create an EventBridge that "connects"
+ *  an SQS queue in one account to another account. Nothing is sent on the
+ *  queue, it's just used to set up the condition where aws-events creates
+ *  a support stack.
+ */
 
 const app = new App();
 
@@ -11,14 +18,14 @@ const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
 
 const fromCrossAccountStack = new Stack(app, 'FromCrossAccountRuleStack', {
   env: {
-    account,
+    account: crossAccount,
     region,
   },
 });
 
 const toCrossAccountStack = new Stack(app, 'ToCrossAccountRuleStack', {
   env: {
-    account: crossAccount,
+    account,
     region,
   },
 });
@@ -29,30 +36,6 @@ const queue = new CfnResource(toCrossAccountStack, 'Queue', {
   properties: {
     QueueName: queueName,
     ReceiveMessageWaitTimeSeconds: 20,
-  },
-});
-
-const integ = new IntegTest(app, 'CrossAccountDeploy', {
-  testCases: [
-    fromCrossAccountStack,
-  ],
-});
-
-new CfnResource(toCrossAccountStack, 'QueuePolicy', {
-  type: 'AWS::SQS::QueuePolicy',
-  properties: {
-    PolicyDocument: {
-      Statement: [{
-        Effect: 'Allow',
-        Principal: {
-          Service: 'events.amazonaws.com',
-          AWS: fromCrossAccountStack.account,
-        },
-        Action: 'sqs:SendMessage',
-        Resource: queue.getAtt('Arn'),
-      }],
-    },
-    Queues: [queue.ref],
   },
 });
 
@@ -67,7 +50,7 @@ const target: IRuleTarget = {
   }),
 };
 
-const rule = new Rule(fromCrossAccountStack, 'MyRule', {
+new Rule(fromCrossAccountStack, 'MyRule', {
   eventPattern: {
     detail: {
       foo: ['bar'],
@@ -78,34 +61,23 @@ const rule = new Rule(fromCrossAccountStack, 'MyRule', {
   targets: [target],
 });
 
-const putEventsCall = new AwsApiCall(
-  fromCrossAccountStack,
-  'PutEventsCall',
-  {
-    service: 'EventBridge',
-    api: 'putEvents',
-    parameters: {
-      Entries: [
-        {
-          Detail: JSON.stringify({
-            foo: 'bar',
-          }),
-          DetailType: 'cdk-integ-custom-rule',
-          Source: 'cdk-integ',
-        },
-      ],
-    },
-  },
-);
-putEventsCall.provider.addPolicyStatementFromSdkCall('events', 'PutEvents');
-
-// Make sure PutEvents is called AFTER the rule is ready to pick it up
-putEventsCall.node.addDependency(rule);
-
 toCrossAccountStack.addDependency(fromCrossAccountStack);
 
-const receiveMessage = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: `https://sqs.${toCrossAccountStack.region}.amazonaws.com/${toCrossAccountStack.account}/${queueName}`,
-  WaitTimeSeconds: 20,
+const integ = new IntegTest(app, 'CrossAccountDeploy', {
+  testCases: [
+    toCrossAccountStack,
+  ],
 });
-receiveMessage.assertAtPath('Messages.0.Body.source', ExpectedResult.stringLikeRegexp('cdk-integ'));
+
+// We are using the default event bus.
+const eventVerification = integ.assertions.awsApiCall('EventBridge', 'describeEventBus');
+
+integ.node.addDependency(toCrossAccountStack);
+
+eventVerification.provider.addPolicyStatementFromSdkCall('events', 'DescribeEventBus');
+
+eventVerification.assertAtPath('Policy.Statement.0', ExpectedResult.objectLike({
+  Sid: 'Allow-account-',
+}));
+
+app.synth();
