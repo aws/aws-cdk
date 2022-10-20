@@ -15,9 +15,23 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
        },
-       "/8951083c42b14c02bc23ef787fdc9dd81379182eba5b19431fb87aae9824399c.json"
+       "/e8a524074c21b1828365d86b0554b5a5282843ef099edb36de4091e50a8b4ac2.json"
       ]
      ]
+    },
+    "Parameters": {
+     "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
+      "Fn::GetAtt": [
+       "ExportsReader8B249524",
+       "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+      ]
+     },
+     "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": {
+      "Fn::GetAtt": [
+       "ExportsReader8B249524",
+       "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+      ]
+     }
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -27,7 +41,12 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B}}",
+    "Value": {
+     "Fn::GetAtt": [
+      "ExportsReader8B249524",
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+     ]
+    },
     "Name": "integ-parameter0"
    }
   },
@@ -35,7 +54,12 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Value": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E}}",
+    "Value": {
+     "Fn::GetAtt": [
+      "ExportsReader8B249524",
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+     ]
+    },
     "Name": "integ-parameter1"
    }
   },
@@ -51,17 +75,12 @@
     "ReaderProps": {
      "region": "us-east-2",
      "prefix": "cross-region-consumer",
-     "imports": [
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E",
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B",
-      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
-     ]
+     "imports": {
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B}}",
+      "/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": "{{resolve:ssm:/cdk/exports/cross-region-consumer/crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E}}"
+     }
     }
    },
-   "DependsOn": [
-    "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -106,10 +125,8 @@
           ]
          },
          "Action": [
-          "ssm:DeleteParameters",
           "ssm:AddTagsToResource",
           "ssm:RemoveTagsFromResource",
-          "ssm:GetParametersByPath",
           "ssm:GetParameters"
          ]
         }
@@ -126,7 +143,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "92be7db38242a4b44c0a0f5a7150a6e1df03622d969fa0a5ef0c6cad6852b878.zip"
+     "S3Key": "4607a5d8b4a4167cb2ff3c986ec884e3eb44c22626b7bce07ac9807730147741.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

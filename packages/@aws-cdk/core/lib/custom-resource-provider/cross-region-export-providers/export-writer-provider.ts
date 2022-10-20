@@ -72,6 +72,7 @@ export class ExportWriter extends Construct {
           resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
         }),
         Action: [
+          'ssm:DeleteParameters',
           'ssm:ListTagsForResource',
           'ssm:GetParameters',
           'ssm:PutParameter',
@@ -101,32 +102,25 @@ export class ExportWriter extends Construct {
    *
    * @param exportName the unique name associated with the export
    * @param reference the value that will be exported
-   * @returns a dynamic reference to an ssm parameter
+   * @returns a reference to the reader custom resource
    */
   public exportValue(exportName: string, reference: Reference, importStack: Stack): Intrinsic {
     const stack = Stack.of(this);
     const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
 
-    this.addToExportReader(parameterName, importStack);
+    const ref = new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
 
     this._references[parameterName] = stack.resolve(reference.toString());
-    return new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
+    return this.addToExportReader(parameterName, ref, importStack);
   }
 
   /**
    * Add the export to the export reader which is created in the importing stack
    */
-  private addToExportReader(exportName: string, importStack: Stack): void {
+  private addToExportReader(exportName: string, exportValueRef: Intrinsic, importStack: Stack): Intrinsic {
     const readerConstructName = makeUniqueId(['ExportsReader']);
     const exportReader = ExportReader.getOrCreate(importStack.nestedStackParent ?? importStack, readerConstructName);
-    // if the reference is being imported into a nested stack we create the export reader
-    // in the parent stack and then add a dependency on the nested stack
-    // this ensures that the nested stack deploys and consumes the reference before
-    // the ExportReader is executed
-    if (importStack.nestedStackResource) {
-      exportReader.addDependency(importStack.nestedStackResource);
-    }
 
-    exportReader.importValue(exportName);
+    return exportReader.importValue(exportName, exportValueRef);
   }
 }

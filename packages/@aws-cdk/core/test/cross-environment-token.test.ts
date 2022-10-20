@@ -240,7 +240,12 @@ describe('cross environment', () => {
     });
     expect(template2?.Outputs).toEqual({
       'Output': {
-        'Value': '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887}}',
+        'Value': {
+          'Fn::GetAtt': [
+            'ExportsReader8B249524',
+            '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887',
+          ],
+        },
       },
     });
   });

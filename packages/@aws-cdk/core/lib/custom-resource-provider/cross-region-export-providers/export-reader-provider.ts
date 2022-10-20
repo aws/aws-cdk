@@ -3,9 +3,10 @@ import { Construct } from 'constructs';
 import { CfnResource } from '../../cfn-resource';
 import { CustomResource } from '../../custom-resource';
 import { Lazy } from '../../lazy';
+import { Intrinsic } from '../../private/intrinsic';
 import { Stack } from '../../stack';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
-import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps } from './types';
+import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps, CrossRegionExports } from './types';
 
 
 /**
@@ -28,7 +29,7 @@ export class ExportReader extends Construct {
       : new ExportReader(stack, uniqueId);
   }
 
-  private readonly importParametersNames: string[] = [];
+  private readonly importParameters: CrossRegionExports = {};
   private readonly customResource: CustomResource;
   constructor(scope: Construct, id: string, _props: ExportReaderProps = {}) {
     super(scope, id);
@@ -46,10 +47,8 @@ export class ExportReader extends Construct {
           resourceName: `${SSM_EXPORT_PATH_PREFIX}${stack.stackName}/*`,
         }),
         Action: [
-          'ssm:DeleteParameters',
           'ssm:AddTagsToResource',
           'ssm:RemoveTagsFromResource',
-          'ssm:GetParametersByPath',
           'ssm:GetParameters',
         ],
       }],
@@ -58,7 +57,7 @@ export class ExportReader extends Construct {
     const properties: ExportReaderCRProps = {
       region: stack.region,
       prefix: stack.stackName,
-      imports: Lazy.list({ produce: () => this.importParametersNames }),
+      imports: Lazy.any({ produce: () => this.importParameters }),
     };
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: resourceType,
@@ -86,9 +85,10 @@ export class ExportReader extends Construct {
    * the export by creating an SSM parameter in the region that the consuming
    * stack is created.
    *
-   * @param exportName the unique name associated with the export
+   * @param exports map of unique name associated with the export to SSM Dynamic reference
    */
-  public importValue(exportName: string): void {
-    this.importParametersNames.push(exportName);
+  public importValue(name: string, value: Intrinsic): Intrinsic {
+    this.importParameters[name] = value.toString();
+    return this.customResource.getAtt(name);
   }
 }

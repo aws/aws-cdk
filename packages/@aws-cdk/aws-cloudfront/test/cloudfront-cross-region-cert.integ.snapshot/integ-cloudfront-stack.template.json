@@ -26,7 +26,12 @@
       }
      ],
      "ViewerCertificate": {
-      "AcmCertificateArn": "{{resolve:ssm:/cdk/exports/integ-cloudfront-stack/integacmstackuseast1RefCert5C9FAEC18647F8A2}}",
+      "AcmCertificateArn": {
+       "Fn::GetAtt": [
+        "ExportsReader8B249524",
+        "/cdk/exports/integ-cloudfront-stack/integacmstackuseast1RefCert5C9FAEC18647F8A2"
+       ]
+      },
       "MinimumProtocolVersion": "TLSv1.2_2021",
       "SslSupportMethod": "sni-only"
      }
@@ -45,9 +50,9 @@
     "ReaderProps": {
      "region": "us-east-2",
      "prefix": "integ-cloudfront-stack",
-     "imports": [
-      "/cdk/exports/integ-cloudfront-stack/integacmstackuseast1RefCert5C9FAEC18647F8A2"
-     ]
+     "imports": {
+      "/cdk/exports/integ-cloudfront-stack/integacmstackuseast1RefCert5C9FAEC18647F8A2": "{{resolve:ssm:/cdk/exports/integ-cloudfront-stack/integacmstackuseast1RefCert5C9FAEC18647F8A2}}"
+     }
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -83,10 +88,8 @@
          "Effect": "Allow",
          "Resource": "arn:aws:ssm:us-east-2:12345678:parameter/cdk/exports/integ-cloudfront-stack/*",
          "Action": [
-          "ssm:DeleteParameters",
           "ssm:AddTagsToResource",
           "ssm:RemoveTagsFromResource",
-          "ssm:GetParametersByPath",
           "ssm:GetParameters"
          ]
         }
@@ -101,7 +104,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-2",
-     "S3Key": "92be7db38242a4b44c0a0f5a7150a6e1df03622d969fa0a5ef0c6cad6852b878.zip"
+     "S3Key": "4607a5d8b4a4167cb2ff3c986ec884e3eb44c22626b7bce07ac9807730147741.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

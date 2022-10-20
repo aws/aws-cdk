@@ -9,11 +9,6 @@ jest.mock('aws-sdk', () => {
   return {
     SSM: jest.fn(() => {
       return {
-        deleteParameters: jest.fn((params) => {
-          return {
-            promise: () => mockDeleteParameters(params),
-          };
-        }),
         addTagsToResource: jest.fn((params) => {
           return {
             promise: () => mockAddTagsToResource(params),
@@ -56,7 +51,9 @@ describe('cross-region-ssm-reader entrypoint', () => {
         ReaderProps: {
           region: 'us-east-1',
           prefix: 'MyStack',
-          imports: ['/cdk/exports/MyStack/MyExport'],
+          imports: {
+            '/cdk/exports/MyStack/MyExport': 'abc',
+          },
         },
         ServiceToken: '<ServiceToken>',
       },
@@ -85,9 +82,9 @@ describe('cross-region-ssm-reader entrypoint', () => {
         ReaderProps: {
           region: 'us-east-1',
           prefix: 'MyStack',
-          imports: [
-            '/cdk/exports/MyStack/ExistingExport',
-          ],
+          imports: {
+            '/cdk/exports/MyStack/ExistingExport': 'abc',
+          },
         },
         ServiceToken: '<ServiceToken>',
       },
@@ -95,10 +92,10 @@ describe('cross-region-ssm-reader entrypoint', () => {
         ReaderProps: {
           r: 'us-east-1',
           prefix: 'MyStack',
-          imports: [
-            '/cdk/exports/MyStack/ExistingExport',
-            '/cdk/exports/MyStack/MyExport',
-          ],
+          imports: {
+            '/cdk/exports/MyStack/ExistingExport': 'abc',
+            '/cdk/exports/MyStack/MyExport': 'xyz',
+          },
         },
         ServiceToken: '<ServiceToken>',
       },
@@ -129,9 +126,9 @@ describe('cross-region-ssm-reader entrypoint', () => {
         ReaderProps: {
           region: 'us-east-1',
           prefix: 'MyStack',
-          imports: [
-            '/cdk/exports/MyStack/RemovedExport',
-          ],
+          imports: {
+            '/cdk/exports/MyStack/RemovedExport': 'abc',
+          },
         },
         ServiceToken: '<ServiceToken>',
       },
@@ -140,9 +137,9 @@ describe('cross-region-ssm-reader entrypoint', () => {
         ReaderProps: {
           region: 'us-east-1',
           prefix: 'MyStack',
-          imports: [
-            '/cdk/exports/MyStack/MyExport',
-          ],
+          imports: {
+            '/cdk/exports/MyStack/MyExport': 'abc',
+          },
         },
       },
     });
@@ -176,9 +173,9 @@ describe('cross-region-ssm-reader entrypoint', () => {
         ReaderProps: {
           region: 'us-east-1',
           prefix: 'MyStack',
-          imports: [
-            '/cdk/exports/MyStack/RemovedExport',
-          ],
+          imports: {
+            '/cdk/exports/MyStack/RemovedExport': 'abc',
+          },
         },
       },
     });
@@ -194,9 +191,11 @@ describe('cross-region-ssm-reader entrypoint', () => {
     await handler(event);
 
     // THEN
-    expect(mockDeleteParameters).toHaveBeenCalledTimes(1);
-    expect(mockDeleteParameters).toHaveBeenCalledWith({
-      Names: ['/cdk/exports/MyStack/OtherExport'],
+    expect(mockRemoveTagsFromResource).toHaveBeenCalledTimes(1);
+    expect(mockRemoveTagsFromResource).toHaveBeenCalledWith({
+      ResourceType: 'Parameter',
+      ResourceId: '/cdk/exports/MyStack/RemovedExport',
+      TagKeys: ['aws-cdk:strong-ref:MyStack'],
     });
   });
 });

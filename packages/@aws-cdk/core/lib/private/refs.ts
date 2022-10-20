@@ -223,7 +223,11 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
     region: importStack.region,
   });
 
-  return exportReader.exportValue(exportName, reference, importStack);
+  const exported = exportReader.exportValue(exportName, reference, importStack);
+  if (importStack.nestedStackParent) {
+    return createNestedStackParameter(importStack, (exported as CfnReference), exported);
+  }
+  return exported;
 }
 
 /**

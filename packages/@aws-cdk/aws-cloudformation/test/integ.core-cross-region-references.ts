@@ -1,7 +1,7 @@
 import { Queue, IQueue } from '@aws-cdk/aws-sqs';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import { App, Stack, StackProps, NestedStack } from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 
 // GIVEN
@@ -51,13 +51,46 @@ class ConsumerStack extends Stack {
     });
   }
 }
-const producer = new ProducerStack(app, 'cross-region-producer');
-const testCase = new ConsumerStack(app, 'cross-region-consumer', {
-  queues: [producer.queue, producer.nestedQueue],
-});
+
+class TestCase extends Construct {
+  public readonly testCase: Stack;
+  public readonly producer: ProducerStack;
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    this.producer = new ProducerStack(app, 'cross-region-producer');
+    this.testCase = new ConsumerStack(app, 'cross-region-consumer', {
+      queues: [this.producer.queue, this.producer.nestedQueue],
+    });
+  }
+}
+const testCase1 = new TestCase(app, 'TestCase1');
 
 // THEN
-new IntegTest(app, 'cross-region-references', {
-  testCases: [testCase],
+const integ = new IntegTest(app, 'cross-region-references', {
+  testCases: [testCase1.testCase],
   stackUpdateWorkflow: false,
 });
+
+
+/**
+ * Test that if the references are still in use, deleting the producer
+ * stack will fail
+ *
+ * When the test cleans up it will delete the consumer then the producer, which should
+ * test that the parameters are cleaned up correctly.
+ */
+
+integ.assertions.awsApiCall('CloudFormation', 'deleteStack', {
+  StackName: testCase1.producer.stackName,
+}).next(
+  integ.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+    StackName: testCase1.producer.stackName,
+  }).expect(ExpectedResult.objectLike({
+    Stacks: Match.arrayWith([
+      Match.objectLike({
+        StackName: testCase1.producer.stackName,
+        StackStatus: 'DELETE_FAILED',
+      }),
+    ]),
+  })).waitForAssertions(),
+);

@@ -520,7 +520,12 @@ describe('stack', () => {
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
-            Name: '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
+            },
           },
         },
       },
@@ -589,10 +594,8 @@ describe('stack', () => {
                   Statement: [
                     {
                       Action: [
-                        'ssm:DeleteParameters',
                         'ssm:AddTagsToResource',
                         'ssm:RemoveTagsFromResource',
-                        'ssm:GetParametersByPath',
                         'ssm:GetParameters',
                       ],
                       Effect: 'Allow',
@@ -626,11 +629,11 @@ describe('stack', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             ReaderProps: {
-              imports: [
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
-                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B',
-              ],
+              imports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': '{{resolve:ssm:/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B}}',
+              },
               region: 'us-east-2',
               prefix: 'Stack2',
             },
@@ -647,9 +650,24 @@ describe('stack', () => {
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
-            Name: '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
-            Other: '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
-            Other2: '{{resolve:ssm:/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B}}',
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
+            },
+            Other: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
+              ],
+            },
+            Other2: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B',
+              ],
+            },
           },
         },
       },
@@ -763,9 +781,24 @@ describe('stack', () => {
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
-            Name: '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
-            Other: '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
-            Other2: '{{resolve:ssm:/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7}}',
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
+            },
+            Other: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
+              ],
+            },
+            Other2: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7',
+              ],
+            },
           },
         },
       },

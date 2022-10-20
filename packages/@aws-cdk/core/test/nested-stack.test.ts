@@ -72,7 +72,12 @@ describe('nested-stack', () => {
       Resources: {
         Resource2: {
           Properties: {
-            Prop1: '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E}}',
+            Prop1: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
+              ],
+            },
           },
           Type: 'My::Resource',
         },
@@ -84,9 +89,9 @@ describe('nested-stack', () => {
         DeletionPolicy: 'Delete',
         Properties: {
           ReaderProps: {
-            imports: [
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
-            ],
+            imports: {
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E}}',
+            },
             region: 'bermuda-triangle-42',
             prefix: 'Stack2',
           },

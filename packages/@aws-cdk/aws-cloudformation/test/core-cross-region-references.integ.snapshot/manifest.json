@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/641a63e906e5a90f7362126c1648579dec5c836db6e43276dadbf3da7627b08c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/70e0b1af0ea278adf024d80a32c2797554d527123f1dc1eb9f2a894a6d46bc7a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -106,7 +106,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/e1c8d2a77a2765a4e4cfdf07208097c34980e050bb50fe5d07702ff157e29adc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/33212ba7662e584fce97d4b64b2b7d157f5f1bac2b2ffe4e25e18545b514ec8b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -133,6 +133,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegNestedParameter1DE6274D4"
+          }
+        ],
+        "/cross-region-consumer/IntegNested/reference-to-crossregionconsumerExportsReader5D0359E7--cdk--exports--cross-region-consumer--crossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+          }
+        ],
+        "/cross-region-consumer/IntegNested/reference-to-crossregionconsumerExportsReader5D0359E7--cdk--exports--cross-region-consumer--crossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
           }
         ],
         "/cross-region-consumer/IntegNested.NestedStack/IntegNested.NestedStackResource": [
@@ -202,7 +214,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e62b4ad819f8f21c0c8707091f053b8b322398afc1a04fd089b1be1436fb011a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -218,6 +230,84 @@
         "crossregionreferencesDefaultTestDeployAssertAB7415FD.assets"
       ],
       "metadata": {
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdeleteStack/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFormationdeleteStack"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFormationdescribeStacks"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFormationdescribeStacksWaitForIsCompleteProviderInvokeD8EB59C7"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFormationdescribeStacksWaitForTimeoutProviderInvokeA2598EF3"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFormationdescribeStacksWaitForRoleEC9EDBA0"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFormationdescribeStacksWaitFor1D722558"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudFormationdescribeStacks"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
         "/cross-region-references/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

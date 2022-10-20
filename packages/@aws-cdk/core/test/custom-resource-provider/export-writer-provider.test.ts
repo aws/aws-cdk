@@ -25,7 +25,12 @@ describe('export writer provider', () => {
     const staging = stack.node.tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
 
-    expect(stack.resolve(exportValue)).toEqual('{{resolve:ssm:/cdk/exports/MyResourceName}}');
+    expect(stack.resolve(exportValue)).toEqual({
+      'Fn::GetAtt': [
+        'ExportsReader8B249524',
+        '/cdk/exports/MyResourceName',
+      ],
+    });
     expect(cfn).toEqual({
       Resources: {
         MyResource: {
@@ -52,6 +57,7 @@ describe('export writer provider', () => {
                   Statement: [
                     {
                       Action: [
+                        'ssm:DeleteParameters',
                         'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
@@ -188,10 +194,8 @@ describe('export writer provider', () => {
                   Statement: [
                     {
                       Action: [
-                        'ssm:DeleteParameters',
                         'ssm:AddTagsToResource',
                         'ssm:RemoveTagsFromResource',
-                        'ssm:GetParametersByPath',
                         'ssm:GetParameters',
                       ],
                       Effect: 'Allow',
@@ -229,9 +233,9 @@ describe('export writer provider', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             ReaderProps: {
-              imports: [
-                '/cdk/exports/MyResourceName',
-              ],
+              imports: {
+                '/cdk/exports/MyResourceName': '{{resolve:ssm:/cdk/exports/MyResourceName}}',
+              },
               region: {
                 Ref: 'AWS::Region',
               },
@@ -273,7 +277,9 @@ describe('export writer provider', () => {
     const staging = stack.node.tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
 
-    expect(stack.resolve(exportValue)).toEqual('{{resolve:ssm:/cdk/exports/MyResourceName}}');
+    expect(stack.resolve(exportValue)).toEqual({
+      'Fn::GetAtt': ['ExportsReader8B249524', '/cdk/exports/MyResourceName'],
+    });
     expect(cfn).toEqual({
       Resources: {
         MyResource: {
@@ -300,6 +306,7 @@ describe('export writer provider', () => {
                   Statement: [
                     {
                       Action: [
+                        'ssm:DeleteParameters',
                         'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
@@ -437,10 +444,8 @@ describe('export writer provider', () => {
                   Statement: [
                     {
                       Action: [
-                        'ssm:DeleteParameters',
                         'ssm:AddTagsToResource',
                         'ssm:RemoveTagsFromResource',
-                        'ssm:GetParametersByPath',
                         'ssm:GetParameters',
                       ],
                       Effect: 'Allow',
@@ -478,9 +483,9 @@ describe('export writer provider', () => {
           DeletionPolicy: 'Delete',
           Properties: {
             ReaderProps: {
-              imports: [
-                '/cdk/exports/MyResourceName',
-              ],
+              imports: {
+                '/cdk/exports/MyResourceName': '{{resolve:ssm:/cdk/exports/MyResourceName}}',
+              },
               region: {
                 Ref: 'AWS::Region',
               },

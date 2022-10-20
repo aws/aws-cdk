@@ -30,7 +30,7 @@ export interface ExportReaderCRProps {
    * A list of imports used by this stack.
    * Will be a list of parameter names
    */
-  readonly imports: string[];
+  readonly imports: CrossRegionExports | IResolvable;
 }
 
 /**
