@@ -1,5 +1,5 @@
-import { renderInExpression } from '../../lib/private/json-path';
 import { JsonPath } from '../../lib';
+import { renderInExpression } from '../../lib/private/json-path';
 
 describe('RenderInExpression', () => {
   test('simple number', () => {
@@ -22,5 +22,5 @@ describe('RenderInExpression', () => {
   });
   test('raw array', () => {
     expect(() => renderInExpression([1, 2])).toThrow();
-  })
+  });
 });
