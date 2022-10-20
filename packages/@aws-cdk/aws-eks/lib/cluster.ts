@@ -336,7 +336,7 @@ export interface ClusterAttributes {
    *
    * This layer is used by the kubectl handler to apply manifests and install
    * helm charts. You must pick an appropriate releases of one of the
-   * `@aws-cdk/asset-kubectl-vXX` packages, that works with the version of
+   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
    * Kubernetes you have chosen. If you don't supply this value `kubectl`
    * 1.20 will be used, but that version is most likely too old.
    *
@@ -530,7 +530,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * This layer is used by the kubectl handler to apply manifests and install
    * helm charts. You must pick an appropriate releases of one of the
-   * `@aws-cdk/asset-kubectl-vXX` packages, that works with the version of
+   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
    * Kubernetes you have chosen. If you don't supply this value `kubectl`
    * 1.20 will be used, but that version is most likely too old.
    *
