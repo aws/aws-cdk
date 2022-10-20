@@ -1,4 +1,5 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '@aws-cdk/core';
@@ -12,7 +13,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
-import { formatDistributionArn } from './private/utils';
+import { formatDistributionArn, grantCreateInvalidation } from './private/utils';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 
 /**
@@ -47,6 +48,13 @@ export interface IDistribution extends IResource {
    * @attribute
    */
   readonly distributionArn: string;
+
+  /**
+   * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  grantCreateInvalidation(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -267,6 +275,10 @@ export class Distribution extends Resource implements IDistribution {
         this.distributionId = attrs.distributionId;
         this.distributionArn = formatDistributionArn(this, this.distributionId);
       }
+
+      grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+        return grantCreateInvalidation(this, identity);
+      }
     }();
   }
 
@@ -355,6 +367,15 @@ export class Distribution extends Resource implements IDistribution {
     }
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
+  }
+
+  /**
+   * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+    return grantCreateInvalidation(this, identity);
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {

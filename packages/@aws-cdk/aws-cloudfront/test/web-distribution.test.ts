@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -1759,4 +1760,36 @@ test('returns valid distribution ARN', () => {
 
   expect(stack.resolve(distribution.distributionArn))
     .toEqual(stack.resolve(`arn:${stack.partition}:cloudfront::${stack.account}:distribution/${distribution.distributionId}`));
+});
+
+test('grants createInvalidation', () => {
+  const stack = new cdk.Stack();
+  const distribution = new CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [{
+      customOriginSource: { domainName: 'myorigin.com' },
+      behaviors: [{ isDefaultBehavior: true }],
+    }],
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+  distribution.grantCreateInvalidation(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'cloudfront:CreateInvalidation',
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::', { Ref: 'AWS::AccountId' }, ':distribution/',
+                { Ref: 'DistributionCFDistribution882A7313' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
 });

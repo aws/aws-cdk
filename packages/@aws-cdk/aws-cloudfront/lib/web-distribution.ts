@@ -10,7 +10,7 @@ import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
-import { formatDistributionArn } from './private/utils';
+import { formatDistributionArn, grantCreateInvalidation } from './private/utils';
 
 /**
  * HTTP status code to failover to second origin
@@ -761,6 +761,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         this.distributionId = attrs.distributionId;
         this.distributionArn = formatDistributionArn(this, this.distributionId);
       }
+
+      grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+        return grantCreateInvalidation(this, identity);
+      }
     }();
   }
 
@@ -990,6 +994,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
     this.distributionArn = formatDistributionArn(this, this.distributionId);
+  }
+
+  /**
+   * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+    return grantCreateInvalidation(this, identity);
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
