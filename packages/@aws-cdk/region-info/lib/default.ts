@@ -96,7 +96,8 @@ export class Default {
 
         // Services with a partitional principal
         case 'ec2':
-          return partitional;
+          // Ec2 is partitional except in isolated regions, where it's universal
+          return region.startsWith('us-iso') ? universal : partitional;
 
         case 'elasticmapreduce':
           return region.startsWith('cn-')
