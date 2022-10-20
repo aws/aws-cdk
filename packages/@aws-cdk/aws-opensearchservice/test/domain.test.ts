@@ -8,6 +8,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;
@@ -563,6 +564,66 @@ describe('log groups', () => {
         },
         AUDIT_LOGS: Match.absent(),
       },
+    });
+  });
+
+  test('log group policy is uniquely named for each domain (under feature flag)', () => {
+    app = new App({ postCliContext: { [cxapi.OPENSEARCH_DISABLE_LOG_CUSTOM_RESOURCE]: true } });
+    stack = new Stack(app, 'Stack', {
+      env: { account: '1234', region: 'testregion' },
+    });
+
+    new Domain(stack, 'Domain1', {
+      version: defaultVersion,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: defaultVersion,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+
+    // Domain1
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:PutLogEvents","logs:CreateLogStream"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'Domain1AppLogs6E8D1D67',
+                'Arn',
+              ],
+            },
+            '"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+      PolicyName: 'OSLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391',
+    });
+
+    // Domain2
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:PutLogEvents","logs:CreateLogStream"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'Domain2AppLogs810876E2',
+                'Arn',
+              ],
+            },
+            '"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+      PolicyName: 'OSLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2',
     });
   });
 

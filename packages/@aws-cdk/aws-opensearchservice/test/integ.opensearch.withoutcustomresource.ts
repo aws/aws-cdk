@@ -1,7 +1,7 @@
 import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as opensearch from '../lib';
 
@@ -46,6 +46,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App({ postCliContext: { [cxapi.OPENSEARCH_DISABLE_LOG_CUSTOM_RESOURCE]: false } });
-new TestStack(app, 'cdk-integ-opensearch');
-app.synth();
+const app = new App();
+const stack = new TestStack(app, 'cdk-integ-opensearch-withoutcustomresource');
+
+new IntegTest(app, 'Integ', { testCases: [stack] });

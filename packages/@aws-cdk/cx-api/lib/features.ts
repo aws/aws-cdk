@@ -352,6 +352,14 @@ export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disab
  */
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 
+
+/*
+* Enable this feature flag to use native cloudformation constructs to
+* generate the required permissions for AWS logs.
+* Previously the generation of these permissions were managed by a custom resource
+*/
+export const OPENSEARCH_DISABLE_LOG_CUSTOM_RESOURCE = '@aws-cdk/aws-opensearchservice:disableLogCustomResource';
+
 /**
  * Flag values that should apply for new projects
  *
@@ -387,6 +395,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
   [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
   [ENABLE_PARTITION_LITERALS]: true,
+  [OPENSEARCH_DISABLE_LOG_CUSTOM_RESOURCE]: true,
 };
 
 /**
