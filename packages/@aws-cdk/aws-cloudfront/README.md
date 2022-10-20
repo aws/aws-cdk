@@ -590,6 +590,16 @@ const distribution = cloudfront.Distribution.fromDistributionAttributes(this, 'I
 });
 ```
 
+### Permissions
+
+Use the `grantCreateInvalidation()` method to allow to create invalidations on the distribution.
+
+```ts
+declare const distribution: cloudfront.Distribution;
+declare const lambdaFn: lambda.Function;
+distribution.grantCreateInvalidation(lambdaFn);
+```
+
 ## Migrating from the original CloudFrontWebDistribution to the newer Distribution construct
 
 It's possible to migrate a distribution from the original to the modern API.
