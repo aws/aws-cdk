@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
 import { TrafficRouting } from '../traffic-routing-config';
+import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of a Lambda Deployment Group.
@@ -90,6 +91,10 @@ export class LambdaDeploymentConfig extends BaseDeploymentConfig implements ILam
    */
   public static import(_scope: Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
     return this.fromLambdaDeploymentConfigName(_scope, _id, props.deploymentConfigName);
+  }
+
+  private static deploymentConfig(name: string): ILambdaDeploymentConfig {
+    return deploymentConfig(name);
   }
 
   public constructor(scope: Construct, id: string, props?: LambdaDeploymentConfigProps) {
