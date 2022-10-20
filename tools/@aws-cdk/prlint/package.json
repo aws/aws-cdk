@@ -23,7 +23,7 @@
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
-    "make-runnable": "^1.3.10",
+    "make-runnable": "^1.4.0",
     "typescript": "~3.9.10"
   },
   "jest": {
