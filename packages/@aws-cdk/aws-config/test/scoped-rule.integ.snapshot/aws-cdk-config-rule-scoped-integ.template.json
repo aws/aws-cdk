@@ -62,7 +62,7 @@
     "CustomFunctionServiceRoleD3F73B79"
    ]
   },
-  "CustomFunctionPermission41887A5E": {
+  "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -103,7 +103,7 @@
     }
    },
    "DependsOn": [
-    "CustomFunctionPermission41887A5E",
+    "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8",
     "CustomFunctionBADD59E7",
     "CustomFunctionServiceRoleD3F73B79"
    ]
