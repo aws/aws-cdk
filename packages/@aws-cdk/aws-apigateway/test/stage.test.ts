@@ -427,7 +427,7 @@ describe('stage', () => {
       })).not.toThrow();
     });
 
-    test('fails when access log format contains `contextRequestIdWillBeByPassed()`', () => {
+    test('fails when access log format contains `contextRequestIdXxx`', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -437,7 +437,7 @@ describe('stage', () => {
       // WHEN
       const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
       const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
-        requestIdBypassed: '$context.requestIdBypassed',
+        requestIdXxx: '$context.requestIdXxx',
       }));
 
       // THEN
