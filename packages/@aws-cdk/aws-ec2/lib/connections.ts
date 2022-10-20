@@ -163,7 +163,6 @@ export class Connections implements IConnectable {
     try {
       other.connections.allowTo(this, portRange, description);
     } finally {
-      this.skip = false;
       other.connections.remoteRule = false;
     }
   }
