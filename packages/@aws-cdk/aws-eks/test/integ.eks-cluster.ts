@@ -192,7 +192,7 @@ class EksClusterStack extends Stack {
   private assertNodeGroupX86() {
     // add a extra nodegroup
     this.cluster.addNodegroupCapacity('extra-ng', {
-      instanceType: new ec2.InstanceType('t3.small'),
+      instanceTypes: [new ec2.InstanceType('t3.small')],
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
@@ -241,7 +241,7 @@ class EksClusterStack extends Stack {
   private assertNodeGroupArm() {
     // add a extra nodegroup
     this.cluster.addNodegroupCapacity('extra-ng-arm', {
-      instanceType: new ec2.InstanceType('m6g.medium'),
+      instanceTypes: [new ec2.InstanceType('m6g.medium')],
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
@@ -250,7 +250,7 @@ class EksClusterStack extends Stack {
   private assertNodeGroupGraviton3() {
     // add a Graviton3 nodegroup
     this.cluster.addNodegroupCapacity('extra-ng-arm3', {
-      instanceType: new ec2.InstanceType('c7g.large'),
+      instanceTypes: [new ec2.InstanceType('c7g.large')],
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
