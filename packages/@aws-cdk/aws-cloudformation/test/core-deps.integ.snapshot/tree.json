@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.129"
         }
       },
       "replace-depends-on-test": {
@@ -215,51 +215,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.33"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "replace-depends-on-test/AssetParameters",
-            "children": {
-              "c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a": {
-                "id": "c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
-                "path": "replace-depends-on-test/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "replace-depends-on-test/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "replace-depends-on-test/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "replace-depends-on-test/AssetParameters/c70c1d1695771af4771fd98971e16bb3e6443c62c2994b002b2c3d76e707b13a/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.33"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "version": "10.1.129"
             }
           },
           "CustomPolicy": {
@@ -420,35 +376,9 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2S3Bucket8F2BF37F"
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/",
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2S3VersionKeyC050131B"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParametersd80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2S3VersionKeyC050131B"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2.json"
                         ]
                       ]
                     }
@@ -462,7 +392,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "version": "10.1.129"
             }
           },
           "Stack2": {
@@ -582,35 +512,9 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431S3BucketA3C1BED8"
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/",
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431S3VersionKey1A3D6FCB"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameterscaff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431S3VersionKey1A3D6FCB"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431.json"
                         ]
                       ]
                     }
@@ -624,85 +528,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.33"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "nested-stack-depends-test/AssetParameters",
-            "children": {
-              "d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2": {
-                "id": "d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2",
-                "path": "nested-stack-depends-test/AssetParameters/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "nested-stack-depends-test/AssetParameters/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "nested-stack-depends-test/AssetParameters/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "nested-stack-depends-test/AssetParameters/d80f241007964c163f30b1e491fb22d85422a376901bdf57f34ef94d71dcf4a2/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.33"
-                }
-              },
-              "caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431": {
-                "id": "caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431",
-                "path": "nested-stack-depends-test/AssetParameters/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "nested-stack-depends-test/AssetParameters/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "nested-stack-depends-test/AssetParameters/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "nested-stack-depends-test/AssetParameters/caff9f6719171b7d0611de54f70e0ef42e8e4f56432babf0d4beae6cb8bba431/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.33"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.33"
+              "version": "10.1.129"
             }
           }
         },
@@ -724,7 +550,7 @@
                 "path": "DependsOnTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.33"
+                  "version": "10.1.129"
                 }
               },
               "DeployAssert": {
