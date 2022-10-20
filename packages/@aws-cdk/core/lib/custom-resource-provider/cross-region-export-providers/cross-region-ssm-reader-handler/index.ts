@@ -37,7 +37,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.error('Error importing cross region stack exports: ', e);
     throw e;
   }
-  console.info('returning imports: ', JSON.stringify(imports));
   return {
     Data: imports,
   };

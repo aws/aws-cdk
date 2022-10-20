@@ -500,9 +500,6 @@ describe('export writer provider', () => {
           },
           Type: 'Custom::CrossRegionExportReader',
           UpdateReplacePolicy: 'Delete',
-          DependsOn: [
-            'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
-          ],
         },
         Nested1NestedStackNested1NestedStackResourceCD0AD36B: {
           DeletionPolicy: 'Delete',

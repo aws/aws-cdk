@@ -73,10 +73,7 @@ describe('nested-stack', () => {
         Resource2: {
           Properties: {
             Prop1: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
-              ],
+              Ref: 'referencetoStack2ExportsReader861D07DCcdkexportsStack2Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
             },
           },
           Type: 'My::Resource',
@@ -102,9 +99,6 @@ describe('nested-stack', () => {
             ],
           },
         },
-        DependsOn: [
-          'Nested2NestedStackNested2NestedStackResource877A1112',
-        ],
         Type: 'Custom::CrossRegionExportReader',
         UpdateReplacePolicy: 'Delete',
       },
