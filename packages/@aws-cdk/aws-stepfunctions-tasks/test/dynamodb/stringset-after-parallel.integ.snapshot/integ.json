@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "StringSetAfterParallel/DefaultTest": {
+      "stacks": [
+        "stringset-after-parallel"
+      ],
+      "assertionStack": "StringSetAfterParallel/DefaultTest/DeployAssert",
+      "assertionStackName": "StringSetAfterParallelDefaultTestDeployAssert649ABBB9"
+    }
+  }
+}

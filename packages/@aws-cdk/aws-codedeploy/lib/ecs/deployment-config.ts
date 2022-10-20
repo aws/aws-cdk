@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
 import { TrafficRouting } from '../traffic-routing-config';
+import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of an ECS Deployment Group.
@@ -57,6 +58,10 @@ export class EcsDeploymentConfig extends BaseDeploymentConfig implements IEcsDep
    */
   public static fromEcsDeploymentConfigName(scope: Construct, id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
     return this.fromDeploymentConfigName(scope, id, ecsDeploymentConfigName);
+  }
+
+  private static deploymentConfig(name: string): IEcsDeploymentConfig {
+    return deploymentConfig(name);
   }
 
   public constructor(scope: Construct, id: string, props?: EcsDeploymentConfigProps) {

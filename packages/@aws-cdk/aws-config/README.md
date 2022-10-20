@@ -116,8 +116,60 @@ new config.CloudFormationStackNotificationCheck(this, 'NotificationCheck', {
 ### Custom rules
 
 You can develop custom rules and add them to AWS Config. You associate each custom rule with an
-AWS Lambda function, which contains the logic that evaluates whether your AWS resources comply
-with the rule.
+AWS Lambda function and Guard.
+
+#### Custom Lambda Rules
+
+Lambda function which contains the logic that evaluates whether your AWS resources comply with the rule.
+
+```ts
+// Lambda function containing logic that evaluates compliance with the rule.
+const evalComplianceFn = new lambda.Function(this, "CustomFunction", {
+  code: lambda.AssetCode.fromInline(
+    "exports.handler = (event) => console.log(event);"
+  ),
+  handler: "index.handler",
+  runtime: lambda.Runtime.NODEJS_14_X,
+});
+
+// A custom rule that runs on configuration changes of EC2 instances
+const customRule = new config.CustomRule(this, "Custom", {
+  configurationChanges: true,
+  lambdaFunction: evalComplianceFn,
+  ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_INSTANCE),
+});
+```
+
+#### Custom Policy Rules
+
+Guard which contains the logic that evaluates whether your AWS resources comply with the rule.
+
+```ts
+const samplePolicyText = `
+# This rule checks if point in time recovery (PITR) is enabled on active Amazon DynamoDB tables
+let status = ['ACTIVE']
+
+rule tableisactive when
+    resourceType == "AWS::DynamoDB::Table" {
+    configuration.tableStatus == %status
+}
+
+rule checkcompliance when
+    resourceType == "AWS::DynamoDB::Table"
+    tableisactive {
+        let pitr = supplementaryConfiguration.ContinuousBackupsDescription.pointInTimeRecoveryDescription.pointInTimeRecoveryStatus
+        %pitr == "ENABLED"
+}
+`;
+
+new config.CustomPolicy(stack, "Custom", {
+  policyText: samplePolicyText,
+  enableDebugLog: true,
+  ruleScope: config.RuleScope.fromResources([
+    config.ResourceType.DYNAMODB_TABLE,
+  ]),
+});
+```
 
 ### Triggers
 

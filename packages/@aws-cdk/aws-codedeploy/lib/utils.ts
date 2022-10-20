@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Aws, Token } from '@aws-cdk/core';
+import { IBaseDeploymentConfig } from './base-deployment-config';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
@@ -24,6 +25,13 @@ CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
       enabled: true,
       ignorePollAlarmFailure,
     };
+}
+
+export function deploymentConfig(name: string): IBaseDeploymentConfig {
+  return {
+    deploymentConfigName: name,
+    deploymentConfigArn: arnForDeploymentConfig(name),
+  };
 }
 
 enum AutoRollbackEvent {

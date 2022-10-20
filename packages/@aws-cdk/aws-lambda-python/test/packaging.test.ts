@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Packaging } from '../lib/packaging';
 
-test('Packging with no dependencies', () => {
+test('Packaging with no dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
   const packaging = Packaging.fromEntry(entry);
 
@@ -9,7 +9,7 @@ test('Packging with no dependencies', () => {
   expect(packaging).toEqual(Packaging.withNoPackaging());
 });
 
-test('Packging with requirements.txt', () => {
+test('Packaging with requirements.txt', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   const packaging = Packaging.fromEntry(entry);
 
@@ -17,7 +17,7 @@ test('Packging with requirements.txt', () => {
   expect(packaging).toEqual(Packaging.withPip());
 });
 
-test('Packging with pipenv', () => {
+test('Packaging with pipenv', () => {
   const entry = path.join(__dirname, 'lambda-handler-pipenv');
   const packaging = Packaging.fromEntry(entry);
 
@@ -25,7 +25,7 @@ test('Packging with pipenv', () => {
   expect(packaging).toEqual(Packaging.withPipenv());
 });
 
-test('Packging with poetry', () => {
+test('Packaging with poetry', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
   const packaging = Packaging.fromEntry(entry);
 

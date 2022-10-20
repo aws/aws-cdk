@@ -235,6 +235,9 @@
    "ap-southeast-2": {
     "FirehoseCidrBlock": "13.210.67.224/27"
    },
+   "ap-southeast-3": {
+    "FirehoseCidrBlock": "108.136.221.64/27"
+   },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
    },

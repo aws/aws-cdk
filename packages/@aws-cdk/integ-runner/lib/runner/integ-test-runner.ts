@@ -3,7 +3,7 @@ import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import * as logger from '../logger';
-import { chain, exec } from '../utils';
+import { chunks, exec } from '../utils';
 import { DestructiveChange, AssertionResults, AssertionResult } from '../workers/common';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 
@@ -222,8 +222,10 @@ export class IntegTestRunner extends IntegRunner {
     const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     try {
       if (actualTestCase.hooks?.preDestroy) {
-        exec([chain(actualTestCase.hooks.preDestroy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.preDestroy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
       this.cdk.destroy({
@@ -231,8 +233,10 @@ export class IntegTestRunner extends IntegRunner {
       });
 
       if (actualTestCase.hooks?.postDestroy) {
-        exec([chain(actualTestCase.hooks.postDestroy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.postDestroy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
     } catch (e) {
@@ -255,8 +259,10 @@ export class IntegTestRunner extends IntegRunner {
     const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     try {
       if (actualTestCase.hooks?.preDeploy) {
-        exec([chain(actualTestCase.hooks?.preDeploy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.preDeploy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
       // if the update workflow is not disabled, first
@@ -297,8 +303,10 @@ export class IntegTestRunner extends IntegRunner {
       });
 
       if (actualTestCase.hooks?.postDeploy) {
-        exec([chain(actualTestCase.hooks?.postDeploy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.postDeploy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
 

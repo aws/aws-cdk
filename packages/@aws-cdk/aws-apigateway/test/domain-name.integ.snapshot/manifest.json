@@ -1,0 +1,397 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-apigw-domain-name-mapping.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-apigw-domain-name-mapping.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-apigw-domain-name-mapping": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apigw-domain-name-mapping.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/732ce16bf00b2654f30bf4b983582705a052dc86d86378d872853ac7af91ba90.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-apigw-domain-name-mapping.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apigw-domain-name-mapping.assets"
+      ],
+      "metadata": {
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi1IntegApi2018FAD77E9"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi1IntegApi201DeploymentF1012E35e3d8f8929b682e11ef294dd954cc0999"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi1IntegApi201Endpoint361E7C32"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi1IntegApi201itemsE127EEB1"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi1IntegApi201itemsGET28ED9C03"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi1IntegApi201GET725FD00E"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegDomain624DF323"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegDomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E86701596"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegDomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E1F08DBEE"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegDomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE3C3CDD8F"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders--v1=>integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D5976": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegDomainMapordersv1integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D59765598DA9A"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ2Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ2Domain70CCEA68"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ2Domain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ2DomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E604CCBD9"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ2Domain/Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ2DomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FECE78C5AD"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ3Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ3DomainE531FBAB"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ3Domain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ3DomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3EC2A223F3"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ3Domain/Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ3DomainMapv2integapigwdomainnamemappingIntegApi2IntegApi20289438F2BD839069D"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegDomainRecord": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegDomainRecord"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ2DomainRecord": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ2DomainRecord"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Integ3DomainRecord": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ3DomainRecord"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi2IntegApi202F39817F4"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi2IntegApi202Deployment16A1A56Af8137e7222475e5a9ac210201aa96737"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi2IntegApi202Endpoint18343E9B"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi2IntegApi202items6625F7BA"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi2IntegApi202itemsGET3C1B2802"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegApi2IntegApi202GETA6A9E1FD"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/InvokeApi/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvokeApiServiceRoleFB17CD97"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/InvokeApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvokeApi313C8B49"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"InvokeApi313C8B49\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"IntegDomain624DF323\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefIntegDomain624DF323D17B7540"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"Integ2Domain70CCEA68\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefInteg2Domain70CCEA688A08551F"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-apigw-domain-name-mapping/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "Integ2DomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D59769E7794A6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Integ2DomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D59769E7794A6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-apigw-domain-name-mapping"
+    },
+    "domainnamemappingtestDefaultTestDeployAssert4FFC8047.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "domainnamemappingtestDefaultTestDeployAssert4FFC8047.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "domainnamemappingtestDefaultTestDeployAssert4FFC8047": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "domainnamemappingtestDefaultTestDeployAssert4FFC8047.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca221fe7d8415bb5d7851fa5f77af9fa55569243f4832c489ac239a1a9ccf4ca.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "domainnamemappingtestDefaultTestDeployAssert4FFC8047.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apigw-domain-name-mapping",
+        "domainnamemappingtestDefaultTestDeployAssert4FFC8047.assets"
+      ],
+      "metadata": {
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6c82f4296e4da69e1d6905e3d20f761aInvokeF34C6427"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke6c82f4296e4da69e1d6905e3d20f761a/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke6c82f4296e4da69e1d6905e3d20f761a"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320InvokeC08B85F1"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke4f2bfb0cc64af0ccca4a6e7b6c3de320"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokef718aff12f12e7e6e6dd823f91dfce23"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokef718aff12f12e7e6e6dd823f91dfce23Invoke0C7CC2F4"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvokef718aff12f12e7e6e6dd823f91dfce23/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokef718aff12f12e7e6e6dd823f91dfce23"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke2025c0c4c97e10064ec08312531cb316"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke2025c0c4c97e10064ec08312531cb316Invoke5ACCC8A3"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/LambdaInvoke2025c0c4c97e10064ec08312531cb316/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke2025c0c4c97e10064ec08312531cb316"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/domain-name-mapping-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "domain-name-mapping-test/DefaultTest/DeployAssert"
+    }
+  }
+}

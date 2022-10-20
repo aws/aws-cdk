@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "DashboardIntegrationTest/DefaultTest": {
+      "stacks": [
+        "DashboardIntegrationTestStack"
+      ],
+      "assertionStack": "DashboardIntegrationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DashboardIntegrationTestDefaultTestDeployAssert5BE38902"
+    }
+  }
+}

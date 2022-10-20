@@ -91,11 +91,6 @@ describe('rule', () => {
         },
         MaximumExecutionFrequency: 'Six_Hours',
       },
-      DependsOn: [
-        'FunctionPermissionEC8FE997',
-        'Function76856677',
-        'FunctionServiceRole675BB04A',
-      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
@@ -416,5 +411,112 @@ describe('rule', () => {
       },
     });
   });
+  test('create a custom policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
+    // WHEN
+    new config.CustomPolicy(stack, 'Rule', {
+      policyText: `
+      let status = ['ACTIVE']
+  
+      rule tableisactive when
+          resourceType == "AWS::DynamoDB::Table" {
+          configuration.tableStatus == %status
+      }
+  
+      rule checkcompliance when
+          resourceType == "AWS::DynamoDB::Table"
+          tableisactive {
+              let pitr = supplementaryConfiguration.ContinuousBackupsDescription.pointInTimeRecoveryDescription.pointInTimeRecoveryStatus
+              %pitr == "ENABLED"
+      }`,
+      description: 'really cool rule',
+      configRuleName: 'cool rule',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
+      Source: {
+        Owner: 'CUSTOM_POLICY',
+        SourceDetails: [
+          {
+            EventSource: 'aws.config',
+            MessageType: 'ConfigurationItemChangeNotification',
+          },
+          {
+            EventSource: 'aws.config',
+            MessageType: 'OversizedConfigurationItemChangeNotification',
+          },
+        ],
+      },
+      ConfigRuleName: 'cool rule',
+      Description: 'really cool rule',
+    });
+  });
+
+  test('create two custom rules and one function', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.AssetCode.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    // WHEN
+    new config.CustomRule(stack, 'Rule1', {
+      configurationChanges: true,
+      description: 'really cool rule',
+      lambdaFunction: fn,
+      maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
+      configRuleName: 'cool rule 1',
+      periodic: true,
+    });
+    new config.CustomRule(stack, 'Rule2', {
+      configurationChanges: true,
+      description: 'really cool rule',
+      lambdaFunction: fn,
+      configRuleName: 'cool rule 2',
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Config::ConfigRule', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn',
+        ],
+      },
+      Principal: 'config.amazonaws.com',
+      SourceAccount: {
+        Ref: 'AWS::AccountId',
+      },
+    });
+  });
+  test('create a 0 charactor policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    // THEN
+    expect(() => new config.CustomPolicy(stack, 'Rule', {
+      policyText: '',
+    })).toThrow('Policy Text cannot be empty.');
+  });
+
+  test('create over 10000 charactor policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stringLen10001 = '0123456789'.repeat(1000) + 'a';
+    // WHEN
+    // THEN
+    expect(() => new config.CustomPolicy(stack, 'Rule', {
+      policyText: stringLen10001,
+    })).toThrow('Policy Text is limited to 10,000 characters or less.');
+  });
 });

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig } from '../base-deployment-config';
 import { MinimumHealthyHosts } from '../host-health-config';
+import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
@@ -61,6 +62,10 @@ export class ServerDeploymentConfig extends BaseDeploymentConfig implements ISer
     id: string,
     serverDeploymentConfigName: string): IServerDeploymentConfig {
     return this.fromDeploymentConfigName(scope, id, serverDeploymentConfigName);
+  }
+
+  private static deploymentConfig(name: string): IServerDeploymentConfig {
+    return deploymentConfig(name);
   }
 
   constructor(scope: Construct, id: string, props: ServerDeploymentConfigProps) {

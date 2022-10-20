@@ -177,6 +177,22 @@ describe('Dashboard', () => {
     expect(() => toThrow()).toThrow(/field dashboardName contains invalid characters/);
   });
 
+  test('dashboardArn should not include a region', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: {
+        region: 'invalid-region',
+      },
+    });
+
+    // WHEN
+    const dashboard = new Dashboard(stack, 'MyStack');
+
+    // THEN
+    expect(dashboard.dashboardArn).not.toContain('invalid-region');
+  });
+
   test('metric warnings are added to dashboard', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');

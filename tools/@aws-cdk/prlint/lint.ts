@@ -275,7 +275,7 @@ export class PullRequestLinter {
     const pr = (await this.client.pulls.get(this.prParams)).data;
 
     console.log(`⌛  Fetching files for PR number ${number}`);
-    const files = (await this.client.pulls.listFiles(this.prParams)).data;
+    const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
 
     console.log("⌛  Validating...");
 

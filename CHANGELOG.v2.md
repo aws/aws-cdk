@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.47.0](https://github.com/aws/aws-cdk/compare/v2.46.0...v2.47.0) (2022-10-20)
+
+
+### Features
+
+* **apigateway:** support multi-level paths for custom domains ([#22463](https://github.com/aws/aws-cdk/issues/22463)) ([cdc5753](https://github.com/aws/aws-cdk/commit/cdc5753982d8f674dab2362ea63790abb736fa32)), closes [#15904](https://github.com/aws/aws-cdk/issues/15904)
+* **config:** add custom policy rule constructs ([#21794](https://github.com/aws/aws-cdk/issues/21794)) ([09a5cc4](https://github.com/aws/aws-cdk/commit/09a5cc4ff55cb7d001c14059c12ada0a2801acd4)), closes [#21441](https://github.com/aws/aws-cdk/issues/21441)
+* **elbv2:** add dropInvalidHeaderFields for elbv2 ([#22466](https://github.com/aws/aws-cdk/issues/22466)) ([91767f0](https://github.com/aws/aws-cdk/commit/91767f03e76db8a63c18882b44854999b15aaff4)), closes [/docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-elb-4](https://github.com/aws//docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html/issues/fsbp-elb-4)
+
+
+### Bug Fixes
+
+* breaking change to deployment config props ([#22567](https://github.com/aws/aws-cdk/issues/22567)) ([be6074a](https://github.com/aws/aws-cdk/commit/be6074a67b68ec2f295196ad73ddb6e92984bdf3)), closes [#22566](https://github.com/aws/aws-cdk/issues/22566)
+* **apigateway:** validation for path parts does not allow creation of resources with colon ([#22531](https://github.com/aws/aws-cdk/issues/22531)) ([73c443a](https://github.com/aws/aws-cdk/commit/73c443a7cd14ad27776907095bf19100e903093f)), closes [#22477](https://github.com/aws/aws-cdk/issues/22477) [#22477](https://github.com/aws/aws-cdk/issues/22477)
+* **cli:** hotswap deploy fails on multiple CfnEvaluationException ([#22339](https://github.com/aws/aws-cdk/issues/22339)) ([7b47f41](https://github.com/aws/aws-cdk/commit/7b47f4178e4a4b9fe3dcb54daa3ec9f94fbd2a31)), closes [#22323](https://github.com/aws/aws-cdk/issues/22323)
+* **cloudwatch:** remove region from dashboard ARN ([#22524](https://github.com/aws/aws-cdk/issues/22524)) ([558d192](https://github.com/aws/aws-cdk/commit/558d1925d7c3b01d7681e28f7b85bc851e403556))
+* **codeguruprofiler:** incorrect profiling group name is returned when using importing ([#22554](https://github.com/aws/aws-cdk/issues/22554)) ([9934619](https://github.com/aws/aws-cdk/commit/9934619970dcb582106e9b2bf0d373d730de1fee))
+* **cognito:** cannot use same lambda function as trigger in multiple user pools ([#22444](https://github.com/aws/aws-cdk/issues/22444)) ([b26fc00](https://github.com/aws/aws-cdk/commit/b26fc007465ce9466cecfaf5c0bb337d741c77e8)), closes [#22315](https://github.com/aws/aws-cdk/issues/22315)
+* **config:** Creating multiple rules from the same lambda ([#21594](https://github.com/aws/aws-cdk/issues/21594)) ([0d2b529](https://github.com/aws/aws-cdk/commit/0d2b5291a10a318bed8d77166eae2bd317dee62e)), closes [#17582](https://github.com/aws/aws-cdk/issues/17582)
+* **iam:** missing validation for actions added post instantiation of a policy statement ([#21906](https://github.com/aws/aws-cdk/issues/21906)) ([10974d9](https://github.com/aws/aws-cdk/commit/10974d95693dd75e993b8f0b5808b775b55b3afd)), closes [40aws-cdk/aws-iam/lib/policy-statement.ts#L88-L95](https://github.com/40aws-cdk/aws-iam/lib/policy-statement.ts/issues/L88-L95)
+* **stepfunctions:** JsonPath.listAt does not accept strings starting with `$[` ([#22472](https://github.com/aws/aws-cdk/issues/22472)) ([6f332ef](https://github.com/aws/aws-cdk/commit/6f332efb1ae5c22f1c3b02221362018e3f4b575f)), closes [#22471](https://github.com/aws/aws-cdk/issues/22471)
+
 ## [2.46.0](https://github.com/aws/aws-cdk/compare/v2.45.0...v2.46.0) (2022-10-13)
 
 
