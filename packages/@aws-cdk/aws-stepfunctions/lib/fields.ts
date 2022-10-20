@@ -298,14 +298,23 @@ export class FieldUtils {
 }
 
 function validateJsonPath(path: string) {
+  const intrinsicFunctions = [
+    'Format', 'StringToJson', 'JsonToString', 'JsonMerge', 'StringSplit',
+    'Array', 'ArrayPartition', 'ArrayContains', 'ArrayRange', 'ArrayGetItem', 'ArrayLength', 'ArrayUnique',
+    'Base64Encode', 'Base64Decode',
+    'Hash',
+    'MathRandom', 'MathAdd',
+    'UUID',
+  ].map(fn => `States.${fn}`);
+  const intrinsicFunctionsText = `${intrinsicFunctions.slice(0, -1).join(', ')} or ${intrinsicFunctions[intrinsicFunctions.length-1]}`;
   if (path !== '$'
     && !path.startsWith('$.')
     && path !== '$$'
     && !path.startsWith('$$.')
     && !path.startsWith('$[')
-    && ['Format', 'StringToJson', 'JsonToString', 'Array'].every(fn => !path.startsWith(`States.${fn}`))
+    && intrinsicFunctions.every(fn => !path.startsWith(fn))
   ) {
-    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array. Received: ${path}`);
+    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsText}. Received: ${path}`);
   }
 }
 

@@ -1,7 +1,7 @@
 import { FieldUtils, JsonPath, TaskInput } from '../lib';
 
 describe('Fields', () => {
-  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array./;
+  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: /;
 
   test('deep replace correctly handles fields in arrays', () => {
     expect(
@@ -80,7 +80,21 @@ describe('Fields', () => {
     expect(JsonPath.stringAt('States.Format')).toBeDefined();
     expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
     expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
+    expect(JsonPath.stringAt('States.JsonMerge')).toBeDefined();
+    expect(JsonPath.stringAt('States.StringSplit')).toBeDefined();
     expect(JsonPath.stringAt('States.Array')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayPartition')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayContains')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayRange')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayGetItem')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayLength')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayUnique')).toBeDefined();
+    expect(JsonPath.stringAt('States.Base64Encode')).toBeDefined();
+    expect(JsonPath.stringAt('States.Base64Decode')).toBeDefined();
+    expect(JsonPath.stringAt('States.Hash')).toBeDefined();
+    expect(JsonPath.stringAt('States.MathRandom')).toBeDefined();
+    expect(JsonPath.stringAt('States.MathAdd')).toBeDefined();
+    expect(JsonPath.stringAt('States.UUID')).toBeDefined();
 
     expect(() => JsonPath.stringAt('$hello')).toThrowError(jsonPathValidationErrorMsg);
     expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
