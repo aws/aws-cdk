@@ -10,6 +10,7 @@ import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
+import { formatDistributionArn } from './private/utils';
 
 /**
  * HTTP status code to failover to second origin
@@ -751,12 +752,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionArn: string;
 
       constructor() {
         super(scope, id);
         this.domainName = attrs.domainName;
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
+        this.distributionArn = formatDistributionArn(this, this.distributionId);
       }
     }();
   }
@@ -787,6 +790,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * The distribution ID for this distribution.
    */
   public readonly distributionId: string;
+
+  /**
+   * The distribution ARN for this distribution.
+   */
+  public readonly distributionArn: string;
 
   /**
    * Maps our methods to the string arrays they are
@@ -981,6 +989,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+    this.distributionArn = formatDistributionArn(this, this.distributionId);
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

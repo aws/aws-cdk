@@ -12,6 +12,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
+import { formatDistributionArn } from './private/utils';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 
 /**
@@ -39,6 +40,13 @@ export interface IDistribution extends IResource {
    * @attribute
    */
   readonly distributionId: string;
+
+  /**
+   * The distribution ARN for this distribution.
+   *
+   * @attribute
+   */
+  readonly distributionArn: string;
 }
 
 /**
@@ -250,12 +258,14 @@ export class Distribution extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionArn: string;
 
       constructor() {
         super(scope, id);
         this.domainName = attrs.domainName;
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
+        this.distributionArn = formatDistributionArn(this, this.distributionId);
       }
     }();
   }
@@ -263,6 +273,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
+  public readonly distributionArn: string;
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
@@ -328,6 +339,7 @@ export class Distribution extends Resource implements IDistribution {
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+    this.distributionArn = formatDistributionArn(this, this.distributionId);
   }
 
   /**

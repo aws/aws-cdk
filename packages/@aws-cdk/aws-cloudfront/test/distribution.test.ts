@@ -1025,3 +1025,12 @@ describe('supported HTTP versions', () => {
     });
   });
 });
+
+test('returns valid distribution ARN', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+
+  expect(stack.resolve(distribution.distributionArn))
+    .toEqual(stack.resolve(`arn:${stack.partition}:cloudfront::${stack.account}:distribution/${distribution.distributionId}`));
+});

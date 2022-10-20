@@ -1747,3 +1747,16 @@ added the ellipsis so a user would know there was more to r...`,
 
   });
 });
+
+test('returns valid distribution ARN', () => {
+  const stack = new cdk.Stack();
+  const distribution = new CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [{
+      customOriginSource: { domainName: 'myorigin.com' },
+      behaviors: [{ isDefaultBehavior: true }],
+    }],
+  });
+
+  expect(stack.resolve(distribution.distributionArn))
+    .toEqual(stack.resolve(`arn:${stack.partition}:cloudfront::${stack.account}:distribution/${distribution.distributionId}`));
+});
