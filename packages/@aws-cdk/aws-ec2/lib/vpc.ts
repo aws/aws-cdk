@@ -1162,7 +1162,7 @@ export class Vpc extends VpcBase {
   }
 
   /**
-   * Import an existing VPC from by querying the AWS environment this stack is deployed to.
+   * Import an existing VPC by querying the AWS environment this stack is deployed to.
    *
    * This function only needs to be used to use VPCs not defined in your CDK
    * application. If you are looking to share a VPC between stacks, you can
