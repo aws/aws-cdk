@@ -48,7 +48,9 @@ export interface StageOptions extends MethodDeploymentOptions {
 
   /**
    * A single line format of access logs of data, as specified by selected $content variables.
-   * The format must include at least `AccessLogFormat.contextRequestId()`.
+   * The format must include either `AccessLogFormat.contextRequestId()`
+   * or `AccessLogFormat.contextExtendedRequestId()`.
+   *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
    *
    * @default - Common Log Format
