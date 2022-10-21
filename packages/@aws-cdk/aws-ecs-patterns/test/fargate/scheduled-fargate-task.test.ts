@@ -306,8 +306,8 @@ test('Scheduled Fargate Task - can take 8 vCpu and 60GB memory sizes', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', Match.objectLike({
-    Cpu: 8192,
-    Memory: 61440,
+    Cpu: '8192',
+    Memory: '61440',
   }),
   );
 });
