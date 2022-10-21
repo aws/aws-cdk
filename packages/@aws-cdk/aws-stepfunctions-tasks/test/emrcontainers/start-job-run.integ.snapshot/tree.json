@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.108"
+          "version": "10.1.123"
         }
       },
       "aws-stepfunctions-tasks-emr-containers-start-job-run-test": {
@@ -952,7 +952,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.123"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1460,7 +1460,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6.zip"
+                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1625,7 +1625,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "2c98a634e36e3f2a1c1a78958953ed173e2c6cf8446c15dabbef67d4e30b33d6.zip"
+                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2442,7 +2442,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.108"
+                      "version": "10.1.123"
                     }
                   }
                 },
@@ -2507,7 +2507,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/73195d4053766d6c76818df200ea1bf96669376b46f1c2c2a4a41bea4eca1a12.json"
+                          "/b73d210baee7beae6e54240f8ac66b15d58e71b593c9b12ee0d84ab110295f94.json"
                         ]
                       ]
                     },
@@ -2529,7 +2529,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.108"
+              "version": "10.1.123"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3199,7 +3199,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.108"
+              "version": "10.1.123"
             }
           },
           "Virtual Cluster": {
@@ -3772,7 +3772,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
+                      "s3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -4233,7 +4233,7 @@
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.123"
                 }
               },
               "DeployAssert": {

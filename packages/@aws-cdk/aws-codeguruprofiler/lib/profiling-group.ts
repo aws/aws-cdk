@@ -154,7 +154,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
    */
   public static fromProfilingGroupArn(scope: Construct, id: string, profilingGroupArn: string): IProfilingGroup {
     class Import extends ProfilingGroupBase {
-      public readonly profilingGroupName = Stack.of(scope).splitArn(profilingGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resource;
+      public readonly profilingGroupName = Stack.of(scope).splitArn(profilingGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public readonly profilingGroupArn = profilingGroupArn;
     }
 

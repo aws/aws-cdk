@@ -1,5 +1,5 @@
 {
-  "$version": "91.0.0",
+  "$version": "93.0.0",
   "PropertyTypes": {
     "AWS::RDS::DBCluster.DBClusterRole": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbcluster-dbclusterrole.html",
@@ -433,6 +433,18 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "Domain": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-domain",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "DomainIAMRoleName": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-domainiamrolename",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "EnableCloudwatchLogsExports": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-enablecloudwatchlogsexports",
           "DuplicatesAllowed": false,
@@ -509,6 +521,12 @@
         },
         "MonitoringRoleArn": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-monitoringrolearn",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "NetworkType": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html#cfn-rds-dbcluster-networktype",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
@@ -908,6 +926,12 @@
           "Required": false,
           "UpdateType": "Immutable"
         },
+        "NetworkType": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-networktype",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "OptionGroupName": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#cfn-rds-dbinstance-optiongroupname",
           "PrimitiveType": "String",
@@ -1059,6 +1083,9 @@
           "PrimitiveType": "String"
         },
         "Endpoint": {
+          "PrimitiveType": "String"
+        },
+        "VpcId": {
           "PrimitiveType": "String"
         }
       },
