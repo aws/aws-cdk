@@ -657,6 +657,20 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
 });
 ```
 
+#### Kubectl and Kubernetes Version
+
+The version of kubectl used must be compatible wtih the Kubernetes version of the cluster. kubectl is supported within one minor version (older or newer) of Kubernetes (see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)). Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different version, you will need to use one of the `@aws-cdk/lambda-layer-kubectlvXY` packages.
+
+```
+import { KubectlV22Layer } from '@aws-cdk/lambda-layer-kubectl-v22';
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_22,
+  kubectlLayer: new KubectlV22Layer(this, 'kubectl'),
+});
+
+```
+
 #### Environment
 
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
