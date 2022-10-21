@@ -169,6 +169,13 @@ describe('profiling group', () => {
     });
   });
 
+  test('use name specified via fromProfilingGroupName', () => {
+    const stack = new Stack();
+
+    const profilingGroup = ProfilingGroup.fromProfilingGroupName(stack, 'MyProfilingGroup', 'MyAwesomeProfilingGroup');
+    expect(profilingGroup.profilingGroupName).toEqual('MyAwesomeProfilingGroup');
+  });
+
   test('default profiling group', () => {
     const stack = new Stack();
     new ProfilingGroup(stack, 'MyProfilingGroup', {
