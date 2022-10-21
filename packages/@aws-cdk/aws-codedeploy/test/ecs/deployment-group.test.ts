@@ -247,6 +247,67 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
 
+  test('fail when ECS service does not use CODE_DEPLOY deployment controller', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.ECS,
+      },
+    });
+
+    expect(() => new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+      deploymentGroupName: 'a'.repeat(101),
+      services: [service],
+      blueGreenDeploymentConfig: {
+        blueTargetGroup: mockTargetGroup(stack, 'blue'),
+        greenTargetGroup: mockTargetGroup(stack, 'green'),
+        listener: mockListener(stack, 'prod'),
+      },
+    })).toThrow('The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type');
+  });
+
+  test('fail when ECS service uses CODE_DEPLOY deployment controller, but did not strip the revision ID from the task definition', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+    (service.node.defaultChild as ecs.CfnService).taskDefinition = 'arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world:8';
+
+    expect(() => new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+      deploymentGroupName: 'a'.repeat(101),
+      services: [service],
+      blueGreenDeploymentConfig: {
+        blueTargetGroup: mockTargetGroup(stack, 'blue'),
+        greenTargetGroup: mockTargetGroup(stack, 'green'),
+        listener: mockListener(stack, 'prod'),
+      },
+    })).toThrow('The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack');
+  });
+
   test('can be created with explicit role', () => {
     const stack = new cdk.Stack();
     const serviceRole = new iam.Role(stack, 'MyRole', {

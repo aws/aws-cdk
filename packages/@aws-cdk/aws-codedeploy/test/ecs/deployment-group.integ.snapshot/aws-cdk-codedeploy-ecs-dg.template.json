@@ -488,15 +488,15 @@
       ]
      }
     },
-    "TaskDefinition": {
-     "Ref": "TaskDef54694570"
-    }
+    "TaskDefinition": "awscdkcodedeployecsdgTaskDef25A5A14D"
    },
    "DependsOn": [
     "GreenTG71A27F2F",
     "ServiceLBProdListenerBlueTGGroupB47699CD",
     "ServiceLBProdListener0E7627EE",
     "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67",
     "TaskDef2C6A35A16",
     "TaskDef2TaskRole5A51C717"
    ]
@@ -519,6 +519,8 @@
    "DependsOn": [
     "GreenTG71A27F2F",
     "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67",
     "TaskDef2C6A35A16",
     "TaskDef2TaskRole5A51C717"
    ]
@@ -546,6 +548,8 @@
    "DependsOn": [
     "GreenTG71A27F2F",
     "ServiceLBTestListener3EA49939",
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67",
     "TaskDef2C6A35A16",
     "TaskDef2TaskRole5A51C717"
    ]
