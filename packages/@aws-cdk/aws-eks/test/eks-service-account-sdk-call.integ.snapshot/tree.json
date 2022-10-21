@@ -42,22 +42,6 @@
               "version": "0.0.0"
             }
           },
-          "imageuri": {
-            "id": "imageuri",
-            "path": "aws-eks-oidc-provider-test/imageuri",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.129"
-            }
-          },
-          "repo": {
-            "id": "repo",
-            "path": "aws-eks-oidc-provider-test/repo",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.129"
-            }
-          },
           "Vpc": {
             "id": "Vpc",
             "path": "aws-eks-oidc-provider-test/Vpc",
@@ -3468,6 +3452,48 @@
                           "fqn": "@aws-cdk/aws-iam.CfnRole",
                           "version": "0.0.0"
                         }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-eks-oidc-provider-test/S3BucketPinger/Function/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-eks-oidc-provider-test/S3BucketPinger/Function/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "s3:DeleteBucket",
+                                        "s3:ListBucket"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "arn:aws:s3:::*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "S3BucketPingerFunctionServiceRoleDefaultPolicy0A5C5673",
+                                "roles": [
+                                  {
+                                    "Ref": "S3BucketPingerFunctionServiceRole37E5E83A"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -3545,7 +3571,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "cbed0613b5a4636afca920c36431cf40e46040b24caed173591260b48676356e.zip"
+                          "s3Key": "dcbc2e9181e895e14522d2a67351d9654790e35567e370f54120423dd4604b40.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3584,48 +3610,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-lambda.Function",
-                  "version": "0.0.0"
-                }
-              },
-              "grant-pinger-lambda-bucket-permission": {
-                "id": "grant-pinger-lambda-bucket-permission",
-                "path": "aws-eks-oidc-provider-test/S3BucketPinger/grant-pinger-lambda-bucket-permission",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-eks-oidc-provider-test/S3BucketPinger/grant-pinger-lambda-bucket-permission/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "s3:DeleteBucket",
-                                "s3:ListBucket"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": "arn:aws:s3:::*"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "S3BucketPingergrantpingerlambdabucketpermission086BFCB5",
-                        "roles": [
-                          {
-                            "Ref": "S3BucketPingerFunctionServiceRole37E5E83A"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
                   "version": "0.0.0"
                 }
               },
@@ -3850,14 +3834,6 @@
           "PingerResponse": {
             "id": "PingerResponse",
             "path": "aws-eks-oidc-provider-test/PingerResponse",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.129"
-            }
-          },
-          "serviceacount-name": {
-            "id": "serviceacount-name",
-            "path": "aws-eks-oidc-provider-test/serviceacount-name",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.1.129"

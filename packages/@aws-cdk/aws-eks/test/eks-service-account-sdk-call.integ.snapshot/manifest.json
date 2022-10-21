@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cfcf09c74329d31db19b49ba9869920caaedba547eb26b71a73e33c6544a9206.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf7fd4cba2720553c79486825ce60a773065fe42b92da377936b517c09592ea6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,18 +39,6 @@
         "aws-eks-oidc-provider-test.assets"
       ],
       "metadata": {
-        "/aws-eks-oidc-provider-test/imageuri": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "imageuri"
-          }
-        ],
-        "/aws-eks-oidc-provider-test/repo": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "repo"
-          }
-        ],
         "/aws-eks-oidc-provider-test/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -543,6 +531,12 @@
             "data": "S3BucketPingerFunctionServiceRole37E5E83A"
           }
         ],
+        "/aws-eks-oidc-provider-test/S3BucketPinger/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketPingerFunctionServiceRoleDefaultPolicy0A5C5673"
+          }
+        ],
         "/aws-eks-oidc-provider-test/S3BucketPinger/Function/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -553,12 +547,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "S3BucketPingerFunctionCCEDB9F3"
-          }
-        ],
-        "/aws-eks-oidc-provider-test/S3BucketPinger/grant-pinger-lambda-bucket-permission/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3BucketPingergrantpingerlambdabucketpermission086BFCB5"
           }
         ],
         "/aws-eks-oidc-provider-test/S3BucketPinger/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -591,12 +579,6 @@
             "data": "PingerResponse"
           }
         ],
-        "/aws-eks-oidc-provider-test/serviceacount-name": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "serviceacountname"
-          }
-        ],
         "/aws-eks-oidc-provider-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -607,6 +589,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "S3BucketPingergrantpingerlambdabucketpermission086BFCB5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketPingergrantpingerlambdabucketpermission086BFCB5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

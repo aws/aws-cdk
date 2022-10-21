@@ -31,13 +31,10 @@ export class BucketPinger extends Construct {
       throw new Error('pinger lambda has no execution role!');
     }
 
-    new iam.Policy(this, 'grant-pinger-lambda-bucket-permission', {
-      statements: [new iam.PolicyStatement({
-        actions: ['s3:DeleteBucket', 's3:ListBucket'],
-        resources: ['arn:aws:s3:::*'],
-      })],
-      roles: [func.role],
-    });
+    func.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['s3:DeleteBucket', 's3:ListBucket'],
+      resources: ['arn:aws:s3:::*'],
+    }));
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: func,
@@ -45,9 +42,6 @@ export class BucketPinger extends Construct {
 
     this._resource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
-      properties: {
-        psuedoProperty: 'changeme456', // update this to trigger the docker to run
-      },
     });
   }
 

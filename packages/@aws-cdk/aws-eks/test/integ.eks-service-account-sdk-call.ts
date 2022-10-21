@@ -9,7 +9,6 @@ import * as kplus from 'cdk8s-plus-21';
 import * as eks from '../lib';
 import { BucketPinger } from './pinger/bucket-pinger/bucket-pinger';
 
-
 const app = new App();
 const stack = new Stack(app, 'aws-eks-oidc-provider-test');
 
@@ -17,26 +16,15 @@ const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docke
   directory: path.join(__dirname, 'docker-app/app'),
 });
 
-new CfnOutput(stack, 'imageuri', {
-  value: dockerImage.imageUri,
-});
-new CfnOutput(stack, 'repo', {
-  value: dockerImage.repository.repositoryName,
-});
-
 // just need one nat gateway to simplify the test
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
-// Create the cluster without an ALB. Creating the ALB
-// forces the cluster to make an OIDC Provider by default,
-// which we don't want. It will cause dependency issues
-// even if removed via `node.tryRemoveChild()`.
 const cluster = new eks.Cluster(stack, 'Cluster', {
   vpc: vpc,
   version: eks.KubernetesVersion.V1_21,
 });
 
-const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image-123'); // changing this ID remakes and runs the pod
+const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image'); // changing this ID remakes and runs the pod
 
 const serviceAccount = cluster.addServiceAccount('my-service-account');
 const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(serviceAccount.serviceAccountName);
@@ -60,6 +48,7 @@ serviceAccount.role.addToPrincipalPolicy(
 const pinger = new BucketPinger(stack, 'S3BucketPinger', {
   vpc: cluster.vpc,
 });
+
 // the pinger must wait for the cluster to be updated.
 // interestingly, without this dependency, CFN will always run the pinger
 // before the pod.
@@ -69,9 +58,6 @@ pinger.node.addDependency(cluster);
 // this should confirm that the bucket actually exists and was deleted
 new CfnOutput(stack, 'PingerResponse', {
   value: pinger.response,
-});
-new CfnOutput(stack, 'serviceacount-name', {
-  value: serviceAccount.serviceAccountName,
 });
 
 new integ.IntegTest(app, 'aws-cdk-eks-service-account-sdk-call', {
