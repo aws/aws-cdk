@@ -107,7 +107,15 @@
        "\")))) OR FALSE)"
       ]
      ]
-    }
+    },
+    "ActionsSuppressor": {
+     "Fn::GetAtt": [
+      "Alarm548383B2F",
+      "Arn"
+     ]
+    },
+    "ActionsSuppressorExtensionPeriod": 60,
+    "ActionsSuppressorWaitPeriod": 60
    }
   }
  },

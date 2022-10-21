@@ -565,6 +565,9 @@
     "NodeType": "dc2.large",
     "AllowVersionUpgrade": true,
     "AutomatedSnapshotRetentionPeriod": 1,
+    "ClusterParameterGroupName": {
+     "Ref": "ClusterParameterGroup879806FD"
+    },
     "ClusterSubnetGroupName": {
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
@@ -580,6 +583,21 @@
        "ClusterSecurityGroup0921994B",
        "GroupId"
       ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterParameterGroup879806FD": {
+   "Type": "AWS::Redshift::ClusterParameterGroup",
+   "Properties": {
+    "Description": "Cluster parameter group for family redshift-1.0",
+    "ParameterGroupFamily": "redshift-1.0",
+    "Parameters": [
+     {
+      "ParameterName": "enable_user_activity_logging",
+      "ParameterValue": "true"
      }
     ]
    },

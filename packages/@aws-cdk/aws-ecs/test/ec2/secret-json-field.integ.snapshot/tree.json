@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.92"
         }
       },
       "aws-ecs-integ-secret-json-field": {
@@ -108,6 +108,20 @@
                                 ]
                               ]
                             }
+                          },
+                          {
+                            "name": "APIKEY",
+                            "valueFrom": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  {
+                                    "Ref": "SecretA720EF05"
+                                  },
+                                  ":apikey::"
+                                ]
+                              ]
+                            }
                           }
                         ]
                       }
@@ -132,7 +146,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -140,8 +154,8 @@
                 "id": "web",
                 "path": "aws-ecs-integ-secret-json-field/TaskDef/web",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
                 }
               },
               "ExecutionRole": {
@@ -225,20 +239,56 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecs.Ec2TaskDefinition",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-ecs-ec2-integ-secret-json-field": {
+        "id": "aws-ecs-ec2-integ-secret-json-field",
+        "path": "aws-ecs-ec2-integ-secret-json-field",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "aws-ecs-ec2-integ-secret-json-field/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-ecs-ec2-integ-secret-json-field/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.92"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "aws-ecs-ec2-integ-secret-json-field/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89ca5c5b2234f7dbbadd142cad0414d3cdf1293dc1edfa1618f4eac392958c82.zip"
+     "S3Key": "ba7fde4a6e034e2591e4b55fb4371a38236de097c96f5bba56c3fba49d3f18fa.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -55,12 +55,12 @@
   }
  },
  "Outputs": {
-  "FunctionArn": {
+  "ExportsOutputRefmyhandlerD202FA8E369E8804": {
    "Value": {
-    "Fn::GetAtt": [
-     "myhandlerD202FA8E",
-     "Arn"
-    ]
+    "Ref": "myhandlerD202FA8E"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-custom-build:ExportsOutputRefmyhandlerD202FA8E369E8804"
    }
   }
  },

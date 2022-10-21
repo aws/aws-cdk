@@ -41,6 +41,49 @@
     },
     "Timeout": {}
    }
+  },
+  "JobDefinitionTags76FA063A": {
+   "Type": "AWS::Batch::JobDefinition",
+   "Properties": {
+    "Type": "container",
+    "ContainerProperties": {
+     "Environment": [
+      {
+       "Name": "AWS_REGION",
+       "Value": {
+        "Ref": "AWS::Region"
+       }
+      },
+      {
+       "Name": "AWS_ACCOUNT",
+       "Value": {
+        "Ref": "AWS::AccountId"
+       }
+      }
+     ],
+     "Image": "docker/whalesay",
+     "Privileged": false,
+     "ReadonlyRootFilesystem": false,
+     "ResourceRequirements": [
+      {
+       "Type": "VCPU",
+       "Value": "1"
+      },
+      {
+       "Type": "MEMORY",
+       "Value": "4"
+      }
+     ]
+    },
+    "PlatformCapabilities": [
+     "EC2"
+    ],
+    "PropagateTags": true,
+    "RetryStrategy": {
+     "Attempts": 1
+    },
+    "Timeout": {}
+   }
   }
  },
  "Parameters": {
