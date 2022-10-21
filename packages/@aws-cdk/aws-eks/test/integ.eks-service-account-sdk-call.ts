@@ -7,13 +7,13 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
 import * as eks from '../lib';
-import { BucketPinger } from './pinger/bucket-pinger/bucket-pinger';
+import { BucketPinger } from './bucket-pinger/bucket-pinger';
 
 const app = new App();
 const stack = new Stack(app, 'aws-eks-oidc-provider-test');
 
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
-  directory: path.join(__dirname, 'docker-app/app'),
+  directory: path.join(__dirname, 'sdk-call-integ-test-docker-app/app'),
 });
 
 // just need one nat gateway to simplify the test
@@ -24,7 +24,7 @@ const cluster = new eks.Cluster(stack, 'Cluster', {
   version: eks.KubernetesVersion.V1_21,
 });
 
-const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image'); // changing this ID remakes and runs the pod
+const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 
 const serviceAccount = cluster.addServiceAccount('my-service-account');
 const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(serviceAccount.serviceAccountName);
@@ -53,7 +53,6 @@ const pinger = new BucketPinger(stack, 'S3BucketPinger', {
 // interestingly, without this dependency, CFN will always run the pinger
 // before the pod.
 pinger.node.addDependency(cluster);
-//cluster.node.addDependency(oidcProvider);
 
 // this should confirm that the bucket actually exists and was deleted
 new CfnOutput(stack, 'PingerResponse', {
