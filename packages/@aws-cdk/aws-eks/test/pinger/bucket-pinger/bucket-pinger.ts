@@ -32,7 +32,7 @@ export class BucketPinger extends Construct {
     }
 
     new iam.Policy(this, 'grant-pinger-lambda-bucket-permission', {
-      statements: [new iam.PolicyStatement({
+      statements: [ new iam.PolicyStatement({
         actions: ['s3:DeleteBucket', 's3:ListBucket'],
         resources: ['arn:aws:s3:::*'],
       })],
@@ -46,7 +46,7 @@ export class BucketPinger extends Construct {
     this._resource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       properties: {
-        psuedoProperty: 'changeme1', // update this to trigger the docker to run
+        psuedoProperty: 'changeme456', // update this to trigger the docker to run
       },
     });
   }
