@@ -657,20 +657,6 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
 });
 ```
 
-#### Kubectl and Kubernetes Version
-
-The version of kubectl used must be compatible wtih the Kubernetes version of the cluster. kubectl is supported within one minor version (older or newer) of Kubernetes (see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)). Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different version, you will need to use one of the `@aws-cdk/lambda-layer-kubectlvXY` packages.
-
-```
-import { KubectlV22Layer } from '@aws-cdk/lambda-layer-kubectl-v22';
-
-const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_22,
-  kubectlLayer: new KubectlV22Layer(this, 'kubectl'),
-});
-
-```
-
 #### Environment
 
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
@@ -690,14 +676,26 @@ The kubectl handler uses `kubectl`, `helm` and the `aws` CLI in order to
 interact with the cluster. These are bundled into AWS Lambda layers included in
 the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 
-You can specify a custom `lambda.LayerVersion` if you wish to use a different
-version of these tools. The handler expects the layer to include the following
-three executables:
+The version of kubectl used must be compatible wtih the Kubernetes version of the cluster. kubectl is supported within one minor version (older or newer) of Kubernetes (see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)). Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different version, you will need to use one of the `@aws-cdk/lambda-layer-kubectlvXY` packages.
+
+```ts
+import { KubectlV22Layer } from '@aws-cdk/lambda-layer-kubectl-v22';
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_22,
+  kubectlLayer: new KubectlV22Layer(this, 'kubectl'),
+});
+
+```
+
+You can also specify a custom `lambda.LayerVersion` if you wish to use a
+different version of these tools, or a version not available in any of the
+`@aws-cdk/lambda-layer-kubectlvXY` packages. The handler expects the layer to
+include the following two executables:
 
 ```text
 helm/helm
 kubectl/kubectl
-awscli/aws
 ```
 
 See more information in the
