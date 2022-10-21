@@ -61,7 +61,7 @@ const pinger = new BucketPinger(stack, 'S3BucketPinger', {
   vpc: cluster.vpc,
 });
 // the pinger must wait for the cluster to be updated.
-// interestingly, without this dependency, CFN will always run the pinger 
+// interestingly, without this dependency, CFN will always run the pinger
 // before the pod.
 pinger.node.addDependency(cluster);
 //cluster.node.addDependency(oidcProvider);

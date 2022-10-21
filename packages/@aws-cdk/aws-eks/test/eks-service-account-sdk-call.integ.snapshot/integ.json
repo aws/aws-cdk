@@ -1,14 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.eks-service-account-sdk-call": {
+    "aws-cdk-eks-service-account-sdk-call/DefaultTest": {
       "stacks": [
         "aws-eks-oidc-provider-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksserviceaccountsdkcallDefaultTestDeployAssertC5196707"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

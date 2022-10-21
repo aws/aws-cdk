@@ -32,7 +32,7 @@ export class BucketPinger extends Construct {
     }
 
     new iam.Policy(this, 'grant-pinger-lambda-bucket-permission', {
-      statements: [ new iam.PolicyStatement({
+      statements: [new iam.PolicyStatement({
         actions: ['s3:DeleteBucket', 's3:ListBucket'],
         resources: ['arn:aws:s3:::*'],
       })],
