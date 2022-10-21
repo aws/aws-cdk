@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
+     "S3Key": "bb426cfb5fed5237e5928f871893b243ddf86a591a592b558bd29f60e28bad9d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -722,6 +722,9 @@
    },
    "ap-southeast-2": {
     "FirehoseCidrBlock": "13.210.67.224/27"
+   },
+   "ap-southeast-3": {
+    "FirehoseCidrBlock": "108.136.221.64/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
