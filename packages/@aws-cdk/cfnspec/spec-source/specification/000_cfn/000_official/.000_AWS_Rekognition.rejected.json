@@ -143,7 +143,7 @@
       }
     }
   },
-  "ResourceSpecificationVersion": "93.0.0",
+  "ResourceSpecificationVersion": "94.0.0",
   "ResourceTypes": {
     "AWS::Rekognition::Collection": {
       "Attributes": {

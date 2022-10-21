@@ -1,3 +1,132 @@
+# CloudFormation Resource Specification v94.0.0
+
+## New Resource Types
+
+* AWS::IdentityStore::Group
+* AWS::IdentityStore::GroupMembership
+
+## Attribute Changes
+
+* AWS::DataPipeline::Pipeline PipelineId (__added__)
+
+## Property Changes
+
+* AWS::CodeStarNotifications::NotificationRule Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DataPipeline::Pipeline ParameterObjects.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MSK::Cluster StorageMode (__added__)
+* AWS::SES::DedicatedIpPool ScalingMode (__added__)
+* AWS::SNS::Topic SignatureVersion (__added__)
+
+## Property Type Changes
+
+* AWS::DevOpsGuru::NotificationChannel.NotificationFilterConfig (__added__)
+* AWS::Lex::Bot.AllowedInputTypes (__added__)
+* AWS::Lex::Bot.AudioAndDTMFInputSpecification (__added__)
+* AWS::Lex::Bot.AudioSpecification (__added__)
+* AWS::Lex::Bot.DTMFSpecification (__added__)
+* AWS::Lex::Bot.PromptAttemptSpecification (__added__)
+* AWS::Lex::Bot.TextInputSpecification (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.BatchTransformInput (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.Csv (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.DatasetFormat (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.Json (__added__)
+* AWS::SageMaker::ModelBiasJobDefinition.BatchTransformInput (__added__)
+* AWS::SageMaker::ModelBiasJobDefinition.Csv (__added__)
+* AWS::SageMaker::ModelBiasJobDefinition.DatasetFormat (__added__)
+* AWS::SageMaker::ModelBiasJobDefinition.Json (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.BatchTransformInput (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.Csv (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.DatasetFormat (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.Json (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition.BatchTransformInput (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition.Csv (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition.DatasetFormat (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition.Json (__added__)
+* AWS::SageMaker::MonitoringSchedule.BatchTransformInput (__added__)
+* AWS::SageMaker::MonitoringSchedule.Csv (__added__)
+* AWS::SageMaker::MonitoringSchedule.DatasetFormat (__added__)
+* AWS::SageMaker::MonitoringSchedule.Json (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties DataTransferApi (__added__)
+* AWS::AppFlow::Flow.SalesforceSourceProperties DataTransferApi (__added__)
+* AWS::Connect::User.UserIdentityInfo Mobile (__added__)
+* AWS::Connect::User.UserIdentityInfo SecondaryEmail (__added__)
+* AWS::DataPipeline::Pipeline.Field Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobjects-fields.html#cfn-datapipeline-pipeline-pipelineobjects-fields-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-field.html#cfn-datapipeline-pipeline-field-key
+* AWS::DataPipeline::Pipeline.Field RefValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobjects-fields.html#cfn-datapipeline-pipeline-pipelineobjects-fields-refvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-field.html#cfn-datapipeline-pipeline-field-refvalue
+* AWS::DataPipeline::Pipeline.Field StringValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobjects-fields.html#cfn-datapipeline-pipeline-pipelineobjects-fields-stringvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-field.html#cfn-datapipeline-pipeline-field-stringvalue
+* AWS::DataPipeline::Pipeline.ParameterAttribute Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterobjects-attributes.html#cfn-datapipeline-pipeline-parameterobjects-attribtues-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterattribute.html#cfn-datapipeline-pipeline-parameterattribute-key
+* AWS::DataPipeline::Pipeline.ParameterAttribute StringValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterobjects-attributes.html#cfn-datapipeline-pipeline-parameterobjects-attribtues-stringvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterattribute.html#cfn-datapipeline-pipeline-parameterattribute-stringvalue
+* AWS::DataPipeline::Pipeline.ParameterObject Attributes.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterobjects.html#cfn-datapipeline-pipeline-parameterobjects-attributes
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterobject.html#cfn-datapipeline-pipeline-parameterobject-attributes
+* AWS::DataPipeline::Pipeline.ParameterObject Id.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterobjects.html#cfn-datapipeline-pipeline-parameterobjects-id
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parameterobject.html#cfn-datapipeline-pipeline-parameterobject-id
+* AWS::DataPipeline::Pipeline.ParameterValue Id.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parametervalues.html#cfn-datapipeline-pipeline-parametervalues-id
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parametervalue.html#cfn-datapipeline-pipeline-parametervalue-id
+* AWS::DataPipeline::Pipeline.ParameterValue StringValue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parametervalues.html#cfn-datapipeline-pipeline-parametervalues-stringvalue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-parametervalue.html#cfn-datapipeline-pipeline-parametervalue-stringvalue
+* AWS::DataPipeline::Pipeline.PipelineObject Fields.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobjects.html#cfn-datapipeline-pipeline-pipelineobjects-fields
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobject.html#cfn-datapipeline-pipeline-pipelineobject-fields
+* AWS::DataPipeline::Pipeline.PipelineObject Id.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobjects.html#cfn-datapipeline-pipeline-pipelineobjects-id
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobject.html#cfn-datapipeline-pipeline-pipelineobject-id
+* AWS::DataPipeline::Pipeline.PipelineObject Name.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobjects.html#cfn-datapipeline-pipeline-pipelineobjects-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobject.html#cfn-datapipeline-pipeline-pipelineobject-name
+* AWS::DataPipeline::Pipeline.PipelineTag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelinetags.html#cfn-datapipeline-pipeline-pipelinetags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelinetag.html#cfn-datapipeline-pipeline-pipelinetag-key
+* AWS::DataPipeline::Pipeline.PipelineTag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelinetags.html#cfn-datapipeline-pipeline-pipelinetags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelinetag.html#cfn-datapipeline-pipeline-pipelinetag-value
+* AWS::DevOpsGuru::NotificationChannel.NotificationChannelConfig Filters (__added__)
+* AWS::Lex::Bot.PromptSpecification PromptAttemptsSpecification (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.DataQualityJobInput BatchTransformInput (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.DataQualityJobInput EndpointInput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::ModelBiasJobDefinition.ModelBiasJobInput BatchTransformInput (__added__)
+* AWS::SageMaker::ModelBiasJobDefinition.ModelBiasJobInput EndpointInput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::ModelExplainabilityJobDefinition.ModelExplainabilityJobInput BatchTransformInput (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.ModelExplainabilityJobInput EndpointInput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::ModelQualityJobDefinition.ModelQualityJobInput BatchTransformInput (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition.ModelQualityJobInput EndpointInput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::MonitoringSchedule.MonitoringInput BatchTransformInput (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringInput EndpointInput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Transfer::Server.WorkflowDetails OnPartialUpload (__added__)
+* AWS::Transfer::Server.WorkflowDetails OnUpload.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Unapplied changes
+
+* AWS::Rekognition is at 92.0.0
+
 # CloudFormation Resource Specification v93.0.0
 
 ## New Resource Types
