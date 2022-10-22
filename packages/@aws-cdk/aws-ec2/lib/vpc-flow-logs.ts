@@ -533,7 +533,7 @@ export interface FlowLogOptions {
    * The fields to include in the flow log record, in the order in which they should appear.
    * See https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records
    *
-   * @default - No custom log format options provided.
+   * @default - default log format is used.
    */
   readonly customLogFormatFields?: LogFormatField[];
 
