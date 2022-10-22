@@ -406,91 +406,91 @@ export enum FlowLogMaxAggregationInterval {
  */
 export enum LogFormatField {
   /**
-    * The VPC Flow Logs version.
-    */
+   * The VPC Flow Logs version.
+   */
   VERSION = '${version}',
 
   /**
-  * The AWS account ID of the owner of the source network interface for which traffic is recorded.
-  */
+   * The AWS account ID of the owner of the source network interface for which traffic is recorded.
+   */
   ACCOUNT_ID = '${account-id}',
 
   /**
-  * The ID of the network interface for which the traffic is recorded.
-  */
+   * The ID of the network interface for which the traffic is recorded.
+   */
   INTERFACE_ID = '${interface-id}',
 
   /**
-    * The source address for incoming traffic, or the IPv4 or IPv6 address of the network interface
-    * for outgoing traffic on the network interface.
-    */
+   * The source address for incoming traffic, or the IPv4 or IPv6 address of the network interface
+   * for outgoing traffic on the network interface.
+   */
   SRC_ADDR = '${srcaddr}',
 
   /**
-    * The destination address for outgoing traffic, or the IPv4 or IPv6 address of the network interface
-    * for incoming traffic on the network interface.
-    */
+   * The destination address for outgoing traffic, or the IPv4 or IPv6 address of the network interface
+   * for incoming traffic on the network interface.
+   */
   DST_ADDR = '${dstaddr}',
 
   /**
-    * The source port of the traffic.
-    */
+   * The source port of the traffic.
+   */
   SRC_PORT = '${srcport}',
 
   /**
-    * The destination port of the traffic.
-    */
+   * The destination port of the traffic.
+   */
   DST_PORT = '${dstport}',
 
   /**
-    * The IANA protocol number of the traffic.
-    */
+   * The IANA protocol number of the traffic.
+   */
   PROTOCOL = '${protocol}',
 
   /**
-    * The number of packets transferred during the flow.
-    */
+   * The number of packets transferred during the flow.
+   */
   PACKETS = '${packets}',
 
   /**
-    * The number of bytes transferred during the flow.
-    */
+   * The number of bytes transferred during the flow.
+   */
   BYTES = '${bytes}',
 
   /**
-    * The packet-level (original) source IP address of the traffic.
-    */
+   * The packet-level (original) source IP address of the traffic.
+   */
   PKT_SRC_ADDR = '${pkt-srcaddr}',
 
   /**
-    * The packet-level (original) destination IP address for the traffic.
-    */
+   * The packet-level (original) destination IP address for the traffic.
+   */
   PKT_DST_ADDR = '${pkt-dstaddr}',
 
   /**
-  * The Region that contains the network interface for which traffic is recorded.
-  */
+   * The Region that contains the network interface for which traffic is recorded.
+   */
   REGION = '${region}',
 
   /**
    * The ID of the Availability Zone that contains the network interface for which traffic is recorded.
-  */
+   */
   AZ_ID = '${az-id}',
 
   /**
-  * The type of sublocation that's returned in the sublocation-id field.
-  */
+   * The type of sublocation that's returned in the sublocation-id field.
+   */
   SUBLOCATION_TYPE = '${sublocation-type}',
 
   /**
-  * The ID of the sublocation that contains the network interface for which traffic is recorded.
-  */
+   * The ID of the sublocation that contains the network interface for which traffic is recorded.
+   */
   SUBLOCATION_ID = '${sublocation-id}',
 
   /**
-  * The name of the subset of IP address ranges for the pkt-srcaddr field,
-  * if the source IP address is for an AWS service.
-  */
+   * The name of the subset of IP address ranges for the pkt-srcaddr field,
+   * if the source IP address is for an AWS service.
+   */
   PKT_SRC_AWS_SERVICE = '${pkt-src-aws-service}',
 
   /**
