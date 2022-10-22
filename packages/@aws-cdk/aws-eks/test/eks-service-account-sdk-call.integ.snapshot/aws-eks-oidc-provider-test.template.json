@@ -1040,7 +1040,7 @@
       [
        "[{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"labels\":{\"aws.cdk.eks/prune-c8c88f6b67ceb9f4140b1b57471ed94d088c917849\":\"\",\"cdk8s.io/metadata.addr\":\"sdk-call-image-Pod-c86043a4\"},\"name\":\"sdk-call-image-pod-c806267e\"},\"spec\":{\"automountServiceAccountToken\":true,\"containers\":[{\"image\":\"",
        {
-        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:9448319c1840dec2adb7d4943d3dbd6c6944b64b7af0c1f4ca63fde4d959131c"
+        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:ad93f5960a1af5328edfd550fa7ceca2cd209f39de91feadf0e38236b56a960b"
        },
        "\",\"imagePullPolicy\":\"Always\",\"name\":\"main\",\"ports\":[{\"containerPort\":8080}],\"securityContext\":{\"privileged\":false,\"readOnlyRootFilesystem\":false,\"runAsNonRoot\":false}}],\"dnsPolicy\":\"ClusterFirst\",\"restartPolicy\":\"Never\",\"securityContext\":{\"fsGroupChangePolicy\":\"Always\",\"runAsNonRoot\":false},\"serviceAccountName\":\"awseksoidcprovidertestclustermyserviceaccount24420634\",\"setHostnameAsFQDN\":false}}]"
       ]
@@ -1086,7 +1086,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/33cd9a04368659c7a40edb81cfe708e35df58fd7fb5cab6e47e4e307101e711a.json"
+       "/e59f13ce93f53a92012f4cb1909dd1c644a3eaabecb3f91452ebb77d698e7b36.json"
       ]
      ]
     },
@@ -1121,7 +1121,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e9a2cf3ba7ffdf0c8dd17e4e44a6408679c276f2e16bf11edacf45fd366acaa5.json"
+       "/059554c62e9a55071f25739c539509931f3e6ca68eaba0d8dabc5a14b8891229.json"
       ]
      ]
     },
@@ -1430,7 +1430,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "dcbc2e9181e895e14522d2a67351d9654790e35567e370f54120423dd4604b40.zip"
+     "S3Key": "41c8a7cd37aeed043235c5685fbbd3711edb412ae285f9993951fd1bde8734a5.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1601,7 +1601,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
     },
     "Role": {
      "Fn::GetAtt": [

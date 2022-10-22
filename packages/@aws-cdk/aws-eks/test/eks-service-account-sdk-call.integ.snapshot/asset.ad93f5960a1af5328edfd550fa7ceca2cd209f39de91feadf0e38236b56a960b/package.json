@@ -1,0 +1,6 @@
+{
+  "name": "eks-service-account-sdk-call-integ-test",
+  "dependencies": {
+    "aws-sdk": "^2.1226.0"
+  }
+}
