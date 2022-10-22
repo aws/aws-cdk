@@ -1332,6 +1332,22 @@ vpc.addFlowLog('FlowLog', {
     LogFormatField.DST_PORT,
   ],
 });
+
+// If you just want to add a field to the default field
+vpc.addFlowLog('FlowLog', {
+  customLogFormatFields: [
+    LogFormatField.VERSION,
+    LogFormatField.ALL_DEFAULT_FIELDS,
+  ],
+});
+
+// If AWS CDK does not support the new fields
+vpc.addFlowLog('FlowLog', {
+  customLogFormatFields: [
+    LogFormatField.SRC_PORT,
+    LogFormatField.custom('new-field'),
+  ],
+});
 ```
 
 

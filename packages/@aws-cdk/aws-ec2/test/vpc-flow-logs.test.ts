@@ -528,6 +528,7 @@ test('with custom log format set, it successfully creates with cloudwatch log de
 
 });
 
+
 test('with custom log format set empty, it not creates with cloudwatch log destination', () => {
   const stack = getTestStack();
 
@@ -556,3 +557,53 @@ function getTestStack(): Stack {
     env: { account: '123456789012', region: 'us-east-1' },
   });
 }
+
+test('with custom log format set all default field, it not creates with cloudwatch log destination', () => {
+  const stack = getTestStack();
+
+  new FlowLog(stack, 'FlowLogs', {
+    resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+    customLogFormatFields: [
+      LogFormatField.VERSION,
+      LogFormatField.ALL_DEFAULT_FIELDS,
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+    ResourceType: 'NetworkInterface',
+    TrafficType: 'ALL',
+    ResourceId: 'eni-123455',
+    DeliverLogsPermissionArn: {
+      'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+    },
+    LogFormat: '${version} ${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} ${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} ${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} ${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}',
+    LogGroupName: {
+      Ref: 'FlowLogsLogGroup9853A85F',
+    },
+  });
+});
+
+test('with custom log format set custom, it not creates with cloudwatch log destination', () => {
+  const stack = getTestStack();
+
+  new FlowLog(stack, 'FlowLogs', {
+    resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+    customLogFormatFields: [
+      LogFormatField.SRC_PORT,
+      LogFormatField.custom('new-field'),
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+    ResourceType: 'NetworkInterface',
+    TrafficType: 'ALL',
+    ResourceId: 'eni-123455',
+    DeliverLogsPermissionArn: {
+      'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+    },
+    LogFormat: '${srcport} ${new-field}',
+    LogGroupName: {
+      Ref: 'FlowLogsLogGroup9853A85F',
+    },
+  });
+});

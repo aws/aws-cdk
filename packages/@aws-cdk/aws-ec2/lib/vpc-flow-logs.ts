@@ -404,110 +404,125 @@ export enum FlowLogMaxAggregationInterval {
 /**
  * The following table describes all of the available fields for a flow log record.
  */
-export enum LogFormatField {
+export class LogFormatField {
   /**
    * The VPC Flow Logs version.
    */
-  VERSION = '${version}',
+  public static readonly VERSION = new LogFormatField('${version}');
 
   /**
    * The AWS account ID of the owner of the source network interface for which traffic is recorded.
    */
-  ACCOUNT_ID = '${account-id}',
+  public static readonly ACCOUNT_ID = new LogFormatField('${account-id}');
 
   /**
    * The ID of the network interface for which the traffic is recorded.
    */
-  INTERFACE_ID = '${interface-id}',
+  public static readonly INTERFACE_ID = new LogFormatField('${interface-id');
 
   /**
    * The source address for incoming traffic, or the IPv4 or IPv6 address of the network interface
    * for outgoing traffic on the network interface.
    */
-  SRC_ADDR = '${srcaddr}',
+  public static readonly SRC_ADDR = new LogFormatField('${srcaddr}');
 
   /**
    * The destination address for outgoing traffic, or the IPv4 or IPv6 address of the network interface
    * for incoming traffic on the network interface.
    */
-  DST_ADDR = '${dstaddr}',
+  public static readonly DST_ADDR = new LogFormatField('${dstaddr}');
 
   /**
    * The source port of the traffic.
    */
-  SRC_PORT = '${srcport}',
+  public static readonly SRC_PORT = LogFormatField.custom('srcport');
 
   /**
    * The destination port of the traffic.
    */
-  DST_PORT = '${dstport}',
+  public static readonly DST_PORT = LogFormatField.custom('dstport');
 
   /**
    * The IANA protocol number of the traffic.
    */
-  PROTOCOL = '${protocol}',
+  public static readonly PROTOCOL = new LogFormatField('${protocol}');
 
   /**
    * The number of packets transferred during the flow.
    */
-  PACKETS = '${packets}',
+  public static readonly PACKETS = new LogFormatField('${packets}');
 
   /**
    * The number of bytes transferred during the flow.
    */
-  BYTES = '${bytes}',
+  public static readonly BYTES = new LogFormatField('${bytes}');
 
   /**
    * The packet-level (original) source IP address of the traffic.
    */
-  PKT_SRC_ADDR = '${pkt-srcaddr}',
+  public static readonly PKT_SRC_ADDR = new LogFormatField('${pkt-srcaddr}');
 
   /**
    * The packet-level (original) destination IP address for the traffic.
    */
-  PKT_DST_ADDR = '${pkt-dstaddr}',
+  public static readonly PKT_DST_ADDR = new LogFormatField('${pkt-dstaddr}');
 
   /**
    * The Region that contains the network interface for which traffic is recorded.
    */
-  REGION = '${region}',
+  public static readonly REGION = new LogFormatField('${region}');
 
   /**
    * The ID of the Availability Zone that contains the network interface for which traffic is recorded.
    */
-  AZ_ID = '${az-id}',
+  public static readonly AZ_ID = new LogFormatField('${az-id}');
 
   /**
    * The type of sublocation that's returned in the sublocation-id field.
    */
-  SUBLOCATION_TYPE = '${sublocation-type}',
+  public static readonly SUBLOCATION_TYPE = new LogFormatField('${sublocation-type}');
 
   /**
    * The ID of the sublocation that contains the network interface for which traffic is recorded.
    */
-  SUBLOCATION_ID = '${sublocation-id}',
+  public static readonly SUBLOCATION_ID = new LogFormatField('${sublocation-id}');
 
   /**
    * The name of the subset of IP address ranges for the pkt-srcaddr field,
    * if the source IP address is for an AWS service.
    */
-  PKT_SRC_AWS_SERVICE = '${pkt-src-aws-service}',
+  public static readonly PKT_SRC_AWS_SERVICE = new LogFormatField('${pkt-src-aws-service}');
 
   /**
    * The name of the subset of IP address ranges for the pkt-dstaddr field,
    * if the destination IP address is for an AWS service.
    */
-  PKT_DST_AWS_SERVICE = '${pkt-dst-aws-service}',
+  public static readonly PKT_DST_AWS_SERVICE = new LogFormatField('${pkt-dst-aws-service}');
 
   /**
    * The direction of the flow with respect to the interface where traffic is captured.
    */
-  FLOW_DIRECTION = '${flow-direction}',
+  public static readonly FLOW_DIRECTION = new LogFormatField('${flow-direction}');
 
   /**
    * The path that egress traffic takes to the destination.
    */
-  TRAFFIC_PATH = '${traffic-path}',
+  public static readonly TRAFFIC_PATH = new LogFormatField('${traffic-path}');
+
+  /**
+   * The default format.
+   */
+  public static readonly ALL_DEFAULT_FIELDS = new LogFormatField('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} ${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} ${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} ${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}');
+
+  /**
+   * The custom format. For users to specify unsupported fields.
+   */
+  public static custom(field: string): LogFormatField {
+    return new LogFormatField(`\${${field}}`);
+  }
+
+  constructor(public readonly value: string) {}
+
 }
 
 /**
@@ -640,7 +655,9 @@ export class FlowLog extends FlowLogBase {
     }
     let customLogFormat: string | undefined = undefined;
     if (props.customLogFormatFields) {
-      customLogFormat = props.customLogFormatFields.join(' ');
+      customLogFormat = props.customLogFormatFields.map(elm => {
+        return elm.value;
+      }).join(' ');
     }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
