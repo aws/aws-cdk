@@ -1,6 +1,8 @@
-/// !cdk-integ *
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as ssm from '../lib';
+
+const SECURE_PARAM_NAME = '/My/Secret/Parameter';
 
 class CreatingStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -8,7 +10,17 @@ class CreatingStack extends cdk.Stack {
 
     new ssm.StringParameter(this, 'String', {
       parameterName: '/My/Public/Parameter',
-      stringValue: 'abcdef',
+      stringValue: 'Abc123',
+    });
+
+    new integ.AwsApiCall(this, 'SecureParam', {
+      service: 'SSM',
+      api: 'putParameter',
+      parameters: {
+        Name: SECURE_PARAM_NAME,
+        Type: 'SecureString',
+        Value: 'Abc123',
+      },
     });
   }
 }
@@ -24,7 +36,6 @@ class UsingStack extends cdk.Stack {
       default: 1,
     }).valueAsNumber;
 
-    /// !show
     // Retrieve the latest value of the non-secret parameter
     // with name "/My/String/Parameter".
     const stringValue = ssm.StringParameter.fromStringParameterAttributes(this, 'MyValue', {
@@ -40,34 +51,52 @@ class UsingStack extends cdk.Stack {
     // Retrieve a specific version of the secret (SecureString) parameter.
     const secretValue = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValue', {
       parameterName: '/My/Secret/Parameter',
-    });
+    }).stringValue;
     const secretValueVersion = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValueVersion', {
       parameterName: '/My/Secret/Parameter',
-      version: 5,
-    });
+      version: 1,
+    }).stringValue;
     const secretValueVersionFromToken = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValueVersionFromToken', {
       parameterName: '/My/Secret/Parameter',
       // parameter version from token
       version: parameterVersion,
+    }).stringValue;
+
+    const user = new cdk.CfnResource(this, 'DummyResourceUsingStringParameters', {
+      type: 'AWS::IAM::User',
+      properties: {
+        LoginProfile: {
+          Password: cdk.Fn.join('-', [
+            stringValue,
+            stringValueVersionFromToken,
+            secretValue,
+            secretValueVersion,
+            secretValueVersionFromToken,
+          ]),
+        },
+      },
     });
-
-    /// !hide
-
-    new cdk.CfnResource(this, 'Dummy', { type: 'AWS::SNS::Topic' });
-    new cdk.CfnOutput(this, 'TheValue', { value: stringValue });
-    new cdk.CfnOutput(this, 'TheValueVersionFromToken', { value: stringValueVersionFromToken });
-
-    // Cannot be provisioned so cannot be actually used
-    Array.isArray(secretValue);
-    Array.isArray(secretValueVersion);
-    Array.isArray(secretValueVersionFromToken);
+    user.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
   }
 }
 
 const app = new cdk.App();
 
 const creating = new CreatingStack(app, 'sspms-creating');
+
 const using = new UsingStack(app, 'sspms-using');
 using.addDependency(creating);
+
+const cleanup = new cdk.Stack(app, 'sspms-cleanup');
+cleanup.addDependency(using);
+
+const integTest = new integ.IntegTest(app, 'SSMParameterStoreTest', {
+  assertionStack: cleanup,
+  testCases: [creating, using],
+});
+
+integTest.assertions.awsApiCall('SSM', 'deleteParameter', {
+  Name: SECURE_PARAM_NAME,
+});
 
 app.synth();
