@@ -619,7 +619,7 @@ test('specifying a vpcConnector should assign the service to it and set the egre
   const stack = new cdk.Stack(app, 'demo-stack');
 
   const vpc = new ec2.Vpc(stack, 'Vpc', {
-    cidr: '10.0.0.0/16',
+    ipAddressManager: ec2.IpAddressManager.cidr('10.0.0.0/16'),
   });
 
   const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
