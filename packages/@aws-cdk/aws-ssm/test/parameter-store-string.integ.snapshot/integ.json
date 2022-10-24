@@ -3,7 +3,6 @@
   "testCases": {
     "SSMParameterStoreTest/DefaultTest": {
       "stacks": [
-        "sspms-creating",
         "sspms-using"
       ],
       "assertionStack": "sspms-cleanup",

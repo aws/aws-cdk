@@ -92,7 +92,7 @@ cleanup.addDependency(using);
 
 const integTest = new integ.IntegTest(app, 'SSMParameterStoreTest', {
   assertionStack: cleanup,
-  testCases: [creating, using],
+  testCases: [using],
 });
 
 integTest.assertions.awsApiCall('SSM', 'deleteParameter', {

@@ -15,7 +15,7 @@
      "Name": "/My/Secret/Parameter"
     },
     "flattenResponse": "false",
-    "salt": "1666615098744"
+    "salt": "1666616854742"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
