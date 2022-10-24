@@ -353,12 +353,12 @@ export class SdkProvider {
     debug(`Assuming role '${roleArn}'.`);
 
     region = region ?? this.defaultRegion;
-
+    const roleSessionName = process.env.AWS_CDK_ROLE_SESSION_NAME || `aws-cdk-${safeUsername()}`; 
     const creds = new AWS.ChainableTemporaryCredentials({
       params: {
         RoleArn: roleArn,
         ...externalId ? { ExternalId: externalId } : {},
-        RoleSessionName: `aws-cdk-${safeUsername()}`,
+        RoleSessionName: roleSessionName,
       },
       stsConfig: {
         region,

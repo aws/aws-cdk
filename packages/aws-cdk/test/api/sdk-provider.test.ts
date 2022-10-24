@@ -294,6 +294,7 @@ describe('with intercepted network calls', () => {
     beforeEach(() => {
       // All these tests share that 'arn:aws:role' is a role into account 88888 which can be assumed from 11111
       fakeSts.registerRole(uniq('88888'), 'arn:aws:role', { allowedAccounts: [uniq('11111')] });
+      delete process.env.AWS_CDK_ROLE_SESSION_NAME;
     });
 
     test('error we get from assuming a role is useful', async () => {
@@ -418,6 +419,28 @@ describe('with intercepted network calls', () => {
         await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: '<FAIL:ExpiredToken>' });
       }).rejects.toThrow(/ExpiredToken/);
     });
+
+    test('if AWS_CDK_ROLE_SESSION_NAME is set the role session name is correctly sey up', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '11111' },
+        },
+      });
+      process.env.AWS_CDK_ROLE_SESSION_NAME = 'custom-session-name';
+
+      const provider = await providerFromProfile(undefined);
+
+      const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
+      await sdk.currentAccount();
+
+      // THEN
+      expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
+        roleSessionName: 'custom-session-name',
+      }));
+    });
+
   });
 
   describe('Plugins', () => {
