@@ -755,6 +755,7 @@ The following environment variables affect aws-cdk:
 
 - `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
 - `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.
+- `AWS_CDK_ROLE_SESSION_NAME`: customize the role session name.
 
 ### Running in CI
 
