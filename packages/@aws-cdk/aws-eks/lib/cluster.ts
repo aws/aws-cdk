@@ -124,11 +124,18 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlLambdaRole?: iam.IRole;
 
   /**
-   * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
+   * An AWS Lambda layer that includes `kubectl` and `helm`
    *
-   * If not defined, a default layer will be used.
+   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * If not defined, a default layer will be used containing the AWS CLI 1.x.
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * Kubectl Provider for issuing kubectl commands against it
@@ -325,18 +332,37 @@ export interface ClusterAttributes {
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI. This layer
-   * is used by the kubectl handler to apply manifests and install helm charts.
+   * An AWS Lambda Layer which includes `kubectl` and Helm.
+   *
+   * This layer is used by the kubectl handler to apply manifests and install
+   * helm charts. You must pick an appropriate releases of one of the
+   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
+   * Kubernetes you have chosen. If you don't supply this value `kubectl`
+   * 1.20 will be used, but that version is most likely too old.
    *
    * The handler expects the layer to include the following executables:
    *
-   *    helm/helm
-   *    kubectl/kubectl
-   *    awscli/aws
+   * ```
+   * /opt/helm/helm
+   * /opt/kubectl/kubectl
+   * ```
    *
-   * @default - a layer bundled with this module.
+   * @default - a default layer with Kubectl 1.20 and helm 3.8.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * The handler expects the layer to include the following executables:
+   *
+   * ```
+   * /opt/awscli/aws
+   * ```
+   *
+   * @default - a default layer with the AWS CLI 1.x
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * KubectlProvider for issuing kubectl commands.
@@ -500,28 +526,37 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
+   * An AWS Lambda Layer which includes `kubectl` and Helm.
    *
-   * By default, the provider will use the layer included in the
-   * "aws-lambda-layer-kubectl" SAR application which is available in all
-   * commercial regions.
+   * This layer is used by the kubectl handler to apply manifests and install
+   * helm charts. You must pick an appropriate releases of one of the
+   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
+   * Kubernetes you have chosen. If you don't supply this value `kubectl`
+   * 1.20 will be used, but that version is most likely too old.
    *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
+   * The handler expects the layer to include the following executables:
    *
-   * ```ts
-   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED],
-   * });
+   * ```
+   * /opt/helm/helm
+   * /opt/kubectl/kubectl
    * ```
    *
-   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   * @default - a default layer with Kubectl 1.20.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * The handler expects the layer to include the following executables:
+   *
+   * ```
+   * /opt/awscli/aws
+   * ```
+   *
+   * @default - a default layer with the AWS CLI 1.x
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.
@@ -1233,10 +1268,18 @@ export class Cluster extends ClusterBase {
   private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
-   * The AWS Lambda layer that contains `kubectl`, `helm` and the AWS CLI. If
-   * undefined, a SAR app that contains this layer will be used.
+   * An AWS Lambda layer that includes `kubectl` and `helm`
+   *
+   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
    */
-  public readonly kubectlLayer?: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * If not defined, a default layer will be used containing the AWS CLI 1.x.
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * The amount of memory allocated to the kubectl provider's lambda function.
@@ -1359,6 +1402,7 @@ export class Cluster extends ClusterBase {
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
+    this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
 
     this.onEventLayer = props.onEventLayer;
@@ -2033,6 +2077,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly awscliLayer?: lambda.ILayerVersion;
   public readonly kubectlProvider?: IKubectlProvider;
   public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
@@ -2054,6 +2099,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
     this.kubectlProvider = props.kubectlProvider;

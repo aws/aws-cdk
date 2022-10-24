@@ -1083,14 +1083,53 @@ new route53.ARecord(this, 'CustomDomainAliasRecord', {
 });
 ```
 
+### Custom Domains with multi-level api mapping
+
+Additional requirements for creating multi-level path mappings for RestApis:
+
+(both are defaults)
+
+- Must use `SecurityPolicy.TLS_1_2`
+- DomainNames must be `EndpointType.REGIONAL`
+
+```ts
+declare const acmCertificateForExampleCom: any;
+declare const restApi: apigateway.RestApi;
+
+new apigateway.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  mapping: restApi,
+  basePath: 'orders/v1/api',
+});
+```
+
+To then add additional mappings to a domain you can use the `addApiMapping` method.
+
+```ts
+declare const acmCertificateForExampleCom: any;
+declare const restApi: apigateway.RestApi;
+declare const secondRestApi: apigateway.RestApi;
+
+const domain = new apigateway.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  mapping: restApi,
+});
+
+domain.addApiMapping(secondRestApi.deploymentStage, {
+  basePath: 'orders/v2/api',
+});
+```
+
 ## Access Logging
 
 Access logging creates logs every time an API method is accessed. Access logs can have information on
 who has accessed the API, how the caller accessed the API and what responses were generated.
 Access logs are configured on a Stage of the RestApi.
 Access logs can be expressed in a format of your choosing, and can contain any access details, with a
-minimum that it must include the 'requestId'. The list of  variables that can be expressed in the access
-log can be found
+minimum that it must include either 'requestId' or 'extendedRequestId'. The list of  variables that
+can be expressed in the access log can be found
 [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference).
 Read more at [Setting Up CloudWatch API Logging in API
 Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
@@ -1101,9 +1140,9 @@ const prdLogGroup = new logs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
-    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields()
-  }
-})
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
+  },
+});
 const deployment = new apigateway.Deployment(this, 'Deployment', {api});
 
 // development stage
@@ -1120,8 +1159,8 @@ new apigateway.Stage(this, 'dev', {
     resourcePath: true,
     responseLength: true,
     status: true,
-    user: true
-  })
+    user: true,
+  }),
 });
 ```
 

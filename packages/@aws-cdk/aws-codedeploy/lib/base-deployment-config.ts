@@ -110,19 +110,6 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
   }
 
   /**
-   * This method should be used only for static references to predefined deployment configurations,
-   * like EcsDeploymentConfig.ALL_AT_ONCE
-   * @param name the name of the referenced custom Deployment Configuration
-   * @returns a reference to an existing custom Deployment Configuration
-   */
-  protected static deploymentConfig(name: string): IBaseDeploymentConfig {
-    return {
-      deploymentConfigName: name,
-      deploymentConfigArn: arnForDeploymentConfig(name),
-    };
-  }
-
-  /**
    * The name of the deployment config
    * @attribute
    */
