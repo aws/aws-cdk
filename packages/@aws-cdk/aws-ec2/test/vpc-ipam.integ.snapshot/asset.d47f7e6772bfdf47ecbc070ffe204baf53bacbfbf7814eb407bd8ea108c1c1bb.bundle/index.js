@@ -534,9 +534,6 @@ function decodeCall(call) {
   }
 }
 
-// lib/assertions/providers/lambda-handler/sdk.ts
-var import_child_process = require("child_process");
-
 // lib/assertions/providers/lambda-handler/utils.ts
 function decode(object) {
   return JSON.parse(JSON.stringify(object), (_k, v) => {
@@ -566,24 +563,9 @@ function flatten(object) {
     }(object)
   );
 }
-function installLatestSdk() {
-  console.log("Installing latest AWS SDK v2");
-  (0, import_child_process.execSync)("HOME=/tmp npm install aws-sdk@2 --production --no-package-lock --no-save --prefix /tmp");
-}
 var AwsApiCallHandler = class extends CustomResourceHandler {
   async processEvent(request2) {
-    let AWS;
-    if (request2.installLatestAwsSdk === "true") {
-      try {
-        installLatestSdk();
-        AWS = require("/tmp/node_modules/aws-sdk");
-      } catch (e) {
-        console.log(`Failed to install latest AWS SDK v2: ${e}`);
-        AWS = require("aws-sdk");
-      }
-    } else {
-      AWS = require("aws-sdk");
-    }
+    const AWS = require("aws-sdk");
     console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
     if (!Object.prototype.hasOwnProperty.call(AWS, request2.service)) {
       throw Error(`Service ${request2.service} does not exist in AWS SDK version ${AWS.VERSION}.`);

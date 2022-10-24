@@ -1,33 +1,34 @@
+
 import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
-import { AwsIpam, IpamProvider, StaticIpam, SubnetType, Vpc } from '../lib';
+import { AwsIpam, IpAddressManager, Cidr, SubnetType, Vpc } from '../lib';
 
-describe('StaticIpam vpc allocation', () => {
+describe('Cidr vpc allocation', () => {
 
-  test('Default StaticIpam returns the correct vpc cidr', () => {
-    const ipamProvider = new StaticIpam('10.0.0.0/16');
-    expect(ipamProvider.allocateVpcCidr().cidrBlock).toEqual('10.0.0.0/16');
+  test('Default Cidr returns the correct vpc cidr', () => {
+    const ipAddressManager = new Cidr('10.0.0.0/16');
+    expect(ipAddressManager.allocateVpcCidr().cidrBlock).toEqual('10.0.0.0/16');
   });
 
-  test('Default StaticIpam returns ipv4IpamPoolId as undefined', () => {
-    const ipamProvider = new StaticIpam('10.0.0.0/16');
-    expect(ipamProvider.allocateVpcCidr().ipv4IpamPoolId).toBeUndefined;
+  test('Default Cidr returns ipv4IpamPoolId as undefined', () => {
+    const ipAddressManager = new Cidr('10.0.0.0/16');
+    expect(ipAddressManager.allocateVpcCidr().ipv4IpamPoolId).toBeUndefined;
   });
 
-  test('Default StaticIpam returns ipv4NetmaskLength as undefined', () => {
-    const ipamProvider = new StaticIpam('10.0.0.0/16');
-    expect(ipamProvider.allocateVpcCidr().ipv4NetmaskLength).toBeUndefined;
+  test('Default Cidr returns ipv4NetmaskLength as undefined', () => {
+    const ipAddressManager = new Cidr('10.0.0.0/16');
+    expect(ipAddressManager.allocateVpcCidr().ipv4NetmaskLength).toBeUndefined;
   });
 
 });
 
-describe('StaticIpam subnets allocation', () => {
+describe('IpAddressManager.Cidr subnets allocation', () => {
 
-  const staticIpamProps = '10.0.0.0/16';
+  const cidrProps = '10.0.0.0/16';
 
-  test('Default StaticIpam returns the correct subnet allocations, when you do not give a cidr for the subnets', () => {
-    const ipamProvider = new StaticIpam(staticIpamProps);
-    expect(ipamProvider.allocateSubnetsCidr({
+  test('Default Cidr returns the correct subnet allocations, when you do not give a cidr for the subnets', () => {
+    const ipAddressManager = new Cidr(cidrProps);
+    expect(ipAddressManager.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
         configuration: {
@@ -47,9 +48,9 @@ describe('StaticIpam subnets allocation', () => {
     }).allocatedSubnets).toEqual([{ cidr: '10.0.0.0/17' }, { cidr: '10.0.128.0/17' }]);
   });
 
-  test('Default StaticIpam returns the correct subnet allocations, when you provide a cidr for the subnets', () => {
-    const ipamProvider = new StaticIpam(staticIpamProps);
-    expect(ipamProvider.allocateSubnetsCidr({
+  test('Default Cidr returns the correct subnet allocations, when you provide a cidr for the subnets', () => {
+    const ipAddressManager = new Cidr(cidrProps);
+    expect(ipAddressManager.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
         configuration: {
@@ -71,9 +72,9 @@ describe('StaticIpam subnets allocation', () => {
     }).allocatedSubnets).toEqual([{ cidr: '10.0.0.0/24' }, { cidr: '10.0.1.0/24' }]);
   });
 
-  test('Default StaticIpam returns the correct subnet allocations, when you mix provide and non provided cidr for the subnets', () => {
-    const ipamProvider = new StaticIpam(staticIpamProps);
-    expect(ipamProvider.allocateSubnetsCidr({
+  test('Default Cidr returns the correct subnet allocations, when you mix provided and non provided cidr for the subnets', () => {
+    const ipAddressManager = new Cidr(cidrProps);
+    expect(ipAddressManager.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
         configuration: {
@@ -104,18 +105,18 @@ describe('AwsIpam vpc allocation', () => {
   };
 
   test('AwsIpam returns cidrBlock as undefined', () => {
-    const ipamProvider = new AwsIpam(awsIpamProps);
-    expect(ipamProvider.allocateVpcCidr().cidrBlock).toBeUndefined;
+    const ipAddressManager = new AwsIpam(awsIpamProps);
+    expect(ipAddressManager.allocateVpcCidr().cidrBlock).toBeUndefined;
   });
 
   test('AwsIpam returns the correct vpc ipv4IpamPoolId', () => {
-    const ipamProvider = new AwsIpam(awsIpamProps);
-    expect(ipamProvider.allocateVpcCidr().ipv4IpamPoolId).toEqual('ipam-pool-0111222333444');
+    const ipAddressManager = new AwsIpam(awsIpamProps);
+    expect(ipAddressManager.allocateVpcCidr().ipv4IpamPoolId).toEqual('ipam-pool-0111222333444');
   });
 
   test('AwsIpam returns the correct vpc ipv4NetmaskLength', () => {
-    const ipamProvider = new AwsIpam(awsIpamProps);
-    expect(ipamProvider.allocateVpcCidr().ipv4NetmaskLength).toEqual(22);
+    const ipAddressManager = new AwsIpam(awsIpamProps);
+    expect(ipAddressManager.allocateVpcCidr().ipv4NetmaskLength).toEqual(22);
   });
 
 });
@@ -128,8 +129,8 @@ describe('AwsIpam subnets allocation', () => {
   };
 
   test('AwsIpam returns subnet allocations as 2x TOKEN, when you do not give a cidr for the subnets', () => {
-    const ipamProvider = new AwsIpam({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
-    const allocations = ipamProvider.allocateSubnetsCidr({
+    const ipAddressManager = new AwsIpam({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
+    const allocations = ipAddressManager.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
         configuration: {
@@ -154,8 +155,8 @@ describe('AwsIpam subnets allocation', () => {
   });
 
   test('AwsIpam returns subnet allocations as 2x TOKEN, when you provide a cidr for the subnets', () => {
-    const ipamProvider = new AwsIpam(awsIpamProps);
-    const allocations = ipamProvider.allocateSubnetsCidr({
+    const ipAddressManager = new AwsIpam(awsIpamProps);
+    const allocations = ipAddressManager.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
         configuration: {
@@ -182,8 +183,8 @@ describe('AwsIpam subnets allocation', () => {
   });
 
   test('AwsIpam returns subnet allocations as 2x TOKEN, when you mix provide and non provided cidr for the subnets', () => {
-    const ipamProvider = new AwsIpam({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
-    const allocations = ipamProvider.allocateSubnetsCidr({
+    const ipAddressManager = new AwsIpam({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
+    const allocations = ipAddressManager.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
         configuration: {
@@ -210,29 +211,29 @@ describe('AwsIpam subnets allocation', () => {
 
 });
 
-describe('StaticIpam Vpc Integration', () => {
-  test('StaticIpam provides the correct Cidr allocation to the Vpc ', () => {
+describe('IpAddressManager.cidr Vpc Integration', () => {
+  test('IpAddressManager.Cidr provides the correct Cidr allocation to the Vpc ', () => {
 
     const stack = new Stack();
 
-    const staticIpamProps = '10.0.0.0/16';
-    const ipamProvider = IpamProvider.staticIpam(staticIpamProps);
+    const cidrProps = '10.0.0.0/16';
+    const ipAddressManager = IpAddressManager.cidr(cidrProps);
 
-    new Vpc(stack, 'VpcNetwork', { ipamProvider });
+    new Vpc(stack, 'VpcNetwork', { ipAddressManager: ipAddressManager });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
-      CidrBlock: staticIpamProps,
+      CidrBlock: cidrProps,
     });
   });
 
-  test('StaticIpam provides the correct Subnet allocation to the Vpc', () => {
+  test('IpAddressManager.cidr provides the correct Subnet allocation to the Vpc', () => {
 
     const stack = new Stack();
 
-    const staticIpamProps = '10.0.0.0/16';
-    const ipamProvider = IpamProvider.staticIpam(staticIpamProps);
+    const cidrProps = '10.0.0.0/16';
+    const ipAddressManager = IpAddressManager.cidr(cidrProps);
 
-    new Vpc(stack, 'VpcNetwork', { ipamProvider });
+    new Vpc(stack, 'VpcNetwork', { ipAddressManager: ipAddressManager });
 
     const template = Template.fromStack(stack);
 
@@ -262,9 +263,9 @@ describe('AwsIpam Vpc Integration', () => {
       ipv4NetmaskLength: 22,
     };
 
-    const ipamProvider = IpamProvider.awsIpam(awsIpamProps);
+    const ipAddressManager = IpAddressManager.awsIpam(awsIpamProps);
 
-    expect(() => {new Vpc(stack, 'VpcNetwork', { ipamProvider });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in the provider/);;
+    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddressManager: ipAddressManager });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in the provider/);;
 
   });
 
@@ -278,9 +279,9 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 24,
     };
 
-    const ipamProvider = IpamProvider.awsIpam(awsIpamProps);
+    const ipAddressManager = IpAddressManager.awsIpam(awsIpamProps);
 
-    new Vpc(stack, 'VpcNetwork', { ipamProvider });
+    new Vpc(stack, 'VpcNetwork', { ipAddressManager: ipAddressManager });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
       Ipv4IpamPoolId: awsIpamProps.ipv4IpamPoolId,
@@ -299,9 +300,9 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 24,
     };
 
-    const ipamProvider = IpamProvider.awsIpam(awsIpamProps);
+    const ipAddressManager = IpAddressManager.awsIpam(awsIpamProps);
 
-    new Vpc(stack, 'VpcNetwork', { ipamProvider });
+    new Vpc(stack, 'VpcNetwork', { ipAddressManager: ipAddressManager });
 
     const template = Template.fromStack(stack);
 
@@ -353,9 +354,9 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 17,
     };
 
-    const ipamProvider = IpamProvider.awsIpam(awsIpamProps);
+    const ipAddressManager = IpAddressManager.awsIpam(awsIpamProps);
 
-    expect(() => {new Vpc(stack, 'VpcNetwork', { ipamProvider });}).toThrow('IP space of size /18 not big enough to allocate subnets of sizes /17,/17,/17,/17');;
+    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddressManager: ipAddressManager });}).toThrow('IP space of size /18 not big enough to allocate subnets of sizes /17,/17,/17,/17');;
 
   });
 
@@ -369,10 +370,10 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 17,
     };
 
-    const ipamProvider = IpamProvider.awsIpam(awsIpamProps);
+    const ipAddressManager = IpAddressManager.awsIpam(awsIpamProps);
 
     new Vpc(stack, 'VpcNetwork', {
-      ipamProvider,
+      ipAddressManager: ipAddressManager,
       subnetConfiguration: [{
         name: 'public',
         subnetType: SubnetType.PUBLIC,

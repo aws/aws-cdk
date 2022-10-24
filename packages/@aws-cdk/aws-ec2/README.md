@@ -219,21 +219,48 @@ provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 
 ### Ip Address Management - IPAM
 
-To facilitate options for flexibility in the allocation and use of IP space within Vpc and Subnet including strategy and implementation for the allocation, Vpc utilizes an IpamProvider.
+The VPC spans a supernet IP range, which contains the non-overlapping IPs of  it's contained subnets. Possible sources for this IP range are:
 
-By default, the Vpc construct will create and use a StaticIpam for you if you do not pass an `ipamProvider` to Vpc. StaticIpam is an implementation of the Original CDK Vpc and Subnet IP address allocation strategy and implementation. 
+- You specify an IP range directly by specifying a CIDR
+- You allocate an IP range of a given size automatically from AWS IPAM
 
-You must supply at most one of ipamProvider or cidr to Vpc.
+If you don't specify anything, by default the Vpc will allocate the 10.0.0.0/16 address range which will be exhaustively spread across all subnets in the subnet configuration. This behavior can be changed (see "Allocating an IP range from AWS IPAM" bellow).
 
-StaticIpam will first try to allocated space from the Vpc Cidr any Subnets that explicitly have a `cidrMask` as part of a SubnetConfiguration, this includes reserved subnets, after this any remaining space is divided between the rest of the required subnets.
+Be aware that if you don't specify any ipAddressManager the address space will be fully allocated! If you predict you may need to add more subnet groups later, add them early on and set reserved: true (see the "Advanced Subnet Configuration" section for more information).
 
-When using StaticIpam concrete Cidr values are generated in the synthesized CloudFormation template.
+To facilitate options for flexibility in the allocation and use of IP space within Vpc and Subnet including strategy and implementation for the allocation, Vpc utilizes an IpAddressManager.
 
+By default, the Vpc construct will create and use a IpAddressManager.Cidr for you if you do not pass an `IpAddressManager` to Vpc. IpAddressManager.Cidr is an implementation of the Original CDK Vpc and Subnet IP address allocation strategy and implementation. 
+
+You must supply at most one of IpAddressManager or cidr to Vpc.
+
+#### Specifying an IP range via a CIDR - IpAddressManager.Cidr
+
+IpAddressManager.Cidr allows you to define a Cidr range directly for your Vpc.
+
+IpAddressManager.Cidr will first try to allocated space from the Vpc Cidr any Subnets that explicitly have a `cidrMask` as part of a SubnetConfiguration, this includes reserved subnets, after this any remaining space is divided fully between the rest of the required subnets.
+
+When using IpAddressManager.Cidr concrete Cidr values are generated in the synthesized CloudFormation template.
+
+Static Ipam can be used by creating a new instance or by using IpAddressManager.
+
+Using IpAddressManager:
 ```ts
+import { IpAddressManager } from ''@aws-cdk/aws-ec2'';
+
 new ec2.Vpc(stack, 'TheVPC', {
-  ipamProvider: new ec2.StaticIpam('10.0.1.0/20')
+  ipAddressManager: IpAddressManager.cidr('10.0.1.0/20')
 });
 ```
+
+Creating a new Instance of IpAddressManager.Cidr:
+```ts
+new ec2.Vpc(stack, 'TheVPC', {
+  ipAddressManager: new ec2.Cidr('10.0.1.0/20')
+});
+```
+
+#### Allocating an IP range from AWS IPAM  - IpAddressManager.AwsIpam
 
 AwsIpam uses Amazon VPC IP Address Manager (IPAM) to allocated the Cidr for the Vpc. For information on Amazon VPC IP Address Manager please see the [official documentation](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html).
 
@@ -241,9 +268,25 @@ AWS Ipam requires a `ipv4IpamPoolId` be set to the Amazon VPC IP Address Manager
 
 Subnets are allocated locally of a size defined by `defaultSubnetIpv4NetmaskLength` in the provider or by using any explicit `cidrMask` from a supplied SubnetConfiguration. The provider AwsIpam dose not attempt to allocated any remaining space in the Vpc's Cidr space.
 
+AwsIpam can be used by creating a new instance or by using IpAddressManager.
+
+Using IpAddressManager:
+```ts
+import { IpAddressManager } from ''@aws-cdk/aws-ec2'';
+
+new ec2.Vpc(stack, 'TheVPC', {
+  ipAddressManager: IpAddressManager.awsIpam({
+    ipv4IpamPoolId: pool.ref,
+    ipv4NetmaskLength: 18,
+    defaultSubnetIpv4NetmaskLength: 24
+  })
+});
+```
+
+Creating a new Instance of AwsIpam:
 ```ts
 new ec2.Vpc(stack, 'TheVPC', {
-  ipamProvider: new ec2.AwsIpam({
+  ipAddressManager: new ec2.AwsIpam({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24
@@ -263,9 +306,9 @@ subnet configuration could look like this:
 
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
-  // 'cidr' configures the IP range and size of the entire VPC.
+  // 'ipAddressManager' configures the IP range and size of the entire VPC.
   // The IP space will be divided over the configured subnets.
-  cidr: '10.0.0.0/21',
+  ipAddressManager: ipAddressManager.cidr('10.0.0.0/21'),
 
   // 'maxAzs' configures the maximum number of availability zones to use.
   // If you want to specify the exact availability zones you want the VPC

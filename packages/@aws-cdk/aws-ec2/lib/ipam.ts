@@ -6,15 +6,15 @@ import { SubnetConfiguration } from './vpc';
 /**
  * An abstract Provider of Ipam
  */
-export abstract class IpamProvider {
+export abstract class IpAddressManager {
   /**
    * Used to provide local Ip Address Management services for your VPC
    *
    * VPC Cidr is supplied at creation and subnets are calculated locally
    *
    */
-  public static staticIpam(cidrBlock: string): IpamProvider {
-    return new StaticIpam(cidrBlock);
+  public static cidr(cidrBlock: string): IpAddressManager {
+    return new Cidr(cidrBlock);
   }
 
   /**
@@ -24,7 +24,7 @@ export abstract class IpamProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html
    */
-  public static awsIpam(props: AwsIpamProps): IpamProvider {
+  public static awsIpam(props: AwsIpamProps): IpAddressManager {
     return new AwsIpam(props);
   }
 
@@ -46,7 +46,7 @@ export abstract class IpamProvider {
 /**
  * Provider of Ipam Implementations
  */
-export interface IIpamProvider {
+export interface IIpAddressManager {
   /**
    * Allocates Cidr for Vpc
    */
@@ -193,7 +193,7 @@ export interface AwsIpamProps {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipamProvider: new ec2.AwsIpam({
+ *   ipAddressManager: new ec2.AwsIpam({
  *     ipv4IpamPoolId: pool.ref,
  *     ipv4NetmaskLength: 18,
  *     defaultSubnetIpv4NetmaskLength: 24
@@ -202,7 +202,7 @@ export interface AwsIpamProps {
  * ```
  *
  */
-export class AwsIpam implements IIpamProvider {
+export class AwsIpam implements IIpAddressManager {
   constructor(private readonly props: AwsIpamProps) {}
 
   /**
@@ -258,12 +258,12 @@ export class AwsIpam implements IIpamProvider {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipamProvider: new ec2.StaticIpam('10.0.1.0/20')
+ *   ipAddressManager: new ec2.IpAddressManager.Cidr('10.0.1.0/20')
  * });
  * ```
  *
  */
-export class StaticIpam implements IIpamProvider {
+export class Cidr implements IIpAddressManager {
   private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
@@ -271,7 +271,7 @@ export class StaticIpam implements IIpamProvider {
   }
 
   /**
-   * Allocates Vpc Cidr. called when creating a Vpc using StaticIpam.
+   * Allocates Vpc Cidr. called when creating a Vpc using IpAddressManager.Cidr.
    */
   allocateVpcCidr(): VpcIpamOptions {
     return {

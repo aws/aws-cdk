@@ -20,8 +20,7 @@
      ]
     },
     "flattenResponse": "false",
-    "salt": "1665391872401",
-    "installLatestAwsSdk": false
+    "salt": "1666602022682"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -75,7 +74,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a5e47e41a5a1802f0a9a6c50ddee0834c5823b35e240ee1a8830e87aebef46cd.zip"
+     "S3Key": "d47f7e6772bfdf47ecbc070ffe204baf53bacbfbf7814eb407bd8ea108c1c1bb.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

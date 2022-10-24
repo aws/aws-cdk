@@ -1,20 +1,7 @@
 {
   "version": "21.0.0",
   "files": {
-    "a5e47e41a5a1802f0a9a6c50ddee0834c5823b35e240ee1a8830e87aebef46cd": {
-      "source": {
-        "path": "asset.a5e47e41a5a1802f0a9a6c50ddee0834c5823b35e240ee1a8830e87aebef46cd.bundle",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-current_region": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a5e47e41a5a1802f0a9a6c50ddee0834c5823b35e240ee1a8830e87aebef46cd.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "d1725d3e6f9001532273823c6744d8c471e52954ff414ab9e83d5979a47f61a4": {
+    "5b3a6377cf636bdf8b57c28c24c57742dfd668f4536432348222f40b5ce1a63d": {
       "source": {
         "path": "aws-cdk-ec2-ipam-vpc.template.json",
         "packaging": "file"
@@ -22,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d1725d3e6f9001532273823c6744d8c471e52954ff414ab9e83d5979a47f61a4.json",
+          "objectKey": "5b3a6377cf636bdf8b57c28c24c57742dfd668f4536432348222f40b5ce1a63d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

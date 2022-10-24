@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d1725d3e6f9001532273823c6744d8c471e52954ff414ab9e83d5979a47f61a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b3a6377cf636bdf8b57c28c24c57742dfd668f4536432348222f40b5ce1a63d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -93,24 +93,6 @@
             "data": "AwsIpamVpcprivateSubnet2RouteTableAssociation52A3C85A"
           }
         ],
-        "/aws-cdk-ec2-ipam-vpc/cleanUpIpam/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "cleanUpIpam"
-          }
-        ],
-        "/aws-cdk-ec2-ipam-vpc/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/aws-cdk-ec2-ipam-vpc/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
         "/aws-cdk-ec2-ipam-vpc/Exports/Output{\"Fn::GetAtt\":[\"AwsIpamVpcD3A1DAEE\",\"VpcId\"]}": [
           {
             "type": "aws:cdk:logicalId",
@@ -148,7 +130,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/82bad81cf8eac60f0e51fc423dae939f8eeeeebef3c4bae147061066e0314098.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ee44ec2182f45d2de6a0f0dce2ba54c61792d88196caa30d00380d2a5bb40c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

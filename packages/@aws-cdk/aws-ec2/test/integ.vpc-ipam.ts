@@ -5,6 +5,13 @@ import { AwsIpam, CfnIPAM, CfnIPAMPool, CfnVPC, SubnetType, Vpc } from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-ipam-vpc');
 
+/**
+ * ### MANUAL CLEAN UP REQUIRED ###
+ * 
+ * When IPAM is created running this integ-test it is not currently removed after the test run is complete.
+ * 
+ */
+
 const ipam = new CfnIPAM(stack, 'IPAM', {
   operatingRegions: [
     { regionName: stack.region },
@@ -29,7 +36,7 @@ const pool = new CfnIPAMPool(stack, 'Pool', {
 pool.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
 const awsIpamVpc = new Vpc(stack, 'AwsIpamVpc', {
-  ipamProvider: new AwsIpam({
+  ipAddressManager: new AwsIpam({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24,
