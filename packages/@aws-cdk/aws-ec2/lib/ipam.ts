@@ -4,16 +4,16 @@ import { NetworkBuilder } from './network-util';
 import { SubnetConfiguration } from './vpc';
 
 /**
- * An abstract Provider of Ipam
+ * An abstract Provider of IpAddresses
  */
-export abstract class IpAddressManager {
+export abstract class IpAddresses {
   /**
    * Used to provide local Ip Address Management services for your VPC
    *
    * VPC Cidr is supplied at creation and subnets are calculated locally
    *
    */
-  public static cidr(cidrBlock: string): IpAddressManager {
+  public static cidr(cidrBlock: string): IpAddresses {
     return new Cidr(cidrBlock);
   }
 
@@ -24,7 +24,7 @@ export abstract class IpAddressManager {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html
    */
-  public static awsIpam(props: AwsIpamProps): IpAddressManager {
+  public static awsIpam(props: AwsIpamProps): IpAddresses {
     return new AwsIpam(props);
   }
 
@@ -44,9 +44,9 @@ export abstract class IpAddressManager {
 }
 
 /**
- * Provider of Ipam Implementations
+ * Implementations for ip address management
  */
-export interface IIpAddressManager {
+export interface IIpAddresses {
   /**
    * Allocates Cidr for Vpc
    */
@@ -193,7 +193,7 @@ export interface AwsIpamProps {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipAddressManager: new ec2.AwsIpam({
+ *   ipAddresses: new ec2.AwsIpam({
  *     ipv4IpamPoolId: pool.ref,
  *     ipv4NetmaskLength: 18,
  *     defaultSubnetIpv4NetmaskLength: 24
@@ -202,7 +202,7 @@ export interface AwsIpamProps {
  * ```
  *
  */
-export class AwsIpam implements IIpAddressManager {
+export class AwsIpam implements IIpAddresses {
   constructor(private readonly props: AwsIpamProps) {}
 
   /**
@@ -223,7 +223,7 @@ export class AwsIpam implements IIpAddressManager {
     const cidrSplit = calculateCidrSplits(this.props.ipv4NetmaskLength, input.requestedSubnets.map((mask => {
 
       if ((mask.configuration.cidrMask === undefined) && (this.props.defaultSubnetIpv4NetmaskLength=== undefined) ) {
-        throw new Error('If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in the provider');
+        throw new Error('If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options');
       }
 
       const cidrMask = mask.configuration.cidrMask ?? this.props.defaultSubnetIpv4NetmaskLength;
@@ -258,12 +258,12 @@ export class AwsIpam implements IIpAddressManager {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipAddressManager: new ec2.IpAddressManager.Cidr('10.0.1.0/20')
+ *   ipAddresses: new ec2.IpAddresses.Cidr('10.0.1.0/20')
  * });
  * ```
  *
  */
-export class Cidr implements IIpAddressManager {
+export class Cidr implements IIpAddresses {
   private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
@@ -276,7 +276,7 @@ export class Cidr implements IIpAddressManager {
   }
 
   /**
-   * Allocates Vpc Cidr. called when creating a Vpc using IpAddressManager.Cidr.
+   * Allocates Vpc Cidr. called when creating a Vpc using IpAddresses.Cidr.
    */
   allocateVpcCidr(): VpcIpamOptions {
     return {

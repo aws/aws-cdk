@@ -10,7 +10,7 @@ import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
-import { AllocatedSubnet, IIpAddressManager as IIpAddressManager, RequestedSubnet, Cidr } from './ipam';
+import { AllocatedSubnet, IIpAddresses as IIpAddresses, RequestedSubnet, Cidr } from './ipam';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -812,13 +812,13 @@ const NAME_TAG: string = 'Name';
 export interface VpcProps {
 
   /**
-   * The Ipam Provider to use to allocate IP Space to your VPC.
+   * The Provider to use to allocate IP Space to your VPC.
    *
    * Options include static allocation or from a pool.
    *
-   * @default ipam.StaticIpam
+   * @default ec2.Cidr
    */
-  readonly ipAddressManager?: IIpAddressManager;
+  readonly ipAddresses?: IIpAddresses;
 
   /**
    * The CIDR range to use for the VPC, e.g. '10.0.0.0/16'.
@@ -828,7 +828,7 @@ export interface VpcProps {
    *
    * @default Vpc.DEFAULT_CIDR_RANGE
    *
-   * @deprecated Use IpAddressManager instead
+   * @deprecated Use ipAddresses instead
    */
   readonly cidr?: string;
 
@@ -1101,7 +1101,7 @@ export interface SubnetConfiguration {
  *
  * ```ts
  * const vpc = new ec2.Vpc(this, 'TheVPC', {
- *   ipAddressManager: IpAddressManager.cidr('10.0.0.0/16'),
+ *   ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
  * })
  *
  * // Iterate the private subnets
@@ -1314,9 +1314,9 @@ export class Vpc extends VpcBase {
   private readonly resource: CfnVPC;
 
   /**
-   * The IPAM provider
+   * The provider of ip addresses
    */
-  private readonly ipAddressManager: IIpAddressManager;
+  private readonly ipAddresses: IIpAddresses;
 
   /**
    * Subnet configurations for this VPC
@@ -1350,24 +1350,24 @@ export class Vpc extends VpcBase {
       throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
     }
 
-    if (props.ipAddressManager && props.cidr) {
-      throw new Error('supply at most one of ipAddressManager or cidr');
+    if (props.ipAddresses && props.cidr) {
+      throw new Error('supply at most one of ipAddresses or cidr');
     }
 
-    this.ipAddressManager = props.ipAddressManager ?? new Cidr(cidrBlock);
+    this.ipAddresses = props.ipAddresses ?? new Cidr(cidrBlock);
 
     this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
-    const vpcIpamOptions = this.ipAddressManager.allocateVpcCidr();
+    const vpcIpAddressOptions = this.ipAddresses.allocateVpcCidr();
 
     // Define a VPC using the provided CIDR range
     this.resource = new CfnVPC(this, 'Resource', {
-      cidrBlock: vpcIpamOptions.cidrBlock,
-      ipv4IpamPoolId: vpcIpamOptions.ipv4IpamPoolId,
-      ipv4NetmaskLength: vpcIpamOptions.ipv4NetmaskLength,
+      cidrBlock: vpcIpAddressOptions.cidrBlock,
+      ipv4IpamPoolId: vpcIpAddressOptions.ipv4IpamPoolId,
+      ipv4NetmaskLength: vpcIpAddressOptions.ipv4NetmaskLength,
       enableDnsHostnames: this.dnsHostnamesEnabled,
       enableDnsSupport: this.dnsSupportEnabled,
       instanceTenancy,
@@ -1540,7 +1540,7 @@ export class Vpc extends VpcBase {
       },
       )));
 
-    const { allocatedSubnets } = this.ipAddressManager.allocateSubnetsCidr({
+    const { allocatedSubnets } = this.ipAddresses.allocateSubnetsCidr({
       vpcCidr: this.vpcCidrBlock,
       requestedSubnets,
     });

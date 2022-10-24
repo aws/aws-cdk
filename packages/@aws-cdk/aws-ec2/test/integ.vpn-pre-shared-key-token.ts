@@ -5,7 +5,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-vpn');
 
 const vpc = new ec2.Vpc(stack, 'MyVpc', {
-  ipAddressManager: ec2.IpAddressManager.cidr('10.10.0.0/16'),
+  ipAddresses: ec2.IpAddresses.cidr('10.10.0.0/16'),
   vpnConnections: {
     Dynamic: { // Dynamic routing
       ip: '52.85.255.164',

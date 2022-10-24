@@ -9,7 +9,7 @@ test('create a vpcConnector with all properties', () => {
   const stack = new cdk.Stack(app, 'demo-stack');
 
   const vpc = new ec2.Vpc(stack, 'Vpc', {
-    ipAddressManager: ec2.IpAddressManager.cidr('10.0.0.0/16'),
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
 
   const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
@@ -48,7 +48,7 @@ test('create a vpcConnector without a name', () => {
   const stack = new cdk.Stack(app, 'demo-stack');
 
   const vpc = new ec2.Vpc(stack, 'Vpc', {
-    ipAddressManager: ec2.IpAddressManager.cidr('10.0.0.0/16'),
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
 
   const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
@@ -85,7 +85,7 @@ test('create a vpcConnector without a security group should create one', () => {
   const stack = new cdk.Stack(app, 'demo-stack');
 
   const vpc = new ec2.Vpc(stack, 'Vpc', {
-    ipAddressManager: ec2.IpAddressManager.cidr('10.0.0.0/16'),
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
 
   // WHEN
@@ -120,7 +120,7 @@ test('create a vpcConnector with an empty security group array should create one
   const stack = new cdk.Stack(app, 'demo-stack');
 
   const vpc = new ec2.Vpc(stack, 'Vpc', {
-    ipAddressManager: ec2.IpAddressManager.cidr('10.0.0.0/16'),
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
 
   // WHEN
