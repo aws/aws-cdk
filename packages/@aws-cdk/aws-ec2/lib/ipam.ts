@@ -1,4 +1,4 @@
-import { Fn } from '@aws-cdk/core';
+import { Fn, Token } from '@aws-cdk/core';
 import { calculateCidrSplits } from './cidr-splits';
 import { NetworkBuilder } from './network-util';
 import { SubnetConfiguration } from './vpc';
@@ -267,6 +267,11 @@ export class Cidr implements IIpAddressManager {
   private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
+
+    if (Token.isUnresolved(cidrBlock)) {
+      throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
+    }
+
     this.networkBuilder = new NetworkBuilder(this.cidrBlock);
   }
 
