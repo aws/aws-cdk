@@ -265,7 +265,7 @@ describe('AwsIpam Vpc Integration', () => {
 
     const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
 
-    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in awsIpam/);;
+    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options/);;
 
   });
 
