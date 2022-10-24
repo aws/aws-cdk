@@ -7,7 +7,7 @@ async function run() {
   const token: string = process.env.GITHUB_TOKEN!;
   const client = new Octokit({ auth: token });
 
-  const prLinter = new linter.PullRequestLinter({
+  const prLinter = new linterrrr.PullRequestLinter({
     client,
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
