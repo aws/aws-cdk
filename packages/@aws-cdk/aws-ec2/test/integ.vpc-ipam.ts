@@ -7,9 +7,9 @@ const stack = new cdk.Stack(app, 'aws-cdk-ec2-ipam-vpc');
 
 /**
  * ### MANUAL CLEAN UP REQUIRED ###
- * 
+ *
  * When IPAM is created running this integ-test it is not currently removed after the test run is complete.
- * 
+ *
  */
 
 const ipam = new CfnIPAM(stack, 'IPAM', {

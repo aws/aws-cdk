@@ -221,8 +221,8 @@ provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 
 The VPC spans a supernet IP range, which contains the non-overlapping IPs of  it's contained subnets. Possible sources for this IP range are:
 
-- You specify an IP range directly by specifying a CIDR
-- You allocate an IP range of a given size automatically from AWS IPAM
+* You specify an IP range directly by specifying a CIDR
+* You allocate an IP range of a given size automatically from AWS IPAM
 
 If you don't specify anything, by default the Vpc will allocate the 10.0.0.0/16 address range which will be exhaustively spread across all subnets in the subnet configuration. This behavior can be changed (see "Allocating an IP range from AWS IPAM" bellow).
 
@@ -245,6 +245,7 @@ When using IpAddressManager.Cidr concrete Cidr values are generated in the synth
 Static Ipam can be used by creating a new instance or by using IpAddressManager.
 
 Using IpAddressManager:
+
 ```ts
 import { IpAddressManager } from ''@aws-cdk/aws-ec2'';
 
@@ -254,6 +255,7 @@ new ec2.Vpc(stack, 'TheVPC', {
 ```
 
 Creating a new Instance of IpAddressManager.Cidr:
+
 ```ts
 new ec2.Vpc(stack, 'TheVPC', {
   ipAddressManager: new ec2.Cidr('10.0.1.0/20')
@@ -271,6 +273,7 @@ Subnets are allocated locally of a size defined by `defaultSubnetIpv4NetmaskLeng
 AwsIpam can be used by creating a new instance or by using IpAddressManager.
 
 Using IpAddressManager:
+
 ```ts
 import { IpAddressManager } from ''@aws-cdk/aws-ec2'';
 
@@ -284,6 +287,7 @@ new ec2.Vpc(stack, 'TheVPC', {
 ```
 
 Creating a new Instance of AwsIpam:
+
 ```ts
 new ec2.Vpc(stack, 'TheVPC', {
   ipAddressManager: new ec2.AwsIpam({
