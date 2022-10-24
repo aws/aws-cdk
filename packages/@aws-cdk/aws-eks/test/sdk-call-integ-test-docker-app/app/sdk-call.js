@@ -9,4 +9,3 @@ s3.createBucket({ Bucket: 'amazingly-made-sdk-call-created-eks-bucket'}, functio
     throw new Error('failed to create s3 bucket with error: ' + err);
   }
 });
-
