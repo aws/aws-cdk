@@ -257,6 +257,8 @@ new ec2.Vpc(stack, 'TheVPC', {
 Creating a new Instance of IpAddressManager.Cidr:
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+
 new ec2.Vpc(stack, 'TheVPC', {
   ipAddressManager: new ec2.Cidr('10.0.1.0/20')
 });
@@ -289,6 +291,8 @@ new ec2.Vpc(stack, 'TheVPC', {
 Creating a new Instance of AwsIpam:
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+
 new ec2.Vpc(stack, 'TheVPC', {
   ipAddressManager: new ec2.AwsIpam({
     ipv4IpamPoolId: pool.ref,
