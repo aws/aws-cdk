@@ -427,6 +427,19 @@
     }
    }
   },
+  "KubectlLayer600207B5": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c0f40a9fd16d1698ca05765606c04c8724dc5c8355b6e124a39af09449a3aa30.zip"
+    },
+    "Description": "/opt/kubectl/kubectl 1.22; /opt/helm/helm 3.9",
+    "LicenseInfo": "Apache-2.0"
+   }
+  },
   "ClusterRoleFA261979": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -627,7 +640,7 @@
      ]
     },
     "Config": {
-     "version": "1.21",
+     "version": "1.22",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -993,7 +1006,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/4ab517122c887f7124ebdd88e39d50dbaf69e6e3c798e5d7fb7ce522213c470f.json"
+       "/258128d6e57344b7a70cc57169438181a2d49799bb90bc7b7445093fe60142c7.json"
       ]
      ]
     },
@@ -1009,6 +1022,9 @@
        "ClusterCreationRole360249B6",
        "Arn"
       ]
+     },
+     "referencetoawscdkekshelmtestKubectlLayer2638D675Ref": {
+      "Ref": "KubectlLayer600207B5"
      },
      "referencetoawscdkekshelmtestVpcPrivateSubnet1Subnet3D2B5C0BRef": {
       "Ref": "VpcPrivateSubnet1Subnet536B997A"
