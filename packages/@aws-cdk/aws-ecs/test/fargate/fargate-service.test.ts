@@ -11,6 +11,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
@@ -2445,6 +2446,39 @@ describe('fargate service', () => {
         },
         DeploymentController: {
           Type: ecs.DeploymentControllerType.ECS,
+        },
+      });
+    });
+
+    test('with circuit breaker and deployment controller feature flag enabled', () => {
+      // GIVEN
+      const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
+          { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
+      const app = new App({ context: disableCircuitBreakerEcsDeploymentControllerFeatureFlag });
+      const stack = new cdk.Stack(app);
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'EcsService', {
+        cluster,
+        taskDefinition,
+        circuitBreaker: { rollback: true },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+          DeploymentCircuitBreaker: {
+            Enable: true,
+            Rollback: true,
+          },
         },
       });
     });

@@ -13,7 +13,7 @@
 // that prevents seamless upgrading. In the next major version, their
 // behavior will become the default, but the flag still exists so users can
 // switch it *off* in order to revert to the old behavior. These flags
-// are marked with with the [PERMANENT] tag below.
+// are marked with the [PERMANENT] tag below.
 //
 // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0055-feature-flags.md
 // --------------------------------------------------------------------------------
@@ -126,7 +126,18 @@ export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl'
 export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
 
 /**
- * ServerlessCluster.clusterIdentifier currently can has uppercase letters,
+ * Enable this feature flag to avoid setting the "ECS" deployment controller when adding a circuit breaker to an
+ * ECS Service, as this will trigger a full replacement which fails to deploy when using set service names.
+ * This does not change any behaviour as the default deployment controller when it is not defined is ECS.
+ *
+ * This is a feature flag as the new behavior provides a better default experience for the users.
+ *
+ * [PERMANENT]
+ */
+export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
+
+/**
+ * ServerlessCluster.clusterIdentifier currently can have uppercase letters,
  * and ServerlessCluster pass it through to CfnDBCluster.dbClusterIdentifier.
  * The identifier is saved as lowercase string in AWS and is resolved as original string in CloudFormation.
  *
@@ -136,7 +147,7 @@ export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:remov
  * only lowercase characters by the `toLowerCase` function and passed to CfnDBCluster.dbClusterIdentifier.
  *
  * This feature flag make correct the ServerlessCluster.clusterArn when
- * clusterIdentifier contains a Upper case letters.
+ * clusterIdentifier contains Upper case letters.
  *
  * [PERMANENT]
  */
@@ -387,6 +398,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
   [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
   [ENABLE_PARTITION_LITERALS]: true,
+  [ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true,
 };
 
 /**
@@ -439,6 +451,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   // activated", as it was introduced AFTER v2 was released.
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: false,
+  [ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

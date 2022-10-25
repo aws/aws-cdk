@@ -5,7 +5,19 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack, ArnFormat } from '@aws-cdk/core';
+import {
+  Annotations,
+  Duration,
+  IResolvable,
+  IResource,
+  Lazy,
+  Resource,
+  Stack,
+  ArnFormat,
+  FeatureFlags,
+} from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
@@ -57,7 +69,11 @@ export interface DeploymentCircuitBreaker {
   /**
    * Whether to use the explicit DeploymentControllerType.ECS when defining the circuit breaker.
    * To avoid a service replacement when adding a CircuitBreaker to an existing ECS service, set this to false.
-   * @default true
+   * If the feature flag:
+   *    @aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker
+   * Is not set, the behaviour will be to use the explicit ECS Controller (true).
+   *
+   * @default false
    */
   readonly useExplicitEcsDeploymentController?: boolean;
 
@@ -434,10 +450,6 @@ export abstract class BaseService extends Resource
     }
 
     this.taskDefinition = taskDefinition;
-    // If useExplicitEcsDeploymentController is explicitly set to false
-    const circuitBreakerSetsEcsDeploymentController = (props.circuitBreaker !== undefined
-            && props.circuitBreaker.useExplicitEcsDeploymentController === undefined)
-        || props.circuitBreaker?.useExplicitEcsDeploymentController;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -460,9 +472,7 @@ export abstract class BaseService extends Resource
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
-      deploymentController: circuitBreakerSetsEcsDeploymentController ? {
-        type: DeploymentControllerType.ECS,
-      } : props.deploymentController,
+      deploymentController: this.getDeploymentController(props),
       launchType: launchType,
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
@@ -519,6 +529,22 @@ export abstract class BaseService extends Resource
    */
   public get cloudMapService(): cloudmap.IService | undefined {
     return this.cloudmapService;
+  }
+
+  private getDeploymentController(props: BaseServiceProps): DeploymentController | undefined {
+    const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
+        FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
+
+    // If the circuit breaker is set, there are 2 cases we should set the deployment controller
+    //  1. The prop has been set to true
+    //  2. The feature flag has been set to false
+    const setEcsDeploymentControllerWithCircuitBreaker = (props.circuitBreaker
+        && (props.circuitBreaker.useExplicitEcsDeploymentController === true
+            || !disableCircuitBreakerEcsDeploymentControllerFeatureFlag)
+    );
+    return setEcsDeploymentControllerWithCircuitBreaker ? {
+      type: DeploymentControllerType.ECS,
+    } : props.deploymentController;
   }
 
   private executeCommandLogConfiguration() {
