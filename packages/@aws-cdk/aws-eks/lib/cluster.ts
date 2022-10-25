@@ -854,6 +854,15 @@ export class KubernetesVersion {
   public static readonly V1_22 = KubernetesVersion.of('1.22');
 
   /**
+   * Kubernetes version 1.23
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlLayer` from
+   * `@aws-cdk/lambda-layer-kubectl-v23`.
+   */
+  public static readonly V1_23 = KubernetesVersion.of('1.23');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1372,8 +1381,9 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
 
-    if (props.version === KubernetesVersion.V1_22 && !props.kubectlLayer) {
-      Annotations.of(this).addWarning(`You created a cluster with Kubernetes Version ${props.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v22.`);
+    const kubectlMinorVersion = Number(props.version.version) * 100;
+    if (kubectlMinorVersion >= 122 && !props.kubectlLayer) {
+      Annotations.of(this).addWarning(`You created a cluster with Kubernetes Version ${props.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlMinorVersion % 100}.`);
     };
     this.version = props.version;
     this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
@@ -2300,7 +2310,7 @@ export enum CoreDnsComputeType {
   /**
    * Deploy CoreDNS on Fargate-managed instances.
    */
-  FARGATE = 'fargate'
+  FARGATE = 'fargate',
 }
 
 /**
@@ -2314,7 +2324,7 @@ export enum DefaultCapacityType {
   /**
    * EC2 autoscaling group
    */
-  EC2
+  EC2,
 }
 
 /**
@@ -2328,7 +2338,7 @@ export enum MachineImageType {
   /**
    * Bottlerocket AMI
    */
-  BOTTLEROCKET
+  BOTTLEROCKET,
 }
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
