@@ -144,7 +144,7 @@
         }
       }
     },
-    "56ba6bc9a9dbd06d584eed339155b6d725b21f7193f1d260b1506a05cf843fd4": {
+    "54c0a1431c092b46f5d7cd0a227f2b2fb5d31c998341871ef82591f2b538d4e6": {
       "source": {
         "path": "aws-eks-oidc-provider-test.template.json",
         "packaging": "file"
@@ -152,7 +152,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "56ba6bc9a9dbd06d584eed339155b6d725b21f7193f1d260b1506a05cf843fd4.json",
+          "objectKey": "54c0a1431c092b46f5d7cd0a227f2b2fb5d31c998341871ef82591f2b538d4e6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

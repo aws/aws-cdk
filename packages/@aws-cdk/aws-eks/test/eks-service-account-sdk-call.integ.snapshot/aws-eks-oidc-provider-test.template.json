@@ -1058,11 +1058,7 @@
     "PruneLabel": "aws.cdk.eks/prune-c8c88f6b67ceb9f4140b1b57471ed94d088c917849"
    },
    "DependsOn": [
-    "ClusterKubectlReadyBarrier200052AF",
-    "ClustermyserviceaccountConditionJson260229E4",
-    "ClustermyserviceaccountmanifestmyserviceaccountServiceAccountResource8FC996C5",
-    "ClustermyserviceaccountRoleDefaultPolicy791F61C9",
-    "ClustermyserviceaccountRole11FFD0A4"
+    "ClusterKubectlReadyBarrier200052AF"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

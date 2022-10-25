@@ -34,7 +34,7 @@ new kplus.Pod(chart, 'Pod', {
   serviceAccount: kplusServiceAccount,
 });
 
-cluster.addCdk8sChart('sdk-call', chart).node.addDependency(serviceAccount);
+cluster.addCdk8sChart('sdk-call', chart);
 
 serviceAccount.role.addToPrincipalPolicy(
   new iam.PolicyStatement({
