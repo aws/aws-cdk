@@ -5,7 +5,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
-test('ssm automation as an event rule target', () => {
+test('ssm run command as an event rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const rule = new events.Rule(stack, 'MyRule', {

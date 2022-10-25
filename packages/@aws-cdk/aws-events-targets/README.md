@@ -30,6 +30,8 @@ Currently supported are:
 * Put a record to a Kinesis Data Firehose stream
 * [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
 * [Send an event to EventBridge API Destination](#invoke-an-api-destination)
+* [Start a Systems Manager Run Command](#start-a-systems-manager-run-command)
+* [Start a Systems Manager Automation](#start-a-systems-manager-automation)
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
@@ -344,4 +346,62 @@ rule.addTarget(new targets.EventBus(
     `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
   ),
 ));
+```
+
+## Start a Systems Manager Run Command
+
+Use the `SsmRunCommand` target to trigger a Systems Manager Run Command.
+
+The code snippet below creates the scheduled event rule that triggers a Systems Manager Run Command every day.
+
+```ts
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 day)'),
+});
+
+rule.addTarget(new targets.SsmRunCommand(new ssm.CfnDocument(stack, 'MyDocument', {
+  content: {...},
+  documentType: 'Command',
+  name: 'my-document',
+}), {
+  targetKey: 'InstanceIds',
+  targetValues: ['i-asdfiuh2304f'],
+}));
+```
+
+## Start a Systems Manager Automation
+
+Use the `SsmRunCommand` target to trigger a Systems Manager Automation.
+
+The code snippet below creates the scheduled event rule that triggers a Systems Manager Automation every day. It also
+creates a new role to be used by the Automation. This role should have the required permissions to execute the Automation.
+
+```ts
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 day)'),
+});
+const ssmAssumeRole = new iam.Role(this, 'SSMAssumeRole', {
+  assumedBy: new iam.ServicePrincipal('ssm.amazonaws.com'),
+});
+
+rule.addTarget(new targets.SsmAutomation(new ssm.CfnDocument(stack, 'MyDocument', {
+  content: {...},
+  documentType: 'Automation',
+  name: 'my-document',
+}), {
+  ssmAssumeRole,
+}));
+```
+
+You can also target a shared document by passing the document ARN to the `SsmAutomation` target.
+
+```ts
+const automationArn = 'arn:aws:ssm:us-east-1::automation-definition/AWS-StopRdsInstance:$DEFAULT';
+
+rule.addTarget(automationArn, {
+  input: {
+    InstanceIds: ['my-rds-instance'],
+  },
+  ssmAssumeRole,
+});
 ```
