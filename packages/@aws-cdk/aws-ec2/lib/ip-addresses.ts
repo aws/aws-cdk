@@ -200,7 +200,8 @@ export interface AwsIpamProps {
  *   })
  * });
  * ```
- *
+ * 
+ *@internal
  */
 class AwsIpam implements IIpAddresses {
   constructor(private readonly props: AwsIpamProps) {}
@@ -261,7 +262,8 @@ class AwsIpam implements IIpAddresses {
  *   ipAddresses: new ec2.IpAddresses.Cidr('10.0.1.0/20')
  * });
  * ```
- *
+ * 
+ *@internal
  */
 class Cidr implements IIpAddresses {
   private readonly networkBuilder: NetworkBuilder;
