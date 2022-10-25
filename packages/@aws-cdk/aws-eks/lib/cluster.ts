@@ -848,7 +848,7 @@ export class KubernetesVersion {
    * Kubernetes version 1.22
    *
    * When creating a `Cluster` with this version, you need to also specify the
-   * `kubectlLayer` property with a `KubectlLayer` from
+   * `kubectlLayer` property with a `KubectlV22Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v22`.
    */
   public static readonly V1_22 = KubernetesVersion.of('1.22');
@@ -857,7 +857,7 @@ export class KubernetesVersion {
    * Kubernetes version 1.23
    *
    * When creating a `Cluster` with this version, you need to also specify the
-   * `kubectlLayer` property with a `KubectlLayer` from
+   * `kubectlLayer` property with a `KubectlV23Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v23`.
    */
   public static readonly V1_23 = KubernetesVersion.of('1.23');
