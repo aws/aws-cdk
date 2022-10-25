@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "ce4f6c1816c6a77aa60915291668f6ceb537b8a131557390c35b976cb8b2dc74": {
+      "source": {
+        "path": "aws-cdk-ssm-automation-event-target.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ce4f6c1816c6a77aa60915291668f6ceb537b8a131557390c35b976cb8b2dc74.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

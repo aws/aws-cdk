@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "Testing/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ssm-runcommand-event-target"
+      ],
+      "assertionStack": "Testing/DefaultTest/DeployAssert",
+      "assertionStackName": "TestingDefaultTestDeployAssertE4BE5621"
+    }
+  }
+}

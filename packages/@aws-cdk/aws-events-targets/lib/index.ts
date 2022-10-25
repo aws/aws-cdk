@@ -14,4 +14,6 @@ export * from './log-group';
 export * from './kinesis-firehose-stream';
 export * from './api-gateway';
 export * from './api-destination';
+export * from './ssm-automation';
+export * from './ssm-runcommand';
 export * from './util';

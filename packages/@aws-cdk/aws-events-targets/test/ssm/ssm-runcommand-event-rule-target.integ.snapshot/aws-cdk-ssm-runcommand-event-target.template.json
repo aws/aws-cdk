@@ -1,0 +1,233 @@
+{
+ "Resources": {
+  "MyRuleA44AB831": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":ssm:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":document/my-document"
+        ]
+       ]
+      },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       }
+      },
+      "Id": "Target0",
+      "Input": "{\"MyParameter\":[\"MyParameterValue\"]}",
+      "RetryPolicy": {
+       "MaximumRetryAttempts": 0
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyRuleEventsRoleF186CAE5",
+        "Arn"
+       ]
+      },
+      "RunCommandParameters": {
+       "RunCommandTargets": [
+        {
+         "Key": "InstanceIds",
+         "Values": [
+          "i-asdfiuh2304f"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "MyRuleEventsRoleF186CAE5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyRuleEventsRoleDefaultPolicy5D01F508": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ssm:SendCommand",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":instance/i-asdfiuh2304f"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyRuleEventsRoleDefaultPolicy5D01F508",
+    "Roles": [
+     {
+      "Ref": "MyRuleEventsRoleF186CAE5"
+     }
+    ]
+   }
+  },
+  "MyDocument": {
+   "Type": "AWS::SSM::Document",
+   "Properties": {
+    "Content": {
+     "schemaVersion": "2.2",
+     "description": "My Document",
+     "parameters": {
+      "MyParameter": {
+       "type": "String",
+       "description": "My Parameter"
+      }
+     },
+     "mainSteps": [
+      {
+       "action": "aws:runShellScript",
+       "name": "runShellScript",
+       "precondition": {
+        "StringEquals": [
+         "platformType",
+         "Linux"
+        ]
+       },
+       "inputs": {
+        "runCommand": [
+         "echo \"Hello World\""
+        ]
+       }
+      }
+     ]
+    },
+    "DocumentType": "Command",
+    "Name": "my-document"
+   }
+  },
+  "MyDeadLetterQueueD997968A": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyDeadLetterQueuePolicyCC35D52C": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "MyRuleA44AB831",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventRuleawscdkssmruncommandeventtargetMyRule6B9F9D33"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "MyDeadLetterQueueD997968A"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

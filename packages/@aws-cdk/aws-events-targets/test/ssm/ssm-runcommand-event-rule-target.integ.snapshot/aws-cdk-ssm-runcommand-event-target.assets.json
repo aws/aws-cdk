@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "63529148a45bce330dafffec6c918d431de85bcd8f72e124096d90eaa707bd84": {
+      "source": {
+        "path": "aws-cdk-ssm-runcommand-event-target.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "63529148a45bce330dafffec6c918d431de85bcd8f72e124096d90eaa707bd84.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

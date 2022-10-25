@@ -1,0 +1,201 @@
+{
+ "Resources": {
+  "MyRuleA44AB831": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:ssm:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::automation-definition/AWS-StopRdsInstance:$DEFAULT"
+        ]
+       ]
+      },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       }
+      },
+      "Id": "Target0",
+      "Input": {
+       "Fn::Join": [
+        "",
+        [
+         "{\"InstanceId\":[\"my-rds-instance\"],\"AutomationAssumeRole\":[\"",
+         {
+          "Fn::GetAtt": [
+           "SSMAssumeRole9F66527C",
+           "Arn"
+          ]
+         },
+         "\"]}"
+        ]
+       ]
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyRuleEventsRoleF186CAE5",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "MyRuleEventsRoleF186CAE5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyRuleEventsRoleDefaultPolicy5D01F508": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ssm:StartAutomationExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::automation-definition/AWS-StopRdsInstance:$DEFAULT"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyRuleEventsRoleDefaultPolicy5D01F508",
+    "Roles": [
+     {
+      "Ref": "MyRuleEventsRoleF186CAE5"
+     }
+    ]
+   }
+  },
+  "MyDeadLetterQueueD997968A": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyDeadLetterQueuePolicyCC35D52C": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "MyRuleA44AB831",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventRuleawscdkssmautomationeventtargetMyRuleCA6803FD"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "MyDeadLetterQueueD997968A"
+     }
+    ]
+   }
+  },
+  "SSMAssumeRole9F66527C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ssm.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
