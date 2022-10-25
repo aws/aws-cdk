@@ -128,13 +128,13 @@ You can use Amazon API Gateway with AWS Step Functions as the backend integratio
 
 The `StepFunctionsRestApi` only supports integration with Synchronous Express state machine. The `StepFunctionsRestApi` construct makes this easy by setting up input, output and error mapping.
 
-The construct sets up an API endpoint and maps the `ANY` HTTP method and any calls to the API endpoint starts an express workflow execution for the underlying state machine. 
+The construct sets up an API endpoint and maps the `ANY` HTTP method and any calls to the API endpoint starts an express workflow execution for the underlying state machine.
 
 Invoking the endpoint with any HTTP method (`GET`, `POST`, `PUT`, `DELETE`, ...) in the example below will send the request to the state machine as a new execution. On success, an HTTP code `200` is returned with the execution output as the Response Body.
 
 If the execution fails, an HTTP `500` response is returned with the `error` and `cause` from the execution output as the Response Body. If the request is invalid (ex. bad execution input) HTTP code `400` is returned.
 
-The response from the invocation contains only the `output` field from the 
+The response from the invocation contains only the `output` field from the
 [StartSyncExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartSyncExecution.html#API_StartSyncExecution_ResponseSyntax) API.
 In case of failures, the fields `error` and `cause` are returned as part of the response.
 Other metadata such as billing details, AWS account ID and resource ARNs are not returned in the API response.
@@ -154,7 +154,7 @@ const stateMachine: stepfunctions.IStateMachine = new stepfunctions.StateMachine
   definition: stateMachineDefinition,
   stateMachineType: stepfunctions.StateMachineType.EXPRESS,
 });
-    
+
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
   deploy: true,
   stateMachine: stateMachine,
@@ -172,7 +172,7 @@ AWS Step Functions will receive the request body in its input as follows:
 ```json
 {
   "body": {
-    "customerId": 1 
+    "customerId": 1
   },
   "path": "/",
   "querystring": {}
@@ -1128,8 +1128,8 @@ Access logging creates logs every time an API method is accessed. Access logs ca
 who has accessed the API, how the caller accessed the API and what responses were generated.
 Access logs are configured on a Stage of the RestApi.
 Access logs can be expressed in a format of your choosing, and can contain any access details, with a
-minimum that it must include the 'requestId'. The list of  variables that can be expressed in the access
-log can be found
+minimum that it must include either 'requestId' or 'extendedRequestId'. The list of  variables that
+can be expressed in the access log can be found
 [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference).
 Read more at [Setting Up CloudWatch API Logging in API
 Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
@@ -1140,9 +1140,9 @@ const prdLogGroup = new logs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
-    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields()
-  }
-})
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
+  },
+});
 const deployment = new apigateway.Deployment(this, 'Deployment', {api});
 
 // development stage
@@ -1159,8 +1159,8 @@ new apigateway.Stage(this, 'dev', {
     resourcePath: true,
     responseLength: true,
     status: true,
-    user: true
-  })
+    user: true,
+  }),
 });
 ```
 
@@ -1378,8 +1378,9 @@ api.addGatewayResponse('test-response', {
   type: apigateway.ResponseType.ACCESS_DENIED,
   statusCode: '500',
   responseHeaders: {
-    'Access-Control-Allow-Origin': "test.com",
-    'test-key': 'test-value'
+    // Note that values must be enclosed within a pair of single quotes
+    'Access-Control-Allow-Origin': "'test.com'",
+    'test-key': "'test-value'",
   },
   templates: {
     'application/json': '{ "message": $context.error.messageString, "statusCode": "488", "type": "$context.error.responseType" }'
