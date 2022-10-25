@@ -10,7 +10,7 @@ import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
-import { AllocatedSubnet, IIpAddresses, RequestedSubnet, Cidr } from './ip-addresses';
+import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses } from './ip-addresses';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -1354,7 +1354,7 @@ export class Vpc extends VpcBase {
       throw new Error('supply at most one of ipAddresses or cidr');
     }
 
-    this.ipAddresses = props.ipAddresses ?? new Cidr(cidrBlock);
+    this.ipAddresses = props.ipAddresses ?? IpAddresses.cidr(cidrBlock);
 
     this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;

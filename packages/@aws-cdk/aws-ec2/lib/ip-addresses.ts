@@ -200,8 +200,7 @@ export interface AwsIpamProps {
  *   })
  * });
  * ```
- * 
- *@internal
+ *
  */
 class AwsIpam implements IIpAddresses {
   constructor(private readonly props: AwsIpamProps) {}
@@ -259,11 +258,10 @@ class AwsIpam implements IIpAddresses {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipAddresses: new ec2.IpAddresses.Cidr('10.0.1.0/20')
+ *   ipAddresses: new ec2.IpAddresses.cidr('10.0.1.0/20')
  * });
  * ```
- * 
- *@internal
+ *
  */
 class Cidr implements IIpAddresses {
   private readonly networkBuilder: NetworkBuilder;
@@ -278,7 +276,7 @@ class Cidr implements IIpAddresses {
   }
 
   /**
-   * Allocates Vpc Cidr. called when creating a Vpc using IpAddresses.Cidr.
+   * Allocates Vpc Cidr. called when creating a Vpc using IpAddresses.cidr.
    */
   allocateVpcCidr(): VpcIpamOptions {
     return {

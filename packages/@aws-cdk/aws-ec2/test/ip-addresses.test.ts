@@ -22,7 +22,7 @@ describe('Cidr vpc allocation', () => {
 
 });
 
-describe('IpAddresses.Cidr subnets allocation', () => {
+describe('IpAddresses.cidr subnets allocation', () => {
 
   const cidrProps = '10.0.0.0/16';
 
