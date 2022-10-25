@@ -4,9 +4,21 @@ import { IApplication, Application } from './application';
 import { CheckedStageStackAssociator } from './aspects/stack-associator';
 
 /**
- * Properties for a Service Catalog AppRegistry AutoApplication
+ * Properties for Service Catalog AppRegistry Application Associator
  */
 export interface ApplicationAssociatorProps {
+  /**
+   * Application associator properties.
+   *
+   * @default - Empty array.
+   */
+  readonly appAssociatorProps: IBaseApplicationAssociatorProps[];
+}
+
+/**
+ * Base Properties for Service Catalog AppRegistry Application Associator
+ */
+export interface IBaseApplicationAssociatorProps {
   /**
    * Enforces a particular physical application name.
    *
@@ -29,10 +41,79 @@ export interface ApplicationAssociatorProps {
   readonly description?: string;
 
   /**
-   * Stack properties.
+   * Stack ID to which application will be created or imported.
+   *
+   * @default - ApplicationAssociatorStack
+   */
+  readonly stackId?: string;
+
+  /**
+   * Stack properties to which Application will be created or imported.
    *
    */
   readonly stackProps: cdk.StackProps;
+}
+
+/**
+ * Class which constructs the input from provided Application ARN.
+ */
+class ImportApplicationProps implements IBaseApplicationAssociatorProps {
+  readonly applicationArnValue: string;
+  readonly stackProps: cdk.StackProps;
+  readonly stackId?: string;
+
+  constructor(appArnValue: string, props: cdk.StackProps, stackId?: string) {
+    this.applicationArnValue = appArnValue;
+    this.stackProps = props;
+    this.stackId = stackId;
+  }
+}
+
+/**
+ * Class which constructs the input from provided application name and stack props.
+ * With this input, the construct will create the Application.
+ */
+class CreateApplicationProps implements IBaseApplicationAssociatorProps {
+  readonly applicationName: string;
+  readonly stackProps: cdk.StackProps;
+  readonly stackId?: string;
+  readonly description?: string;
+
+  constructor(appName: string, props: cdk.StackProps, appDescription?: string, stackId?: string) {
+    this.applicationName = appName;
+    this.stackProps = props;
+    this.description = appDescription;
+    this.stackId = stackId;
+  }
+}
+
+/**
+ * Factory class with which you can build the input needed for
+ * application associator to work.
+ */
+export class ApplicationAssociatorPropsInputFactory {
+  /**
+     * Factory method to build the input using the provided
+     * application ARN.
+     */
+  public static getApplicationAssociatorPropsFromArn(
+    appArnValue: string,
+    props: cdk.StackProps,
+    stackId?: string): IBaseApplicationAssociatorProps {
+    return new ImportApplicationProps(appArnValue, props, stackId);
+  }
+
+  /**
+     * Factory method to build the input using the provided
+     * application name and stack props.
+     */
+  public static getApplicationAssociatorPropsFromAppName(
+    name: string,
+    props: cdk.StackProps,
+    description?: string,
+    stackId?: string): IBaseApplicationAssociatorProps {
+    return new CreateApplicationProps(name, props, description, stackId);
+  }
 }
 
 /**
@@ -56,17 +137,21 @@ export class ApplicationAssociator extends Construct {
   constructor(scope: cdk.App, id: string, props: ApplicationAssociatorProps) {
     super(scope, id);
 
-    const applicationStack = new cdk.Stack(scope, 'ApplicationAssociatorStack', props.stackProps);
-
-    if (!!props.applicationArnValue) {
-      this.application = Application.fromApplicationArn(applicationStack, 'ImportedApplication', props.applicationArnValue);
-    } else if (!!props.applicationName) {
-      this.application = new Application(applicationStack, 'DefaultCdkApplication', {
-        applicationName: props.applicationName,
-        description: props.description,
-      });
-    } else {
+    if (props.appAssociatorProps.length != 1) {
       throw new Error('Please provide either ARN or application name.');
+    }
+
+    const associatorProps = props.appAssociatorProps[0];
+    const stackId = associatorProps.stackId ?? 'ApplicationAssociatorStack';
+    const applicationStack = new cdk.Stack(scope, stackId, associatorProps.stackProps);
+
+    if (!!associatorProps.applicationArnValue) {
+      this.application = Application.fromApplicationArn(applicationStack, 'ImportedApplication', associatorProps.applicationArnValue);
+    } else {
+      this.application = new Application(applicationStack, 'DefaultCdkApplication', {
+        applicationName: associatorProps.applicationName as string,
+        description: associatorProps.description,
+      });
     }
 
     cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this));
@@ -94,7 +179,7 @@ export class ApplicationAssociator extends Construct {
    * Get the AppRegistry application.
    *
    */
-  get appRegistryApplication() {
+  public appRegistryApplication(): IApplication {
     return this.application;
   }
 }
