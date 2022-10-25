@@ -45,6 +45,7 @@ describe('gateway response', () => {
       responseHeaders: {
         'Access-Control-Allow-Origin': 'test.com',
         'test-key': 'test-value',
+        'another-test': "'test-value-enclosed-within-single-quotes'",
       },
     });
 
@@ -54,8 +55,9 @@ describe('gateway response', () => {
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: '500',
       ResponseParameters: {
-        'gatewayresponse.header.Access-Control-Allow-Origin': 'test.com',
-        'gatewayresponse.header.test-key': 'test-value',
+        'gatewayresponse.header.Access-Control-Allow-Origin': "'test.com'",
+        'gatewayresponse.header.test-key': "'test-value'",
+        'gatewayresponse.header.another-test': "'test-value-enclosed-within-single-quotes'",
       },
       ResponseTemplates: Match.absent(),
     });
