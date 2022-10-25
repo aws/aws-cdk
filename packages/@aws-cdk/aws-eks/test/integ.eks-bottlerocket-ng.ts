@@ -5,7 +5,7 @@ import { App, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
 import { NodegroupAmiType } from '../lib';
-
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
 
@@ -28,7 +28,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
     });
 
     this.cluster.addNodegroupCapacity('BottlerocketNG1', {

@@ -2,9 +2,7 @@
 import { App, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
-
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
-
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksAllHandlersInVpcStack extends Stack {
 
@@ -12,7 +10,7 @@ class EksAllHandlersInVpcStack extends Stack {
     super(scope, id);
 
     new eks.Cluster(this, 'EksAllHandlersInVpcStack', {
-      version: CLUSTER_VERSION,
+      ...getClusterVersionConfig(this),
       placeClusterHandlerInVpc: true,
     });
   }
