@@ -52,10 +52,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 
 For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
-## Launch Types: AWS Fargate vs Amazon EC2
+## Launch Types: AWS Fargate vs Amazon EC2 vs AWS ECS Anywhere
 
-There are two sets of constructs in this library; one to run tasks on Amazon EC2 and
-one to run tasks on AWS Fargate.
+There are three sets of constructs in this library:
 
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
 - Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
@@ -74,7 +73,9 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
-- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Bridge, Host and None networking modes are supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
+- **AWS ECS Anywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure
+  owned by the customer. Bridge, Host and None networking modes are supported. Does not
+  support autoscaling, load balancing, cloudmap or attachment of volumes.
 
 For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
@@ -330,7 +331,7 @@ const container = fargateTaskDefinition.addContainer("WebContainer", {
 });
 ```
 
-For a `Ec2TaskDefinition`:
+For an `Ec2TaskDefinition`:
 
 ```ts
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {

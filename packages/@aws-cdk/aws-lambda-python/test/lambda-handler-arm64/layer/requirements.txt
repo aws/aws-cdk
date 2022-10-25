@@ -1,4 +1,0 @@
-# Lock versions of pip packages
-typing-extensions==4.4.0
-# Used by this lambda
-flupy==1.1.9
