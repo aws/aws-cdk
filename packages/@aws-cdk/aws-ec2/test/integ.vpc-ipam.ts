@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
-import { AwsIpam, CfnIPAM, CfnIPAMPool, CfnVPC, SubnetType, Vpc } from '../lib';
+import { IpAddresses, CfnIPAM, CfnIPAMPool, CfnVPC, SubnetType, Vpc } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-ipam-vpc');
@@ -36,7 +36,7 @@ const pool = new CfnIPAMPool(stack, 'Pool', {
 pool.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
 const awsIpamVpc = new Vpc(stack, 'AwsIpamVpc', {
-  ipAddresses: new AwsIpam({
+  ipAddresses: IpAddresses.awsIpam({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24,

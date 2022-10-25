@@ -816,7 +816,7 @@ export interface VpcProps {
    *
    * Options include static allocation or from a pool.
    *
-   * @default ec2.Cidr
+   * @default ec2.IpAddresses.cidr
    */
   readonly ipAddresses?: IIpAddresses;
 

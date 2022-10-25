@@ -193,7 +193,7 @@ export interface AwsIpamProps {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipAddresses: new ec2.AwsIpam({
+ *   ipAddresses: new IpAddresses.awsIpam({
  *     ipv4IpamPoolId: pool.ref,
  *     ipv4NetmaskLength: 18,
  *     defaultSubnetIpv4NetmaskLength: 24
@@ -202,7 +202,7 @@ export interface AwsIpamProps {
  * ```
  *
  */
-export class AwsIpam implements IIpAddresses {
+class AwsIpam implements IIpAddresses {
   constructor(private readonly props: AwsIpamProps) {}
 
   /**
@@ -263,7 +263,7 @@ export class AwsIpam implements IIpAddresses {
  * ```
  *
  */
-export class Cidr implements IIpAddresses {
+class Cidr implements IIpAddresses {
   private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
