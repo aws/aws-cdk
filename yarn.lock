@@ -35,10 +35,15 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-cdk/lambda-layer-kubectl-v22@2.0.0":
+"@aws-cdk/lambda-layer-kubectl-v22@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v22/-/lambda-layer-kubectl-v22-2.0.0.tgz#18daadbb856a42377c04ea81b029debc1523ad3a"
   integrity sha512-GdpZbfry6jJ+NGOxYNrmTm0TNU3xjhjROgIiy9fdFZzb6PaKBglLftBAJbyNldPbvWfl2G+PJWe2jBURUkeacw==
+
+"@aws-cdk/lambda-layer-kubectl-v23@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v23/-/lambda-layer-kubectl-v23-2.0.0.tgz#8e46c505c8ba106d7589c9bebda824b8d963463c"
+  integrity sha512-g0H20+aWk6p4NsLSnMwUCwuLbD9v1tLPYH8c229w/qT6B7U/DFliQmiSnGSxe7BOjL/qfIkLfvXReBji15yEvg==
 
 "@babel/code-frame@7.12.11":
   version "7.12.11"
