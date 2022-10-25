@@ -457,6 +457,7 @@ export abstract class BaseService extends Resource
       undefined : props.launchType;
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
+    const deploymentController = this.getDeploymentController(props);
 
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -472,7 +473,7 @@ export abstract class BaseService extends Resource
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
-      deploymentController: this.getDeploymentController(props),
+      deploymentController: deploymentController,
       launchType: launchType,
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
@@ -487,12 +488,9 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
-    // If the circuit breaker chooses not to set the DeploymentController, and it has been manually set to something other than ECS
-    // Add an error that it is not supported
     if (props.circuitBreaker
-        && !props.circuitBreaker.useExplicitEcsDeploymentController
-        && props.deploymentController
-        && props.deploymentController.type !== DeploymentControllerType.ECS) {
+        && deploymentController
+        && deploymentController.type !== DeploymentControllerType.ECS) {
       Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
 
@@ -532,6 +530,10 @@ export abstract class BaseService extends Resource
   }
 
   private getDeploymentController(props: BaseServiceProps): DeploymentController | undefined {
+    if (props.deploymentController) {
+      // The customer is always right
+      return props.deploymentController;
+    }
     const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
         FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
 
