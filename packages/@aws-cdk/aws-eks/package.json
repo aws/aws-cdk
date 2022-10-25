@@ -81,6 +81,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v22": "2.0.0",
+    "aws-cdk-lib": "^2.47.0",
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
