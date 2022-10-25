@@ -15,7 +15,7 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
   taskImageOptions: {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
-  circuitBreaker: { rollback: true },
+  circuitBreaker: { rollback: true, useExplicitEcsDeploymentController: true },
 });
 
 new integ.IntegTest(app, 'circuitBreakerAlbFargateTest', {

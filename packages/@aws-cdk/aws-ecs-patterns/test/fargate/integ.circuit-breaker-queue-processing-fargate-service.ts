@@ -14,7 +14,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 new QueueProcessingFargateService(stack, 'QueueProcessingService', {
   vpc,
   memoryLimitMiB: 512,
-  circuitBreaker: { rollback: true },
+  circuitBreaker: { rollback: true, useExplicitEcsDeploymentController: true },
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
 });
 
