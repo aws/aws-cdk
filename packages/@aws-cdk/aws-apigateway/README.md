@@ -128,13 +128,13 @@ You can use Amazon API Gateway with AWS Step Functions as the backend integratio
 
 The `StepFunctionsRestApi` only supports integration with Synchronous Express state machine. The `StepFunctionsRestApi` construct makes this easy by setting up input, output and error mapping.
 
-The construct sets up an API endpoint and maps the `ANY` HTTP method and any calls to the API endpoint starts an express workflow execution for the underlying state machine. 
+The construct sets up an API endpoint and maps the `ANY` HTTP method and any calls to the API endpoint starts an express workflow execution for the underlying state machine.
 
 Invoking the endpoint with any HTTP method (`GET`, `POST`, `PUT`, `DELETE`, ...) in the example below will send the request to the state machine as a new execution. On success, an HTTP code `200` is returned with the execution output as the Response Body.
 
 If the execution fails, an HTTP `500` response is returned with the `error` and `cause` from the execution output as the Response Body. If the request is invalid (ex. bad execution input) HTTP code `400` is returned.
 
-The response from the invocation contains only the `output` field from the 
+The response from the invocation contains only the `output` field from the
 [StartSyncExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartSyncExecution.html#API_StartSyncExecution_ResponseSyntax) API.
 In case of failures, the fields `error` and `cause` are returned as part of the response.
 Other metadata such as billing details, AWS account ID and resource ARNs are not returned in the API response.
@@ -154,7 +154,7 @@ const stateMachine: stepfunctions.IStateMachine = new stepfunctions.StateMachine
   definition: stateMachineDefinition,
   stateMachineType: stepfunctions.StateMachineType.EXPRESS,
 });
-    
+
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
   deploy: true,
   stateMachine: stateMachine,
@@ -172,7 +172,7 @@ AWS Step Functions will receive the request body in its input as follows:
 ```json
 {
   "body": {
-    "customerId": 1 
+    "customerId": 1
   },
   "path": "/",
   "querystring": {}
@@ -1378,8 +1378,9 @@ api.addGatewayResponse('test-response', {
   type: apigateway.ResponseType.ACCESS_DENIED,
   statusCode: '500',
   responseHeaders: {
-    'Access-Control-Allow-Origin': "test.com",
-    'test-key': 'test-value'
+    // Note that values must be enclosed within a pair of single quotes
+    "Access-Control-Allow-Origin": "'test.com'",
+    "test-key": "'test-value'",
   },
   templates: {
     'application/json': '{ "message": $context.error.messageString, "statusCode": "488", "type": "$context.error.responseType" }'
