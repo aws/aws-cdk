@@ -863,7 +863,7 @@ export class KubernetesVersion {
   public static readonly V1_23 = KubernetesVersion.of('1.23');
 
   /**
-   * Kubernetes version 1.23
+   * Kubernetes version 1.24
    *
    * When creating a `Cluster` with this version, you need to also specify the
    * `kubectlLayer` property with a `KubectlV24Layer` from
