@@ -1378,7 +1378,6 @@ api.addGatewayResponse('test-response', {
   type: apigateway.ResponseType.ACCESS_DENIED,
   statusCode: '500',
   responseHeaders: {
-    // Note that values must be enclosed within a pair of single quotes
     "Access-Control-Allow-Origin": "'test.com'",
     "test-key": "'test-value'",
   },
