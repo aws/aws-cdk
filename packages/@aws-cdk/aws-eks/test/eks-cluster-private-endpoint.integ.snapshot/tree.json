@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.133"
+          "version": "10.1.140"
         }
       },
       "aws-cdk-eks-cluster-private-endpoint-test": {
@@ -1003,7 +1003,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.133"
+                  "version": "10.1.140"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2415,7 +2415,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.133"
+                      "version": "10.1.140"
                     }
                   }
                 },
@@ -2502,7 +2502,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.133"
+              "version": "10.1.140"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2670,7 +2670,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb.zip"
+                          "s3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3084,7 +3084,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/74b7999aa1b2c159b5b7cf71de159597f25fc448f67da4554e8c7b78f038ee52.json"
+                          "/cf1d052158170cdf51f6e3cbf4b80806d0cab71e9d887decd88e368eef9f9321.json"
                         ]
                       ]
                     },
@@ -3127,7 +3127,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.133"
+              "version": "10.1.140"
             }
           }
         },
@@ -3149,7 +3149,7 @@
                 "path": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.133"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
