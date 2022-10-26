@@ -395,6 +395,19 @@
     }
    }
   },
+  "KubectlLayer600207B5": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c0f40a9fd16d1698ca05765606c04c8724dc5c8355b6e124a39af09449a3aa30.zip"
+    },
+    "Description": "/opt/kubectl/kubectl 1.22; /opt/helm/helm 3.9",
+    "LicenseInfo": "Apache-2.0"
+   }
+  },
   "ClusterRoleFA261979": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -616,7 +629,7 @@
      ]
     },
     "Config": {
-     "version": "1.21",
+     "version": "1.22",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -1160,7 +1173,7 @@
    "Type": "AWS::AutoScaling::LaunchConfiguration",
    "Properties": {
     "ImageId": {
-     "Ref": "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     "Ref": "SsmParameterValueawsserviceeksoptimizedami122amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "inf1.2xlarge",
     "IamInstanceProfile": {
@@ -1342,7 +1355,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/1b169daea7e8cd4be81e7eda35aef70e597514069419dcab0d24505c9608a7c7.json"
+       "/87023d6f638c868d4981dbbef728546df86c24bb96022d45e901c4eaf533cca9.json"
       ]
      ]
     },
@@ -1358,6 +1371,9 @@
        "ClusterCreationRole360249B6",
        "Arn"
       ]
+     },
+     "referencetoawscdkeksclusterinferencetestKubectlLayerC250C540Ref": {
+      "Ref": "KubectlLayer600207B5"
      },
      "referencetoawscdkeksclusterinferencetestVpcPrivateSubnet1Subnet57B9547BRef": {
       "Ref": "VpcPrivateSubnet1Subnet536B997A"
@@ -1974,9 +1990,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami122amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.21/amazon-linux-2-gpu/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.22/amazon-linux-2-gpu/recommended/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

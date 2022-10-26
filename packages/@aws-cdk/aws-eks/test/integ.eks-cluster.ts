@@ -11,6 +11,7 @@ import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 
 class EksClusterStack extends Stack {
@@ -36,7 +37,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -338,6 +339,13 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
   testCases: [stack],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
 });
 
 app.synth();
