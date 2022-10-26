@@ -2,6 +2,45 @@
 
 ## New Resource Types
 
+* AWS::FSx::DataRepositoryAssociation
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::Api ApiId (__added__)
+
+## Property Changes
+
+* AWS::ACMPCA::CertificateAuthority UsageMode (__added__)
+* AWS::ApiGatewayV2::Api Tags.PrimitiveType (__deleted__)
+* AWS::ApiGatewayV2::Api Tags.PrimitiveItemType (__added__)
+* AWS::ApiGatewayV2::Api Tags.Type (__added__)
+* AWS::Cognito::UserPool DeletionProtection (__added__)
+* AWS::EC2::FlowLog TrafficType.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::IoT::TopicRule.LocationAction (__added__)
+* AWS::IoT::TopicRule.Timestamp (__added__)
+* AWS::ApiGatewayV2::Api.Cors AllowHeaders.DuplicatesAllowed (__added__)
+* AWS::ApiGatewayV2::Api.Cors AllowMethods.DuplicatesAllowed (__added__)
+* AWS::ApiGatewayV2::Api.Cors AllowOrigins.DuplicatesAllowed (__added__)
+* AWS::ApiGatewayV2::Api.Cors ExposeHeaders.DuplicatesAllowed (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition Image.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ECS::TaskDefinition.ContainerDefinition Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoT::TopicRule.Action Location (__added__)
+* AWS::IoT::TopicRule.TimestreamAction BatchMode (__deleted__)
+
+
+# CloudFormation Resource Specification v94.0.0
+
+## New Resource Types
+
 * AWS::IdentityStore::Group
 * AWS::IdentityStore::GroupMembership
 
