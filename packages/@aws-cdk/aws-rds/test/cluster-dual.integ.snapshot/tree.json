@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.129"
+          "version": "10.1.133"
         }
       },
       "aws-cdk-rds-cluster-dual-integ": {
@@ -584,21 +584,21 @@
               "version": "0.0.0"
             }
           },
-          "Cluster": {
-            "id": "Cluster",
-            "path": "aws-cdk-rds-cluster-dual-integ/Cluster",
+          "DualstackCluster": {
+            "id": "DualstackCluster",
+            "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "aws-cdk-rds-cluster-dual-integ/Cluster/Subnets",
+                "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-rds-cluster-dual-integ/Cluster/Subnets/Default",
+                    "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
-                        "dbSubnetGroupDescription": "Subnets for Cluster database",
+                        "dbSubnetGroupDescription": "Subnets for DualstackCluster database",
                         "subnetIds": [
                           {
                             "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -622,11 +622,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-cluster-dual-integ/Cluster/SecurityGroup",
+                "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-cluster-dual-integ/Cluster/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -656,7 +656,7 @@
               },
               "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                "path": "aws-cdk-rds-cluster-dual-integ/Cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -664,7 +664,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-cluster-dual-integ/Cluster/Resource",
+                "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -672,7 +672,7 @@
                     "copyTagsToSnapshot": true,
                     "dbClusterParameterGroupName": "default.aurora-mysql8.0",
                     "dbSubnetGroupName": {
-                      "Ref": "ClusterSubnetsDCFA5CB7"
+                      "Ref": "DualstackClusterSubnets00EA466E"
                     },
                     "engineVersion": "8.0.mysql_aurora.3.02.0",
                     "masterUsername": "admin",
@@ -681,7 +681,7 @@
                     "vpcSecurityGroupIds": [
                       {
                         "Fn::GetAtt": [
-                          "ClusterSecurityGroup0921994B",
+                          "DualstackClusterSecurityGroupA8CDA208",
                           "GroupId"
                         ]
                       }
@@ -695,16 +695,16 @@
               },
               "Instance1": {
                 "id": "Instance1",
-                "path": "aws-cdk-rds-cluster-dual-integ/Cluster/Instance1",
+                "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/Instance1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
                     "dbClusterIdentifier": {
-                      "Ref": "ClusterEB0386A7"
+                      "Ref": "DualstackCluster84A5FE37"
                     },
                     "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
-                      "Ref": "ClusterSubnetsDCFA5CB7"
+                      "Ref": "DualstackClusterSubnets00EA466E"
                     },
                     "engine": "aurora-mysql",
                     "publiclyAccessible": false
@@ -717,16 +717,175 @@
               },
               "Instance2": {
                 "id": "Instance2",
-                "path": "aws-cdk-rds-cluster-dual-integ/Cluster/Instance2",
+                "path": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/Instance2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
                     "dbClusterIdentifier": {
-                      "Ref": "ClusterEB0386A7"
+                      "Ref": "DualstackCluster84A5FE37"
                     },
                     "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
-                      "Ref": "ClusterSubnetsDCFA5CB7"
+                      "Ref": "DualstackClusterSubnets00EA466E"
+                    },
+                    "engine": "aurora-mysql",
+                    "publiclyAccessible": false
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
+              "version": "0.0.0"
+            }
+          },
+          "Ipv4Cluster": {
+            "id": "Ipv4Cluster",
+            "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster",
+            "children": {
+              "Subnets": {
+                "id": "Subnets",
+                "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Subnets",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Subnets/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "dbSubnetGroupDescription": "Subnets for Ipv4Cluster database",
+                        "subnetIds": [
+                          {
+                            "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+                          },
+                          {
+                            "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "RDS security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "engine": "aurora-mysql",
+                    "copyTagsToSnapshot": true,
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
+                    "dbSubnetGroupName": {
+                      "Ref": "Ipv4ClusterSubnets5BD573AA"
+                    },
+                    "engineVersion": "8.0.mysql_aurora.3.02.0",
+                    "masterUsername": "admin",
+                    "masterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+                    "networkType": "IPV4",
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "Ipv4ClusterSecurityGroup90341172",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance1": {
+                "id": "Instance1",
+                "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Instance1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "dbClusterIdentifier": {
+                      "Ref": "Ipv4Cluster5F67A28A"
+                    },
+                    "dbInstanceClass": "db.t3.medium",
+                    "dbSubnetGroupName": {
+                      "Ref": "Ipv4ClusterSubnets5BD573AA"
+                    },
+                    "engine": "aurora-mysql",
+                    "publiclyAccessible": false
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              },
+              "Instance2": {
+                "id": "Instance2",
+                "path": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Instance2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "dbClusterIdentifier": {
+                      "Ref": "Ipv4Cluster5F67A28A"
+                    },
+                    "dbInstanceClass": "db.t3.medium",
+                    "dbSubnetGroupName": {
+                      "Ref": "Ipv4ClusterSubnets5BD573AA"
                     },
                     "engine": "aurora-mysql",
                     "publiclyAccessible": false
@@ -762,7 +921,7 @@
                 "path": "cluster-dual-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.129"
+                  "version": "10.1.133"
                 }
               },
               "DeployAssert": {

@@ -457,6 +457,25 @@ describe('cluster', () => {
     }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
+  test('instance with IPv4 network type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      networkType: NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      NetworkType: 'IPV4',
+    });
+  });
+
   test('instance with dual-stack network type', () => {
     // GIVEN
     const stack = testStack();

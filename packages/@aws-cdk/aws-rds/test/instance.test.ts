@@ -321,7 +321,21 @@ describe('instance', () => {
     });
   });
 
-  test('instance with dualstack network type', () => {
+  test('instance with IPv4 network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'IPV4',
+    });
+  });
+
+  test('instance with dual-stack network type', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,

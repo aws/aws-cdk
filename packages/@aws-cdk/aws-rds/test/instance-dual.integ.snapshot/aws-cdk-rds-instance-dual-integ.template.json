@@ -354,10 +354,10 @@
     "AmazonProvidedIpv6CidrBlock": true
    }
   },
-  "InstanceSubnetGroupF2CBA54F": {
+  "DualstackInstanceSubnetGroupB16A837F": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnet group for Instance database",
+    "DBSubnetGroupDescription": "Subnet group for DualstackInstance database",
     "SubnetIds": [
      {
       "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -368,10 +368,10 @@
     ]
    }
   },
-  "InstanceSecurityGroupB4E5FA83": {
+  "DualstackInstanceSecurityGroupE7C05542": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Security group for Instance database",
+    "GroupDescription": "Security group for DualstackInstance database",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -384,14 +384,14 @@
     }
    }
   },
-  "InstanceC1063A87": {
+  "DualstackInstance4CB1897E": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "AllocatedStorage": "100",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.micro",
     "DBSubnetGroupName": {
-     "Ref": "InstanceSubnetGroupF2CBA54F"
+     "Ref": "DualstackInstanceSubnetGroupB16A837F"
     },
     "Engine": "postgres",
     "EngineVersion": "11.12",
@@ -404,7 +404,66 @@
     "VPCSecurityGroups": [
      {
       "Fn::GetAtt": [
-       "InstanceSecurityGroupB4E5FA83",
+       "DualstackInstanceSecurityGroupE7C05542",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Ipv4InstanceSubnetGroup6E04EDDC": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for Ipv4Instance database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+     },
+     {
+      "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+     }
+    ]
+   }
+  },
+  "Ipv4InstanceSecurityGroup0E80CE00": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for Ipv4Instance database",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Ipv4Instance75869831": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "AllocatedStorage": "100",
+    "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t3.micro",
+    "DBSubnetGroupName": {
+     "Ref": "Ipv4InstanceSubnetGroup6E04EDDC"
+    },
+    "Engine": "postgres",
+    "EngineVersion": "11.12",
+    "MasterUsername": "postgres",
+    "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+    "MultiAZ": false,
+    "NetworkType": "IPV4",
+    "PubliclyAccessible": false,
+    "StorageType": "gp2",
+    "VPCSecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "Ipv4InstanceSecurityGroup0E80CE00",
        "GroupId"
       ]
      }

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.129"
+          "version": "10.1.133"
         }
       },
       "aws-cdk-rds-instance-dual-integ": {
@@ -584,21 +584,21 @@
               "version": "0.0.0"
             }
           },
-          "Instance": {
-            "id": "Instance",
-            "path": "aws-cdk-rds-instance-dual-integ/Instance",
+          "DualstackInstance": {
+            "id": "DualstackInstance",
+            "path": "aws-cdk-rds-instance-dual-integ/DualstackInstance",
             "children": {
               "SubnetGroup": {
                 "id": "SubnetGroup",
-                "path": "aws-cdk-rds-instance-dual-integ/Instance/SubnetGroup",
+                "path": "aws-cdk-rds-instance-dual-integ/DualstackInstance/SubnetGroup",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-rds-instance-dual-integ/Instance/SubnetGroup/Default",
+                    "path": "aws-cdk-rds-instance-dual-integ/DualstackInstance/SubnetGroup/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
-                        "dbSubnetGroupDescription": "Subnet group for Instance database",
+                        "dbSubnetGroupDescription": "Subnet group for DualstackInstance database",
                         "subnetIds": [
                           {
                             "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -622,15 +622,15 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-instance-dual-integ/Instance/SecurityGroup",
+                "path": "aws-cdk-rds-instance-dual-integ/DualstackInstance/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-instance-dual-integ/Instance/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-instance-dual-integ/DualstackInstance/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Security group for Instance database",
+                        "groupDescription": "Security group for DualstackInstance database",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -656,7 +656,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-instance-dual-integ/Instance/Resource",
+                "path": "aws-cdk-rds-instance-dual-integ/DualstackInstance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
@@ -664,7 +664,7 @@
                     "copyTagsToSnapshot": true,
                     "dbInstanceClass": "db.t3.micro",
                     "dbSubnetGroupName": {
-                      "Ref": "InstanceSubnetGroupF2CBA54F"
+                      "Ref": "DualstackInstanceSubnetGroupB16A837F"
                     },
                     "engine": "postgres",
                     "engineVersion": "11.12",
@@ -677,7 +677,118 @@
                     "vpcSecurityGroups": [
                       {
                         "Fn::GetAtt": [
-                          "InstanceSecurityGroupB4E5FA83",
+                          "DualstackInstanceSecurityGroupE7C05542",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-rds.DatabaseInstance",
+              "version": "0.0.0"
+            }
+          },
+          "Ipv4Instance": {
+            "id": "Ipv4Instance",
+            "path": "aws-cdk-rds-instance-dual-integ/Ipv4Instance",
+            "children": {
+              "SubnetGroup": {
+                "id": "SubnetGroup",
+                "path": "aws-cdk-rds-instance-dual-integ/Ipv4Instance/SubnetGroup",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-rds-instance-dual-integ/Ipv4Instance/SubnetGroup/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "dbSubnetGroupDescription": "Subnet group for Ipv4Instance database",
+                        "subnetIds": [
+                          {
+                            "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+                          },
+                          {
+                            "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-rds-instance-dual-integ/Ipv4Instance/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-instance-dual-integ/Ipv4Instance/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Security group for Ipv4Instance database",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-instance-dual-integ/Ipv4Instance/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "allocatedStorage": "100",
+                    "copyTagsToSnapshot": true,
+                    "dbInstanceClass": "db.t3.micro",
+                    "dbSubnetGroupName": {
+                      "Ref": "Ipv4InstanceSubnetGroup6E04EDDC"
+                    },
+                    "engine": "postgres",
+                    "engineVersion": "11.12",
+                    "masterUsername": "postgres",
+                    "masterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+                    "multiAz": false,
+                    "networkType": "IPV4",
+                    "publiclyAccessible": false,
+                    "storageType": "gp2",
+                    "vpcSecurityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "Ipv4InstanceSecurityGroup0E80CE00",
                           "GroupId"
                         ]
                       }
@@ -714,7 +825,7 @@
                 "path": "instance-dual-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.129"
+                  "version": "10.1.133"
                 }
               },
               "DeployAssert": {

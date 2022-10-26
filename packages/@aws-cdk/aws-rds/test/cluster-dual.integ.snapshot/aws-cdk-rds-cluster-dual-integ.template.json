@@ -354,10 +354,10 @@
     "AmazonProvidedIpv6CidrBlock": true
    }
   },
-  "ClusterSubnetsDCFA5CB7": {
+  "DualstackClusterSubnets00EA466E": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for Cluster database",
+    "DBSubnetGroupDescription": "Subnets for DualstackCluster database",
     "SubnetIds": [
      {
       "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
@@ -368,7 +368,7 @@
     ]
    }
   },
-  "ClusterSecurityGroup0921994B": {
+  "DualstackClusterSecurityGroupA8CDA208": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -384,14 +384,14 @@
     }
    }
   },
-  "ClusterEB0386A7": {
+  "DualstackCluster84A5FE37": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "Engine": "aurora-mysql",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
-     "Ref": "ClusterSubnetsDCFA5CB7"
+     "Ref": "DualstackClusterSubnets00EA466E"
     },
     "EngineVersion": "8.0.mysql_aurora.3.02.0",
     "MasterUsername": "admin",
@@ -400,7 +400,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "ClusterSecurityGroup0921994B",
+       "DualstackClusterSecurityGroupA8CDA208",
        "GroupId"
       ]
      }
@@ -409,15 +409,15 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterInstance1448F06E4": {
+  "DualstackClusterInstance11BFB1E7F": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
-     "Ref": "ClusterEB0386A7"
+     "Ref": "DualstackCluster84A5FE37"
     },
     "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
-     "Ref": "ClusterSubnetsDCFA5CB7"
+     "Ref": "DualstackClusterSubnets00EA466E"
     },
     "Engine": "aurora-mysql",
     "PubliclyAccessible": false
@@ -429,15 +429,110 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterInstance2C3E0561B": {
+  "DualstackClusterInstance227DA8F29": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
-     "Ref": "ClusterEB0386A7"
+     "Ref": "DualstackCluster84A5FE37"
     },
     "DBInstanceClass": "db.t3.medium",
     "DBSubnetGroupName": {
-     "Ref": "ClusterSubnetsDCFA5CB7"
+     "Ref": "DualstackClusterSubnets00EA466E"
+    },
+    "Engine": "aurora-mysql",
+    "PubliclyAccessible": false
+   },
+   "DependsOn": [
+    "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C",
+    "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Ipv4ClusterSubnets5BD573AA": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for Ipv4Cluster database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+     },
+     {
+      "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+     }
+    ]
+   }
+  },
+  "Ipv4ClusterSecurityGroup90341172": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Ipv4Cluster5F67A28A": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-mysql",
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBSubnetGroupName": {
+     "Ref": "Ipv4ClusterSubnets5BD573AA"
+    },
+    "EngineVersion": "8.0.mysql_aurora.3.02.0",
+    "MasterUsername": "admin",
+    "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
+    "NetworkType": "IPV4",
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "Ipv4ClusterSecurityGroup90341172",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Ipv4ClusterInstance1AC5CF4FD": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "Ipv4Cluster5F67A28A"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "DBSubnetGroupName": {
+     "Ref": "Ipv4ClusterSubnets5BD573AA"
+    },
+    "Engine": "aurora-mysql",
+    "PubliclyAccessible": false
+   },
+   "DependsOn": [
+    "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C",
+    "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Ipv4ClusterInstance20433FFCA": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "Ipv4Cluster5F67A28A"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "DBSubnetGroupName": {
+     "Ref": "Ipv4ClusterSubnets5BD573AA"
     },
     "Engine": "aurora-mysql",
     "PubliclyAccessible": false

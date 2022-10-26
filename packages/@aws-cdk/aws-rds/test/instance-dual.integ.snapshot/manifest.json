@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fc17213fb94773b93bcd7628cdb51bb81d836862985de222cf093e44532a1ee.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2cfbf4ae15417959d859c3a040d7c531ebed16f50bc7b64e958d09092535d712.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -147,25 +147,40 @@
             "data": "Ipv6CidrBlock"
           }
         ],
-        "/aws-cdk-rds-instance-dual-integ/Instance/SubnetGroup/Default": [
+        "/aws-cdk-rds-instance-dual-integ/DualstackInstance/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceSubnetGroupF2CBA54F"
+            "data": "DualstackInstanceSubnetGroupB16A837F"
           }
         ],
-        "/aws-cdk-rds-instance-dual-integ/Instance/SecurityGroup/Resource": [
+        "/aws-cdk-rds-instance-dual-integ/DualstackInstance/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceSecurityGroupB4E5FA83"
+            "data": "DualstackInstanceSecurityGroupE7C05542"
           }
         ],
-        "/aws-cdk-rds-instance-dual-integ/Instance/Resource": [
+        "/aws-cdk-rds-instance-dual-integ/DualstackInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DualstackInstance4CB1897E"
+          }
+        ],
+        "/aws-cdk-rds-instance-dual-integ/Ipv4Instance/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4InstanceSubnetGroup6E04EDDC"
+          }
+        ],
+        "/aws-cdk-rds-instance-dual-integ/Ipv4Instance/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4InstanceSecurityGroup0E80CE00"
+          }
+        ],
+        "/aws-cdk-rds-instance-dual-integ/Ipv4Instance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ipv4Instance75869831"
           }
         ],
         "/aws-cdk-rds-instance-dual-integ/BootstrapVersion": [
@@ -178,24 +193,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "InstanceSecret478E0A47": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InstanceSecret478E0A47",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "InstanceSecretAttachment83BEE581": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InstanceSecretAttachment83BEE581",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
