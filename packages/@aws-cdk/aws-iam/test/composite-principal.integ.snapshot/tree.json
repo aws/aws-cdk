@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.123"
         }
       },
       "iam-integ-composite-principal": {
@@ -33,17 +33,7 @@
                           "Effect": "Allow",
                           "Principal": {
                             "AWS": "*",
-                            "Service": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "ec2.",
-                                  {
-                                    "Ref": "AWS::URLSuffix"
-                                  }
-                                ]
-                              ]
-                            }
+                            "Service": "ec2.amazonaws.com"
                           }
                         }
                       ],
@@ -64,14 +54,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
