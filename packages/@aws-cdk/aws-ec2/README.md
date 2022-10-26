@@ -219,50 +219,43 @@ provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 
 ### Ip Address Management
 
-The VPC spans a supernet IP range, which contains the non-overlapping IPs of  it's contained subnets. Possible sources for this IP range are:
+The VPC spans a supernet IP range, which contains the non-overlapping IPs of its contained subnets. Possible sources for this IP range are:
 
 * You specify an IP range directly by specifying a CIDR
 * You allocate an IP range of a given size automatically from AWS IPAM
 
-If you don't specify anything, by default the Vpc will allocate the 10.0.0.0/16 address range which will be exhaustively spread across all subnets in the subnet configuration. This behavior can be changed (see "Allocating an IP range from AWS IPAM" bellow).
+By default the Vpc will allocate the `10.0.0.0/16` address range which will be exhaustively spread across all subnets in the subnet configuration. This behavior can be changed by passing an object that implements `IIpAddresses` to the `ipAddress` property of a Vpc. See the subsequent sections for the options.
 
-Be aware that if you don't specify 'ipAddresses' the address space will be fully allocated! If you predict you may need to add more subnet groups later, add them early on and set reserved: true (see the "Advanced Subnet Configuration" section for more information).
+Be aware that if you don't explicitly reserve subnet groups in `subnetConfiguration`, the address space will be fully allocated! If you predict you may need to add more subnet groups later, add them early on and set `reserved: true` (see the "Advanced Subnet Configuration" section for more information).
 
-To facilitate options for flexibility in the allocation and use of IP space within Vpc and Subnet including strategy and implementation for the allocation, Vpc utilizes 'ipAddresses'.
+#### Specifying a CIDR directly
 
-By default, the Vpc construct will create and use IpAddresses.cidr for you if you do not set the Vpc ipAddresses property. IpAddresses.cidr is an implementation of the Original CDK Vpc and Subnet IP address allocation strategy and implementation. 
-
-You must supply at most one of 'ipAddresses' or 'cidr' to Vpc.
-
-#### Specifying an IP range via a CIDR - IpAddresses.cidr
-
-IpAddresses.cidr allows you to define a Cidr range directly for your Vpc.
-
-IpAddresses.cidr will first try to allocated space from the Vpc Cidr any Subnets that explicitly have a `cidrMask` as part of a SubnetConfiguration, this includes reserved subnets, after this any remaining space is divided fully between the rest of the required subnets.
-
-When using IpAddresses.cidr concrete Cidr values are generated in the synthesized CloudFormation template.
+Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
 
 ```ts
-import { IpAddresses } from ''@aws-cdk/aws-ec2'';
+import { IpAddresses } from '@aws-cdk/aws-ec2';
 
 new ec2.Vpc(stack, 'TheVPC', {
   ipAddresses: IpAddresses.cidr('10.0.1.0/20')
 });
 ```
 
-#### Allocating an IP range from AWS IPAM  - IpAddresses.awsIpam
+Space will be allocated to subnets in the following order:
 
-IpAddresses.awsIpam uses Amazon VPC IP Address Manager (IPAM) to allocated the Cidr for the Vpc. For information on Amazon VPC IP Address Manager please see the [official documentation](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html).
+- First, spaces is allocated for all subnets groups that explicitly have a `cidrMask` set as part of their configuration (including reserved subnets).
+- Afterwards, any remaining space is divided evenly between the rest of the subnets (if any).
 
-AWS Ipam requires a `ipv4IpamPoolId` be set to the Amazon VPC IP Address Manager Pool Id used for the Vpc Cidr allocation, additionally an `ipv4NetmaskLength` must be set, which defines the size of cidr that will be requested from the Pool at deploy time by the CloudFormation engine.
+The argument to `IpAddresses.cidr` may not be a token, and concrete Cidr values are generated in the synthesized CloudFormation template.
 
-Subnets are allocated locally of a size defined by `defaultSubnetIpv4NetmaskLength` property or by using any explicit `cidrMask` from a supplied SubnetConfiguration. The provider AwsIpam dose not attempt to allocated any remaining space in the Vpc's Cidr space.
+#### Allocating an IP range from AWS IPAM
+
+Amazon VPC IP Address Manager (IPAM) manages a large IP space, from which chunks can be allocated for use in the Vpc. For information on Amazon VPC IP Address Manager please see the [official documentation](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html). An example of allocating from AWS IPAM looks like this:
 
 ```ts
-import { IpAddresses } from ''@aws-cdk/aws-ec2'';
+import { IpAddresses } from '@aws-cdk/aws-ec2';
 
 new ec2.Vpc(stack, 'TheVPC', {
-  ipAddresses: IpAddresses.awsIpam({
+  ipAddresses: IpAddresses.awsIpamAllocation({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24
@@ -270,7 +263,13 @@ new ec2.Vpc(stack, 'TheVPC', {
 });
 ```
 
-When using IpAddresses.awsIpam the final Cidr allocation for Vpc and Subnets are unknown at synth time. Because of this Subnet Cidr values are synthesized as CloudFormation Intrinsic functions representing their offset within the Vpc Cidr space and not concrete values.
+`IpAddresses.awsIpamAllocation` requires the following:
+
+- `ipv4IpamPoolId`, the id of an IPAM Pool from which the VPC range should be allocated.
+- `ipv4NetmaskLength`, the size of the IP range that will be requested from the Pool at deploy time.
+- `defaultSubnetIpv4NetmaskLength`, the size of subnets in groups that don't have `cidrMask` set.
+
+With this method of IP address management, no attempt is made to guess at subnet group sizes or to exhaustively allocate the IP range. All subnet groups must have an explicit `cidrMask` set as part of their subnet configuration, or `defaultSubnetIpv4NetmaskLength` must be set for a default size. If not, synthesis will fail and you must provide one or the other.
 
 ### Advanced Subnet Configuration
 
@@ -1003,11 +1002,11 @@ new ec2.Instance(this, 'Instance2', {
   }),
 });
 
-// AWS Linux 2 with kernel 5.x 
+// AWS Linux 2 with kernel 5.x
 new ec2.Instance(this, 'Instance3', {
   vpc,
   instanceType,
-  machineImage: new ec2.AmazonLinuxImage({ 
+  machineImage: new ec2.AmazonLinuxImage({
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
     kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
   }),
@@ -1017,7 +1016,7 @@ new ec2.Instance(this, 'Instance3', {
 new ec2.Instance(this, 'Instance4', {
   vpc,
   instanceType,
-  machineImage: new ec2.AmazonLinuxImage({ 
+  machineImage: new ec2.AmazonLinuxImage({
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
   }),
 });
@@ -1462,9 +1461,9 @@ asset.grantRead(instance.role);
 ### Persisting user data
 
 By default, EC2 UserData is run once on only the first time that an instance is started. It is possible to make the
-user data script run on every start of the instance. 
+user data script run on every start of the instance.
 
-When creating a Windows UserData you can use the `persist` option to set whether or not to add 
+When creating a Windows UserData you can use the `persist` option to set whether or not to add
 `<persist>true</persist>` [to the user data script](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts). it can be used as follows:
 
 ```ts

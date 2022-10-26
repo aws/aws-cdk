@@ -36,7 +36,7 @@ const pool = new CfnIPAMPool(stack, 'Pool', {
 pool.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
 const awsIpamVpc = new Vpc(stack, 'AwsIpamVpc', {
-  ipAddresses: IpAddresses.awsIpam({
+  ipAddresses: IpAddresses.awsIpamAllocation({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24,

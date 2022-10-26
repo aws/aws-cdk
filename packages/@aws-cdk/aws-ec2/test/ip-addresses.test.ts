@@ -105,17 +105,17 @@ describe('AwsIpam vpc allocation', () => {
   };
 
   test('AwsIpam returns cidrBlock as undefined', () => {
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
     expect(ipAddresses.allocateVpcCidr().cidrBlock).toBeUndefined;
   });
 
   test('AwsIpam returns the correct vpc ipv4IpamPoolId', () => {
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
     expect(ipAddresses.allocateVpcCidr().ipv4IpamPoolId).toEqual('ipam-pool-0111222333444');
   });
 
   test('AwsIpam returns the correct vpc ipv4NetmaskLength', () => {
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
     expect(ipAddresses.allocateVpcCidr().ipv4NetmaskLength).toEqual(22);
   });
 
@@ -129,7 +129,7 @@ describe('AwsIpam subnets allocation', () => {
   };
 
   test('AwsIpam returns subnet allocations as 2x TOKEN, when you do not give a cidr for the subnets', () => {
-    const ipAddresses = IpAddresses.awsIpam({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
+    const ipAddresses = IpAddresses.awsIpamAllocation({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
     const allocations = ipAddresses.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
@@ -155,7 +155,7 @@ describe('AwsIpam subnets allocation', () => {
   });
 
   test('AwsIpam returns subnet allocations as 2x TOKEN, when you provide a cidr for the subnets', () => {
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
     const allocations = ipAddresses.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
@@ -183,7 +183,7 @@ describe('AwsIpam subnets allocation', () => {
   });
 
   test('AwsIpam returns subnet allocations as 2x TOKEN, when you mix provide and non provided cidr for the subnets', () => {
-    const ipAddresses = IpAddresses.awsIpam({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
+    const ipAddresses = IpAddresses.awsIpamAllocation({ defaultSubnetIpv4NetmaskLength: 24, ...awsIpamProps });
     const allocations = ipAddresses.allocateSubnetsCidr({
       requestedSubnets: [{
         availabilityZone: 'dummyAz1',
@@ -263,7 +263,7 @@ describe('AwsIpam Vpc Integration', () => {
       ipv4NetmaskLength: 22,
     };
 
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
     expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options/);;
 
@@ -279,7 +279,7 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 24,
     };
 
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
     new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });
 
@@ -300,7 +300,7 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 24,
     };
 
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
     new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });
 
@@ -354,7 +354,7 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 17,
     };
 
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
     expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow('IP space of size /18 not big enough to allocate subnets of sizes /17,/17,/17,/17');;
 
@@ -370,7 +370,7 @@ describe('AwsIpam Vpc Integration', () => {
       defaultSubnetIpv4NetmaskLength: 17,
     };
 
-    const ipAddresses = IpAddresses.awsIpam(awsIpamProps);
+    const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
     new Vpc(stack, 'VpcNetwork', {
       ipAddresses: ipAddresses,

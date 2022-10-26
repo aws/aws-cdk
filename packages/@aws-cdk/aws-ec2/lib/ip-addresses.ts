@@ -13,7 +13,7 @@ export abstract class IpAddresses {
    * VPC Cidr is supplied at creation and subnets are calculated locally
    *
    */
-  public static cidr(cidrBlock: string): IpAddresses {
+  public static cidr(cidrBlock: string): IIpAddresses {
     return new Cidr(cidrBlock);
   }
 
@@ -24,7 +24,7 @@ export abstract class IpAddresses {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html
    */
-  public static awsIpam(props: AwsIpamProps): IpAddresses {
+  public static awsIpamAllocation(props: AwsIpamProps): IIpAddresses {
     return new AwsIpam(props);
   }
 
@@ -41,6 +41,8 @@ export abstract class IpAddresses {
    * Don't call this directly, the VPC will call it automatically.
    */
   public abstract allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions;
+
+  protected constructor() { }
 }
 
 /**
@@ -193,7 +195,7 @@ export interface AwsIpamProps {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipAddresses: new IpAddresses.awsIpam({
+ *   ipAddresses: IpAddresses.awsIpamAllocation({
  *     ipv4IpamPoolId: pool.ref,
  *     ipv4NetmaskLength: 18,
  *     defaultSubnetIpv4NetmaskLength: 24
@@ -203,7 +205,8 @@ export interface AwsIpamProps {
  *
  */
 class AwsIpam implements IIpAddresses {
-  constructor(private readonly props: AwsIpamProps) {}
+  constructor(private readonly props: AwsIpamProps) {
+  }
 
   /**
    * Allocates Vpc Cidr. called when creating a Vpc using AwsIpam.
@@ -258,7 +261,7 @@ class AwsIpam implements IIpAddresses {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipAddresses: new ec2.IpAddresses.cidr('10.0.1.0/20')
+ *   ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
  * });
  * ```
  *
@@ -267,7 +270,6 @@ class Cidr implements IIpAddresses {
   private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
-
     if (Token.isUnresolved(cidrBlock)) {
       throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
     }
