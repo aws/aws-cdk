@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/a95bdf2a7c979f2d47f3deb5f22bb7d7c64ac5d7074620faec6b7512b3d9a4db.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/d239410685309e285d885c3b5cf9ff272e8dce6e34938936d4c26aa53593a509.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -175,6 +175,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/KubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlLayer600207B5"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Role/Resource": [
@@ -380,7 +386,10 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesLaunchConfig7C420A27"
+            "data": "ClusterNodesLaunchConfig7C420A27",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/ASG": [
@@ -466,7 +475,10 @@
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesArmLaunchConfigAAF61344"
+            "data": "ClusterNodesArmLaunchConfigAAF61344",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/ASG": [
@@ -552,7 +564,10 @@
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBottlerocketNodesLaunchConfig76D7BEBE"
+            "data": "ClusterBottlerocketNodesLaunchConfig76D7BEBE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/ASG": [
@@ -638,7 +653,10 @@
         "/aws-cdk-eks-cluster-test/Cluster/spot/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterspotLaunchConfigCC19F2E6"
+            "data": "ClusterspotLaunchConfigCC19F2E6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/spot/ASG": [
@@ -651,12 +669,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Clusterchartspotinterrupthandler79E2D768"
-          }
-        ],
-        "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "\"instanceType\" is deprecated and will be removed in the next major version. please use \"instanceTypes\" instead"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng/NodeGroupRole/Resource": [
@@ -683,12 +695,6 @@
             "data": "ClusterNodegroupextrangspotB327AE6B"
           }
         ],
-        "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "\"instanceType\" is deprecated and will be removed in the next major version. please use \"instanceTypes\" instead"
-          }
-        ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -699,12 +705,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupextrangarm7773987A"
-          }
-        ],
-        "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm3": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "\"instanceType\" is deprecated and will be removed in the next major version. please use \"instanceTypes\" instead"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodegroupextra-ng-arm3/NodeGroupRole/Resource": [
@@ -959,12 +959,6 @@
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-        "/aws-cdk-eks-cluster-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
-          }
-        ],
         "/aws-cdk-eks-cluster-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1001,6 +995,12 @@
             "data": "referencetoawscdkeksclustertestClusterCreationRole95F44854Arn"
           }
         ],
+        "/aws-cdk-eks-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclustertestKubectlLayerD8FA674ERef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksclustertestKubectlLayerD8FA674ERef"
+          }
+        ],
         "/aws-cdk-eks-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclustertestVpcPrivateSubnet1Subnet32A4EC2ARef": [
           {
             "type": "aws:cdk:logicalId",
@@ -1025,22 +1025,28 @@
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
           }
         ],
+        "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.22--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceeksoptimizedami122amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.22--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceeksoptimizedami122amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.22--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsservicebottlerocketawsk8s122x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
         "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.21--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.21--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.21--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicebottlerocketawsk8s121x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-eks-cluster-test/LaunchTemplate": [

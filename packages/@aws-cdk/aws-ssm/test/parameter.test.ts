@@ -602,7 +602,7 @@ test('StringParameter.fromSecureStringParameterAttributes without version', () =
   });
 
   // THEN
-  expect(stack.resolve(param.stringValue)).toEqual('{{resolve:ssm-secure:MyParamName:}}');
+  expect(stack.resolve(param.stringValue)).toEqual('{{resolve:ssm-secure:MyParamName}}');
 });
 
 test('StringListParameter.fromName', () => {

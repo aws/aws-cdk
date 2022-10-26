@@ -12,6 +12,7 @@ import * as synthetics from '../lib';
  * -- aws synthetics get-canary --name assetcanary-one has a state of 'RUNNING'
  * -- aws synthetics get-canary --name assetcanary-two has a state of 'RUNNING'
  * -- aws synthetics get-canary --name assetcanary-three has a state of 'RUNNING'
+ * -- aws synthetics get-canary --name assetcanary-four has a state of 'RUNNING'
  */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'canary-one');
@@ -58,6 +59,15 @@ new synthetics.Canary(stack, 'MyCanaryThree', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+});
+
+new synthetics.Canary(stack, 'MyCanaryFour', {
+  canaryName: 'assetcanary-four',
+  test: synthetics.Test.custom({
+    handler: 'canary.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_7,
 });
 
 new synthetics.Canary(stack, 'MyPythonCanary', {
