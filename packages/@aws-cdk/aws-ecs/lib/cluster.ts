@@ -182,6 +182,11 @@ export class Cluster extends Resource implements ICluster {
   private _executeCommandConfiguration?: ExecuteCommandConfiguration;
 
   /**
+   * CfnCluster instance
+   */
+  private cfnCluster: CfnCluster;
+
+  /**
    * Constructs a new instance of the Cluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterProps = {}) {
@@ -212,21 +217,20 @@ export class Cluster extends Resource implements ICluster {
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
 
-    const cluster = new CfnCluster(this, 'Resource', {
+    this.cfnCluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
       configuration: this._executeCommandConfiguration && this.renderExecuteCommandConfiguration(),
     });
 
-    this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
+    this.clusterArn = this.getResourceArnAttribute(this.cfnCluster.attrArn, {
       service: 'ecs',
       resource: 'cluster',
       resourceName: this.physicalName,
     });
-    this.clusterName = this.getResourceNameAttribute(cluster.ref);
+    this.clusterName = this.getResourceNameAttribute(this.cfnCluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
-
 
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
       ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
@@ -290,6 +294,12 @@ export class Cluster extends Resource implements ICluster {
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
       throw new Error('Can only add default namespace once.');
+    }
+
+    if (options.useAsServiceConnectDefault) {
+      this.cfnCluster.serviceConnectDefaults = {
+        namespace: options?.name,
+      } as CfnCluster.ServiceConnectDefaultsProperty;
     }
 
     const namespaceType = options.type !== undefined
@@ -890,6 +900,14 @@ export interface CloudMapNamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * This property specifies whether to set the provided namespace as the service connect default in the cluster properties.
+   *
+   * @default false
+   */
+  readonly useAsServiceConnectDefault?: boolean;
+
 }
 
 enum ContainerInsights {
