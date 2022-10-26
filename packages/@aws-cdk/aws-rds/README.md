@@ -50,6 +50,22 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property:
+
+```ts
+declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  instanceProps: {
+    vpc,
+    publiclyAccessible: false,
+  },
+  networkType: rds.NetworkType.DUAL,
+});
+```
+
+For more information about dual-stack mode, see [Working with a DB cluster in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
+
 Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 
 ```ts
@@ -128,6 +144,20 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   maxAllocatedStorage: 200,
 });
 ```
+
+To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property:
+
+```ts
+declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_14_4 }),
+  vpc,
+  networkType: rds.NetworkType.DUAL,
+  publiclyAccessible: false,
+});
+```
+
+For more information about dual-stack mode, see [Working with a DB instance in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
 
 Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
 a source database respectively:
