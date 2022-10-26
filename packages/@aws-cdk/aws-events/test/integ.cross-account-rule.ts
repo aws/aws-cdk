@@ -1,6 +1,6 @@
 /// !cdk-integ *
 import { App, Arn, CfnResource, Stack } from '@aws-cdk/core';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests';
 import { Rule, IRuleTarget } from '../lib';
 
 /**
@@ -13,7 +13,9 @@ import { Rule, IRuleTarget } from '../lib';
 const app = new App();
 
 const account = process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT;
-const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || process.env.CDK_DEFAULT_CROSS_ACCOUNT;
+
+// As the integ-runner doesnt provide a default cross account, we make our own.
+const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '987654321';
 const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
 
 const fromCrossAccountStack = new Stack(app, 'FromCrossAccountRuleStack', {
@@ -23,6 +25,11 @@ const fromCrossAccountStack = new Stack(app, 'FromCrossAccountRuleStack', {
   },
 });
 
+/**
+ * To make this testable, we need to have the stack that stores the event bridge be in
+ *  the same account that the IntegTest stack is deployed into. Otherwise, we have no
+ *  access to the IAM policy that the EventBusPolicy-account-region support stack creates.
+ */
 const toCrossAccountStack = new Stack(app, 'ToCrossAccountRuleStack', {
   env: {
     account,
@@ -69,15 +76,24 @@ const integ = new IntegTest(app, 'CrossAccountDeploy', {
   ],
 });
 
-// We are using the default event bus.
+// We are using the default event bus, don't need to define any parameters for this call.
 const eventVerification = integ.assertions.awsApiCall('EventBridge', 'describeEventBus');
 
 integ.node.addDependency(toCrossAccountStack);
 
 eventVerification.provider.addPolicyStatementFromSdkCall('events', 'DescribeEventBus');
 
-eventVerification.assertAtPath('Policy.Statement.0', ExpectedResult.objectLike({
-  Sid: 'Allow-account-',
+// IAM policy will be created by the support stack, assert that everything created as expected.
+eventVerification.assertAtPath('Policy', ExpectedResult.objectLike({
+  Statement: Match.arrayWith(
+    [Match.objectLike({
+      Sid: Match.stringLikeRegexp(`Allow-account-${crossAccount}`),
+      Principal: {
+        AWS: `arn:aws:iam::${crossAccount}:root`,
+      },
+      Resource: Match.stringLikeRegexp(`arn:aws:events:us-east-1:${account}`),
+    })],
+  ),
 }));
 
 app.synth();
