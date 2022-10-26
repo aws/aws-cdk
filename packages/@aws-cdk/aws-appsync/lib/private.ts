@@ -3,14 +3,6 @@ import { Directive } from './schema-base';
 import { InterfaceType } from './schema-intermediate';
 
 /**
- * Utility enum for Schema class
- */
-export enum SchemaMode {
-  FILE = 'FILE',
-  CODE = 'CODE',
-};
-
-/**
  * Generates an addition to the schema
  *
  * ```
