@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
-import * as cdkCore from '@aws-cdk/core';
+import { SecretValue, Stack, Size } from '@aws-cdk/core';
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ecs = require('@aws-cdk/aws-ecs');
@@ -17,7 +17,7 @@ import targets = require('@aws-cdk/aws-events-targets');
 import iam = require('@aws-cdk/aws-iam');
 import path = require('path');
 
-class Fixture extends cdkCore.Stack {
+class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 

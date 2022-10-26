@@ -493,7 +493,6 @@ To apply additional linux-specific options related to init process and memory ma
 
 ```ts
 declare const taskDefinition: ecs.TaskDefinition;
-declare const maxSawpSize: cdkCore.Size;
 
 taskDefinition.addContainer('container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
@@ -501,7 +500,7 @@ taskDefinition.addContainer('container', {
   linuxParameters: new ecs.LinuxParameters(this, 'LinuxParameters', {
     initProcessEnabled: true,
     sharedMemorySize: 1024,
-    maxSwap: maxSawpSize,
+    maxSwap: Size.mebibytes(5000),
     swappiness: 90,
   }),
 });
