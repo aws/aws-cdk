@@ -904,7 +904,7 @@ test('building assets', async () => {
     name: 'aws://account/region',
     region: 'region',
   });
-  expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment);
+  expect(buildAssets).toBeCalledWith(expectedAssetManifest, sdkProvider, expectedEnvironment, undefined);
 });
 
 function pushStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {

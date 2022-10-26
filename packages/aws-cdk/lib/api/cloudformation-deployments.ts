@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
-import { buildAssets, publishAssets } from '../util/asset-publishing';
+import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions } from '../util/asset-publishing';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
@@ -253,6 +253,13 @@ export interface DeployStackOptions {
    * @default true To remain backward compatible.
    */
   readonly buildAssets?: boolean;
+
+  /**
+   * Whether to build/publish assets in parallel
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly assetParallelism?: boolean;
 }
 
 export interface BuildStackAssetsOptions {
@@ -274,6 +281,11 @@ export interface BuildStackAssetsOptions {
    * @default - Current role
    */
   readonly roleArn?: string;
+
+  /**
+   * Options to pass on to `buildAsests()` function
+   */
+  readonly buildOptions?: BuildAssetsOptions;
 }
 
 interface PublishStackAssetsOptions {
@@ -283,6 +295,11 @@ interface PublishStackAssetsOptions {
    * @default true To remain backward compatible.
    */
   readonly buildAssets?: boolean;
+
+  /**
+   * Options to pass on to `publishAsests()` function
+   */
+  readonly publishOptions?: Omit<PublishAssetsOptions, 'buildAssets'>;
 }
 
 export interface DestroyStackOptions {
@@ -401,6 +418,9 @@ export class CloudFormationDeployments {
     if (options.resourcesToImport === undefined) {
       await this.publishStackAssets(options.stack, toolkitInfo, {
         buildAssets: options.buildAssets ?? true,
+        publishOptions: {
+          parallel: options.assetParallelism,
+        },
       });
     }
 
@@ -434,6 +454,7 @@ export class CloudFormationDeployments {
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
+      assetParallelism: options.assetParallelism,
     });
   }
 
@@ -529,7 +550,7 @@ export class CloudFormationDeployments {
         toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await buildAssets(manifest, this.sdkProvider, stackEnv);
+      await buildAssets(manifest, this.sdkProvider, stackEnv, options.buildOptions);
     }
   }
 
@@ -549,6 +570,7 @@ export class CloudFormationDeployments {
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
       await publishAssets(manifest, this.sdkProvider, stackEnv, {
+        ...options.publishOptions,
         buildAssets: options.buildAssets ?? true,
       });
     }
