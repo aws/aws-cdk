@@ -275,6 +275,21 @@ export enum StorageType {
 }
 
 /**
+ * The network type of the DB instance.
+ */
+export enum NetworkType {
+  /**
+   * IPv4 only network type.
+   */
+  IPV4 = 'IPV4',
+
+  /**
+   * Dual-stack network type.
+   */
+  DUAL = 'DUAL'
+}
+
+/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
@@ -617,6 +632,13 @@ export interface DatabaseInstanceNewProps {
    * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
+
+  /**
+   * The network type of the DB instance.
+   *
+   * @default - IPV4
+   */
+  readonly networkType?: NetworkType;
 }
 
 /**
@@ -759,6 +781,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       maxAllocatedStorage: props.maxAllocatedStorage,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
+      networkType: props.networkType,
     };
   }
 
