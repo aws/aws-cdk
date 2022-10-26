@@ -242,8 +242,8 @@ new ec2.Vpc(stack, 'TheVPC', {
 
 Space will be allocated to subnets in the following order:
 
-- First, spaces is allocated for all subnets groups that explicitly have a `cidrMask` set as part of their configuration (including reserved subnets).
-- Afterwards, any remaining space is divided evenly between the rest of the subnets (if any).
+* First, spaces is allocated for all subnets groups that explicitly have a `cidrMask` set as part of their configuration (including reserved subnets).
+* Afterwards, any remaining space is divided evenly between the rest of the subnets (if any).
 
 The argument to `IpAddresses.cidr` may not be a token, and concrete Cidr values are generated in the synthesized CloudFormation template.
 
@@ -267,9 +267,9 @@ new ec2.Vpc(stack, 'TheVPC', {
 
 `IpAddresses.awsIpamAllocation` requires the following:
 
-- `ipv4IpamPoolId`, the id of an IPAM Pool from which the VPC range should be allocated.
-- `ipv4NetmaskLength`, the size of the IP range that will be requested from the Pool at deploy time.
-- `defaultSubnetIpv4NetmaskLength`, the size of subnets in groups that don't have `cidrMask` set.
+* `ipv4IpamPoolId`, the id of an IPAM Pool from which the VPC range should be allocated.
+* `ipv4NetmaskLength`, the size of the IP range that will be requested from the Pool at deploy time.
+* `defaultSubnetIpv4NetmaskLength`, the size of subnets in groups that don't have `cidrMask` set.
 
 With this method of IP address management, no attempt is made to guess at subnet group sizes or to exhaustively allocate the IP range. All subnet groups must have an explicit `cidrMask` set as part of their subnet configuration, or `defaultSubnetIpv4NetmaskLength` must be set for a default size. If not, synthesis will fail and you must provide one or the other.
 
