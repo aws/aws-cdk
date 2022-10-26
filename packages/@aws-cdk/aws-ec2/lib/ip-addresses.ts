@@ -6,7 +6,7 @@ import { SubnetConfiguration } from './vpc';
 /**
  * An abstract Provider of IpAddresses
  */
-export abstract class IpAddresses {
+export class IpAddresses {
   /**
    * Used to provide local Ip Address Management services for your VPC
    *
@@ -28,21 +28,7 @@ export abstract class IpAddresses {
     return new AwsIpam(props);
   }
 
-  /**
-   * Called by the VPC to retrieve VPC options from the Ipam
-   *
-   * Don't call this directly, the VPC will call it automatically.
-   */
-  public abstract allocateVpcCidr(): VpcIpamOptions;
-
-  /**
-   * Called by the VPC to retrieve Subnet options from the Ipam
-   *
-   * Don't call this directly, the VPC will call it automatically.
-   */
-  public abstract allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions;
-
-  protected constructor() { }
+  private constructor() { }
 }
 
 /**
@@ -50,12 +36,16 @@ export abstract class IpAddresses {
  */
 export interface IIpAddresses {
   /**
-   * Allocates Cidr for Vpc
+   * Called by the VPC to retrieve VPC options from the Ipam
+   *
+   * Don't call this directly, the VPC will call it automatically.
    */
   allocateVpcCidr(): VpcIpamOptions;
 
   /**
-   * Allocates Cidr for Subnets
+   * Called by the VPC to retrieve Subnet options from the Ipam
+   *
+   * Don't call this directly, the VPC will call it automatically.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions;
 }
