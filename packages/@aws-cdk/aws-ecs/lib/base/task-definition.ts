@@ -722,6 +722,21 @@ export class TaskDefinition extends TaskDefinitionBase {
         }
       }
     }
+
+    // Validate that there are no named port mapping conflicts for Service Connect.
+    const portMappingNames = new Map<string, string>(); // Map from port mapping name to most recent container it appears in.
+    this.containers.map(container => {
+      for (const pm of container.portMappings) {
+        if (pm.name) {
+          if (portMappingNames.has(pm.name)) {
+            ret.push(`Port mapping name '${pm.name}' cannot appear in both '${container.containerName}' and '${portMappingNames.get(pm.name)}'`);
+          }
+          portMappingNames.set(pm.name, container.containerName);
+        }
+      }
+    });
+
+
     return ret;
   }
 
