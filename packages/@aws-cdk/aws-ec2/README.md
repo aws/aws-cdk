@@ -236,7 +236,7 @@ Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
 import { IpAddresses } from '@aws-cdk/aws-ec2';
 
 new ec2.Vpc(stack, 'TheVPC', {
-  ipAddresses: IpAddresses.cidr('10.0.1.0/20')
+  ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
 });
 ```
 
@@ -254,8 +254,10 @@ Amazon VPC IP Address Manager (IPAM) manages a large IP space, from which chunks
 ```ts
 import { IpAddresses } from '@aws-cdk/aws-ec2';
 
+declare const pool: ec2.CfnIPAMPool;
+
 new ec2.Vpc(stack, 'TheVPC', {
-  ipAddresses: IpAddresses.awsIpamAllocation({
+  ipAddresses: ec2.IpAddresses.awsIpamAllocation({
     ipv4IpamPoolId: pool.ref,
     ipv4NetmaskLength: 18,
     defaultSubnetIpv4NetmaskLength: 24
