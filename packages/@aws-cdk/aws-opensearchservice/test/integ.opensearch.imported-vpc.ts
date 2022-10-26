@@ -18,7 +18,7 @@ class TestStack extends Stack {
     });
 
     const vpc: IVpc = ec2.Vpc.fromLookup(this, 'Vpc', {
-      vpcId: 'vpc-123',
+      isDefault: true,
     });
     const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_EGRESS });
     const domainProps: opensearch.DomainProps = {
@@ -41,7 +41,11 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-const testCase = new TestStack(app, 'cdk-integ-opensearch-vpc');
+const env = {
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+  region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+};
+const testCase = new TestStack(app, 'cdk-integ-opensearch-vpc', { env });
 new integ.IntegTest(app, 'cdk-integ-opensearch-vpc-test', {
   testCases: [testCase],
 });

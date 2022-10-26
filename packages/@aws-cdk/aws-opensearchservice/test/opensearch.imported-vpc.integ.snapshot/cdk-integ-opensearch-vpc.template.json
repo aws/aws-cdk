@@ -1,0 +1,112 @@
+{
+ "Resources": {
+  "ServiceLinkedRole": {
+   "Type": "AWS::IAM::ServiceLinkedRole",
+   "Properties": {
+    "AWSServiceName": "opensearchservice.amazonaws.com",
+    "Description": "Role for OpenSearch VPC Test"
+   }
+  },
+  "DomainSecurityGroup48AA5FD6": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for domain Domain",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": "vpc-12345"
+   },
+   "DependsOn": [
+    "ServiceLinkedRole"
+   ]
+  },
+  "Domain66AC69E0": {
+   "Type": "AWS::OpenSearchService::Domain",
+   "Properties": {
+    "ClusterConfig": {
+     "DedicatedMasterEnabled": false,
+     "InstanceCount": 2,
+     "InstanceType": "r5.large.search",
+     "ZoneAwarenessConfig": {
+      "AvailabilityZoneCount": 3
+     },
+     "ZoneAwarenessEnabled": true
+    },
+    "DomainEndpointOptions": {
+     "EnforceHTTPS": false,
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+    },
+    "EBSOptions": {
+     "EBSEnabled": true,
+     "VolumeSize": 10,
+     "VolumeType": "gp2"
+    },
+    "EncryptionAtRestOptions": {
+     "Enabled": false
+    },
+    "EngineVersion": "Elasticsearch_7.1",
+    "LogPublishingOptions": {},
+    "NodeToNodeEncryptionOptions": {
+     "Enabled": false
+    },
+    "VPCOptions": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "DomainSecurityGroup48AA5FD6",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      "p-12345",
+      "p-67890"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ServiceLinkedRole"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
