@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { CfnFleet } from './gamelift.generated';
 
 /**
  * Configuration of a fleet server process
@@ -39,7 +40,7 @@ export class ServerProcess {
   /**
    * Convert a Server process entity to its Json representation
    */
-  public toJson() {
+  public toJson(): CfnFleet.ServerProcessProperty {
     return {
       parameters: this.props.parameters,
       launchPath: this.props.launchPath,
@@ -99,9 +100,9 @@ export class RuntimeConfiguration {
   /**
    * Convert a runtime configuration entity to its Json representation
    */
-  public toJson() {
+  public toJson(): CfnFleet.RuntimeConfigurationProperty {
     return {
-      gameSessionActivationTimeout: this.props.gameSessionActivationTimeout && this.props.gameSessionActivationTimeout.toSeconds(),
+      gameSessionActivationTimeoutSeconds: this.props.gameSessionActivationTimeout && this.props.gameSessionActivationTimeout.toSeconds(),
       maxConcurrentGameSessionActivations: this.props.maxConcurrentGameSessionActivations,
       serverProcesses: this.props.serverProcesses && this.props.serverProcesses.map((serverProcess: ServerProcess) => serverProcess.toJson()),
     };

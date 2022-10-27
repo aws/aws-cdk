@@ -1,3 +1,5 @@
+import { CfnFleet } from './gamelift.generated';
+
 /**
  * Configuration of a location capacity
  */
@@ -28,7 +30,10 @@ export interface LocationCapacityConfig {
 export class LocationCapacity {
   constructor(private readonly props: LocationCapacityConfig) {}
 
-  public toJson() {
+  /**
+   * Convert a location capacity entity to its Json representation
+   */
+  public toJson(): CfnFleet.LocationCapacityProperty {
     return {
       desiredEc2Instances: this.props.desiredCapacity,
       minSize: this.props.minSize ? this.props.minSize : 0,
@@ -48,6 +53,8 @@ export interface LocationConfig {
   /**
    * Current resource capacity settings in a specified fleet or location.
    * The location value might refer to a fleet's remote location or its home Region.
+   *
+   * @default no capacity settings on the specified location
    */
   readonly capacity?: LocationCapacity;
 }
@@ -62,7 +69,7 @@ export class Location {
   /**
    * Convert a location entity to its Json representation
    */
-  public toJson() {
+  public toJson(): CfnFleet.LocationConfigurationProperty {
     return {
       location: this.props.location,
       locationCapacity: this.props.capacity && this.props.capacity.toJson(),

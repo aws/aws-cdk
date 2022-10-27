@@ -2,11 +2,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IBuild } from './build';
-import { FleetBase, FleetProps, IFleet, FleetAttributes } from './fleet-base';
+import { FleetBase, FleetProps, IFleet } from './fleet-base';
+import { CfnFleet } from './gamelift.generated';
 import { InboundPermission } from './inbound-permission';
 
 /**
- *
+ * Represents a GameLift Fleet used to run a custom game build.
  */
 export interface IBuildFleet extends IFleet {}
 
@@ -46,42 +47,15 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   /**
    * Import an existing fleet from its identifier.
    */
-  static fromFleetId(scope: Construct, id: string, fleetId: string): IBuildFleet {
-    return this.fromFleetAttributes(scope, id, { fleetId });
+  static fromBuildFleetId(scope: Construct, id: string, buildFleetId: string): IBuildFleet {
+    return this.fromFleetAttributes(scope, id, { fleetId: buildFleetId });
   }
 
   /**
    * Import an existing fleet from its ARN.
    */
-  static fromFleetArn(scope: Construct, id: string, fleetArn: string): IBuildFleet {
-    return this.fromFleetAttributes(scope, id, { fleetArn });
-  }
-
-  /**
-   * Import an existing fleet from its attributes.
-   */
-  static fromFleetAttributes(scope: Construct, id: string, attrs: FleetAttributes): IBuildFleet {
-    if (!attrs.fleetId && !attrs.fleetId) {
-      throw new Error('Either fleetId or fleetArn must be provided in FleetAttributes');
-    }
-    const fleetId = attrs.fleetId ??
-      cdk.Stack.of(scope).splitArn(attrs.fleetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-
-    if (!fleetId) {
-      throw new Error(`No fleet identifier found in ARN: '${attrs.fleetArn}'`);
-    }
-    const fleetArn = attrs.fleetArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'fleet',
-      resourceName: attrs.fleetId,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
-    class Import extends FleetBase {
-      public readonly fleetId = fleetId;
-      public readonly fleetArn = fleetArn;
-      public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
-    }
-    return new Import(scope, id);
+  static fromBuildFleetArn(scope: Construct, id: string, buildFleetArn: string): IBuildFleet {
+    return this.fromFleetAttributes(scope, id, { fleetArn: buildFleetArn });
   }
 
   /**
@@ -90,14 +64,14 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   public readonly fleetId: string;
 
   /**
-   * The name of the fleet.
-   */
-  public readonly fleetName: string;
-
-  /**
    * The ARN of the fleet.
    */
   public readonly fleetArn: string;
+
+  /**
+   * The build content of the fleet
+   */
+  public readonly content: IBuild;
 
   /**
    * The IAM role GameLift assumes by fleet instances to access AWS ressources.
@@ -137,23 +111,41 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
     if (props.locations && props.locations?.length > 100) {
       throw new Error(`No more than 100 locations are allowed per fleet, given ${props.locations.length}`);
     }
-  }
-}
 
-/**
- * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the script
- * identifier from the ARN.
- *
- * Script ARNs look like this:
- *
- *   arn:aws:gamelift:region:account-id:script/script-identifier
- *
- * ..which means that in order to extract the `script-identifier` component from the ARN, we can
- * split the ARN using ":" and select the component in index 5 then split using "/" and select the component in index 1.
- *
- * @returns the script identifier from his ARN
- */
-function extractIdFromArn(arn: string) {
-  const splitValue = cdk.Fn.select(5, cdk.Fn.split(':', arn));
-  return cdk.Fn.select(1, cdk.Fn.split('/', splitValue));
+    this.content = props.content;
+    this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
+      assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
+    });
+    this.grantPrincipal = this.role;
+
+    const resource = new CfnFleet(this, 'Resource', {
+      buildId: this.content.buildId,
+      certificateConfiguration: {
+        certificateType: props.useCertificate ? 'GENERATED': 'DISABLED',
+      },
+      description: props.description,
+      desiredEc2Instances: props.desiredCapacity,
+      ec2InboundPermissions: props.inboundPermission.map((value) => value.toJson()),
+      ec2InstanceType: props.instanceType.toString(),
+      fleetType: props.useSpot ? 'SPOT' : 'ON_DEMAND',
+      instanceRoleArn: this.role.roleArn,
+      locations: props.locations && props.locations.map((value) => value.toJson()),
+      maxSize: props.maxSize,
+      minSize: props.minSize,
+      name: this.physicalName,
+      newGameSessionProtectionPolicy: props.protectNewGameSession ? 'FULL_PROTECTION' : 'NO_PROTECTION',
+      peerVpcAwsAccountId: props.peerVpc && props.peerVpc.env.account,
+      peerVpcId: props.peerVpc && props.peerVpc.vpcId,
+      resourceCreationLimitPolicy: props.resourceCreationLimitPolicy && props.resourceCreationLimitPolicy.toJson(),
+      runtimeConfiguration: props.runtimeConfigurations.toJson(),
+    });
+
+    this.fleetId = this.getResourceNameAttribute(resource.ref);
+    this.fleetArn = cdk.Stack.of(scope).formatArn({
+      service: 'gamelift',
+      resource: 'fleet',
+      resourceName: this.fleetId,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+    });
+  }
 }

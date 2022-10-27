@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { CfnFleet } from './gamelift.generated';
 
 /**
  * Protocol for use in Connection Rules
@@ -227,7 +228,10 @@ export interface InboundPermissionConfig {
 export class InboundPermission {
   constructor(private readonly props: InboundPermissionConfig) {}
 
-  public toJson() {
+  /**
+   * Convert a inbound permission entity to its Json representation
+   */
+  public toJson(): CfnFleet.IpPermissionProperty {
     return {
       ...this.props.source.toJson(),
       ...this.props.port.toJson(),

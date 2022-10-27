@@ -3,6 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Location } from './location';
+import { ResourceCreationLimitPolicy } from './resource-creation-limit-policy';
 import { RuntimeConfiguration } from './runtime-configuration';
 
 /**
@@ -169,7 +171,7 @@ export interface FleetProps {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-multiprocess.html
    */
-  readonly runtimeConfigurations: RuntimeConfiguration[];
+  readonly runtimeConfigurations: RuntimeConfiguration;
 
   /**
    * A set of remote locations to deploy additional instances to and manage as part of the fleet.
@@ -180,6 +182,13 @@ export interface FleetProps {
    * @default Create a fleet with instances in the home region only
    */
   readonly locations?: Location[];
+
+  /**
+   * A policy that limits the number of game sessions that an individual player can create on instances in this fleet within a specified span of time.
+   *
+   * @default No resource creation limit policy
+   */
+  readonly resourceCreationLimitPolicy?: ResourceCreationLimitPolicy;
 }
 
 /**
@@ -216,6 +225,34 @@ export interface FleetAttributes {
  * Base class for new and imported GameLift fleet.
  */
 export abstract class FleetBase extends cdk.Resource implements IFleet {
+
+  /**
+   * Import an existing fleet from its attributes.
+   */
+  static fromFleetAttributes(scope: Construct, id: string, attrs: FleetAttributes): IFleet {
+    if (!attrs.fleetId && !attrs.fleetId) {
+      throw new Error('Either fleetId or fleetArn must be provided in FleetAttributes');
+    }
+    const fleetId = attrs.fleetId ??
+      cdk.Stack.of(scope).splitArn(attrs.fleetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+
+    if (!fleetId) {
+      throw new Error(`No fleet identifier found in ARN: '${attrs.fleetArn}'`);
+    }
+    const fleetArn = attrs.fleetArn ?? cdk.Stack.of(scope).formatArn({
+      service: 'gamelift',
+      resource: 'fleet',
+      resourceName: attrs.fleetId,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+    });
+    class Import extends FleetBase {
+      public readonly fleetId = fleetId;
+      public readonly fleetArn = fleetArn;
+      public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
+    }
+    return new Import(scope, id);
+  }
+
   /**
     * The Identifier of the fleet.
     */
@@ -255,12 +292,5 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       'Make this call using the account that manages your non-GameLift resources.',
       'See: https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html',
     ].join('\n'));
-  }
-
-  private cannedMetric(fn: (dims: { FleetId: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      ...fn({ FleetId: this.fleetId }),
-      ...props,
-    }).attachTo(this);
   }
 }
