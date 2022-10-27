@@ -72,7 +72,10 @@
      "Ref": "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65"
     },
     "StageName": "prod"
-   }
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
   },
   "myapiCloudWatchRole095452E5": {
    "Type": "AWS::IAM::Role",

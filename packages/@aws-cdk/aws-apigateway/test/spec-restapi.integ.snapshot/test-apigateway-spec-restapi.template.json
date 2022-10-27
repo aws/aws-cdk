@@ -517,7 +517,10 @@
      }
     ],
     "StageName": "beta"
-   }
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
   },
   "myapiCloudWatchRole095452E5": {
    "Type": "AWS::IAM::Role",
