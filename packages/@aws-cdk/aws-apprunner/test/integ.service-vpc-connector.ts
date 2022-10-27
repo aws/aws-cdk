@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'integ-apprunner');
 
 // Scenario 6: Create the service from ECR public with a VPC Connector
 const vpc = new ec2.Vpc(stack, 'Vpc', {
-  cidr: '10.0.0.0/16',
+  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
 });
 
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
