@@ -53,15 +53,15 @@
         }
       }
     },
-    "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb": {
+    "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33": {
       "source": {
-        "path": "asset.d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb",
+        "path": "asset.1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb.zip",
+          "objectKey": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -92,7 +92,7 @@
         }
       }
     },
-    "ae4173a4ac8fe0695ecab60f149f3df09560b96e6fff0f6aeb41e84cbf2fbdc8": {
+    "10fc72b78ad6e3acf1381cc99a752d56c6423ccb3628bfa0ec6d51434244d42c": {
       "source": {
         "path": "awscdkeksclusterbottlerocketngtestawscdkawseksKubectlProviderE02BC096.nested.template.json",
         "packaging": "file"
@@ -100,12 +100,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ae4173a4ac8fe0695ecab60f149f3df09560b96e6fff0f6aeb41e84cbf2fbdc8.json",
+          "objectKey": "10fc72b78ad6e3acf1381cc99a752d56c6423ccb3628bfa0ec6d51434244d42c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "64829500258edd3d38b1c29152ced52b42816ccc90432190cafe2fa52bb4472f": {
+    "4c83be2cb27d35f5ebcdead395ca2da423e85d21119ceecee4aeb55986d1b0ae": {
       "source": {
         "path": "aws-cdk-eks-cluster-bottlerocket-ng-test.template.json",
         "packaging": "file"
@@ -113,7 +113,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "64829500258edd3d38b1c29152ced52b42816ccc90432190cafe2fa52bb4472f.json",
+          "objectKey": "4c83be2cb27d35f5ebcdead395ca2da423e85d21119ceecee4aeb55986d1b0ae.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

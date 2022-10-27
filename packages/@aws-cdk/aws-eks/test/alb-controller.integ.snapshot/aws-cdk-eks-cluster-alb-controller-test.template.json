@@ -913,14 +913,14 @@
      "Fn::Join": [
       "",
       [
-       "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-server-deployment-c852e88c\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"minReadySeconds\":0,\"progressDeadlineSeconds\":600,\"replicas\":1,\"selector\":{\"matchLabels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"spec\":{\"automountServiceAccountToken\":true,\"containers\":[{\"args\":[\"-text\",\"hello\"],\"image\":\"hashicorp/http-echo\",\"imagePullPolicy\":\"Always\",\"name\":\"main\",\"ports\":[{\"containerPort\":5678}],\"securityContext\":{\"privileged\":false,\"readOnlyRootFilesystem\":false,\"runAsNonRoot\":false}}],\"dnsPolicy\":\"ClusterFirst\",\"securityContext\":{\"fsGroupChangePolicy\":\"Always\",\"runAsNonRoot\":false},\"setHostnameAsFQDN\":false}}}},{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"externalIPs\":[],\"ports\":[{\"port\":5678,\"targetPort\":5678}],\"selector\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"},\"type\":\"NodePort\"}},{\"apiVersion\":\"networking.k8s.io/v1beta1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"kubernetes.io/ingress.class\":\"alb\",\"alb.ingress.kubernetes.io/scheme\":\"internal\",\"alb.ingress.kubernetes.io/inbound-cidrs\":\"",
+       "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"hello-server-deployment-c852e88c\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"minReadySeconds\":0,\"progressDeadlineSeconds\":600,\"replicas\":2,\"selector\":{\"matchLabels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"}},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"args\":[\"-text\",\"hello\"],\"image\":\"hashicorp/http-echo\",\"imagePullPolicy\":\"Always\",\"name\":\"main\",\"ports\":[{\"containerPort\":5678}],\"resources\":{\"limits\":{\"cpu\":\"1500m\",\"memory\":\"2048Mi\"},\"requests\":{\"cpu\":\"1000m\",\"memory\":\"512Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"privileged\":false,\"readOnlyRootFilesystem\":true,\"runAsGroup\":26000,\"runAsNonRoot\":true,\"runAsUser\":25000},\"startupProbe\":{\"failureThreshold\":3,\"tcpSocket\":{\"port\":5678}}}],\"dnsPolicy\":\"ClusterFirst\",\"restartPolicy\":\"Always\",\"securityContext\":{\"fsGroupChangePolicy\":\"Always\",\"runAsNonRoot\":true},\"setHostnameAsFQDN\":false}}}},{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"externalIPs\":[],\"ports\":[{\"port\":5678,\"targetPort\":5678}],\"selector\":{\"cdk8s.io/metadata.addr\":\"hello-server-Deployment-c8659a74\"},\"type\":\"NodePort\"}},{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"kubernetes.io/ingress.class\":\"alb\",\"alb.ingress.kubernetes.io/scheme\":\"internal\",\"alb.ingress.kubernetes.io/inbound-cidrs\":\"",
        {
         "Fn::GetAtt": [
          "Vpc8378EB38",
          "CidrBlock"
         ]
        },
-       "\"},\"name\":\"hello-server-deployment-service-ingress-c896bd7e\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"rules\":[{\"http\":{\"paths\":[{\"backend\":{\"serviceName\":\"hello-server-deployment-service-c8fd9c61\",\"servicePort\":5678},\"path\":\"/\"}]}}]}}]"
+       "\"},\"name\":\"hello-server-deployment-service-ingress-c896bd7e\",\"labels\":{\"aws.cdk.eks/prune-c88b1dfeeaf63e3024ab07862029ba60fd8907fb04\":\"\"}},\"spec\":{\"rules\":[{\"http\":{\"paths\":[{\"backend\":{\"service\":{\"name\":\"hello-server-deployment-service-c8fd9c61\",\"port\":{\"number\":5678}}},\"path\":\"/\",\"pathType\":\"Prefix\"}]}}]}}]"
       ]
      ]
     },
@@ -1030,7 +1030,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/a5c54a47681dc263bb296e341ff9500a68cc18f5d368dd66b41793f364332175.json"
+       "/420d40fdc46ce5f130bd0ca21b943c124e3bb08c3d220a240d7e63832e92e896.json"
       ]
      ]
     },
