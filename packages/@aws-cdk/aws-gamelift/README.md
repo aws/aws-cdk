@@ -52,8 +52,6 @@ configuration or game server fleet management system.
 
 ## GameLift Hosting
 
-### Defining a GameLift Fleet
-
 GameLift helps you deploy, operate, and scale dedicated game servers for
 session-based multiplayer games. It helps you regulate the resources needed to
 host your games, finds available game servers to host new game sessions, and
@@ -109,3 +107,261 @@ new gamelift.Script(this, 'Script', {
   content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
 });
 ```
+
+### Defining a GameLift Fleet
+
+#### Creating a realtime game server fleet
+
+This lightweight server solution provides ready-to-go game servers that you can
+configure to fit your game. To set up and optionnally customize a realtime
+server fleet, you need to provide a script (in the form of some JavaScript
+code).
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3-assets';
+import * as gamelift from 'aws-cdk-lib/aws-gamelift';
+
+new gamelift.ScriptFleet(this, 'Realtime server fleet', {
+  content: gamelift.Script.fromAsset(path.join(__dirname, 'file-asset.js')
+});
+```
+
+#### Creating a custom game server fleet
+
+Your uploaded game servers are hosted on GameLift virtual computing resources,
+called instances. You set up your hosting resources by creating a fleet of
+instances and deploying them to run your game servers. You can design a fleet
+to fit your game's needs.
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3-assets';
+import * as gamelift from 'aws-cdk-lib/aws-gamelift';
+
+new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: gamelift.Build.fromAsset(path.join(__dirname, 'CustomerGameServer/')
+});
+```
+
+### Managing game servers launch configuration
+
+GameLift uses a fleet's runtime configuration to determine the type and number
+of processes to run on each instance in the fleet. At a minimum, a runtime
+configuration contains one server process configuration that represents one
+game server executable. You can also define additional server process
+configurations to run other types of processes related to your game. Each
+server process configuration contains the following information:
+
+* The file name and path of an executable in your game build.
+
+* Optionally Parameters to pass to the process on launch.
+
+* The number of processes to run concurrently.
+
+A GameLift instance is limited to 50 processes running concurrently.
+
+```ts fixture=with-build
+import * as gamelift from '@aws-cdk-lib/aws-gamelift';
+
+declare const build: gamelift.Build;
+// Server processes can be delcared in a declarative way through the constructor
+const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: build,
+  gameSessionActivationTimeoutSeconds: 123,
+  maxConcurrentGameSessionActivations: 123,
+  serverProcesses: [{
+    launchPath: '/local/game/GameLiftExampleServer.x86_64',
+    parameters: '-logFile /local/game/logs/myserver1935.log -port 1935',
+    concurrentExecutions: 100,
+  }]
+});
+
+// Or through dedicated runtimeConfiguration methods
+fleet.addServerProcess({
+  launchPath: '/local/game/GameLiftExampleServer.x86_64',
+  parameters: '-logFile /local/game/logs/myserver1935.log -port 1935',
+  concurrentExecutions: 100,
+});
+```
+
+See [Managing how game servers are launched for hosting](https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-multiprocess.html)
+in the *Amazon GameLift Developer Guide*.
+
+### Defining an instance type
+
+GameLift uses Amazon Elastic Compute Cloud (Amazon EC2) resources, called
+instances, to deploy your game servers and host game sessions for your players.
+When setting up a new fleet, you decide what type of instances your game needs
+and how to run game server processes on them (using a runtime configuration). All instances in a fleet use the same type of resources and the same runtime
+configuration. You can edit a fleet's runtime configuration and other fleet
+properties, but the type of resources cannot be changed.
+
+```ts fixture=with-build
+import * as gamelift from '@aws-cdk-lib/aws-gamelift';
+import * as ec2 from '@aws-cdk-lib/aws-ec2';
+
+declare const build: gamelift.Build;
+new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: build,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
+});
+```
+
+### Using Spot instances
+
+When setting up your hosting resources, you have the option of using Spot
+Instances, On-Demand Instances, or a combination.
+
+By default, fleet are using on demand capacity.
+
+```ts fixture=with-build
+import * as gamelift from '@aws-cdk-lib/aws-gamelift';
+
+declare const build: gamelift.Build;
+new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: build,
+  useSpot: true
+});
+```
+
+### Allowing Ingress traffic
+
+The allowed IP address ranges and port settings that allow inbound traffic to
+access game sessions on this fleet.
+
+New game sessions are assigned an IP address/port number combination, which
+must fall into the fleet's allowed ranges. Fleets with custom game builds must
+have permissions explicitly set. For Realtime Servers fleets, GameLift
+automatically opens two port ranges, one for TCP messaging and one for UDP.
+
+```ts fixture=with-build
+import * as gamelift from '@aws-cdk-lib/aws-gamelift';
+import * as ec2 from '@aws-cdk-lib/aws-ec2';
+
+declare const build: gamelift.Build;
+const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: build,
+  inboundPermissions: [
+
+  ]
+});
+// Allowing all IP Addresses from port 1111 to port 1122 on TCP Protocol
+fleet.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(1111), ec2.Port.tcp(1122));
+
+// Allowing a specific CIDR for port 1111 on UDP Protocol
+fleet.addIngressRule(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.udp(1111));
+```
+
+### Managing locations
+
+A single Amazon GameLift fleet has a home Region by default (the Region you
+deploy it to), but it can deploy resources to any number of GameLift supported
+Regions. Select Regions based on where your players are located and your
+latency needs.
+
+By default, home region is used as default location.
+
+```ts fixture=with-build
+import * as gamelift from '@aws-cdk-lib/aws-gamelift';
+
+declare const build: gamelift.Build;
+new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: build
+});
+```
+
+but we can add new locations if needed and define desired capacity
+
+```ts fixture=with-build
+import * as gamelift from '@aws-cdk-lib/aws-gamelift';
+
+declare const build: gamelift.Build;
+const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: build,
+  locations: [ {
+    name: 'eu-west-1',
+    desiredCapacity: 5,
+    minCapacity: 2,
+    maxCapacity: 10
+  }, {
+    name: 'us-east-1',
+    desiredCapacity: 5,
+    minCapacity: 2,
+    maxCapacity: 10
+  }
+});
+
+// Or through dedicated methods
+const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  content: build
+});
+fleet.addLocation('eu-west-1', 5, 2, 10);
+fleet.addLocation('us-east-1', 5, 2, 10);
+```
+
+### Specifying an IAM role
+
+Some GameLift features require you to extend limited access to your AWS
+resources. This is done by creating an AWS IAM role. The GameLift Fleet class
+automatically created an IAM role with all the minimum necessary permissions
+for GameLift to access your ressources. If you wish, you may
+specify your own IAM role.
+
+```ts
+import * as iam from '@aws-cdk-lib/aws-iam';
+import * as ec2 from '@aws-cdk-lib/aws-ec2';
+import * as gamelift from '@aws-cdk-lib/aws-gamelift';
+
+declare const build: gamelift.Build;
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.CompositePrincipale(new iam.ServicePrincipal('gamelift.amazonaws.com'))
+});
+role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
+
+new gamelift.BuildFleet(this, 'Game server fleet', {
+  content = build,
+  role: role
+});
+```
+
+### Monitoring
+
+GameLift is integrated with CloudWatch, so you can monitor the performance of
+your game servers via logs and metrics.
+
+#### Metrics
+
+GameLift Fleet sends metrics to CloudWatch so that you can collect and analyze
+the activity of your Fleet, including game  and player sessions and server
+processes.
+
+You can then use CloudWatch alarms to alert you, for example, when matches has
+been rejected (potential matches that were rejected by at least one player
+since the last report) exceed a certain thresold which could means that you may
+have an issue in your matchmaking rules.
+
+CDK provides methods for accessing GameLift Fleet metrics with default configuration,
+such as `metricActiveInstances`, or `metricIdleInstances` (see [`IFleet`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-gamelift.IFleet.html)
+for a full list). CDK also provides a generic `metric` method that can be used
+to produce metric configurations for any metric provided by GameLift Fleet,
+Game sessions or server processes; the configurations are pre-populated with
+the correct dimensions for the matchmaking configuration.
+
+```ts fixture=with-matchmaking-configuration
+import * as cloudwatch from '@aws-cdk-lib/aws-cloudwatch';
+// Alarm that triggers when the per-second average of not used instances exceed 10%
+const instancesUsedRatio = new cloudwatch.MathExpression({
+  expression: '1 - (activeInstances / idleInstances)',
+  usingMetrics: {
+    activeInstances: fleet.metricActiveInstances({ statistic: cloudwatch.Statistic.SUM }),
+    idleInstances: fleet.metric('IdleInstances'),
+  },
+});
+new Alarm(this, 'Alarm', {
+  metric: instancesUsedRatio,
+  threshold: 0.1,
+  evaluationPeriods: 3,
+});
+```
+
+See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/gamelift/latest/developerguide/monitoring-cloudwatch.html)
+in the *Amazon GameLift Developer Guide*.
