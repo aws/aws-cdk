@@ -91,6 +91,8 @@
       "@aws-cdk/aws-cognito/punycode/**",
       "@aws-cdk/aws-ecr-assets/minimatch",
       "@aws-cdk/aws-ecr-assets/minimatch/**",
+      "@aws-cdk/aws-eks/semver",
+      "@aws-cdk/aws-eks/semver/**",
       "@aws-cdk/aws-eks/yaml",
       "@aws-cdk/aws-eks/yaml/**",
       "@aws-cdk/aws-events-targets/aws-sdk",

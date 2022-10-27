@@ -27,8 +27,6 @@ describe('fargate resource provider', () => {
         PhysicalResourceId: 'MockProfileName',
         Data: { fargateProfileArn: 'MockProfileArn' },
       });
-
-
     });
 
     test('respects physical name if provided', async () => {
@@ -57,8 +55,6 @@ describe('fargate resource provider', () => {
         PhysicalResourceId: 'MockProfileName',
         Data: { fargateProfileArn: 'MockProfileArn' },
       });
-
-
     });
 
     test('isComplete returns true if fargate profile is ACTIVE', async () => {
@@ -82,7 +78,6 @@ describe('fargate resource provider', () => {
       });
 
       expect(resp.IsComplete).toEqual(true);
-
     });
 
     test('isComplete returns false as long as fargate profile is CREATING', async () => {
@@ -106,7 +101,6 @@ describe('fargate resource provider', () => {
       });
 
       expect(resp.IsComplete).toEqual(false);
-
     });
 
     test('isComplete throws an exception if the status is CREATE_FAILED', async () => {
@@ -136,12 +130,10 @@ describe('fargate resource provider', () => {
       });
 
       expect(error.message).toEqual('CREATE_FAILED');
-
     });
   });
 
   describe('update', () => {
-
     test('calls createFargateProfile with a new name', async () => {
       // GIVEN
       const client = newEksClientMock();
@@ -167,10 +159,7 @@ describe('fargate resource provider', () => {
         PhysicalResourceId: 'MockProfileName',
         Data: { fargateProfileArn: 'MockProfileArn' },
       });
-
-
     });
-
   });
 
   describe('delete', () => {
@@ -197,7 +186,6 @@ describe('fargate resource provider', () => {
       });
 
       expect(onEventResponse).toEqual(undefined);
-
     });
 
     test('isComplete returns true when describeFargateProfile throws ResourceNotFoundException', async () => {
@@ -223,8 +211,6 @@ describe('fargate resource provider', () => {
       expect(resp).toEqual({
         IsComplete: true,
       });
-
-
     });
 
     test('isComplete throws an exception if the status is DELETE_FAILED', async () => {
@@ -254,9 +240,7 @@ describe('fargate resource provider', () => {
       });
 
       expect(error.message).toEqual('DELETE_FAILED');
-
     });
-
   });
 });
 

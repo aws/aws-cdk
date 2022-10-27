@@ -125,8 +125,6 @@ describe('user data', () => {
         ],
       ],
     });
-
-
   });
 
   test('--use-max-pods=false', () => {
@@ -159,7 +157,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('--aws-api-retry-attempts', () => {
@@ -192,7 +189,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('--dns-cluster-ip', () => {
@@ -225,7 +221,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('--docker-config-json', () => {
@@ -258,7 +253,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('--enable-docker-bridge=true', () => {
@@ -291,7 +285,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('--enable-docker-bridge=false', () => {
@@ -324,7 +317,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('--kubelet-extra-args', () => {
@@ -357,7 +349,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('arbitrary additional bootstrap arguments can be passed through "additionalArgs"', () => {
@@ -391,7 +382,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 
   test('if asg has spot instances, the correct label and taint is used', () => {
@@ -424,7 +414,6 @@ describe('user data', () => {
         ],
       },
     );
-
   });
 });
 
