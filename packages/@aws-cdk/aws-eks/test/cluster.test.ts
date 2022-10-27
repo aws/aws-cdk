@@ -3066,7 +3066,32 @@ describe('cluster', () => {
     // THEN
     const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     Template.fromStack(providerStack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:of:layer'],
+      Layers: [
+        { Ref: 'AwsCliLayerF44AAF94' },
+        'arn:of:layer',
+      ],
+    });
+  });
+
+  test('custom awscli layer can be provided', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = lambda.LayerVersion.fromLayerVersionArn(stack, 'MyLayer', 'arn:of:layer');
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      awscliLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    Template.fromStack(providerStack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: [
+        'arn:of:layer',
+        { Ref: 'KubectlLayer600207B5' },
+      ],
     });
   });
 
