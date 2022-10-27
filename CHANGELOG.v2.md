@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.49.0](https://github.com/aws/aws-cdk/compare/v2.48.0...v2.49.0) (2022-10-27)
+
+
+### Features
+
+* **eks:** support for Kubernetes version 1.23 ([#22638](https://github.com/aws/aws-cdk/issues/22638)) ([4e858f2](https://github.com/aws/aws-cdk/commit/4e858f2ddd4d04de90453ce50c83b68b8595e87f))
+
+
+### Bug Fixes
+
+* **eks:** kubectl get handler output includes stderr ([#22658](https://github.com/aws/aws-cdk/issues/22658)) ([66d1ed3](https://github.com/aws/aws-cdk/commit/66d1ed36b1628c116d5f1b3397688308d888c9de))
+
 ## [2.48.0](https://github.com/aws/aws-cdk/compare/v2.47.0...v2.48.0) (2022-10-27)
 
 
