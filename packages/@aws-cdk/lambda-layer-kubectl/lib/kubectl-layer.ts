@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
-import * as path from 'path';
+import { ASSET_FILE, DOCKER_DIR } from '@aws-cdk/asset-kubectl-v20';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
 
@@ -10,9 +10,9 @@ import { Construct } from 'constructs';
 export class KubectlLayer extends lambda.LayerVersion {
   constructor(scope: Construct, id: string) {
     super(scope, id, {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
+      code: lambda.Code.fromAsset(ASSET_FILE, {
         // we hash the Dockerfile (it contains the tools versions) because hashing the zip is non-deterministic
-        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'Dockerfile')),
+        assetHash: hashFile(DOCKER_DIR),
       }),
       description: '/opt/kubectl/kubectl and /opt/helm/helm',
     });
