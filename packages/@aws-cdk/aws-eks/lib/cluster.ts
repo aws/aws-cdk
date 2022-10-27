@@ -2300,7 +2300,7 @@ export enum CoreDnsComputeType {
   /**
    * Deploy CoreDNS on Fargate-managed instances.
    */
-  FARGATE = 'fargate'
+  FARGATE = 'fargate',
 }
 
 /**
@@ -2314,7 +2314,7 @@ export enum DefaultCapacityType {
   /**
    * EC2 autoscaling group
    */
-  EC2
+  EC2,
 }
 
 /**
@@ -2328,7 +2328,7 @@ export enum MachineImageType {
   /**
    * Bottlerocket AMI
    */
-  BOTTLEROCKET
+  BOTTLEROCKET,
 }
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
