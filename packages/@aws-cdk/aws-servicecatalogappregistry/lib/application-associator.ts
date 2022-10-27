@@ -12,7 +12,7 @@ export interface ApplicationAssociatorProps {
    *
    * @default - Empty array.
    */
-  readonly appAssociatorProps: IBaseApplicationAssociatorProps[];
+  readonly applications: IBaseApplicationAssociatorProps[];
 }
 
 /**
@@ -91,12 +91,12 @@ class CreateApplicationProps implements IBaseApplicationAssociatorProps {
  * Factory class with which you can build the input needed for
  * application associator to work.
  */
-export class ApplicationAssociatorPropsInputFactory {
+export class ApplicationBuilder {
   /**
      * Factory method to build the input using the provided
      * application ARN.
      */
-  public static getApplicationAssociatorPropsFromArn(
+  public static importApplicationFromArn(
     appArnValue: string,
     props: cdk.StackProps,
     stackId?: string): IBaseApplicationAssociatorProps {
@@ -107,7 +107,7 @@ export class ApplicationAssociatorPropsInputFactory {
      * Factory method to build the input using the provided
      * application name and stack props.
      */
-  public static getApplicationAssociatorPropsFromAppName(
+  public static createApplication(
     name: string,
     props: cdk.StackProps,
     description?: string,
@@ -137,11 +137,11 @@ export class ApplicationAssociator extends Construct {
   constructor(scope: cdk.App, id: string, props: ApplicationAssociatorProps) {
     super(scope, id);
 
-    if (props.appAssociatorProps.length != 1) {
+    if (props.applications.length != 1) {
       throw new Error('Please provide either ARN or application name.');
     }
 
-    const associatorProps = props.appAssociatorProps[0];
+    const associatorProps = props.applications[0];
     const stackId = associatorProps.stackId ?? 'ApplicationAssociatorStack';
     const applicationStack = new cdk.Stack(scope, stackId, associatorProps.stackProps);
 
