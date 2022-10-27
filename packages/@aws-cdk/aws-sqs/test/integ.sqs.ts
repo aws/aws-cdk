@@ -28,6 +28,7 @@ const sqsManagedEncryptedQueue = new Queue(stack, 'SqsManagedEncryptedQueue', {
 const unencryptedQueue = new Queue(stack, 'UnencryptedQueue', {
   encryption: QueueEncryption.UNENCRYPTED,
 });
+const ssl = new Queue(stack, 'SSLQueue', { enforceSSL: true });
 
 const role = new Role(stack, 'Role', {
   assumedBy: new AccountRootPrincipal(),
@@ -39,6 +40,7 @@ fifo.grantConsumeMessages(role);
 highThroughputFifo.grantConsumeMessages(role);
 sqsManagedEncryptedQueue.grantConsumeMessages(role);
 unencryptedQueue.grantConsumeMessages(role);
+ssl.grantConsumeMessages(role);
 
 new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
 
