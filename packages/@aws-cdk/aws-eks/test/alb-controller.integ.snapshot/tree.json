@@ -1050,14 +1050,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "fqn": "@aws-cdk/aws-eks.KubernetesManifest",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "fqn": "@aws-cdk/aws-eks.AwsAuth",
+                  "version": "0.0.0"
                 }
               },
               "OpenIdConnectProvider": {
@@ -1084,7 +1084,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
+                  "fqn": "@aws-cdk/aws-eks.OpenIdConnectProvider",
                   "version": "0.0.0"
                 }
               },
@@ -1211,13 +1211,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "@aws-cdk/aws-eks.CfnNodegroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-eks.Nodegroup",
                   "version": "0.0.0"
                 }
               },
@@ -1261,8 +1261,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "fqn": "@aws-cdk/aws-eks.KubernetesManifest",
+                  "version": "0.0.0"
                 }
               },
               "hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress": {
@@ -1289,13 +1289,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "fqn": "@aws-cdk/aws-eks.KubernetesObjectValue",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-eks.Cluster",
               "version": "0.0.0"
             }
           },
@@ -1489,7 +1489,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7310b2a8eaa9f242fab09119e0d8da8155e086fa746cf9e6af04627698933913.zip"
+                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -1654,7 +1654,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7310b2a8eaa9f242fab09119e0d8da8155e086fa746cf9e6af04627698933913.zip"
+                          "s3Key": "73edfa4462023915a2f13bf570acae05c5111817c606f9837f832152920ba517.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2536,7 +2536,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/0815f84775e34415c28f233c9442dd63c7a1f9847600593e9476d18263fdd0d4.json"
+                          "/d0eea51f7dbab5b7b7808e781debb9c0b23d85a3286ca3c111aef389cae8f6c0.json"
                         ]
                       ]
                     },
@@ -3110,7 +3110,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
+              "fqn": "@aws-cdk/aws-eks.KubectlProvider",
               "version": "0.0.0"
             }
           },
@@ -3494,14 +3494,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "fqn": "@aws-cdk/aws-eks.KubernetesManifest",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "fqn": "@aws-cdk/aws-eks.ServiceAccount",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -3528,14 +3528,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "fqn": "@aws-cdk/aws-eks.HelmChart",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "fqn": "@aws-cdk/aws-eks.AlbController",
+              "version": "0.0.0"
             }
           },
           "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
