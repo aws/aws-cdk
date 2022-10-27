@@ -113,9 +113,11 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "constructs": "^10.0.0",
+    "semver": "^7.3.8",
     "yaml": "1.10.2"
   },
   "bundledDependencies": [
+    "semver",
     "yaml"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
