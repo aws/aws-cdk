@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.133"
+          "version": "10.1.140"
         }
       },
       "aws-cdk-eks-cluster-bottlerocket-ng-test": {
@@ -714,7 +714,7 @@
                     "path": "aws-cdk-eks-cluster-bottlerocket-ng-test/KubectlLayer/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "version": "2.47.0"
                     }
                   },
                   "AssetBucket": {
@@ -722,13 +722,13 @@
                     "path": "aws-cdk-eks-cluster-bottlerocket-ng-test/KubectlLayer/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "2.47.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "version": "2.47.0"
                 }
               },
               "Resource": {
@@ -749,7 +749,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                  "version": "0.0.0"
+                  "version": "2.47.0"
                 }
               }
             },
@@ -1003,7 +1003,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.133"
+                  "version": "10.1.140"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2514,7 +2514,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.133"
+                      "version": "10.1.140"
                     }
                   }
                 },
@@ -2601,7 +2601,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.133"
+              "version": "10.1.140"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2769,7 +2769,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb.zip"
+                          "s3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3183,7 +3183,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/ae4173a4ac8fe0695ecab60f149f3df09560b96e6fff0f6aeb41e84cbf2fbdc8.json"
+                          "/10fc72b78ad6e3acf1381cc99a752d56c6423ccb3628bfa0ec6d51434244d42c.json"
                         ]
                       ]
                     },
@@ -3226,7 +3226,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.133"
+              "version": "10.1.140"
             }
           }
         },
@@ -3248,7 +3248,7 @@
                 "path": "aws-cdk-eks-cluster-bottlerocket-ng/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.133"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
