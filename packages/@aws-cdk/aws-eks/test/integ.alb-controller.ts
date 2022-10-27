@@ -3,11 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
-<<<<<<< HEAD
 import * as kplus from 'cdk8s-plus-23';
-=======
-import * as kplus from 'cdk8s-plus-22';
->>>>>>> conroy/eks
 import * as eks from '../lib';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
