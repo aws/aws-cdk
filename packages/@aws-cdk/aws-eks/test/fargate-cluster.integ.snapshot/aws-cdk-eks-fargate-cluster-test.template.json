@@ -7,9 +7,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c0f40a9fd16d1698ca05765606c04c8724dc5c8355b6e124a39af09449a3aa30.zip"
+     "S3Key": "dd8086b05eeea461708bd66ad140d8965ddf70c0e144af871d078fdbddf0a67d.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.22; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.23; /opt/helm/helm 3.9",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -664,7 +664,7 @@
      ]
     },
     "Config": {
-     "version": "1.22",
+     "version": "1.23",
      "roleArn": {
       "Fn::GetAtt": [
        "FargateClusterRole8E36B33A",
@@ -990,7 +990,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/ea0cb9ef003ed986f6b27111a38d7a11db01334d0f16dc0dc55e338f9f844c77.json"
+       "/5396472f0ec92cc42a8249d5e17892cd72cd5bd5077e94eeda56122cc50417f5.json"
       ]
      ]
     },

@@ -19,6 +19,7 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Namespace: 'default' });
     });
+
     test('should have a lowercase default release name', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -31,6 +32,7 @@ describe('helm chart', () => {
         Release: 'stackmychartff398361',
       });
     });
+
     test('should throw when chart and chartAsset not specified', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -43,6 +45,7 @@ describe('helm chart', () => {
       // THEN
       expect(t).toThrowError();
     });
+
     test('should throw when chart and repository specified', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -62,6 +65,7 @@ describe('helm chart', () => {
       // THEN
       expect(t).toThrowError();
     });
+
     test('should throw when chartAsset and version specified', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -81,6 +85,7 @@ describe('helm chart', () => {
       // THEN
       expect(t).toThrowError();
     });
+
     test('should handle chart from S3 asset', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -99,6 +104,7 @@ describe('helm chart', () => {
         },
       });
     });
+
     test('should use the last 53 of the default release name', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -114,6 +120,7 @@ describe('helm chart', () => {
         Release: 'hismostprobablylongerthanfiftythreecharacterscaf15d09',
       });
     });
+
     test('with values', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -124,6 +131,7 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Values: '{"foo":123}' });
     });
+
     test('should support create namespaces by default', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -134,6 +142,7 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true });
     });
+
     test('should support create namespaces when explicitly specified', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -144,6 +153,7 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true });
     });
+
     test('should not create namespaces when disabled', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -155,6 +165,7 @@ describe('helm chart', () => {
       const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true });
       expect(Object.keys(charts).length).toEqual(0);
     });
+
     test('should support waiting until everything is completed before marking release as successful', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -165,6 +176,7 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Wait: true });
     });
+
     test('should default to not waiting before marking release as successful', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -175,8 +187,8 @@ describe('helm chart', () => {
       // THEN
       const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Wait: true });
       expect(Object.keys(charts).length).toEqual(0);
-
     });
+
     test('should enable waiting when specified', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -187,6 +199,7 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Wait: true });
     });
+
     test('should disable waiting when specified as false', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
