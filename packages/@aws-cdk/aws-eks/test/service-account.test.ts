@@ -62,8 +62,8 @@ describe('service account', () => {
           Version: '2012-10-17',
         },
       });
-
     });
+
     test('it is possible to add annotations and labels', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -127,8 +127,8 @@ describe('service account', () => {
           Version: '2012-10-17',
         },
       });
-
     });
+
     test('should have allow multiple services accounts', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -161,8 +161,8 @@ describe('service account', () => {
           ],
         },
       });
-
     });
+
     test('should have unique resource name', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -172,8 +172,8 @@ describe('service account', () => {
 
       // THEN
       expect(() => cluster.addServiceAccount('MyServiceAccount')).toThrow();
-
     });
+
     test('addServiceAccount for imported cluster', () => {
       const { stack } = testFixture();
       const oidcProvider = new iam.OpenIdConnectProvider(stack, 'ClusterOpenIdConnectProvider', {
@@ -236,7 +236,6 @@ describe('service account', () => {
           Version: '2012-10-17',
         },
       });
-
     });
   });
 
@@ -252,6 +251,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if ends with dot', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -263,6 +263,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('dot in the name is allowed', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -276,6 +277,7 @@ describe('service account', () => {
       // THEN
       expect(sa.serviceAccountName).toEqual(valueWithDot);
     });
+
     test('throw error if name is too long', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -301,6 +303,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if ends with dot', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -312,6 +315,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if dot is in the name', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -324,6 +328,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if name is too long', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
