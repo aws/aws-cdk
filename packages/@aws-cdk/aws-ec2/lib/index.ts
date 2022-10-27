@@ -27,6 +27,7 @@ export * from './client-vpn-endpoint-types';
 export * from './client-vpn-endpoint';
 export * from './client-vpn-authorization-rule';
 export * from './client-vpn-route';
+export * from './ip-addresses';
 
 // AWS::EC2 CloudFormation Resources:
 export * from './ec2.generated';
