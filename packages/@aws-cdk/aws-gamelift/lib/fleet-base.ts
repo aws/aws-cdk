@@ -2,6 +2,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { RuntimeConfiguration } from './runtime-configuration';
 
 /**
@@ -14,13 +15,6 @@ export interface IFleet extends cdk.IResource, iam.IGrantable {
    * @attribute
    */
   readonly fleetId: string;
-
-  /**
-   * The name of the fleet.
-   *
-   * @attribute
-   */
-  readonly fleetName: string;
 
   /**
    * The ARN of the fleet.
@@ -199,16 +193,16 @@ export interface FleetAttributes {
      *
      * @default derived from `fleetName`.
      */
-  readonly fleetArn: string;
+  readonly fleetArn?: string;
 
   /**
-   * The name of the fleet
+   * The identifier of the fleet
    *
-   * At least one of `fleetName` and `fleetArn`  must be provided.
+   * At least one of `fleetId` and `fleetArn`  must be provided.
    *
    * @default derived from `fleetArn`.
    */
-  readonly fleetName?: string;
+  readonly fleetId?: string;
 
   /**
    * The IAM role assumed by GameLift fleet instances to access AWS ressources.
@@ -219,7 +213,7 @@ export interface FleetAttributes {
 }
 
 /**
- * Base class for new and imported GameLift server build.
+ * Base class for new and imported GameLift fleet.
  */
 export abstract class FleetBase extends cdk.Resource implements IFleet {
   /**
@@ -227,14 +221,13 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     */
   public abstract readonly fleetId: string;
   /**
-   * The name of the fleet.
-   */
-  public abstract readonly fleetName: string;
-  /**
    * The ARN of the fleet.
    */
   public abstract readonly fleetArn: string;
 
+  /**
+   * The principal this GameLift fleet is using.
+   */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -254,6 +247,14 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       },
       ...props,
     }).attachTo(this);
+  }
+
+  protected warnVpcPeeringAuthorizations(scope: Construct): void {
+    cdk.Annotations.of(scope).addWarning([
+      'To authorize the VPC peering, call the GameLift service API CreateVpcPeeringAuthorization() or use the AWS CLI command create-vpc-peering-authorization.',
+      'Make this call using the account that manages your non-GameLift resources.',
+      'See: https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html',
+    ].join('\n'));
   }
 
   private cannedMetric(fn: (dims: { FleetId: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
