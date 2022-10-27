@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.123"
+          "version": "10.1.140"
         }
       },
       "aws-stepfunctions-tasks-eks-call-integ-test": {
@@ -1012,7 +1012,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.123"
+                  "version": "10.1.140"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2446,7 +2446,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.123"
+                      "version": "10.1.140"
                     }
                   }
                 },
@@ -2533,7 +2533,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.123"
+              "version": "10.1.140"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2701,7 +2701,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb.zip"
+                          "s3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3163,7 +3163,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/20fc072eef36985386fc6afe7f26fcea80328ed29cc2de7e46dbc5daccd55b91.json"
+                          "/d883f4a670bf58f289b85046d0250ec60832d3e8cc91b9c36ea0cea845215867.json"
                         ]
                       ]
                     },
@@ -3203,7 +3203,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.123"
+              "version": "10.1.140"
             }
           },
           "Role": {
@@ -3352,7 +3352,7 @@
                 "path": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.123"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
