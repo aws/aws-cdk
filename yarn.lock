@@ -35,10 +35,10 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-cdk/lambda-layer-kubectl-v22@2.0.0":
+"@aws-cdk/lambda-layer-kubectl-v23@^2.0.0":
   version "2.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v22/-/lambda-layer-kubectl-v22-2.0.0.tgz#18daadbb856a42377c04ea81b029debc1523ad3a"
-  integrity sha512-GdpZbfry6jJ+NGOxYNrmTm0TNU3xjhjROgIiy9fdFZzb6PaKBglLftBAJbyNldPbvWfl2G+PJWe2jBURUkeacw==
+  resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v23/-/lambda-layer-kubectl-v23-2.0.0.tgz#8e46c505c8ba106d7589c9bebda824b8d963463c"
+  integrity sha512-g0H20+aWk6p4NsLSnMwUCwuLbD9v1tLPYH8c229w/qT6B7U/DFliQmiSnGSxe7BOjL/qfIkLfvXReBji15yEvg==
 
 "@babel/code-frame@7.12.11":
   version "7.12.11"
@@ -3019,10 +3019,10 @@ cdk8s-plus-21@^2.0.0-beta.12:
     minimatch "^3.1.2"
     safe-stable-stringify "*"
 
-cdk8s-plus-22@^2.0.0-rc.158:
-  version "2.0.0-rc.158"
-  resolved "https://registry.npmjs.org/cdk8s-plus-22/-/cdk8s-plus-22-2.0.0-rc.158.tgz#49b7d24fdea3e2c609266e329b316b6ac8e3cd4e"
-  integrity sha512-fV6MF92Jotz5I71plmd/x90nkfwJxYLGo9KnQQvE50D0ivQQbwrwBPIg/0abKG77na9w6nNMJq/vbTYIMGNuig==
+cdk8s-plus-23@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/cdk8s-plus-23/-/cdk8s-plus-23-2.0.2.tgz#7b8e0af664f5a1d6cac94dfce91c99181319e8a1"
+  integrity sha512-/363MURliSclq48NDpnDNxzvzMBaL8z2gEurWCBb4WRpOHfamfz/Jl9kvR2VSjaOith8YgQZqJmydZrf89aj8g==
   dependencies:
     minimatch "^3.1.2"
 

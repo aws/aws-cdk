@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -3070,6 +3070,44 @@ describe('cluster', () => {
         { Ref: 'AwsCliLayerF44AAF94' },
         'arn:of:layer',
       ],
+    });
+  });
+
+  describe('kubectlLayer annotation', () => {
+    function message(version: string) {
+      return [
+        'You created a cluster with Kubernetes Version 1.23 without specifying the kubectlLayer property.',
+        'This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21.',
+        `Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${version}.`,
+      ].join(' ');
+    }
+
+    test('not added when version < 1.22 and no kubectl layer provided', () => {
+    // GIVEN
+      const { stack } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster1', {
+        version: eks.KubernetesVersion.V1_21,
+        prune: false,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Stack/Cluster1', message('21'));
+    });
+
+    test('added when version >= 1.22 and no kubectl layer provided', () => {
+    // GIVEN
+      const { stack } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster1', {
+        version: eks.KubernetesVersion.V1_23,
+        prune: false,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster1', message('23'));
     });
   });
 
