@@ -446,10 +446,11 @@ export interface VolumeProps {
 
   /**
    * The throughput that the volume supports, in MiB/s
+   * Takes a minimum of 125 and maximum of 1000.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
-   * @default - 125 MiB/s
+   * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
-  readonly throughput?: number;
+   readonly throughput?: number;
 }
 
 /**
