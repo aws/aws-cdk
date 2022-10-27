@@ -1,0 +1,90 @@
+{
+ "Parameters": {
+  "MyParameterVersion": {
+   "Type": "Number",
+   "Default": 1
+  },
+  "MyValueParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/My/Public/Parameter"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "DummyResourceUsingStringParameters": {
+   "Type": "AWS::IAM::User",
+   "Properties": {
+    "LoginProfile": {
+     "Password": {
+      "Fn::Join": [
+       "-",
+       [
+        {
+         "Ref": "MyValueParameter"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "{{resolve:ssm:/My/Public/Parameter:",
+           {
+            "Ref": "MyParameterVersion"
+           },
+           "}}"
+          ]
+         ]
+        },
+        "{{resolve:ssm-secure:/My/Secret/Parameter}}-{{resolve:ssm-secure:/My/Secret/Parameter:1}}",
+        {
+         "Fn::Join": [
+          "",
+          [
+           "{{resolve:ssm-secure:/My/Secret/Parameter:",
+           {
+            "Ref": "MyParameterVersion"
+           },
+           "}}"
+          ]
+         ]
+        }
+       ]
+      ]
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -26,9 +26,7 @@ runs a service on it:
 declare const vpc: ec2.Vpc;
 
 // Create an ECS cluster
-const cluster = new ecs.Cluster(this, 'Cluster', {
-  vpc,
-});
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
 // Add capacity to it
 cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
@@ -52,10 +50,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 
 For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
-## Launch Types: AWS Fargate vs Amazon EC2
+## Launch Types: AWS Fargate vs Amazon EC2 vs AWS ECS Anywhere
 
-There are two sets of constructs in this library; one to run tasks on Amazon EC2 and
-one to run tasks on AWS Fargate.
+There are three sets of constructs in this library:
 
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
 - Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
@@ -74,7 +71,9 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
-- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Bridge, Host and None networking modes are supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
+- **AWS ECS Anywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure
+  owned by the customer. Bridge, Host and None networking modes are supported. Does not
+  support autoscaling, load balancing, cloudmap or attachment of volumes.
 
 For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
@@ -170,6 +169,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
   instanceType: new ec2.InstanceType('t3.medium'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
@@ -330,7 +330,7 @@ const container = fargateTaskDefinition.addContainer("WebContainer", {
 });
 ```
 
-For a `Ec2TaskDefinition`:
+For an `Ec2TaskDefinition`:
 
 ```ts
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
@@ -423,7 +423,7 @@ To grant a principal permission to run your `TaskDefinition`, you can use the `T
 
 ```ts
 declare const role: iam.IGrantable;
-const taskDef = new ecs.TaskDefinition(stack, 'TaskDef', {
+const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
   cpu: '512',
   memoryMiB: '512',
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
@@ -500,7 +500,7 @@ taskDefinition.addContainer('container', {
   linuxParameters: new ecs.LinuxParameters(this, 'LinuxParameters', {
     initProcessEnabled: true,
     sharedMemorySize: 1024,
-    maxSwap: 5000,
+    maxSwap: Size.mebibytes(5000),
     swappiness: 90,
   }),
 });
@@ -889,7 +889,7 @@ taskDefinition.addContainer('TheContainer', {
 ### splunk Log Driver
 
 ```ts
-declare const secret: secretsmanager.Secret;
+declare const secret: ecs.Secret;
 
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');

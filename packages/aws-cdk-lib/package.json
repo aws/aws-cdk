@@ -227,6 +227,7 @@
     "@aws-cdk/aws-guardduty": "0.0.0",
     "@aws-cdk/aws-healthlake": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-identitystore": "0.0.0",
     "@aws-cdk/aws-imagebuilder": "0.0.0",
     "@aws-cdk/aws-inspector": "0.0.0",
     "@aws-cdk/aws-inspectorv2": "0.0.0",
@@ -367,7 +368,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^14.18.32",
     "constructs": "^10.0.0",
-    "esbuild": "^0.15.11",
+    "esbuild": "^0.15.12",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"

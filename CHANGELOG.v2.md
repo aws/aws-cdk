@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.48.0](https://github.com/aws/aws-cdk/compare/v2.47.0...v2.48.0) (2022-10-27)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v93.0.0 ([#22562](https://github.com/aws/aws-cdk/issues/22562)) ([2afb718](https://github.com/aws/aws-cdk/commit/2afb718b02e8fef70729981c2f1cd5b23449dcde))
+* **cfnspec:** cloudformation spec v94.0.0 ([#22599](https://github.com/aws/aws-cdk/issues/22599)) ([e5be100](https://github.com/aws/aws-cdk/commit/e5be10049047d29e9e687f5f4f39037275d51d38))
+* **cfnspec:** cloudformation spec v94.0.0 ([#22649](https://github.com/aws/aws-cdk/issues/22649)) ([42160fc](https://github.com/aws/aws-cdk/commit/42160fc2e5532acfb6b97652f6ad0e3354b32baa))
+* **cli:** allow disabling parallel asset publishing ([#22579](https://github.com/aws/aws-cdk/issues/22579)) ([69981ac](https://github.com/aws/aws-cdk/commit/69981ac07b40ce3f690f6c1ad0010b51f29103a6)), closes [#19367](https://github.com/aws/aws-cdk/issues/19367)
+* **ec2:** Vpc supports allocating CIDR from AWS IPAM ([#22458](https://github.com/aws/aws-cdk/issues/22458)) ([7ed9cd1](https://github.com/aws/aws-cdk/commit/7ed9cd14aa5aaff90badb6438a0941fbca2d370c))
+* **eks:** support for Kubernetes version 1.22 ([#22604](https://github.com/aws/aws-cdk/issues/22604)) ([91704aa](https://github.com/aws/aws-cdk/commit/91704aa3632dd6424017ae7aafebda832f309315)), closes [#20263](https://github.com/aws/aws-cdk/issues/20263)
+* **rds:** dual-stack mode support ([#22596](https://github.com/aws/aws-cdk/issues/22596)) ([89a7365](https://github.com/aws/aws-cdk/commit/89a73651ccd619b9b1878c40214e4647095803de)), closes [#19525](https://github.com/aws/aws-cdk/issues/19525)
+
+
+### Bug Fixes
+
+* **apigateway:** relax access log format check to allow either requestId or extendedRequestId ([#22591](https://github.com/aws/aws-cdk/issues/22591)) ([1a16ad0](https://github.com/aws/aws-cdk/commit/1a16ad0bf422e17b8c56d1fe2581eda7c60e7522))
+* **eks:** kubectl layer must contain AWS CLI ([#22559](https://github.com/aws/aws-cdk/issues/22559)) ([d8b4c09](https://github.com/aws/aws-cdk/commit/d8b4c091d85eb818c6e106416eea52d26f4fa73b))
+* **ssm:** `StringParameter.fromSecureStringParameterAttributes` not working without version ([#22618](https://github.com/aws/aws-cdk/issues/22618)) ([b33b9b0](https://github.com/aws/aws-cdk/commit/b33b9b0a3ce2cfd79082bb743b36c6fda9e8278b)), closes [#18729](https://github.com/aws/aws-cdk/issues/18729) [#22311](https://github.com/aws/aws-cdk/issues/22311)
+
 ## [2.47.0](https://github.com/aws/aws-cdk/compare/v2.46.0...v2.47.0) (2022-10-20)
 
 

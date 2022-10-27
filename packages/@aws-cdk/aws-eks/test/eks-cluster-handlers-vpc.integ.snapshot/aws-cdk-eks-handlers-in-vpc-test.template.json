@@ -1,5 +1,18 @@
 {
  "Resources": {
+  "KubectlLayer600207B5": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c0f40a9fd16d1698ca05765606c04c8724dc5c8355b6e124a39af09449a3aa30.zip"
+    },
+    "Description": "/opt/kubectl/kubectl 1.22; /opt/helm/helm 3.9",
+    "LicenseInfo": "Apache-2.0"
+   }
+  },
   "EksAllHandlersInVpcStackDefaultVpcBE11D4AE": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -643,7 +656,7 @@
      ]
     },
     "Config": {
-     "version": "1.21",
+     "version": "1.22",
      "roleArn": {
       "Fn::GetAtt": [
        "EksAllHandlersInVpcStackRoleC36F09F0",
@@ -981,7 +994,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/31840d1c86a54bc632a48579b951ea5a63c0fce16056b88bf9dbd6aa4fc43f43.json"
+       "/869c87faaa9561d8a3c3ae2d5302c692e55ac11187f5f115faaf773a08f28fb4.json"
       ]
      ]
     },
@@ -997,6 +1010,9 @@
        "EksAllHandlersInVpcStackCreationRole0BAA4CDC",
        "Arn"
       ]
+     },
+     "referencetoawscdkekshandlersinvpctestKubectlLayerAD42127BRef": {
+      "Ref": "KubectlLayer600207B5"
      },
      "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref": {
       "Ref": "EksAllHandlersInVpcStackDefaultVpcPrivateSubnet1SubnetE2B86978"

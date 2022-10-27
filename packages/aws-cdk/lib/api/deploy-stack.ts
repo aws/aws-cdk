@@ -198,6 +198,13 @@ export interface DeployStackOptions {
    * @default - Use the stored template
    */
   readonly overrideTemplate?: any;
+
+  /**
+   * Whether to build/publish assets in parallel
+   *
+   * @default true To remain backward compatible.
+   */
+  readonly assetParallelism?: boolean;
 }
 
 export type DeploymentMethod =
@@ -287,7 +294,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     options.toolkitInfo,
     options.sdk,
     options.overrideTemplate);
-  await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
+  await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
+    parallel: options.assetParallelism,
+  });
 
   if (options.hotswap) {
     // attempt to short-circuit the deployment if possible

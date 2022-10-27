@@ -10,9 +10,9 @@ import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
+import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses } from './ip-addresses';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
-import { NetworkBuilder } from './network-util';
 import { SubnetFilter } from './subnet';
 import { allRouteTableIds, defaultSubnetName, flatten, ImportSubnetGroup, subnetGroupNameFromConstructId, subnetId } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions, InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
@@ -812,12 +812,23 @@ const NAME_TAG: string = 'Name';
 export interface VpcProps {
 
   /**
+   * The Provider to use to allocate IP Space to your VPC.
+   *
+   * Options include static allocation or from a pool.
+   *
+   * @default ec2.IpAddresses.cidr
+   */
+  readonly ipAddresses?: IIpAddresses;
+
+  /**
    * The CIDR range to use for the VPC, e.g. '10.0.0.0/16'.
    *
    * Should be a minimum of /28 and maximum size of /16. The range will be
    * split across all subnets per Availability Zone.
    *
    * @default Vpc.DEFAULT_CIDR_RANGE
+   *
+   * @deprecated Use ipAddresses instead
    */
   readonly cidr?: string;
 
@@ -1090,7 +1101,7 @@ export interface SubnetConfiguration {
  *
  * ```ts
  * const vpc = new ec2.Vpc(this, 'TheVPC', {
- *   cidr: "10.0.0.0/16"
+ *   ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
  * })
  *
  * // Iterate the private subnets
@@ -1162,7 +1173,7 @@ export class Vpc extends VpcBase {
   }
 
   /**
-   * Import an existing VPC from by querying the AWS environment this stack is deployed to.
+   * Import an existing VPC by querying the AWS environment this stack is deployed to.
    *
    * This function only needs to be used to use VPCs not defined in your CDK
    * application. If you are looking to share a VPC between stacks, you can
@@ -1303,9 +1314,9 @@ export class Vpc extends VpcBase {
   private readonly resource: CfnVPC;
 
   /**
-   * The NetworkBuilder
+   * The provider of ip addresses
    */
-  private networkBuilder: NetworkBuilder;
+  private readonly ipAddresses: IIpAddresses;
 
   /**
    * Subnet configurations for this VPC
@@ -1339,16 +1350,24 @@ export class Vpc extends VpcBase {
       throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
     }
 
-    this.networkBuilder = new NetworkBuilder(cidrBlock);
+    if (props.ipAddresses && props.cidr) {
+      throw new Error('supply at most one of ipAddresses or cidr');
+    }
+
+    this.ipAddresses = props.ipAddresses ?? IpAddresses.cidr(cidrBlock);
 
     this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
+    const vpcIpAddressOptions = this.ipAddresses.allocateVpcCidr();
+
     // Define a VPC using the provided CIDR range
     this.resource = new CfnVPC(this, 'Resource', {
-      cidrBlock,
+      cidrBlock: vpcIpAddressOptions.cidrBlock,
+      ipv4IpamPoolId: vpcIpAddressOptions.ipv4IpamPoolId,
+      ipv4NetmaskLength: vpcIpAddressOptions.ipv4NetmaskLength,
       enableDnsHostnames: this.dnsHostnamesEnabled,
       enableDnsSupport: this.dnsSupportEnabled,
       instanceTenancy,
@@ -1508,28 +1527,38 @@ export class Vpc extends VpcBase {
    * array or creates the `DEFAULT_SUBNETS` configuration
    */
   private createSubnets() {
-    const remainingSpaceSubnets: SubnetConfiguration[] = [];
 
-    for (const subnet of this.subnetConfiguration) {
-      if (subnet.cidrMask === undefined) {
-        remainingSpaceSubnets.push(subnet);
-        continue;
-      }
-      this.createSubnetResources(subnet, subnet.cidrMask);
+    const requestedSubnets: RequestedSubnet[] = [];
+
+    this.subnetConfiguration.forEach((configuration)=> (
+      this.availabilityZones.forEach((az, index) => {
+        requestedSubnets.push({
+          availabilityZone: az,
+          subnetConstructId: subnetId(configuration.name, index),
+          configuration,
+        });
+      },
+      )));
+
+    const { allocatedSubnets } = this.ipAddresses.allocateSubnetsCidr({
+      vpcCidr: this.vpcCidrBlock,
+      requestedSubnets,
+    });
+
+    if (allocatedSubnets.length != requestedSubnets.length) {
+      throw new Error('Incomplete Subnet Allocation; response array dose not equal input array');
     }
 
-    const totalRemaining = remainingSpaceSubnets.length * this.availabilityZones.length;
-    const cidrMaskForRemaining = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
-    for (const subnet of remainingSpaceSubnets) {
-      this.createSubnetResources(subnet, cidrMaskForRemaining);
-    }
+    this.createSubnetResources(requestedSubnets, allocatedSubnets);
   }
 
-  private createSubnetResources(subnetConfig: SubnetConfiguration, cidrMask: number) {
-    this.availabilityZones.forEach((zone, index) => {
+  private createSubnetResources(requestedSubnets: RequestedSubnet[], allocatedSubnets: AllocatedSubnet[]) {
+    allocatedSubnets.forEach((allocated, i) => {
+
+      const { configuration: subnetConfig, subnetConstructId, availabilityZone } = requestedSubnets[i];
+
       if (subnetConfig.reserved === true) {
-        // For reserved subnets, just allocate ip space but do not create any resources
-        this.networkBuilder.addSubnet(cidrMask);
+        // For reserved subnets, do not create any resources
         return;
       }
 
@@ -1544,31 +1573,30 @@ export class Vpc extends VpcBase {
           : true;
       }
 
-      const name = subnetId(subnetConfig.name, index);
       const subnetProps: SubnetProps = {
-        availabilityZone: zone,
+        availabilityZone,
         vpcId: this.vpcId,
-        cidrBlock: this.networkBuilder.addSubnet(cidrMask),
+        cidrBlock: allocated.cidr,
         mapPublicIpOnLaunch: mapPublicIpOnLaunch,
       };
 
       let subnet: Subnet;
       switch (subnetConfig.subnetType) {
         case SubnetType.PUBLIC:
-          const publicSubnet = new PublicSubnet(this, name, subnetProps);
+          const publicSubnet = new PublicSubnet(this, subnetConstructId, subnetProps);
           this.publicSubnets.push(publicSubnet);
           subnet = publicSubnet;
           break;
         case SubnetType.PRIVATE_WITH_EGRESS:
         case SubnetType.PRIVATE_WITH_NAT:
         case SubnetType.PRIVATE:
-          const privateSubnet = new PrivateSubnet(this, name, subnetProps);
+          const privateSubnet = new PrivateSubnet(this, subnetConstructId, subnetProps);
           this.privateSubnets.push(privateSubnet);
           subnet = privateSubnet;
           break;
         case SubnetType.PRIVATE_ISOLATED:
         case SubnetType.ISOLATED:
-          const isolatedSubnet = new PrivateSubnet(this, name, subnetProps);
+          const isolatedSubnet = new PrivateSubnet(this, subnetConstructId, subnetProps);
           this.isolatedSubnets.push(isolatedSubnet);
           subnet = isolatedSubnet;
           break;

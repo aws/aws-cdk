@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { AssetManifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
@@ -14,10 +15,15 @@ export interface TestStackArtifact {
   env?: string,
   depends?: string[];
   metadata?: cxapi.StackMetadata;
+
+  /** Old-style assets */
   assets?: cxschema.AssetMetadataEntry[];
   properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
   terminationProtection?: boolean;
   displayName?: string;
+
+  /** New-style assets */
+  assetManifest?: AssetManifest;
 }
 
 export interface TestAssembly {
@@ -69,11 +75,26 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
       builder.addMissing(missing);
     }
 
+    const dependencies = [...stack.depends ?? []];
+
+    if (stack.assetManifest) {
+      const manifestFile = `${stack.stackName}.assets.json`;
+      fs.writeFileSync(path.join(builder.outdir, manifestFile), JSON.stringify(stack.assetManifest, undefined, 2));
+      dependencies.push(`${stack.stackName}.assets`);
+      builder.addArtifact(`${stack.stackName}.assets`, {
+        type: cxschema.ArtifactType.ASSET_MANIFEST,
+        environment: stack.env || 'aws://123456789012/here',
+        properties: {
+          file: manifestFile,
+        },
+      });
+    }
+
     builder.addArtifact(stack.stackName, {
       type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: stack.env || 'aws://123456789012/here',
 
-      dependencies: stack.depends,
+      dependencies,
       metadata,
       properties: {
         ...stack.properties,
@@ -82,6 +103,7 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
       },
       displayName: stack.displayName,
     });
+
   }
 }
 

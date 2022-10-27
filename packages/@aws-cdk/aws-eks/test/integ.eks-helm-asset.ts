@@ -6,6 +6,7 @@ import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib/index';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -27,7 +28,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
       tags: {
         foo: 'bar',
       },

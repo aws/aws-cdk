@@ -129,7 +129,7 @@ new acm.PrivateCertificate(this, 'PrivateCertificate', {
 
 ## Requesting certificates without transparency logging
 
-Transparency logging can be opted out of for AWS Certificate Manager certificates. See [opting out of certifiacte transparency logging](https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency) for limits.
+Transparency logging can be opted out of for AWS Certificate Manager certificates. See [opting out of certificate transparency logging](https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency) for limits.
 
 ```ts
 new acm.Certificate(this, 'Certificate', {

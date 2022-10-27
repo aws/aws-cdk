@@ -48,7 +48,9 @@ export interface StageOptions extends MethodDeploymentOptions {
 
   /**
    * A single line format of access logs of data, as specified by selected $content variables.
-   * The format must include at least `AccessLogFormat.contextRequestId()`.
+   * The format must include either `AccessLogFormat.contextRequestId()`
+   * or `AccessLogFormat.contextExtendedRequestId()`.
+   *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
    *
    * @default - Common Log Format
@@ -387,9 +389,9 @@ export class Stage extends StageBase {
     } else {
       if (accessLogFormat !== undefined &&
         !Token.isUnresolved(accessLogFormat.toString()) &&
-        !/.*\$context.requestId.*/.test(accessLogFormat.toString())) {
+        !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
 
-        throw new Error('Access log must include at least `AccessLogFormat.contextRequestId()`');
+        throw new Error('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
       }
       if (accessLogFormat !== undefined && accessLogDestination === undefined) {
         throw new Error('Access log format is specified without a destination');

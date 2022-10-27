@@ -18,7 +18,31 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 You can reference existing SSM Parameter Store values that you want to use in
 your CDK app by using `ssm.StringParameter.fromStringParameterAttributes`:
 
-[using SSM parameter](test/integ.parameter-store-string.lit.ts)
+```ts
+// Retrieve the latest value of the non-secret parameter
+// with name "/My/String/Parameter".
+const stringValue = ssm.StringParameter.fromStringParameterAttributes(this, 'MyValue', {
+  parameterName: '/My/Public/Parameter',
+  // 'version' can be specified but is optional.
+}).stringValue;
+const stringValueVersionFromToken = ssm.StringParameter.fromStringParameterAttributes(this, 'MyValueVersionFromToken', {
+  parameterName: '/My/Public/Parameter',
+  // parameter version from token
+  version: parameterVersion,
+}).stringValue;
+
+// Retrieve a specific version of the secret (SecureString) parameter.
+// 'version' is always required.
+const secretValue = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValue', {
+  parameterName: '/My/Secret/Parameter',
+  version: 5,
+});
+const secretValueVersionFromToken = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValueVersionFromToken', {
+  parameterName: '/My/Secret/Parameter',
+  // parameter version from token
+  version: parameterVersion,
+});
+```
 
 You can also reference an existing SSM Parameter Store value that matches an
 [AWS specific parameter type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-specific-parameter-types):
