@@ -2170,11 +2170,15 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
       const { iops, volumeType, throughput } = ebs;
 
       if (throughput) {
+        const throughputRange = { Min: 125, Max: 1000 };
+        const { Min, Max } = throughputRange;
         if (volumeType != EbsDeviceVolumeType.GP3) {
           throw new Error('throughput property requires volumeType: EbsDeviceVolumeType.GP3');
         }
-        if (throughput < 125 || throughput > 1000) {
-          throw new Error('throughput property takes a minimum of 125 and a maximum of 1000');
+        if (throughput < Min || throughput > Max) {
+          throw new Error(
+            `throughput property takes a minimum of ${Min} and a maximum of ${Max}`
+          );
         }
       }
 

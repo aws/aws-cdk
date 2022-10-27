@@ -450,7 +450,7 @@ export interface VolumeProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
-   readonly throughput?: number;
+  readonly throughput?: number;
 }
 
 /**
@@ -747,11 +747,17 @@ export class Volume extends VolumeBase {
     }
 
     if (props.throughput) {
+      const throughputRange = { Min: 125, Max: 1000 };
+      const { Min, Max } = throughputRange;
       if (props.volumeType != EbsDeviceVolumeType.GP3) {
-        throw new Error('throughput property requires volumeType: EbsDeviceVolumeType.GP3');
+        throw new Error(
+          'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
+        );
       }
-      if (props.throughput < 125 || props.throughput > 1000) {
-        throw new Error('throughput property takes a minimum of 125 and a maximum of 1000');
+      if (props.throughput < Min || props.throughput > Max) {
+        throw new Error(
+          `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
+        );
       }
     }
   }

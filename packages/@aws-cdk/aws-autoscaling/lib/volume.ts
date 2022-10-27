@@ -73,7 +73,7 @@ export interface EbsDeviceOptionsBase {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
-   readonly throughput?: number;
+  readonly throughput?: number;
 }
 
 /**
