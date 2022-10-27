@@ -402,9 +402,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c0f40a9fd16d1698ca05765606c04c8724dc5c8355b6e124a39af09449a3aa30.zip"
+     "S3Key": "dd8086b05eeea461708bd66ad140d8965ddf70c0e144af871d078fdbddf0a67d.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.22; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.23; /opt/helm/helm 3.9",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -629,7 +629,7 @@
      ]
     },
     "Config": {
-     "version": "1.22",
+     "version": "1.23",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -1173,7 +1173,7 @@
    "Type": "AWS::AutoScaling::LaunchConfiguration",
    "Properties": {
     "ImageId": {
-     "Ref": "SsmParameterValueawsserviceeksoptimizedami122amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     "Ref": "SsmParameterValueawsserviceeksoptimizedami123amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "inf1.2xlarge",
     "IamInstanceProfile": {
@@ -1355,7 +1355,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/87023d6f638c868d4981dbbef728546df86c24bb96022d45e901c4eaf533cca9.json"
+       "/7a78cb0271fcc6f2b7167cb18c2977c57a0011f8969246183ae4e02eba38a585.json"
       ]
      ]
     },
@@ -1990,9 +1990,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceeksoptimizedami122amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami123amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.22/amazon-linux-2-gpu/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.23/amazon-linux-2-gpu/recommended/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
