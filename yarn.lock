@@ -3019,6 +3019,13 @@ cdk8s-plus-21@^2.0.0-beta.12:
     minimatch "^3.1.2"
     safe-stable-stringify "*"
 
+cdk8s-plus-22@^2.0.0-rc.158:
+  version "2.0.0-rc.158"
+  resolved "https://registry.npmjs.org/cdk8s-plus-22/-/cdk8s-plus-22-2.0.0-rc.158.tgz#49b7d24fdea3e2c609266e329b316b6ac8e3cd4e"
+  integrity sha512-fV6MF92Jotz5I71plmd/x90nkfwJxYLGo9KnQQvE50D0ivQQbwrwBPIg/0abKG77na9w6nNMJq/vbTYIMGNuig==
+  dependencies:
+    minimatch "^3.1.2"
+
 cdk8s@^2.5.28:
   version "2.5.28"
   resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-2.5.28.tgz#0f041e2d9cc16d7653ce5cb3d2018ad6376751ee"
