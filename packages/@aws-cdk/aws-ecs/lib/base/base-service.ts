@@ -9,8 +9,9 @@ import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack, A
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
-import { ContainerDefinition, Protocol } from '../container-definition';
+import { ContainerDefinition, PortMapping, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
+import { LogDriverConfig } from '../log-drivers/log-driver';
 import { ScalableTaskCount } from './scalable-task-count';
 
 /**
@@ -91,6 +92,96 @@ export interface EcsTarget {
  * Interface for ECS load balancer target.
  */
 export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+}
+
+/**
+ * Interface for Service Connect configuration.
+ */
+export interface ServiceConnectConfiguration {
+  /**
+   * Setting enabled to 'true' allows services to send and receive traffic via the
+   * managed service mesh provisioned by service connect.
+   *
+   * @default: true if the cluster has
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * The cloudmap namespace to register this service into.
+   *
+   * @default the cloudmap namespace specified on the cluster. If the cluster has a service connect default, this may be blank.
+   */
+  readonly namespace?: cloudmap.INamespace | string;
+
+  /**
+   * The list of Services, including a port mapping, terse client alias, and optional intermediate dns name.
+   */
+  readonly services: ServiceConnectService[];
+
+  /**
+   * Optional. The log driver configuration to use for the envoy proxy logs.
+   *
+   * @default - none
+   */
+  readonly logConfig?: LogDriverConfig;
+}
+
+/**
+ * Interface for service connect Service props.
+ */
+export interface ServiceConnectService {
+  /**
+   * port specifies which port and protocol combination should be used for this
+   * service connect service.
+   *
+   * If a PortMapping is specified and a) it does not exist already and b) there is only one container
+   * in the task definition, it will be created.
+   */
+  readonly port: PortMapping | string;
+
+  /**
+   * optionally specifies an intermediate dns name to register in the CloudMap namespace.
+   *
+   * @default - port mapping name
+   */
+  readonly discoveryName?: string;
+
+  /**
+   * The terse DNS alias to use for this port mapping in the service connect mesh.
+   * Service Connect-enabled clients will be able to reach this service at
+   * http://dnsName:port.
+   *
+   * This list may be at most one element long.
+   *
+   * @default - alias consisting of port mapping name and container port.
+   */
+  readonly aliases?: ClientAlias[];
+
+  /**
+   * Optional. The port on the Envoy container to use for traffic ingress to this service.
+   *
+   * @default - none
+   */
+  readonly ingressPortOverride?: number;
+}
+
+/**
+ * Interface for a service connect ClientAlias. A ClientAlias describes a terse
+ * DNS name and port combination at which clients of this service may reach it.
+ */
+export interface ClientAlias {
+  /**
+   * The dns name of the alias.
+   *
+   * @example backend.prod, dataservice
+   */
+  readonly dnsName: string;
+  /**
+   * The port for clients to use to communicate with this service.
+   *
+   * @default the container port specified by the port mapping.
+   */
+  readonly port?: number;
 }
 
 /**
@@ -205,6 +296,13 @@ export interface BaseServiceOptions {
    *  @default - undefined
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * Configuration for Service Connect.
+   *
+   * @default - undefined
+   */
+  readonly serviceConnectConfiguration?: ServiceConnectConfiguration;
 }
 
 /**

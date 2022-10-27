@@ -43,12 +43,6 @@
                                 "Required": false,
                                 "UpdateType": "Mutable"
                             },
-                            "LogConfiguration": {
-                                "Documentation": "placeholder",
-                                "Type": "LogConfiguration",
-                                "Required": false,
-                                "UpdateType": "Mutable"
-                            },
                             "IngressPortOverride": {
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "Integer",
