@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/150c4c7748874402f88e7269dbd7b4c6f93d52315f502714bd6f6d3739076af2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/cd7379f454bce263be9bdb8610853e73586b9e3605d095098feaf5088680667a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -180,10 +180,7 @@
         "/aws-cdk-eks-cluster-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "KubectlLayer600207B5"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Role/Resource": [
@@ -389,10 +386,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesLaunchConfig7C420A27",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesLaunchConfig7C420A27"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/ASG": [
@@ -478,10 +472,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesArmLaunchConfigAAF61344",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesArmLaunchConfigAAF61344"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/ASG": [
@@ -567,10 +558,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBottlerocketNodesLaunchConfig76D7BEBE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterBottlerocketNodesLaunchConfig76D7BEBE"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/ASG": [
@@ -656,10 +644,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/spot/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterspotLaunchConfigCC19F2E6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterspotLaunchConfigCC19F2E6"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/spot/ASG": [

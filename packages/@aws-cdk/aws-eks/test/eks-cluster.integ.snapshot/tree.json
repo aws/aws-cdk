@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.133"
+          "version": "10.1.140"
         }
       },
       "aws-cdk-eks-cluster-test": {
@@ -1181,7 +1181,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.133"
+                  "version": "10.1.140"
                 }
               },
               "KubectlReadyBarrier": {
@@ -5397,7 +5397,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.133"
+                      "version": "10.1.140"
                     }
                   }
                 },
@@ -5472,7 +5472,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.133"
+              "version": "10.1.140"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -5673,7 +5673,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb.zip"
+                          "s3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -6083,7 +6083,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/0c25fb8e7ac319cc9738daadd498a271c2d5aca9b5fb3016f0842e9a36df4c25.json"
+                          "/8e6c5a95620bc99dffd9c6bd1d299fb558b2c0a8d7d533323b050e801bf89c02.json"
                         ]
                       ]
                     },
@@ -6126,7 +6126,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.133"
+              "version": "10.1.140"
             }
           },
           "SsmParameterValue:--aws--service--eks--optimized-ami--1.23--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
@@ -6414,7 +6414,7 @@
                 "path": "aws-cdk-eks-cluster/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.133"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
