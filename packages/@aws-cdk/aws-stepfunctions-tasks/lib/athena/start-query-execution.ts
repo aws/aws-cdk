@@ -112,6 +112,8 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
               service: 's3',
               resource: this.props.resultConfiguration?.outputLocation?.bucketName,
               resourceName: this.props.resultConfiguration?.outputLocation?.objectKey,
+              region: '',
+              account: '',
             })
             : '*',
         ],
