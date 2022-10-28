@@ -1,5 +1,5 @@
 {
-  "$version": "94.0.0",
+  "$version": "95.0.0",
   "PropertyTypes": {
     "AWS::IoT::AccountAuditConfiguration.AuditCheckConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-accountauditconfiguration-auditcheckconfiguration.html",
@@ -1331,6 +1331,12 @@
     "AWS::IoT::TopicRule.RepublishAction": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-republishaction.html",
       "Properties": {
+        "Headers": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-republishaction.html#cfn-iot-topicrule-republishaction-headers",
+          "PrimitiveType": "Json",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "Qos": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-republishaction.html#cfn-iot-topicrule-republishaction-qos",
           "PrimitiveType": "Integer",
