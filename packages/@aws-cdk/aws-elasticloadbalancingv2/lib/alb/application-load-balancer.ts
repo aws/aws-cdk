@@ -43,6 +43,14 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    * @default 60
    */
   readonly idleTimeout?: Duration;
+
+  /**
+   * Indicates whether HTTP headers with invalid header fields are removed
+   * by the load balancer (true) or routed to targets (false)
+   *
+   * @default false
+   */
+  readonly dropInvalidHeaderFields?: boolean;
 }
 
 /**
@@ -100,6 +108,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
+    if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
   }
 
   /**

@@ -178,6 +178,14 @@ describe('user data', () => {
     );
 
   });
+  test('can persist windows userdata', () => {
+    // WHEN
+    const userData = ec2.UserData.forWindows({ persist: true });
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual('<powershell></powershell><persist>true</persist>');
+  });
   test('can create Linux user data', () => {
     // GIVEN
 

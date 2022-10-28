@@ -11,7 +11,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { DatabaseInstance, ServerlessV2InstanceType, IDatabaseInstance } from './instance';
+import { DatabaseInstance, ServerlessV2InstanceType, IDatabaseInstance, NetworkType } from './instance';
 import { IInstanceEngine } from './instance-engine';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
@@ -316,6 +316,13 @@ interface DatabaseClusterBaseProps {
    * @default - true
    */
   readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The network type of the DB instance.
+   *
+   * @default - IPV4
+   */
+  readonly networkType?: NetworkType;
 }
 
 /**
@@ -519,6 +526,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       enableIamDatabaseAuthentication: props.iamAuthentication,
       serverlessV2ScalingConfiguration: props.serverlessV2Scaling ?
         this.renderV2ScalingConfiguration(props.serverlessV2Scaling) : undefined,
+      networkType: props.networkType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),

@@ -1,7 +1,8 @@
+import { createHash } from 'crypto';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnConfigRule } from './config.generated';
 
@@ -282,6 +283,63 @@ export class ManagedRule extends RuleNew {
 }
 
 /**
+ * The source of the event, such as an AWS service,
+ * that triggers AWS Config to evaluate your AWS resources.
+ */
+enum EventSource {
+
+  /* from aws.config */
+  AWS_CONFIG = 'aws.config',
+
+}
+
+/**
+ * The type of notification that triggers AWS Config to run an evaluation for a rule.
+ */
+enum MessageType {
+
+  /**
+   * Triggers an evaluation when AWS Config delivers a configuration item as a result of a resource change.
+   */
+  CONFIGURATION_ITEM_CHANGE_NOTIFICATION = 'ConfigurationItemChangeNotification',
+
+  /**
+   * Triggers an evaluation when AWS Config delivers an oversized configuration item.
+   */
+  OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION = 'OversizedConfigurationItemChangeNotification',
+
+  /**
+   * Triggers a periodic evaluation at the frequency specified for MaximumExecutionFrequency.
+   */
+  SCHEDULED_NOTIFICATION = 'ScheduledNotification',
+
+  /**
+   * Triggers a periodic evaluation when AWS Config delivers a configuration snapshot.
+   */
+  CONFIGURATION_SNAPSHOT_DELIVERY_COMPLETED = 'ConfigurationSnapshotDeliveryCompleted',
+}
+
+/**
+ * Construction properties for a CustomRule.
+ */
+interface SourceDetail {
+  /**
+   * The source of the event, such as an AWS service,
+   * that triggers AWS Config to evaluate your AWS resources.
+   *
+   */
+  readonly eventSource: EventSource;
+  /**
+   * The frequency at which you want AWS Config to run evaluations for a custom rule with a periodic trigger.
+   */
+  readonly maximumExecutionFrequency?: MaximumExecutionFrequency;
+  /**
+   * The type of notification that triggers AWS Config to run an evaluation for a rule.
+   */
+  readonly messageType: MessageType;
+}
+
+/**
  * Construction properties for a CustomRule.
  */
 export interface CustomRuleProps extends RuleProps {
@@ -331,32 +389,40 @@ export class CustomRule extends RuleNew {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
     }
 
-    const sourceDetails: any[] = [];
+    const sourceDetails: SourceDetail[] = [];
     this.ruleScope = props.ruleScope;
-
     if (props.configurationChanges) {
       sourceDetails.push({
-        eventSource: 'aws.config',
-        messageType: 'ConfigurationItemChangeNotification',
+        eventSource: EventSource.AWS_CONFIG,
+        messageType: MessageType.CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
       });
       sourceDetails.push({
-        eventSource: 'aws.config',
-        messageType: 'OversizedConfigurationItemChangeNotification',
+        eventSource: EventSource.AWS_CONFIG,
+        messageType: MessageType.OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
       });
     }
 
     if (props.periodic) {
       sourceDetails.push({
-        eventSource: 'aws.config',
+        eventSource: EventSource.AWS_CONFIG,
         maximumExecutionFrequency: props.maximumExecutionFrequency,
-        messageType: 'ScheduledNotification',
+        messageType: MessageType.SCHEDULED_NOTIFICATION,
       });
     }
-
-    props.lambdaFunction.addPermission('Permission', {
-      principal: new iam.ServicePrincipal('config.amazonaws.com'),
-      sourceAccount: this.env.account,
-    });
+    const hash = createHash('sha256')
+      .update(JSON.stringify({
+        fnName: props.lambdaFunction.functionName.toString,
+        accountId: Stack.of(this).resolve(this.env.account),
+        region: Stack.of(this).resolve(this.env.region),
+      }), 'utf8')
+      .digest('base64');
+    const customRulePermissionId: string = `CustomRulePermission${hash}`;
+    if (!props.lambdaFunction.permissionsNode.tryFindChild(customRulePermissionId)) {
+      props.lambdaFunction.addPermission(customRulePermissionId, {
+        principal: new iam.ServicePrincipal('config.amazonaws.com'),
+        sourceAccount: this.env.account,
+      });
+    };
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(
@@ -388,6 +454,88 @@ export class CustomRule extends RuleNew {
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;
     }
+  }
+}
+
+/**
+ * Construction properties for a CustomPolicy.
+ */
+export interface CustomPolicyProps extends RuleProps {
+  /**
+   * The policy definition containing the logic for your AWS Config Custom Policy rule.
+   */
+  readonly policyText: string;
+
+  /**
+   * The boolean expression for enabling debug logging for your AWS Config Custom Policy rule.
+   *
+   * @default false
+   */
+  readonly enableDebugLog?: boolean;
+}
+
+/**
+ * A new custom policy.
+ *
+ * @resource AWS::Config::ConfigRule
+ */
+export class CustomPolicy extends RuleNew {
+  /** @attribute */
+  public readonly configRuleName: string;
+
+  /** @attribute */
+  public readonly configRuleArn: string;
+
+  /** @attribute */
+  public readonly configRuleId: string;
+
+  /** @attribute */
+  public readonly configRuleComplianceType: string;
+
+  constructor(scope: Construct, id: string, props: CustomPolicyProps) {
+    super(scope, id, {
+      physicalName: props.configRuleName,
+    });
+
+    if (!props.policyText || [...props.policyText].length === 0) {
+      throw new Error('Policy Text cannot be empty.');
+    }
+    if ( [...props.policyText].length > 10000 ) {
+      throw new Error('Policy Text is limited to 10,000 characters or less.');
+    }
+
+    const sourceDetails: SourceDetail[] = [];
+    this.ruleScope = props.ruleScope;
+
+    sourceDetails.push({
+      eventSource: EventSource.AWS_CONFIG,
+      messageType: MessageType.CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
+    });
+    sourceDetails.push({
+      eventSource: EventSource.AWS_CONFIG,
+      messageType: MessageType.OVERSIZED_CONFIGURATION_ITEM_CHANGE_NOTIFICATION,
+    });
+    const rule = new CfnConfigRule(this, 'Resource', {
+      configRuleName: this.physicalName,
+      description: props.description,
+      inputParameters: props.inputParameters,
+      scope: Lazy.any({ produce: () => renderScope(this.ruleScope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      source: {
+        owner: 'CUSTOM_POLICY',
+        sourceDetails,
+        customPolicyDetails: {
+          enableDebugLogDelivery: props.enableDebugLog,
+          policyRuntime: 'guard-2.x.x',
+          policyText: props.policyText,
+        },
+      },
+    });
+
+    this.configRuleName = rule.ref;
+    this.configRuleArn = rule.attrArn;
+    this.configRuleId = rule.attrConfigRuleId;
+    this.configRuleComplianceType = rule.attrComplianceType;
+    this.isCustomWithChanges = true;
   }
 }
 
@@ -1344,6 +1492,8 @@ export class ResourceType {
   public static readonly EC2_REGISTERED_HA_INSTANCE = new ResourceType('AWS::EC2::RegisteredHAInstance');
   /** EC2 launch template */
   public static readonly EC2_LAUNCH_TEMPLATE = new ResourceType('AWS::EC2::LaunchTemplate');
+  /** EC2 Network Insights Access Scope Analysis */
+  public static readonly EC2_NETWORK_INSIGHTS_ACCESS_SCOPE_ANALYSIS = new ResourceType('AWS::EC2::NetworkInsightsAccessScopeAnalysis');
   /** Amazon ECR repository */
   public static readonly ECR_REPOSITORY = new ResourceType('AWS::ECR::Repository');
   /** Amazon ECR public repository */
@@ -1364,6 +1514,10 @@ export class ResourceType {
   public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType('AWS::EMR::SecurityConfiguration');
   /** Amazon GuardDuty detector */
   public static readonly GUARDDUTY_DETECTOR = new ResourceType('AWS::GuardDuty::Detector');
+  /** Amazon GuardDuty Threat Intel Set */
+  public static readonly GUARDDUTY_THREAT_INTEL_SET = new ResourceType('AWS::GuardDuty::ThreatIntelSet');
+  /** Amazon GuardDuty IP Set */
+  public static readonly GUARDDUTY_IP_SET = new ResourceType(' AWS::GuardDuty::IPSet');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
   /** Amazon OpenSearch domain */
@@ -1420,6 +1574,12 @@ export class ResourceType {
   public static readonly SAGEMAKER_MODEL = new ResourceType('AWS::SageMaker::Model');
   /** Amazon SageMaker notebook instance */
   public static readonly SAGEMAKER_NOTEBOOK_INSTANCE = new ResourceType('AWS::SageMaker::NotebookInstance');
+  /** Amazon SageMaker workteam */
+  public static readonly SAGEMAKER_WORKTEAM = new ResourceType('AWS::SageMaker::Workteam');
+  /** Amazon SES Configuration Set */
+  public static readonly SES_CONFIGURATION_SET = new ResourceType('AWS::SES::ConfigurationSet');
+  /** Amazon SES Contact List */
+  public static readonly SES_CONTACT_LIST = new ResourceType('AWS::SES::ContactList');
   /** Amazon S3 account public access block */
   public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType('AWS::S3::AccountPublicAccessBlock');
   /** Amazon EC2 customer gateway */
@@ -1450,6 +1610,10 @@ export class ResourceType {
   public static readonly WORKSPACES_CONNECTION_ALIAS = new ResourceType('AWS::WorkSpaces::ConnectionAlias');
   /** Amazon WorkSpaces workSpace */
   public static readonly WORKSPACES_WORKSPACE = new ResourceType('AWS::WorkSpaces::Workspace');
+  /** AWS AppConfig application */
+  public static readonly APPCONFIG_APPLICATION = new ResourceType('AWS::AppConfig::Application');
+  /** AWS AppSync GraphQL Api */
+  public static readonly APPSYNC_GRAPHQL_API = new ResourceType('AWS::AppSync::GraphQLApi');
   /** AWS Backup backup plan */
   public static readonly BACKUP_BACKUP_PLAN = new ResourceType('AWS::Backup::BackupPlan');
   /** AWS Backup backup selection */
@@ -1468,6 +1632,10 @@ export class ResourceType {
   public static readonly CLOUDFORMATION_STACK = new ResourceType('AWS::CloudFormation::Stack');
   /** AWS CloudTrail trail */
   public static readonly CLOUDTRAIL_TRAIL = new ResourceType('AWS::CloudTrail::Trail');
+  /** AWS Cloud Map(ServiceDiscovery) service */
+  public static readonly SERVICEDISCOVERY_SERVICE = new ResourceType('AWS::ServiceDiscovery::Service');
+  /** AWS Cloud Map(ServiceDiscovery) Public Dns Namespace */
+  public static readonly SERVICEDISCOVERY_PUBLIC_DNS_NAMESPACE = new ResourceType('AWS::ServiceDiscovery::PublicDnsNamespace');
   /** AWS CodeBuild project */
   public static readonly CODEBUILD_PROJECT = new ResourceType('AWS::CodeBuild::Project');
   /** AWS CodeDeploy application */
@@ -1486,6 +1654,18 @@ export class ResourceType {
   public static readonly DMS_EVENT_SUBSCRIPTION = new ResourceType('AWS::DMS::EventSubscription');
   /** AWS DMS replication subnet group */
   public static readonly DMS_REPLICATION_SUBNET_GROUP = new ResourceType('AWS::DMS::ReplicationSubnetGroup');
+  /** AWS DataSync location SMB */
+  public static readonly DATASYNC_LOCATION_SMB = new ResourceType('AWS::DataSync::LocationSMB');
+  /** AWS DataSync location FSx Lustre */
+  public static readonly DATASYNC_LOCATION_FSX_LUSTRE = new ResourceType('AWS::DataSync::LocationFSxLustre');
+  /** AWS DataSync location S3 */
+  public static readonly DATASYNC_LOCATION_S3 = new ResourceType('AWS::DataSync::LocationS3');
+  /** AWS DataSync location EFS */
+  public static readonly DATASYNC_LOCATION_EFS = new ResourceType('AWS::DataSync::LocationEFS');
+  /** AWS DataSync task */
+  public static readonly DATASYNC_TASK = new ResourceType('AWS::DataSync::Task');
+  /** AWS DataSync location NFS */
+  public static readonly DATASYNC_LOCATION_NFS = new ResourceType('AWS::DataSync::LocationNFS');
   /** AWS Elastic Beanstalk (EB) application */
   public static readonly ELASTIC_BEANSTALK_APPLICATION = new ResourceType('AWS::ElasticBeanstalk::Application');
   /** AWS Elastic Beanstalk (EB) application version */

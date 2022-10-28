@@ -379,6 +379,7 @@ function configureMock(pr: linter.GitHubPr, prFiles?: linter.GitHubFile[]): lint
     client: {
       pulls: pullsClient as any,
       issues: issuesClient as any,
+      paginate: (method: any, args: any) => { return method(args).data },
     } as any,
   })
 }

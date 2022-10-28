@@ -92,7 +92,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb.zip"
+     "S3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -107,7 +107,7 @@
       "Ref": "AwsCliLayerF44AAF94"
      },
      {
-      "Ref": "KubectlLayer600207B5"
+      "Ref": "referencetoawscdkekshandlersinvpctestKubectlLayerAD42127BRef"
      }
     ],
     "MemorySize": 1024,
@@ -144,18 +144,6 @@
      "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
     },
     "Description": "/opt/awscli/aws"
-   }
-  },
-  "KubectlLayer600207B5": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed.zip"
-    },
-    "Description": "/opt/kubectl/kubectl and /opt/helm/helm"
    }
   },
   "ProviderframeworkonEventServiceRole9FF04296": {
@@ -250,7 +238,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3b263c2ad043fd069ef446753788c36e595c82b51a70478e58258c8ef7471671.zip"
+     "S3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -309,6 +297,9 @@
    "Type": "String"
   },
   "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn": {
+   "Type": "String"
+  },
+  "referencetoawscdkekshandlersinvpctestKubectlLayerAD42127BRef": {
    "Type": "String"
   },
   "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackDefaultVpcPrivateSubnet1Subnet9479BAA8Ref": {
