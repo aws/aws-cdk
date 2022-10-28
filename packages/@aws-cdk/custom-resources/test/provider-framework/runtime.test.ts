@@ -106,6 +106,45 @@ test('fails gracefully if "onEvent" throws an error', async () => {
   expectNoWaiter();
 });
 
+test('Fails if Status returned by "onEvent" is FAILED', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ Status: 'FAILED', Reason: 'Some failure message.' });
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Create',
+  });
+
+  // THEN
+  expectCloudFormationFailed('Some failure message.');
+});
+
+test('Succeeds if Status returned by "onEvent" is SUCCESS', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ Status: 'SUCCESS', Reason: 'foo' });
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Create',
+  });
+
+  // THEN
+  expectCloudFormationSuccess();
+});
+
+test('Succeeds if Status is ommited by "onEvent"', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({});
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Create',
+  });
+
+  // THEN
+  expectCloudFormationSuccess();
+});
+
 describe('PhysicalResourceId', () => {
 
   describe('if not omitted from onEvent result', () => {

@@ -40,7 +40,17 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // determine if this is an async provider based on whether we have an isComplete handler defined.
   // if it is not defined, then we are basically ready to return a positive response.
   if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
-    return cfnResponse.submitResponse('SUCCESS', resourceEvent, { noEcho: resourceEvent.NoEcho });
+    // If a onEvent handler returns `Status` this `Status` should be used
+    // to determine the response `Status` to CFN however previous customers
+    // may not be defining this `Status` response for historical reasons,
+    // because of this we should allow for the default of success.
+    //
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html
+    if (resourceEvent.Status) {
+      return cfnResponse.submitResponse(resourceEvent.Status, resourceEvent, { reason: resourceEvent.Reason, noEcho: resourceEvent.NoEcho });
+    } else {
+      return cfnResponse.submitResponse('SUCCESS', resourceEvent, { noEcho: resourceEvent.NoEcho });
+    }
   }
 
   // ok, we are not complete, so kick off the waiter workflow
