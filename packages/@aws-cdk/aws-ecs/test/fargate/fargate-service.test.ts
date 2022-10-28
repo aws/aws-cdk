@@ -744,14 +744,50 @@ describe('fargate service', () => {
       new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
-        minHealthyPercent: 0,
+        assignPublicIp: true,
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-        DeploymentConfiguration: {
-          MinimumHealthyPercent: 0,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'ENABLED',
+          },
         },
+      });
+    });
+
+    test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::ECS::Service', {
+        Properties: {
+          TaskDefinition: 'FargateTaskDef',
+          DeploymentController: {
+            Type: 'CODE_DEPLOY',
+          },
+        },
+        DependsOn: [
+          'FargateTaskDefC6FB60B4',
+          'FargateTaskDefTaskRole0B257552',
+        ],
       });
     });
 
