@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "files": {
     "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "b6f4053913c5258c89b2cb1e8d48d0a04346c7b0736f15235a74f8fd890de556": {
+    "2fcb710210eb75f31b39dd1787cc4271df763ad6b541a188cb417095e1b83aa7": {
       "source": {
         "path": "integtest-restapi-fromdefinition-asset.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b6f4053913c5258c89b2cb1e8d48d0a04346c7b0736f15235a74f8fd890de556.json",
+          "objectKey": "2fcb710210eb75f31b39dd1787cc4271df763ad6b541a188cb417095e1b83aa7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
