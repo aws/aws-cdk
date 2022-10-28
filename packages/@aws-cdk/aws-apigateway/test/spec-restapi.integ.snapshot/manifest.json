@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/551655898503491ac7795f943b15b78ff3cd7b88de0661f6b5a09b11ec6976f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b4324bd66c0a5352124c718d0cb3990046afe7ccf1cea94d4488ed7cd67191b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -141,6 +141,18 @@
             "data": "myapiv1booksPOST53E2832E"
           }
         ],
+        "/test-apigateway-spec-restapi/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5"
+          }
+        ],
+        "/test-apigateway-spec-restapi/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A"
+          }
+        ],
         "/test-apigateway-spec-restapi/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -157,18 +169,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiEndpoint3628AFE3"
-          }
-        ],
-        "/test-apigateway-spec-restapi/my-api/CloudWatchRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiCloudWatchRole095452E5"
-          }
-        ],
-        "/test-apigateway-spec-restapi/my-api/Account": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiAccountEC421A0A"
           }
         ],
         "/test-apigateway-spec-restapi/my-api/ApiKey/Resource": [
