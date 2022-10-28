@@ -195,6 +195,8 @@ other.
 
 ## Accessing resources in a different stack and region
 
+> **This feature is currently experimental**
+
 You can enable the Stack property `optInToCrossRegionReferences`
 in order to access resources in a different stack _and_ region. With this feature flag
 enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and

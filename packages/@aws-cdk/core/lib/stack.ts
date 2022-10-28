@@ -146,6 +146,8 @@ export interface StackProps {
    * Enabling this will create a CloudFormation custom resource
    * in both the producing stack and consuming stack in order to perform the export/import
    *
+   * This feature is currently experimental
+   *
    * @default false
    */
   readonly optInToCrossRegionReferences?: boolean;
