@@ -1,9 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Duration, Lazy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
+import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
@@ -485,13 +485,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 /**
  * Properties to reference an existing listener
  */
-export interface IApplicationListener extends IResource, ec2.IConnectable {
-  /**
-   * ARN of the listener
-   * @attribute
-   */
-  readonly listenerArn: string;
-
+export interface IApplicationListener extends IListener, ec2.IConnectable {
   /**
    * Add one or more certificates to this listener.
    * @deprecated use `addCertificates()`
