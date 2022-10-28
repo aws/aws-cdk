@@ -154,9 +154,9 @@ export interface EcsDeploymentGroupProps {
   readonly role?: iam.IRole;
 
   /**
-   * The ECS services to deploy with this Deployment Group.
+   * The ECS service to deploy with this Deployment Group.
    */
-  readonly services: ecs.IBaseService[];
+  readonly service: ecs.IBaseService;
 
   /**
    * The configuration options for blue-green ECS deployments
@@ -224,21 +224,19 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
     this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
 
-    for (const service of props.services) {
-      if (cdk.Resource.isOwnedResource(service)) {
-        const cfnSvc = (service as ecs.BaseService).node.defaultChild as ecs.CfnService;
-        if (cfnSvc.deploymentController === undefined ||
-          (cfnSvc.deploymentController! as ecs.CfnService.DeploymentControllerProperty).type !== ecs.DeploymentControllerType.CODE_DEPLOY) {
-          throw new Error(
-            'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type',
-          );
-        }
+    if (cdk.Resource.isOwnedResource(props.service)) {
+      const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
+      if (cfnSvc.deploymentController === undefined ||
+        (cfnSvc.deploymentController! as ecs.CfnService.DeploymentControllerProperty).type !== ecs.DeploymentControllerType.CODE_DEPLOY) {
+        throw new Error(
+          'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type',
+        );
+      }
 
-        if (cfnSvc.taskDefinition !== (service as ecs.BaseService).taskDefinition.family) {
-          throw new Error(
-            'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack',
-          );
-        }
+      if (cfnSvc.taskDefinition !== (props.service as ecs.BaseService).taskDefinition.family) {
+        throw new Error(
+          'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack',
+        );
       }
     }
 
@@ -251,12 +249,10 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
-      ecsServices: props.services.map(s => {
-        return {
-          clusterName: s.cluster.clusterName,
-          serviceName: s.serviceName,
-        };
-      }),
+      ecsServices: [{
+        clusterName: props.service.cluster.clusterName,
+        serviceName: props.service.serviceName,
+      }],
       blueGreenDeploymentConfiguration: cdk.Lazy.any({
         produce: () => this.renderBlueGreenDeploymentConfiguration(props.blueGreenDeploymentConfig),
       }),

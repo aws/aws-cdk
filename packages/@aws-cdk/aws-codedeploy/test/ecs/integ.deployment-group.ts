@@ -210,7 +210,7 @@ const dg = new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
     greenUnhealthyHosts,
     greenApiFailure,
   ],
-  services: [service],
+  service,
   blueGreenDeploymentConfig: {
     blueTargetGroup: blueTG,
     greenTargetGroup: greenTG,

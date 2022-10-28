@@ -53,7 +53,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const stack = new cdk.Stack();
 
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -167,7 +167,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const stack = new cdk.Stack();
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       deploymentGroupName: 'test',
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -185,7 +185,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const application = codedeploy.EcsApplication.fromEcsApplicationName(stack, 'A', 'myapp');
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       application,
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -202,7 +202,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const stack = new cdk.Stack();
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_15MINUTES,
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -220,7 +220,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const stack = new cdk.Stack(app);
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       deploymentGroupName: 'a'.repeat(101),
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -236,7 +236,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     const stack = new cdk.Stack(app);
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       deploymentGroupName: 'my name',
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -268,7 +268,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
 
     expect(() => new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       deploymentGroupName: 'a'.repeat(101),
-      services: [service],
+      service,
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -299,7 +299,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
 
     expect(() => new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       deploymentGroupName: 'a'.repeat(101),
-      services: [service],
+      service,
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -316,7 +316,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
 
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
       role: serviceRole,
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -381,7 +381,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
           evaluationPeriods: 1,
         }),
       ],
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -433,7 +433,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
           evaluationPeriods: 1,
         }),
       ],
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -488,7 +488,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       autoRollback: {
         deploymentInAlarm: true,
       },
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -531,7 +531,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
           evaluationPeriods: 1,
         }),
       ],
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -571,7 +571,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       autoRollback: {
         failedDeployment: false,
       },
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -641,7 +641,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       autoRollback: {
         stoppedDeployment: true,
       },
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -694,7 +694,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
           evaluationPeriods: 1,
         }),
       ],
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -730,7 +730,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
   test('can specify a test traffic route', () => {
     const stack = new cdk.Stack();
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -770,7 +770,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
   test('can require manual deployment approval', () => {
     const stack = new cdk.Stack();
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -796,7 +796,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
   test('can add deployment bake time', () => {
     const stack = new cdk.Stack();
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
@@ -825,7 +825,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       env: { region: 'us-isob-east-1' },
     });
     new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      services: [mockEcsService(stack)],
+      service: mockEcsService(stack),
       blueGreenDeploymentConfig: {
         blueTargetGroup: mockTargetGroup(stack, 'blue'),
         greenTargetGroup: mockTargetGroup(stack, 'green'),
