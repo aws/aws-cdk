@@ -116,7 +116,7 @@ To import an already existing Deployment Group:
 ```ts
 declare const application: codedeploy.ServerApplication;
 const deploymentGroup = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(
-  this, 
+  this,
   'ExistingCodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyExistingDeploymentGroup',
@@ -426,7 +426,7 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
-  services: [service],
+  service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
     greenTargetGroup,
@@ -508,7 +508,7 @@ new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
     // CodeDeploy will automatically roll back if a deployment is stopped
     stoppedDeployment: true,
   },
-  services: [service],
+  service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
     greenTargetGroup,
@@ -536,7 +536,7 @@ declare const listener: elbv2.IApplicationListener;
 declare const testListener: elbv2.IApplicationListener;
 
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
-  services: [service],
+  service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
     greenTargetGroup,
@@ -574,7 +574,7 @@ new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
     // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
     stoppedDeployment: true,
   },
-  services: [service],
+  service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
     greenTargetGroup,
@@ -593,7 +593,7 @@ CloudWatch alarms specified for the deployment group and will automatically roll
 
 ```ts
 new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
-  services: [service],
+  service,
   blueGreenDeploymentConfig: {
     blueTargetGroup,
     greenTargetGroup,
