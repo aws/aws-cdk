@@ -69,6 +69,8 @@ jobs:
           for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
             (cd $(dirname $pj) && ncu --upgrade --reject='@types/jest,@types/node,@types/prettier,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,ts-jest,jest,${{ steps.list-packages.outputs.list }}')
           done
+          # Upgrade dependencies at packages/@aws-cdk/aws-eks/test/sdk-call-integ-test-docker-app/app/package.json
+          pwd
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"
