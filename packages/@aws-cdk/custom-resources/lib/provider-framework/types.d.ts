@@ -77,6 +77,16 @@ interface OnEventResponse {
   readonly Data?: { [name: string]: any };
 
   /**
+   * The status value sent by the custom resource provider in response to an AWS CloudFormation-generated request.
+   */
+  readonly Status?: 'SUCCESS' | 'FAILED';
+
+  /**
+   * Describes the reason for a failure response.
+   */
+  readonly Reason?: string;
+
+  /**
    * Custom fields returned from OnEvent will be passed to IsComplete.
    */
   readonly [key: string]: any;
@@ -100,6 +110,16 @@ export type IsCompleteRequest = OnEventRequest & OnEventResponse;
  * The output of the `isComplete` user-defined handler.
  */
 export interface IsCompleteResponse {
+  /**
+   * The status value sent by the custom resource provider in response to an AWS CloudFormation-generated request.
+   */
+  readonly Status?: 'SUCCESS' | 'FAILED';
+
+  /**
+   * Describes the reason for a failure response.
+   */
+  readonly Reason?: string;
+
   /**
    * Indicates if the resource operation is complete or should we retry.
    */
