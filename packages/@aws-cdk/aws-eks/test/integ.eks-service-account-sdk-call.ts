@@ -10,7 +10,7 @@ import * as eks from '../lib';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 
 const app = new App();
-const stack = new Stack(app, 'aws-eks-oidc-provider-test');
+const stack = new Stack(app, 'aws-eks-service-accounts-can-make-sdk-calls-test');
 
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
   directory: path.join(__dirname, 'sdk-call-integ-test-docker-app/app'),
@@ -29,12 +29,12 @@ const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 const serviceAccount = cluster.addServiceAccount('my-service-account');
 const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(serviceAccount.serviceAccountName);
 new kplus.Pod(chart, 'Pod', {
-  containers: [{ image: dockerImage.imageUri, port: 8080 }],
+  containers: [{ image: dockerImage.imageUri }],
   restartPolicy: kplus.RestartPolicy.NEVER,
   serviceAccount: kplusServiceAccount,
 });
 
-cluster.addCdk8sChart('sdk-call', chart);
+cluster.addCdk8sChart('sdk-call', chart).node.addDependency(serviceAccount);
 
 serviceAccount.role.addToPrincipalPolicy(
   new iam.PolicyStatement({
@@ -43,7 +43,8 @@ serviceAccount.role.addToPrincipalPolicy(
   }),
 );
 
-// this custom resource will check that the bucket exists and delete it
+// this custom resource will check that the bucket exists
+// the bucket will be deleted when the custom resource is deleted
 // if the bucket does not exist, then it will throw an error and fail the deployment.
 const pinger = new BucketPinger(stack, 'S3BucketPinger', {
   vpc: cluster.vpc,
@@ -54,7 +55,7 @@ const pinger = new BucketPinger(stack, 'S3BucketPinger', {
 // before the pod.
 pinger.node.addDependency(cluster);
 
-// this should confirm that the bucket actually exists and was deleted
+// this should confirm that the bucket actually exists
 new CfnOutput(stack, 'PingerResponse', {
   value: pinger.response,
 });

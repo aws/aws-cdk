@@ -12,19 +12,23 @@ def handler(event, context):
   props = event['ResourceProperties']
 
   s3_bucket_name = 'amazingly-made-sdk-call-created-eks-bucket'
+  s3 = boto3.client('s3')
 
   if request_type in ['Create', 'Update']:
-    logger.info(f'making sdk call to create bucket with name {s3_bucket_name}')
+    logger.info(f'making sdk call to check if bucket with name {s3_bucket_name} exists')
 
-    s3 = boto3.client('s3')
     try:
       s3.head_bucket(Bucket=s3_bucket_name)
     except Exception as error:
       raise RuntimeError(f'failed to head bucket with error: {str(error)}')
+    return {'Data': {'Value': f'confirmed that bucket with name {s3_bucket_name} exists' }}
+
+  elif request_type in ['Delete']:
+    logger.info(f'making sdk call to delete bucket with name {s3_bucket_name}')
+
     try:
       s3.delete_bucket(Bucket=s3_bucket_name)
     except Exception as error:
       # If the bucket does not exist, then this error will be thrown
       raise RuntimeError(f'failed to delete bucket: {str(error)}')
-
-    return {'Data': {'Value': f'confirmed that bucket with name {s3_bucket_name} exists...bucket has been deleted' }}
+    return {'Data': {'Value': f'bucket with name {s3_bucket_name} has been deleted' }}
