@@ -239,7 +239,7 @@ describe('lambda-insights', () => {
     // On synthesis it should not throw an error
     expect(() => app.synth()).not.toThrow();
   });
-  test('can use with arm architecture', () => {
+  test('can use layer v1.0.143.0', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
