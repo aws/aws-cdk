@@ -1,0 +1,20 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "462c696e4c93ec0e97ebd5917666e8ded21f0a81055e38f6683a27853ca79fd4": {
+      "source": {
+        "path": "EventBusPolicy-987654321-test-region-12345678.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "462c696e4c93ec0e97ebd5917666e8ded21f0a81055e38f6683a27853ca79fd4.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

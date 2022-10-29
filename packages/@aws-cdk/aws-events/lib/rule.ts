@@ -368,9 +368,12 @@ export class Rule extends Resource implements IRule {
           // Leaving it in for backwards compatibility.
           stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
         });
+        const statementPrefix = `Allow-account-${sourceAccount}-`;
         new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
           action: 'events:PutEvents',
-          statementId: `Allow-account-${sourceAccount}-${this.node.addr}`,
+          statementId: statementPrefix + Names.uniqueResourceName(this, {
+            maxLength: 64 - statementPrefix.length,
+          }),
           principal: sourceAccount,
         });
       }
