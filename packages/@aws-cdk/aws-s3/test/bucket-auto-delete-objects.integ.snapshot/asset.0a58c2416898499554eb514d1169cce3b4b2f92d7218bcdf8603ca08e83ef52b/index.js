@@ -1,0 +1,83 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handler = void 0;
+// eslint-disable-next-line import/no-extraneous-dependencies
+const aws_sdk_1 = require("aws-sdk");
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects:cr-id';
+const s3 = new aws_sdk_1.S3();
+async function handler(event) {
+    switch (event.RequestType) {
+        case 'Create':
+            return;
+        case 'Update':
+            return onUpdate(event);
+        case 'Delete':
+            return onDelete(event.LogicalResourceId, event.ResourceProperties?.BucketName);
+    }
+}
+exports.handler = handler;
+async function onUpdate(event) {
+    const updateEvent = event;
+    const oldBucketName = updateEvent.OldResourceProperties?.BucketName;
+    const newBucketName = updateEvent.ResourceProperties?.BucketName;
+    const bucketNameHasChanged = newBucketName != null && oldBucketName != null && newBucketName !== oldBucketName;
+    /* If the name of the bucket has changed, CloudFormation will try to delete the bucket
+       and create a new one with the new name. So we have to delete the contents of the
+       bucket so that this operation does not fail. */
+    if (bucketNameHasChanged) {
+        return onDelete(event.LogicalResourceId, oldBucketName);
+    }
+}
+/**
+ * Recursively delete all items in the bucket
+ *
+ * @param bucketName the bucket name
+ */
+async function emptyBucket(bucketName) {
+    const listedObjects = await s3.listObjectVersions({ Bucket: bucketName }).promise();
+    const contents = [...listedObjects.Versions ?? [], ...listedObjects.DeleteMarkers ?? []];
+    if (contents.length === 0) {
+        return;
+    }
+    const records = contents.map((record) => ({ Key: record.Key, VersionId: record.VersionId }));
+    await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } }).promise();
+    if (listedObjects?.IsTruncated) {
+        await emptyBucket(bucketName);
+    }
+}
+async function onDelete(logicalResourceId, bucketName) {
+    if (!bucketName) {
+        throw new Error('No BucketName was provided.');
+    }
+    if (!await isBucketTaggedForDeletion(logicalResourceId, bucketName)) {
+        process.stdout.write(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag or the tag value does not match the logical ID of this custom resource, skipping cleaning.\n`);
+        return;
+    }
+    try {
+        await emptyBucket(bucketName);
+    }
+    catch (e) {
+        if (e.code !== 'NoSuchBucket') {
+            throw e;
+        }
+        // Bucket doesn't exist. Ignoring
+    }
+}
+/**
+ * The bucket will only be tagged for deletion if it's being deleted in the same
+ * deployment as this Custom Resource.
+ *
+ * If the Custom Resource is every deleted before the bucket, it must be because
+ * `autoDeleteObjects` has been switched to false, in which case the tag would have
+ * been removed before we get to this Delete event.
+ *
+ * The bucket tag value is set to the logical ID of the custom resource. This
+ * covers the case where we may want to drop and re-create the custom resource without
+ * emptying the bucket, e.g. to update the service token property. The bucket can
+ * then safely designate a new custom resource to empty the bucket by updating the tag value.
+ */
+async function isBucketTaggedForDeletion(logicalResourceId, bucketName) {
+    const response = await s3.getBucketTagging({ Bucket: bucketName }).promise();
+    return response.TagSet.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === logicalResourceId);
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFBQSw2REFBNkQ7QUFDN0QscUNBQTZCO0FBRTdCLE1BQU0sdUJBQXVCLEdBQUcsbUNBQW1DLENBQUM7QUFFcEUsTUFBTSxFQUFFLEdBQUcsSUFBSSxZQUFFLEVBQUUsQ0FBQztBQUViLEtBQUssVUFBVSxPQUFPLENBQUMsS0FBa0Q7SUFDOUUsUUFBUSxLQUFLLENBQUMsV0FBVyxFQUFFO1FBQ3pCLEtBQUssUUFBUTtZQUNYLE9BQU87UUFDVCxLQUFLLFFBQVE7WUFDWCxPQUFPLFFBQVEsQ0FBQyxLQUFLLENBQUMsQ0FBQztRQUN6QixLQUFLLFFBQVE7WUFDWCxPQUFPLFFBQVEsQ0FBQyxLQUFLLENBQUMsaUJBQWlCLEVBQUUsS0FBSyxDQUFDLGtCQUFrQixFQUFFLFVBQVUsQ0FBQyxDQUFDO0tBQ2xGO0FBQ0gsQ0FBQztBQVRELDBCQVNDO0FBRUQsS0FBSyxVQUFVLFFBQVEsQ0FBQyxLQUFrRDtJQUN4RSxNQUFNLFdBQVcsR0FBRyxLQUEwRCxDQUFDO0lBQy9FLE1BQU0sYUFBYSxHQUFHLFdBQVcsQ0FBQyxxQkFBcUIsRUFBRSxVQUFVLENBQUM7SUFDcEUsTUFBTSxhQUFhLEdBQUcsV0FBVyxDQUFDLGtCQUFrQixFQUFFLFVBQVUsQ0FBQztJQUNqRSxNQUFNLG9CQUFvQixHQUFHLGFBQWEsSUFBSSxJQUFJLElBQUksYUFBYSxJQUFJLElBQUksSUFBSSxhQUFhLEtBQUssYUFBYSxDQUFDO0lBRS9HOztzREFFa0Q7SUFDbEQsSUFBSSxvQkFBb0IsRUFBRTtRQUN4QixPQUFPLFFBQVEsQ0FBQyxLQUFLLENBQUMsaUJBQWlCLEVBQUUsYUFBYSxDQUFDLENBQUM7S0FDekQ7QUFDSCxDQUFDO0FBRUQ7Ozs7R0FJRztBQUNILEtBQUssVUFBVSxXQUFXLENBQUMsVUFBa0I7SUFDM0MsTUFBTSxhQUFhLEdBQUcsTUFBTSxFQUFFLENBQUMsa0JBQWtCLENBQUMsRUFBRSxNQUFNLEVBQUUsVUFBVSxFQUFFLENBQUMsQ0FBQyxPQUFPLEVBQUUsQ0FBQztJQUNwRixNQUFNLFFBQVEsR0FBRyxDQUFDLEdBQUcsYUFBYSxDQUFDLFFBQVEsSUFBSSxFQUFFLEVBQUUsR0FBRyxhQUFhLENBQUMsYUFBYSxJQUFJLEVBQUUsQ0FBQyxDQUFDO0lBQ3pGLElBQUksUUFBUSxDQUFDLE1BQU0sS0FBSyxDQUFDLEVBQUU7UUFDekIsT0FBTztLQUNSO0lBRUQsTUFBTSxPQUFPLEdBQUcsUUFBUSxDQUFDLEdBQUcsQ0FBQyxDQUFDLE1BQVcsRUFBRSxFQUFFLENBQUMsQ0FBQyxFQUFFLEdBQUcsRUFBRSxNQUFNLENBQUMsR0FBRyxFQUFFLFNBQVMsRUFBRSxNQUFNLENBQUMsU0FBUyxFQUFFLENBQUMsQ0FBQyxDQUFDO0lBQ2xHLE1BQU0sRUFBRSxDQUFDLGFBQWEsQ0FBQyxFQUFFLE1BQU0sRUFBRSxVQUFVLEVBQUUsTUFBTSxFQUFFLEVBQUUsT0FBTyxFQUFFLE9BQU8sRUFBRSxFQUFFLENBQUMsQ0FBQyxPQUFPLEVBQUUsQ0FBQztJQUV2RixJQUFJLGFBQWEsRUFBRSxXQUFXLEVBQUU7UUFDOUIsTUFBTSxXQUFXLENBQUMsVUFBVSxDQUFDLENBQUM7S0FDL0I7QUFDSCxDQUFDO0FBRUQsS0FBSyxVQUFVLFFBQVEsQ0FBQyxpQkFBeUIsRUFBRSxVQUFtQjtJQUNwRSxJQUFJLENBQUMsVUFBVSxFQUFFO1FBQ2YsTUFBTSxJQUFJLEtBQUssQ0FBQyw2QkFBNkIsQ0FBQyxDQUFDO0tBQ2hEO0lBQ0QsSUFBSSxDQUFDLE1BQU0seUJBQXlCLENBQUMsaUJBQWlCLEVBQUUsVUFBVSxDQUFDLEVBQUU7UUFDbkUsT0FBTyxDQUFDLE1BQU0sQ0FBQyxLQUFLLENBQUMseUJBQXlCLHVCQUF1QixvR0FBb0csQ0FBQyxDQUFDO1FBQzNLLE9BQU87S0FDUjtJQUNELElBQUk7UUFDRixNQUFNLFdBQVcsQ0FBQyxVQUFVLENBQUMsQ0FBQztLQUMvQjtJQUFDLE9BQU8sQ0FBQyxFQUFFO1FBQ1YsSUFBSSxDQUFDLENBQUMsSUFBSSxLQUFLLGNBQWMsRUFBRTtZQUM3QixNQUFNLENBQUMsQ0FBQztTQUNUO1FBQ0QsaUNBQWlDO0tBQ2xDO0FBQ0gsQ0FBQztBQUVEOzs7Ozs7Ozs7Ozs7R0FZRztBQUNILEtBQUssVUFBVSx5QkFBeUIsQ0FBQyxpQkFBeUIsRUFBRSxVQUFrQjtJQUNwRixNQUFNLFFBQVEsR0FBRyxNQUFNLEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxFQUFFLE1BQU0sRUFBRSxVQUFVLEVBQUUsQ0FBQyxDQUFDLE9BQU8sRUFBRSxDQUFDO0lBQzdFLE9BQU8sUUFBUSxDQUFDLE1BQU0sQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLENBQUMsR0FBRyxLQUFLLHVCQUF1QixJQUFJLEdBQUcsQ0FBQyxLQUFLLEtBQUssaUJBQWlCLENBQUMsQ0FBQztBQUM3RyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLy8gZXNsaW50LWRpc2FibGUtbmV4dC1saW5lIGltcG9ydC9uby1leHRyYW5lb3VzLWRlcGVuZGVuY2llc1xuaW1wb3J0IHsgUzMgfSBmcm9tICdhd3Mtc2RrJztcblxuY29uc3QgQVVUT19ERUxFVEVfT0JKRUNUU19UQUcgPSAnYXdzLWNkazphdXRvLWRlbGV0ZS1vYmplY3RzOmNyLWlkJztcblxuY29uc3QgczMgPSBuZXcgUzMoKTtcblxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIGhhbmRsZXIoZXZlbnQ6IEFXU0xhbWJkYS5DbG91ZEZvcm1hdGlvbkN1c3RvbVJlc291cmNlRXZlbnQpIHtcbiAgc3dpdGNoIChldmVudC5SZXF1ZXN0VHlwZSkge1xuICAgIGNhc2UgJ0NyZWF0ZSc6XG4gICAgICByZXR1cm47XG4gICAgY2FzZSAnVXBkYXRlJzpcbiAgICAgIHJldHVybiBvblVwZGF0ZShldmVudCk7XG4gICAgY2FzZSAnRGVsZXRlJzpcbiAgICAgIHJldHVybiBvbkRlbGV0ZShldmVudC5Mb2dpY2FsUmVzb3VyY2VJZCwgZXZlbnQuUmVzb3VyY2VQcm9wZXJ0aWVzPy5CdWNrZXROYW1lKTtcbiAgfVxufVxuXG5hc3luYyBmdW5jdGlvbiBvblVwZGF0ZShldmVudDogQVdTTGFtYmRhLkNsb3VkRm9ybWF0aW9uQ3VzdG9tUmVzb3VyY2VFdmVudCkge1xuICBjb25zdCB1cGRhdGVFdmVudCA9IGV2ZW50IGFzIEFXU0xhbWJkYS5DbG91ZEZvcm1hdGlvbkN1c3RvbVJlc291cmNlVXBkYXRlRXZlbnQ7XG4gIGNvbnN0IG9sZEJ1Y2tldE5hbWUgPSB1cGRhdGVFdmVudC5PbGRSZXNvdXJjZVByb3BlcnRpZXM/LkJ1Y2tldE5hbWU7XG4gIGNvbnN0IG5ld0J1Y2tldE5hbWUgPSB1cGRhdGVFdmVudC5SZXNvdXJjZVByb3BlcnRpZXM/LkJ1Y2tldE5hbWU7XG4gIGNvbnN0IGJ1Y2tldE5hbWVIYXNDaGFuZ2VkID0gbmV3QnVja2V0TmFtZSAhPSBudWxsICYmIG9sZEJ1Y2tldE5hbWUgIT0gbnVsbCAmJiBuZXdCdWNrZXROYW1lICE9PSBvbGRCdWNrZXROYW1lO1xuXG4gIC8qIElmIHRoZSBuYW1lIG9mIHRoZSBidWNrZXQgaGFzIGNoYW5nZWQsIENsb3VkRm9ybWF0aW9uIHdpbGwgdHJ5IHRvIGRlbGV0ZSB0aGUgYnVja2V0XG4gICAgIGFuZCBjcmVhdGUgYSBuZXcgb25lIHdpdGggdGhlIG5ldyBuYW1lLiBTbyB3ZSBoYXZlIHRvIGRlbGV0ZSB0aGUgY29udGVudHMgb2YgdGhlXG4gICAgIGJ1Y2tldCBzbyB0aGF0IHRoaXMgb3BlcmF0aW9uIGRvZXMgbm90IGZhaWwuICovXG4gIGlmIChidWNrZXROYW1lSGFzQ2hhbmdlZCkge1xuICAgIHJldHVybiBvbkRlbGV0ZShldmVudC5Mb2dpY2FsUmVzb3VyY2VJZCwgb2xkQnVja2V0TmFtZSk7XG4gIH1cbn1cblxuLyoqXG4gKiBSZWN1cnNpdmVseSBkZWxldGUgYWxsIGl0ZW1zIGluIHRoZSBidWNrZXRcbiAqXG4gKiBAcGFyYW0gYnVja2V0TmFtZSB0aGUgYnVja2V0IG5hbWVcbiAqL1xuYXN5bmMgZnVuY3Rpb24gZW1wdHlCdWNrZXQoYnVja2V0TmFtZTogc3RyaW5nKSB7XG4gIGNvbnN0IGxpc3RlZE9iamVjdHMgPSBhd2FpdCBzMy5saXN0T2JqZWN0VmVyc2lvbnMoeyBCdWNrZXQ6IGJ1Y2tldE5hbWUgfSkucHJvbWlzZSgpO1xuICBjb25zdCBjb250ZW50cyA9IFsuLi5saXN0ZWRPYmplY3RzLlZlcnNpb25zID8/IFtdLCAuLi5saXN0ZWRPYmplY3RzLkRlbGV0ZU1hcmtlcnMgPz8gW11dO1xuICBpZiAoY29udGVudHMubGVuZ3RoID09PSAwKSB7XG4gICAgcmV0dXJuO1xuICB9XG5cbiAgY29uc3QgcmVjb3JkcyA9IGNvbnRlbnRzLm1hcCgocmVjb3JkOiBhbnkpID0+ICh7IEtleTogcmVjb3JkLktleSwgVmVyc2lvbklkOiByZWNvcmQuVmVyc2lvbklkIH0pKTtcbiAgYXdhaXQgczMuZGVsZXRlT2JqZWN0cyh7IEJ1Y2tldDogYnVja2V0TmFtZSwgRGVsZXRlOiB7IE9iamVjdHM6IHJlY29yZHMgfSB9KS5wcm9taXNlKCk7XG5cbiAgaWYgKGxpc3RlZE9iamVjdHM/LklzVHJ1bmNhdGVkKSB7XG4gICAgYXdhaXQgZW1wdHlCdWNrZXQoYnVja2V0TmFtZSk7XG4gIH1cbn1cblxuYXN5bmMgZnVuY3Rpb24gb25EZWxldGUobG9naWNhbFJlc291cmNlSWQ6IHN0cmluZywgYnVja2V0TmFtZT86IHN0cmluZykge1xuICBpZiAoIWJ1Y2tldE5hbWUpIHtcbiAgICB0aHJvdyBuZXcgRXJyb3IoJ05vIEJ1Y2tldE5hbWUgd2FzIHByb3ZpZGVkLicpO1xuICB9XG4gIGlmICghYXdhaXQgaXNCdWNrZXRUYWdnZWRGb3JEZWxldGlvbihsb2dpY2FsUmVzb3VyY2VJZCwgYnVja2V0TmFtZSkpIHtcbiAgICBwcm9jZXNzLnN0ZG91dC53cml0ZShgQnVja2V0IGRvZXMgbm90IGhhdmUgJyR7QVVUT19ERUxFVEVfT0JKRUNUU19UQUd9JyB0YWcgb3IgdGhlIHRhZyB2YWx1ZSBkb2VzIG5vdCBtYXRjaCB0aGUgbG9naWNhbCBJRCBvZiB0aGlzIGN1c3RvbSByZXNvdXJjZSwgc2tpcHBpbmcgY2xlYW5pbmcuXFxuYCk7XG4gICAgcmV0dXJuO1xuICB9XG4gIHRyeSB7XG4gICAgYXdhaXQgZW1wdHlCdWNrZXQoYnVja2V0TmFtZSk7XG4gIH0gY2F0Y2ggKGUpIHtcbiAgICBpZiAoZS5jb2RlICE9PSAnTm9TdWNoQnVja2V0Jykge1xuICAgICAgdGhyb3cgZTtcbiAgICB9XG4gICAgLy8gQnVja2V0IGRvZXNuJ3QgZXhpc3QuIElnbm9yaW5nXG4gIH1cbn1cblxuLyoqXG4gKiBUaGUgYnVja2V0IHdpbGwgb25seSBiZSB0YWdnZWQgZm9yIGRlbGV0aW9uIGlmIGl0J3MgYmVpbmcgZGVsZXRlZCBpbiB0aGUgc2FtZVxuICogZGVwbG95bWVudCBhcyB0aGlzIEN1c3RvbSBSZXNvdXJjZS5cbiAqXG4gKiBJZiB0aGUgQ3VzdG9tIFJlc291cmNlIGlzIGV2ZXJ5IGRlbGV0ZWQgYmVmb3JlIHRoZSBidWNrZXQsIGl0IG11c3QgYmUgYmVjYXVzZVxuICogYGF1dG9EZWxldGVPYmplY3RzYCBoYXMgYmVlbiBzd2l0Y2hlZCB0byBmYWxzZSwgaW4gd2hpY2ggY2FzZSB0aGUgdGFnIHdvdWxkIGhhdmVcbiAqIGJlZW4gcmVtb3ZlZCBiZWZvcmUgd2UgZ2V0IHRvIHRoaXMgRGVsZXRlIGV2ZW50LlxuICpcbiAqIFRoZSBidWNrZXQgdGFnIHZhbHVlIGlzIHNldCB0byB0aGUgbG9naWNhbCBJRCBvZiB0aGUgY3VzdG9tIHJlc291cmNlLiBUaGlzXG4gKiBjb3ZlcnMgdGhlIGNhc2Ugd2hlcmUgd2UgbWF5IHdhbnQgdG8gZHJvcCBhbmQgcmUtY3JlYXRlIHRoZSBjdXN0b20gcmVzb3VyY2Ugd2l0aG91dFxuICogZW1wdHlpbmcgdGhlIGJ1Y2tldCwgZS5nLiB0byB1cGRhdGUgdGhlIHNlcnZpY2UgdG9rZW4gcHJvcGVydHkuIFRoZSBidWNrZXQgY2FuXG4gKiB0aGVuIHNhZmVseSBkZXNpZ25hdGUgYSBuZXcgY3VzdG9tIHJlc291cmNlIHRvIGVtcHR5IHRoZSBidWNrZXQgYnkgdXBkYXRpbmcgdGhlIHRhZyB2YWx1ZS5cbiAqL1xuYXN5bmMgZnVuY3Rpb24gaXNCdWNrZXRUYWdnZWRGb3JEZWxldGlvbihsb2dpY2FsUmVzb3VyY2VJZDogc3RyaW5nLCBidWNrZXROYW1lOiBzdHJpbmcpIHtcbiAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBzMy5nZXRCdWNrZXRUYWdnaW5nKHsgQnVja2V0OiBidWNrZXROYW1lIH0pLnByb21pc2UoKTtcbiAgcmV0dXJuIHJlc3BvbnNlLlRhZ1NldC5zb21lKHRhZyA9PiB0YWcuS2V5ID09PSBBVVRPX0RFTEVURV9PQkpFQ1RTX1RBRyAmJiB0YWcuVmFsdWUgPT09IGxvZ2ljYWxSZXNvdXJjZUlkKTtcbn0iXX0=

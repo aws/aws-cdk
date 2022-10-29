@@ -5,8 +5,8 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
+      "Key": "aws-cdk:auto-delete-objects:cr-id",
+      "Value": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
      }
     ]
    },
@@ -112,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip"
+     "S3Key": "0a58c2416898499554eb514d1169cce3b4b2f92d7218bcdf8603ca08e83ef52b.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -198,7 +198,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12.zip"
+     "S3Key": "093f4930cefa9f3d35b0537aa8ae19e1733c55715a09a1bf9aca4a2b80ba803f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -253,8 +253,8 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
+      "Key": "aws-cdk:auto-delete-objects:cr-id",
+      "Value": "BucketCustomRoleAutoDeleteObjectsCustomResourceCustomRole6901575D"
      }
     ]
    },
@@ -312,7 +312,7 @@
     }
    }
   },
-  "BucketCustomRoleAutoDeleteObjectsCustomResource524E2B8B": {
+  "BucketCustomRoleAutoDeleteObjectsCustomResourceCustomRole6901575D": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -336,41 +336,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "0a58c2416898499554eb514d1169cce3b4b2f92d7218bcdf8603ca08e83ef52b.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -451,41 +419,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "093f4930cefa9f3d35b0537aa8ae19e1733c55715a09a1bf9aca4a2b80ba803f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

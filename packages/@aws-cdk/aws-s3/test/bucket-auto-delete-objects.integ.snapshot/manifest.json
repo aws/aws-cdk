@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/34588b22066351ec4599612a9503dbbce052c535da98310bc64dda1d3fcc5b3f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce09f87b4b30b9071ca8018481dbea7262f49f50b16058e6387ae265cc2aca2c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -87,18 +87,6 @@
             "data": "PutObjectsCustomResource"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/cdk-s3-bucket-auto-delete-objects/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ],
         "/cdk-s3-bucket-auto-delete-objects/CustomRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -117,10 +105,10 @@
             "data": "BucketCustomRolePolicyFB405E22"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/BucketCustomRole/AutoDeleteObjectsCustomResource/Default": [
+        "/cdk-s3-bucket-auto-delete-objects/BucketCustomRole/AutoDeleteObjectsCustomResource-CustomRole/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketCustomRoleAutoDeleteObjectsCustomResource524E2B8B"
+            "data": "BucketCustomRoleAutoDeleteObjectsCustomResourceCustomRole6901575D"
           }
         ],
         "/cdk-s3-bucket-auto-delete-objects/Custom::S3AutoDeleteObjects-CustomRoleCustomResourceProvider/Handler": [
@@ -145,6 +133,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PutObjectsCustomResourceCustomRole"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
