@@ -601,3 +601,21 @@ new apigwv2.HttpStage(this, 'HttpDevStageWithExternalLogGroup', {
 Note that creating the IAM role and registering it with the account won't be necessary if
 that's been done somewhere else for the account and region that the api is being deployed in 
 (e.g. by hand in the console or in a support stack).
+
+Finally, for Http gateways there's a 'default' stage that matches calls made to the api gateway url that 
+doesn't have any stage name appended.  It gets created automatically when a new HttpApi
+object is created unless createDefaultStage:false is specified.  The default stage that's automatically
+created by HttpApi doesn't have access logging enabled.  To create a default stage with access logging
+enabled, first inhibit the automatic creation of the default stage by HttpApi and then create a stage with a
+stageName of '$default' with the Http logging options you desire.  For example,
+
+```ts
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi', { createDefaultStage: false });
+new apigwv2.HttpStage(this, 'HttpDefaultStage', {
+  httpApi,
+  stageName: '$default',
+  autoDeploy: true,
+  accessLogEnabled: true,
+});
+```
+
