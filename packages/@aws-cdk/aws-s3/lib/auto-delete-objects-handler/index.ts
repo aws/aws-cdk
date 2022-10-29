@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { S3 } from 'aws-sdk';
 
-const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects:cr-id';
 
 const s3 = new S3();
 
@@ -12,7 +12,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     case 'Update':
       return onUpdate(event);
     case 'Delete':
-      return onDelete(event.ResourceProperties?.BucketName);
+      return onDelete(event.LogicalResourceId, event.ResourceProperties?.BucketName);
   }
 }
 
@@ -26,7 +26,7 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
      and create a new one with the new name. So we have to delete the contents of the
      bucket so that this operation does not fail. */
   if (bucketNameHasChanged) {
-    return onDelete(oldBucketName);
+    return onDelete(event.LogicalResourceId, oldBucketName);
   }
 }
 
@@ -50,12 +50,12 @@ async function emptyBucket(bucketName: string) {
   }
 }
 
-async function onDelete(bucketName?: string) {
+async function onDelete(logicalResourceId: string, bucketName?: string) {
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }
-  if (!await isBucketTaggedForDeletion(bucketName)) {
-    process.stdout.write(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.\n`);
+  if (!await isBucketTaggedForDeletion(logicalResourceId, bucketName)) {
+    process.stdout.write(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag or the tag value does not match the logical ID of this custom resource, skipping cleaning.\n`);
     return;
   }
   try {
@@ -75,8 +75,13 @@ async function onDelete(bucketName?: string) {
  * If the Custom Resource is every deleted before the bucket, it must be because
  * `autoDeleteObjects` has been switched to false, in which case the tag would have
  * been removed before we get to this Delete event.
+ *
+ * The bucket tag value is set to the logical ID of the custom resource. This
+ * covers the case where we may want to drop and re-create the custom resource without
+ * emptying the bucket, e.g. to update the service token property. The bucket can
+ * then safely designate a new custom resource to empty the bucket by updating the tag value.
  */
-async function isBucketTaggedForDeletion(bucketName: string) {
+async function isBucketTaggedForDeletion(logicalResourceId: string, bucketName: string) {
   const response = await s3.getBucketTagging({ Bucket: bucketName }).promise();
-  return response.TagSet.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true');
+  return response.TagSet.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === logicalResourceId);
 }

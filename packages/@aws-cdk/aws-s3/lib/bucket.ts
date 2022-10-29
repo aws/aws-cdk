@@ -4,6 +4,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
+  CfnElement,
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
@@ -32,7 +33,7 @@ import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
-const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects:cr-id';
 
 export interface IBucket extends IResource {
   /**
@@ -2266,7 +2267,8 @@ export class Bucket extends BucketBase {
       principals: [new iam.ArnPrincipal(provider.roleArn)],
     }));
 
-    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+    const customResourceId = role ? `AutoDeleteObjectsCustomResource-${role.node.id}` : 'AutoDeleteObjectsCustomResource';
+    const customResource = new CustomResource(this, customResourceId, {
       resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
@@ -2286,7 +2288,8 @@ export class Bucket extends BucketBase {
     // Because tagging and untagging will ALWAYS happen before the CR is deleted,
     // we can set `autoDeleteObjects: false` without the removal of the CR emptying
     // the bucket as a side effect.
-    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+    const crId = this.stack.resolve((customResource.node.defaultChild as CfnElement).logicalId);
+    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, crId);
   }
 }
 

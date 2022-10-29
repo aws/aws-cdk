@@ -7,6 +7,8 @@ const mockS3Client = {
 
 import { handler } from '../lib/auto-delete-objects-handler';
 
+const crLogicalId = 'CustomResourceLogicalIdABCDEFG';
+
 jest.mock('aws-sdk', () => {
   return { S3: jest.fn(() => mockS3Client) };
 });
@@ -24,6 +26,7 @@ afterEach(() => {
 test('does nothing on create event', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -42,6 +45,7 @@ test('does nothing on create event', async () => {
 test('does nothing on update event when everything remains the same', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Update',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -64,6 +68,7 @@ test('does nothing on update event when everything remains the same', async () =
 test('does nothing on update event when the bucket name remains the same but the service token changes', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Update',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -86,6 +91,7 @@ test('does nothing on update event when the bucket name remains the same but the
 test('does nothing on update event when the old resource properties are absent', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Update',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -104,6 +110,7 @@ test('does nothing on update event when the old resource properties are absent',
 test('does nothing on update event when the new resource properties are absent', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Update',
     OldResourceProperties: {
       ServiceToken: 'Foo',
@@ -129,6 +136,7 @@ test('deletes all objects when the name changes on update event', async () => {
   });
 
   const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Update',
     OldResourceProperties: {
       ServiceToken: 'Foo',
@@ -164,6 +172,7 @@ test('deletes no objects on delete event when bucket has no objects', async () =
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Delete',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -189,6 +198,7 @@ test('deletes all objects on delete event', async () => {
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Delete',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -224,6 +234,7 @@ test('does not empty bucket if it is not tagged', async () => {
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Delete',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -255,6 +266,7 @@ test('delete event where bucket has many objects does recurse appropriately', as
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    LogicalResourceId: crLogicalId,
     RequestType: 'Delete',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -293,6 +305,29 @@ test('does nothing when the bucket does not exist', async () => {
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    LogicalResourceId: crLogicalId,
+    RequestType: 'Delete',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+  };
+  await invokeHandler(event);
+
+  expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
+});
+
+test('does nothing when the bucket tag and custom resource ID do not match', async () => {
+  // GIVEN
+  mockAwsPromise(mockS3Client.listObjectVersions, {
+    Versions: [
+      { Key: 'Key1', VersionId: 'VersionId1' },
+      { Key: 'Key2', VersionId: 'VersionId2' },
+    ],
+  });
+  // WHEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    LogicalResourceId: 'different-logical-id',
     RequestType: 'Delete',
     ResourceProperties: {
       ServiceToken: 'Foo',
@@ -320,8 +355,8 @@ function givenTaggedForDeletion() {
   mockAwsPromise(mockS3Client.getBucketTagging, {
     TagSet: [
       {
-        Key: 'aws-cdk:auto-delete-objects',
-        Value: 'true',
+        Key: 'aws-cdk:auto-delete-objects:cr-id',
+        Value: crLogicalId,
       },
     ],
 
