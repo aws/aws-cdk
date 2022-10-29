@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a7952c511d282bd028c89eada46178e2c8388a5649c0fc3d3364479c01bca79e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e8f5b9efc22fb7df3c3a0e894ec6ddf91d5b71c100c70638ff47b2379c3a749.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -163,6 +163,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller-test/KubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller-test/Cluster/Role/Resource": [
@@ -417,12 +426,6 @@
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-        "/aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
-          }
-        ],
         "/aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -457,6 +460,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksclusteralbcontrollertestClusterCreationRoleA16C24E9Arn"
+          }
+        ],
+        "/aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref"
           }
         ],
         "/aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref": [

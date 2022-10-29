@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.108"
+          "version": "10.1.129"
         }
       },
       "test-apigateway-restapi": {
@@ -145,7 +145,7 @@
                         "cacheClusterEnabled": true,
                         "cacheClusterSize": "0.5",
                         "deploymentId": {
-                          "Ref": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5"
+                          "Ref": "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca"
                         },
                         "description": "beta stage",
                         "methodSettings": [
@@ -466,20 +466,20 @@
                           "version": "0.0.0"
                         }
                       },
-                      "appliances": {
-                        "id": "appliances",
-                        "path": "test-apigateway-restapi/my-api/Default/v1/appliances",
+                      "appliances:all": {
+                        "id": "appliances:all",
+                        "path": "test-apigateway-restapi/my-api/Default/v1/appliances:all",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "test-apigateway-restapi/my-api/Default/v1/appliances/Resource",
+                            "path": "test-apigateway-restapi/my-api/Default/v1/appliances:all/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
                               "aws:cdk:cloudformation:props": {
                                 "parentId": {
                                   "Ref": "myapiv113487378"
                                 },
-                                "pathPart": "appliances",
+                                "pathPart": "appliances:all",
                                 "restApiId": {
                                   "Ref": "myapi4C7BF186"
                                 }
@@ -492,17 +492,17 @@
                           },
                           "GET": {
                             "id": "GET",
-                            "path": "test-apigateway-restapi/my-api/Default/v1/appliances/GET",
+                            "path": "test-apigateway-restapi/my-api/Default/v1/appliances:all/GET",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "test-apigateway-restapi/my-api/Default/v1/appliances/GET/Resource",
+                                "path": "test-apigateway-restapi/my-api/Default/v1/appliances:all/GET/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                   "aws:cdk:cloudformation:props": {
                                     "httpMethod": "GET",
                                     "resourceId": {
-                                      "Ref": "myapiv1appliances507FEFF4"
+                                      "Ref": "myapiv1appliancesallCF8C6A16"
                                     },
                                     "restApiId": {
                                       "Ref": "myapi4C7BF186"
@@ -1176,7 +1176,7 @@
                 "path": "apigateway-restapi/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.129"
                 }
               },
               "DeployAssert": {

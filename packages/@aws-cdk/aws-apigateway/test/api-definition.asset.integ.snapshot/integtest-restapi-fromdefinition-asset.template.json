@@ -57,31 +57,6 @@
     ]
    }
   },
-  "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96": {
-   "Type": "AWS::ApiGateway::Deployment",
-   "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
-    "Description": "Automatically created by the RestApi construct"
-   },
-   "DependsOn": [
-    "myapibooksGETD6B2F597",
-    "myapibooks51D54548"
-   ]
-  },
-  "myapiDeploymentStageprod298F01AF": {
-   "Type": "AWS::ApiGateway::Stage",
-   "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
-    "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96"
-    },
-    "StageName": "prod"
-   }
-  },
   "myapiCloudWatchRole095452E5": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -130,6 +105,34 @@
    ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "Description": "Automatically created by the RestApi construct"
+   },
+   "DependsOn": [
+    "myapibooksGETD6B2F597",
+    "myapibooks51D54548"
+   ]
+  },
+  "myapiDeploymentStageprod298F01AF": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "DeploymentId": {
+     "Ref": "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
   }
  },
  "Outputs": {

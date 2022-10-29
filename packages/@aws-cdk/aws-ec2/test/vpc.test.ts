@@ -26,6 +26,7 @@ import {
   SubnetType,
   TrafficDirection,
   Vpc,
+  IpAddresses,
 } from '../lib';
 
 describe('vpc', () => {
@@ -174,7 +175,7 @@ describe('vpc', () => {
     test('with all of the properties set, it successfully sets the correct VPC properties', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '192.168.0.0/16',
+        ipAddresses: IpAddresses.cidr('192.168.0.0/16'),
         enableDnsHostnames: false,
         enableDnsSupport: false,
         defaultInstanceTenancy: DefaultInstanceTenancy.DEDICATED,
@@ -205,7 +206,7 @@ describe('vpc', () => {
 
           const stack = getTestStack();
           const vpc = new Vpc(stack, 'TheVPC', {
-            cidr: '192.168.0.0/16',
+            ipAddresses: IpAddresses.cidr('192.168.0.0/16'),
             enableDnsHostnames: input.dnsHostnames,
             enableDnsSupport: input.dnsSupport,
             defaultInstanceTenancy: DefaultInstanceTenancy.DEDICATED,
@@ -362,7 +363,7 @@ describe('vpc', () => {
     test('with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets ', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -389,7 +390,7 @@ describe('vpc', () => {
     test('with reserved subnets, any other subnets should not have cidrBlock from within reserved space', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -410,19 +411,22 @@ describe('vpc', () => {
         ],
         maxAzs: 3,
       });
+
+      const template = Template.fromStack(stack);
+
       for (let i = 0; i < 3; i++) {
-        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        template.hasResourceProperties('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
       }
       for (let i = 3; i < 6; i++) {
-        const matchingSubnets = Template.fromStack(stack).findResources('AWS::EC2::Subnet', {
+        const matchingSubnets = template.findResources('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
         expect(Object.keys(matchingSubnets).length).toBe(0);
       }
       for (let i = 6; i < 9; i++) {
-        Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        template.hasResourceProperties('AWS::EC2::Subnet', {
           CidrBlock: `10.0.${i}.0/24`,
         });
       }
@@ -432,7 +436,7 @@ describe('vpc', () => {
       const stack = getTestStack();
       const zones = stack.availabilityZones.length;
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/21',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -470,7 +474,7 @@ describe('vpc', () => {
     test('with custom subnets and natGateways = 2 there should be only two NATGW', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
-        cidr: '10.0.0.0/21',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
         natGateways: 2,
         subnetConfiguration: [
           {
@@ -842,7 +846,7 @@ describe('vpc', () => {
     test('natGateways = 0 allows RESERVED PRIVATE subnets', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             name: 'ingress',
@@ -866,7 +870,7 @@ describe('vpc', () => {
     test('EIP passed with NAT gateway does not create duplicate EIP', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -1128,7 +1132,7 @@ describe('vpc', () => {
       const stack = new Stack();
       expect(() => {
         new Vpc(stack, 'Vpc', {
-          cidr: Lazy.string({ produce: () => 'abc' }),
+          ipAddresses: IpAddresses.cidr(Lazy.string({ produce: () => 'abc' })),
         });
       }).toThrow(/property must be a concrete CIDR string/);
     });
@@ -1450,7 +1454,7 @@ describe('vpc', () => {
       const stack = getTestStack();
 
       // WHEN
-      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
       new CfnOutput(stack, 'Output', {
         value: (vpc.publicSubnets[0] as Subnet).subnetNetworkAclAssociationId,
       });
@@ -1467,7 +1471,7 @@ describe('vpc', () => {
     test('if ACL is replaced new ACL reference is returned', () => {
       // GIVEN
       const stack = getTestStack();
-      const vpc = new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
 
       // WHEN
       new CfnOutput(stack, 'Output', {
@@ -1491,7 +1495,7 @@ describe('vpc', () => {
   describe('When creating a VPC with a custom CIDR range', () => {
     test('vpc.vpcCidrBlock is the correct network range', () => {
       const stack = getTestStack();
-      new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
+      new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
         CidrBlock: '192.168.0.0/16',
       });
@@ -1930,7 +1934,7 @@ describe('vpc', () => {
 
       // IP space is split into 6 pieces, one public/one private per AZ
       const vpc = new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         maxAzs: 3,
       });
 
@@ -1961,7 +1965,7 @@ describe('vpc', () => {
 
       // IP space is split into 6 pieces, one public/one private per AZ
       const vpc = new Vpc(stack, 'VPC', {
-        cidr: '10.0.0.0/16',
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
         maxAzs: 3,
       });
 

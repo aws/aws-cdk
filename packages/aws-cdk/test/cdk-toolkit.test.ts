@@ -52,8 +52,11 @@ jest.mock('../lib/logging', () => ({
   ...jest.requireActual('../lib/logging'),
   data: mockData,
 }));
+jest.setTimeout(30_000);
 
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
@@ -62,7 +65,8 @@ import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
-import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact, withMocked } from './util';
+import { MockSdkProvider } from './util/mock-sdk';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
@@ -555,6 +559,36 @@ describe('deploy', () => {
       expect(cloudExecutable.hasApp).toEqual(false);
       expect(mockSynthesize).not.toHaveBeenCalled();
     });
+
+    test('can disable asset parallelism', async () => {
+      // GIVEN
+      cloudExecutable = new MockCloudExecutable({
+        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
+      });
+      const fakeCloudFormation = new FakeCloudFormation({});
+
+      const toolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: fakeCloudFormation,
+      });
+
+      // WHEN
+      // Not the best test but following this through to the asset publishing library fails
+      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
+        await toolkit.deploy({
+          selector: { patterns: ['Test-Stack-Asset'] },
+          assetParallelism: false,
+        });
+
+        expect(mockBuildStackAssets).toHaveBeenCalledWith(expect.objectContaining({
+          buildOptions: expect.objectContaining({
+            parallel: false,
+          }),
+        }));
+      });
+    });
   });
 });
 
@@ -911,6 +945,23 @@ class MockStack {
     },
     displayName: 'Test-Stack-A/witherrors',
   }
+  public static readonly MOCK_STACK_WITH_ASSET: TestStackArtifact = {
+    stackName: 'Test-Stack-Asset',
+    template: { Resources: { TemplateName: 'Test-Stack-Asset' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    assetManifest: {
+      version: Manifest.version(),
+      files: {
+        xyz: {
+          source: {
+            path: path.resolve(__dirname, '..', 'LICENSE'),
+          },
+          destinations: {
+          },
+        },
+      },
+    },
+  }
 }
 
 class FakeCloudFormation extends CloudFormationDeployments {
@@ -921,7 +972,7 @@ class FakeCloudFormation extends CloudFormationDeployments {
     expectedTags: { [stackName: string]: { [key: string]: string } } = {},
     expectedNotificationArns?: string[],
   ) {
-    super({ sdkProvider: undefined as any });
+    super({ sdkProvider: new MockSdkProvider() });
 
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] =
@@ -934,9 +985,17 @@ class FakeCloudFormation extends CloudFormationDeployments {
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    expect([MockStack.MOCK_STACK_A.stackName, MockStack.MOCK_STACK_B.stackName, MockStack.MOCK_STACK_C.stackName])
-      .toContain(options.stack.stackName);
-    expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
+    expect([
+      MockStack.MOCK_STACK_A.stackName,
+      MockStack.MOCK_STACK_B.stackName,
+      MockStack.MOCK_STACK_C.stackName,
+      MockStack.MOCK_STACK_WITH_ASSET.stackName,
+    ]).toContain(options.stack.stackName);
+
+    if (this.expectedTags[options.stack.stackName]) {
+      expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
+    }
+
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
     return Promise.resolve({
       stackArn: `arn:aws:cloudformation:::stack/${options.stack.stackName}/MockedOut`,
@@ -958,6 +1017,8 @@ class FakeCloudFormation extends CloudFormationDeployments {
       case MockStack.MOCK_STACK_B.stackName:
         return Promise.resolve({});
       case MockStack.MOCK_STACK_C.stackName:
+        return Promise.resolve({});
+      case MockStack.MOCK_STACK_WITH_ASSET.stackName:
         return Promise.resolve({});
       default:
         return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);
