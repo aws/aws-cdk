@@ -5,7 +5,7 @@
       "stacks": [
         "RuleStack"
       ],
-      "assertionStack": "IntegTestBatchDefaultEnvVarsStackDefaultTestDeployAssertC15EFFF2"
+      "assertionStack": "IntegTest-BatchDefaultEnvVarsStack/DefaultTest/DeployAssert"
     }
   }
 }

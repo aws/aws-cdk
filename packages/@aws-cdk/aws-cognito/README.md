@@ -66,8 +66,14 @@ the `userPoolName` to give your own identifier to the user pool. If not, CloudFo
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
+  signInCaseSensitive: false, // case insensitive is preferred in most situations
 });
 ```
+
+By default, usernames and email addresses in user pools are case sensitive, which means `user@example.com` and `User@example.com`
+are considered different. In most situations it is prefered to have usernames and email addresses be case insensitive so that
+capitalization differences are ignored. As shown above, you can make a user pool case insensitive by setting `signInCaseSensitive`
+to `false`. The case sensitivity cannot be changed once a user pool is created.
 
 The default set up for the user pool is configured such that only administrators will be allowed
 to create users. Features such as Multi-factor authentication (MFAs) and Lambda Triggers are not
@@ -528,6 +534,7 @@ The following third-party identity providers are currently supported in the CDK 
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
 - [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-oidc-idp.html)
+- [SAML](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-saml-idp.html)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the

@@ -282,10 +282,10 @@ describe('custom resource provider', () => {
     const template = toCloudFormation(stack);
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     expect(lambda.Properties.Environment).toEqual({
-      Variables: {
+      Variables: expect.objectContaining({
         A: 'a',
         B: 'b',
-      },
+      }),
     });
 
   });

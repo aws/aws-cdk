@@ -332,6 +332,11 @@ export class CustomResourceProvider extends Construct {
       return undefined;
     }
 
+    env = { ...env }; // Copy
+
+    // Always use regional endpoints
+    env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
+
     // Sort environment so the hash of the function used to create
     // `currentVersion` is not affected by key order (this is how lambda does
     // it)

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.123"
         }
       },
       "integ-user-pool-custom-sender": {
@@ -92,33 +92,6 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
                   "version": "0.0.0"
                 }
-              },
-              "CustomEmailSenderCognito": {
-                "id": "CustomEmailSenderCognito",
-                "path": "integ-user-pool-custom-sender/emailLambda/CustomEmailSenderCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "emailLambda61F82360",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "pool056F3F7E",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -181,6 +154,33 @@
             "id": "pool",
             "path": "integ-user-pool-custom-sender/pool",
             "children": {
+              "CustomEmailSenderCognito": {
+                "id": "CustomEmailSenderCognito",
+                "path": "integ-user-pool-custom-sender/pool/CustomEmailSenderCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "emailLambda61F82360",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "pool056F3F7E",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-user-pool-custom-sender/pool/Resource",

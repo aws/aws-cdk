@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.63"
+          "version": "10.1.140"
         }
       },
       "integtest-restapi-fromdefinition-asset": {
@@ -54,41 +54,9 @@
                   "aws:cdk:cloudformation:props": {
                     "bodyS3Location": {
                       "bucket": {
-                        "Ref": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "key": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml"
                     },
                     "name": "my-api"
                   }
@@ -189,71 +157,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Deployment": {
-                "id": "Deployment",
-                "path": "integtest-restapi-fromdefinition-asset/my-api/Deployment",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integtest-restapi-fromdefinition-asset/my-api/Deployment/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
-                      "aws:cdk:cloudformation:props": {
-                        "restApiId": {
-                          "Ref": "myapi4C7BF186"
-                        },
-                        "description": "Automatically created by the RestApi construct"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
-                  "version": "0.0.0"
-                }
-              },
-              "DeploymentStage.prod": {
-                "id": "DeploymentStage.prod",
-                "path": "integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
-                      "aws:cdk:cloudformation:props": {
-                        "restApiId": {
-                          "Ref": "myapi4C7BF186"
-                        },
-                        "deploymentId": {
-                          "Ref": "myapiDeployment92F2CB49fe116fef7f552ff0fc433c9aa3930d2f"
-                        },
-                        "stageName": "prod"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.Stage",
-                  "version": "0.0.0"
-                }
-              },
-              "Endpoint": {
-                "id": "Endpoint",
-                "path": "integtest-restapi-fromdefinition-asset/my-api/Endpoint",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
               "CloudWatchRole": {
                 "id": "CloudWatchRole",
                 "path": "integtest-restapi-fromdefinition-asset/my-api/CloudWatchRole",
@@ -321,55 +224,76 @@
                   "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
                   "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigateway.SpecRestApi",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "integtest-restapi-fromdefinition-asset/AssetParameters",
-            "children": {
-              "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb": {
-                "id": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb",
-                "path": "integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb",
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "integtest-restapi-fromdefinition-asset/my-api/Deployment",
                 "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/S3Bucket",
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integtest-restapi-fromdefinition-asset/my-api/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "myapi4C7BF186"
+                        },
+                        "description": "Automatically created by the RestApi construct"
+                      }
+                    },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.63"
+                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentStage.prod": {
+                "id": "DeploymentStage.prod",
+                "path": "integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "myapi4C7BF186"
+                        },
+                        "deploymentId": {
+                          "Ref": "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "version": "0.0.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "integtest-restapi-fromdefinition-asset/my-api/Endpoint",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.63"
+              "fqn": "@aws-cdk/aws-apigateway.SpecRestApi",
+              "version": "0.0.0"
             }
           },
           "PetsURL": {
@@ -407,7 +331,7 @@
                 "path": "restapi-fromdefinition/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.63"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {

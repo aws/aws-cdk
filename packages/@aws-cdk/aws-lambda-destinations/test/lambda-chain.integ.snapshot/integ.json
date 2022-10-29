@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.lambda-chain": {
+    "LambdaDestChain3/DefaultTest": {
       "stacks": [
         "aws-cdk-lambda-chain"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "LambdaDestChain3/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaDestChain3DefaultTestDeployAssertB72F10E8"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

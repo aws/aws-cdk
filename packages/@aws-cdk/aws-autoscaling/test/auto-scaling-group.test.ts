@@ -665,7 +665,7 @@ describe('auto scaling group', () => {
     expect(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup).toEqual(true);
   });
 
-  test('can set blockDeviceMappings', () => {
+  testDeprecated('can set blockDeviceMappings', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1825,7 +1825,7 @@ test('can use Vpc imported from unparseable list tokens', () => {
     vpc,
     allowAllOutbound: false,
     associatePublicIpAddress: false,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   });
 
   // THEN

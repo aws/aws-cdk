@@ -7,40 +7,38 @@
         "file": "tree.json"
       }
     },
+    "cdk-s3-bucket-auto-delete-objects.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-s3-bucket-auto-delete-objects.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cdk-s3-bucket-auto-delete-objects": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-s3-bucket-auto-delete-objects.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cdk-s3-bucket-auto-delete-objects": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
-              "id": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
-              "packaging": "zip",
-              "sourceHash": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
-              "s3BucketParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2",
-              "s3KeyParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48",
-              "artifactHashParameter": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB"
-            }
-          },
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12",
-              "id": "e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12",
-              "packaging": "zip",
-              "sourceHash": "e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12",
-              "s3BucketParameter": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545",
-              "s3KeyParameter": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0",
-              "artifactHashParameter": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12ArtifactHashD6D06D72"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/34588b22066351ec4599612a9503dbbce052c535da98310bc64dda1d3fcc5b3f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-s3-bucket-auto-delete-objects.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-s3-bucket-auto-delete-objects.assets"
+      ],
+      "metadata": {
         "/cdk-s3-bucket-auto-delete-objects/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -71,42 +69,6 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3Bucket180EC6B2"
-          }
-        ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26S3VersionKeyF1ADAF48"
-          }
-        ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26ArtifactHashF709D3CB"
-          }
-        ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3Bucket12F02545"
-          }
-        ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12S3VersionKey63B061C0"
-          }
-        ],
-        "/cdk-s3-bucket-auto-delete-objects/AssetParameters/e9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse9c68cf1f45c13541846ac21c968ae404003e58f772e7c54163c0980d8123e12ArtifactHashD6D06D72"
-          }
-        ],
         "/cdk-s3-bucket-auto-delete-objects/Custom::S3PutObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -123,6 +85,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PutObjectsCustomResource"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-s3-bucket-auto-delete-objects/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ],
         "/cdk-s3-bucket-auto-delete-objects/CustomRole/Resource": [

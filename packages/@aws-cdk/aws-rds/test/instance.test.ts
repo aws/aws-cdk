@@ -6,9 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -300,7 +298,7 @@ describe('instance', () => {
       credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
     });
 
@@ -320,6 +318,34 @@ describe('instance', () => {
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
         },
       ],
+    });
+  });
+
+  test('instance with IPv4 network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'IPV4',
+    });
+  });
+
+  test('instance with dual-stack network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.DUAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'DUAL',
     });
   });
 
@@ -822,7 +848,7 @@ describe('instance', () => {
     instance.addRotationSingleUser({
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -875,7 +901,7 @@ describe('instance', () => {
       secret: userSecret.attach(instance),
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -1276,8 +1302,8 @@ describe('instance', () => {
   });
 
   describe('S3 Import/Export', () => {
-    testFutureBehavior('instance with s3 import and export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
-      stack = new cdk.Stack(app);
+    test('instance with s3 import and export buckets', () => {
+      stack = new cdk.Stack();
       vpc = new ec2.Vpc(stack, 'VPC');
       new rds.DatabaseInstance(stack, 'DB', {
         engine: rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
@@ -1519,7 +1545,7 @@ describe('instance', () => {
       }),
       vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
       publiclyAccessible: true,
     });
@@ -1529,11 +1555,9 @@ describe('instance', () => {
     });
   });
 
-  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+  test('changes the case of the cluster identifier', () => {
     // GIVEN
-    const app = new cdk.App({
-      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
-    });
+    const app = new cdk.App();
     stack = new cdk.Stack( app );
     vpc = new ec2.Vpc( stack, 'VPC' );
 

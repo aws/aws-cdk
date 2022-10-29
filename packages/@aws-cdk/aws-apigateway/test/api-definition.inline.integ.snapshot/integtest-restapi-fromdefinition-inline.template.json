@@ -53,27 +53,6 @@
     "Name": "my-api"
    }
   },
-  "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65": {
-   "Type": "AWS::ApiGateway::Deployment",
-   "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
-    "Description": "Automatically created by the RestApi construct"
-   }
-  },
-  "myapiDeploymentStageprod298F01AF": {
-   "Type": "AWS::ApiGateway::Stage",
-   "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
-    "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65"
-    },
-    "StageName": "prod"
-   }
-  },
   "myapiCloudWatchRole095452E5": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -122,6 +101,30 @@
    ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "Description": "Automatically created by the RestApi construct"
+   }
+  },
+  "myapiDeploymentStageprod298F01AF": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "DeploymentId": {
+     "Ref": "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
   }
  },
  "Outputs": {
@@ -176,6 +179,40 @@
      ]
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

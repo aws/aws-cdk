@@ -300,6 +300,37 @@ cluster.addRotationMultiUser('MultiUserRotation', {
 });
 ```
 
+## Adding Parameters
+
+You can add a parameter to a parameter group with`ClusterParameterGroup.addParameter()`.
+
+```ts
+const params = new ClusterParameterGroup(stack, 'Params', {
+  description: 'desc',
+  parameters: {
+    require_ssl: 'true',
+  },
+});
+
+params.addParameter('enable_user_activity_logging', 'true');
+```
+
+Additionally, you can add a parameter to the cluster's associated parameter group with `Cluster.addToParameterGroup()`. If the cluster does not have an associated parameter group, a new parameter group is created.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new Cluster(this, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+    masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+  },
+  vpc,
+});
+
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+```
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
@@ -337,3 +368,21 @@ The elastic IP address is an external IP address for accessing the cluster outsi
 
 In some cases, you might want to associate the cluster with an elastic IP address or change an elastic IP address that is associated with the cluster. To attach an elastic IP address after the cluster is created, first update the cluster so that it is not publicly accessible, then make it both publicly accessible and add an Elastic IP address in the same operation.
 
+## Enhanced VPC Routing
+
+When you use Amazon Redshift enhanced VPC routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC) based on the Amazon VPC service. By using enhanced VPC routing, you can use standard VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateways, and Domain Name System (DNS) servers, as described in the Amazon VPC User Guide. You use these features to tightly manage the flow of data between your Amazon Redshift cluster and other resources. When you use enhanced VPC routing to route traffic through your VPC, you can also use VPC flow logs to monitor COPY and UNLOAD traffic.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    enhancedVpcRouting: true,
+})
+```
+
+If enhanced VPC routing is not enabled, Amazon Redshift routes traffic through the internet, including traffic to other services within the AWS network.

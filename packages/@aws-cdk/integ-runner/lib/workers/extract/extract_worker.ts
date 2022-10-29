@@ -44,7 +44,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             updateWorkflow: request.updateWorkflow,
             verbosity,
           });
-          if (results) {
+          if (results && Object.values(results).some(result => result.status === 'fail')) {
             failures.push(testInfo);
             workerpool.workerEmit({
               reason: DiagnosticReason.ASSERTION_FAILED,
@@ -56,7 +56,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             workerpool.workerEmit({
               reason: DiagnosticReason.TEST_SUCCESS,
               testName: `${runner.testName}-${testCaseName}`,
-              message: 'Success',
+              message: results ? formatAssertionResults(results) : 'NO ASSERTIONS',
               duration: (Date.now() - start) / 1000,
             });
           }

@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.63"
+          "version": "10.1.129"
         }
       },
       "test-dynamodbv2-put-item-action-stack": {
@@ -214,7 +214,7 @@
                 "path": "dynamodbv2-integtest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.63"
+                  "version": "10.1.129"
                 }
               },
               "DeployAssert": {

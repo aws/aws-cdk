@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "cdk-route53-resolver-firewall.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-route53-resolver-firewall.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "cdk-route53-resolver-firewall": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-route53-resolver-firewall.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/cdk-route53-resolver-firewall": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a.txt",
-              "id": "e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a",
-              "packaging": "file",
-              "sourceHash": "e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a",
-              "s3BucketParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673",
-              "s3KeyParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D",
-              "artifactHashParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4d564e2e1e1df6b0fbf0d36e4b706373e62d2e210d50c24ffe00ea80be1fabd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-route53-resolver-firewall.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-route53-resolver-firewall.assets"
+      ],
+      "metadata": {
         "/cdk-route53-resolver-firewall/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -125,24 +135,6 @@
             "data": "OtherListBA4427B5"
           }
         ],
-        "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673"
-          }
-        ],
-        "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D"
-          }
-        ],
-        "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347"
-          }
-        ],
         "/cdk-route53-resolver-firewall/RuleGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -153,6 +145,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleGroupAssociation5494BFB1"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-route53-resolver-firewall/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

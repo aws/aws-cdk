@@ -4,7 +4,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib/index';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -26,7 +28,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
       tags: {
         foo: 'bar',
       },
@@ -62,7 +64,10 @@ class EksClusterStack extends Stack {
 
 const app = new App();
 
-new EksClusterStack(app, 'aws-cdk-eks-helm-test');
+const stack = new EksClusterStack(app, 'aws-cdk-eks-helm-test');
+new integ.IntegTest(app, 'aws-cdk-eks-helm', {
+  testCases: [stack],
+});
 
 app.synth();
 

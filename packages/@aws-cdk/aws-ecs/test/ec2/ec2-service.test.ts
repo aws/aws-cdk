@@ -845,7 +845,7 @@ describe('ec2 service', () => {
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
         deploymentController: {
-          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          type: ecs.DeploymentControllerType.ECS,
         },
         securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
@@ -873,7 +873,7 @@ describe('ec2 service', () => {
           MinimumHealthyPercent: 55,
         },
         DeploymentController: {
-          Type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          Type: ecs.DeploymentControllerType.ECS,
         },
         DesiredCount: 2,
         LaunchType: LaunchType.EC2,
@@ -1091,6 +1091,42 @@ describe('ec2 service', () => {
       });
 
 
+    });
+
+    test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::ECS::Service', {
+        Properties: {
+          TaskDefinition: 'Ec2TaskDef',
+          DeploymentController: {
+            Type: 'CODE_DEPLOY',
+          },
+        },
+        DependsOn: [
+          'Ec2TaskDef0226F28C',
+          'Ec2TaskDefTaskRole400FA349',
+        ],
+      });
     });
 
     testDeprecated('throws when both securityGroup and securityGroups are supplied', () => {

@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "inline-api-definition/DefaultTest": {
       "stacks": [
         "integtest-restapi-fromdefinition-inline"
       ],
-      "assertionStack": "inlineapidefinitionDefaultTestDeployAssert923CAC29"
+      "assertionStack": "inline-api-definition/DefaultTest/DeployAssert",
+      "assertionStackName": "inlineapidefinitionDefaultTestDeployAssert923CAC29"
     }
   }
 }

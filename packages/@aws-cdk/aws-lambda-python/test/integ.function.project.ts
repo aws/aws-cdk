@@ -3,7 +3,8 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -13,6 +14,7 @@ import * as lambda from '../lib';
  */
 
 class TestStack extends Stack {
+  public readonly functionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -27,13 +29,22 @@ class TestStack extends Stack {
         }),
       ],
     });
-
-    new CfnOutput(this, 'FunctionArn', {
-      value: fn.functionArn,
-    });
+    this.functionName = fn.functionName;
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-function-project');
+const testCase = new TestStack(app, 'cdk-integ-lambda-function-project');
+const integ = new IntegTest(app, 'lambda-python-project', {
+  testCases: [testCase],
+  stackUpdateWorkflow: false,
+});
+
+const invoke = integ.assertions.invokeFunction({
+  functionName: testCase.functionName,
+});
+
+invoke.expect(ExpectedResult.objectLike({
+  Payload: '200',
+}));
 app.synth();

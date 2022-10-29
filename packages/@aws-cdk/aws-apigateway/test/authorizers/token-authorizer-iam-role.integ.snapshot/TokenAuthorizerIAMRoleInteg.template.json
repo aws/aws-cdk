@@ -36,41 +36,9 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Fn::Select": [
-          0,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
-            }
-           ]
-          }
-         ]
-        },
-        {
-         "Fn::Select": [
-          1,
-          {
-           "Fn::Split": [
-            "||",
-            {
-             "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
-            }
-           ]
-          }
-         ]
-        }
-       ]
-      ]
-     }
+     "S3Key": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -329,20 +297,6 @@
    }
   }
  },
- "Parameters": {
-  "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3\""
-  },
-  "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3\""
-  },
-  "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3\""
-  }
- },
  "Outputs": {
   "MyRestApiEndpoint4C55E4CB": {
    "Value": {
@@ -369,6 +323,40 @@
      ]
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

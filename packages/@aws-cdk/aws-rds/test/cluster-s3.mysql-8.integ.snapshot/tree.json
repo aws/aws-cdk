@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.78"
+          "version": "10.1.102"
         }
       },
       "aws-cdk-rds-s3-mysql-8-integ": {
@@ -953,8 +953,7 @@
                     "dbSubnetGroupName": {
                       "Ref": "DatabaseSubnets56F17B9A"
                     },
-                    "engine": "aurora-mysql",
-                    "engineVersion": "8.0.mysql_aurora.3.01.0"
+                    "engine": "aurora-mysql"
                   }
                 },
                 "constructInfo": {

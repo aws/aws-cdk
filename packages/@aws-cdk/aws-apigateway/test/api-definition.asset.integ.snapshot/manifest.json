@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "integtest-restapi-fromdefinition-asset.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtest-restapi-fromdefinition-asset.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integtest-restapi-fromdefinition-asset": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integtest-restapi-fromdefinition-asset.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/integtest-restapi-fromdefinition-asset": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
-              "id": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb",
-              "packaging": "file",
-              "sourceHash": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb",
-              "s3BucketParameter": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29",
-              "s3KeyParameter": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F",
-              "artifactHashParameter": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbArtifactHashA9C91B6D"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2fcb710210eb75f31b39dd1787cc4271df763ad6b541a188cb417095e1b83aa7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtest-restapi-fromdefinition-asset.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtest-restapi-fromdefinition-asset.assets"
+      ],
+      "metadata": {
         "/integtest-restapi-fromdefinition-asset/my-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -47,10 +57,22 @@
             "data": "myapibooksGETD6B2F597"
           }
         ],
+        "/integtest-restapi-fromdefinition-asset/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A"
+          }
+        ],
         "/integtest-restapi-fromdefinition-asset/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB49fe116fef7f552ff0fc433c9aa3930d2f"
+            "data": "myapiDeployment92F2CB49d7e5c9cfe50a1616e1cef4517d6b8f96"
           }
         ],
         "/integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod/Resource": [
@@ -65,36 +87,6 @@
             "data": "myapiEndpoint3628AFE3"
           }
         ],
-        "/integtest-restapi-fromdefinition-asset/my-api/CloudWatchRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiCloudWatchRole095452E5"
-          }
-        ],
-        "/integtest-restapi-fromdefinition-asset/my-api/Account": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiAccountEC421A0A"
-          }
-        ],
-        "/integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29"
-          }
-        ],
-        "/integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F"
-          }
-        ],
-        "/integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbArtifactHashA9C91B6D"
-          }
-        ],
         "/integtest-restapi-fromdefinition-asset/PetsURL": [
           {
             "type": "aws:cdk:logicalId",
@@ -106,16 +98,66 @@
             "type": "aws:cdk:logicalId",
             "data": "BooksURL"
           }
+        ],
+        "/integtest-restapi-fromdefinition-asset/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "integtest-restapi-fromdefinition-asset"
+    },
+    "restapifromdefinitionDefaultTestDeployAssertDF3B0845.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "restapifromdefinitionDefaultTestDeployAssertDF3B0845.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "restapifromdefinitionDefaultTestDeployAssertDF3B0845": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "restapifromdefinitionDefaultTestDeployAssertDF3B0845.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "restapifromdefinitionDefaultTestDeployAssertDF3B0845.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "restapifromdefinitionDefaultTestDeployAssertDF3B0845.assets"
+      ],
+      "metadata": {
+        "/restapi-fromdefinition/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/restapi-fromdefinition/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
       },
       "displayName": "restapi-fromdefinition/DefaultTest/DeployAssert"
     }
