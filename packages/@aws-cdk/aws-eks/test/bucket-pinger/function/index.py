@@ -23,7 +23,7 @@ def handler(event, context):
       raise RuntimeError(f'failed to head bucket with error: {str(error)}')
     return {'Data': {'Value': f'confirmed that bucket with name {s3_bucket_name} exists' }}
 
-  elif request_type in ['Delete']:
+  elif request_type == 'Delete':
     logger.info(f'making sdk call to delete bucket with name {s3_bucket_name}')
 
     try:
