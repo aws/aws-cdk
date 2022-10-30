@@ -395,6 +395,7 @@
   },
   "exports": {
     ".": "./index.js",
+    "./core": "./core/index.js",
     "./package.json": "./package.json",
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",

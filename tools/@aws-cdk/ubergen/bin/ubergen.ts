@@ -270,6 +270,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   // allowed for this package: we only want to allow the exact import statements that we want to support.
   packageJson.exports = {
     '.': './index.js',
+    './core': './core/index.js',
 
     // We need to expose 'package.json' and '.jsii' because 'jsii' and 'jsii-reflect' load them using
     // require(). (-_-). Can be removed after https://github.com/aws/jsii/pull/3205 gets merged.

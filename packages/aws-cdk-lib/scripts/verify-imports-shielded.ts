@@ -13,6 +13,7 @@ async function main() {
     await fs.symlink(path.resolve(__dirname, '..'), path.join(tmpDir, 'node_modules', 'aws-cdk-lib'));
 
     assertImportSucceeds('aws-cdk-lib');
+    assertImportSucceeds('aws-cdk-lib/core');
     assertImportFails('aws-cdk-lib/LICENSE', 'ERR_PACKAGE_PATH_NOT_EXPORTED');
     assertImportFails('aws-cdk-lib/aws-s3/lib/bucket', 'ERR_PACKAGE_PATH_NOT_EXPORTED');
     assertImportSucceeds('aws-cdk-lib/aws-s3');
