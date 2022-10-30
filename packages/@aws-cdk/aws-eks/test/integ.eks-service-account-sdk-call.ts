@@ -10,7 +10,7 @@ import * as eks from '../lib';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 
 const app = new App();
-const stack = new Stack(app, 'aws-eks-service-accounts-can-make-sdk-calls-test');
+const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
   directory: path.join(__dirname, 'sdk-call-integ-test-docker-app/app'),

@@ -3,7 +3,7 @@
   "testCases": {
     "aws-cdk-eks-service-account-sdk-call/DefaultTest": {
       "stacks": [
-        "aws-eks-oidc-provider-test"
+        "aws-eks-service-account-sdk-calls-test"
       ],
       "assertionStack": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksserviceaccountsdkcallDefaultTestDeployAssertC5196707"
