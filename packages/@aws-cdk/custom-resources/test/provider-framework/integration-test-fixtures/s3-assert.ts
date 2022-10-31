@@ -21,6 +21,11 @@ export interface S3AssertProps {
    * The expected contents.
    */
   readonly expectedContent: string;
+
+  /**
+   * Optional status indicator to force a test to return a status
+   */
+  readonly status?: 'SUCCESS' | 'FAILED'
 }
 
 /**
@@ -42,6 +47,7 @@ export class S3Assert extends Construct {
         BucketName: props.bucket.bucketName,
         ObjectKey: props.objectKey,
         ExpectedContent: props.expectedContent,
+        Status: props.status,
       },
     });
   }

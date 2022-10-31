@@ -22,6 +22,9 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
   const contents = event.ResourceProperties[api.PROP_CONTENTS];
   if (!contents) { throw new Error('"Contents" is required'); }
 
+  const status = event.ResourceProperties[api.PROP_STATUS];
+
+
   // determine the object key which is the physical ID of the resource.
   // if it was not provided by the user, we generated it using the request ID.
   let objectKey = event.ResourceProperties[api.PROP_OBJECT_KEY] || event.LogicalResourceId + '-' + event.RequestId.replace(/-/g, '') + '.txt';
@@ -35,7 +38,7 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
 
   console.log(`writing s3://${bucketName}/${objectKey}`);
 
-  const resp = await s3.putObject({
+  const bucket = await s3.putObject({
     Bucket: bucketName,
     Key: objectKey,
     Body: contents,
@@ -46,14 +49,17 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
   // the new name. this will tell cloudformation that the resource has been replaced and it will issue a DELETE
   // for the old object.
 
-  return {
+  const res: AWSCDKAsyncCustomResource.OnEventResponse = {
     PhysicalResourceId: objectKey,
+    Status: status,
     Data: {
       [api.ATTR_OBJECT_KEY]: objectKey,
-      [api.ATTR_ETAG]: resp.ETag,
+      [api.ATTR_ETAG]: bucket.ETag,
       [api.ATTR_URL]: `https://${bucketName}.s3.amazonaws.com/${objectKey}`,
     },
   };
+
+  return res;
 }
 
 export async function deleteObject(event: AWSCDKAsyncCustomResource.OnEventRequest) {

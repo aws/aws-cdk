@@ -29,6 +29,13 @@ class TestStack extends Stack {
       expectedContent: file2Contents,
     });
 
+    new S3Assert(this, 'assert-file', {
+      bucket,
+      objectKey: file2.objectKey,
+      expectedContent: file2Contents,
+      status: 'SUCCESS', // Tests new optional Status return.
+    });
+
     // delay file2 updates so we can test async assertions
     Node.of(file2).addDependency(file1);
 
