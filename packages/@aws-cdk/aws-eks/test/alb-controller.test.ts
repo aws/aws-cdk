@@ -6,7 +6,6 @@ import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmCh
 import { testFixture } from './util';
 
 test('all vended policies are valid', () => {
-
   const addOnsDir = path.join(__dirname, '..', 'lib', 'addons');
 
   for (const addOn of fs.readdirSync(addOnsDir)) {
@@ -23,11 +22,9 @@ test('all vended policies are valid', () => {
       }
     }
   }
-
 });
 
 test('can configure a custom repository', () => {
-
   const { stack } = testFixture();
 
   const cluster = new Cluster(stack, 'Cluster', {
@@ -58,11 +55,9 @@ test('can configure a custom repository', () => {
       ],
     },
   });
-
 });
 
 test('throws when a policy is not defined for a custom version', () => {
-
   const { stack } = testFixture();
 
   const cluster = new Cluster(stack, 'Cluster', {
@@ -73,5 +68,4 @@ test('throws when a policy is not defined for a custom version', () => {
     cluster,
     version: AlbControllerVersion.of('custom'),
   })).toThrowError("'albControllerOptions.policy' is required when using a custom controller version");
-
 });

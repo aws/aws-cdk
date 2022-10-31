@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad4787bdd5f9c4b16cdee4831d5642e564049c42cac331b6d4b51b9ab2ae322e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/527feb6f65d1f41404abb6acfb6504a918e1d7489665b74acb9fa0ca23f34049.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -60,7 +60,7 @@
         "/test-apigateway-restapi/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5"
+            "data": "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca"
           }
         ],
         "/test-apigateway-restapi/my-api/DeploymentStage.beta/Resource": [
@@ -117,16 +117,16 @@
             "data": "myapiv1toysPUT59AFBBC2"
           }
         ],
-        "/test-apigateway-restapi/my-api/Default/v1/appliances/Resource": [
+        "/test-apigateway-restapi/my-api/Default/v1/appliances:all/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiv1appliances507FEFF4"
+            "data": "myapiv1appliancesallCF8C6A16"
           }
         ],
-        "/test-apigateway-restapi/my-api/Default/v1/appliances/GET/Resource": [
+        "/test-apigateway-restapi/my-api/Default/v1/appliances:all/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiv1appliancesGET8FE872EC"
+            "data": "myapiv1appliancesallGETC4DF552D"
           }
         ],
         "/test-apigateway-restapi/my-api/Default/v1/books/Resource": [
@@ -229,6 +229,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myapiv1appliances507FEFF4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliances507FEFF4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myapiv1appliancesGET8FE872EC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliancesGET8FE872EC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
