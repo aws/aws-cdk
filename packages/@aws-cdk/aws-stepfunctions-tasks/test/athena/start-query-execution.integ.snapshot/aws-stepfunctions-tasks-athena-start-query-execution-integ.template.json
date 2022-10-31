@@ -246,7 +246,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}}},\"TimeoutSeconds\":30}"
+       ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}}},\"TimeoutSeconds\":30}"
       ]
      ]
     }
