@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.140"
         }
       },
       "aws-stepfunctions-tasks-athena-start-query-execution-integ": {
@@ -130,17 +130,34 @@
                                 {
                                   "Action": [
                                     "lakeformation:GetDataAccess",
-                                    "s3:AbortMultipartUpload",
                                     "s3:CreateBucket",
                                     "s3:GetBucketLocation",
                                     "s3:GetObject",
-                                    "s3:ListBucket",
+                                    "s3:ListBucket"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:AbortMultipartUpload",
                                     "s3:ListBucketMultipartUploads",
                                     "s3:ListMultipartUploadParts",
                                     "s3:PutObject"
                                   ],
                                   "Effect": "Allow",
-                                  "Resource": "*"
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":s3:::query-results-bucket/folder"
+                                      ]
+                                    ]
+                                  }
                                 },
                                 {
                                   "Action": [
@@ -296,7 +313,7 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"}}}}},\"TimeoutSeconds\":30}"
+                          ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}}},\"TimeoutSeconds\":30}"
                         ]
                       ]
                     }
@@ -317,28 +334,28 @@
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/Service-principalMap",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

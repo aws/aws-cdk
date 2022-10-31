@@ -273,6 +273,31 @@ new ec2.Vpc(stack, 'TheVPC', {
 
 With this method of IP address management, no attempt is made to guess at subnet group sizes or to exhaustively allocate the IP range. All subnet groups must have an explicit `cidrMask` set as part of their subnet configuration, or `defaultSubnetIpv4NetmaskLength` must be set for a default size. If not, synthesis will fail and you must provide one or the other.
 
+### Reserving availability zones
+
+There are situations where the IP space for availability zones will
+need to be reserved. This is useful in situations where availability
+zones would need to be added after the vpc is originally deployed,
+without causing IP renumbering for availability zones subnets. The IP
+space for reserving `n` availability zones can be done by setting the
+`reservedAzs` to `n` in vpc props, as shown below:
+
+```ts
+const vpc = new ec2.Vpc(this, 'TheVPC', {
+  cidr: '10.0.0.0/21',
+  maxAzs: 3,
+  reservedAzs: 1,
+});
+```
+
+In the example above, the subnets for reserved availability zones is not
+actually provisioned but its IP space is still reserved. If, in the future,
+new availability zones needs to be provisioned, then we would decrement
+the value of `reservedAzs` and increment the `maxAzs` or `availabilityZones`
+accordingly. This action would not cause the IP address of subnets to get
+renumbered, but rather the IP space that was previously reserved will be
+used for the new availability zones subnets.
+
 ### Advanced Subnet Configuration
 
 If the default VPC configuration (public and private subnets spanning the
