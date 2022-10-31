@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "cross-region-references/DefaultTest": {
+      "stacks": [
+        "cross-region-consumer"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "cross-region-references/DefaultTest/DeployAssert",
+      "assertionStackName": "crossregionreferencesDefaultTestDeployAssertAB7415FD"
+    }
+  }
+}

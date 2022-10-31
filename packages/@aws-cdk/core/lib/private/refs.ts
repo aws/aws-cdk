@@ -2,10 +2,12 @@
 // CROSS REFERENCES
 // ----------------------------------------------------
 
+import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { Names } from '../names';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
@@ -14,6 +16,7 @@ import { Token, Tokenization } from '../token';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
+import { makeUniqueId } from './uniqueid';
 
 /**
  * This is called from the App level to resolve all references defined. Each
@@ -33,11 +36,16 @@ export function resolveReferences(scope: IConstruct): void {
   }
 }
 
+
 /**
  * Resolves the value for `reference` in the context of `consumer`.
  */
 function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   const producer = Stack.of(reference.target);
+  const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
+  const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
+  const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
+  const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
@@ -49,11 +57,20 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     throw new Error('Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
-  // unsupported: stacks are not in the same environment
-  if (producer.environment !== consumer.environment) {
+  // unsupported: stacks are not in the same account
+  if (producerAccount !== consumerAccount) {
     throw new Error(
       `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
-      'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack');
+      'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
+  }
+
+
+  // Stacks are in the same account, but different regions
+  if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
+    throw new Error(
+      `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+      'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
+      'Set crossRegionReferences=true to enable cross region references');
   }
 
   // ----------------------------------------------------------------------
@@ -90,6 +107,18 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // ----------------------------------------------------------------------
   // export/import
   // ----------------------------------------------------------------------
+
+  // Stacks are in the same account, but different regions
+  if (producerRegion !== consumerRegion && consumer._crossRegionReferences) {
+    if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
+      throw new Error(
+        `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
+        'Cross stack/region references are only supported for stacks with an explicit region defined. ');
+    }
+    consumer.addDependency(producer,
+      `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+    return createCrossRegionImportValue(reference, consumer);
+  }
 
   // export the value through a cloudformation "export name" and use an
   // Fn::ImportValue in the consumption site.
@@ -168,6 +197,70 @@ function createImportValue(reference: Reference): Intrinsic {
 
   // I happen to know this returns a Fn.importValue() which implements Intrinsic.
   return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
+}
+
+/**
+ * Imports a value from another stack in a different region by creating an "Output" with an "ExportName"
+ * in the producing stack, and a "ExportsReader" custom resource in the consumer stack
+ *
+ * Returns a reference to the ExportsReader attribute which contains the exported value
+ */
+function createCrossRegionImportValue(reference: Reference, importStack: Stack): Intrinsic {
+  const referenceStack = Stack.of(reference.target);
+  const exportingStack = referenceStack.nestedStackParent ?? referenceStack;
+
+  // generate an export name
+  const exportable = getExportable(exportingStack, reference);
+  const id = JSON.stringify(exportingStack.resolve(exportable));
+  const exportName = generateExportName(importStack, reference, id);
+  if (Token.isUnresolved(exportName)) {
+    throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
+  }
+
+  // get or create the export writer
+  const writerConstructName = makeUniqueId(['ExportsWriter', importStack.region]);
+  const exportReader = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
+    region: importStack.region,
+  });
+
+  const exported = exportReader.exportValue(exportName, reference, importStack);
+  if (importStack.nestedStackParent) {
+    return createNestedStackParameter(importStack, (exported as CfnReference), exported);
+  }
+  return exported;
+}
+
+/**
+ * Generate a unique physical name for the export
+ */
+function generateExportName(importStack: Stack, reference: Reference, id: string): string {
+  const referenceStack = Stack.of(reference.target);
+
+  const components = [
+    referenceStack.stackName ?? '',
+    referenceStack.region,
+    id,
+  ];
+  const prefix = `${importStack.nestedStackParent?.stackName ?? importStack.stackName}/`;
+  const localPart = makeUniqueId(components);
+  // max name length for a system manager parameter is 1011 characters
+  // including the arn, i.e.
+  // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${stackName}/${name}
+  const maxLength = 900;
+  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+}
+
+export function getExportable(stack: Stack, reference: Reference): Reference {
+  // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
+  // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
+  // if the user tries to override the id _after_ calling exportValue
+  if (CfnElement.isCfnElement(reference.target)) {
+    reference.target._lockLogicalId();
+  }
+
+  // "teleport" the value here, in case it comes from a nested stack. This will also
+  // ensure the value is from our own scope.
+  return referenceNestedStackValueInParent(reference, stack);
 }
 
 // ------------------------------------------------------------------------------------------------

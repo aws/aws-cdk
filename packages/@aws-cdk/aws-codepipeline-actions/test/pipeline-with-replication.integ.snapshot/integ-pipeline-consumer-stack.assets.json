@@ -1,0 +1,48 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "33e2651435a0d472a75c1e033c9832b21321d9e56711926b04c5705e5f63874c": {
+      "source": {
+        "path": "asset.33e2651435a0d472a75c1e033c9832b21321d9e56711926b04c5705e5f63874c",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-east-2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
+          "objectKey": "33e2651435a0d472a75c1e033c9832b21321d9e56711926b04c5705e5f63874c.zip",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
+        }
+      }
+    },
+    "4607a5d8b4a4167cb2ff3c986ec884e3eb44c22626b7bce07ac9807730147741": {
+      "source": {
+        "path": "asset.4607a5d8b4a4167cb2ff3c986ec884e3eb44c22626b7bce07ac9807730147741",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-east-2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
+          "objectKey": "4607a5d8b4a4167cb2ff3c986ec884e3eb44c22626b7bce07ac9807730147741.zip",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
+        }
+      }
+    },
+    "143ebf10248652fdf40e751a3fce16c5f63478c655577efc66530b02f4fb647a": {
+      "source": {
+        "path": "integ-pipeline-consumer-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
+          "objectKey": "143ebf10248652fdf40e751a3fce16c5f63478c655577efc66530b02f4fb647a.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

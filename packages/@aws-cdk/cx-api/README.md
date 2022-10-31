@@ -104,3 +104,4 @@ becomes:
  Principal:
    AWS: "arn:aws:iam::123456789876:root"
 ```
+
