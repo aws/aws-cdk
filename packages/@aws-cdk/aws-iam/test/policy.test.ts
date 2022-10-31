@@ -1,6 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
-import { App, CfnResource, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, CfnPolicy, Grant, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { App, CfnResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -464,6 +465,46 @@ describe('IAM policy', () => {
         },
       },
     });
+  });
+
+  test('fails when passed as a grantee to Grant.addToPrincipalAndResource', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+
+    class DummyResource extends Resource implements IResourceWithPolicy {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+      }
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+
+    expect(() => {
+      Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
+    }).toThrow('Policy has no principals.');
+  });
+
+  test('fails when passed as a grantee to Grant.addToPrincipalOrResource', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+
+    class DummyResource extends Resource implements IResourceWithPolicy {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+      }
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+
+    expect(() => {
+      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
+    }).toThrow('Policy has no principals.');
   });
 });
 
