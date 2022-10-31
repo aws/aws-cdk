@@ -8,7 +8,7 @@ import * as cdk from '@aws-cdk/core';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
-  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType,
 } from '../lib';
 
 describe('cluster', () => {
@@ -455,6 +455,44 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
+  test('instance with IPv4 network type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      networkType: NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      NetworkType: 'IPV4',
+    });
+  });
+
+  test('instance with dual-stack network type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      networkType: NetworkType.DUAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      NetworkType: 'DUAL',
+    });
   });
 
   describe('performance insights', () => {
@@ -2597,6 +2635,22 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       BacktrackWindow: 24 * 60 * 60,
+    });
+  });
+
+  test('DB instances should not have engine version set when part of a cluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineVersion: Match.absent(),
     });
   });
 });

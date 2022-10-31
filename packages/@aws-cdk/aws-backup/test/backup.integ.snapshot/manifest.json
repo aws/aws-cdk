@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8001d34381bcb57b7b2a8fb3ade1e27b0ea7c1819c1d3973537e2cb5aa604ce7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14e034eeffbdd95a18b6c1a8c7a4876e1dfbedde51220bb1a196a337a6848c16.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,6 +55,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Vault23237E5B"
+          }
+        ],
+        "/cdk-backup/SecondaryVault/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondaryVault67665B5E"
           }
         ],
         "/cdk-backup/Plan/Resource": [

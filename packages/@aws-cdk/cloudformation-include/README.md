@@ -132,7 +132,9 @@ make sure to download the unprocessed template
 However, certain unprocessed templates can fail when used with the `CfnInclude` class.
 The most common reason for the failure is that the unprocessed template can contain cycles between resources,
 which get removed after the Transform is processed,
-but is not allowed when being included (as pure CloudFormation does not permit cycles).
+but is not allowed when being included (as pure CloudFormation does not permit cycles). To enable cycle processing behavior similar
+to cloudformation, set `allowCyclicalReferences` of CfnIncludeProps to true.
+
 
 When that happens, you should instead download the processed template from the CloudFormation AWS Console
 (make sure the "View processed template" checkbox is **checked** in that case):

@@ -1,6 +1,8 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
@@ -68,6 +70,26 @@ export class EngineVersion {
    * @param version the engine version of Neptune
    */
   public constructor(public readonly version: string) {}
+}
+
+/**
+ * Neptune log types that can be exported to CloudWatch logs
+ *
+ * @see https://docs.aws.amazon.com/neptune/latest/userguide/cloudwatch-logs.html
+ */
+export class LogType {
+  /**
+   * Audit logs
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html
+   */
+  public static readonly AUDIT = new LogType('audit');
+
+  /**
+   * Constructor for specifying a custom log type
+   * @param value the log type
+   */
+  public constructor(public readonly value: string) {}
 }
 
 /**
@@ -242,6 +264,34 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * The list of log types that need to be enabled for exporting to
+   * CloudWatch Logs.
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cloudwatch-logs.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable
+   *
+   * @default - no log exports
+   */
+  readonly cloudwatchLogsExports?: LogType[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
+  readonly cloudwatchLogsRetentionRole?: iam.IRole;
 }
 
 /**
@@ -284,6 +334,14 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
    * Grant the given identity connection access to the database.
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Return the given named metric associated with this DatabaseCluster instance
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-dimensions.html
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -398,6 +456,17 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   public grantConnect(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'neptune-db:*');
   }
+
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Neptune',
+      dimensionsMap: {
+        DBClusterIdentifier: this.clusterIdentifier,
+      },
+      metricName,
+      ...props,
+    });
+  }
 }
 
 /**
@@ -509,6 +578,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
+      // CloudWatch Logs exports
+      enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,
     });
 
@@ -522,6 +593,18 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     const port = Token.asNumber(cluster.attrPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpoint, port);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpoint, port);
+
+    // Log retention
+    const retention = props.cloudwatchLogsRetention;
+    if (retention) {
+      props.cloudwatchLogsExports?.forEach(logType => {
+        new logs.LogRetention(this, `${logType}LogRetention`, {
+          logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
+          role: props.cloudwatchLogsRetentionRole,
+          retention,
+        });
+      });
+    }
 
     // Create the instances
     const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
