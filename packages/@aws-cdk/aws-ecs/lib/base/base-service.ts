@@ -493,6 +493,13 @@ export abstract class BaseService extends Resource
         && deploymentController.type !== DeploymentControllerType.ECS) {
       Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
+    if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
+      // Strip the revision ID from the service's task definition property to
+      // prevent new task def revisions in the stack from triggering updates
+      // to the stack's ECS service resource
+      this.resource.taskDefinition = taskDefinition.family;
+      this.node.addDependency(taskDefinition);
+    }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
       service: 'ecs',
