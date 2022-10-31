@@ -186,7 +186,7 @@ describe('cross environment', () => {
       /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
   });
 
-  test('can reference a deploy-time physical name across regions, when optInToCrossRegionReferences=true', () => {
+  test('can reference a deploy-time physical name across regions, when crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -194,14 +194,14 @@ describe('cross environment', () => {
         account: '123456789012',
         region: 'bermuda-triangle-1337',
       },
-      optInToCrossRegionReferences: true,
+      crossRegionReferences: true,
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '123456789012',
         region: 'bermuda-triangle-42',
       },
-      optInToCrossRegionReferences: true,
+      crossRegionReferences: true,
     });
 
     // WHEN
@@ -250,7 +250,7 @@ describe('cross environment', () => {
     });
   });
 
-  test('cannot reference a deploy-time physical name across regions, when optInToCrossRegionReferences=false', () => {
+  test('cannot reference a deploy-time physical name across regions, when crossRegionReferences=false', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -258,14 +258,14 @@ describe('cross environment', () => {
         account: '123456789012',
         region: 'bermuda-triangle-1337',
       },
-      optInToCrossRegionReferences: true,
+      crossRegionReferences: true,
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '123456789012',
         region: 'bermuda-triangle-42',
       },
-      optInToCrossRegionReferences: false,
+      crossRegionReferences: false,
     });
 
     // WHEN

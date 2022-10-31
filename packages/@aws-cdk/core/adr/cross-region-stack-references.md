@@ -219,7 +219,7 @@ optional Stack property.
 
 ```ts
 new Stack(app, 'MyStack', {
-  optInToCrossRegionReferences: true,
+  crossRegionReferences: true,
 });
 ```
 

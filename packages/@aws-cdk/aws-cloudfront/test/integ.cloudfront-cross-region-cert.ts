@@ -21,7 +21,7 @@ const acmStack = new cdk.Stack(app, 'integ-acm-stack', {
     region: 'us-east-1',
     account,
   },
-  optInToCrossRegionReferences: true,
+  crossRegionReferences: true,
 });
 
 const cloudFrontStack = new cdk.Stack(app, 'integ-cloudfront-stack', {
@@ -29,7 +29,7 @@ const cloudFrontStack = new cdk.Stack(app, 'integ-cloudfront-stack', {
     region: 'us-east-2',
     account,
   },
-  optInToCrossRegionReferences: true,
+  crossRegionReferences: true,
 });
 
 

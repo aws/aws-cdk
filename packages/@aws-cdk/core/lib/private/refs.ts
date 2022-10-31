@@ -70,7 +70,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     throw new Error(
       `Stack "${consumer.node.path}" cannot consume a cross reference from stack "${producer.node.path}". ` +
       'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
-      'Set optInToCrossRegionReferences=true to enable cross region references');
+      'Set crossRegionReferences=true to enable cross region references');
   }
 
   // ----------------------------------------------------------------------

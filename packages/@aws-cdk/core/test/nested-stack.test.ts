@@ -35,7 +35,7 @@ describe('nested-stack', () => {
     expect(nestedStack.templateOptions.description).toEqual(description);
   });
 
-  test('can create cross region references when optInToCrossRegionReferences=true', () => {
+  test('can create cross region references when crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -43,14 +43,14 @@ describe('nested-stack', () => {
         account: '123456789012',
         region: 'bermuda-triangle-1337',
       },
-      optInToCrossRegionReferences: true,
+      crossRegionReferences: true,
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '123456789012',
         region: 'bermuda-triangle-42',
       },
-      optInToCrossRegionReferences: true,
+      crossRegionReferences: true,
     });
     const nestedStack = new NestedStack(stack1, 'Nested1');
     const nestedStack2 = new NestedStack(stack2, 'Nested2');
@@ -141,7 +141,7 @@ describe('nested-stack', () => {
     });
   });
 
-  test('cannot create cross region references when optInToCrossRegionReferences=false', () => {
+  test('cannot create cross region references when crossRegionReferences=false', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {

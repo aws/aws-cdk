@@ -17,7 +17,7 @@ class ProducerStack extends Stack {
       env: {
         region: 'us-east-1',
       },
-      optInToCrossRegionReferences: true,
+      crossRegionReferences: true,
     });
     const nested = new NestedStack(this, 'IntegNested');
     this.queue = new Queue(this, 'IntegQueue');
@@ -35,7 +35,7 @@ class ConsumerStack extends Stack {
       env: {
         region: 'us-east-2',
       },
-      optInToCrossRegionReferences: true,
+      crossRegionReferences: true,
     });
 
     const nested = new NestedStack(this, 'IntegNested');

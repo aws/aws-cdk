@@ -150,7 +150,7 @@ export interface StackProps {
    *
    * @default false
    */
-  readonly optInToCrossRegionReferences?: boolean;
+  readonly crossRegionReferences?: boolean;
 }
 
 /**
@@ -363,7 +363,7 @@ export class Stack extends Construct implements ITaggable {
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };
     this.templateOptions = { };
-    this._crossRegionReferences = !!props.optInToCrossRegionReferences;
+    this._crossRegionReferences = !!props.crossRegionReferences;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 

@@ -120,7 +120,7 @@ export class NestedStack extends Stack {
       env: { account: parentStack.account, region: parentStack.region },
       synthesizer: new NestedStackSynthesizer(parentStack.synthesizer),
       description: props.description,
-      optInToCrossRegionReferences: parentStack._crossRegionReferences,
+      crossRegionReferences: parentStack._crossRegionReferences,
     });
 
     this._parentStack = parentStack;

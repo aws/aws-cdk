@@ -462,14 +462,14 @@ describe('stack', () => {
     });
   });
 
-  test('cross-region stack references, optInToCrossRegionReferences=true', () => {
+  test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, optInToCrossRegionReferences: true });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
 
     // WHEN - used in another stack
     new CfnResource(stack2, 'SomeResource', {
@@ -535,7 +535,7 @@ describe('stack', () => {
   test('cross-region stack references throws error', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
@@ -552,21 +552,21 @@ describe('stack', () => {
     // THEN
     expect(() => {
       app.synth();
-    }).toThrow(/Set optInToCrossRegionReferences=true to enable cross region references/);
+    }).toThrow(/Set crossRegionReferences=true to enable cross region references/);
   });
 
-  test('cross region stack references with multiple stacks, optInToCrossRegionReferences=true', () => {
+  test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, optInToCrossRegionReferences: true });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
 
     // WHEN - used in another stack
     new CfnResource(stack2, 'SomeResource', {
@@ -740,18 +740,18 @@ describe('stack', () => {
     });
   });
 
-  test('cross region stack references with multiple stacks and multiple regions, optInToCrossRegionReferences=true', () => {
+  test('cross region stack references with multiple stacks and multiple regions, crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, optInToCrossRegionReferences: true });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-west-1' }, optInToCrossRegionReferences: true });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-west-1' }, crossRegionReferences: true });
     const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, optInToCrossRegionReferences: true });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
 
     // WHEN - used in another stack
     new CfnResource(stack2, 'SomeResource', {

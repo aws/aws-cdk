@@ -166,7 +166,7 @@ other.
 
 > **This feature is currently experimental**
 
-You can enable the Stack property `optInToCrossRegionReferences`
+You can enable the Stack property `crossRegionReferences`
 in order to access resources in a different stack _and_ region. With this feature flag
 enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
 an ACM certificate in `us-east-1`.
@@ -176,7 +176,7 @@ const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',
   },
-  optInToCrossRegionReferences: true,
+  crossRegionReferences: true,
 });
 const cert = new acm.Certificate(stack1, 'Cert', {
   domainName: '*.example.com',
@@ -187,7 +187,7 @@ const stack2 = new Stack(app, 'Stack2', {
   env: {
     region: 'us-east-2',
   },
-  optInToCrossRegionReferences: true,
+  crossRegionReferences: true,
 });
 new cloudfront.Distribution(stack2, 'Distribution', {
   defaultBehavior: {

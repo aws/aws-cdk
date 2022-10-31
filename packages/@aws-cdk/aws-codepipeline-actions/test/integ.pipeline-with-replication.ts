@@ -14,13 +14,13 @@ const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {
   env: {
     region: 'us-east-1',
   },
-  optInToCrossRegionReferences: true,
+  crossRegionReferences: true,
 });
 const stack2 = new Stack(app, 'integ-pipeline-consumer-stack', {
   env: {
     region: 'us-east-2',
   },
-  optInToCrossRegionReferences: true,
+  crossRegionReferences: true,
 });
 
 
