@@ -4,17 +4,13 @@ import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export interface PingerProps {
   readonly url: string;
   readonly securityGroup?: ec2.SecurityGroup;
   readonly vpc?: ec2.IVpc;
   readonly subnets?: ec2.ISubnet[];
 }
-export class Pinger extends CoreConstruct {
+export class Pinger extends Construct {
 
   private _resource: CustomResource;
 
@@ -24,7 +20,7 @@ export class Pinger extends CoreConstruct {
     const func = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(`${__dirname}/function`),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
       vpc: props.vpc,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,

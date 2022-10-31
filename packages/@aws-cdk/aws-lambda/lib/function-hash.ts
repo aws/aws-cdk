@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import { CfnResource, FeatureFlags, Stack } from '@aws-cdk/core';
-import { LAMBDA_RECOGNIZE_VERSION_PROPS } from '@aws-cdk/cx-api';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS } from '@aws-cdk/cx-api';
 import { Function as LambdaFunction } from './function';
+import { ILayerVersion } from './layers';
 
 export function calculateFunctionHash(fn: LambdaFunction) {
   const stack = Stack.of(fn);
@@ -27,6 +28,10 @@ export function calculateFunctionHash(fn: LambdaFunction) {
     const sorted = sortProperties(properties);
     config.Resources[logicalId].Properties = sorted;
     stringifiedConfig = JSON.stringify(config);
+  }
+
+  if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
+    stringifiedConfig = stringifiedConfig + calculateLayersHash(fn._layers);
   }
 
   const hash = crypto.createHash('md5');
@@ -60,6 +65,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   DeadLetterConfig: true,
   Description: true,
   Environment: true,
+  EphemeralStorage: true,
   FileSystemConfigs: true,
   FunctionName: true,
   Handler: true,
@@ -115,4 +121,32 @@ function sortProperties(properties: any) {
     }
   }
   return ret;
+}
+
+function calculateLayersHash(layers: ILayerVersion[]): string {
+  const layerConfig: {[key: string]: any } = {};
+  for (const layer of layers) {
+    const stack = Stack.of(layer);
+    const layerResource = layer.node.defaultChild as CfnResource;
+    // if there is no layer resource, then the layer was imported
+    // and we will include the layer arn and runtimes in the hash
+    if (layerResource === undefined) {
+      layerConfig[layer.layerVersionArn] = layer.compatibleRuntimes;
+      continue;
+    }
+    const config = stack.resolve((layerResource as any)._toCloudFormation());
+    const resources = config.Resources;
+    const resourceKeys = Object.keys(resources);
+    if (resourceKeys.length !== 1) {
+      throw new Error(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`);
+    }
+    const logicalId = resourceKeys[0];
+    const properties = resources[logicalId].Properties;
+    // all properties require replacement, so they are all version locked.
+    layerConfig[layer.node.id] = properties;
+  }
+
+  const hash = crypto.createHash('md5');
+  hash.update(JSON.stringify(layerConfig));
+  return hash.digest('hex');
 }

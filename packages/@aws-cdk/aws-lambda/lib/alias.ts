@@ -75,7 +75,7 @@ export interface AliasProps extends AliasOptions {
   /**
    * Function version this alias refers to
    *
-   * Use lambda.addVersion() to obtain a new lambda version to refer to.
+   * Use lambda.currentVersion to reference a version with your latest changes.
    */
   readonly version: IVersion;
 }

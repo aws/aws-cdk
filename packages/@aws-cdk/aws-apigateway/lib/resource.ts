@@ -4,7 +4,7 @@ import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
-import { Method, MethodOptions } from './method';
+import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
 
 export interface IResource extends IResourceBase {
@@ -296,6 +296,12 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
         { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
       ],
     }), {
+      authorizer: {
+        authorizerId: '',
+        authorizationType: AuthorizationType.NONE,
+      },
+      apiKeyRequired: false,
+      authorizationType: AuthorizationType.NONE,
       methodResponses: [
         { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
       ],
@@ -348,7 +354,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       }
 
       // trim trailing "/"
-      return this.resourceForPath(path.substr(1));
+      return this.resourceForPath(path.slice(1));
     }
 
     const parts = path.split('/');
@@ -544,16 +550,16 @@ export class ProxyResource extends Resource {
 function validateResourcePathPart(part: string) {
   // strip {} which indicate this is a parameter
   if (part.startsWith('{') && part.endsWith('}')) {
-    part = part.substr(1, part.length - 2);
+    part = part.slice(1, -1);
 
     // proxy resources are allowed to end with a '+'
     if (part.endsWith('+')) {
-      part = part.substr(0, part.length - 1);
+      part = part.slice(0, -1);
     }
   }
 
-  if (!/^[a-zA-Z0-9\.\_\-]+$/.test(part)) {
-    throw new Error(`Resource's path part only allow [a-zA-Z0-9._-], an optional trailing '+'
+  if (!/^[a-zA-Z0-9:\.\_\-]+$/.test(part)) {
+    throw new Error(`Resource's path part only allow [a-zA-Z0-9:._-], an optional trailing '+'
       and curly braces at the beginning and the end: ${part}`);
   }
 }

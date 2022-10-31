@@ -83,6 +83,7 @@ export async function unitTestFiles(): Promise<File[]> {
 }
 
 export async function hasIntegTests(): Promise<boolean> {
+  if (currentPackageJson().name === '@aws-cdk/integ-runner') return false;
   const files = await listFiles('test', f => f.filename.startsWith('integ.') && f.filename.endsWith('.js'));
   return files.length > 0;
 }
@@ -99,6 +100,9 @@ export interface CompilerOverrides {
 export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
     const args = ['--silence-warnings=reserved-word', '--add-deprecation-warnings'];
+    if (options?.compressAssembly) {
+      args.push('--compress-assembly');
+    }
     if (options?.stripDeprecated) {
       args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
@@ -173,6 +177,11 @@ export interface CDKBuildOptions {
    * @see https://aws.github.io/jsii/user-guides/lib-author/toolchain/jsii/#-strip-deprecated
    */
   stripDeprecated?: boolean;
+
+  /**
+   * Whether the jsii assembly should be compressed into a .jsii.gz file or left uncompressed as a .jsii file.
+   */
+  compressAssembly?: boolean;
 }
 
 export interface CDKPackageOptions {

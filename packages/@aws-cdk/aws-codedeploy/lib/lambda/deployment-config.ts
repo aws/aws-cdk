@@ -1,18 +1,22 @@
 import { Construct } from 'constructs';
-import { arnForDeploymentConfig } from '../utils';
+import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
+import { TrafficRouting } from '../traffic-routing-config';
+import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of a Lambda Deployment Group.
+ *
+ * If you're managing the Deployment Configuration alongside the rest of your CDK resources,
+ * use the {@link LambdaDeploymentConfig} class.
+ *
+ * If you want to reference an already existing deployment configuration,
+ * or one defined in a different CDK Stack,
+ * use the {@link LambdaDeploymentConfig#fromLambdaDeploymentConfigName} method.
+ *
  * The default, pre-defined Configurations are available as constants on the {@link LambdaDeploymentConfig} class
  * (`LambdaDeploymentConfig.AllAtOnce`, `LambdaDeploymentConfig.Canary10Percent30Minutes`, etc.).
- *
- * Note: CloudFormation does not currently support creating custom lambda configs outside
- * of using a custom resource. You can import custom deployment config created outside the
- * CDK or via a custom resource with {@link LambdaDeploymentConfig#import}.
  */
-export interface ILambdaDeploymentConfig {
-  readonly deploymentConfigName: string;
-  readonly deploymentConfigArn: string;
+export interface ILambdaDeploymentConfig extends IBaseDeploymentConfig {
 }
 
 /**
@@ -29,45 +33,75 @@ export interface LambdaDeploymentConfigImportProps {
 }
 
 /**
+ * Construction properties of {@link LambdaDeploymentConfig}.
+ */
+export interface LambdaDeploymentConfigProps extends BaseDeploymentConfigOptions {
+  /**
+   * The configuration that specifies how traffic is shifted from the 'blue'
+   * target group to the 'green' target group during a deployment.
+   * @default AllAtOnce
+   */
+  readonly trafficRouting?: TrafficRouting;
+}
+
+/**
  * A custom Deployment Configuration for a Lambda Deployment Group.
- *
- * Note: This class currently stands as namespaced container of the default configurations
- * until CloudFormation supports custom Lambda Deployment Configs. Until then it is closed
- * (private constructor) and does not extend {@link cdk.Construct}
- *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
-export class LambdaDeploymentConfig {
-  public static readonly ALL_AT_ONCE = deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
-  public static readonly CANARY_10PERCENT_30MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent30Minutes');
-  public static readonly CANARY_10PERCENT_5MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent5Minutes');
-  public static readonly CANARY_10PERCENT_10MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent10Minutes');
-  public static readonly CANARY_10PERCENT_15MINUTES = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent15Minutes');
-  public static readonly LINEAR_10PERCENT_EVERY_10MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery10Minutes');
-  public static readonly LINEAR_10PERCENT_EVERY_1MINUTE = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery1Minute');
-  public static readonly LINEAR_10PERCENT_EVERY_2MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery2Minutes');
-  public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery3Minutes');
+export class LambdaDeploymentConfig extends BaseDeploymentConfig implements ILambdaDeploymentConfig {
+  /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated Lambda function at once. */
+  public static readonly ALL_AT_ONCE = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 30 minutes later. */
+  public static readonly CANARY_10PERCENT_30MINUTES = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaCanary10Percent30Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed five minutes later. */
+  public static readonly CANARY_10PERCENT_5MINUTES = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaCanary10Percent5Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 10 minutes later. */
+  public static readonly CANARY_10PERCENT_10MINUTES = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaCanary10Percent10Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 15 minutes later. */
+  public static readonly CANARY_10PERCENT_15MINUTES = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaCanary10Percent15Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every 10 minutes until all traffic is shifted. */
+  public static readonly LINEAR_10PERCENT_EVERY_10MINUTES = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery10Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every minute until all traffic is shifted. */
+  public static readonly LINEAR_10PERCENT_EVERY_1MINUTE = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery1Minute');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every two minutes until all traffic is shifted. */
+  public static readonly LINEAR_10PERCENT_EVERY_2MINUTES = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery2Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every three minutes until all traffic is shifted. */
+  public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery3Minutes');
 
   /**
-   * Import a custom Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
+   * Import a Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
+   *
+   * @param scope the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param lambdaDeploymentConfigName the name of the Lambda Deployment Configuration to import
+   * @returns a Construct representing a reference to an existing Lambda Deployment Configuration
+   */
+  public static fromLambdaDeploymentConfigName(scope: Construct, id: string, lambdaDeploymentConfigName: string): ILambdaDeploymentConfig {
+    return this.fromDeploymentConfigName(scope, id, lambdaDeploymentConfigName);
+  }
+
+  /**
+   * Import a Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
    *
    * @param _scope the parent Construct for this new Construct
    * @param _id the logical ID of this new Construct
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
+   * @deprecated use `fromLambdaDeploymentConfigName`
    */
-  public static import(_scope:Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
-    return deploymentConfig(props.deploymentConfigName);
+  public static import(_scope: Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
+    return this.fromLambdaDeploymentConfigName(_scope, _id, props.deploymentConfigName);
   }
 
-  private constructor() {
-    // nothing to do until CFN supports custom lambda deployment configurations
+  private static deploymentConfig(name: string): ILambdaDeploymentConfig {
+    return deploymentConfig(name);
   }
-}
 
-function deploymentConfig(name: string): ILambdaDeploymentConfig {
-  return {
-    deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name),
-  };
+  public constructor(scope: Construct, id: string, props?: LambdaDeploymentConfigProps) {
+    super(scope, id, {
+      ...props,
+      computePlatform: ComputePlatform.LAMBDA,
+      trafficRouting: props?.trafficRouting ?? TrafficRouting.allAtOnce(),
+    });
+  }
 }

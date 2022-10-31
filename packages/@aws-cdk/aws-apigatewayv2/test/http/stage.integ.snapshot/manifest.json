@@ -1,0 +1,70 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-aws-apigatewayv2-http-stage.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-aws-apigatewayv2-http-stage.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-aws-apigatewayv2-http-stage": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-aws-apigatewayv2-http-stage.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5626e75fff43d2eed0d63a5a925cb78eb1fd3d7fded40fe3b4036e0ce26a1ea9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-aws-apigatewayv2-http-stage.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-aws-apigatewayv2-http-stage.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-aws-apigatewayv2-http-stage/HttpApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiF5A9A8A7"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage/HttpStageWithProperties/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpStageWithPropertiesC0AABA83"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-aws-apigatewayv2-http-stage/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-apigatewayv2-http-stage"
+    }
+  }
+}

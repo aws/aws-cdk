@@ -4,9 +4,23 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Tags,
+  Token,
+  Tokenization,
 } from '@aws-cdk/core';
+import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
@@ -353,6 +367,23 @@ export interface IBucket extends IResource {
    * @param filters Filters (see onEvent)
    */
   addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
+
+
+  /**
+   * Enables event bridge notification, causing all events below to be sent to EventBridge:
+   *
+   * - Object Deleted (DeleteObject)
+   * - Object Deleted (Lifecycle expiration)
+   * - Object Restore Initiated
+   * - Object Restore Completed
+   * - Object Restore Expired
+   * - Object Storage Class Changed
+   * - Object Access Tier Changed
+   * - Object ACL Updated
+   * - Object Tags Added
+   * - Object Tags Deleted
+   */
+  enableEventBridgeNotification(): void;
 }
 
 /**
@@ -497,6 +528,8 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
   /**
@@ -611,12 +644,6 @@ export abstract class BucketBase extends Resource implements IBucket {
     }
 
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
@@ -876,6 +903,24 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
+  }
+
+  /**
+   * Enables event bridge notification, causing all events below to be sent to EventBridge:
+   *
+   * - Object Deleted (DeleteObject)
+   * - Object Deleted (Lifecycle expiration)
+   * - Object Restore Initiated
+   * - Object Restore Completed
+   * - Object Restore Expired
+   * - Object Storage Class Changed
+   * - Object Access Tier Changed
+   * - Object ACL Updated
+   * - Object Tags Added
+   * - Object Tags Deleted
+   */
+  public enableEventBridgeNotification() {
+    this.withNotifications(notifications => notifications.enableEventBridgeNotification());
   }
 
   private get writeActions(): string[] {
@@ -1309,10 +1354,15 @@ export interface BucketProps {
   readonly enforceSSL?: boolean;
 
   /**
-   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
-   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   * Whether Amazon S3 should use its own intermediary key to generate data keys.
    *
-   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   * Only relevant when using KMS for encryption.
+   *
+   * - If not enabled, every object GET and PUT will cause an API call to KMS (with the
+   *   attendant cost implications of that).
+   * - If enabled, S3 will use its own time-limited key instead.
+   *
+   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
    *
    * @default - false
    */
@@ -1353,6 +1403,13 @@ export interface BucketProps {
    * @default false
    */
   readonly versioned?: boolean;
+
+  /**
+   * Whether this bucket should send notifications to Amazon EventBridge or not.
+   *
+   * @default false
+   */
+  readonly eventBridgeEnabled?: boolean;
 
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
@@ -1512,9 +1569,19 @@ export interface Tag {
  *
  * This bucket does not yet have all features that exposed by the underlying
  * BucketResource.
+ *
+ * @example
+ *
+ * new Bucket(scope, 'Bucket', {
+ *   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+ *   encryption: BucketEncryption.S3_MANAGED,
+ *   enforceSSL: true,
+ *   versioned: true,
+ *   removalPolicy: RemovalPolicy.RETAIN,
+ * });
+ *
  */
 export class Bucket extends BucketBase {
-
   public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
     return Bucket.fromBucketAttributes(scope, id, { bucketArn });
   }
@@ -1581,6 +1648,64 @@ export class Bucket extends BucketBase {
   }
 
   /**
+   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   */
+  public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnBucket';
+
+    // if fromCfnBucket() was already called on this cfnBucket,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the policy property of the L1 below)
+    const existing = cfnBucket.node.tryFindChild(id);
+    if (existing) {
+      return <IBucket>existing;
+    }
+
+    // handle the KMS Key if the Bucket references one
+    let encryptionKey: kms.IKey | undefined;
+    if (cfnBucket.bucketEncryption) {
+      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
+      if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
+        const serverSideEncryptionRuleProperty = serverSideEncryptionConfiguration[0];
+        const serverSideEncryptionByDefault = serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
+        if (serverSideEncryptionByDefault && Token.isUnresolved(serverSideEncryptionByDefault.kmsMasterKeyId)) {
+          const kmsIResolvable = Tokenization.reverse(serverSideEncryptionByDefault.kmsMasterKeyId);
+          if (kmsIResolvable instanceof CfnReference) {
+            const cfnElement = kmsIResolvable.target;
+            if (cfnElement instanceof kms.CfnKey) {
+              encryptionKey = kms.Key.fromCfnKey(cfnElement);
+            }
+          }
+        }
+      }
+    }
+
+    return new class extends BucketBase {
+      public readonly bucketArn = cfnBucket.attrArn;
+      public readonly bucketName = cfnBucket.ref;
+      public readonly bucketDomainName = cfnBucket.attrDomainName;
+      public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
+      public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
+      public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
+      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
+
+      public readonly encryptionKey = encryptionKey;
+      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
+      public policy = undefined;
+      protected autoCreatePolicy = true;
+      protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
+        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+
+      constructor() {
+        super(cfnBucket, id);
+
+        this.node.defaultChild = cfnBucket;
+      }
+    }();
+  }
+
+  /**
    * Thrown an exception if the given bucket name is not valid.
    *
    * @param physicalName name of the bucket.
@@ -1642,6 +1767,7 @@ export class Bucket extends BucketBase {
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
+  private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
@@ -1683,6 +1809,7 @@ export class Bucket extends BucketBase {
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
+    this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
     this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -1732,6 +1859,10 @@ export class Bucket extends BucketBase {
       }
 
       this.enableAutoDeleteObjects();
+    }
+
+    if (this.eventBridgeEnabled) {
+      this.enableEventBridgeNotification();
     }
   }
 
@@ -1817,7 +1948,7 @@ export class Bucket extends BucketBase {
     }
 
     // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
       throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
@@ -1857,7 +1988,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+          },
         ],
       };
       return { bucketEncryption };
@@ -1888,7 +2022,10 @@ export class Bucket extends BucketBase {
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
+        noncurrentVersionExpiration: rule.noncurrentVersionExpiration && {
+          noncurrentDays: rule.noncurrentVersionExpiration.toDays(),
+          newerNoncurrentVersions: rule.noncurrentVersionsToRetain,
+        },
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
@@ -1903,6 +2040,8 @@ export class Bucket extends BucketBase {
         })),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
+        objectSizeLessThan: rule.objectSizeLessThan,
+        objectSizeGreaterThan: rule.objectSizeGreaterThan,
       };
 
       return x;
@@ -2107,7 +2246,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
@@ -2157,17 +2296,17 @@ export enum BucketEncryption {
   /**
    * Objects in the bucket are not encrypted.
    */
-  UNENCRYPTED = 'NONE',
+  UNENCRYPTED = 'UNENCRYPTED',
 
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */
-  KMS_MANAGED = 'MANAGED',
+  KMS_MANAGED = 'KMS_MANAGED',
 
   /**
    * Server-side encryption with a master key managed by S3.
    */
-  S3_MANAGED = 'S3MANAGED',
+  S3_MANAGED = 'S3_MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.

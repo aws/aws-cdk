@@ -14,10 +14,6 @@ import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Interface for CloudFront distributions
  */
@@ -220,6 +216,25 @@ export interface DistributionProps {
     * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
+
+  /**
+    * The SSL method CloudFront will use for your distribution.
+    *
+    * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
+    * which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
+    * multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
+    * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
+    *
+    * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
+    *
+    * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
+    * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
+    *
+    * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
+    *
+    * @default SSLMethod.SNI
+    */
+  readonly sslSupportMethod?: SSLMethod;
 }
 
 /**
@@ -304,7 +319,8 @@ export class Distribution extends Resource implements IDistribution {
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
-        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion) : undefined,
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
+          props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
         webAclId: props.webAclId,
       },
     });
@@ -337,9 +353,13 @@ export class Distribution extends Resource implements IDistribution {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
-      const scope = new CoreConstruct(this, `Origin${originIndex}`);
+      const scope = new Construct(this, `Origin${originIndex}`);
       const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const originBindConfig = origin.bind(scope, { originId });
+      const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
+      if (duplicateId) {
+        throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
+      }
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
       } else {
@@ -347,14 +367,14 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
+        const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
         return originGroupId;
       }
-      return originId;
+      return originBindConfig.originProperty?.id ?? originId;
     }
   }
 
@@ -430,7 +450,9 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('Explicitly disabled logging but provided a logging bucket.');
     }
 
-    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
+    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
     return {
       bucket: bucket.bucketRegionalDomainName,
       includeCookies: props.logIncludesCookies,
@@ -448,16 +470,17 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersionProp?: SecurityPolicyProtocol): CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
 
     const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
       ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
     const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
+    const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
     return {
       acmCertificateArn: certificate.certificateArn,
-      sslSupportMethod: SSLMethod.SNI,
       minimumProtocolVersion: minimumProtocolVersion,
+      sslSupportMethod: sslSupportMethod,
     };
   }
 }
@@ -467,7 +490,11 @@ export enum HttpVersion {
   /** HTTP 1.1 */
   HTTP1_1 = 'http1.1',
   /** HTTP 2 */
-  HTTP2 = 'http2'
+  HTTP2 = 'http2',
+  /** HTTP 2 and HTTP 3 */
+  HTTP2_AND_3 = 'http2and3',
+  /** HTTP 3 */
+  HTTP3 = 'http3'
 }
 
 /**

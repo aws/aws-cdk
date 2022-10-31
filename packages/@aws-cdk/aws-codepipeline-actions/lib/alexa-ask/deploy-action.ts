@@ -1,10 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
@@ -70,8 +67,8 @@ export class AlexaSkillDeployAction extends Action {
     return {
       configuration: {
         ClientId: this.props.clientId,
-        ClientSecret: this.props.clientSecret,
-        RefreshToken: this.props.refreshToken,
+        ClientSecret: this.props.clientSecret.unsafeUnwrap(), // Safe usage
+        RefreshToken: this.props.refreshToken.unsafeUnwrap(), // Safe usage
         SkillId: this.props.skillId,
       },
     };

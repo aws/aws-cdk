@@ -46,6 +46,41 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+Alternatively you can create an `AutoScalingGroup` from a `LaunchTemplate`:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  launchTemplate: launchTemplate
+});
+```
+
+To launch a mixture of Spot and on-demand instances, and/or with multiple instance types, you can create an `AutoScalingGroup` from a MixedInstancesPolicy:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate1: ec2.LaunchTemplate;
+declare const launchTemplate2: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    instancesDistribution: {
+      onDemandPercentageAboveBaseCapacity: 50, // Mix Spot and On-Demand instances
+    },
+    launchTemplate: launchTemplate1,
+    launchTemplateOverrides: [ // Mix multiple instance types
+      { instanceType: new ec2.InstanceType('t3.micro') },
+      { instanceType: new ec2.InstanceType('t3a.micro') },
+      { instanceType: new ec2.InstanceType('t4g.micro'), launchTemplate: launchTemplate2 },
+    ],
+  }
+});
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
@@ -486,6 +521,27 @@ The example below demonstrates the `AutoScalingGroupRequireImdsv2Aspect` being u
 const aspect = new autoscaling.AutoScalingGroupRequireImdsv2Aspect();
 
 Aspects.of(this).add(aspect);
+```
+
+## Warm Pool
+
+Auto Scaling offers [a warm pool](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html) which gives an ability to decrease latency for applications that have exceptionally long boot times. You can create a warm pool with default parameters as below:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool();
+```
+
+You can also customize a warm pool by configuring parameters:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool({
+  minSize: 1,
+  reuseOnScaleIn: true,
+});
 ```
 
 ## Future work

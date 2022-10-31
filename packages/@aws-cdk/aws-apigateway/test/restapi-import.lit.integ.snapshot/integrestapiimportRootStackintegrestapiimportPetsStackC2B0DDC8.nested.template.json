@@ -1,0 +1,54 @@
+{
+ "Resources": {
+  "RestApipetsC5A41236": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId"
+    },
+    "PathPart": "pets",
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    }
+   }
+  },
+  "RestApipetsGET4375532C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "GET",
+    "ResourceId": {
+     "Ref": "RestApipetsC5A41236"
+    },
+    "RestApiId": {
+     "Ref": "referencetointegrestapiimportRootStackRestApi2647DA4CRef"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "referencetointegrestapiimportRootStackRestApi2647DA4CRootResourceId": {
+   "Type": "String"
+  },
+  "referencetointegrestapiimportRootStackRestApi2647DA4CRef": {
+   "Type": "String"
+  }
+ }
+}

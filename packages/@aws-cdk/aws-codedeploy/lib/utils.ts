@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Aws } from '@aws-cdk/core';
+import { Aws, Token } from '@aws-cdk/core';
+import { IBaseDeploymentConfig } from './base-deployment-config';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
@@ -24,6 +25,13 @@ CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
       enabled: true,
       ignorePollAlarmFailure,
     };
+}
+
+export function deploymentConfig(name: string): IBaseDeploymentConfig {
+  return {
+    deploymentConfigName: name,
+    deploymentConfigArn: arnForDeploymentConfig(name),
+  };
 }
 
 enum AutoRollbackEvent {
@@ -58,10 +66,33 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
     }
   }
 
+  if (autoRollbackConfig.failedDeployment === false
+    && autoRollbackConfig.stoppedDeployment !== true
+    && autoRollbackConfig.deploymentInAlarm === false) {
+    return {
+      enabled: false,
+    };
+  }
+
   return events.length > 0
     ? {
       enabled: true,
       events,
     }
     : undefined;
+}
+
+export function validateName(type: 'Application' | 'Deployment group' | 'Deployment config', name: string): string[] {
+  const ret = [];
+
+  if (!Token.isUnresolved(name) && name !== undefined) {
+    if (name.length > 100) {
+      ret.push(`${type} name: "${name}" can be a max of 100 characters.`);
+    }
+    if (!/^[a-z0-9._+=,@-]+$/i.test(name)) {
+      ret.push(`${type} name: "${name}" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).`);
+    }
+  }
+
+  return ret;
 }

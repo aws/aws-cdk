@@ -466,6 +466,14 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
+    if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
+      // Strip the revision ID from the service's task definition property to
+      // prevent new task def revisions in the stack from triggering updates
+      // to the stack's ECS service resource
+      this.resource.taskDefinition = taskDefinition.family;
+      this.node.addDependency(taskDefinition);
+    }
+
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
       service: 'ecs',
       resource: 'service',
@@ -510,7 +518,7 @@ export abstract class BaseService extends Resource
       resources: ['*'],
     }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogStream',
@@ -558,7 +566,7 @@ export abstract class BaseService extends Resource
         'kms:*',
       ],
       resources: ['*'],
-      principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.stack.account}:root`)],
+      principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.env.account}:root`)],
     }));
 
     if (logging === ExecuteCommandLogging.DEFAULT || this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
@@ -571,9 +579,9 @@ export abstract class BaseService extends Resource
           'kms:Describe*',
         ],
         resources: ['*'],
-        principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
+        principals: [new iam.ServicePrincipal(`logs.${this.env.region}.amazonaws.com`)],
         conditions: {
-          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:*` },
+          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:*` },
         },
       }));
     }

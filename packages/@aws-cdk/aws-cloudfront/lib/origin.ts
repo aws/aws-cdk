@@ -1,9 +1,6 @@
 import { Duration, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The failover configuration used for Origin Groups,
@@ -51,17 +48,9 @@ export interface IOrigin {
 }
 
 /**
- * Properties to define an Origin.
+ * Options to define an Origin.
  */
-export interface OriginProps {
-  /**
-   * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
-   * Must begin, but not end, with '/' (e.g., '/production/images').
-   *
-   * @default '/'
-   */
-  readonly originPath?: string;
-
+export interface OriginOptions {
   /**
    * The number of seconds that CloudFront waits when trying to establish a connection to the origin.
    * Valid values are 1-10 seconds, inclusive.
@@ -92,6 +81,26 @@ export interface OriginProps {
    * @default - origin shield not enabled
    */
   readonly originShieldRegion?: string;
+
+  /**
+   * A unique identifier for the origin. This value must be unique within the distribution.
+   *
+   * @default - an originid will be generated for you
+   */
+  readonly originId?: string;
+}
+
+/**
+ * Properties to define an Origin.
+ */
+export interface OriginProps extends OriginOptions {
+  /**
+   * An optional path that CloudFront appends to the origin domain name when CloudFront requests content from the origin.
+   * Must begin, but not end, with '/' (e.g., '/production/images').
+   *
+   * @default '/'
+   */
+  readonly originPath?: string;
 }
 
 /**
@@ -116,6 +125,7 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
   private readonly originShieldRegion?: string
+  private readonly originId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
@@ -128,6 +138,7 @@ export abstract class OriginBase implements IOrigin {
     this.connectionAttempts = props.connectionAttempts;
     this.customHeaders = props.customHeaders;
     this.originShieldRegion = props.originShieldRegion;
+    this.originId = props.originId;
   }
 
   /**
@@ -144,7 +155,7 @@ export abstract class OriginBase implements IOrigin {
     return {
       originProperty: {
         domainName: this.domainName,
-        id: options.originId,
+        id: this.originId ?? options.originId,
         originPath: this.originPath,
         connectionAttempts: this.connectionAttempts,
         connectionTimeout: this.connectionTimeout?.toSeconds(),
@@ -182,7 +193,7 @@ export abstract class OriginBase implements IOrigin {
     if (originPath === undefined) { return undefined; }
     let path = originPath;
     if (!path.startsWith('/')) { path = '/' + path; }
-    if (path.endsWith('/')) { path = path.substr(0, path.length - 1); }
+    if (path.endsWith('/')) { path = path.slice(0, -1); }
     return path;
   }
 

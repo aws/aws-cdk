@@ -1,11 +1,40 @@
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { retry, sleep } from '../helpers/aws';
 import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../helpers/cdk';
+import { randomInteger, withSamIntegrationFixture } from '../helpers/sam';
 import { integTest } from '../helpers/test-helpers';
 
-jest.setTimeout(600 * 1000);
+jest.setTimeout(600_000);
+
+describe('ci', () => {
+  integTest('output to stderr', withDefaultFixture(async (fixture) => {
+    const deployOutput = await fixture.cdkDeploy('test-2', { captureStderr: true, onlyStderr: true });
+    const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], { captureStderr: true, onlyStderr: true });
+    const destroyOutput = await fixture.cdkDestroy('test-2', { captureStderr: true, onlyStderr: true });
+    expect(deployOutput).not.toEqual('');
+    expect(destroyOutput).not.toEqual('');
+    expect(diffOutput).not.toEqual('');
+  }));
+  describe('ci=true', () => {
+    integTest('output to stdout', withDefaultFixture(async (fixture) => {
+
+      const execOptions = {
+        captureStderr: true,
+        onlyStderr: true,
+        modEnv: { CI: 'true' },
+      };
+
+      const deployOutput = await fixture.cdkDeploy('test-2', execOptions);
+      const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], execOptions);
+      const destroyOutput = await fixture.cdkDestroy('test-2', execOptions);
+      expect(deployOutput).toEqual('');
+      expect(destroyOutput).toEqual('');
+      expect(diffOutput).toEqual('');
+    }));
+  });
+});
 
 integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
@@ -30,6 +59,13 @@ integTest('Construct with builtin Lambda function', withDefaultFixture(async (fi
   await fixture.cdkDeploy('builtin-lambda-function');
   fixture.log('Setup complete!');
   await fixture.cdkDestroy('builtin-lambda-function');
+}));
+
+// this is to ensure that asset bundling for apps under a stage does not break
+integTest('Stage with bundled Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('bundling-stage/BundlingStack');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('bundling-stage/BundlingStack');
 }));
 
 integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
@@ -99,6 +135,37 @@ integTest('automatic ordering', withDefaultFixture(async (fixture) => {
   await fixture.cdkDestroy('order-providing');
 }));
 
+integTest('automatic ordering with concurrency', withDefaultFixture(async (fixture) => {
+  // Deploy the consuming stack which will include the producing stack
+  await fixture.cdkDeploy('order-consuming', { options: ['--concurrency', '2'] });
+
+  // Destroy the providing stack which will include the consuming stack
+  await fixture.cdkDestroy('order-providing');
+}));
+
+integTest('--exclusively selects only selected stack', withDefaultFixture(async (fixture) => {
+  // Deploy the "depends-on-failed" stack, with --exclusively. It will NOT fail (because
+  // of --exclusively) and it WILL create an output we can check for to confirm that it did
+  // get deployed.
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  await fixture.cdkDeploy('depends-on-failed', {
+    options: [
+      '--exclusively',
+      '--outputs-file', outputsFile,
+    ],
+  });
+
+  // Verify the output to see that the stack deployed
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  expect(outputs).toEqual({
+    [`${fixture.stackNamePrefix}-depends-on-failed`]: {
+      TopicName: `${fixture.stackNamePrefix}-depends-on-failedMyTopic`,
+    },
+  });
+}));
+
 integTest('context setting', withDefaultFixture(async (fixture) => {
   await fs.writeFile(path.join(fixture.integTestDir, 'cdk.context.json'), JSON.stringify({
     contextkey: 'this is the context value',
@@ -139,10 +206,33 @@ integTest('deploy', withDefaultFixture(async (fixture) => {
   expect(response.StackResources?.length).toEqual(2);
 }));
 
+integTest('deploy --method=direct', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-2', {
+    options: ['--method=direct'],
+    captureStderr: false,
+  });
+
+  // verify the number of resources in the stack
+  const response = await fixture.aws.cloudFormation('describeStackResources', {
+    StackName: stackArn,
+  });
+  expect(response.StackResources?.length).toBeGreaterThan(0);
+}));
+
 integTest('deploy all', withDefaultFixture(async (fixture) => {
   const arns = await fixture.cdkDeploy('test-*', { captureStderr: false });
 
-  // verify that we only deployed a single stack (there's a single ARN in the output)
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
+  expect(arns.split('\n').length).toEqual(2);
+}));
+
+integTest('deploy all concurrently', withDefaultFixture(async (fixture) => {
+  const arns = await fixture.cdkDeploy('test-*', {
+    captureStderr: false,
+    options: ['--concurrency', '2'],
+  });
+
+  // verify that we only deployed both stacks (there are 2 ARNs in the output)
   expect(arns.split('\n').length).toEqual(2);
 }));
 
@@ -489,6 +579,43 @@ integTest('cdk diff', withDefaultFixture(async (fixture) => {
     .rejects.toThrow('exited with error');
 }));
 
+integTest('enableDiffNoFail', withDefaultFixture(async (fixture) => {
+  await diffShouldSucceedWith({ fail: false, enableDiffNoFail: false });
+  await diffShouldSucceedWith({ fail: false, enableDiffNoFail: true });
+  await diffShouldFailWith({ fail: true, enableDiffNoFail: false });
+  await diffShouldFailWith({ fail: true, enableDiffNoFail: true });
+  await diffShouldFailWith({ fail: undefined, enableDiffNoFail: false });
+  await diffShouldSucceedWith({ fail: undefined, enableDiffNoFail: true });
+
+  async function diffShouldSucceedWith(props: DiffParameters) {
+    await expect(diff(props)).resolves.not.toThrowError();
+  }
+
+  async function diffShouldFailWith(props: DiffParameters) {
+    await expect(diff(props)).rejects.toThrow('exited with error');
+  }
+
+  async function diff(props: DiffParameters): Promise<string> {
+    await updateContext(props.enableDiffNoFail);
+    const flag = props.fail != null
+      ? (props.fail ? '--fail' : '--no-fail')
+      : '';
+
+    return fixture.cdk(['diff', flag, fixture.fullStackName('test-1')]);
+  }
+
+  async function updateContext(enableDiffNoFail: boolean) {
+    const cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+    cdkJson.context = {
+      ...cdkJson.context,
+      'aws-cdk:enableDiffNoFail': enableDiffNoFail,
+    };
+    await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+  }
+
+  type DiffParameters = { fail?: boolean, enableDiffNoFail: boolean };
+}));
+
 integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', withDefaultFixture(async (fixture) => {
   // GIVEN
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
@@ -757,6 +884,222 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
 }));
 
+integTest('CDK synth add the metadata properties expected by sam', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedResources = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      cdkId: 'PythonLayerVersion',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      cdkId: 'LayerVersion',
+      isBundled: false,
+      property: 'Content',
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      cdkId: 'BundledLayerVersionPythonRuntime',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      cdkId: 'PythonFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Log Retention Function
+      id: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+      cdkId: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      cdkId: 'FunctionPythonRuntime',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      cdkId: 'BundledFunctionPythonRuntime',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      cdkId: 'NodejsFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      cdkId: 'GoFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      cdkId: 'DockerImageFunction',
+      dockerFilePath: 'Dockerfile',
+      property: 'Code.ImageUri',
+    },
+    {
+      // Spec Rest Api
+      id: 'SpecRestAPI7D4B3A34',
+      cdkId: 'SpecRestAPI',
+      property: 'BodyS3Location',
+    },
+  ];
+
+  for (const resource of expectedResources) {
+    fixture.output.write(`validate assets metadata for resource ${resource}`);
+    expect(resource.id in template.Resources).toBeTruthy();
+    expect(template.Resources[resource.id]).toEqual(expect.objectContaining({
+      Metadata: {
+        'aws:cdk:path': `${fixture.fullStackName('TestStack')}/${resource.cdkId}/Resource`,
+        'aws:asset:path': expect.stringMatching(/asset\.[0-9a-zA-Z]{64}/),
+        'aws:asset:is-bundled': resource.isBundled,
+        'aws:asset:dockerfile-path': resource.dockerFilePath,
+        'aws:asset:property': resource.property,
+      },
+    }));
+  }
+
+  // Nested Stack
+  fixture.output.write('validate assets metadata for nested stack resource');
+  expect('NestedStackNestedStackNestedStackNestedStackResourceB70834FD' in template.Resources).toBeTruthy();
+  expect(template.Resources.NestedStackNestedStackNestedStackNestedStackResourceB70834FD).toEqual(expect.objectContaining({
+    Metadata: {
+      'aws:cdk:path': `${fixture.fullStackName('TestStack')}/NestedStack.NestedStack/NestedStack.NestedStackResource`,
+      'aws:asset:path': expect.stringMatching(`${fixture.stackNamePrefix.replace(/-/, '')}TestStackNestedStack[0-9A-Z]{8}\.nested\.template\.json`),
+      'aws:asset:property': 'TemplateURL',
+    },
+  }));
+}));
+
+integTest('CDK synth bundled functions as expected', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedBundledAssets = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      files: [
+        'layer_version_dependency.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      files: [
+        'app.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      files: [
+        'index.js',
+      ],
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      files: [
+        'bootstrap',
+      ],
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      files: [
+        'app.js',
+        'Dockerfile',
+        'package.json',
+      ],
+    },
+  ];
+
+  for (const resource of expectedBundledAssets) {
+    const assetPath = template.Resources[resource.id].Metadata['aws:asset:path'];
+    for (const file of resource.files) {
+      fixture.output.write(`validate Path ${file} for resource ${resource}`);
+      expect(existsSync(path.join(fixture.integTestDir, 'cdk.out', assetPath, file))).toBeTruthy();
+    }
+  }
+}));
+
+integTest('sam can locally test the synthesized cdk application', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const result = await fixture.samLocalStartApi(
+    'TestStack', false, randomInteger(30000, 40000), '/restapis/spec/pythonFunction');
+  expect(result.actionSucceeded).toBeTruthy();
+  expect(result.actionOutput).toEqual(expect.objectContaining({
+    message: 'Hello World',
+  }));
+}));
+
 integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
   const output = await fixture.cdkSynth({
     options: ['--no-notices'],
@@ -769,6 +1112,74 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
   // Neither succeeds nor fails, but skips the refresh
   await expect(output).not.toContain('Notices refreshed');
   await expect(output).not.toContain('Notices refresh failed');
+}));
+
+/**
+ * Create a queue with a fresh name, redeploy orphaning the queue, then import it again
+ */
+integTest('test resource import', withDefaultFixture(async (fixture) => {
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  // Initial deploy
+  await fixture.cdkDeploy('importable-stack', {
+    modEnv: { ORPHAN_TOPIC: '1' },
+    options: ['--outputs-file', outputsFile],
+  });
+
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  const queueName = outputs.QueueName;
+  const queueLogicalId = outputs.QueueLogicalId;
+  fixture.log(`Setup complete, created queue ${queueName}`);
+  try {
+    // Deploy again, orphaning the queue
+    await fixture.cdkDeploy('importable-stack', {
+      modEnv: { OMIT_TOPIC: '1' },
+    });
+
+    // Write a resource mapping file based on the ID from step one, then run an import
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
+    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+
+    await fixture.cdk(['import',
+      '--resource-mapping', mappingFile,
+      fixture.fullStackName('importable-stack')]);
+  } finally {
+    // Cleanup
+    await fixture.cdkDestroy('importable-stack');
+  }
+}));
+
+integTest('hotswap deployment supports Lambda function\'s description and environment variables', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
+    captureStderr: false,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'original value',
+    },
+  });
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('lambda-hotswap', {
+    options: ['--hotswap'],
+    captureStderr: true,
+    onlyStderr: true,
+    modEnv: {
+      DYNAMIC_LAMBDA_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
+
+  // THEN
+
+  // The deployment should not trigger a full deployment, thus the stack's status must remains
+  // "CREATE_COMPLETE"
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(deployOutput).toContain(`Lambda Function '${functionName}' hotswapped!`);
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

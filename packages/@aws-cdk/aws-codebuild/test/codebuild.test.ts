@@ -566,7 +566,7 @@ describe('default properties', () => {
         reportBuildStatus: false,
         webhookFilters: [
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
-          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('master'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('main'),
         ],
       }),
     });
@@ -593,7 +593,7 @@ describe('default properties', () => {
           ],
           [
             { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
-            { Type: 'BASE_REF', Pattern: 'refs/heads/master' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
           ],
         ],
       },
@@ -612,7 +612,7 @@ describe('default properties', () => {
         webhook: true,
         reportBuildStatus: false,
         webhookFilters: [
-          pushFilterGroup.andBranchIs('master'),
+          pushFilterGroup.andBranchIs('main'),
           pushFilterGroup.andBranchIs('develop'),
           pushFilterGroup.andFilePathIs('ReadMe.md'),
         ],
@@ -635,7 +635,7 @@ describe('default properties', () => {
         FilterGroups: [
           [
             { Type: 'EVENT', Pattern: 'PUSH' },
-            { Type: 'HEAD_REF', Pattern: 'refs/heads/master' },
+            { Type: 'HEAD_REF', Pattern: 'refs/heads/main' },
           ],
           [
             { Type: 'EVENT', Pattern: 'PUSH' },
@@ -1024,6 +1024,78 @@ describe('secondary sources', () => {
           'Type': 'S3',
         },
       ],
+    });
+  });
+});
+
+describe('sources with customised build status configuration', () => {
+  test('GitHub', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHub({
+      owner: 'awslabs',
+      repo: 'aws-cdk',
+      buildStatusContext: context,
+    });
+
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+
+  test('GitHub Enterprise', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHubEnterprise({
+      httpsCloneUrl: 'url',
+      buildStatusContext: context,
+    });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+
+  test('BitBucket', () => {
+    const context = 'My custom CodeBuild worker!';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          context: context,
+        },
+      },
+    });
+  });
+});
+
+describe('sources with customised build status configuration', () => {
+  test('GitHub with targetUrl', () => {
+    const targetUrl = 'https://example.com';
+    const stack = new cdk.Stack();
+    const source = codebuild.Source.gitHub({
+      owner: 'awslabs',
+      repo: 'aws-cdk',
+      buildStatusUrl: targetUrl,
+    });
+    new codebuild.Project(stack, 'MyProject', { source });
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
+      Source: {
+        buildStatusConfig: {
+          targetUrl: targetUrl,
+        },
+      },
     });
   });
 });

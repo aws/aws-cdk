@@ -1,0 +1,94 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-ivs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-ivs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-ivs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-ivs.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b36ed5e0442d45ac76fe1b3f5b5145badac1a90491b827d69d0abf253f7b5a39.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-ivs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-ivs.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-ivs/PlaybackKeyPair/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlaybackKeyPairBE17315B"
+          }
+        ],
+        "/aws-cdk-ivs/Channel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Channel4048F119"
+          }
+        ],
+        "/aws-cdk-ivs/StreamKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamKey9F296F4F"
+          }
+        ],
+        "/aws-cdk-ivs/PlaybackKeyPairArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlaybackKeyPairArn"
+          }
+        ],
+        "/aws-cdk-ivs/ChannelArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChannelArn"
+          }
+        ],
+        "/aws-cdk-ivs/StreamKeyArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamKeyArn"
+          }
+        ],
+        "/aws-cdk-ivs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-ivs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ivs"
+    }
+  }
+}

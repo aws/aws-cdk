@@ -1,0 +1,107 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-ecr-integ-stack": {
+        "id": "aws-ecr-integ-stack",
+        "path": "aws-ecr-integ-stack",
+        "children": {
+          "Repo": {
+            "id": "Repo",
+            "path": "aws-ecr-integ-stack/Repo",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecr-integ-stack/Repo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "imageScanningConfiguration": {
+                      "scanOnPush": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRepository",
+                  "version": "0.0.0"
+                }
+              },
+              "ImageScanComplete": {
+                "id": "ImageScanComplete",
+                "path": "aws-ecr-integ-stack/Repo/ImageScanComplete",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecr-integ-stack/Repo/ImageScanComplete/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                      "aws:cdk:cloudformation:props": {
+                        "eventPattern": {
+                          "source": [
+                            "aws.ecr"
+                          ],
+                          "detail-type": [
+                            "ECR Image Scan"
+                          ],
+                          "detail": {
+                            "repository-name": [
+                              {
+                                "Ref": "Repo02AC86CF"
+                              }
+                            ],
+                            "scan-status": [
+                              "COMPLETE"
+                            ]
+                          }
+                        },
+                        "state": "ENABLED"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-events.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.Rule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecr.Repository",
+              "version": "0.0.0"
+            }
+          },
+          "RepositoryURI": {
+            "id": "RepositoryURI",
+            "path": "aws-ecr-integ-stack/RepositoryURI",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

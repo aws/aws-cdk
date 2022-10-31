@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Duration, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
 describe('vpn', () => {
@@ -84,7 +85,7 @@ describe('vpn', () => {
 
   });
 
-  test('with tunnel options', () => {
+  test('with tunnel options, using secret value', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -92,12 +93,10 @@ describe('vpn', () => {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
-          tunnelOptions: [
-            {
-              preSharedKey: 'secretkey1234',
-              tunnelInsideCidr: '169.254.10.0/30',
-            },
-          ],
+          tunnelOptions: [{
+            preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+            tunnelInsideCidr: '169.254.10.0/30',
+          }],
         },
       },
     });
@@ -118,8 +117,40 @@ describe('vpn', () => {
         },
       ],
     });
+  });
 
+  testDeprecated('with tunnel options, using secret', () => {
+    // GIVEN
+    const stack = new Stack();
 
+    new Vpc(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [{
+            preSharedKey: 'secretkey1234',
+            tunnelInsideCidr: '169.254.10.0/30',
+          }],
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
+      CustomerGatewayId: {
+        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
+      },
+      Type: 'ipsec.1',
+      VpnGatewayId: {
+        Ref: 'VpcNetworkVpnGateway501295FA',
+      },
+      StaticRoutesOnly: false,
+      VpnTunnelOptionsSpecifications: [
+        {
+          PreSharedKey: 'secretkey1234',
+          TunnelInsideCidr: '169.254.10.0/30',
+        },
+      ],
+    });
   });
 
   test('fails when ip is invalid', () => {
@@ -147,13 +178,13 @@ describe('vpn', () => {
           ip: '192.0.2.1',
           tunnelOptions: [
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
             {
-              preSharedKey: 'secretkey1234',
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
             },
           ],
         },
@@ -186,7 +217,7 @@ describe('vpn', () => {
 
   });
 
-  test('fails when specifying an invalid pre-shared key', () => {
+  testDeprecated('fails when specifying an invalid pre-shared key', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -267,6 +298,48 @@ describe('vpn', () => {
       statistic: 'Average',
     });
 
+
+  });
+
+  test('can import a vpn connection from attributes', () => {
+
+    const stack = new Stack();
+
+    const vpn = VpnConnection.fromVpnConnectionAttributes(stack, 'Connection', {
+      vpnId: 'idv',
+      customerGatewayIp: 'ip',
+      customerGatewayId: 'idc',
+      customerGatewayAsn: 6500,
+    });
+
+    expect(vpn.vpnId).toEqual('idv');
+    expect(vpn.customerGatewayAsn).toEqual(6500);
+    expect(vpn.customerGatewayId).toEqual('idc');
+    expect(vpn.customerGatewayIp).toEqual('ip');
+
+    expect(stack.resolve(vpn.metricTunnelState())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelState',
+      period: Duration.minutes(5),
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(vpn.metricTunnelDataIn())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelDataIn',
+      period: Duration.minutes(5),
+      statistic: 'Sum',
+    });
+
+    expect(stack.resolve(vpn.metricTunnelDataOut())).toEqual({
+      dimensions: { VpnId: 'idv' },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelDataOut',
+      period: Duration.minutes(5),
+      statistic: 'Sum',
+    });
 
   });
 

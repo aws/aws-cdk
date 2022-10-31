@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
@@ -12,7 +13,8 @@ describe('CDK Include for nested stacks', () => {
   let stack: core.Stack;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new core.Stack(app);
   });
 
   test('can ingest a template with one child', () => {
@@ -504,7 +506,8 @@ describe('CDK Include for nested stacks', () => {
     let childKeyParam: string;
 
     beforeAll(() => {
-      assetStack = new core.Stack();
+      const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      assetStack = new core.Stack(app);
       parentTemplate = new inc.CfnInclude(assetStack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-one-child.json'),
         loadNestedStacks: {

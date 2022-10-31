@@ -7,10 +7,13 @@ import * as cloudtrail from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudtrail');
 
-const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
+const bucket = new s3.Bucket(stack, 'Bucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
 const topic = new sns.Topic(stack, 'Topic');
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });

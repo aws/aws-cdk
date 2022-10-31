@@ -1,5 +1,5 @@
-import { Bucket } from '@aws-cdk/aws-s3';
 import { Template, Match } from '@aws-cdk/assertions';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Aws, Stack, CfnResource } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
@@ -177,6 +177,14 @@ describe('user data', () => {
       'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>',
     );
 
+  });
+  test('can persist windows userdata', () => {
+    // WHEN
+    const userData = ec2.UserData.forWindows({ persist: true });
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual('<powershell></powershell><persist>true</persist>');
   });
   test('can create Linux user data', () => {
     // GIVEN

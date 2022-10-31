@@ -37,7 +37,7 @@ export interface AttributionsProps {
    *
    */
   readonly allowedLicenses: string[];
-   /**
+  /**
    * Dependencies matching this pattern will be excluded from attribution.
    *
    * @default - no exclusions.
@@ -133,7 +133,10 @@ export class Attributions {
       content.push('');
     }
 
-    for (const attr of attributions.values()) {
+    // sort the attributions so the file doesn't change due to ordering issues
+    const ordered = Array.from(attributions.values()).sort((a1, a2) => a1.package.localeCompare(a2.package));
+
+    for (const attr of ordered) {
       content.push(`** ${attr.package} - ${attr.url} | ${attr.licenses[0]}`);
 
       // prefer notice over license

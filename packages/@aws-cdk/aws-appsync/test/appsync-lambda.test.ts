@@ -22,7 +22,7 @@ describe('Lambda Data Source configuration', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
       handler: 'iam-query.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 
@@ -78,7 +78,7 @@ describe('Lambda Data Source configuration', () => {
       const dummyFunction = new lambda.Function(newStack, 'func', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
         handler: 'iam-query.handler',
-        runtime: lambda.Runtime.NODEJS_12_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       });
       graphqlapi.addLambdaDataSource(`data-${badCharacter}-source`, dummyFunction);
 
@@ -132,7 +132,7 @@ describe('adding lambda data source from imported api', () => {
     func = new lambda.Function(stack, 'func', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
       handler: 'iam-query.handler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
   });
 

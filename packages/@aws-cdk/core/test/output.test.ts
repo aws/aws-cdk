@@ -1,4 +1,4 @@
-import { App, CfnOutput, CfnResource, ConstructNode, Stack, ValidationError } from '../lib';
+import { App, CfnOutput, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 let app: App;
@@ -30,7 +30,6 @@ describe('output', () => {
       },
      },
     });
-
   });
 
   test('No export is created by default', () => {
@@ -45,8 +44,6 @@ describe('output', () => {
         },
       },
     });
-
-
   });
 
   test('importValue can be used to obtain a Fn::ImportValue expression', () => {
@@ -73,8 +70,6 @@ describe('output', () => {
         },
       },
     });
-
-
   });
 
   test('importValue used inside the same stack produces an error', () => {
@@ -89,8 +84,6 @@ describe('output', () => {
 
     // THEN
     expect(() => toCloudFormation(stack)).toThrow(/should only be used in a different Stack/);
-
-
   });
 
   test('error message if importValue is used and Output is not exported', () => {
@@ -109,19 +102,14 @@ describe('output', () => {
     expect(() => {
       toCloudFormation(stack2);
     }).toThrow(/Add an exportName to the CfnOutput/);
-
-
   });
 
   test('Verify maximum length of export name', () => {
-    new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'x'.repeat(260) });
-
-    const errors = ConstructNode.validate(stack.node).map((v: ValidationError) => v.message);
+    const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'x'.repeat(260) });
+    const errors = output.node.validate();
 
     expect(errors).toEqual([
       expect.stringContaining('Export name cannot exceed 255 characters'),
     ]);
-
-
   });
 });

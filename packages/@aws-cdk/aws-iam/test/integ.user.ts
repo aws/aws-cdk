@@ -7,7 +7,7 @@ const stack = new Stack(app, 'aws-cdk-iam-user');
 
 new User(stack, 'MyUser', {
   userName: 'benisrae',
-  password: SecretValue.plainText('Test1234567890!'),
+  password: SecretValue.unsafePlainText('Test1234567890!'),
   passwordResetRequired: true,
 });
 

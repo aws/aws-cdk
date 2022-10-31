@@ -1,0 +1,100 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-backup.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-backup.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-backup": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-backup.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14e034eeffbdd95a18b6c1a8c7a4876e1dfbedde51220bb1a196a337a6848c16.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-backup.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-backup.assets"
+      ],
+      "metadata": {
+        "/cdk-backup/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableCD117FA1"
+          }
+        ],
+        "/cdk-backup/FileSystem": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem"
+          }
+        ],
+        "/cdk-backup/Vault/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vault23237E5B"
+          }
+        ],
+        "/cdk-backup/SecondaryVault/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondaryVault67665B5E"
+          }
+        ],
+        "/cdk-backup/Plan/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanDAF4E53A"
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanSelectionRole6D10F4B7"
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanSelectionF88CBC04"
+          }
+        ],
+        "/cdk-backup/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-backup/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-backup"
+    }
+  }
+}

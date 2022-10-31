@@ -10,7 +10,7 @@
 <!--END STABILITY BANNER-->
 
 If you're migrating from the old `assert` library, the migration guide can be found in
-[our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assertions/MIGRATING.md).
+[our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/assertions/MIGRATING.md).
 
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
@@ -33,6 +33,11 @@ Alternatively, assertions can be run on an existing CloudFormation template -
 const templateJson = '{ "Resources": ... }'; /* The CloudFormation template as JSON serialized string. */
 const template = Template.fromString(templateJson);
 ```
+
+**Cyclical Resources Note**
+
+If allowing cyclical references is desired, for example in the case of unprocessed Transform templates, supply TemplateParsingOptions and
+set skipCyclicalDependenciesCheck to true. In all other cases, will fail on detecting cyclical dependencies.
 
 ## Full Template Match
 
@@ -74,6 +79,17 @@ in a template.
 
 ```ts
 template.resourceCountIs('Foo::Bar', 2);
+```
+
+You can also count the number of resources of a specific type whose `Properties`
+section contains the specified properties:
+
+```ts
+template.resourcePropertiesCountIs('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+}, 1);
 ```
 
 ## Resource Matching & Retrieval
@@ -550,9 +566,9 @@ Annotations.fromStack(stack).hasError(
 
 Here are the available APIs for `Annotations`:
 
-- `hasError()` and `findError()`
-- `hasWarning()` and `findWarning()`
-- `hasInfo()` and `findInfo()`
+- `hasError()`, `hasNoError()`, and `findError()`
+- `hasWarning()`, `hasNoWarning()`, and `findWarning()`
+- `hasInfo()`, `hasNoInfo()`, and `findInfo()`
 
 The corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead
 of asserting its presence, it returns the set of matching messages.

@@ -7,7 +7,7 @@ test('creates an api destination for an EventBus', () => {
   // GIVEN
   const stack = new Stack();
   const connection = new events.Connection(stack, 'Connection', {
-    authorization: events.Authorization.basic('username', SecretValue.plainText('password')),
+    authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
     connectionName: 'testConnection',
     description: 'ConnectionDescription',
   });

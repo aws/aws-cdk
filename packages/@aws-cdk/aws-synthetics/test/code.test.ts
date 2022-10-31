@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as synthetics from '../lib';
 import { RuntimeFamily } from '../lib';
 
@@ -89,7 +90,11 @@ describe(synthetics.Code.fromAsset, () => {
 
   test('only one Asset object gets created even if multiple canaries use the same AssetCode', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
     const stack = new Stack(app, 'canaries');
 
     // WHEN

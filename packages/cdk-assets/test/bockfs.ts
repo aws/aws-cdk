@@ -20,7 +20,7 @@ namespace bockfs {
   }
 
   export function path(x: string) {
-    if (x.startsWith('/')) { x = x.substr(1); } // Force path to be non-absolute
+    if (x.startsWith('/')) { x = x.slice(1); } // Force path to be non-absolute
     return path_.join(bockFsRoot, x);
   }
 

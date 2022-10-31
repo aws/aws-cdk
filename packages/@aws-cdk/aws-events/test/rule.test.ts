@@ -1,8 +1,9 @@
 /* eslint-disable object-curly-newline */
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
+import { Construct, IConstruct } from 'constructs';
+import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable quote-props */
@@ -26,6 +27,31 @@ describe('rule', () => {
         },
       },
     });
+  });
+
+  test('rule displays warning when minutes are not included in cron', () => {
+    const stack = new cdk.Stack();
+    new Rule(stack, 'MyRule', {
+      schedule: Schedule.cron({
+        hour: '8',
+        day: '1',
+      }),
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+  });
+
+  test('rule does not display warning when minute is set to * in cron', () => {
+    const stack = new cdk.Stack();
+    new Rule(stack, 'MyRule', {
+      schedule: Schedule.cron({
+        minute: '*',
+        hour: '8',
+        day: '1',
+      }),
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/MyRule', Match.anyValue());
   });
 
   test('can get rule name', () => {
@@ -99,6 +125,24 @@ describe('rule', () => {
         account: ['account1', 'account2'],
         detail: {
           foo: [1, 2],
+          strings: ['foo', 'bar'],
+          rangeMatcher: m.interval(-1, 1),
+          stringMatcher: m.exactString('I am just a string'),
+          prefixMatcher: m.prefix('aws.'),
+          ipAddress: m.ipAddressRange('192.0.2.0/24'),
+          shouldExist: m.exists(),
+          shouldNotExist: m.doesNotExist(),
+          numbers: m.allOf(m.greaterThan(0), m.lessThan(5)),
+          topLevel: {
+            deeper: m.equal(42),
+            oneMoreLevel: {
+              deepest: m.anyOf(m.lessThanOrEqual(-1), m.greaterThanOrEqual(1)),
+            },
+          },
+          state: m.anythingBut('initializing'),
+          limit: m.anythingBut(100, 200, 300),
+          notPrefixedBy: m.anythingButPrefix('sensitive-'),
+          bar: undefined,
         },
         detailType: ['detailType1'],
         id: ['id1', 'id2'],
@@ -117,7 +161,26 @@ describe('rule', () => {
           'Properties': {
             'EventPattern': {
               account: ['account1', 'account2'],
-              detail: { foo: [1, 2] },
+              detail: {
+                foo: [1, 2],
+                strings: ['foo', 'bar'],
+                rangeMatcher: [{ numeric: ['>=', -1, '<=', 1] }],
+                stringMatcher: ['I am just a string'],
+                prefixMatcher: [{ prefix: 'aws.' }],
+                ipAddress: [{ cidr: '192.0.2.0/24' }],
+                shouldExist: [{ exists: true }],
+                shouldNotExist: [{ exists: false }],
+                numbers: [{ numeric: ['>', 0, '<', 5] }],
+                topLevel: {
+                  deeper: [{ numeric: ['=', 42] }],
+                  oneMoreLevel: {
+                    deepest: [{ numeric: ['<=', -1] }, { numeric: ['>=', 1] }],
+                  },
+                },
+                state: [{ 'anything-but': ['initializing'] }],
+                limit: [{ 'anything-but': [100, 200, 300] }],
+                notPrefixedBy: [{ 'anything-but': { 'prefix': 'sensitive-' } }],
+              },
               'detail-type': ['detailType1'],
               id: ['id1', 'id2'],
               region: ['region1', 'region2', 'region3'],
@@ -133,7 +196,7 @@ describe('rule', () => {
     });
   });
 
-  test('fails synthesis if neither eventPattern nor scheudleExpression are specified', () => {
+  test('fails synthesis if neither eventPattern nor scheduleExpression are specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');
@@ -630,7 +693,7 @@ describe('rule', () => {
 
       const targetAccount = '234567890123';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -645,7 +708,7 @@ describe('rule', () => {
       const rule = new Rule(sourceStack, 'Rule');
 
       const targetStack = new cdk.Stack(app, 'TargetStack');
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -661,7 +724,7 @@ describe('rule', () => {
 
       const targetAccount = '234567890123';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -683,7 +746,7 @@ describe('rule', () => {
       const targetAccount = '234567890123';
       const targetRegion = sourceRegion;
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: targetRegion } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       rule.addTarget(new SomeTarget('T', resource));
 
@@ -734,7 +797,7 @@ describe('rule', () => {
       const targetAccount = '234567890123';
       const targetRegion = 'us-east-1';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: targetRegion } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       rule.addTarget(new SomeTarget('T', resource));
 
@@ -785,7 +848,7 @@ describe('rule', () => {
       const targetAccount = '234567890123';
       const targetRegion = 'us-east-1';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: targetRegion } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       rule.addTarget(new SomeTarget('T', resource));
       // same target should be skipped
@@ -859,7 +922,7 @@ describe('rule', () => {
       const targetApp = new cdk.App();
       const targetAccount = '234567890123';
       const targetStack = new cdk.Stack(targetApp, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
+      const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
@@ -870,6 +933,7 @@ describe('rule', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
+      const uniqueName = 'SourceStackRuleD6962A13';
       const sourceStack = new cdk.Stack(app, 'SourceStack', {
         env: {
           account: sourceAccount,
@@ -889,8 +953,8 @@ describe('rule', () => {
           region: 'us-west-2',
         },
       });
-      const resource1 = new cdk.Construct(targetStack, 'Resource1');
-      const resource2 = new cdk.Construct(targetStack, 'Resource2');
+      const resource1 = new Construct(targetStack, 'Resource1');
+      const resource2 = new Construct(targetStack, 'Resource2');
 
       rule.addTarget(new SomeTarget('T1', resource1));
       rule.addTarget(new SomeTarget('T2', resource2));
@@ -951,7 +1015,7 @@ describe('rule', () => {
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': `Allow-account-${sourceAccount}`,
+        'StatementId': `Allow-account-${sourceAccount}-${uniqueName}`,
         'Principal': sourceAccount,
       });
     });
@@ -975,7 +1039,7 @@ describe('rule', () => {
           region: 'us-west-2',
         },
       });
-      const resource = new cdk.Construct(targetStack, 'Resource1');
+      const resource = new Construct(targetStack, 'Resource1');
 
       rule.addTarget(new SomeTarget('T', resource));
 
@@ -1003,7 +1067,7 @@ describe('rule', () => {
 
 class SomeTarget implements IRuleTarget {
   // eslint-disable-next-line @aws-cdk/no-core-construct
-  public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
+  public constructor(private readonly id?: string, private readonly resource?: IConstruct) {
   }
 
   public bind(): RuleTargetConfig {

@@ -1,0 +1,14 @@
+{
+    "ResourceTypes": {
+      "patch": {
+        "description": "Remove the DomainArn attribute of AWS::OpenSearchService::Domain resources, as it is unsupported by CloudFormation",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/AWS::OpenSearchService::Domain/Attributes/DomainArn"
+          }
+        ]
+      }
+    }
+  }
+  

@@ -26,20 +26,6 @@ AWS IoT Events enables you to monitor your equipment or device fleets for
 failures or changes in operation, and to trigger actions when such events
 occur. 
 
-## Installation
-
-Install the module:
-
-```console
-$ npm i @aws-cdk/aws-iotevents
-```
-
-Import it into your code:
-
-```ts nofixture
-import * as iotevents from '@aws-cdk/aws-iotevents';
-```
-
 ## `DetectorModel`
 
 The following example creates an AWS IoT Events detector model to your stack.
@@ -81,20 +67,20 @@ const coldState = new iotevents.State({
   stateName: 'cold',
 });
 
-// transit to coldState when temperature is 10
+// transit to coldState when temperature is less than 15
 warmState.transitionTo(coldState, {
   eventName: 'to_coldState', // optional property, default by combining the names of the States
-  when: iotevents.Expression.eq(
+  when: iotevents.Expression.lt(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.fromString('10'),
+    iotevents.Expression.fromString('15'),
   ),
   executing: [new actions.LambdaInvokeAction(func)], // optional
 });
-// transit to warmState when temperature is 20
+// transit to warmState when temperature is greater than or equal to 15
 coldState.transitionTo(warmState, {
-  when: iotevents.Expression.eq(
+  when: iotevents.Expression.gte(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.fromString('20'),
+    iotevents.Expression.fromString('15'),
   ),
 });
 

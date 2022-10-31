@@ -14,6 +14,7 @@ import {
 } from '@aws-cdk/core';
 import {
   IdentityPool,
+  IdentityPoolProviderUrl,
 } from '../lib/identitypool';
 import {
   UserPoolAuthenticationProvider,
@@ -50,12 +51,21 @@ new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
     },
   },
 });
+const client = userPool.addClient('testClient');
+const provider = new UserPoolAuthenticationProvider({ userPool, userPoolClient: client });
 const idPool = new IdentityPool(stack, 'identitypool', {
   authenticationProviders: {
-    userPools: [new UserPoolAuthenticationProvider({ userPool })],
+    userPools: [provider],
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
     google: { clientId: '12345678012.apps.googleusercontent.com' },
   },
+  roleMappings: [
+    {
+      mappingKey: 'theKey',
+      providerUrl: IdentityPoolProviderUrl.userPool(`${userPool.userPoolProviderName}:${client.userPoolClientId}`),
+      useToken: true,
+    },
+  ],
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
 });

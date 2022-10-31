@@ -63,9 +63,10 @@ describe('ecr source action', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'detail': {
-            'requestParameters': {
-              'imageTag': ['latest'],
-            },
+            'result': ['SUCCESS'],
+            'repository-name': ['repo'],
+            'image-tag': ['latest'],
+            'action-type': ['PUSH'],
           },
         },
       });
@@ -110,9 +111,10 @@ describe('ecr source action', () => {
             'aws.ecr',
           ],
           'detail': {
-            'requestParameters': {
-              'imageTag': Match.absent(),
-            },
+            'result': ['SUCCESS'],
+            'repository-name': ['repo'],
+            'image-tag': [],
+            'action-type': ['PUSH'],
           },
         },
       });

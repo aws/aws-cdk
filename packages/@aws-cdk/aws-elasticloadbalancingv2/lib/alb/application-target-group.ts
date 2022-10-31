@@ -13,10 +13,6 @@ import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
 import { HttpCodeTarget } from './application-load-balancer';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Properties for defining an Application Target Group
  */
@@ -242,7 +238,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerAttachedDependencies.add((associatingConstruct || listener) as CoreConstruct);
+    this.loadBalancerAttachedDependencies.add(associatingConstruct ?? listener);
   }
 
   /**
@@ -387,28 +383,27 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  protected validate(): string[] {
-    const ret = super.validate();
+  protected validateTargetGroup(): string[] {
+    const ret = super.validateTargetGroup();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
       && (this.protocol === undefined || this.port === undefined)) {
       ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
     }
 
-    if (this.healthCheck && this.healthCheck.protocol) {
-
-      if (ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
-        if (this.healthCheck.interval && this.healthCheck.timeout &&
-          this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()) {
-          ret.push(`Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`);
-        }
+    if (this.healthCheck) {
+      if (this.healthCheck.interval && this.healthCheck.timeout &&
+        this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()) {
+        ret.push(`Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`);
       }
 
-      if (!ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
-        ret.push([
-          `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
-          `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
-        ].join(''));
+      if (this.healthCheck.protocol) {
+        if (!ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+          ret.push([
+            `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
+            `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
+          ].join(''));
+        }
       }
     }
 

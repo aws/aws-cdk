@@ -21,4 +21,5 @@ type Post {
     ups: Int
     downs: Int
     relatedPosts: [Post]
+    relatedPostsMaxBatchSize: [Post]
 }

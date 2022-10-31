@@ -68,10 +68,15 @@ async function findAllHotswappableChanges(
   sdk: ISDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackNames },
 ): Promise<HotswapOperation[] | undefined> {
+  // Skip hotswap if there is any change on stack outputs
+  if (stackChanges.outputs.differenceCount > 0) {
+    return undefined;
+  }
+
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
   let foundNonHotswappableChange = false;
-  const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
+  const promises: Array<() => Array<Promise<ChangeHotswapResult>>> = [];
   const hotswappableResources = new Array<HotswapOperation>();
 
   // gather the results of the detector functions
@@ -92,7 +97,8 @@ async function findAllHotswappableChanges(
     } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
-      promises.push([
+      // run isHotswappable* functions lazily to prevent unhandled rejections
+      promises.push(() => [
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
@@ -106,7 +112,7 @@ async function findAllHotswappableChanges(
   // resolve all detector results
   const changesDetectionResults: Array<Array<ChangeHotswapResult>> = [];
   for (const detectorResultPromises of promises) {
-    const hotswapDetectionResults = await Promise.all(detectorResultPromises);
+    const hotswapDetectionResults = await Promise.all(detectorResultPromises());
     changesDetectionResults.push(hotswapDetectionResults);
   }
 

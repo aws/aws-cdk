@@ -235,6 +235,8 @@ export abstract class BaseLoadBalancer extends Resource {
     this.loadBalancerName = resource.attrLoadBalancerName;
     this.loadBalancerArn = resource.ref;
     this.loadBalancerSecurityGroups = resource.attrSecurityGroups;
+
+    this.node.addValidation({ validate: this.validateLoadBalancer.bind(this) });
   }
 
   /**
@@ -266,7 +268,7 @@ export abstract class BaseLoadBalancer extends Resource {
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
         resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.stack.account}/*`),
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
@@ -299,5 +301,28 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   public removeAttribute(key: string) {
     this.setAttribute(key, undefined);
+  }
+
+  protected validateLoadBalancer(): string[] {
+    const ret = new Array<string>();
+
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html#cfn-elasticloadbalancingv2-loadbalancer-name
+    const loadBalancerName = this.physicalName;
+    if (!Token.isUnresolved(loadBalancerName) && loadBalancerName !== undefined) {
+      if (loadBalancerName.length > 32) {
+        ret.push(`Load balancer name: "${loadBalancerName}" can have a maximum of 32 characters.`);
+      }
+      if (loadBalancerName.startsWith('internal-')) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must not begin with "internal-".`);
+      }
+      if (loadBalancerName.startsWith('-') || loadBalancerName.endsWith('-')) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must not begin or end with a hyphen.`);
+      }
+      if (!/^[0-9a-z-]+$/i.test(loadBalancerName)) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must contain only alphanumeric characters or hyphens.`);
+      }
+    }
+
+    return ret;
   }
 }

@@ -1,0 +1,40 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "Replace AWS::Serverless::Function.DeploymentPreference#Hooks",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/AWS::Serverless::Function.DeploymentPreference/Properties/Hooks",
+          "value": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+            "Type": "Hooks",
+            "Required": false,
+            "UpdateType": "Immutable"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/AWS::Serverless::Function.Hooks",
+          "value": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst",
+            "Properties": {
+              "PreTraffic": {
+                "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                "Required": false,
+                "PrimitiveType": "String",
+                "UpdateType": "Immutable"
+              },
+              "PostTraffic": {
+                "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                "Required": false,
+                "PrimitiveType": "String",
+                "UpdateType": "Immutable"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

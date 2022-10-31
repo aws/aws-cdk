@@ -1,0 +1,210 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "nested-stacks-docker": {
+        "id": "nested-stacks-docker",
+        "path": "nested-stacks-docker",
+        "children": {
+          "nested-stack-with-image": {
+            "id": "nested-stack-with-image",
+            "path": "nested-stacks-docker/nested-stack-with-image",
+            "children": {
+              "my-image": {
+                "id": "my-image",
+                "path": "nested-stacks-docker/nested-stack-with-image/my-image",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "nested-stacks-docker/nested-stack-with-image/my-image/Staging",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
+                    }
+                  },
+                  "Repository": {
+                    "id": "Repository",
+                    "path": "nested-stacks-docker/nested-stack-with-image/my-image/Repository",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+                  "version": "0.0.0"
+                }
+              },
+              "User": {
+                "id": "User",
+                "path": "nested-stacks-docker/nested-stack-with-image/User",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-docker/nested-stack-with-image/User/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnUser",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "nested-stacks-docker/nested-stack-with-image/User/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "nested-stacks-docker/nested-stack-with-image/User/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecr:BatchCheckLayerAvailability",
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":repository/",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "ecr:GetAuthorizationToken",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "UserDefaultPolicy1F97781E",
+                            "users": [
+                              {
+                                "Ref": "User00B015A1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.User",
+                  "version": "0.0.0"
+                }
+              },
+              "output": {
+                "id": "output",
+                "path": "nested-stacks-docker/nested-stack-with-image/output",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "nested-stack-with-image.NestedStack": {
+            "id": "nested-stack-with-image.NestedStack",
+            "path": "nested-stacks-docker/nested-stack-with-image.NestedStack",
+            "children": {
+              "nested-stack-with-image.NestedStackResource": {
+                "id": "nested-stack-with-image.NestedStackResource",
+                "path": "nested-stacks-docker/nested-stack-with-image.NestedStack/nested-stack-with-image.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "/eaf17d410c9c3958b50b406011121bab5f3147b4a61a0f93a9ab1db097033867.json"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

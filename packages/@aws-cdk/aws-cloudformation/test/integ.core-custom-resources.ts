@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 /*
  * Stack verification steps:
  * - Deploy with `--no-clean`
@@ -8,10 +7,7 @@
  *   - GetAtt.Attribute2: 1234
  */
 import { App, CfnOutput, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /* eslint-disable @aws-cdk/no-core-construct */
 
@@ -20,10 +16,11 @@ class TestStack extends Stack {
     super(scope, id);
 
     const resourceType = 'Custom::Reflect';
+    const lengthyResourceType = 'Custom::Given_Resource_Type_Is_Exactly_Sixty_Characters_Long';
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/core-custom-resource-provider-fixture`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       description: 'veni vidi vici',
     });
 
@@ -36,6 +33,14 @@ class TestStack extends Stack {
           Attribute1: 'foo',
           Attribute2: 1234,
         },
+      },
+    });
+
+    new CustomResource(this, 'MyLengthyTypeResource', {
+      resourceType: lengthyResourceType,
+      serviceToken,
+      properties: {
+        physicalResourceId: 'MyPhysicalLengthyType',
       },
     });
 

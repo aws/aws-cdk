@@ -62,8 +62,73 @@ describe('service account', () => {
           Version: '2012-10-17',
         },
       });
-
     });
+
+    test('it is possible to add annotations and labels', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        annotations: {
+          'eks.amazonaws.com/sts-regional-endpoints': 'false',
+        },
+        labels: {
+          'some-label': 'with-some-value',
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
+            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+          ],
+        },
+        Manifest: {
+          'Fn::Join': [
+            '',
+            [
+              '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackmyserviceaccount58b9529e\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackmyserviceaccount58b9529e\",\"some-label\":\"with-some-value\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
+              {
+                'Fn::GetAtt': [
+                  'MyServiceAccountRoleB41709FF',
+                  'Arn',
+                ],
+              },
+              '\",\"eks.amazonaws.com/sts-regional-endpoints\":\"false\"}}}]',
+            ],
+          ],
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRoleWithWebIdentity',
+              Effect: 'Allow',
+              Principal: {
+                Federated: {
+                  Ref: 'ClusterOpenIdConnectProviderE7EB0530',
+                },
+              },
+              Condition: {
+                StringEquals: {
+                  'Fn::GetAtt': [
+                    'MyServiceAccountConditionJson1ED3BC54',
+                    'Value',
+                  ],
+                },
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
     test('should have allow multiple services accounts', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
@@ -96,8 +161,8 @@ describe('service account', () => {
           ],
         },
       });
-
     });
+
     test('should have unique resource name', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -107,8 +172,8 @@ describe('service account', () => {
 
       // THEN
       expect(() => cluster.addServiceAccount('MyServiceAccount')).toThrow();
-
     });
+
     test('addServiceAccount for imported cluster', () => {
       const { stack } = testFixture();
       const oidcProvider = new iam.OpenIdConnectProvider(stack, 'ClusterOpenIdConnectProvider', {
@@ -171,7 +236,6 @@ describe('service account', () => {
           Version: '2012-10-17',
         },
       });
-
     });
   });
 
@@ -187,6 +251,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if ends with dot', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -198,6 +263,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('dot in the name is allowed', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -211,6 +277,7 @@ describe('service account', () => {
       // THEN
       expect(sa.serviceAccountName).toEqual(valueWithDot);
     });
+
     test('throw error if name is too long', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -236,6 +303,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if ends with dot', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -247,6 +315,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if dot is in the name', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();
@@ -259,6 +328,7 @@ describe('service account', () => {
       // THEN
         .toThrowError(RangeError);
     });
+
     test('throw error if name is too long', () => {
       // GIVEN
       const { cluster } = testFixtureCluster();

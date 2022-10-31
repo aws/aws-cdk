@@ -1,6 +1,8 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
@@ -54,12 +56,40 @@ export class EngineVersion {
    * Neptune engine version 1.1.0.0
    */
   public static readonly V1_1_0_0 = new EngineVersion('1.1.0.0');
+  /**
+   * Neptune engine version 1.1.1.0
+   */
+  public static readonly V1_1_1_0 = new EngineVersion('1.1.1.0');
+  /**
+   * Neptune engine version 1.2.0.0
+   */
+  public static readonly V1_2_0_0 = new EngineVersion('1.2.0.0');
 
   /**
    * Constructor for specifying a custom engine version
    * @param version the engine version of Neptune
    */
   public constructor(public readonly version: string) {}
+}
+
+/**
+ * Neptune log types that can be exported to CloudWatch logs
+ *
+ * @see https://docs.aws.amazon.com/neptune/latest/userguide/cloudwatch-logs.html
+ */
+export class LogType {
+  /**
+   * Audit logs
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html
+   */
+  public static readonly AUDIT = new LogType('audit');
+
+  /**
+   * Constructor for specifying a custom log type
+   * @param value the log type
+   */
+  public constructor(public readonly value: string) {}
 }
 
 /**
@@ -234,6 +264,34 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * The list of log types that need to be enabled for exporting to
+   * CloudWatch Logs.
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cloudwatch-logs.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/auditing.html#auditing-enable
+   *
+   * @default - no log exports
+   */
+  readonly cloudwatchLogsExports?: LogType[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+
+  /**
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
+  readonly cloudwatchLogsRetentionRole?: iam.IRole;
 }
 
 /**
@@ -264,9 +322,26 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
   readonly clusterReadEndpoint: Endpoint;
 
   /**
+   * Grant the given identity the specified actions
+   * @param grantee the identity to be granted the actions
+   * @param actions the data-access actions
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/iam-dp-actions.html
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
    * Grant the given identity connection access to the database.
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Return the given named metric associated with this DatabaseCluster instance
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-dimensions.html
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -356,15 +431,15 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
 
   protected abstract enableIamAuthentication?: boolean;
 
-  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new Error('Cannot grant connect when IAM authentication is disabled');
+      throw new Error('Cannot grant permissions when IAM authentication is disabled');
     }
 
     this.enableIamAuthentication = true;
     return iam.Grant.addToPrincipal({
       grantee,
-      actions: ['neptune-db:*'],
+      actions,
       resourceArns: [
         [
           'arn',
@@ -375,6 +450,21 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
           `${this.clusterResourceIdentifier}/*`,
         ].join(':'),
       ],
+    });
+  }
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, 'neptune-db:*');
+  }
+
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Neptune',
+      dimensionsMap: {
+        DBClusterIdentifier: this.clusterIdentifier,
+      },
+      metricName,
+      ...props,
     });
   }
 }
@@ -435,7 +525,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE };
+    this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
     // Determine the subnet(s) to deploy the Neptune cluster to
     const { subnetIds, internetConnectivityEstablished } = this.vpc.selectSubnets(this.vpcSubnets);
@@ -488,6 +578,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
+      // CloudWatch Logs exports
+      enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,
     });
 
@@ -501,6 +593,18 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     const port = Token.asNumber(cluster.attrPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpoint, port);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpoint, port);
+
+    // Log retention
+    const retention = props.cloudwatchLogsRetention;
+    if (retention) {
+      props.cloudwatchLogsExports?.forEach(logType => {
+        new logs.LogRetention(this, `${logType}LogRetention`, {
+          logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
+          role: props.cloudwatchLogsRetentionRole,
+          retention,
+        });
+      });
+    }
 
     // Create the instances
     const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;

@@ -6,10 +6,6 @@ import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Options for defining EKS Fargate Profiles.
  */
@@ -115,7 +111,7 @@ export interface Selector {
  * eks.amazonaws.com/fargate-profile: profile_name. However, the pod must still
  * match a selector in that profile in order to be scheduled onto Fargate.
  */
-export class FargateProfile extends CoreConstruct implements ITaggable {
+export class FargateProfile extends Construct implements ITaggable {
 
   /**
    * The full Amazon Resource Name (ARN) of the Fargate profile.
@@ -165,7 +161,7 @@ export class FargateProfile extends CoreConstruct implements ITaggable {
 
     let subnets: string[] | undefined;
     if (props.vpc) {
-      const selection: ec2.SubnetSelection = props.subnetSelection ?? { subnetType: ec2.SubnetType.PRIVATE };
+      const selection: ec2.SubnetSelection = props.subnetSelection ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
       subnets = props.vpc.selectSubnets(selection).subnetIds;
     }
 

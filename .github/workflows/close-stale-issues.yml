@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Stale issue job
     steps:
-    - uses: aws-actions/stale-issue-cleanup@v3
+    - uses: aws-actions/stale-issue-cleanup@v5
       with:
         # Setting messages to an empty string will cause the automation to skip
         # that category
@@ -25,9 +25,9 @@ jobs:
         
         # These labels are required
         stale-issue-label: closing-soon
-        exempt-issue-label: no-autoclose
+        exempt-issue-labels: no-autoclose
         stale-pr-label: closing-soon
-        exempt-pr-label: no-autoclose
+        exempt-pr-labels: no-autoclose
         response-requested-label: response-requested
 
         # Don't set closed-for-staleness label to skip closing very old issues

@@ -123,7 +123,6 @@ describe('tokens that return literals', () => {
     });
   });
 
-
   test('tokens in strings survive additional TokenJSON.stringification()', () => {
     // GIVEN
     for (const token of tokensThatResolveTo('pong!')) {
@@ -160,7 +159,6 @@ describe('tokens that return literals', () => {
     // THEN
     expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: \\"woof\\""}');
   });
-
 });
 
 describe('tokens returning CloudFormation intrinsics', () => {
@@ -322,18 +320,16 @@ describe('tokens returning CloudFormation intrinsics', () => {
 
     // THEN
     const asm = app.synth();
-    expect(asm.getStackByName('Stack2').template).toEqual({
-      Outputs: {
-        Stack1Id: {
-          Value: {
-            'Fn::Join': ['', [
-              '{"Stack1Id":"',
-              { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
-              '","Stack2Id":"',
-              { Ref: 'AWS::StackId' },
-              '"}',
-            ]],
-          },
+    expect(asm.getStackByName('Stack2').template?.Outputs).toEqual({
+      Stack1Id: {
+        Value: {
+          'Fn::Join': ['', [
+            '{"Stack1Id":"',
+            { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
+            '","Stack2Id":"',
+            { Ref: 'AWS::StackId' },
+            '"}',
+          ]],
         },
       },
     });
@@ -407,7 +403,6 @@ test('JSON strings nested inside JSON strings have correct quoting', () => {
   // Is this even correct? Let's ask JavaScript because I have trouble reading this many backslashes.
   expect(JSON.parse(JSON.parse(evaluated).payload).message).toEqual('I am in account "1234"');
 });
-
 
 /**
  * Return two Tokens, one of which evaluates to a Token directly, one which evaluates to it lazily

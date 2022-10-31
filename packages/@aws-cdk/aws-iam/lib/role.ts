@@ -1,17 +1,20 @@
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '@aws-cdk/core';
+import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
-import { IManagedPolicy } from './managed-policy';
+import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, IComparablePrincipal } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { AttachedPolicies, UniqueStringSet } from './util';
+
+const MAX_INLINE_SIZE = 10000;
+const MAX_MANAGEDPOL_SIZE = 6000;
 
 /**
  * Properties for defining an IAM Role
@@ -159,7 +162,24 @@ export interface FromRoleArnOptions {
    * @default false
    */
   readonly addGrantsToResources?: boolean;
+
+  /**
+   * Any policies created by this role will use this value as their ID, if specified.
+   * Specify this if importing the same role in multiple stacks, and granting it
+   * different permissions in at least two stacks. If this is not specified
+   * (or if the same name is specified in more than one stack),
+   * a CloudFormation issue will result in the policy created in whichever stack
+   * is deployed last overwriting the policies created by the others.
+   *
+   * @default 'Policy'
+   */
+  readonly defaultPolicyName?: string;
 }
+
+/**
+ * Options allowing customizing the behavior of {@link Role.fromRoleName}.
+ */
+export interface FromRoleNameOptions extends FromRoleArnOptions { }
 
 /**
  * IAM Role
@@ -195,7 +215,7 @@ export class Role extends Resource implements IRole {
     // we want to support these as well, so we just use the element after the last slash as role name
     const roleName = resourceName.split('/').pop()!;
 
-    class Import extends Resource implements IRole {
+    class Import extends Resource implements IRole, IComparablePrincipal {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly principalAccount = roleAccount;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
@@ -203,12 +223,15 @@ export class Role extends Resource implements IRole {
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
       private readonly attachedPolicies = new AttachedPolicies();
+      private readonly defaultPolicyName?: string;
       private defaultPolicy?: Policy;
 
       constructor(_scope: Construct, _id: string) {
         super(_scope, _id, {
           account: roleAccount,
         });
+
+        this.defaultPolicyName = options.defaultPolicyName;
       }
 
       public addToPolicy(statement: PolicyStatement): boolean {
@@ -217,7 +240,7 @@ export class Role extends Resource implements IRole {
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
+          this.defaultPolicy = new Policy(this, this.defaultPolicyName ?? 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
         this.defaultPolicy.addStatements(statement);
@@ -247,6 +270,13 @@ export class Role extends Resource implements IRole {
       }
 
       /**
+       * Grant permissions to the given principal to pass this role.
+       */
+      public grantAssumeRole(identity: IPrincipal): Grant {
+        return this.grant(identity, 'sts:AssumeRole');
+      }
+
+      /**
        * Grant the actions defined in actions to the identity Principal on this resource.
        */
       public grant(grantee: IPrincipal, ...actions: string[]): Grant {
@@ -257,21 +287,30 @@ export class Role extends Resource implements IRole {
           scope: this,
         });
       }
+
+      public dedupeString(): string | undefined {
+        return `ImportedRole:${roleArn}`;
+      }
     }
 
     if (options.addGrantsToResources !== undefined && options.mutable !== false) {
       throw new Error('\'addGrantsToResources\' can only be passed if \'mutable: false\'');
     }
 
-    const importedRole = new Import(scope, id);
-    const roleArnAndScopeStackAccountComparison = Token.compareStrings(importedRole.env.account, scopeStack.account);
+    const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
     const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
       roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
       roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
+
+    // if we are returning an immutable role then the 'importedRole' is just a throwaway construct
+    // so give it a different id
+    const mutableRoleId = (options.mutable !== false && equalOrAnyUnresolved) ? id : `MutableRole${id}`;
+    const importedRole = new Import(scope, mutableRoleId);
+
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
-      : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole, options.addGrantsToResources ?? false);
+      : new ImmutableRole(scope, id, importedRole, options.addGrantsToResources ?? false);
   }
 
   /**
@@ -279,14 +318,19 @@ export class Role extends Resource implements IRole {
    *
    * The imported role is assumed to exist in the same account as the account
    * the scope's containing Stack is being deployed to.
+
+   * @param scope construct scope
+   * @param id construct id
+   * @param roleName the name of the role to import
+   * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleName(scope: Construct, id: string, roleName: string) {
+  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
       resource: 'role',
       resourceName: roleName,
-    }));
+    }), options);
   }
 
   public readonly grantPrincipal: IPrincipal = this;
@@ -331,7 +375,9 @@ export class Role extends Resource implements IRole {
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
   private readonly inlinePolicies: { [name: string]: PolicyDocument };
+  private readonly dependables = new Map<PolicyStatement, DependencyGroup>();
   private immutableRole?: IRole;
+  private _didSplit = false;
 
   constructor(scope: Construct, id: string, props: RoleProps) {
     super(scope, id, {
@@ -355,6 +401,8 @@ export class Role extends Resource implements IRole {
       throw new Error('Role description must be no longer than 1000 characters.');
     }
 
+    validateRolePath(props.path);
+
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
@@ -371,7 +419,8 @@ export class Role extends Resource implements IRole {
       region: '', // IAM is global in each partition
       service: 'iam',
       resource: 'role',
-      resourceName: this.physicalName,
+      // Removes leading slash from path
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
     this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
@@ -387,6 +436,16 @@ export class Role extends Resource implements IRole {
       }
       return result;
     }
+
+    Aspects.of(this).add({
+      visit: (c) => {
+        if (c === this) {
+          this.splitLargePolicy();
+        }
+      },
+    });
+
+    this.node.addValidation({ validate: () => this.validateRole() });
   }
 
   /**
@@ -400,7 +459,13 @@ export class Role extends Resource implements IRole {
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.defaultPolicy };
+
+    // We might split this statement off into a different policy, so we'll need to
+    // late-bind the dependable.
+    const policyDependable = new DependencyGroup();
+    this.dependables.set(statement, policyDependable);
+
+    return { statementAdded: true, policyDependable };
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -445,6 +510,14 @@ export class Role extends Resource implements IRole {
   }
 
   /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  public grantAssumeRole(identity: IPrincipal) {
+    return this.grant(identity, 'sts:AssumeRole');
+  }
+
+
+  /**
    * Return a copy of this Role object whose Policies will not be updated
    *
    * Use the object returned by this method if you want this Role to be used by
@@ -461,13 +534,63 @@ export class Role extends Resource implements IRole {
     return this.immutableRole;
   }
 
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() || []);
+  private validateRole(): string[] {
+    const errors = new Array<string>();
+    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }
+
     return errors;
+  }
+
+  /**
+   * Split large inline policies into managed policies
+   *
+   * This gets around the 10k bytes limit on role policies.
+   */
+  private splitLargePolicy() {
+    if (!this.defaultPolicy || this._didSplit) {
+      return;
+    }
+    this._didSplit = true;
+
+    const self = this;
+    const originalDoc = this.defaultPolicy.document;
+
+    const splitOffDocs = originalDoc._splitDocument(this, MAX_INLINE_SIZE, MAX_MANAGEDPOL_SIZE);
+    // Includes the "current" document
+
+    const mpCount = this.managedPolicies.length + (splitOffDocs.size - 1);
+    if (mpCount > 20) {
+      Annotations.of(this).addWarning(`Policy too large: ${mpCount} exceeds the maximum of 20 managed policies attached to a Role`);
+    } else if (mpCount > 10) {
+      Annotations.of(this).addWarning(`Policy large: ${mpCount} exceeds 10 managed policies attached to a Role, this requires a quota increase`);
+    }
+
+    // Create the managed policies and fix up the dependencies
+    markDeclaringConstruct(originalDoc, this.defaultPolicy);
+
+    let i = 1;
+    for (const newDoc of splitOffDocs.keys()) {
+      if (newDoc === originalDoc) { continue; }
+
+      const mp = new ManagedPolicy(this, `OverflowPolicy${i++}`, {
+        description: `Part of the policies for ${this.node.path}`,
+        document: newDoc,
+        roles: [this],
+      });
+      markDeclaringConstruct(newDoc, mp);
+    }
+
+    /**
+     * Update the Dependables for the statements in the given PolicyDocument to point to the actual declaring construct
+     */
+    function markDeclaringConstruct(doc: PolicyDocument, declaringConstruct: IConstruct) {
+      for (const original of splitOffDocs.get(doc) ?? []) {
+        self.dependables.get(original)?.add(declaringConstruct);
+      }
+    }
   }
 }
 
@@ -498,6 +621,11 @@ export interface IRole extends IIdentity {
    * Grant permissions to the given principal to pass this role.
    */
   grantPassRole(grantee: IPrincipal): Grant;
+
+  /**
+   * Grant permissions to the given principal to assume this role.
+   */
+  grantAssumeRole(grantee: IPrincipal): Grant;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
@@ -516,6 +644,22 @@ function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   defaultAddPrincipalToAssumeRole(principal, addDoc);
 
   return actualDoc;
+}
+
+function validateRolePath(path?: string) {
+  if (path === undefined || Token.isUnresolved(path)) {
+    return;
+  }
+
+  const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
+
+  if (path.length == 0 || path.length > 512) {
+    throw new Error(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`);
+  } else if (!validRolePath.test(path)) {
+    throw new Error(
+      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+      + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`);
+  }
 }
 
 function validateMaxSessionDuration(duration?: number) {

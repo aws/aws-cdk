@@ -210,12 +210,12 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   }
 
   private validateEntryPointArguments (entryPointArguments:sfn.TaskInput) {
-    if (typeof entryPointArguments.value === 'string' && !sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array or encoded JSON path, but received a non JSON path string');
-      .`);
-    }
-    if (!this.isArrayOfStrings(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array or encoded JSON path but received ${typeof entryPointArguments.value}.`);
+    if (typeof entryPointArguments.value === 'string') {
+      if (!sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
+        throw new Error('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
+      }
+    } else if (!this.isArrayOfStrings(entryPointArguments.value)) {
+      throw new Error(`Entry point arguments must be a string array or an encoded JSON path but received ${typeof entryPointArguments.value}.`);
     }
   }
 
@@ -280,7 +280,10 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     jobExecutionRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         resources: [
-          'arn:aws:logs:*:*:*',
+          cdk.Stack.of(this).formatArn({
+            service: 'logs',
+            resource: '*',
+          }),
         ],
         actions: [
           'logs:DescribeLogGroups',
@@ -301,7 +304,10 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     this.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         resources: [
-          'arn:aws:logs:*:*:*',
+          cdk.Stack.of(this).formatArn({
+            service: 'logs',
+            resource: '*',
+          }),
         ],
         actions: [
           'logs:DescribeLogGroups',
@@ -344,7 +350,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
     const shellCliLambda = new lambda.SingletonFunction(this, 'Call Update-Role-Trust-Policy', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, 'utils/role-policy')),
       timeout: cdk.Duration.seconds(30),

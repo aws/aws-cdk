@@ -1,0 +1,195 @@
+{
+ "Resources": {
+  "AwsApiCallS3listObjectsV2": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "parameters": {
+     "Bucket": {
+      "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputRefLoggingBucket1E5A6F3B2AAAD6ED"
+     },
+     "MaxKeys": 1,
+     "Prefix": {
+      "Fn::Join": [
+       "",
+       [
+        "AWSLogs/",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        "/KafkaBrokerLogs"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1663236373089"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2AssertEqualsS3listObjectsV26A93E391": {
+   "Type": "Custom::DeployAssert@AssertEquals",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "actual": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2",
+      "apiCallResponse"
+     ]
+    },
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "salt": "1663236373089"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputFnGetAttLoggingBucket1E5A6F3BArn248EC7EA"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputFnGetAttLoggingBucket1E5A6F3BArn248EC7EA"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "2a53dc40a7dae81c8850e125ab49e5f55d80b7b8ceac86976f2a4119393cab72.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAssertEqualsS3listObjectsV2773d42ff5e69123d2a937459089e2352": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV2AssertEqualsS3listObjectsV26A93E391",
+     "data"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

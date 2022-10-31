@@ -104,7 +104,13 @@ graph showing the Average statistic with an aggregation period of 5 minutes:
 
 ```ts
 const cpuUtilization = new cloudwatch.MathExpression({
-  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)"
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+
+  // Specifying '' as the label suppresses the default behavior
+  // of using the expression as metric label. This is especially appropriate
+  // when using expressions that return multiple time series (like SEARCH()
+  // or METRICS()), to show the labels of the retrieved metrics only.
+  label: '',
 });
 ```
 
@@ -156,6 +162,33 @@ useful when embedding them in graphs, see below).
 > aggregating using `Sum`, which will be the same for both metrics types. If you
 > happen to know the Metric you want to alarm on makes sense as a rate
 > (`Average`) you can always choose to change the statistic.
+
+### Labels
+
+Metric labels are displayed in the legend of graphs that include the metrics.
+
+You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+to show summary information about the displayed time series
+in the legend. For example, if you use:
+
+```ts
+declare const fn: lambda.Function;
+
+const minuteErrorRate = fn.metricErrors({
+  statistic: 'sum',
+  period: Duration.hours(1),
+
+  // Show the maximum hourly error count in the legend
+  label: '[max: ${MAX}] Lambda failure rate',
+});
+```
+
+As the metric label, the maximum value in the visible range will
+be shown next to the time series name in the graph's legend.
+
+If the metric is a math expression producing more than one time series, the
+maximum will be individually calculated and shown for each time series produce
+by the math expression.
 
 ## Alarms
 
@@ -255,6 +288,30 @@ new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
 });
 ```
 
+#### Actions Suppressor
+
+If you want to disable actions of a Composite Alarm based on a certain condition, you can use [Actions Suppression](https://www.amazonaws.cn/en/new/2022/amazon-cloudwatch-supports-composite-alarm-actions-suppression/).
+
+```ts
+declare const childAlarm1: cloudwatch.Alarm;
+declare const childAlarm2: cloudwatch.Alarm;
+declare const onAlarmAction: cloudwatch.IAlarmAction;
+declare const onOkAction: cloudwatch.IAlarmAction;
+declare const actionsSuppressor: cloudwatch.Alarm;
+
+const alarmRule = cloudwatch.AlarmRule.anyOf(alarm1, alarm2);
+
+const myCompositeAlarm = new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
+  alarmRule,
+  actionsSuppressor,
+});
+myCompositeAlarm.addAlarmActions(onAlarmAction);
+myComposireAlarm.addOkAction(onOkAction);
+```
+
+In the provided example, if `actionsSuppressor` is in `ALARM` state, `onAlarmAction` won't be triggered even if `myCompositeAlarm` goes into `ALARM` state.
+Similar, if `actionsSuppressor` is in `ALARM` state and `myCompositeAlarm` goes from `ALARM` into `OK` state, `onOkAction` won't be triggered.
+
 ### A note on units
 
 In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
@@ -308,7 +365,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   right: [errorCountMetric.with({
     statistic: "average",
     label: "Error rate",
-    color: cloudwatch.Color.GREEN
+    color: cloudwatch.Color.GREEN,
   })]
 }));
 ```
@@ -366,6 +423,24 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+### Gauge widget
+
+Gauge graph requires the max and min value of the left Y axis, if no value is informed the limits will be from 0 to 100.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+declare const gaugeMetric: cloudwatch.Metric;
+
+dashboard.addWidgets(new cloudwatch.GaugeWidget({
+  metrics: [gaugeMetric],
+  leftYAxis: {
+    min: 0,
+    max: 1000,
+  }
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:
@@ -397,6 +472,7 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 
 Show as many digits as can fit, before rounding.
 
+
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
 
@@ -404,6 +480,18 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [ /* ... */ ],
 
   fullPrecision: true,
+}));
+```
+
+Sparkline allows you to glance the trend of a metric by displaying a simplified linegraph below the value. You can't use `sparkline: true` together with `setPeriodToTimeRange: true`
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
+
+  sparkline: true,
 }));
 ```
 
@@ -436,6 +524,20 @@ dashboard.addWidgets(
 );
 ```
 
+An alarm status widget only showing firing alarms, sorted by state and timestamp:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+
+dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
+  title: "Errors",
+  alarms: [errorAlarm],
+  sortBy: cloudwatch.AlarmStatusWidgetSortBy.STATE_UPDATED_TIMESTAMP,
+  states: [cloudwatch.AlarmState.ALARM],
+}));
+```
+
 ### Query results widget
 
 A `LogQueryWidget` shows the results of a query from Logs Insights:
@@ -453,6 +555,28 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   ]
 }));
 ```
+
+### Custom widget
+
+A `CustomWidget` shows the result of an AWS Lambda function:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+// Import or create a lambda function
+const fn = lambda.Function.fromFunctionArn(
+  dashboard,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+
+dashboard.addWidgets(new cloudwatch.CustomWidget({
+  functionArn: fn.functionArn,
+  title: 'My lambda baked widget',
+}));
+```
+
+You can learn more about custom widgets in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/add_custom_widget_dashboard.html).
 
 ### Dashboard Layout
 
@@ -473,3 +597,35 @@ you can use the following widgets to pack widgets together in different ways:
 - `Column`: stack two or more widgets vertically.
 - `Row`: lay out two or more widgets horizontally.
 - `Spacer`: take up empty space
+
+### Column widget
+
+A column widget contains other widgets and they will be laid out in a 
+vertical column. Widgets will be put one after another in order.
+
+```ts
+declare const widgetA: cloudwatch.IWidget;
+declare const widgetB: cloudwatch.IWidget;
+
+new cloudwatch.Column(widgetA, widgetB);
+```
+
+You can add a widget after object instantiation with the method
+`addWidget()`. Each new widget will be put at the bottom of the column.
+
+### Row widget
+
+A row widget contains other widgets and they will be laid out in a 
+horizontal row. Widgets will be put one after another in order.
+If the total width of the row exceeds the max width of the grid of 24
+columns, the row will wrap automatically and adapt its height.
+
+```ts
+declare const widgetA: cloudwatch.IWidget;
+declare const widgetB: cloudwatch.IWidget;
+
+new cloudwatch.Row(widgetA, widgetB);
+```
+
+You can add a widget after object instantiation with the method
+`addWidget()`.

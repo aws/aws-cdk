@@ -55,8 +55,8 @@ function sanitizeArtifactName(x: string): string {
   const maxLength = 100; // Max length of 100 is imposed by CodePipeline library
 
   if (sani.length > maxLength) {
-    const fingerprint = crypto.createHash('sha256').update(sani).digest('hex').substr(0, 8);
-    sani = sani.substr(0, maxLength - fingerprint.length) + fingerprint;
+    const fingerprint = crypto.createHash('sha256').update(sani).digest('hex').slice(0, 8);
+    sani = sani.slice(0, maxLength - fingerprint.length) + fingerprint;
   }
 
   return sani;

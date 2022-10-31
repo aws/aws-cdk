@@ -28,3 +28,5 @@ junit.xml
 test/
 
 !*.lit.ts
+**/*.integ.snapshot
+**/*.integ.snapshot

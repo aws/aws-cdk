@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Construct as CoreConstruct, Duration, Names, Stack } from '@aws-cdk/core';
+import { Duration, Names, Stack } from '@aws-cdk/core';
 
 /**
  * Controller version.
@@ -83,6 +83,11 @@ export class AlbControllerVersion {
   public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', false);
 
   /**
+   * v2.4.1
+   */
+  public static readonly V2_4_1 = new AlbControllerVersion('v2.4.1', false);
+
+  /**
    * Specify a custom version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
@@ -101,7 +106,7 @@ export class AlbControllerVersion {
     /**
      * Whether or not its a custom version.
      */
-    public readonly custom: boolean) {}
+    public readonly custom: boolean) { }
 }
 
 /**
@@ -180,7 +185,7 @@ export interface AlbControllerProps extends AlbControllerOptions {
  * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller
  *
  */
-export class AlbController extends CoreConstruct {
+export class AlbController extends Construct {
 
   /**
    * Create the controller construct associated with this cluster and scope.
@@ -226,7 +231,7 @@ export class AlbController extends CoreConstruct {
       // want to expose this since helm here is just an implementation detail
       // for installing a specific version of the controller itself.
       // https://github.com/aws/eks-charts/blob/v0.0.65/stable/aws-load-balancer-controller/Chart.yaml
-      version: '1.2.7',
+      version: '1.4.1',
 
       wait: true,
       timeout: Duration.minutes(15),
@@ -246,8 +251,8 @@ export class AlbController extends CoreConstruct {
     });
 
     // the controller relies on permissions deployed using these resources.
-    chart.node.addDependency(serviceAccount);
-    chart.node.addDependency(props.cluster.openIdConnectProvider);
-    chart.node.addDependency(props.cluster.awsAuth);
+    Node.of(chart).addDependency(serviceAccount);
+    Node.of(chart).addDependency(props.cluster.openIdConnectProvider);
+    Node.of(chart).addDependency(props.cluster.awsAuth);
   }
 }

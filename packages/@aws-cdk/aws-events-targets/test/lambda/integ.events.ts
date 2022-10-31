@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'lambda-events');
 
 const fn = new lambda.Function(stack, 'MyFunc', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });
@@ -34,7 +34,7 @@ const queue = new sqs.Queue(stack, 'Queue');
 timer3.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue,
   maxEventAge: cdk.Duration.hours(2),
-  retryAttempts: 2,
+  retryAttempts: 0,
 }));
 
 app.synth();

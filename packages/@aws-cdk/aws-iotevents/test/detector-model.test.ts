@@ -148,7 +148,7 @@ test('can set actions to events', () => {
         eventName: 'test-eventName1',
         condition: iotevents.Expression.currentInput(input),
         actions: [{
-          bind: () => ({
+          _bind: () => ({
             configuration: {
               lambda: {
                 functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
@@ -200,7 +200,7 @@ test.each([
 test('can set an action to multiple detector models', () => {
   // GIVEN an action
   const action: iotevents.IAction = {
-    bind: (_, { role }) => {
+    _bind: (_, { role }) => {
       role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['lambda:InvokeFunction'],
         resources: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn'],
@@ -393,7 +393,7 @@ test('can set actions to transitions', () => {
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12'),
     ),
-    executing: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+    executing: [{ _bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
 
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
@@ -498,14 +498,39 @@ test('cannot create transitions that transit to duprecated target state', () => 
 });
 
 describe('Expression', () => {
-  test('currentInput', () => {
+  const E = iotevents.Expression;
+  test.each([
+    ['currentInput', (testInput: iotevents.IInput) => E.currentInput(testInput), 'currentInput("test-input")'],
+    ['timeout', () => E.timeout('test-timer'), 'timeout("test-timer")'],
+    ['inputAttribute', (testInput: iotevents.IInput) => E.inputAttribute(testInput, 'json.path'), '$input.test-input.json.path'],
+    ['add', () => E.add(E.fromString('5'), E.fromString('2')), '5 + 2'],
+    ['subtract', () => E.subtract(E.fromString('5'), E.fromString('2')), '5 - 2'],
+    ['divide', () => E.divide(E.fromString('5'), E.fromString('2')), '5 / 2'],
+    ['multiply', () => E.multiply(E.fromString('5'), E.fromString('2')), '5 * 2'],
+    ['concat', () => E.concat(E.fromString('"aaa"'), E.fromString('"bbb"')), '"aaa" + "bbb"'],
+    ['bitwiseOr', () => E.bitwiseOr(E.fromString('5'), E.fromString('2')), '5 | 2'],
+    ['bitwiseAnd', () => E.bitwiseAnd(E.fromString('5'), E.fromString('2')), '5 & 2'],
+    ['bitwiseXor', () => E.bitwiseXor(E.fromString('5'), E.fromString('2')), '5 ^ 2'],
+    ['eq', () => E.eq(E.fromString('"aaa"'), E.fromString('"bbb"')), '"aaa" == "bbb"'],
+    ['neq', () => E.neq(E.fromString('"aaa"'), E.fromString('"bbb"')), '"aaa" != "bbb"'],
+    ['lt', () => E.lt(E.fromString('5'), E.fromString('2')), '5 < 2'],
+    ['lte', () => E.lte(E.fromString('5'), E.fromString('2')), '5 <= 2'],
+    ['gt', () => E.gt(E.fromString('5'), E.fromString('2')), '5 > 2'],
+    ['gte', () => E.gte(E.fromString('5'), E.fromString('2')), '5 >= 2'],
+    ['and', () => E.and(E.fromString('true'), E.fromString('false')), 'true && false'],
+    ['or', () => E.or(E.fromString('true'), E.fromString('false')), 'true || false'],
+    ['operator priority', () => E.and(
+      E.and(E.fromString('false'), E.fromString('false')),
+      E.or(E.fromString('true'), E.fromString('true')),
+    ), 'false && false && (true || true)'],
+  ])('%s', (_, getExpression, expectedCondition) => {
     // WHEN
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          condition: iotevents.Expression.currentInput(input),
+          condition: getExpression(input),
         }],
       }),
     });
@@ -517,97 +542,7 @@ describe('Expression', () => {
           Match.objectLike({
             OnEnter: {
               Events: [Match.objectLike({
-                Condition: 'currentInput("test-input")',
-              })],
-            },
-          }),
-        ],
-      },
-    });
-  });
-
-  test('inputAttribute', () => {
-    // WHEN
-    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-      initialState: new iotevents.State({
-        stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-          condition: iotevents.Expression.inputAttribute(input, 'json.path'),
-        }],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-      DetectorModelDefinition: {
-        States: [
-          Match.objectLike({
-            OnEnter: {
-              Events: [Match.objectLike({
-                Condition: '$input.test-input.json.path',
-              })],
-            },
-          }),
-        ],
-      },
-    });
-  });
-
-  test('eq', () => {
-    // WHEN
-    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-      initialState: new iotevents.State({
-        stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-          condition: iotevents.Expression.eq(
-            iotevents.Expression.fromString('"aaa"'),
-            iotevents.Expression.fromString('"bbb"'),
-          ),
-        }],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-      DetectorModelDefinition: {
-        States: [
-          Match.objectLike({
-            OnEnter: {
-              Events: [Match.objectLike({
-                Condition: '"aaa" == "bbb"',
-              })],
-            },
-          }),
-        ],
-      },
-    });
-  });
-
-  test('eq', () => {
-    // WHEN
-    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-      initialState: new iotevents.State({
-        stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-          condition: iotevents.Expression.and(
-            iotevents.Expression.fromString('true'),
-            iotevents.Expression.fromString('false'),
-          ),
-        }],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-      DetectorModelDefinition: {
-        States: [
-          Match.objectLike({
-            OnEnter: {
-              Events: [Match.objectLike({
-                Condition: 'true && false',
+                Condition: expectedCondition,
               })],
             },
           }),

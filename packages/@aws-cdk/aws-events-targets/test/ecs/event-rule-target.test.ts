@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
@@ -64,6 +65,61 @@ test('Can use EC2 taskdef as EventRule target', () => {
         },
         RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
         Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('Can use EC2 taskdef as EventRule target with dead letter queue', () => {
+  // GIVEN
+  const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+  const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+    memoryLimitMiB: 256,
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    deadLetterQueue,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+        },
+        InputTransformer: {
+          InputPathsMap: {
+            'detail-event': '$.detail.event',
+          },
+          InputTemplate: '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}]}',
+        },
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+        DeadLetterConfig: {
+          Arn: {
+            'Fn::GetAtt': [
+              'MyDeadLetterQueueD997968A',
+              'Arn',
+            ],
+          },
+        },
       },
     ],
   });
@@ -347,6 +403,81 @@ test('Can use Fargate taskdef as EventRule target', () => {
   });
 });
 
+test('Can use Fargate taskdef as EventRule target with dead letter queue', () => {
+  // GIVEN
+  const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  const target = new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    deadLetterQueue,
+  });
+  rule.addTarget(target);
+
+  // THEN
+  expect(target.securityGroups?.length).toBeGreaterThan(0); // Generated security groups should be accessible.
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+          LaunchType: 'FARGATE',
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: 'VpcPrivateSubnet1Subnet536B997A',
+                },
+              ],
+              AssignPublicIp: 'DISABLED',
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': [
+                    'TaskDefSecurityGroupD50E7CF0',
+                    'GroupId',
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        InputTransformer: {
+          InputPathsMap: {
+            'detail-event': '$.detail.event',
+          },
+          InputTemplate: '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}]}',
+        },
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+        DeadLetterConfig: {
+          Arn: {
+            'Fn::GetAtt': [
+              'MyDeadLetterQueueD997968A',
+              'Arn',
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
 test('Can use same fargate taskdef with multiple rules', () => {
   // GIVEN
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -410,7 +541,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
   vpc = new ec2.Vpc(stack, 'Vpc2', {
     maxAzs: 1,
     subnetConfiguration: [{
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       name: 'Isolated',
     }],
   });
@@ -430,7 +561,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
     cluster,
     taskDefinition,
     taskCount: 1,
-    subnetSelection: { subnetType: ec2.SubnetType.ISOLATED },
+    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     containerOverrides: [{
       containerName: 'TheContainer',
       command: ['echo', 'yay'],

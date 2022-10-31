@@ -1,0 +1,128 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "cloudfront-geo-restrictions": {
+        "id": "cloudfront-geo-restrictions",
+        "path": "cloudfront-geo-restrictions",
+        "children": {
+          "Bucket": {
+            "id": "Bucket",
+            "path": "cloudfront-geo-restrictions/Bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cloudfront-geo-restrictions/Bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "MyDistribution": {
+            "id": "MyDistribution",
+            "path": "cloudfront-geo-restrictions/MyDistribution",
+            "children": {
+              "CFDistribution": {
+                "id": "CFDistribution",
+                "path": "cloudfront-geo-restrictions/MyDistribution/CFDistribution",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "defaultRootObject": "index.html",
+                      "httpVersion": "http2",
+                      "priceClass": "PriceClass_100",
+                      "ipv6Enabled": true,
+                      "origins": [
+                        {
+                          "id": "origin1",
+                          "domainName": {
+                            "Fn::GetAtt": [
+                              "Bucket83908E77",
+                              "RegionalDomainName"
+                            ]
+                          },
+                          "s3OriginConfig": {},
+                          "connectionAttempts": 3,
+                          "connectionTimeout": 10
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "allowedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "cachedMethods": [
+                          "GET",
+                          "HEAD"
+                        ],
+                        "compress": true,
+                        "forwardedValues": {
+                          "queryString": false,
+                          "cookies": {
+                            "forward": "none"
+                          }
+                        },
+                        "targetOriginId": "origin1",
+                        "viewerProtocolPolicy": "redirect-to-https"
+                      },
+                      "viewerCertificate": {
+                        "cloudFrontDefaultCertificate": true
+                      },
+                      "restrictions": {
+                        "geoRestriction": {
+                          "restrictionType": "whitelist",
+                          "locations": [
+                            "US",
+                            "GB"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.CloudFrontWebDistribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

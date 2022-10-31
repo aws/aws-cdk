@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
-import { LambdaIntegration } from './integrations';
+import { LambdaIntegration, LambdaIntegrationOptions } from './integrations';
 import { Method } from './method';
 import { ProxyResource, Resource } from './resource';
 import { RestApi, RestApiProps } from './restapi';
@@ -13,6 +13,13 @@ export interface LambdaRestApiProps extends RestApiProps {
    * this API, unless specified otherwise in `addMethod`.
    */
   readonly handler: lambda.IFunction;
+
+  /**
+   * Specific Lambda integration options.
+   *
+   * @default see defaults defined in {@link LambdaIntegrationOptions}.
+   */
+  readonly integrationOptions?: LambdaIntegrationOptions;
 
   /**
    * If true, route all requests to the Lambda Function
@@ -43,12 +50,12 @@ export interface LambdaRestApiProps extends RestApiProps {
  */
 export class LambdaRestApi extends RestApi {
   constructor(scope: Construct, id: string, props: LambdaRestApiProps) {
-    if ((props.options && props.options.defaultIntegration) || props.defaultIntegration) {
+    if (props.options?.defaultIntegration || props.defaultIntegration) {
       throw new Error('Cannot specify "defaultIntegration" since Lambda integration is automatically defined');
     }
 
     super(scope, id, {
-      defaultIntegration: new LambdaIntegration(props.handler),
+      defaultIntegration: new LambdaIntegration(props.handler, props.integrationOptions),
       ...props.options, // deprecated, but we still support
       ...props,
     });

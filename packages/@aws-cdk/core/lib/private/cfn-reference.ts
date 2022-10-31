@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { Reference } from '../reference';
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
@@ -117,7 +118,7 @@ export class CfnReference extends Reference {
   private readonly replacementTokens: Map<Stack, IResolvable>;
   private readonly targetStack: Stack;
 
-  protected constructor(value: any, displayName: string, target: IConstruct) {
+  protected constructor(value: any, displayName: string, public readonly target: IConstruct) {
     // prepend scope path to display name
     super(value, target, displayName);
 
@@ -174,8 +175,8 @@ export class CfnReference extends Reference {
   }
 }
 
+import { Construct, IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
-import { Construct, IConstruct } from '../construct-compat';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';

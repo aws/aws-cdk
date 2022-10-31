@@ -1,0 +1,15 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.nested-stacks-nested-export-to-sibling": {
+      "stacks": [
+        "Stack1",
+        "Stack2"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

@@ -67,7 +67,7 @@ export abstract class Authorization {
           authParameters: {
             apiKeyAuthParameters: {
               apiKeyName: apiKeyName,
-              apiKeyValue: apiKeyValue.toString(),
+              apiKeyValue: apiKeyValue.unsafeUnwrap(), // Safe usage
             },
           } as CfnConnection.AuthParametersProperty,
         };
@@ -86,7 +86,7 @@ export abstract class Authorization {
           authParameters: {
             basicAuthParameters: {
               username: username,
-              password: password.toString(),
+              password: password.unsafeUnwrap(), // Safe usage
             },
           } as CfnConnection.AuthParametersProperty,
         };
@@ -111,7 +111,7 @@ export abstract class Authorization {
               authorizationEndpoint: props.authorizationEndpoint,
               clientParameters: {
                 clientId: props.clientId,
-                clientSecret: props.clientSecret.toString(),
+                clientSecret: props.clientSecret.unsafeUnwrap(), // Safe usage
               },
               httpMethod: props.httpMethod,
               oAuthHttpParameters: {
@@ -199,6 +199,7 @@ export abstract class HttpParameter {
         return {
           key: name,
           value,
+          isValueSecret: false,
         } as CfnConnection.ParameterProperty;
       }
     }();
@@ -212,7 +213,7 @@ export abstract class HttpParameter {
       public _render(name: string) {
         return {
           key: name,
-          value: value.toString(),
+          value: value.unsafeUnwrap(), // Safe usage
           isValueSecret: true,
         } as CfnConnection.ParameterProperty;
       }

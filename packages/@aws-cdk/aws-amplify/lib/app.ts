@@ -2,7 +2,6 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as YAML from 'yaml';
 import { CfnApp } from './amplify.generated';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
@@ -37,7 +36,7 @@ export interface SourceCodeProviderConfig {
    * to create webhook and read-only deploy key. OAuth token is not stored.
    *
    * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
+   * is specified.
    *
    * @default - do not use a token
    */
@@ -223,7 +222,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
     const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
 
     const app = new CfnApp(this, 'Resource', {
-      accessToken: sourceCodeProviderOptions?.accessToken?.toString(),
+      accessToken: sourceCodeProviderOptions?.accessToken?.unsafeUnwrap(), // Safe usage
       autoBranchCreationConfig: props.autoBranchCreation && {
         autoBranchCreationPatterns: props.autoBranchCreation.patterns,
         basicAuthConfig: props.autoBranchCreation.basicAuth
@@ -247,7 +246,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       iamServiceRole: role.roleArn,
       name: props.appName || this.node.id,
-      oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
+      oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
       customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
     });
@@ -515,11 +514,18 @@ export interface CustomResponseHeader {
 }
 
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): string {
-  const modifiedHeaders = customHeaders.map(customHeader => ({
-    ...customHeader,
-    headers: Object.entries(customHeader.headers).map(([key, value]) => ({ key, value })),
-  }));
+  const yaml = [
+    'customHeaders:',
+  ];
 
-  const customHeadersObject = { customHeaders: modifiedHeaders };
-  return YAML.stringify(customHeadersObject);
+  for (const customHeader of customHeaders) {
+    yaml.push(`  - pattern: "${customHeader.pattern}"`);
+    yaml.push('    headers:');
+    for (const [key, value] of Object.entries(customHeader.headers)) {
+      yaml.push(`      - key: "${key}"`);
+      yaml.push(`        value: "${value}"`);
+    }
+  }
+
+  return `${yaml.join('\n')}\n`;
 }

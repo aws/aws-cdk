@@ -12,7 +12,10 @@ export class SetVariableAction implements iotevents.IAction {
   constructor(private readonly variableName: string, private readonly value: iotevents.Expression) {
   }
 
-  bind(_scope: Construct, _options: iotevents.ActionBindOptions): iotevents.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(_scope: Construct, _options: iotevents.ActionBindOptions): iotevents.ActionConfig {
     return {
       configuration: {
         setVariable: {

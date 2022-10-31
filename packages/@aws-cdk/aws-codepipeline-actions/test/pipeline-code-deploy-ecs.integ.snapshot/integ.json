@@ -1,0 +1,14 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "integ.pipeline-code-deploy-ecs": {
+      "stacks": [
+        "aws-cdk-codepipeline-codedeploy-ecs"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

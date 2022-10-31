@@ -7,12 +7,8 @@ import * as cr from '@aws-cdk/custom-resources';
 import { NodeProxyAgentLayer } from '@aws-cdk/lambda-layer-node-proxy-agent';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
-const HANDLER_RUNTIME = lambda.Runtime.NODEJS_12_X;
+const HANDLER_RUNTIME = lambda.Runtime.NODEJS_14_X;
 
 export interface ClusterResourceProviderProps {
   /**
@@ -71,7 +67,7 @@ export class ClusterResourceProvider extends NestedStack {
   public readonly provider: cr.Provider;
 
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
-    super(scope as CoreConstruct, id);
+    super(scope, id);
 
     // The NPM dependency proxy-agent is required in order to support proxy routing with the AWS JS SDK.
     const nodeProxyAgentLayer = new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer');
@@ -80,7 +76,10 @@ export class ClusterResourceProvider extends NestedStack {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
-      environment: props.environment,
+      environment: {
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...props.environment,
+      },
       handler: 'index.onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
@@ -94,7 +93,10 @@ export class ClusterResourceProvider extends NestedStack {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'isComplete handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
-      environment: props.environment,
+      environment: {
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...props.environment,
+      },
       handler: 'index.isComplete',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,

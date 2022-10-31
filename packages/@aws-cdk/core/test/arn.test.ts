@@ -17,7 +17,6 @@ describe('arn', () => {
 
     expect(stack.resolve(arn)).toEqual(
       stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
-
   });
 
   test('cannot rely on defaults when stack not known', () => {
@@ -42,7 +41,6 @@ describe('arn', () => {
 
     expect(stack.resolve(arn)).toEqual(
       'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
-
   });
 
   test('allow empty string in components', () => {
@@ -58,8 +56,6 @@ describe('arn', () => {
 
     expect(stack.resolve(arn)).toEqual(
       'arn:aws-cn:s3:::my-bucket');
-
-
   });
 
   testDeprecated('resourcePathSep can be set to ":" instead of the default "/"', () => {
@@ -76,7 +72,6 @@ describe('arn', () => {
 
     expect(stack.resolve(arn)).toEqual(
       stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
-
   });
 
   testDeprecated('resourcePathSep can be set to "" instead of the default "/"', () => {
@@ -93,7 +88,6 @@ describe('arn', () => {
 
     expect(stack.resolve(arn)).toEqual(
       stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
-
   });
 
   test('fails if resourcePathSep is neither ":" nor "/"', () => {
@@ -104,7 +98,6 @@ describe('arn', () => {
       resource: 'bar',
       sep: 'x',
     })).toThrow();
-
   });
 
   describeDeprecated('Arn.parse(s)', () => {
@@ -119,19 +112,16 @@ describe('arn', () => {
       test('if the ARN doesnt have enough components', () => {
         const stack = new Stack();
         expect(() => stack.parseArn('arn:is:too:short')).toThrow(/The `resource` component \(6th component\) of an ARN is required/);
-
       });
 
       test('if "service" is not specified', () => {
         const stack = new Stack();
         expect(() => stack.parseArn('arn:aws::4:5:6')).toThrow(/The `service` component \(3rd component\) of an ARN is required/);
-
       });
 
       test('if "resource" is not specified', () => {
         const stack = new Stack();
         expect(() => stack.parseArn('arn:aws:service:::')).toThrow(/The `resource` component \(6th component\) of an ARN is required/);
-
       });
     });
 
@@ -236,8 +226,6 @@ describe('arn', () => {
         const evaluatedArnComponents = evaluateCFN(cfnArnComponents, { TheArn: arn });
         expect(evaluatedArnComponents).toEqual(parsedComponents);
       }
-
-
     });
 
     test('a Token with : separator', () => {
@@ -252,8 +240,6 @@ describe('arn', () => {
       expect(stack.resolve(parsed.resource)).toEqual({ 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] });
       expect(stack.resolve(parsed.resourceName)).toEqual({ 'Fn::Select': [6, { 'Fn::Split': [':', theToken] }] });
       expect(parsed.sep).toEqual(':');
-
-
     });
 
     test('a Token with / separator', () => {
@@ -267,8 +253,6 @@ describe('arn', () => {
       expect(stack.resolve(parsed.resource)).toEqual({ 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
       // eslint-disable-next-line max-len
       expect(stack.resolve(parsed.resourceName)).toEqual({ 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
-
-
     });
 
     test('extracting resource name from a complex ARN', () => {
@@ -283,8 +267,6 @@ describe('arn', () => {
       expect(evaluateCFN(stack.resolve(parsed), {
         SomeParameter: 'arn:aws:iam::111111111111:role/path/to/role/name',
       })).toEqual('path/to/role/name');
-
-
     });
 
     test('extractResourceName validates resource type if possible', () => {
@@ -292,8 +274,6 @@ describe('arn', () => {
       expect(() => {
         Arn.extractResourceName('arn:aws:iam::111111111111:banana/rama', 'role');
       }).toThrow(/Expected resource type/);
-
-
     });
 
     test('returns empty string ARN components', () => {
@@ -311,7 +291,6 @@ describe('arn', () => {
       };
 
       expect(stack.parseArn(arn)).toEqual(expected);
-
     });
   });
 
@@ -340,8 +319,6 @@ describe('arn', () => {
         },
       },
     });
-
-
   });
 
   testDeprecated('parse other fields if only some are tokens', () => {
@@ -359,7 +336,5 @@ describe('arn', () => {
     expect(stack.resolve(parsed.resource)).toEqual('role');
     expect(stack.resolve(parsed.resourceName)).toEqual('S3Access');
     expect(parsed.sep).toEqual('/');
-
-
   });
 });

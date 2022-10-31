@@ -1,5 +1,3 @@
-import { before, RULE_SSM_PRINCIPALS_ARE_REGIONAL } from './aws-entities';
-
 /**
  * Provides default values for certain regional information points.
  */
@@ -35,10 +33,10 @@ export class Default {
     }
 
     function determineConfiguration(service: string): (service: string, region: string, urlSuffix: string) => string {
-      function universal(s: string) { return `${s}.amazonaws.com`; };
-      function partitional(s: string, _: string, u: string) { return `${s}.${u}`; };
-      function regional(s: string, r: string) { return `${s}.${r}.amazonaws.com`; };
-      function regionalPartitional(s: string, r: string, u: string) { return `${s}.${r}.${u}`; };
+      function universal(s: string) { return `${s}.amazonaws.com`; }
+      function partitional(s: string, _: string, u: string) { return `${s}.${u}`; }
+      function regional(s: string, r: string) { return `${s}.${r}.amazonaws.com`; }
+      function regionalPartitional(s: string, r: string, u: string) { return `${s}.${r}.${u}`; }
 
       // Exceptions for Service Principals in us-iso-*
       const US_ISO_EXCEPTIONS = new Set([
@@ -81,17 +79,12 @@ export class Default {
       }
 
       switch (service) {
-        // SSM turned from global to regional at some point
-        case 'ssm':
-          return before(region, RULE_SSM_PRINCIPALS_ARE_REGIONAL)
-            ? universal
-            : regional;
-
         // CodeDeploy is regional+partitional in CN, only regional everywhere else
         case 'codedeploy':
           return region.startsWith('cn-')
             ? regionalPartitional
-            : regional;
+            // ...except in the isolated regions, where it's universal
+            : (region.startsWith('us-iso') ? universal : regional);
 
         // Services with a regional AND partitional principal
         case 'logs':
@@ -104,6 +97,11 @@ export class Default {
         // Services with a partitional principal
         case 'ec2':
           return partitional;
+
+        case 'elasticmapreduce':
+          return region.startsWith('cn-')
+            ? partitional
+            : universal;
 
         // Services with a universal principal across all regions/partitions (the default case)
         default:

@@ -1,0 +1,752 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-dynamodb": {
+        "id": "aws-cdk-dynamodb",
+        "path": "aws-cdk-dynamodb",
+        "children": {
+          "Table": {
+            "id": "Table",
+            "path": "aws-cdk-dynamodb/Table",
+            "children": {
+              "Key": {
+                "id": "Key",
+                "path": "aws-cdk-dynamodb/Table/Key",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-dynamodb/Table/Key/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                      "aws:cdk:cloudformation:props": {
+                        "keyPolicy": {
+                          "Statement": [
+                            {
+                              "Action": "kms:*",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "description": "Customer-managed key auto-created for encrypting DynamoDB table at aws-cdk-dynamodb/Table",
+                        "enableKeyRotation": true
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-kms.CfnKey",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kms.Key",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/Table/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true,
+                      "kmsMasterKeyId": {
+                        "Fn::GetAtt": [
+                          "TableKey25666F95",
+                          "Arn"
+                        ]
+                      },
+                      "sseType": "KMS"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/Table/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "TableWithGlobalAndLocalSecondaryIndex": {
+            "id": "TableWithGlobalAndLocalSecondaryIndex",
+            "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "attributeType": "N"
+                      },
+                      {
+                        "attributeName": "gsiHashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "gsiSortKey",
+                        "attributeType": "N"
+                      },
+                      {
+                        "attributeName": "lsiSortKey",
+                        "attributeType": "N"
+                      }
+                    ],
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "GSI-PartitionKeyOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      },
+                      {
+                        "indexName": "GSI-PartitionAndSortKeyWithReadAndWriteCapacity",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "gsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 10,
+                          "writeCapacityUnits": 10
+                        }
+                      },
+                      {
+                        "indexName": "GSI-ProjectionTypeKeysOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "gsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "KEYS_ONLY"
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      },
+                      {
+                        "indexName": "GSI-ProjectionTypeInclude",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "gsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "INCLUDE",
+                          "nonKeyAttributes": [
+                            "A",
+                            "B",
+                            "C",
+                            "D",
+                            "E",
+                            "F",
+                            "G",
+                            "H",
+                            "I",
+                            "J"
+                          ]
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      },
+                      {
+                        "indexName": "GSI-InverseTableKeySchema",
+                        "keySchema": [
+                          {
+                            "attributeName": "sortKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      }
+                    ],
+                    "localSecondaryIndexes": [
+                      {
+                        "indexName": "LSI-PartitionAndTableSortKey",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      },
+                      {
+                        "indexName": "LSI-PartitionAndSortKey",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "sortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      },
+                      {
+                        "indexName": "LSI-ProjectionTypeKeysOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "KEYS_ONLY"
+                        }
+                      },
+                      {
+                        "indexName": "LSI-ProjectionTypeInclude",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "INCLUDE",
+                          "nonKeyAttributes": [
+                            "K",
+                            "L",
+                            "M",
+                            "N",
+                            "O",
+                            "P",
+                            "Q",
+                            "R",
+                            "S",
+                            "T"
+                          ]
+                        }
+                      }
+                    ],
+                    "pointInTimeRecoverySpecification": {
+                      "pointInTimeRecoveryEnabled": true
+                    },
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true
+                    },
+                    "streamSpecification": {
+                      "streamViewType": "KEYS_ONLY"
+                    },
+                    "tags": [
+                      {
+                        "key": "Environment",
+                        "value": "Production"
+                      }
+                    ],
+                    "timeToLiveSpecification": {
+                      "attributeName": "timeToLive",
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "Key": {
+            "id": "Key",
+            "path": "aws-cdk-dynamodb/Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "enableKeyRotation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "TableWithGlobalSecondaryIndex": {
+            "id": "TableWithGlobalSecondaryIndex",
+            "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "gsiHashKey",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "GSI-PartitionKeyOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        },
+                        "provisionedThroughput": {
+                          "readCapacityUnits": 5,
+                          "writeCapacityUnits": 5
+                        }
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true,
+                      "kmsMasterKeyId": {
+                        "Fn::GetAtt": [
+                          "Key961B73FD",
+                          "Arn"
+                        ]
+                      },
+                      "sseType": "KMS"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "TableWithLocalSecondaryIndex": {
+            "id": "TableWithLocalSecondaryIndex",
+            "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "attributeType": "N"
+                      },
+                      {
+                        "attributeName": "lsiSortKey",
+                        "attributeType": "N"
+                      }
+                    ],
+                    "localSecondaryIndexes": [
+                      {
+                        "indexName": "LSI-PartitionAndSortKey",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ],
+                    "provisionedThroughput": {
+                      "readCapacityUnits": 5,
+                      "writeCapacityUnits": 5
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "Role": {
+            "id": "Role",
+            "path": "aws-cdk-dynamodb/Role",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "sqs.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-dynamodb/Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-dynamodb/Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:ConditionCheckItem",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:GetItem",
+                                "dynamodb:GetRecords",
+                                "dynamodb:GetShardIterator",
+                                "dynamodb:Query",
+                                "dynamodb:Scan"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "TableCD117FA1",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "TableWithGlobalAndLocalSecondaryIndexBC540710",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "TableWithGlobalAndLocalSecondaryIndexBC540710",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/index/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Ref": "AWS::NoValue"
+                                }
+                              ]
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "TableKey25666F95",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "RoleDefaultPolicy5FFB7DAB",
+                        "roles": [
+                          {
+                            "Ref": "Role1ABCC5F0"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

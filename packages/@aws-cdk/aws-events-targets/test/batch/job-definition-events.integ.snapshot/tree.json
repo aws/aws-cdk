@@ -1,0 +1,482 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "batch-events": {
+        "id": "batch-events",
+        "path": "batch-events",
+        "children": {
+          "ComputeEnvironment": {
+            "id": "ComputeEnvironment",
+            "path": "batch-events/ComputeEnvironment",
+            "children": {
+              "Resource-Service-Instance-Role": {
+                "id": "Resource-Service-Instance-Role",
+                "path": "batch-events/ComputeEnvironment/Resource-Service-Instance-Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-events/ComputeEnvironment/Resource-Service-Instance-Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "batch.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSBatchServiceRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-events/ComputeEnvironment/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "UNMANAGED",
+                    "serviceRole": {
+                      "Fn::GetAtt": [
+                        "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445",
+                        "Arn"
+                      ]
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnComputeEnvironment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.ComputeEnvironment",
+              "version": "0.0.0"
+            }
+          },
+          "MyQueue": {
+            "id": "MyQueue",
+            "path": "batch-events/MyQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-events/MyQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::JobQueue",
+                  "aws:cdk:cloudformation:props": {
+                    "computeEnvironmentOrder": [
+                      {
+                        "computeEnvironment": {
+                          "Ref": "ComputeEnvironmentC570994D"
+                        },
+                        "order": 1
+                      }
+                    ],
+                    "priority": 1,
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnJobQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.JobQueue",
+              "version": "0.0.0"
+            }
+          },
+          "MyJob": {
+            "id": "MyJob",
+            "path": "batch-events/MyJob",
+            "children": {
+              "Resource-Batch-Task-Definition-Role": {
+                "id": "Resource-Batch-Task-Definition-Role",
+                "path": "batch-events/MyJob/Resource-Batch-Task-Definition-Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.LazyRole",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource-Batch-Job-Container-Definition": {
+                "id": "Resource-Batch-Job-Container-Definition",
+                "path": "batch-events/MyJob/Resource-Batch-Job-Container-Definition",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-events/MyJob/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "container",
+                    "containerProperties": {
+                      "environment": [
+                        {
+                          "name": "AWS_REGION",
+                          "value": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        {
+                          "name": "AWS_ACCOUNT",
+                          "value": {
+                            "Ref": "AWS::AccountId"
+                          }
+                        }
+                      ],
+                      "image": "test-repo",
+                      "privileged": false,
+                      "readonlyRootFilesystem": false,
+                      "resourceRequirements": [
+                        {
+                          "type": "VCPU",
+                          "value": "1"
+                        },
+                        {
+                          "type": "MEMORY",
+                          "value": "4"
+                        }
+                      ]
+                    },
+                    "platformCapabilities": [
+                      "EC2"
+                    ],
+                    "retryStrategy": {
+                      "attempts": 1
+                    },
+                    "timeout": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-batch.CfnJobDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "batch-events/MyJob/EventsRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-events/MyJob/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "batch-events/MyJob/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "batch-events/MyJob/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "batch:SubmitJob",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Ref": "MyJob8719E923"
+                                    },
+                                    {
+                                      "Ref": "MyQueueE6CA6235"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyJobEventsRoleDefaultPolicy7266D3A7",
+                            "roles": [
+                              {
+                                "Ref": "MyJobEventsRoleCF43C336"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.JobDefinition",
+              "version": "0.0.0"
+            }
+          },
+          "Timer": {
+            "id": "Timer",
+            "path": "batch-events/Timer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-events/Timer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "rate(1 minute)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Ref": "MyQueueE6CA6235"
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "MyJobEventsRoleCF43C336",
+                            "Arn"
+                          ]
+                        },
+                        "batchParameters": {
+                          "jobDefinition": {
+                            "Ref": "MyJob8719E923"
+                          },
+                          "jobName": "batcheventsTimer32212B30"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "Timer2": {
+            "id": "Timer2",
+            "path": "batch-events/Timer2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-events/Timer2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "rate(2 minutes)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Ref": "MyQueueE6CA6235"
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "MyJobEventsRoleCF43C336",
+                            "Arn"
+                          ]
+                        },
+                        "batchParameters": {
+                          "jobDefinition": {
+                            "Ref": "MyJob8719E923"
+                          },
+                          "jobName": "batcheventsTimer232549135"
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "Queue4A7E3555",
+                              "Arn"
+                            ]
+                          }
+                        },
+                        "retryPolicy": {
+                          "maximumRetryAttempts": 2,
+                          "maximumEventAgeInSeconds": 7200
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "Queue": {
+            "id": "Queue",
+            "path": "batch-events/Queue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-events/Queue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "batch-events/Queue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-events/Queue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "Timer2B6F162E9",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Queue4A7E3555",
+                                  "Arn"
+                                ]
+                              },
+                              "Sid": "AllowEventRulebatcheventsTimer232549135"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "Queue4A7E3555"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

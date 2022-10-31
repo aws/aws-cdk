@@ -1,0 +1,106 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-dynamodb.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-dynamodb.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-dynamodb": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-dynamodb.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/449ab31c53e48708bdc4d899497ed3129e2565e94bbdf22cd8704751fc73fcb5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-dynamodb.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-dynamodb.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-dynamodb/Table/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableKey25666F95"
+          }
+        ],
+        "/aws-cdk-dynamodb/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableCD117FA1"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithGlobalAndLocalSecondaryIndexBC540710"
+          }
+        ],
+        "/aws-cdk-dynamodb/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithGlobalSecondaryIndexCC8E841E"
+          }
+        ],
+        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithLocalSecondaryIndex4DA3D08F"
+          }
+        ],
+        "/aws-cdk-dynamodb/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-dynamodb/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
+        "/aws-cdk-dynamodb/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-dynamodb/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-dynamodb"
+    }
+  }
+}

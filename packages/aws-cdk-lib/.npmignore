@@ -21,9 +21,13 @@ tsconfig.json
 *.tsbuildinfo
 
 !.jsii
+!.jsii.gz
 .eslintrc.js
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
 
 !*.lit.ts
+
+# exclude source maps as they only work locally
+*.map

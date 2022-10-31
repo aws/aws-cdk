@@ -1,3 +1,4 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -165,6 +166,14 @@ export interface IDatabaseInstance extends cdk.IResource {
    * @attribute Port
    */
   readonly dbInstanceEndpointPort: string;
+
+  /**
+   * Return the given named metric associated with this database instance
+   *
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-metrics.html
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/cw-dimensions.html
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -233,27 +242,64 @@ export interface DatabaseInstanceProps {
 }
 
 /**
- * A database instance
- *
- * @resource AWS::Neptune::DBInstance
+ * A new or imported database instance.
  */
-export class DatabaseInstance extends cdk.Resource implements IDatabaseInstance {
-
+export abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseInstance {
   /**
    * Import an existing database instance.
    */
   public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
-    class Import extends cdk.Resource implements IDatabaseInstance {
+    class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
       public readonly dbInstanceEndpointPort = attrs.port.toString();
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
     }
-
     return new Import(scope, id);
   }
 
+  /**
+   * @inheritdoc
+   */
+  public abstract readonly dbInstanceEndpointAddress: string;
+
+  /**
+   * @inheritdoc
+   */
+  public abstract readonly dbInstanceEndpointPort: string;
+
+  /**
+   * @inheritdoc
+   */
+  public abstract readonly instanceEndpoint: Endpoint;
+
+  /**
+   * @inheritdoc
+   */
+  public abstract readonly instanceIdentifier: string;
+
+  /**
+   * @inheritdoc
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Neptune',
+      dimensionsMap: {
+        DBInstanceIdentifier: this.instanceIdentifier,
+      },
+      metricName,
+      ...props,
+    });
+  }
+}
+
+/**
+ * A database instance
+ *
+ * @resource AWS::Neptune::DBInstance
+ */
+export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
 
   /**
    * The instance's database cluster

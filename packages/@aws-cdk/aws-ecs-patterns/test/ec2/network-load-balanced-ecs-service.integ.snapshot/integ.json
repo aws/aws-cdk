@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "networkLoadBalancedEc2ServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-nlb"
+      ],
+      "assertionStack": "networkLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
+    }
+  }
+}

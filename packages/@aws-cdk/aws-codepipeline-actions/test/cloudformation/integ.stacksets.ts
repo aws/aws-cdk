@@ -24,12 +24,13 @@ import { Construct } from 'constructs';
 import * as cpactions from '../../lib';
 
 export class StackSetPipelineStack extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
       artifactBucket: new s3.Bucket(this, 'ArtifactBucket', {
         removalPolicy: RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
       }),
     });
 
@@ -75,9 +76,4 @@ export class StackSetPipelineStack extends Stack {
 }
 
 const app = new App();
-new StackSetPipelineStack(app, 'StackSetPipelineStack', {
-  env: {
-    region: process.env.CDK_DEFAULT_REGION,
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-  },
-});
+new StackSetPipelineStack(app, 'StackSetPipelineStack');

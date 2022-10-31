@@ -15,6 +15,7 @@ test('simple use case', () => {
   const app = new cdk.App({
     context: {
       [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
     },
   });
   const stack = new cdk.Stack(app, 'MyStack');
@@ -24,7 +25,7 @@ test('simple use case', () => {
 
   // verify that metadata contains an "aws:cdk:asset" entry with
   // the correct information
-  const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // verify that now the template contains parameters for this asset
@@ -47,7 +48,11 @@ test('simple use case', () => {
 });
 
 test('verify that the app resolves tokens in metadata', () => {
-  const app = new cdk.App();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
   const stack = new cdk.Stack(app, 'my-stack');
   const dirPath = path.resolve(__dirname, 'sample-asset-directory');
 
@@ -71,10 +76,15 @@ test('verify that the app resolves tokens in metadata', () => {
 });
 
 test('"file" assets', () => {
-  const stack = new cdk.Stack();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  const stack = new cdk.Stack(app);
   const filePath = path.join(__dirname, 'file-asset.txt');
   new Asset(stack, 'MyAsset', { path: filePath });
-  const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // synthesize first so "prepare" is called
@@ -100,7 +110,12 @@ test('"file" assets', () => {
 });
 
 test('"readers" or "grantRead" can be used to grant read permissions on the asset to a principal', () => {
-  const stack = new cdk.Stack();
+  const app = new cdk.App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'MyUser');
   const group = new iam.Group(stack, 'MyGroup');
 
@@ -275,7 +290,7 @@ test('nested assemblies share assets: default synth edition', () => {
 
   // Read the asset manifests to verify the file paths
   for (const stageName of ['Stage1', 'Stage2']) {
-    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isAssetManifestArtifact)[0];
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
     const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     expect(manifest.files[SAMPLE_ASSET_HASH].source).toEqual({
@@ -390,7 +405,11 @@ describe('staging', () => {
 
   test('cdk metadata points to staged asset', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
     const stack = new cdk.Stack(app, 'stack');
     new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
@@ -409,8 +428,4 @@ function mkdtempSync() {
 
 function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
   return x instanceof cxapi.CloudFormationStackArtifact;
-}
-
-function isAssetManifestArtifact(x: any): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
 }

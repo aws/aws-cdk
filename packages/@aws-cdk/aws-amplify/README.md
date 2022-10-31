@@ -96,7 +96,7 @@ Add branches:
 ```ts
 declare const amplifyApp: amplify.App;
 
-const master = amplifyApp.addBranch('master'); // `id` will be used as repo branch name
+const main = amplifyApp.addBranch('main'); // `id` will be used as repo branch name
 const dev = amplifyApp.addBranch('dev', {
   performanceMode: true, // optional, enables performance mode
 });
@@ -132,15 +132,15 @@ Add a domain and map sub domains to branches:
 
 ```ts
 declare const amplifyApp: amplify.App;
-declare const master: amplify.Branch;
+declare const main: amplify.Branch;
 declare const dev: amplify.Branch;
 
 const domain = amplifyApp.addDomain('example.com', {
   enableAutoSubdomain: true, // in case subdomains should be auto registered for branches
   autoSubdomainCreationPatterns: ['*', 'pr*'], // regex for branches that should auto register subdomains
 });
-domain.mapRoot(master); // map master branch to domain root
-domain.mapSubDomain(master, 'www');
+domain.mapRoot(main); // map main branch to domain root
+domain.mapSubDomain(main, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```
 

@@ -8,6 +8,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
@@ -24,10 +25,6 @@ import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -128,11 +125,18 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlLambdaRole?: iam.IRole;
 
   /**
-   * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
+   * An AWS Lambda layer that includes `kubectl` and `helm`
    *
-   * If not defined, a default layer will be used.
+   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * If not defined, a default layer will be used containing the AWS CLI 1.x.
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * Kubectl Provider for issuing kubectl commands against it
@@ -329,18 +333,37 @@ export interface ClusterAttributes {
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI. This layer
-   * is used by the kubectl handler to apply manifests and install helm charts.
+   * An AWS Lambda Layer which includes `kubectl` and Helm.
+   *
+   * This layer is used by the kubectl handler to apply manifests and install
+   * helm charts. You must pick an appropriate releases of one of the
+   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
+   * Kubernetes you have chosen. If you don't supply this value `kubectl`
+   * 1.20 will be used, but that version is most likely too old.
    *
    * The handler expects the layer to include the following executables:
    *
-   *    helm/helm
-   *    kubectl/kubectl
-   *    awscli/aws
+   * ```
+   * /opt/helm/helm
+   * /opt/kubectl/kubectl
+   * ```
    *
-   * @default - a layer bundled with this module.
+   * @default - a default layer with Kubectl 1.20 and helm 3.8.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * The handler expects the layer to include the following executables:
+   *
+   * ```
+   * /opt/awscli/aws
+   * ```
+   *
+   * @default - a default layer with the AWS CLI 1.x
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * KubectlProvider for issuing kubectl commands.
@@ -405,7 +428,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]`
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]`
    *
    * @default - All public and private subnets
    */
@@ -504,28 +527,37 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
+   * An AWS Lambda Layer which includes `kubectl` and Helm.
    *
-   * By default, the provider will use the layer included in the
-   * "aws-lambda-layer-kubectl" SAR application which is available in all
-   * commercial regions.
+   * This layer is used by the kubectl handler to apply manifests and install
+   * helm charts. You must pick an appropriate releases of one of the
+   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
+   * Kubernetes you have chosen. If you don't supply this value `kubectl`
+   * 1.20 will be used, but that version is most likely too old.
    *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
+   * The handler expects the layer to include the following executables:
    *
-   * ```ts
-   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED],
-   * });
+   * ```
+   * /opt/helm/helm
+   * /opt/kubectl/kubectl
    * ```
    *
-   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   * @default - a default layer with Kubectl 1.20.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * The handler expects the layer to include the following executables:
+   *
+   * ```
+   * /opt/awscli/aws
+   * ```
+   *
+   * @default - a default layer with the AWS CLI 1.x
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.
@@ -564,7 +596,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
    * });
    * ```
    *
@@ -616,6 +648,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -757,13 +795,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default - none
    */
   readonly tags?: { [key: string]: string };
-
-  /**
-   * The cluster log types which you want to enable.
-   *
-   * @default - none
-   */
-  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -813,6 +844,24 @@ export class KubernetesVersion {
    * Kubernetes version 1.21
    */
   public static readonly V1_21 = KubernetesVersion.of('1.21');
+
+  /**
+   * Kubernetes version 1.22
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV22Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v22`.
+   */
+  public static readonly V1_22 = KubernetesVersion.of('1.22');
+
+  /**
+   * Kubernetes version 1.23
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV23Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v23`.
+   */
+  public static readonly V1_23 = KubernetesVersion.of('1.23');
 
   /**
    * Custom cluster version
@@ -946,7 +995,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '1.14.1',
+        version: '0.18.0',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1055,10 +1104,10 @@ abstract class ClusterBase extends Resource implements ICluster {
       this.addSpotInterruptHandler();
     }
 
-    if (this instanceof Cluster) {
+    if (this instanceof Cluster && this.albController) {
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
-      this.albController?.node.addDependency(autoScalingGroup);
+      Node.of(this.albController).addDependency(autoScalingGroup);
     }
   }
 }
@@ -1238,10 +1287,18 @@ export class Cluster extends ClusterBase {
   private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
-   * The AWS Lambda layer that contains `kubectl`, `helm` and the AWS CLI. If
-   * undefined, a SAR app that contains this layer will be used.
+   * An AWS Lambda layer that includes `kubectl` and `helm`
+   *
+   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
    */
-  public readonly kubectlLayer?: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * An AWS Lambda layer that contains the `aws` CLI.
+   *
+   * If not defined, a default layer will be used containing the AWS CLI 1.x.
+   */
+  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * The amount of memory allocated to the kubectl provider's lambda function.
@@ -1324,6 +1381,11 @@ export class Cluster extends ClusterBase {
 
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
+
+    const kubectlVersion = new semver.SemVer(`${props.version.version}.0`);
+    if (semver.gte(kubectlVersion, '1.22.0') && !props.kubectlLayer) {
+      Annotations.of(this).addWarning(`You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
+    };
     this.version = props.version;
     this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
 
@@ -1342,7 +1404,7 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
+    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
@@ -1364,6 +1426,7 @@ export class Cluster extends ClusterBase {
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
+    this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
 
     this.onEventLayer = props.onEventLayer;
@@ -2038,6 +2101,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly awscliLayer?: lambda.ILayerVersion;
   public readonly kubectlProvider?: IKubectlProvider;
   public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
@@ -2054,10 +2118,12 @@ class ImportedCluster extends ClusterBase {
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
+    this.kubectlLambdaRole = props.kubectlLambdaRole;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
     this.kubectlProvider = props.kubectlProvider;
@@ -2185,7 +2251,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
@@ -2245,7 +2311,7 @@ export enum CoreDnsComputeType {
   /**
    * Deploy CoreDNS on Fargate-managed instances.
    */
-  FARGATE = 'fargate'
+  FARGATE = 'fargate',
 }
 
 /**
@@ -2259,7 +2325,7 @@ export enum DefaultCapacityType {
   /**
    * EC2 autoscaling group
    */
-  EC2
+  EC2,
 }
 
 /**
@@ -2273,7 +2339,7 @@ export enum MachineImageType {
   /**
    * Bottlerocket AMI
    */
-  BOTTLEROCKET
+  BOTTLEROCKET,
 }
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
@@ -2284,8 +2350,9 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
   return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-      CpuArch.X86_64;
+    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
+      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
+        CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {

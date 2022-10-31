@@ -51,11 +51,16 @@ export interface UserPoolSESOptions {
    * region in which the UserPool is deployed, you must specify that
    * region here.
    *
-   * Must be 'us-east-1', 'us-west-2', or 'eu-west-1'
-   *
    * @default - The same region as the Cognito UserPool
    */
   readonly sesRegion?: string;
+
+  /**
+   * SES Verified custom domain to be used to verify the identity
+   *
+   * @default - no domain
+   */
+  readonly sesVerifiedDomain?: string
 }
 
 /**
@@ -164,6 +169,13 @@ class SESEmail extends UserPoolEmail {
       from = `${this.options.fromName} <${this.options.fromEmail}>`;
     }
 
+    if (this.options.sesVerifiedDomain) {
+      const domainFromEmail = this.options.fromEmail.split('@').pop();
+      if (domainFromEmail !== this.options.sesVerifiedDomain) {
+        throw new Error('"fromEmail" contains a different domain than the "sesVerifiedDomain"');
+      }
+    }
+
     return {
       from: encodeAndTest(from),
       replyToEmailAddress: encodeAndTest(this.options.replyTo),
@@ -172,7 +184,7 @@ class SESEmail extends UserPoolEmail {
       sourceArn: Stack.of(scope).formatArn({
         service: 'ses',
         resource: 'identity',
-        resourceName: encodeAndTest(this.options.fromEmail),
+        resourceName: encodeAndTest(this.options.sesVerifiedDomain ?? this.options.fromEmail),
         region: this.options.sesRegion ?? region,
       }),
     };

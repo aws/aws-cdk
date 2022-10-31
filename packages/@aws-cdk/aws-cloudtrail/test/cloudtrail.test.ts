@@ -572,7 +572,7 @@ describe('cloudtrail', () => {
       test('for Lambda function data event', () => {
         const stack = getTestStack();
         const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-          runtime: lambda.Runtime.NODEJS_10_X,
+          runtime: lambda.Runtime.NODEJS_14_X,
           handler: 'hello.handler',
           code: lambda.Code.fromInline('exports.handler = {}'),
         });
@@ -639,6 +639,33 @@ describe('cloudtrail', () => {
             },
           ],
         });
+      });
+
+      test('isOrganizationTrail is passed correctly', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'OrganizationTrail', {
+          isOrganizationTrail: true,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
+          IsOrganizationTrail: true,
+        });
+      });
+
+      test('isOrganizationTrail defaults to not defined', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'OrganizationTrail');
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', Match.objectEquals({
+          IsLogging: true,
+          S3BucketName: Match.anyValue(),
+          EnableLogFileValidation: true,
+          EventSelectors: [],
+          IncludeGlobalServiceEvents: true,
+          IsMultiRegionTrail: true,
+        }));
       });
     });
   });

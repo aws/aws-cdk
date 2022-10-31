@@ -42,13 +42,23 @@ export interface IRepository extends IResource {
   repositoryUriForTag(tag?: string): string;
 
   /**
-   * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
+   * Returns the URI of the repository for a certain digest. Can be used in `docker push/pull`.
    *
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
    *
    * @param digest Image digest to use (tools usually default to the image with the "latest" tag if omitted)
    */
   repositoryUriForDigest(digest?: string): string;
+
+  /**
+   * Returns the URI of the repository for a certain tag or digest, inferring based on the syntax of the tag. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
+   *
+   * @param tagOrDigest Image tag or digest to use (tools usually default to the image with the "latest" tag if omitted)
+   */
+  repositoryUriForTagOrDigest(tagOrDigest?: string): string;
 
   /**
    * Add a policy statement to the repository's resource policy
@@ -160,6 +170,22 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public repositoryUriForDigest(digest?: string): string {
     const digestSuffix = digest ? `@${digest}` : '';
     return this.repositoryUriWithSuffix(digestSuffix);
+  }
+
+  /**
+   * Returns the URL of the repository. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
+   *
+   * @param tagOrDigest Optional image tag or digest (digests must start with `sha256:`)
+   */
+  public repositoryUriForTagOrDigest(tagOrDigest?: string): string {
+    if (tagOrDigest?.startsWith('sha256:')) {
+      return this.repositoryUriForDigest(tagOrDigest);
+    } else {
+      return this.repositoryUriForTag(tagOrDigest);
+    }
   }
 
   /**
@@ -508,9 +534,7 @@ export class Repository extends RepositoryBase {
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
-      imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
-        scanOnPush: true,
-      },
+      imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
     });
@@ -528,6 +552,8 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
@@ -535,13 +561,7 @@ export class Repository extends RepositoryBase {
       this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatements(statement);
-    return { statementAdded: false, policyDependable: this.policyDocument };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policyDocument?.validateForResourcePolicy() || []);
-    return errors;
+    return { statementAdded: true, policyDependable: this.policyDocument };
   }
 
   /**

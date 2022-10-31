@@ -79,27 +79,35 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;
+  private _removalPolicy?: cdk.RemovalPolicy;
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
 
     this.region = props.region;
-
     this.domainName = props.domainName;
+    // check if domain name is 64 characters or less
+    if (this.domainName.length > 64) {
+      throw new Error('Domain name must be 64 characters or less');
+    }
     this.normalizedZoneName = props.hostedZone.zoneName;
     // Remove trailing `.` from zone name
     if (this.normalizedZoneName.endsWith('.')) {
       this.normalizedZoneName = this.normalizedZoneName.substring(0, this.normalizedZoneName.length - 1);
     }
-
     // Remove any `/hostedzone/` prefix from the Hosted Zone ID
     this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
     this.tags = new cdk.TagManager(cdk.TagType.MAP, 'AWS::CertificateManager::Certificate');
 
+    let certificateTransparencyLoggingPreference: string | undefined;
+    if (props.transparencyLoggingEnabled !== undefined) {
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
+    }
+
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });
@@ -114,6 +122,18 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     requestorFunction.addToRolePolicy(new iam.PolicyStatement({
       actions: ['route53:changeResourceRecordSets'],
       resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
+      conditions: {
+        'ForAllValues:StringEquals': {
+          'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+          'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
+        },
+        'ForAllValues:StringLike': {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+            addWildcard(props.domainName),
+            ...(props.subjectAlternativeNames ?? []).map(d => addWildcard(d)),
+          ],
+        },
+      },
     }));
 
     const certificate = new cdk.CustomResource(this, 'CertificateRequestorResource', {
@@ -121,9 +141,11 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       properties: {
         DomainName: props.domainName,
         SubjectAlternativeNames: cdk.Lazy.list({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
+        CertificateTransparencyLoggingPreference: certificateTransparencyLoggingPreference,
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
+        RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
         // Custom resources properties are always converted to strings; might as well be explict here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
@@ -131,9 +153,15 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     });
 
     this.certificateArn = certificate.getAtt('Arn').toString();
+
+    this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
   }
 
-  protected validate(): string[] {
+  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
+    this._removalPolicy = policy;
+  }
+
+  private validateDnsValidatedCertificate(): string[] {
     const errors: string[] = [];
     // Ensure the zone name is a parent zone of the certificate domain name
     if (!cdk.Token.isUnresolved(this.normalizedZoneName) &&
@@ -143,4 +171,12 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     }
     return errors;
   }
+}
+
+// https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-rrset-conditions.html
+function addWildcard(domainName: string) {
+  if (domainName.startsWith('*.')) {
+    return domainName;
+  }
+  return `*.${domainName}`;
 }

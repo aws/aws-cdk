@@ -8,6 +8,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var ssm = require('@aws-cdk/aws-ssm');
   var iam = require('@aws-cdk/aws-iam');
   var sns = require('@aws-cdk/aws-sns');
+  var sqs = require('@aws-cdk/aws-sqs');
   var lambda = require('@aws-cdk/aws-lambda');
   var docker = require('@aws-cdk/aws-ecr-assets');
 } else {
@@ -18,6 +19,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_ssm: ssm,
     aws_iam: iam,
     aws_sns: sns,
+    aws_sqs: sqs,
     aws_lambda: lambda,
     aws_ecr_assets: docker
   } = require('aws-cdk-lib');
@@ -58,6 +60,27 @@ class YourStack extends cdk.Stack {
     super(parent, id, props);
     new sns.Topic(this, 'topic1');
     new sns.Topic(this, 'topic2');
+  }
+}
+
+class ImportableStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    if (!process.env.OMIT_TOPIC) {
+      const queue = new sqs.Queue(this, 'Queue', {
+        removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+      });
+
+      new cdk.CfnOutput(this, 'QueueName', {
+        value: queue.queueName,
+      });
+      new cdk.CfnOutput(this, 'QueueLogicalId', {
+        value: queue.node.defaultChild.logicalId,
+      });
+    }
+
+    new cdk.CfnWaitConditionHandle(this, 'Handle');
   }
 }
 
@@ -197,11 +220,29 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler'
     });
 
     new cdk.CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
+  }
+}
+
+class LambdaHotswapStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const fn = new lambda.Function(this, 'my-function', {
+      code: lambda.Code.asset(path.join(__dirname, 'lambda')),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      description: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "description",
+      environment: {
+        SomeVariable: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "environment",
+      }
+    });
+
+    new cdk.CfnOutput(this, 'FunctionName', { value: fn.functionName });
   }
 }
 
@@ -238,6 +279,9 @@ class DockerStackWithCustomFile extends cdk.Stack {
   }
 }
 
+/**
+ * A stack that will never succeed deploying (done in a way that CDK cannot detect but CFN will complain about)
+ */
 class FailedStack extends cdk.Stack {
 
   constructor(parent, id, props) {
@@ -285,6 +329,19 @@ class ConditionalResourceStack extends cdk.Stack {
   }
 }
 
+class BundlingStage extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    const stack = new cdk.Stack(this, 'BundlingStack');
+
+    new lambda.Function(stack, 'Handler', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_16_X,
+    });
+  }
+}
+
 class SomeStage extends cdk.Stage {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -312,7 +369,11 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
+  },
+});
 
 const defaultEnv = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -343,9 +404,14 @@ switch (stackSet) {
     new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
+    new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
-    new FailedStack(app, `${stackPrefix}-failed`)
+    const failed = new FailedStack(app, `${stackPrefix}-failed`)
+
+    // A stack that depends on the failed stack -- used to test that '-e' does not deploy the failing stack
+    const dependsOnFailed = new OutputsStack(app, `${stackPrefix}-depends-on-failed`);
+    dependsOnFailed.addDependency(failed);
 
     if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
       const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
@@ -367,6 +433,10 @@ switch (stackSet) {
     new SomeStage(app, `${stackPrefix}-stage`);
 
     new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
+
+    new ImportableStack(app, `${stackPrefix}-importable-stack`);
+
+    new BundlingStage(app, `${stackPrefix}-bundling-stage`);
     break;
 
   case 'stage-using-context':

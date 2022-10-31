@@ -9,7 +9,8 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "lib": [
-      "es2019"
+      "es2019",
+      "dom"
     ],
     "module": "CommonJS",
     "noEmitOnError": false,

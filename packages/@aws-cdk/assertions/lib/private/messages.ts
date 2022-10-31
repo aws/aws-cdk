@@ -1,6 +1,6 @@
 import { SynthesisMessage } from '@aws-cdk/cx-api';
 import { Messages } from './message';
-import { formatFailure, matchSection } from './section';
+import { formatAllMatches, formatFailure, matchSection } from './section';
 
 export function findMessage(messages: Messages, constructPath: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section: { [key: string]: SynthesisMessage } = messages;
@@ -29,6 +29,20 @@ export function hasMessage(messages: Messages, constructPath: string, props: any
   return [
     `Stack has ${result.analyzedCount} messages, but none match as expected.`,
     formatFailure(result.closestResult),
+  ].join('\n');
+}
+
+export function hasNoMessage(messages: Messages, constructPath: string, props: any): string | void {
+  const section: { [key: string]: SynthesisMessage } = messages;
+  const result = matchSection(filterPath(section, constructPath), props);
+
+  if (!result.match) {
+    return;
+  }
+
+  return [
+    `Expected no matches, but stack has ${Object.keys(result.matches).length} messages as follows:`,
+    formatAllMatches(result.matches),
   ].join('\n');
 }
 

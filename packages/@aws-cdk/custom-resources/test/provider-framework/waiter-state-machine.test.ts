@@ -12,12 +12,12 @@ describe('state machine', () => {
 
     const isCompleteHandler = new lambdaFn(stack, 'isComplete', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
     const timeoutHandler = new lambdaFn(stack, 'isTimeout', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_12_X,
+      runtime: Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
     const interval = Duration.hours(2);
@@ -83,12 +83,12 @@ describe('state machine', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: stack.resolve(isCompleteHandler.functionArn),
+            Resource: stack.resolve(isCompleteHandler.resourceArnsForGrantInvoke),
           },
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: stack.resolve(timeoutHandler.functionArn),
+            Resource: stack.resolve(timeoutHandler.resourceArnsForGrantInvoke),
           },
         ],
         Version: '2012-10-17',

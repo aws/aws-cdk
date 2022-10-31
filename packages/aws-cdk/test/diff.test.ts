@@ -1,5 +1,5 @@
 import { Writable } from 'stream';
-import { NodeStringDecoder, StringDecoder } from 'string_decoder';
+import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -236,18 +236,19 @@ describe('nested stacks', () => {
     });
 
     // THEN
-    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      .replace(/[ \t]+$/mg, '');
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
 Resources
-[~] AWS::CloudFormation::Stack AdditionChild 
+[~] AWS::CloudFormation::Stack AdditionChild
  └─ [~] Resources
      └─ [~] .SomeResource:
          └─ [+] Added: .Properties
-[~] AWS::CloudFormation::Stack DeletionChild 
+[~] AWS::CloudFormation::Stack DeletionChild
  └─ [~] Resources
      └─ [~] .SomeResource:
          └─ [-] Removed: .Properties
-[~] AWS::CloudFormation::Stack ChangedChild 
+[~] AWS::CloudFormation::Stack ChangedChild
  └─ [~] Resources
      └─ [~] .SomeResource:
          └─ [~] .Properties:
@@ -261,7 +262,7 @@ Resources
 
 class StringWritable extends Writable {
   public data: string;
-  private readonly _decoder: NodeStringDecoder;
+  private readonly _decoder: StringDecoder;
 
   constructor(options: any = {}) {
     super(options);

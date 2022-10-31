@@ -1,8 +1,10 @@
+import { ClientRequest } from 'http';
 import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from './logging';
+import { some, ConstructTreeNode, loadTreeFromDir } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -78,7 +80,7 @@ export function filterNotices(data: Notice[], options: FilterNoticeOptions): Not
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
-    tree: loadTree(options.outdir ?? 'cdk.out').tree,
+    tree: loadTreeFromDir(options.outdir ?? 'cdk.out'),
   });
   return data.filter(notice => filter.apply(notice));
 }
@@ -107,12 +109,19 @@ export interface NoticeDataSource {
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
+    return new Promise((resolve, reject) => {
+      let req: ClientRequest | undefined;
 
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([]), timeout);
+      let timer = setTimeout(() => {
+        if (req) {
+          req.destroy(new Error('Request timed out'));
+        }
+      }, timeout);
+
+      timer.unref();
+
       try {
-        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
-          { timeout },
+        req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
           res => {
             if (res.statusCode === 200) {
               res.setEncoding('utf8');
@@ -123,29 +132,25 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
               res.on('end', () => {
                 try {
                   const data = JSON.parse(rawData).notices as Notice[];
+                  if (!data) {
+                    throw new Error("'notices' key is missing");
+                  }
+                  debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e) {
-                  debug(`Failed to parse notices: ${e}`);
-                  resolve([]);
+                  reject(new Error(`Failed to parse notices: ${e.message}`));
                 }
               });
               res.on('error', e => {
-                debug(`Failed to fetch notices: ${e}`);
-                resolve([]);
+                reject(new Error(`Failed to fetch notices: ${e.message}`));
               });
             } else {
-              debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
-              resolve([]);
+              reject(new Error(`Failed to fetch notices. Status code: ${res.statusCode}`));
             }
           });
-        req.on('error', e => {
-          debug(`Error on request: ${e}`);
-          resolve([]);
-        });
-        req.on('timeout', _ => resolve([]));
+        req.on('error', reject);
       } catch (e) {
-        debug(`HTTPS 'get' call threw an error: ${e}`);
-        resolve([]);
+        reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });
   }
@@ -156,7 +161,8 @@ interface CachedNotices {
   notices: Notice[],
 }
 
-const TIME_TO_LIVE = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_SUCCESS = 60 * 60 * 1000; // 1 hour
+const TIME_TO_LIVE_ERROR = 1 * 60 * 1000; // 1 minute
 
 export class CachedDataSource implements NoticeDataSource {
   constructor(
@@ -171,14 +177,27 @@ export class CachedDataSource implements NoticeDataSource {
     const expiration = cachedData.expiration ?? 0;
 
     if (Date.now() > expiration || this.skipCache) {
-      const freshData = {
-        expiration: Date.now() + TIME_TO_LIVE,
-        notices: await this.dataSource.fetch(),
-      };
+      const freshData = await this.fetchInner();
       await this.save(freshData);
       return freshData.notices;
     } else {
+      debug(`Reading cached notices from ${this.fileName}`);
       return data;
+    }
+  }
+
+  private async fetchInner(): Promise<CachedNotices> {
+    try {
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_SUCCESS,
+        notices: await this.dataSource.fetch(),
+      };
+    } catch (e) {
+      debug(`Could not refresh notices: ${e}`);
+      return {
+        expiration: Date.now() + TIME_TO_LIVE_ERROR,
+        notices: [],
+      };
     }
   }
 
@@ -316,53 +335,5 @@ function match(query: Component[], tree: ConstructTreeNode): boolean {
 
   function compareVersions(pattern: string, target: string | undefined): boolean {
     return semver.satisfies(target ?? '', pattern);
-  }
-}
-
-function loadTree(outdir: string) {
-  try {
-    return fs.readJSONSync(path.join(outdir, 'tree.json'));
-  } catch (e) {
-    debug(`Failed to get tree.json file: ${e}`);
-    return {};
-  }
-}
-
-/**
- * Source information on a construct (class fqn and version)
- */
-interface ConstructInfo {
-  readonly fqn: string;
-  readonly version: string;
-}
-
-/**
- * A node in the construct tree.
- * @internal
- */
-interface ConstructTreeNode {
-  readonly id: string;
-  readonly path: string;
-  readonly children?: { [key: string]: ConstructTreeNode };
-  readonly attributes?: { [key: string]: any };
-
-  /**
-   * Information on the construct class that led to this node, if available
-   */
-  readonly constructInfo?: ConstructInfo;
-}
-
-function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) => boolean): boolean {
-  return node != null && (predicate(node) || findInChildren());
-
-  function findInChildren(): boolean {
-    if (node.children == null) { return false; }
-
-    for (const name in node.children) {
-      if (some(node.children[name], predicate)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

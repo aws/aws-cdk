@@ -45,6 +45,7 @@ const myHostedZone = new route53.HostedZone(this, 'HostedZone', {
 });
 new acm.Certificate(this, 'Certificate', {
   domainName: 'hello.example.com',
+  certificateName: 'Hello World Service', // Optionally provide an certificate name
   validation: acm.CertificateValidation.fromDns(myHostedZone),
 });
 ```
@@ -123,6 +124,17 @@ new acm.PrivateCertificate(this, 'PrivateCertificate', {
   subjectAlternativeNames: ['cool.example.com', 'test.example.net'], // optional
   certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(this, 'CA',
     'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+});
+```
+
+## Requesting certificates without transparency logging
+
+Transparency logging can be opted out of for AWS Certificate Manager certificates. See [opting out of certificate transparency logging](https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency) for limits.
+
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'test.example.com',
+  transparencyLoggingEnabled: false,
 });
 ```
 

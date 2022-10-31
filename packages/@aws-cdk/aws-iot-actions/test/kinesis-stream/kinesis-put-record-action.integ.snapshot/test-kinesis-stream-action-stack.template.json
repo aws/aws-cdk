@@ -1,0 +1,150 @@
+{
+ "Resources": {
+  "TopicRule40A4EA44": {
+   "Type": "AWS::IoT::TopicRule",
+   "Properties": {
+    "TopicRulePayload": {
+     "Actions": [
+      {
+       "Kinesis": {
+        "PartitionKey": "${timestamp()}",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "TopicRuleTopicRuleActionRole246C4F77",
+          "Arn"
+         ]
+        },
+        "StreamName": {
+         "Ref": "MyStream5C050E93"
+        }
+       }
+      }
+     ],
+     "AwsIotSqlVersion": "2016-03-23",
+     "Sql": "SELECT * FROM 'device/+/data'"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRole246C4F77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "kinesis:PutRecord",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyStream5C050E93",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+    "Roles": [
+     {
+      "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+     }
+    ]
+   }
+  },
+  "MyStream5C050E93": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 3,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    },
+    "StreamModeDetails": {
+     "StreamMode": "PROVISIONED"
+    }
+   }
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

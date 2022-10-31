@@ -1,0 +1,82 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "nested-stacks-docker.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "nested-stacks-docker.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "nested-stacks-docker": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "nested-stacks-docker.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ed2ff74808def58b4e893544bdfb2f7a0842261328681dea4f83a9dd027179d4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "nested-stacks-docker.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "nested-stacks-docker.assets"
+      ],
+      "metadata": {
+        "/nested-stacks-docker/nested-stack-with-image/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/nested-stacks-docker/nested-stack-with-image/User/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserDefaultPolicy1F97781E"
+          }
+        ],
+        "/nested-stacks-docker/nested-stack-with-image/output": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "output"
+          }
+        ],
+        "/nested-stacks-docker/nested-stack-with-image.NestedStack/nested-stack-with-image.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nestedstackwithimageNestedStacknestedstackwithimageNestedStackResourceDF784FD5"
+          }
+        ],
+        "/nested-stacks-docker/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/nested-stacks-docker/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "nested-stacks-docker"
+    }
+  }
+}

@@ -4,7 +4,6 @@ import { Construct } from 'constructs';
 import { RestApi, RestApiProps } from '.';
 import { RequestContext } from './integrations';
 import { StepFunctionsIntegration } from './integrations/stepfunctions';
-import { Model } from './model';
 
 /**
  * Properties for StepFunctionsRestApi
@@ -89,6 +88,14 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
    * @default false
    */
   readonly authorizer?: boolean;
+
+  /**
+   * An IAM role that API Gateway will assume to start the execution of the
+   * state machine.
+   *
+   * @default - a new role is created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -105,7 +112,7 @@ export class StepFunctionsRestApi extends RestApi {
     }
 
     const stepfunctionsIntegration = StepFunctionsIntegration.startExecution(props.stateMachine, {
-      credentialsRole: role(scope, props),
+      credentialsRole: props.role,
       requestContext: props.requestContext,
       path: props.path?? true,
       querystring: props.querystring?? true,
@@ -115,54 +122,6 @@ export class StepFunctionsRestApi extends RestApi {
 
     super(scope, id, props);
 
-    this.root.addMethod('ANY', stepfunctionsIntegration, {
-      methodResponses: methodResponse(),
-    });
+    this.root.addMethod('ANY', stepfunctionsIntegration);
   }
-}
-
-/**
- * Defines the IAM Role for API Gateway with required permissions
- * to invoke a synchronous execution for the provided state machine
- *
- * @param scope
- * @param props
- * @returns Role - IAM Role
- */
-function role(scope: Construct, props: StepFunctionsRestApiProps): iam.Role {
-  const roleName: string = 'StartSyncExecutionRole';
-  const apiRole = new iam.Role(scope, roleName, {
-    assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-  });
-
-  props.stateMachine.grantStartSyncExecution(apiRole);
-
-  return apiRole;
-}
-
-/**
- * Defines the method response modelfor each HTTP code response
- * @returns methodResponse
- */
-function methodResponse() {
-  return [
-    {
-      statusCode: '200',
-      responseModels: {
-        'application/json': Model.EMPTY_MODEL,
-      },
-    },
-    {
-      statusCode: '400',
-      responseModels: {
-        'application/json': Model.ERROR_MODEL,
-      },
-    },
-    {
-      statusCode: '500',
-      responseModels: {
-        'application/json': Model.ERROR_MODEL,
-      },
-    },
-  ];
 }

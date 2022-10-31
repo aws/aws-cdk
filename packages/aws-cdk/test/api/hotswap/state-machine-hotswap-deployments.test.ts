@@ -558,3 +558,119 @@ test('knows how to handle attributes of the AWS::Events::EventBus resource', asy
     }),
   });
 });
+
+test('knows how to handle attributes of the AWS::DynamoDB::Table resource', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Table: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          KeySchema: [{
+            AttributeName: 'name',
+            KeyType: 'HASH',
+          }],
+          AttributeDefinitions: [{
+            AttributeName: 'name',
+            AttributeType: 'S',
+          }],
+          BillingMode: 'PAY_PER_REQUEST',
+        },
+      },
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: '{}',
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  setup.pushStackResourceSummaries(
+    setup.stackSummaryOf('Table', 'AWS::DynamoDB::Table', 'my-dynamodb-table'),
+  );
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Table: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            KeySchema: [{
+              AttributeName: 'name',
+              KeyType: 'HASH',
+            }],
+            AttributeDefinitions: [{
+              AttributeName: 'name',
+              AttributeType: 'S',
+            }],
+            BillingMode: 'PAY_PER_REQUEST',
+          },
+        },
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': ['', [
+                '{"TableName":"',
+                { Ref: 'Table' },
+                '","TableArn":"',
+                { 'Fn::GetAtt': ['Table', 'Arn'] },
+                '"}',
+              ]],
+            },
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  const result = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  expect(result).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
+    definition: JSON.stringify({
+      TableName: 'my-dynamodb-table',
+      TableArn: 'arn:aws:dynamodb:here:123456789012:table/my-dynamodb-table',
+    }),
+  });
+});
+
+test('does not explode if the DependsOn changes', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: '{ Prop: "old-value" }',
+          StateMachineName: 'my-machine',
+        },
+        DependsOn: ['abc'],
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: '{ Prop: "old-value" }',
+            StateMachineName: 'my-machine',
+          },
+        },
+        DependsOn: ['xyz'],
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+});

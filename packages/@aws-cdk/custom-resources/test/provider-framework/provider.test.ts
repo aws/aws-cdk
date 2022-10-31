@@ -21,15 +21,15 @@ test('security groups are applied to all framework functions', () => {
     onEventHandler: new lambda.Function(stack, 'OnEvent', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     }),
     isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.isComplete',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     }),
     vpc: vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     securityGroups: [securityGroup],
   });
 
@@ -89,15 +89,15 @@ test('vpc is applied to all framework functions', () => {
     onEventHandler: new lambda.Function(stack, 'OnEvent', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     }),
     isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.isComplete',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     }),
     vpc: vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -141,7 +141,7 @@ test('minimal setup', () => {
     onEventHandler: new lambda.Function(stack, 'MyHandler', {
       code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     }),
   });
 
@@ -173,7 +173,7 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   const handler = new lambda.Function(stack, 'MyHandler', {
     code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
     handler: 'index.onEvent',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   });
 
   // WHEN
@@ -247,7 +247,7 @@ test('fails if "queryInterval" and/or "totalTimeout" are set without "isComplete
   const handler = new lambda.Function(stack, 'MyHandler', {
     code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
     handler: 'index.onEvent',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   });
 
   // THEN
@@ -303,7 +303,7 @@ describe('log retention', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       }),
       logRetention: logs.RetentionDays.ONE_WEEK,
     });
@@ -334,7 +334,7 @@ describe('log retention', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       }),
     });
 
@@ -353,7 +353,7 @@ describe('role', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       }),
       role: new iam.Role(stack, 'MyRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -381,7 +381,7 @@ describe('role', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       }),
     });
 
@@ -408,7 +408,7 @@ describe('name', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_14_X,
       }),
       providerFunctionName,
     });
@@ -419,4 +419,3 @@ describe('name', () => {
     });
   });
 });
-

@@ -16,10 +16,8 @@ describe('duration', () => {
     expect(stack.resolve(lazyDuration.toSeconds())).toEqual(1337);
     expect(
       () => stack.resolve(lazyDuration.toMinutes())).toThrow(
-      /Unable to perform time unit conversion on un-resolved token/,
+      /Duration must be specified as 'Duration.minutes\(\)' here/,
     );
-
-
   });
 
   test('Duration in seconds', () => {
@@ -31,8 +29,6 @@ describe('duration', () => {
     floatEqual(duration.toDays({ integral: false }), 300 / 86_400);
 
     expect(Duration.seconds(60 * 60 * 24).toDays()).toEqual(1);
-
-
   });
 
   test('Duration in minutes', () => {
@@ -44,8 +40,6 @@ describe('duration', () => {
     floatEqual(duration.toDays({ integral: false }), 300 / 86_400);
 
     expect(Duration.minutes(60 * 24).toDays()).toEqual(1);
-
-
   });
 
   test('Duration in hours', () => {
@@ -57,16 +51,12 @@ describe('duration', () => {
     floatEqual(duration.toDays({ integral: false }), 5 / 24);
 
     expect(Duration.hours(24).toDays()).toEqual(1);
-
-
   });
 
   test('seconds to milliseconds', () => {
     const duration = Duration.seconds(5);
 
     expect(duration.toMilliseconds()).toEqual(5_000);
-
-
   });
 
   test('Duration in days', () => {
@@ -75,8 +65,6 @@ describe('duration', () => {
     expect(duration.toSeconds()).toEqual(86_400);
     expect(duration.toMinutes()).toEqual(1_440);
     expect(duration.toDays()).toEqual(1);
-
-
   });
 
   testDeprecated('toISOString', () => {
@@ -93,8 +81,6 @@ describe('duration', () => {
     expect(Duration.days(5).toISOString()).toEqual('P5D');
 
     expect(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toISOString()).toEqual('P1DT1H1M1S');
-
-
   });
 
   test('toIsoString', () => {
@@ -112,8 +98,6 @@ describe('duration', () => {
 
     expect(Duration.seconds(65).toIsoString()).toEqual('PT1M5S');
     expect(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString()).toEqual('P1DT1H1M1S');
-
-
   });
 
   test('parse', () => {
@@ -128,8 +112,6 @@ describe('duration', () => {
     expect(Duration.parse('P5D').toSeconds()).toEqual(432_000);
 
     expect(Duration.parse('P1DT1H1M1S').toSeconds()).toEqual(1 + 60 * (1 + 60 * (1 + 24)));
-
-
   });
 
   test('reject illegal parses', () => {
@@ -141,8 +123,6 @@ describe('duration', () => {
     expect(() => {
       Duration.parse('P5S');
     }).toThrow(err);
-
-
   });
 
   test('to human string', () => {
@@ -165,8 +145,6 @@ describe('duration', () => {
     expect(Duration.millis(3666).toHumanString()).toEqual('3 seconds 666 millis');
 
     expect(Duration.millis(3.6).toHumanString()).toEqual('3.6 millis');
-
-
   });
 
   test('add two durations', () => {
@@ -188,7 +166,6 @@ describe('duration', () => {
     expect(Duration.millis(1).unitLabel()).toEqual('millis');
     expect(Duration.hours(1000).unitLabel()).toEqual('hours');
     expect(Duration.days(2).unitLabel()).toEqual('days');
-
   });
 
   test('format number token to number', () => {
@@ -197,14 +174,60 @@ describe('duration', () => {
     expect(stack.resolve(lazyDuration.formatTokenToNumber())).toEqual('10 minutes');
     expect(Duration.hours(10).formatTokenToNumber()).toEqual('10 hours');
     expect(Duration.days(5).formatTokenToNumber()).toEqual('5 days');
-
   });
 
   test('duration is unresolved', () => {
     const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 10 }));
     expect(lazyDuration.isUnresolved()).toEqual(true);
     expect(Duration.hours(10).isUnresolved()).toEqual(false);
+  });
+});
 
+describe('integral flag checks', () => {
+  test('convert fractional minutes to minutes', () => {
+    expect(() => {
+      Duration.minutes(0.5).toMinutes();
+    }).toThrow(/must be a whole number of/);
+  });
+
+  test('convert fractional minutes to minutes - integral: false', () => {
+    expect(Duration.minutes(5.5).toMinutes({ integral: false })).toEqual(5.5);
+  });
+
+  test('convert whole minutes to minutes', () => {
+    expect(Duration.minutes(5).toMinutes()).toEqual(5);
+  });
+
+  test('convert fractional minutes to fractional seconds', () => {
+    expect(() => {
+      Duration.minutes(9/8).toSeconds();
+    }).toThrow(/cannot be converted into a whole number of/);
+  });
+
+  test('convert fractional minutes to fractional seconds - integral: false', () => {
+    expect(Duration.minutes(9/8).toSeconds({ integral: false })).toEqual(67.5);
+  });
+
+  test('convert fractional minutes to whole seconds', () => {
+    expect(Duration.minutes(5/4).toSeconds({ integral: false })).toEqual(75);
+  });
+
+  test('convert whole minutes to whole seconds', () => {
+    expect(Duration.minutes(10).toSeconds({ integral: false })).toEqual(600);
+  });
+
+  test('convert seconds to fractional minutes', () => {
+    expect(() => {
+      Duration.seconds(45).toMinutes();
+    }).toThrow(/cannot be converted into a whole number of/);
+  });
+
+  test('convert seconds to fractional minutes - integral: false', () => {
+    expect(Duration.seconds(45).toMinutes({ integral: false })).toEqual(0.75);
+  });
+
+  test('convert seconds to whole minutes', () => {
+    expect(Duration.seconds(120).toMinutes()).toEqual(2);
   });
 });
 

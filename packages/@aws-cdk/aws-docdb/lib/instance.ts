@@ -101,7 +101,7 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
    */
   public get instanceArn(): string {
     return cdk.Stack.of(this).formatArn({
-      service: 'docdb',
+      service: 'rds',
       resource: 'db',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.instanceIdentifier,

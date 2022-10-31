@@ -65,10 +65,10 @@ declare const repo: codecommit.Repository;
 declare const project: codebuild.PipelineProject;
 declare const myTopic: sns.Topic;
 
-// starts a CodeBuild project when a commit is pushed to the "master" branch of the repo
-repo.onCommit('CommitToMaster', {
+// starts a CodeBuild project when a commit is pushed to the "main" branch of the repo
+repo.onCommit('CommitToMain', {
   target: new targets.CodeBuildProject(project),
-  branches: ['master'],
+  branches: ['main'],
 });
 
 // publishes a message to an Amazon SNS topic when a comment is made on a pull request

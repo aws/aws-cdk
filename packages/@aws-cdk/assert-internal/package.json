@@ -26,21 +26,21 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
-    "ts-jest": "^27.1.3"
+    "ts-jest": "^27.1.5"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "constructs": "^10.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -53,7 +53,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "deprecated",
   "maturity": "deprecated",

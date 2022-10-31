@@ -38,9 +38,9 @@ export function stringifyOptions(options: { [key: string]: (SecretValue | Durati
   const _options: { [key: string]: string } = {};
   const filteredOptions = removeEmpty(options);
 
-  for (const key of Object.keys(filteredOptions)) {
+  for (const [key, value] of Object.entries(filteredOptions)) {
     // Convert value to string
-    _options[key] = `${filteredOptions[key]}`;
+    _options[key] = SecretValue.isSecretValue(value) ? value.unsafeUnwrap() : `${value}`;
   }
 
   return _options;

@@ -66,12 +66,29 @@ the `userPoolName` to give your own identifier to the user pool. If not, CloudFo
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
+  signInCaseSensitive: false, // case insensitive is preferred in most situations
 });
 ```
+
+By default, usernames and email addresses in user pools are case sensitive, which means `user@example.com` and `User@example.com`
+are considered different. In most situations it is prefered to have usernames and email addresses be case insensitive so that
+capitalization differences are ignored. As shown above, you can make a user pool case insensitive by setting `signInCaseSensitive`
+to `false`. The case sensitivity cannot be changed once a user pool is created.
 
 The default set up for the user pool is configured such that only administrators will be allowed
 to create users. Features such as Multi-factor authentication (MFAs) and Lambda Triggers are not
 configured by default.
+
+Use the `grant()` method to add an IAM policy statement associated with the user pool to an
+IAM principal's policy.
+
+```ts
+const userPool = new cognito.UserPool(this, 'myuserpool');
+const role = new iam.Role(this, 'role', {
+  assumedBy: new iam.ServicePrincipal('foo'),
+});
+userPool.grant(role, 'cognito-idp:AdminCreateUser');
+```
 
 ### Sign Up
 
@@ -221,6 +238,30 @@ them for specific users using the [AdminUpdateUserAttributes API].
 
 [AdminUpdateUserAttributes API]: https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html
 
+### Attribute verification
+
+When your user updates an email address or phone number attribute, Amazon Cognito marks it unverified until they verify the new value.
+You can’t send messages to an unverified email address or phone number.
+Your user can’t sign in with an unverified alias attribute.
+You can choose how Amazon Cognito handles an updated email address or phone number after the update and before the verification.
+
+Learn more on [configuring email or phone verification in Cognito's documentation.](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html?icmpid=docs_cognito_console_help_panel)
+
+The following code configures a user pool that keeps the original value for the two standard attributes (email and phone_number) until the new values are verified.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  signInAliases: { username: true },
+  autoVerify: { email: true, phone: true },
+  keepOriginal: {
+    email: true,
+    phone: true,
+  },
+});
+```
+
+
 ### Security
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
@@ -364,6 +405,21 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ```
 
+When sending emails from an SES verified domain, `sesVerifiedDomain` can be used to specify the domain.
+The email address does not need to be verified when sending emails from a verified domain, because the identity of the email configuration is can be determined from the domain alone.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    sesRegion: 'us-east-1',
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'Awesome App',
+    replyTo: 'support@myawesomeapp.com',
+    sesVerifiedDomain: 'myawesomeapp.com',
+  }),
+});
+```
+
 ### Device Tracking
 
 User pools can be configured to track devices that users have logged in to.
@@ -393,7 +449,7 @@ on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 });
@@ -407,7 +463,7 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 });
 
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 }));
@@ -477,6 +533,8 @@ The following third-party identity providers are currently supported in the CDK 
 - [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
+- [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-oidc-idp.html)
+- [SAML](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-saml-idp.html)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
@@ -617,8 +675,8 @@ pool.addClient('app-client', {
 });
 ```
 
-If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to 
-make sure that the identity provider already exists when the app client will be created. The app client cannot handle the 
+If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to
+make sure that the identity provider already exists when the app client will be created. The app client cannot handle the
 dependency to the identity provider automatically because the client does not have access to the provider's construct.
 
 ```ts
@@ -653,11 +711,11 @@ pool.addClient('app-client', {
 });
 ```
 
-Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to 
+Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to
 read the `given_name` attribute but not every client should be allowed to set the `email_verified` attribute.
 The same criteria applies for both standard and custom attributes, more info is available at
 [Attribute Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
-The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be 
+The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be
 configured for a client.
 
 ```ts
@@ -688,7 +746,21 @@ pool.addClient('app-client', {
   // ...
   enableTokenRevocation: true,
 });
-``` 
+```
+
+User Pool clients can generate a client ID as well as a client secret, to support more advanced authentication workflows.
+
+To create a client with an autogenerated client secret, pass the `generateSecret: true` prop:
+
+```ts
+const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
+  userPool: importedPool,
+  generateSecret: true,
+});
+
+// Allows you to pass the generated secret to other pieces of infrastructure
+const secret = userPoolClient.userPoolClientSecret;
+```
 
 ### Resource Servers
 

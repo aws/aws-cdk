@@ -170,6 +170,30 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
   });
 
+  test('Job Driver with Entry Point Arguments', () => {
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      ...defaultProps,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('entrypoint'),
+          entryPointArguments: sfn.TaskInput.fromJsonPathAt('$.entrypointArguments'),
+        },
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            'EntryPoint': 'entrypoint',
+            'EntryPointArguments.$': '$.entrypointArguments',
+          },
+        },
+      },
+    });
+  });
 
   test('Job Execution Role', () => {
     // WHEN
@@ -224,7 +248,11 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
                 's3:GetBucket*',
                 's3:List*',
                 's3:DeleteObject*',
-                's3:PutObject*',
+                's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               Effect: 'Allow',
@@ -277,7 +305,26 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
-              Resource: 'arn:aws:logs:*:*:*',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
             },
           ],
           Version: '2012-10-17',
@@ -346,7 +393,11 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
                 's3:GetBucket*',
                 's3:List*',
                 's3:DeleteObject*',
-                's3:PutObject*',
+                's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               Effect: 'Allow',
@@ -431,7 +482,26 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             {
               Action: 'logs:DescribeLogGroups',
               Effect: 'Allow',
-              Resource: 'arn:aws:logs:*:*:*',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
             },
           ],
           Version: '2012-10-17',
@@ -581,7 +651,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       }).toThrow('Entry point must be between 1 and 256 characters in length. Received 0.');
     });
 
-    test('Entry Point Arguments is not an string array that is between 1 and 10280 entries in length', () => {
+    test('Entry Point Arguments is not a string array that is between 1 and 10280 entries in length', () => {
       // WHEN
       const entryPointArgs = sfn.TaskInput.fromObject(new Array(10281).fill('x', 10281));
       const entryPointArgsNone = sfn.TaskInput.fromObject([]);
@@ -599,7 +669,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or encoded JSON path but received object');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path but received object');
 
       // THEN
       expect(() => {
@@ -612,7 +682,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or encoded JSON path, but received a non JSON path string');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
 
       // THEN
       expect(() => {
@@ -976,7 +1046,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.6',
+      Runtime: 'python3.9',
       Timeout: 30,
     });
   });

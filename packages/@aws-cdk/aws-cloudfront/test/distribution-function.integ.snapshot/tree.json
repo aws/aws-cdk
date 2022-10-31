@@ -1,0 +1,140 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-distribution-function": {
+        "id": "integ-distribution-function",
+        "path": "integ-distribution-function",
+        "children": {
+          "Function": {
+            "id": "Function",
+            "path": "integ-distribution-function/Function",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-function/Function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "eu-west-1integdistributionfunctionFunctionDCD62A02",
+                    "autoPublish": true,
+                    "functionCode": "function handler(event) { return event.request }",
+                    "functionConfig": {
+                      "comment": "eu-west-1integdistributionfunctionFunctionDCD62A02",
+                      "runtime": "cloudfront-js-1.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Dist": {
+            "id": "Dist",
+            "path": "integ-distribution-function/Dist",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-distribution-function/Dist/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-function/Dist/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "integdistributionfunctionDistOrigin1D1E9DF17",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integdistributionfunctionDistOrigin1D1E9DF17",
+                        "cachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all",
+                        "functionAssociations": [
+                          {
+                            "functionArn": {
+                              "Fn::GetAtt": [
+                                "Function76856677",
+                                "FunctionARN"
+                              ]
+                            },
+                            "eventType": "viewer-request"
+                          }
+                        ]
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "FunctionArn": {
+            "id": "FunctionArn",
+            "path": "integ-distribution-function/FunctionArn",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "FunctionStage": {
+            "id": "FunctionStage",
+            "path": "integ-distribution-function/FunctionStage",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

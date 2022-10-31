@@ -26,8 +26,6 @@ describe('cfn json', () => {
 
     // output is basically an Fn::GetAtt
     expect(stack.resolve(json)).toEqual({ 'Fn::GetAtt': ['MyCfnJson248769BB', 'Value'] });
-
-
   });
 
   test('tokens and intrinsics can be used freely in keys or values', () => {
@@ -52,7 +50,6 @@ describe('cfn json', () => {
     expect(template.Resources.MyCfnJson248769BB.Properties.Value).toEqual({
       'Fn::Join': ['', ['{"', { Ref: 'Other' }, '":1234,"world":{"bar":"this is a I am lazy"}}']],
     });
-
   });
 
   test('JSON.stringify() will return the CFN-stringified value to avoid circular references', () => {
@@ -73,8 +70,6 @@ describe('cfn json', () => {
     expect(stack.resolve(str)).toEqual({
       'Fn::Join': ['', ['"{"ref=', { Ref: 'MyResource' }, '":"this is a I am lazy"}"']],
     });
-
-
   });
 
   test('resource provider simply parses json and reflects back as an attribute', async () => {
@@ -86,6 +81,5 @@ describe('cfn json', () => {
       },
     } as any);
     expect(input).toEqual(response.Data.Value);
-
   });
 });

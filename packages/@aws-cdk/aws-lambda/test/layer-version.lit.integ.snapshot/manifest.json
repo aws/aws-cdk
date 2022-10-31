@@ -1,0 +1,82 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-layer-version-1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-layer-version-1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-layer-version-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-layer-version-1.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2807a9be099ce796f18dbc341fe29cd5c9e4fafa207188a37bc8cbf5af8702a4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-layer-version-1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-layer-version-1.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-layer-version-1/MyLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayer38944FA5"
+          }
+        ],
+        "/aws-cdk-layer-version-1/MyLayer/remote-account-grant": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayerremoteaccountgrant715E5D21"
+          }
+        ],
+        "/aws-cdk-layer-version-1/MyLayeredLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayeredLambdaServiceRole1A7DC118"
+          }
+        ],
+        "/aws-cdk-layer-version-1/MyLayeredLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLayeredLambda9A3008D1"
+          }
+        ],
+        "/aws-cdk-layer-version-1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-layer-version-1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-layer-version-1"
+    }
+  }
+}

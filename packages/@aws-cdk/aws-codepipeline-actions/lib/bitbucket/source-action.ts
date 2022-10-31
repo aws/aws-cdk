@@ -1,10 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
+import { Construct } from 'constructs';
 import { CodeStarConnectionsSourceAction, CodeStarConnectionsSourceActionProps } from '../codestar-connections/source-action';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties for {@link BitBucketSourceAction}.

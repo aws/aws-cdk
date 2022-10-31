@@ -1,4 +1,5 @@
 import { Match, Template } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
@@ -438,6 +439,124 @@ test('can specify custom test', () => {
           console.log(\'hello world\');
         };`,
     },
+  });
+});
+
+describe('canary in a vpc', () => {
+  test('can specify vpc', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Code: {
+        Handler: 'index.handler',
+        Script: `
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`,
+      },
+      VPCConfig: {
+        VpcId: {
+          Ref: Match.anyValue(),
+        },
+      },
+    });
+  });
+
+  test('default security group and subnets', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Code: {
+        Handler: 'index.handler',
+        Script: `
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`,
+      },
+      VPCConfig: {
+        VpcId: {
+          Ref: Match.anyValue(),
+        },
+        SecurityGroupIds: Match.anyValue(),
+        SubnetIds: [...vpc.privateSubnets.map(subnet => ({ Ref: Match.stringLikeRegexp(subnet.node.id) }))],
+      },
+    });
+  });
+
+  test('provided security group', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+    const sg = new ec2.SecurityGroup(stack, 'Sg', { vpc });
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+      vpc,
+      securityGroups: [sg],
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const sgTemplate = template.findResources('AWS::EC2::SecurityGroup');
+    const sgIds = Object.keys(sgTemplate);
+
+    expect(sgIds).toHaveLength(1);
+
+    template.hasResourceProperties('AWS::Synthetics::Canary', {
+      Code: {
+        Handler: 'index.handler',
+        Script: `
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`,
+      },
+      VPCConfig: {
+        VpcId: {
+          Ref: Match.anyValue(),
+        },
+        SecurityGroupIds: [{ 'Fn::GetAtt': [sgIds[0], 'GroupId'] }],
+      },
+    });
   });
 });
 

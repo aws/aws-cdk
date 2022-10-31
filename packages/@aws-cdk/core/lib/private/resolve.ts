@@ -4,10 +4,6 @@ import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
 
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { IConstruct as ICoreConstruct } from '../construct-compat';
-
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
 
@@ -114,7 +110,8 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
     const context: IResolveContext = {
       preparing: options.preparing,
-      scope: options.scope as ICoreConstruct,
+      scope: options.scope as IConstruct,
+      documentPath: newPrefix ?? [],
       registerPostProcessor(pp) { postProcessor = pp; },
       resolve(x: any, changeOptions?: ResolveChangeContextOptions) { return resolve(x, { ...options, ...changeOptions, prefix: newPrefix }); },
     };

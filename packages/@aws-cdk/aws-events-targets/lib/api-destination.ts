@@ -70,9 +70,9 @@ export class ApiDestination implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const httpParameters: events.CfnRule.HttpParametersProperty | undefined =
-      !!this.props.headerParameters ??
-      !!this.props.pathParameterValues ??
-      !!this.props.queryStringParameters
+      this.props.headerParameters ??
+      this.props.pathParameterValues ??
+      this.props.queryStringParameters
         ? {
           headerParameters: this.props.headerParameters,
           pathParameterValues: this.props.pathParameterValues,
@@ -83,13 +83,16 @@ export class ApiDestination implements events.IRuleTarget {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
     }
 
+    const role = this.props?.eventRole ?? singletonEventRole(this.apiDestination);
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: [this.apiDestination.apiDestinationArn],
+      actions: ['events:InvokeApiDestination'],
+    }));
+
     return {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: this.apiDestination.apiDestinationArn,
-      role: this.props?.eventRole ?? singletonEventRole(this.apiDestination, [new iam.PolicyStatement({
-        resources: [this.apiDestination.apiDestinationArn],
-        actions: ['events:InvokeApiDestination'],
-      })]),
+      role,
       input: this.props.event,
       targetResource: this.apiDestination,
       httpParameters,

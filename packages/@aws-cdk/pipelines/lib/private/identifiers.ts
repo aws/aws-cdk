@@ -54,8 +54,8 @@ function sanitizeName(x: string): string {
  */
 export function limitIdentifierLength(s: string, n: number): string {
   if (s.length <= n) { return s; }
-  const h = hash(s).substr(0, 8);
+  const h = hash(s).slice(0, 8);
   const mid = Math.floor((n - h.length) / 2);
 
-  return s.substr(0, mid) + h + s.substr(s.length - mid);
+  return s.slice(0, mid) + h + s.slice(-mid);
 }

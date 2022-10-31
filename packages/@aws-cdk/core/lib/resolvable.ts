@@ -1,4 +1,4 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
 import { TokenizedStringFragments } from './string-fragments';
@@ -16,6 +16,11 @@ export interface IResolveContext {
    * True when we are still preparing, false if we're rendering the final output
    */
   readonly preparing: boolean;
+
+  /**
+   * Path in the JSON document that is being constructed
+   */
+  readonly documentPath: string[];
 
   /**
    * Resolve an inner object

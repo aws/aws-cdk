@@ -1,12 +1,9 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as elbv2 from '../../lib';
-
-const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
@@ -50,6 +47,30 @@ describe('tests', () => {
     });
   });
 
+  test('VpcEndpointService with Domain Name imported from public hosted zone', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'Nlb', { vpc });
+    const endpointService = new ec2.VpcEndpointService(stack, 'EndpointService', { vpcEndpointServiceLoadBalancers: [nlb] });
+
+    // WHEN
+    const importedPHZ = route53.PublicHostedZone.fromPublicHostedZoneAttributes(stack, 'MyPHZ', {
+      hostedZoneId: 'sampleid',
+      zoneName: 'MyZone',
+    });
+    new route53.VpcEndpointServiceDomainName(stack, 'EndpointServiceDomainName', {
+      endpointService,
+      domainName: 'MyDomain',
+      publicHostedZone: importedPHZ,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'sampleid',
+    });
+  });
+
   test('Attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -72,8 +93,9 @@ describe('tests', () => {
     });
   });
 
-  testFutureBehavior('Access logging', s3GrantWriteCtx, cdk.App, (app) => {
+  test('Access logging', () => {
     // GIVEN
+    const app = new cdk.App();
     const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
@@ -151,8 +173,9 @@ describe('tests', () => {
     });
   });
 
-  testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
+  test('access logging with prefix', () => {
     // GIVEN
+    const app = new cdk.App();
     const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
@@ -241,6 +264,96 @@ describe('tests', () => {
     });
   });
 
+  test('loadBalancerName unallowed: more than 32 characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'a'.repeat(33),
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" can have a maximum of 32 characters.');
+  });
+
+  test('loadBalancerName unallowed: starts with "internal-"', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'internal-myLoadBalancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "internal-myLoadBalancer" must not begin with "internal-".');
+  });
+
+  test('loadBalancerName unallowed: starts with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: '-myLoadBalancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "-myLoadBalancer" must not begin or end with a hyphen.');
+  });
+
+  test('loadBalancerName unallowed: ends with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'myLoadBalancer-',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "myLoadBalancer-" must not begin or end with a hyphen.');
+  });
+
+  test('loadBalancerName unallowed: unallowed characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'my load balancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "my load balancer" must contain only alphanumeric characters or hyphens.');
+  });
+
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -287,7 +400,7 @@ describe('tests', () => {
       subnetConfiguration: [{
         cidrMask: 20,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -318,11 +431,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -353,11 +466,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -410,11 +523,11 @@ describe('tests', () => {
       }, {
         cidrMask: 24,
         name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       }, {
         cidrMask: 28,
         name: 'Isolated',
-        subnetType: ec2.SubnetType.ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
       }],
     });
 
@@ -422,7 +535,7 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: false,
-      vpcSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
 
     // THEN

@@ -17,6 +17,11 @@ const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
 });
 
 const mesh = new appmesh.Mesh(stack, 'mesh');
+new appmesh.Mesh(stack, 'mesh-with-preference', {
+  serviceDiscovery: {
+    ipPreference: appmesh.IpPreference.IPV4_ONLY,
+  },
+});
 const router = mesh.addVirtualRouter('router', {
   listeners: [
     appmesh.VirtualRouterListener.http(),
@@ -29,7 +34,7 @@ const virtualService = new appmesh.VirtualService(stack, 'service', {
 });
 
 const node = mesh.addVirtualNode('node', {
-  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`, undefined, appmesh.IpPreference.IPV4_ONLY),
   listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,

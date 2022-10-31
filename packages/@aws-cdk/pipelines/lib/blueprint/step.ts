@@ -105,10 +105,10 @@ export abstract class Step implements IFileSetProducer {
   /**
    * Crawl the given structure for references to StepOutputs and add dependencies on all steps found
    *
-   * Should be called by subclasses based on what the user passes in as
-   * construction properties. The format of the structure passed in here does
-   * not have to correspond exactly to what gets rendered into the engine, it
-   * just needs to contain the same amount of data.
+   * Should be called in the constructor of subclasses based on what the user
+   * passes in as construction properties. The format of the structure passed in
+   * here does not have to correspond exactly to what gets rendered into the
+   * engine, it just needs to contain the same data.
    */
   protected discoverReferencedOutputs(structure: any) {
     for (const output of StepOutput.findAll(structure)) {

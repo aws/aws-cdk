@@ -59,6 +59,19 @@ test('test listener', async () => {
   expect(allMessages).toContain('theAsset:theDestination2');
 });
 
+test('test publishing in parallel', async () => {
+  const progressListener = new FakeListener();
+
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener, publishInParallel: true });
+  await pub.publish();
+
+  const allMessages = progressListener.messages.join('\n');
+
+  // Log mentions asset/destination ids
+  expect(allMessages).toContain('theAsset:theDestination1');
+  expect(allMessages).toContain('theAsset:theDestination2');
+});
+
 test('test abort', async () => {
   const progressListener = new FakeListener(true);
 

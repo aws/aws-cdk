@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as iot from '@aws-cdk/aws-iot';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';

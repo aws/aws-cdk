@@ -39,7 +39,7 @@ export class TestGitHubAction extends codepipeline_actions.GitHubSourceAction {
     super({
       actionName: 'GitHub',
       output: sourceArtifact,
-      oauthToken: SecretValue.plainText('$3kr1t'),
+      oauthToken: SecretValue.unsafePlainText('$3kr1t'),
       owner: 'test',
       repo: 'test',
       trigger: codepipeline_actions.GitHubTrigger.POLL,

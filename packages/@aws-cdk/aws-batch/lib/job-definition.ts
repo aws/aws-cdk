@@ -113,6 +113,13 @@ export interface JobDefinitionContainer {
   readonly environment?: { [key: string]: string };
 
   /**
+   * The environment variables from secrets manager or ssm parameter store
+   *
+   * @default none
+   */
+  readonly secrets?: { [key: string]: ecs.Secret };
+
+  /**
    * The image used to start a container.
    */
   readonly image: ecs.ContainerImage;
@@ -296,6 +303,18 @@ export interface JobDefinitionProps {
    * @default - EC2
    */
   readonly platformCapabilities?: PlatformCapabilities[];
+
+  /**
+   * Specifies whether to propagate the tags from the job or job definition to the corresponding Amazon ECS task.
+   * If no value is specified, the tags aren't propagated.
+   * Tags can only be propagated to the tasks during task creation. For tags with the same name,
+   * job tags are given priority over job definitions tags.
+   * If the total number of combined tags from the job and job definition is over 50, the job is moved to the `FAILED` state.
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-jobdefinition.html#cfn-batch-jobdefinition-propagatetags
+   * @default - undefined
+   */
+  readonly propagateTags?: boolean;
 }
 
 /**
@@ -451,7 +470,16 @@ export class JobDefinition extends Resource implements IJobDefinition {
         attemptDurationSeconds: props.timeout ? props.timeout.toSeconds() : undefined,
       },
       platformCapabilities: props.platformCapabilities ?? [PlatformCapabilities.EC2],
+      propagateTags: props.propagateTags,
     });
+
+    // add read secrets permission to execution role
+    if ( props.container.secrets && props.container.executionRole ) {
+      const executionRole = props.container.executionRole;
+      Object.values(props.container.secrets).forEach((secret) => {
+        secret.grantRead(executionRole);
+      });
+    }
 
     this.jobDefinitionArn = this.getResourceArnAttribute(jobDef.ref, {
       service: 'batch',
@@ -461,11 +489,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
     this.jobDefinitionName = this.getResourceNameAttribute(jobDef.ref);
   }
 
-  private deserializeEnvVariables(env?: { [name: string]: string }): CfnJobDefinition.EnvironmentProperty[] | undefined {
+  private deserializeEnvVariables(env?: { [name: string]: string }): CfnJobDefinition.EnvironmentProperty[] {
     const vars = new Array<CfnJobDefinition.EnvironmentProperty>();
 
     if (env === undefined) {
-      return undefined;
+      return vars;
     }
 
     Object.keys(env).map((name: string) => {
@@ -504,9 +532,35 @@ export class JobDefinition extends Resource implements IJobDefinition {
       return undefined;
     }
 
+    // If the AWS_*** environment variables are not explicitly set to the container, infer them from the current environment.
+    // This makes the usage of tools like AWS SDK inside the container frictionless
+
+    const environment = this.deserializeEnvVariables(container.environment);
+
+    if (!environment.find((x) => x.name === 'AWS_REGION')) {
+      environment.push({
+        name: 'AWS_REGION',
+        value: Stack.of(this).region,
+      });
+    }
+    if (!environment.find((x) => x.name === 'AWS_ACCOUNT')) {
+      environment.push({
+        name: 'AWS_ACCOUNT',
+        value: Stack.of(this).account,
+      });
+    }
+
     return {
       command: container.command,
-      environment: this.deserializeEnvVariables(container.environment),
+      environment,
+      secrets: container.secrets
+        ? Object.entries(container.secrets).map(([key, value]) => {
+          return {
+            name: key,
+            valueFrom: value.arn,
+          };
+        })
+        : undefined,
       image: this.imageConfig.imageName,
       instanceType: container.instanceType && container.instanceType.toString(),
       jobRoleArn: container.jobRole && container.jobRole.roleArn,

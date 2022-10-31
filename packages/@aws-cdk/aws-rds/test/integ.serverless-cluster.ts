@@ -19,7 +19,7 @@ const cluster = new rds.ServerlessCluster(stack, 'Serverless Database', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   credentials: {
     username: 'admin',
-    password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
+    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
   },
   vpc,
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -27,5 +27,19 @@ const cluster = new rds.ServerlessCluster(stack, 'Serverless Database', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+const noCopyTagsCluster = new rds.ServerlessCluster(stack, 'Serverless Database Without Copy Tags', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  credentials: {
+    username: 'admin',
+    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
+  },
+  vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  subnetGroup,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  copyTagsToSnapshot: false,
+});
+noCopyTagsCluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
 app.synth();

@@ -46,7 +46,7 @@ export class ResourcePolicy extends Resource {
       physicalName: props?.resourcePolicyName,
     });
 
-    new CfnResourcePolicy(this, 'ResourcePolicy', {
+    const l1 = new CfnResourcePolicy(this, 'ResourcePolicy', {
       policyName: Lazy.string({
         produce: () => props?.resourcePolicyName ?? Names.uniqueId(this),
       }),
@@ -54,6 +54,8 @@ export class ResourcePolicy extends Resource {
         produce: () => JSON.stringify(this.document),
       }),
     });
+
+    this.node.defaultChild = l1;
 
     if (props?.policyStatements) {
       this.document.addStatements(...props.policyStatements);

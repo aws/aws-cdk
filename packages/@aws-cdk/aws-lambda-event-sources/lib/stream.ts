@@ -2,8 +2,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration } from '@aws-cdk/core';
 
 /**
- * The set of properties for event sources that follow the streaming model,
- * such as, Dynamo, Kinesis and Kafka.
+ * The set of properties for streaming event sources shared by
+ * Dynamo, Kinesis and Kafka.
  */
 export interface BaseStreamEventSourceProps{
   /**
@@ -22,22 +22,17 @@ export interface BaseStreamEventSourceProps{
   readonly batchSize?: number;
 
   /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
-   *
-   * @default discarded records are ignored
-   */
-  readonly onFailure?: lambda.IEventSourceDlq;
-
-  /**
    * Where to begin consuming the stream.
    */
   readonly startingPosition: lambda.StartingPosition;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
-   * Maximum of Duration.minutes(5)
+   * Maximum of Duration.minutes(5).
    *
-   * @default Duration.seconds(0)
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html#invocation-eventsourcemapping-batching
+   *
+   * @default - Duration.seconds(0) for Kinesis, DynamoDB, and SQS event sources, Duration.millis(500) for MSK, self-managed Kafka, and Amazon MQ.
    */
   readonly maxBatchingWindow?: Duration;
 
@@ -50,8 +45,8 @@ export interface BaseStreamEventSourceProps{
 }
 
 /**
- * The set of properties for event sources that follow the streaming model,
- * such as, Dynamo, Kinesis.
+ * The set of properties for streaming event sources shared by
+ * Dynamo and Kinesis.
  */
 export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
   /**
@@ -107,6 +102,20 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * @default - None
    */
   readonly tumblingWindow?: Duration;
+
+  /**
+   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   *
+   * @default - discarded records are ignored
+   */
+  readonly onFailure?: lambda.IEventSourceDlq;
+
+  /**
+   * Add filter criteria option
+   *
+   * @default - None
+   */
+  readonly filters?: Array<{[key: string]: any}>;
 }
 
 /**
@@ -132,6 +141,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       onFailure: this.props.onFailure,
       tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
+      filters: this.props.filters,
     };
   }
 }

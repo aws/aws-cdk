@@ -256,8 +256,8 @@ export class Settings {
     // If we deploy, diff, synth or watch a list of stacks exclusively we skip
     // bundling for all other stacks.
       bundlingStacks = argv.exclusively
-        ? argv.STACKS ?? ['*']
-        : ['*'];
+        ? argv.STACKS ?? ['**']
+        : ['**'];
     } else { // Skip bundling for all stacks
       bundlingStacks = [];
     }
@@ -265,6 +265,7 @@ export class Settings {
     return new Settings({
       app: argv.app,
       browser: argv.browser,
+      build: argv.build,
       context,
       debug: argv.debug,
       tags,
@@ -288,6 +289,7 @@ export class Settings {
       lookups: argv.lookups,
       rollback: argv.rollback,
       notices: argv.notices,
+      assetParallelism: argv['asset-parallelism'],
     });
   }
 
@@ -442,7 +444,7 @@ export class Settings {
 
 function expandHomeDir(x: string) {
   if (x.startsWith('~')) {
-    return fs_path.join(os.homedir(), x.substr(1));
+    return fs_path.join(os.homedir(), x.slice(1));
   }
   return x;
 }

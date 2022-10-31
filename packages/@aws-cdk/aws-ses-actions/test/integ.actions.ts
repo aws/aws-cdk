@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -16,7 +15,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.fromInline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');

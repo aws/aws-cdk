@@ -11,7 +11,7 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.MWAA",
         "packageId": "Amazon.CDK.AWS.MWAA",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
         "package": "software.amazon.awscdk.services.mwaa",
@@ -23,7 +23,7 @@
       "python": {
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-mwaa",
         "module": "aws_cdk.aws_mwaa"
@@ -48,7 +48,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "cdk-integ",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -85,16 +85,18 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.1"
+    "@types/jest": "^27.5.2"
   },
   "dependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "cfn-only",
@@ -103,5 +105,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }

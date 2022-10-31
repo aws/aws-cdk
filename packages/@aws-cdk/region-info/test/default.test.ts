@@ -5,7 +5,7 @@ const urlSuffix = '.nowhere.null';
 
 describe('servicePrincipal', () => {
   for (const suffix of ['', '.amazonaws.com', '.amazonaws.com.cn']) {
-    for (const service of ['codedeploy', 'states', 'ssm']) {
+    for (const service of ['codedeploy', 'states']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.amazonaws.com`);
       });
@@ -53,15 +53,32 @@ describe('servicePrincipal', () => {
       expect(Default.servicePrincipal('codedeploy', cnRegion, 'amazonaws.com.cn')).toBe(`codedeploy.${cnRegion}.amazonaws.com.cn`);
     });
   }
-
 });
 
 
 describe('spot-check some service principals', () => {
   test('ssm', () => {
-    expect(Default.servicePrincipal('ssm.amazonaws.com', 'us-east-1', 'x')).toBe('ssm.amazonaws.com');
-    expect(Default.servicePrincipal('ssm.amazonaws.com', 'eu-north-1', 'x')).toBe('ssm.amazonaws.com');
-    expect(Default.servicePrincipal('ssm.amazonaws.com', 'ap-east-1', 'x')).toBe('ssm.ap-east-1.amazonaws.com');
-    expect(Default.servicePrincipal('ssm.amazonaws.com', 'eu-south-1', 'x')).toBe('ssm.eu-south-1.amazonaws.com');
+    // SSM has advertised in its documentation that it is regional after a certain point, but that
+    // documentation only applies to SSM Inventory, not SSM Automation. Plus, there is no need for
+    // a different service principal, as all accounts are (at least currently) included in the global
+    // one.
+    expectServicePrincipals('ssm.amazonaws.com', {
+      'us-east-1': 'ssm.amazonaws.com',
+      'eu-north-1': 'ssm.amazonaws.com',
+      'ap-east-1': 'ssm.amazonaws.com',
+      'eu-south-1': 'ssm.amazonaws.com',
+    });
   });
+
+  test('EMR', () => {
+    expectServicePrincipals('elasticmapreduce.amazonaws.com', {
+      'us-east-1': 'elasticmapreduce.amazonaws.com',
+      'cn-north-1': 'elasticmapreduce.EXTENSION', // amazonaws.com.cn in China
+      'us-iso-east-1': 'elasticmapreduce.amazonaws.com',
+    });
+  });
+
+  function expectServicePrincipals(principal: string, regionMap: Record<string, string>) {
+    expect(Object.fromEntries(Object.keys(regionMap).map(reg => [reg, Default.servicePrincipal(principal, reg, 'EXTENSION')]))).toEqual(regionMap);
+  }
 });

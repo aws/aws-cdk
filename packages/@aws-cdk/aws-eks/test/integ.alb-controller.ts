@@ -1,25 +1,26 @@
-/// !cdk-integ pragma:ignore-assets
+/// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { App, CfnOutput, Duration } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-23';
 import * as eks from '../lib';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
-import { TestStack } from './util';
 
-class EksClusterAlbControllerStack extends TestStack {
+class EksClusterAlbControllerStack extends Stack {
 
   constructor(scope: App, id: string) {
     super(scope, id);
 
     // just need one nat gateway to simplify the test
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1 });
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
       albController: {
-        version: eks.AlbControllerVersion.V2_3_1,
+        version: eks.AlbControllerVersion.V2_4_1,
       },
     });
 
@@ -58,5 +59,8 @@ class EksClusterAlbControllerStack extends TestStack {
 }
 
 const app = new App();
-new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-test');
+const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-test');
+new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller', {
+  testCases: [stack],
+});
 app.synth();

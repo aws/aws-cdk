@@ -1,16 +1,16 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Duration, Lazy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
+import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, RedirectResponse, validateFixedResponse, validateRedirectResponse } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
@@ -377,7 +377,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       messageBody: props.messageBody,
     };
 
-    validateFixedResponse(fixedResponse);
+    /**
+     * NOTE - Copy/pasted from `application-listener-rule.ts#validateFixedResponse`.
+     * This was previously a deprecated, exported function, which caused issues with jsii's strip-deprecated functionality.
+     * Inlining the duplication functionality in v2 only (for now).
+     */
+    if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
+      throw new Error('`statusCode` must be 2XX, 4XX or 5XX.');
+    }
+
+    if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
+      throw new Error('`messageBody` cannot have more than 1024 characters.');
+    }
 
     if (props.priority) {
       new ApplicationListenerRule(this, id + 'Rule', {
@@ -410,7 +421,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       statusCode: props.statusCode,
     };
 
-    validateRedirectResponse(redirectResponse);
+    /**
+     * NOTE - Copy/pasted from `application-listener-rule.ts#validateRedirectResponse`.
+     * This was previously a deprecated, exported function, which caused issues with jsii's strip-deprecated functionality.
+     * Inlining the duplication functionality in v2 only (for now).
+     */
+    if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
+      throw new Error('`protocol` must be HTTP, HTTPS, or #{protocol}.');
+    }
+
+    if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
+      throw new Error('`statusCode` must be HTTP_301 or HTTP_302.');
+    }
 
     if (props.priority) {
       new ApplicationListenerRule(this, id + 'Rule', {
@@ -443,8 +465,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Validate this listener.
    */
-  protected validate(): string[] {
-    const errors = super.validate();
+  protected validateListener(): string[] {
+    const errors = super.validateListener();
     if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
       errors.push('HTTPS Listener needs at least one certificate (call addCertificates)');
     }
@@ -463,13 +485,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 /**
  * Properties to reference an existing listener
  */
-export interface IApplicationListener extends IResource, ec2.IConnectable {
-  /**
-   * ARN of the listener
-   * @attribute
-   */
-  readonly listenerArn: string;
-
+export interface IApplicationListener extends IListener, ec2.IConnectable {
   /**
    * Add one or more certificates to this listener.
    * @deprecated use `addCertificates()`
@@ -508,6 +524,21 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void;
+
+  /**
+   * Perform the given action on incoming requests
+   *
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   *
+   * It is not possible to add a default action to an imported IApplicationListener.
+   * In order to add actions to an imported IApplicationListener a `priority`
+   * must be provided.
+   */
+  addAction(id: string, props: AddApplicationActionProps): void;
 }
 
 /**
@@ -520,16 +551,9 @@ export interface ApplicationListenerAttributes {
   readonly listenerArn: string;
 
   /**
-   * Security group ID of the load balancer this listener is associated with
-   *
-   * @deprecated use `securityGroup` instead
-   */
-  readonly securityGroupId?: string;
-
-  /**
    * Security group of the load balancer this listener is associated with
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup: ec2.ISecurityGroup;
 
   /**
    * The default port on which this listener is listening
@@ -627,6 +651,36 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
     // eslint-disable-next-line max-len
     throw new Error('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.');
   }
+
+  /**
+   * Perform the given action on incoming requests
+   *
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   *
+   * It is not possible to add a default action to an imported IApplicationListener.
+   * In order to add actions to an imported IApplicationListener a `priority`
+   * must be provided.
+   */
+  public addAction(id: string, props: AddApplicationActionProps): void {
+    checkAddRuleProps(props);
+
+    if (props.priority !== undefined) {
+      // New rule
+      //
+      // TargetGroup.registerListener is called inside ApplicationListenerRule.
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        priority: props.priority,
+        ...props,
+      });
+    } else {
+      throw new Error('priority must be set for actions added to an imported listener');
+    }
+  }
 }
 
 /**
@@ -642,19 +696,8 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     this.listenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
-    let securityGroup: ec2.ISecurityGroup;
-    if (props.securityGroup) {
-      securityGroup = props.securityGroup;
-    } else if (props.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound,
-      });
-    } else {
-      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
-    }
-
     this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
+      securityGroups: [props.securityGroup],
       defaultPort,
     });
   }

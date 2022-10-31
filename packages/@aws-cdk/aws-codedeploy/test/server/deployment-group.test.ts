@@ -412,6 +412,42 @@ describe('CodeDeploy Server Deployment Group', () => {
     expect(() => app.synth()).toThrow(/deploymentInAlarm/);
   });
 
+  test('disable automatic rollback', () => {
+    const stack = new cdk.Stack();
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      autoRollback: {
+        deploymentInAlarm: false,
+        failedDeployment: false,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      'AutoRollbackConfiguration': {
+        'Enabled': false,
+      },
+    });
+  });
+
+  test('disable automatic rollback when all options are false', () => {
+    const stack = new cdk.Stack();
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      autoRollback: {
+        deploymentInAlarm: false,
+        failedDeployment: false,
+        stoppedDeployment: false,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
+      'AutoRollbackConfiguration': {
+        'Enabled': false,
+      },
+    });
+  });
+
+
   test('can be used with an imported ALB Target Group as the load balancer', () => {
     const stack = new cdk.Stack();
 
@@ -435,6 +471,27 @@ describe('CodeDeploy Server Deployment Group', () => {
         'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
       },
     });
+  });
+
+  test('fail with more than 100 characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+      deploymentGroupName: 'a'.repeat(101),
+    });
+
+    expect(() => app.synth()).toThrow(`Deployment group name: "${'a'.repeat(101)}" can be a max of 100 characters.`);
+  });
+
+  test('fail with unallowed characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+
+      deploymentGroupName: 'my name',
+    });
+
+    expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
 
 });

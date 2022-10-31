@@ -1,9 +1,4 @@
 /**
- * After this point, SSM only creates regional principals
- */
-export const RULE_SSM_PRINCIPALS_ARE_REGIONAL = Symbol('SSM_PRINCIPALS_ARE_REGIONAL');
-
-/**
  * After this point, S3 website domains look like `s3-website.REGION.s3.amazonaws.com`
  *
  * Before this point, S3 website domains look like `s3-website-REGION.s3.amazonaws.com`.
@@ -49,7 +44,6 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'ap-northeast-3', // Asia Pacific (Osaka)
   'us-gov-east-1', // AWS GovCloud (US-East)
   'eu-north-1', // Europe (Stockholm)
-  RULE_SSM_PRINCIPALS_ARE_REGIONAL,
   'ap-east-1', // Asia Pacific (Hong Kong)
   'me-south-1', // Middle East (Bahrain)
   'eu-south-1', // Europe (Milan)
@@ -132,15 +126,4 @@ export function partitionInformation(region: string): Region {
     }
   }
   return PARTITION_MAP.default;
-}
-
-/**
- * Build a lookup map for all regions
- */
-export function generateRegionMap(cb: (region: string) => string): Record<string, string> {
-  const ret: Record<string, string> = {};
-  for (const region of AWS_REGIONS) {
-    ret[region] = cb(region);
-  }
-  return ret;
 }

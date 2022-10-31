@@ -254,6 +254,16 @@ describe('event bus', () => {
     }).toThrow(/'eventSourceName' must satisfy: \/\^aws/);
   });
 
+  test('does not throw if eventSourceName is a token', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN / THEN
+    expect(() => new EventBus(stack, 'EventBus', {
+      eventSourceName: Aws.STACK_NAME,
+    })).not.toThrow();
+  });
+
   test('event bus source name cannot be empty string', () => {
     // GIVEN
     const stack = new Stack();

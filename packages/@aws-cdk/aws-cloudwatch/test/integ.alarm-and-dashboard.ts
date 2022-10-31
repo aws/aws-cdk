@@ -45,6 +45,10 @@ dashboard.addWidgets(new cloudwatch.AlarmWidget({
   title: 'Messages in queue',
   alarm,
 }));
+dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
+  title: 'Firing alarms',
+  alarms: [alarm],
+}));
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',
   left: [numberOfMessagesVisibleMetric],
@@ -97,6 +101,10 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   title: 'Sent message size with full precision',
   metrics: [sentMessageSizeMetric],
   fullPrecision: true,
+}));
+dashboard.addWidgets(new cloudwatch.CustomWidget({
+  title: 'My custom alarm',
+  functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
 }));
 
 app.synth();

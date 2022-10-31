@@ -13,7 +13,7 @@ export interface LambdaAuthorizerProps {
   /**
    * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
-   * @default - the unique construcrt ID
+   * @default - the unique construct ID
    */
   readonly authorizerName?: string;
 
@@ -105,7 +105,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
         statements: [
           new iam.PolicyStatement({
-            resources: [this.handler.functionArn],
+            resources: this.handler.resourceArnsForGrantInvoke,
             actions: ['lambda:InvokeFunction'],
           }),
         ],

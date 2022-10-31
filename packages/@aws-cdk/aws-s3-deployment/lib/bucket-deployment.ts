@@ -12,12 +12,9 @@ import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 // tag key has a limit of 128 characters
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
+
 /**
  * Properties for `BucketDeployment`.
  */
@@ -40,6 +37,13 @@ export interface BucketDeploymentProps {
    * @default "/" (unzip to root of the destination bucket)
    */
   readonly destinationKeyPrefix?: string;
+
+  /**
+   * If this is set, the zip file will be synced to the destination S3 bucket and extracted.
+   * If false, the file will remain zipped in the destination bucket.
+   * @default true
+   */
+  readonly extract?: boolean;
 
   /**
    * If this is set, matching files or objects will be excluded from the deployment's sync
@@ -81,7 +85,7 @@ export interface BucketDeploymentProps {
    * NOTICE: Configuring this to "false" might have operational implications. Please
    * visit to the package documentation referred below to make sure you fully understand those implications.
    *
-   * @see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
+   * @see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
@@ -120,6 +124,13 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   * The size of the AWS Lambda function’s /tmp directory in MiB.
+   *
+   * @default 512 MiB
+   */
+  readonly ephemeralStorageSize?: cdk.Size;
 
   /**
    *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
@@ -238,7 +249,7 @@ export interface BucketDeploymentProps {
  * `BucketDeployment` populates an S3 bucket with the contents of .zip files from
  * other S3 buckets or from local disk
  */
-export class BucketDeployment extends CoreConstruct {
+export class BucketDeployment extends Construct {
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: boolean = false;
@@ -292,10 +303,10 @@ export class BucketDeployment extends CoreConstruct {
 
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit, props.vpc),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       environment: props.useEfs ? {
         MOUNT_PATH: mountPath,
       } : undefined,
@@ -304,6 +315,7 @@ export class BucketDeployment extends CoreConstruct {
       timeout: cdk.Duration.minutes(15),
       role: props.role,
       memorySize: props.memoryLimit,
+      ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
       filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
@@ -319,6 +331,9 @@ export class BucketDeployment extends CoreConstruct {
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
     props.destinationBucket.grantReadWrite(handler);
+    if (props.accessControl) {
+      props.destinationBucket.grantPutAcl(handler);
+    }
     if (props.distribution) {
       handler.addToRolePolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -331,7 +346,13 @@ export class BucketDeployment extends CoreConstruct {
     // the sources actually has markers.
     const hasMarkers = sources.some(source => source.markers);
 
-    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
+    // Markers are not replaced if zip sources are not extracted, so throw an error
+    // if extraction is not wanted and sources have markers.
+    if (hasMarkers && props.extract == false) {
+      throw new Error('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
+    }
+
+    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc)}`;
     this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
@@ -342,6 +363,7 @@ export class BucketDeployment extends CoreConstruct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        Extract: props.extract,
         Prune: props.prune ?? true,
         Exclude: props.exclude,
         Include: props.include,
@@ -357,15 +379,15 @@ export class BucketDeployment extends CoreConstruct {
     let prefix: string = props.destinationKeyPrefix ?
       `:${props.destinationKeyPrefix}` :
       '';
-    prefix += `:${this.cr.node.addr.substr(-8)}`;
+    prefix += `:${this.cr.node.addr.slice(-8)}`;
     const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
 
     // destinationKeyPrefix can be 104 characters before we hit
     // the tag key limit of 128
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
-    if (tagKey.length > 128) {
-      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters');
+    if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
+      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.');
     }
 
     /*
@@ -426,21 +448,49 @@ export class BucketDeployment extends CoreConstruct {
     return this._deployedBucket;
   }
 
-  private renderUniqueId(memoryLimit?: number, vpc?: ec2.IVpc) {
+  /**
+   * The object keys for the sources deployed to the S3 bucket.
+   *
+   * This returns a list of tokenized object keys for source files that are deployed to the bucket.
+   *
+   * This can be useful when using `BucketDeployment` with `extract` set to `false` and you need to reference
+   * the object key that resides in the bucket for that zip source file somewhere else in your CDK
+   * application, such as in a CFN output.
+   *
+   * For example, use `Fn.select(0, myBucketDeployment.objectKeys)` to reference the object key of the
+   * first source file in your bucket deployment.
+   */
+  public get objectKeys(): string[] {
+    const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
+    return objectKeys;
+  }
+
+  private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
     let uuid = '';
 
-    // if user specify a custom memory limit, define another singleton handler
+    // if the user specifes a custom memory limit, we define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new Error('Can\'t use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler');
+        throw new Error("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.");
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
     }
 
-    // if user specify to use VPC, define another singleton handler
+    // if the user specifies a custom ephemeral storage size, we define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    if (ephemeralStorageSize) {
+      if (ephemeralStorageSize.isUnresolved()) {
+        throw new Error("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.");
+      }
+
+      uuid += `-${ephemeralStorageSize.toMebibytes().toString()}MiB`;
+    }
+
+    // if the user specifies a VPC, we define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
     // A VPC is a must if EFS storage is used and that's why we are only using VPC in uuid.
@@ -451,10 +501,10 @@ export class BucketDeployment extends CoreConstruct {
     return uuid;
   }
 
-  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
+  private renderSingletonUuid(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
-    uuid += this.renderUniqueId(memoryLimit, vpc);
+    uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc);
 
     return uuid;
   }

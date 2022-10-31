@@ -22,6 +22,10 @@ const event = new events.Rule(stack, 'EveryMinute', {
 const queue = new sqs.Queue(stack, 'MyQueue');
 topic.addSubscription(new subs.SqsSubscription(queue));
 
-event.addTarget(new targets.SnsTopic(topic));
+const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+
+event.addTarget(new targets.SnsTopic(topic, {
+  deadLetterQueue,
+}));
 
 app.synth();

@@ -18,7 +18,7 @@ describe('serverless cluster', () => {
       vpc,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
     });
@@ -27,6 +27,7 @@ describe('serverless cluster', () => {
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
+        CopyTagsToSnapshot: true,
         DBClusterParameterGroupName: 'default.aurora-postgresql10',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
@@ -64,6 +65,7 @@ describe('serverless cluster', () => {
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-mysql',
+        CopyTagsToSnapshot: true,
         DBClusterParameterGroupName: 'default.aurora-mysql5.7',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
@@ -331,7 +333,7 @@ describe('serverless cluster', () => {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       vpc,
     });
@@ -862,6 +864,78 @@ describe('serverless cluster', () => {
       vpcSubnets,
     })).toThrow(/A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets/);
   });
+
+  test('can call exportValue on endpoint.port', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      credentials: { username: 'admin' },
+      vpc,
+    });
+
+    // WHEN
+    stack.exportValue(cluster.clusterEndpoint.port);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasOutput('ExportsOutputFnGetAttDatabaseB269D8BBEndpointPort3ACB3F51', {
+      Value: { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+      Export: { Name: 'Default:ExportsOutputFnGetAttDatabaseB269D8BBEndpointPort3ACB3F51' },
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot default', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot disabled', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      copyTagsToSnapshot: false,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: false,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot enabled', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      copyTagsToSnapshot: true,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
 });
 
 function testStack(app?: cdk.App, id?: string): cdk.Stack {

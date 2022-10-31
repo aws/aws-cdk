@@ -21,7 +21,11 @@ const bucket2 = new s3.Bucket(stack, 'Bucket2', {
 });
 bucket2.addObjectRemovedNotification(new s3n.SnsDestination(topic3), { prefix: 'foo' }, { suffix: 'foo/bar' });
 
-const bucket3 = s3.Bucket.fromBucketName(stack, 'Bucket3', bucket2.bucketName);
-bucket3.addEventNotification(s3.EventType.OBJECT_CREATED_COPY, new s3n.SnsDestination(topic3));
+const bucket3 = new s3.Bucket(stack, 'Bucket3', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+const importedBucket3 = s3.Bucket.fromBucketName(stack, 'Bucket3Imported', bucket3.bucketName);
+importedBucket3.addEventNotification(s3.EventType.OBJECT_CREATED_COPY, new s3n.SnsDestination(topic3));
 
 app.synth();

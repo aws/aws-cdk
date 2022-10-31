@@ -164,6 +164,62 @@ describe('User Pool Client', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Cognito::UserPoolDomain', 0);
   });
 
+  describe('baseUrl', () => {
+    test('returns the expected standard URL', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+
+      // WHEN
+      const baseUrl = domain.baseUrl();
+
+      // THEN
+      expect(stack.resolve(baseUrl)).toEqual({
+        'Fn::Join': [
+          '', [
+            'https://',
+            { Ref: 'PoolDomainCFC71F56' },
+            '.auth.',
+            { Ref: 'AWS::Region' },
+            '.amazoncognito.com',
+          ],
+        ],
+      });
+    });
+
+    test('returns the expected FIPS-compliant endpoint URL', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+
+      // WHEN
+      const baseUrl = domain.baseUrl({ fips: true });
+
+      // THEN
+      expect(stack.resolve(baseUrl)).toEqual({
+        'Fn::Join': [
+          '', [
+            'https://',
+            { Ref: 'PoolDomainCFC71F56' },
+            '.auth-fips.',
+            { Ref: 'AWS::Region' },
+            '.amazoncognito.com',
+          ],
+        ],
+      });
+    });
+  });
+
   describe('signInUrl', () => {
     test('returns the expected URL', () => {
       // GIVEN
