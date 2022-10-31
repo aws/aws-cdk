@@ -417,5 +417,9 @@ export const DEFAULT_SYNTH_OPTIONS = {
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
     CDK_INTEG_REGION: 'test-region',
+    CDK_INTEG_HOSTED_ZONE_ID: 'Z23ABC4XYZL05B',
+    CDK_INTEG_HOSTED_ZONE_NAME: 'example.com',
+    CDK_INTEG_DOMAIN_NAME: '*.example.com',
+    CDK_INTEG_CERT_ARN: 'arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z',
   },
 };

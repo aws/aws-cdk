@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11bd38722e879ee3efdf98cf177f0af6442195bb308e1bde662147a30bf350ed.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fd5f7d37f2f344aa43e18636af702436c91c871b1380d772857c431c603bb27.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -75,6 +75,24 @@
             "data": "SqsManagedEncryptedQueue587679B3"
           }
         ],
+        "/aws-cdk-sqs/UnencryptedQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnencryptedQueue57F92F9C"
+          }
+        ],
+        "/aws-cdk-sqs/SSLQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SSLQueue4E9BF022"
+          }
+        ],
+        "/aws-cdk-sqs/SSLQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SSLQueuePolicy5ABFDF4F"
+          }
+        ],
         "/aws-cdk-sqs/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -107,6 +125,53 @@
         ]
       },
       "displayName": "aws-cdk-sqs"
+    },
+    "SqsTestDefaultTestDeployAssert659366A6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SqsTestDefaultTestDeployAssert659366A6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SqsTestDefaultTestDeployAssert659366A6": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SqsTestDefaultTestDeployAssert659366A6.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SqsTestDefaultTestDeployAssert659366A6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SqsTestDefaultTestDeployAssert659366A6.assets"
+      ],
+      "metadata": {
+        "/SqsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SqsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SqsTest/DefaultTest/DeployAssert"
     }
   }
 }

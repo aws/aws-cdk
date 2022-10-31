@@ -143,7 +143,7 @@ To associate an App Runner service with a custom VPC, define `vpcConnector` for 
 import * as ec2 from '@aws-cdk/aws-ec2';
 
 const vpc = new ec2.Vpc(this, 'Vpc', {
-  cidr: '10.0.0.0/16',
+  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16')
 });
 
 const vpcConnector = new apprunner.VpcConnector(this, 'VpcConnector', {

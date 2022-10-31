@@ -931,7 +931,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/3498cefd41e3a401faaa5680bd1a64efc6a083cdb55e4d8351d8ff40c6bc806d.json"
+       "/f75e820959b02dd00b4beed4e373c13244cd22da837690c04088430abf02ef85.json"
       ]
      ]
     },
@@ -966,7 +966,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/c4672d8c6d6d1377e53af565e1ace0592bbd3f77dfbdec26df207d20ea4ded03.json"
+       "/09cb2a8f4caee55702274de89ee12759f098f9a4ccbe7a8d1d757e19e82163a1.json"
       ]
      ]
     },
@@ -1093,7 +1093,26 @@
       {
        "Action": "logs:DescribeLogGroups",
        "Effect": "Allow",
-       "Resource": "arn:aws:logs:*:*:*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

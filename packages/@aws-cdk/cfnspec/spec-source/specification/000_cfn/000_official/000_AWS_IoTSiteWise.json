@@ -1,5 +1,5 @@
 {
-  "$version": "89.0.0",
+  "$version": "94.0.0",
   "PropertyTypes": {
     "AWS::IoTSiteWise::AccessPolicy.AccessPolicyIdentity": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-accesspolicy-accesspolicyidentity.html",
@@ -130,6 +130,12 @@
         },
         "NotificationState": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-asset-assetproperty.html#cfn-iotsitewise-asset-assetproperty-notificationstate",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Unit": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotsitewise-asset-assetproperty.html#cfn-iotsitewise-asset-assetproperty-unit",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"

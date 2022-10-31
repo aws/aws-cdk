@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.49.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.48.0-alpha.0...v2.49.0-alpha.0) (2022-10-27)
+
+## [2.48.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.47.0-alpha.0...v2.48.0-alpha.0) (2022-10-27)
+
+
+### Features
+
+* **synthetics:** runtime version syn-nodejs-puppeteer-3.7 ([#22610](https://github.com/aws/aws-cdk/issues/22610)) ([326637c](https://github.com/aws/aws-cdk/commit/326637c2879657bfac33b5cc60dced7471abf7c8))
+
+## [2.47.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.46.0-alpha.0...v2.47.0-alpha.0) (2022-10-20)
+
+
+### Features
+
+* **redshift:** support enhanced vpc routing when creating redshift cluster ([#22499](https://github.com/aws/aws-cdk/issues/22499)) ([e2b18e7](https://github.com/aws/aws-cdk/commit/e2b18e7b47eb7a87ae37356a9719c055e58e6e6c))
+
+
+### Bug Fixes
+
+* **integ-runner:** Fix call to spawnSync for hooks commands ([#22429](https://github.com/aws/aws-cdk/issues/22429)) ([9139ca9](https://github.com/aws/aws-cdk/commit/9139ca96ffc010e13393aff927d7b7eacfbae4f9)), closes [#22344](https://github.com/aws/aws-cdk/issues/22344)
+* **lambda-python:** root-owned cache items not cleaned up after install ([#22512](https://github.com/aws/aws-cdk/issues/22512)) ([5ef65e0](https://github.com/aws/aws-cdk/commit/5ef65e042c747bedf9d770b47e540393454762f2)), closes [#22398](https://github.com/aws/aws-cdk/issues/22398)
+
+## [2.46.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.45.0-alpha.0...v2.46.0-alpha.0) (2022-10-13)
+
+
+### Features
+
+* **integ-tests:** add ability to `wait` for assertions to pass ([#22335](https://github.com/aws/aws-cdk/issues/22335)) ([700f9c4](https://github.com/aws/aws-cdk/commit/700f9c4d465684b784f50ec74e897c9031a639c5))
+* **integ-tests:** allow for user provided assertions stack ([#22404](https://github.com/aws/aws-cdk/issues/22404)) ([39089f5](https://github.com/aws/aws-cdk/commit/39089f5eabc61c2a546391742ff2cf906f8e0f8b))
+* **synthetics:** new runtime synthetics nodejs puppeteer 3 6 ([#22374](https://github.com/aws/aws-cdk/issues/22374)) ([e0c0b56](https://github.com/aws/aws-cdk/commit/e0c0b56dded26a897dc6243298947bd4e69321b2))
+
+
+### Bug Fixes
+
+* **appsync:** can not use Tokens in the name of a DataSource ([#22378](https://github.com/aws/aws-cdk/issues/22378)) ([511eb79](https://github.com/aws/aws-cdk/commit/511eb79cba734bcd9e013d5dfbf262c75a522f09)), closes [#18900](https://github.com/aws/aws-cdk/issues/18900)
+* **aws-lambda-python:** export poetry dependencies without hashes ([#22351](https://github.com/aws/aws-cdk/issues/22351)) ([76482f6](https://github.com/aws/aws-cdk/commit/76482f6847a46806c1a309d2f9335a3d6e838fc6)), closes [#14201](https://github.com/aws/aws-cdk/issues/14201) [#19232](https://github.com/aws/aws-cdk/issues/19232)
+* **lambda-python:** commands run non-sequentially on Graviton when building container image ([#22398](https://github.com/aws/aws-cdk/issues/22398)) ([e427fd6](https://github.com/aws/aws-cdk/commit/e427fd6f4a186784e345b8f88424d74c004f1e5a)), closes [#22012](https://github.com/aws/aws-cdk/issues/22012)
+
+## [2.45.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.44.0-alpha.0...v2.45.0-alpha.0) (2022-10-06)
+
+
+### Features
+
+* **gamelift:** add Build L2 constructs for GameLift ([#22313](https://github.com/aws/aws-cdk/issues/22313)) ([983d26e](https://github.com/aws/aws-cdk/commit/983d26e4e7cbb40fe1148ec635efe8093d850835))
+* **gamelift:** add Script L2 Construct for GameLift ([#22343](https://github.com/aws/aws-cdk/issues/22343)) ([da181ba](https://github.com/aws/aws-cdk/commit/da181bac2a7fee2cad8915006d4501074fcb04d4))
+* **neptune:** enable cloudwatch logs exports ([#22004](https://github.com/aws/aws-cdk/issues/22004)) ([2b2bb01](https://github.com/aws/aws-cdk/commit/2b2bb01dbe00c79e7f5a0513a2e1f76f6cdcbc11)), closes [#20248](https://github.com/aws/aws-cdk/issues/20248) [#15888](https://github.com/aws/aws-cdk/issues/15888)
+* **servicecatalogappregistry:** application-associator L2 Construct ([#22024](https://github.com/aws/aws-cdk/issues/22024)) ([a2b7a46](https://github.com/aws/aws-cdk/commit/a2b7a4624638a458bfb6e8e09c67a77e48e1d167))
+
 ## [2.44.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.43.1-alpha.0...v2.44.0-alpha.0) (2022-09-28)
 
 

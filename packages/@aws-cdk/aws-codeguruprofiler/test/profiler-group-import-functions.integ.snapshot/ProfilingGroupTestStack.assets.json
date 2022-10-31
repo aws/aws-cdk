@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "49d6a3151509f39124c2f82b21cf55a8a1364289fce8b6f8b764af6e204c6647": {
+      "source": {
+        "path": "ProfilingGroupTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "49d6a3151509f39124c2f82b21cf55a8a1364289fce8b6f8b764af6e204c6647.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
