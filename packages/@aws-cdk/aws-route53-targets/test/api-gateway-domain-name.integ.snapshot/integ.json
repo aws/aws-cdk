@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.api-gateway-domain-name": {
+    "apigateway-domain-name/DefaultTest": {
       "stacks": [
         "aws-cdk-apigw-alias-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "apigateway-domain-name/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

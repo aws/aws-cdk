@@ -128,7 +128,9 @@
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedFargateService.assignPublicIp",
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.ApplicationLoadBalancedTaskImageOptions",
       "docs-public-apis:@aws-cdk/aws-ecs-patterns.NetworkLoadBalancedTaskImageOptions",
-      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ScheduledTaskImageProps"
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.ScheduledTaskImageProps",
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.FargateServiceBase",
+      "docs-public-apis:@aws-cdk/aws-ecs-patterns.FargateServiceBaseProps"
     ]
   },
   "awscdkio": {

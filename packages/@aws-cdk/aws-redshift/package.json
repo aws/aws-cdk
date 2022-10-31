@@ -85,8 +85,9 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.848.0",
+    "aws-sdk": "^2.1211.0",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -125,7 +126,8 @@
       "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps",
       "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterId",
-      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterDeferMaintenanceIdentifier"
+      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterDeferMaintenanceIdentifier",
+      "resource-attribute:@aws-cdk/aws-redshift.ClusterParameterGroup.clusterParameterGroupParameterGroupName"
     ]
   },
   "stability": "experimental",

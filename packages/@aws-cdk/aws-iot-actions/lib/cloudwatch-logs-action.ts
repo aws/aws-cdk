@@ -27,7 +27,10 @@ export class CloudWatchLogsAction implements iot.IAction {
     this.role = props.role;
   }
 
-  bind(rule: iot.ITopicRule): iot.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
     this.logGroup.grantWrite(role);
     this.logGroup.grant(role, 'logs:DescribeLogStreams');

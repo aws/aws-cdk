@@ -19,7 +19,7 @@ class VpcReservedPrivateSubnetStack extends cdk.Stack {
     /// !show
     // Specify no NAT gateways with a reserved private subnet
     new ec2.Vpc(this, 'VPC', {
-      cidr: '10.0.0.0/16',
+      ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
       subnetConfiguration: [
         {
           name: 'ingress',
@@ -27,7 +27,7 @@ class VpcReservedPrivateSubnetStack extends cdk.Stack {
         },
         {
           name: 'private',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           reserved: true,
         },
       ],

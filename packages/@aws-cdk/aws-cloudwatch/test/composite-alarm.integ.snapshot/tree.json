@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.108"
         }
       },
       "CompositeAlarmIntegrationTest": {
@@ -220,7 +220,15 @@
                           "\")))) OR FALSE)"
                         ]
                       ]
-                    }
+                    },
+                    "actionsSuppressor": {
+                      "Fn::GetAtt": [
+                        "Alarm548383B2F",
+                        "Arn"
+                      ]
+                    },
+                    "actionsSuppressorExtensionPeriod": 60,
+                    "actionsSuppressorWaitPeriod": 60
                   }
                 },
                 "constructInfo": {

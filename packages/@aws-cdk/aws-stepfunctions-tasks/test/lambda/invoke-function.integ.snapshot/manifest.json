@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-stepfunctions-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-stepfunctions-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-stepfunctions-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-stepfunctions-integ.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/aws-stepfunctions-integ": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
-              "id": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
-              "packaging": "zip",
-              "sourceHash": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
-              "s3BucketParameter": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645",
-              "s3KeyParameter": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC",
-              "artifactHashParameter": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232ArtifactHashFA16AACF"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/636122f4c278b2eba13318bfb66e1a43f9a7d7e7d3b86ad7ad0f776c8af6206e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-stepfunctions-integ.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-stepfunctions-integ.assets"
+      ],
+      "metadata": {
         "/aws-stepfunctions-integ/Handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -39,24 +49,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Handler886CB40B"
-          }
-        ],
-        "/aws-stepfunctions-integ/AssetParameters/9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
-          }
-        ],
-        "/aws-stepfunctions-integ/AssetParameters/9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
-          }
-        ],
-        "/aws-stepfunctions-integ/AssetParameters/9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232ArtifactHashFA16AACF"
           }
         ],
         "/aws-stepfunctions-integ/CallbackHandler/ServiceRole/Resource": [
@@ -93,6 +85,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceprincipalMap"
+          }
+        ],
+        "/aws-stepfunctions-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-stepfunctions-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },

@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -31,4 +30,3 @@ const app = new cdk.App();
 new ChatbotLogRetentionInteg(app, 'ChatbotLogRetentionInteg');
 
 app.synth();
-

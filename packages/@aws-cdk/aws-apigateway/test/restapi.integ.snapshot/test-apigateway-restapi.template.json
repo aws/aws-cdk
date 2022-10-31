@@ -35,7 +35,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "myapiAccountEC421A0A": {
    "Type": "AWS::ApiGateway::Account",
@@ -49,9 +51,11 @@
    },
    "DependsOn": [
     "myapi4C7BF186"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5": {
+  "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -60,8 +64,8 @@
     "Description": "Automatically created by the RestApi construct"
    },
    "DependsOn": [
-    "myapiv1appliancesGET8FE872EC",
-    "myapiv1appliances507FEFF4",
+    "myapiv1appliancesallGETC4DF552D",
+    "myapiv1appliancesallCF8C6A16",
     "myapiv1booksGETC6B996D0",
     "myapiv1booksPOST53E2832E",
     "myapiv1books1D4BE6C1",
@@ -83,7 +87,7 @@
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB4963d40685c54c6f8da21d80a83f16d3d5"
+     "Ref": "myapiDeployment92F2CB4996088bac04ec19d9db88f146f3d88bca"
     },
     "Description": "beta stage",
     "MethodSettings": [
@@ -284,24 +288,24 @@
     }
    }
   },
-  "myapiv1appliances507FEFF4": {
+  "myapiv1appliancesallCF8C6A16": {
    "Type": "AWS::ApiGateway::Resource",
    "Properties": {
     "ParentId": {
      "Ref": "myapiv113487378"
     },
-    "PathPart": "appliances",
+    "PathPart": "appliances:all",
     "RestApiId": {
      "Ref": "myapi4C7BF186"
     }
    }
   },
-  "myapiv1appliancesGET8FE872EC": {
+  "myapiv1appliancesallGETC4DF552D": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "HttpMethod": "GET",
     "ResourceId": {
-     "Ref": "myapiv1appliances507FEFF4"
+     "Ref": "myapiv1appliancesallCF8C6A16"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
@@ -667,6 +671,56 @@
    "DependsOn": [
     "MyHandlerServiceRoleFFA06653"
    ]
+  },
+  "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    }
+   },
+   "DependsOn": [
+    "myapiv1appliancesallGETC4DF552D",
+    "myapiv1booksGETC6B996D0",
+    "myapiv1booksPOST53E2832E",
+    "myapiv1toysGET7348114D",
+    "myapiv1toysPOST55128058",
+    "myapiv1toysPUT59AFBBC2"
+   ]
+  },
+  "TestStage3097EB68": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "DeploymentId": {
+     "Ref": "TestDeploymentD77B56866f3141cef1e8fea8ab3b3b8bc90df36d"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
+  },
+  "TestStageMyTestApiKeyAB584BD5": {
+   "Type": "AWS::ApiGateway::ApiKey",
+   "Properties": {
+    "Enabled": true,
+    "StageKeys": [
+     {
+      "RestApiId": {
+       "Ref": "myapi4C7BF186"
+      },
+      "StageName": {
+       "Ref": "TestStage3097EB68"
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "myapiAccountEC421A0A"
+   ]
   }
  },
  "Outputs": {
@@ -695,6 +749,40 @@
      ]
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

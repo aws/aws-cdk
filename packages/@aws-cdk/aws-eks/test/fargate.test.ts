@@ -5,7 +5,6 @@ import * as kms from '@aws-cdk/aws-kms';
 import { Stack, Tags } from '@aws-cdk/core';
 import * as eks from '../lib';
 
-
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 describe('fargate', () => {
@@ -27,7 +26,6 @@ describe('fargate', () => {
         selectors: [{ namespace: 'default' }],
       },
     });
-
   });
 
   test('supports specifying a profile name', () => {
@@ -50,7 +48,6 @@ describe('fargate', () => {
         fargateProfileName: 'MyProfileName',
       },
     });
-
   });
 
   test('supports custom execution role', () => {
@@ -73,7 +70,6 @@ describe('fargate', () => {
         selectors: [{ namespace: 'default' }],
       },
     });
-
   });
 
   test('supports tags through aspects', () => {
@@ -101,7 +97,6 @@ describe('fargate', () => {
         },
       },
     });
-
   });
 
   test('supports specifying vpc', () => {
@@ -129,7 +124,6 @@ describe('fargate', () => {
         subnets: ['priv1'],
       },
     });
-
   });
 
   test('fails if there are no selectors or if there are more than 5', () => {
@@ -149,7 +143,6 @@ describe('fargate', () => {
         { namespace: '6' },
       ],
     }));
-
   });
 
   test('FargateCluster creates an EKS cluster fully managed by Fargate', () => {
@@ -187,7 +180,6 @@ describe('fargate', () => {
         ],
       },
     });
-
   });
 
   test('can create FargateCluster with a custom profile', () => {
@@ -221,7 +213,6 @@ describe('fargate', () => {
         ],
       },
     });
-
   });
 
   test('custom profile name is "custom" if no custom profile name is provided', () => {
@@ -254,7 +245,6 @@ describe('fargate', () => {
         ],
       },
     });
-
   });
 
   test('multiple Fargate profiles added to a cluster are processed sequentially', () => {
@@ -298,8 +288,6 @@ describe('fargate', () => {
         'MyClusterfargateprofileMyProfile1879D501A',
       ],
     });
-
-
   });
 
   test('fargate role is added to RBAC', () => {
@@ -341,7 +329,6 @@ describe('fargate', () => {
         ],
       },
     });
-
   });
 
   test('allow cluster creation role to iam:PassRole on fargate pod execution role', () => {
@@ -426,7 +413,6 @@ describe('fargate', () => {
         ],
       },
     });
-
   });
 
   test('supports passing secretsEncryptionKey with FargateCluster', () => {
@@ -456,24 +442,9 @@ describe('fargate', () => {
         }],
       },
     });
-
   });
 
-  test('supports cluster logging without FargateCluster', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-
-    new eks.FargateCluster(stack, 'FargateCluster', {
-      version: CLUSTER_VERSION,
-    });
-
-    //THEN
-    Template.fromStack(stack).resourceCountIs('Custom::AWSCDK-EKS-Cluster::Config::logging', 0);
-  });
-
-  test('supports cluster partial logging enabled with FargateCluster', () => {
+  test('supports cluster logging with FargateCluster', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -493,63 +464,7 @@ describe('fargate', () => {
       Config: {
         logging: {
           clusterLogging: [
-            {
-              enabled: true,
-              types: [
-                'api',
-                'authenticator',
-                'scheduler',
-              ],
-            },
-            {
-              enabled: false,
-              types: [
-                'audit',
-                'controllerManager',
-              ],
-            },
-          ],
-        },
-      },
-    });
-  });
-
-  test('supports cluster all logging enabled with FargateCluster', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-
-    new eks.FargateCluster(stack, 'FargateCluster', {
-      version: CLUSTER_VERSION,
-      clusterLogging: [
-        eks.ClusterLoggingTypes.API,
-        eks.ClusterLoggingTypes.AUDIT,
-        eks.ClusterLoggingTypes.AUTHENTICATOR,
-        eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
-        eks.ClusterLoggingTypes.SCHEDULER,
-      ],
-    });
-
-    //THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        logging: {
-          clusterLogging: [
-            {
-              enabled: true,
-              types: [
-                'api',
-                'audit',
-                'authenticator',
-                'controllerManager',
-                'scheduler',
-              ],
-            },
-            {
-              enabled: false,
-              types: [],
-            },
+            { enabled: true, types: ['api', 'authenticator', 'scheduler'] },
           ],
         },
       },

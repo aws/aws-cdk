@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
@@ -20,7 +19,7 @@ const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.request-authorizer.handler')),
 });
 
-const restapi = new RestApi(stack, 'MyRestApi');
+const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 
 const authorizer = new RequestAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,

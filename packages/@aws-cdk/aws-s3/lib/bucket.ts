@@ -18,7 +18,9 @@ import {
   Stack,
   Tags,
   Token,
+  Tokenization,
 } from '@aws-cdk/core';
+import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
@@ -1352,10 +1354,15 @@ export interface BucketProps {
   readonly enforceSSL?: boolean;
 
   /**
-   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
-   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   * Whether Amazon S3 should use its own intermediary key to generate data keys.
    *
-   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   * Only relevant when using KMS for encryption.
+   *
+   * - If not enabled, every object GET and PUT will cause an API call to KMS (with the
+   *   attendant cost implications of that).
+   * - If enabled, S3 will use its own time-limited key instead.
+   *
+   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
    *
    * @default - false
    */
@@ -1575,7 +1582,6 @@ export interface Tag {
  *
  */
 export class Bucket extends BucketBase {
-
   public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
     return Bucket.fromBucketAttributes(scope, id, { bucketArn });
   }
@@ -1639,6 +1645,64 @@ export class Bucket extends BucketBase {
       account: attrs.account,
       region: attrs.region,
     });
+  }
+
+  /**
+   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   */
+  public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnBucket';
+
+    // if fromCfnBucket() was already called on this cfnBucket,
+    // return the same L2
+    // (as different L2s would conflict, because of the mutation of the policy property of the L1 below)
+    const existing = cfnBucket.node.tryFindChild(id);
+    if (existing) {
+      return <IBucket>existing;
+    }
+
+    // handle the KMS Key if the Bucket references one
+    let encryptionKey: kms.IKey | undefined;
+    if (cfnBucket.bucketEncryption) {
+      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
+      if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
+        const serverSideEncryptionRuleProperty = serverSideEncryptionConfiguration[0];
+        const serverSideEncryptionByDefault = serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
+        if (serverSideEncryptionByDefault && Token.isUnresolved(serverSideEncryptionByDefault.kmsMasterKeyId)) {
+          const kmsIResolvable = Tokenization.reverse(serverSideEncryptionByDefault.kmsMasterKeyId);
+          if (kmsIResolvable instanceof CfnReference) {
+            const cfnElement = kmsIResolvable.target;
+            if (cfnElement instanceof kms.CfnKey) {
+              encryptionKey = kms.Key.fromCfnKey(cfnElement);
+            }
+          }
+        }
+      }
+    }
+
+    return new class extends BucketBase {
+      public readonly bucketArn = cfnBucket.attrArn;
+      public readonly bucketName = cfnBucket.ref;
+      public readonly bucketDomainName = cfnBucket.attrDomainName;
+      public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
+      public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
+      public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
+      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
+
+      public readonly encryptionKey = encryptionKey;
+      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
+      public policy = undefined;
+      protected autoCreatePolicy = true;
+      protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
+        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+
+      constructor() {
+        super(cfnBucket, id);
+
+        this.node.defaultChild = cfnBucket;
+      }
+    }();
   }
 
   /**
@@ -1884,7 +1948,7 @@ export class Bucket extends BucketBase {
     }
 
     // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
       throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
@@ -1924,7 +1988,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+          },
         ],
       };
       return { bucketEncryption };
@@ -2229,17 +2296,17 @@ export enum BucketEncryption {
   /**
    * Objects in the bucket are not encrypted.
    */
-  UNENCRYPTED = 'NONE',
+  UNENCRYPTED = 'UNENCRYPTED',
 
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */
-  KMS_MANAGED = 'MANAGED',
+  KMS_MANAGED = 'KMS_MANAGED',
 
   /**
    * Server-side encryption with a master key managed by S3.
    */
-  S3_MANAGED = 'S3MANAGED',
+  S3_MANAGED = 'S3_MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.

@@ -34,6 +34,8 @@ const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service
       TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
       TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
     },
+    command: ['command'],
+    entryPoint: ['entry', 'point'],
   },
   desiredCount: 2,
 });
@@ -49,6 +51,8 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   cpu: 512,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    command: ['command'],
+    entryPoint: ['entry', 'point'],
   },
 });
 
@@ -818,6 +822,22 @@ loadBalancedFargateService.targetGroups[1].configureHealthCheck({
 
 ```
 
+### Set runtimePlatform for ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  runtimePlatform: {
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  },
+});
+```
 
 ### Set PlatformVersion for ScheduledFargateTask
 

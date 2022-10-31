@@ -1,5 +1,5 @@
 {
-  "version": "17.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,13 +7,37 @@
         "file": "tree.json"
       }
     },
+    "integ-user-pool-custom-sender.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool-custom-sender.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "integ-user-pool-custom-sender": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-user-pool-custom-sender.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/51bd20d4d484317d077ffb92a54630892966b5b3354ea04f9b8ac08cb5d5d1d0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool-custom-sender.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "integ-user-pool-custom-sender.assets"
+      ],
       "metadata": {
         "/integ-user-pool-custom-sender/emailLambda/ServiceRole/Resource": [
           {
@@ -27,16 +51,16 @@
             "data": "emailLambda61F82360"
           }
         ],
-        "/integ-user-pool-custom-sender/emailLambda/CustomEmailSenderCognito": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "emailLambdaCustomEmailSenderCognito5E15D907"
-          }
-        ],
         "/integ-user-pool-custom-sender/key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "keyFEDD6EC0"
+          }
+        ],
+        "/integ-user-pool-custom-sender/pool/CustomEmailSenderCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolCustomEmailSenderCognitoE3D88E99"
           }
         ],
         "/integ-user-pool-custom-sender/pool/Resource": [
@@ -61,6 +85,27 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClientId"
+          }
+        ],
+        "/integ-user-pool-custom-sender/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool-custom-sender/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "emailLambdaCustomEmailSenderCognito5E15D907": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "emailLambdaCustomEmailSenderCognito5E15D907",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

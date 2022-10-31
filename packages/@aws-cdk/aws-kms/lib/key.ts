@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Alias } from './alias';
@@ -94,8 +94,8 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
 
     this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
   }
@@ -464,8 +464,8 @@ export class Key extends KeyBase {
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
 
-      constructor(keyId: string) {
-        super(scope, id);
+      constructor(keyId: string, props: ResourceProps = {}) {
+        super(scope, id, props);
 
         this.keyId = keyId;
       }
@@ -476,7 +476,9 @@ export class Key extends KeyBase {
       throw new Error(`KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
     }
 
-    return new Import(keyResourceName);
+    return new Import(keyResourceName, {
+      environmentFromArn: keyArn,
+    });
   }
 
   /**

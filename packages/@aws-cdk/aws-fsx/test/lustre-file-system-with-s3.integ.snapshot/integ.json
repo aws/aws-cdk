@@ -5,7 +5,7 @@
       "stacks": [
         "AwsCdkFsxLustre"
       ],
-      "assertionStack": "FsxLustreWithS3TestDefaultTestDeployAssert0752DB81"
+      "assertionStack": "FsxLustreWithS3Test/DefaultTest/DeployAssert"
     }
   }
 }

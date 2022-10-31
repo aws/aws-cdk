@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 /*
  * Stack verification steps:
  * - Deploy with `--no-clean`
@@ -17,6 +16,7 @@ class TestStack extends Stack {
     super(scope, id);
 
     const resourceType = 'Custom::Reflect';
+    const lengthyResourceType = 'Custom::Given_Resource_Type_Is_Exactly_Sixty_Characters_Long';
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/core-custom-resource-provider-fixture`,
@@ -33,6 +33,14 @@ class TestStack extends Stack {
           Attribute1: 'foo',
           Attribute2: 1234,
         },
+      },
+    });
+
+    new CustomResource(this, 'MyLengthyTypeResource', {
+      resourceType: lengthyResourceType,
+      serviceToken,
+      properties: {
+        physicalResourceId: 'MyPhysicalLengthyType',
       },
     });
 

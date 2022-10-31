@@ -262,6 +262,24 @@ describe('staging', () => {
     expect(withExtra.assetHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
   });
 
+  test('can specify extra asset salt via context key', () => {
+    // GIVEN
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    const saltedApp = new App({ context: { '@aws-cdk/core:assetHashSalt': 'magic' } });
+    const saltedStack = new Stack(saltedApp, 'stack');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'X', { sourcePath: directory });
+    const saltedAsset = new AssetStaging(saltedStack, 'X', { sourcePath: directory });
+
+    // THEN
+    expect(asset.assetHash).not.toEqual(saltedAsset.assetHash);
+  });
+
   test('with bundling', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
@@ -581,7 +599,7 @@ describe('staging', () => {
     ]);
   });
 
-  test('bundling throws when /asset-ouput is empty', () => {
+  test('bundling throws when /asset-output is empty', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -912,6 +930,155 @@ describe('staging', () => {
     expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
+  test('correctly skips bundling with stack under stage and custom stack name', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
+
+    const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
+    const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly bundles with stack under stage and the default stack pattern', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+
+    const stack1 = new Stack(stage, 'Stack1');
+    const stack2 = new Stack(stage, 'Stack2');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker ran for the asset in Stack2
+    expect(dockerStubInput).toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly bundles with stack under stage and partial globstar wildcard', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['**/Stack1']); // a single wildcard prefix ('*Stack1') won't match
+
+    const stack1 = new Stack(stage, 'Stack1');
+    const stack2 = new Stack(stage, 'Stack2');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly bundles selected stacks nested in Stack/Stage/Stack', () => {
+    // GIVEN
+    const app = new App();
+
+    const topStack = new Stack(app, 'TopStack');
+    topStack.node.setContext(cxapi.BUNDLING_STACKS, ['TopStack/MiddleStage/BottomStack']);
+
+    const middleStage = new Stage(topStack, 'MiddleStage');
+    const bottomStack = new Stack(middleStage, 'BottomStack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(bottomStack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+    new AssetStaging(topStack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in BottomStack
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in TopStack
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
   test('bundling still occurs with partial wildcard', () => {
     // GIVEN
     const app = new App();
@@ -936,7 +1103,7 @@ describe('staging', () => {
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
 
-  test('bundling still occurs with full wildcard', () => {
+  test('bundling still occurs with a single wildcard', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');

@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "CognitoUserPoolsAuthorizerInteg": {
@@ -247,8 +247,8 @@
                 "id": "Endpoint",
                 "path": "CognitoUserPoolsAuthorizerInteg/myrestapi/Endpoint",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Default": {
@@ -323,14 +323,50 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "cognito-authorizer": {
+        "id": "cognito-authorizer",
+        "path": "cognito-authorizer",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cognito-authorizer/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cognito-authorizer/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cognito-authorizer/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

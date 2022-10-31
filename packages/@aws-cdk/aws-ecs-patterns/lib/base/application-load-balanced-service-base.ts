@@ -272,7 +272,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly enableExecuteCommand?: boolean;
 
   /**
-   * The load balancer idle timeout, in seconds
+   * The load balancer idle timeout, in seconds. Can be between 1 and 4000 seconds
    *
    * @default - CloudFormation sets idle timeout to 60 seconds
    */
@@ -365,6 +365,32 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default - No labels.
    */
   readonly dockerLabels?: { [key: string]: string };
+
+  /**
+  * The entry point that's passed to the container.
+  *
+  * This parameter maps to `Entrypoint` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `--entrypoint` option to
+  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+  *
+  * For more information about the Docker `ENTRYPOINT` parameter, see https://docs.docker.com/engine/reference/builder/#entrypoint.
+  *
+  * @default none
+  */
+  readonly entryPoint?: string[];
+
+  /**
+  * The command that's passed to the container. If there are multiple arguments, make sure that each argument is a separated string in the array.
+  *
+  * This parameter maps to `Cmd` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `COMMAND` parameter to
+  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+  *
+  * For more information about the Docker `CMD` parameter, see https://docs.docker.com/engine/reference/builder/#cmd.
+  *
+  * @default none
+  */
+  readonly command?: string[];
 }
 
 /**
@@ -443,7 +469,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const internetFacing = props.publicLoadBalancer ?? true;
 
     if (props.idleTimeout) {
-      if (props.idleTimeout > Duration.seconds(4000) || props.idleTimeout < Duration.seconds(1)) {
+      const idleTimeout = props.idleTimeout.toSeconds();
+      if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
         throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
       }
     }

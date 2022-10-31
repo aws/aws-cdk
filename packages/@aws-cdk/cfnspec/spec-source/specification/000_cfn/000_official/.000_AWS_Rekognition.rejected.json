@@ -143,7 +143,7 @@
       }
     }
   },
-  "ResourceSpecificationVersion": "82.0.0",
+  "ResourceSpecificationVersion": "94.0.0",
   "ResourceTypes": {
     "AWS::Rekognition::Collection": {
       "Attributes": {
@@ -258,7 +258,7 @@
         "PolygonRegionsOfInterest": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-polygonregionsofinterest",
           "DuplicatesAllowed": false,
-          "ItemType": "List",
+          "ItemType": "Json",
           "Required": false,
           "Type": "List",
           "UpdateType": "Immutable"

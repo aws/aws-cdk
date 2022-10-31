@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.85"
         }
       },
       "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs": {
@@ -506,7 +506,7 @@
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Source/Source1",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   },
                   "Source2": {
@@ -514,13 +514,13 @@
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Source/Source2",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.85"
                 }
               },
               "EventsRole": {
@@ -628,7 +628,7 @@
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Build/Build1",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   },
                   "Build2": {
@@ -636,13 +636,13 @@
                     "path": "aws-cdk-codepipeline-codebuild-multiple-inputs-outputs/Pipeline/Build/Build2",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.0.9"
+                      "version": "10.1.85"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.0.9"
+                  "version": "10.1.85"
                 }
               }
             },
@@ -862,14 +862,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

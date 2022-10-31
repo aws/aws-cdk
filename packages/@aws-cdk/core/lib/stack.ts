@@ -511,10 +511,15 @@ export class Stack extends Construct implements ITaggable {
    * The partition in which this stack is defined
    */
   public get partition(): string {
-    // Always return a non-scoped partition intrinsic. These will usually
-    // be used to construct an ARN, but there are no cross-partition
-    // calls anyway.
-    return Aws.PARTITION;
+    // Return a non-scoped partition intrinsic when the stack's region is
+    // unresolved or unknown.  Otherwise we will return the partition name as
+    // a literal string.
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ENABLE_PARTITION_LITERALS) || Token.isUnresolved(this.region)) {
+      return Aws.PARTITION;
+    } else {
+      const partition = RegionInfo.get(this.region).partition;
+      return partition ?? Aws.PARTITION;
+    }
   }
 
   /**
@@ -723,6 +728,19 @@ export class Stack extends Construct implements ITaggable {
       this.templateOptions.transforms = [];
     }
     this.templateOptions.transforms.push(transform);
+  }
+
+  /**
+   * Adds an arbitary key-value pair, with information you want to record about the stack.
+   * These get translated to the Metadata section of the generated template.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.templateOptions.metadata) {
+      this.templateOptions.metadata = {};
+    }
+    this.templateOptions.metadata[key] = value;
   }
 
   /**
@@ -1166,12 +1184,11 @@ export class Stack extends Construct implements ITaggable {
    * Indicates whether the stack requires bundling or not
    */
   public get bundlingRequired() {
-    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['**'];
 
-    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
     return bundlingStacks.some(pattern => minimatch(
-      this.stackName,
-      pattern.replace('/', '-'),
+      this.node.path, // use the same value for pattern matching as the aws-cdk CLI (displayName / hierarchicalId)
+      pattern,
     ));
   }
 }

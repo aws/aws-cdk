@@ -51,25 +51,6 @@
     "createAuthChallengeServiceRole611710B5"
    ]
   },
-  "createAuthChallengeCreateAuthChallengeCognito57E2297E": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "createAuthChallengeB185B225",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
-  },
   "customMessageServiceRoleB4AE7F17": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -120,25 +101,6 @@
    "DependsOn": [
     "customMessageServiceRoleB4AE7F17"
    ]
-  },
-  "customMessageCustomMessageCognitoB4F894A6": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "customMessage52BA91E2",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
   },
   "defineAuthChallengeServiceRole9E2D15DF": {
    "Type": "AWS::IAM::Role",
@@ -191,25 +153,6 @@
     "defineAuthChallengeServiceRole9E2D15DF"
    ]
   },
-  "defineAuthChallengeDefineAuthChallengeCognito4DBD8021": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "defineAuthChallengeAE7BCDA1",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
-  },
   "postAuthenticationServiceRole5B3B242A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -260,25 +203,6 @@
    "DependsOn": [
     "postAuthenticationServiceRole5B3B242A"
    ]
-  },
-  "postAuthenticationPostAuthenticationCognito8B923BC3": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "postAuthentication741BD8E3",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
   },
   "postConfirmationServiceRole864BE5F9": {
    "Type": "AWS::IAM::Role",
@@ -331,25 +255,6 @@
     "postConfirmationServiceRole864BE5F9"
    ]
   },
-  "postConfirmationPostConfirmationCognito9D010393": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "postConfirmationD5E3F1DD",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
-  },
   "preAuthenticationServiceRole9712F4D8": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -400,25 +305,6 @@
    "DependsOn": [
     "preAuthenticationServiceRole9712F4D8"
    ]
-  },
-  "preAuthenticationPreAuthenticationCognito67FACB54": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "preAuthentication56F78C81",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
   },
   "preSignUpServiceRole0A7E91EB": {
    "Type": "AWS::IAM::Role",
@@ -471,25 +357,6 @@
     "preSignUpServiceRole0A7E91EB"
    ]
   },
-  "preSignUpPreSignUpCognitoE986CC53": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "preSignUp1934B27C",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
-  },
   "preTokenGenerationServiceRole430C3D14": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -540,25 +407,6 @@
    "DependsOn": [
     "preTokenGenerationServiceRole430C3D14"
    ]
-  },
-  "preTokenGenerationPreTokenGenerationCognitoC1959918": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "preTokenGeneration1E968302",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
   },
   "userMigrationServiceRole091766B0": {
    "Type": "AWS::IAM::Role",
@@ -611,25 +459,6 @@
     "userMigrationServiceRole091766B0"
    ]
   },
-  "userMigrationUserMigrationCognito29EEC4AD": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "userMigrationAAA960EC",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "myuserpool01998219",
-      "Arn"
-     ]
-    }
-   }
-  },
   "verifyAuthChallengeResponseServiceRole7077884C": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -681,7 +510,178 @@
     "verifyAuthChallengeResponseServiceRole7077884C"
    ]
   },
-  "verifyAuthChallengeResponseVerifyAuthChallengeResponseCognito9DC48AFC": {
+  "myuserpoolCreateAuthChallengeCognitoCE4A6821": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "createAuthChallengeB185B225",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolCustomMessageCognito8057432C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "customMessage52BA91E2",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolDefineAuthChallengeCognito81526ECF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "defineAuthChallengeAE7BCDA1",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolPostAuthenticationCognito83D5BAE9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "postAuthentication741BD8E3",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolPostConfirmationCognitoB4F79E1C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "postConfirmationD5E3F1DD",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolPreAuthenticationCognitoE1C7AED3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "preAuthentication56F78C81",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolPreSignUpCognitoD6CE8CAD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "preSignUp1934B27C",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolPreTokenGenerationCognitoF1714665": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "preTokenGeneration1E968302",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolUserMigrationCognito56734AFB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "userMigrationAAA960EC",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "myuserpool01998219",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "myuserpoolVerifyAuthChallengeResponseCognitoAEAB40FD": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -767,9 +767,6 @@
      "email",
      "phone_number"
     ],
-    "UserAttributeUpdateSettings": {
-     "AttributesRequireVerificationBeforeUpdate": ["email", "phone_number"]
-    },
     "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
     "EmailVerificationSubject": "verification email subject from the integ test",
     "LambdaConfig": {
@@ -902,6 +899,12 @@
      }
     },
     "SmsVerificationMessage": "verification sms message from the integ test. Code is {####}.",
+    "UserAttributeUpdateSettings": {
+     "AttributesRequireVerificationBeforeUpdate": [
+      "email",
+      "phone_number"
+     ]
+    },
     "UserPoolName": "MyUserPool",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
@@ -945,6 +948,40 @@
      ]
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

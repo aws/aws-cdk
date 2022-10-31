@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.event-fargate-task": {
+    "EcsFargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-fargate"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "EcsFargateTest/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

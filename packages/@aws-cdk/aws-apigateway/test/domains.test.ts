@@ -137,6 +137,209 @@ describe('domains', () => {
     });
   });
 
+  describe('multi-level mapping', () => {
+    test('can add a multi-level path', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      api.root.addMethod('GET');
+
+      // WHEN
+      new apigw.DomainName(stack, 'Domain', {
+        domainName: 'foo.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        endpointType: apigw.EndpointType.REGIONAL,
+        mapping: api,
+        basePath: 'v1/api',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'Domain66AC69E0',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+        'ApiMappingKey': 'v1/api',
+      });
+    });
+
+    test('throws if endpointType is not REGIONAL', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      api.root.addMethod('GET');
+
+      // THEN
+      expect(() => {
+        new apigw.DomainName(stack, 'Domain', {
+          domainName: 'foo.com',
+          certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+          endpointType: apigw.EndpointType.EDGE,
+          mapping: api,
+          basePath: 'v1/api',
+        });
+      }).toThrow(/multi-level basePath is only supported when endpointType is EndpointType.REGIONAL/);
+    });
+
+    test('throws if securityPolicy is not TLS_1_2', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      api.root.addMethod('GET');
+
+      // THEN
+      expect(() => {
+        new apigw.DomainName(stack, 'Domain', {
+          domainName: 'foo.com',
+          certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+          mapping: api,
+          basePath: 'v1/api',
+          securityPolicy: apigw.SecurityPolicy.TLS_1_0,
+        });
+      }).toThrow(/securityPolicy must be set to TLS_1_2 if multi-level basePath is provided/);
+    });
+
+    test('can use addApiMapping', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      api.root.addMethod('GET');
+
+      // WHEN
+      const domain = new apigw.DomainName(stack, 'Domain', {
+        domainName: 'foo.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      });
+      domain.addApiMapping(api.deploymentStage);
+      domain.addApiMapping(api.deploymentStage, { basePath: '//' });
+      domain.addApiMapping(api.deploymentStage, {
+        basePath: 'v1/my-api',
+      });
+      domain.addApiMapping(api.deploymentStage, {
+        basePath: 'v1//my-api',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'Domain66AC69E0',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'Domain66AC69E0',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+        'ApiMappingKey': '//',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'Domain66AC69E0',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+        'ApiMappingKey': 'v1/my-api',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'Domain66AC69E0',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+        'ApiMappingKey': 'v1//my-api',
+      });
+    });
+
+    test('can use addDomainName', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      api.root.addMethod('GET');
+
+      const domain = api.addDomainName('Domain', {
+        domainName: 'foo.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      });
+
+      // WHEN
+      domain.addApiMapping(api.deploymentStage, {
+        basePath: 'v1/my-api',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+        'DomainName': {
+          'Ref': 'apiDomain6D60CEFD',
+        },
+        'RestApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+        'DomainName': {
+          'Ref': 'apiDomain6D60CEFD',
+        },
+        'ApiId': {
+          'Ref': 'apiC8550315',
+        },
+        'Stage': {
+          'Ref': 'apiDeploymentStageprod896C8101',
+        },
+        'ApiMappingKey': 'v1/my-api',
+      });
+    });
+
+    test('throws if addBasePathMapping tries to add a mapping for a path that is already mapped', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      api.root.addMethod('GET');
+
+      // WHEN
+      const domain = new apigw.DomainName(stack, 'Domain', {
+        domainName: 'foo.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        mapping: api,
+        basePath: 'v1/path',
+      });
+
+      // THEN
+      expect(() => {
+        domain.addApiMapping(api.deploymentStage, {
+          basePath: 'v1/path',
+        });
+      }).toThrow(/DomainName Domain already has a mapping for path v1\/path/);
+    });
+
+  });
+
   test('"addBasePathMapping" can be used to add base path mapping to the domain', () => {
     // GIVEN
     const stack = new Stack();
@@ -312,24 +515,6 @@ describe('domains', () => {
       },
     });
   });
-
-  test('no additional base paths can added if addDomainName was called without a base path', () => {
-    // GIVEN
-    const domainName = 'my.domain.com';
-    const stack = new Stack();
-    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
-
-    // WHEN
-    const api = new apigw.RestApi(stack, 'api', {});
-
-    api.root.addMethod('GET');
-
-    const dn = api.addDomainName('domainId', { domainName, certificate });
-
-    expect(() => dn.addBasePathMapping(api, { basePath: 'books' }))
-      .toThrow(/No additional base paths are allowed/);
-  });
-
 
   test('domain name cannot contain uppercase letters', () => {
     // GIVEN

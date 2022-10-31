@@ -1,5 +1,5 @@
 {
-  "$version": "82.0.0",
+  "$version": "94.0.0",
   "PropertyTypes": {
     "AWS::SES::ConfigurationSet.DeliveryOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-configurationset-deliveryoptions.html",
@@ -682,6 +682,12 @@
       "Properties": {
         "PoolName": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ses-dedicatedippool.html#cfn-ses-dedicatedippool-poolname",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "ScalingMode": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ses-dedicatedippool.html#cfn-ses-dedicatedippool-scalingmode",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"

@@ -1,0 +1,55 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-ec2-import": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://778906199533/us-east-2",
+      "properties": {
+        "templateFile": "aws-cdk-ec2-import.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-ec2-import/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/aws-cdk-ec2-import/PublicSubnets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicSubnets"
+          }
+        ],
+        "/aws-cdk-ec2-import/PrivateSubnets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateSubnets"
+          }
+        ],
+        "/aws-cdk-ec2-import/PublicRouteTables": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicRouteTables"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-ec2-import"
+    },
+    "importdefaultvpcDefaultTestDeployAssertC39D1439": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "importdefaultvpcDefaultTestDeployAssertC39D1439.template.json",
+        "validateOnSynth": false
+      },
+      "displayName": "import-default-vpc/DefaultTest/DeployAssert"
+    }
+  }
+}

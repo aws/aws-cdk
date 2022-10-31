@@ -14,6 +14,14 @@ describe('GlueVersion', () => {
   test('of(customVersion) should set the name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
 });
 
+describe('PythonVersion', () => {
+  test('.TWO should set the name correctly', () => expect(glue.PythonVersion.TWO).toEqual('2'));
+
+  test('.THREE should set the name correctly', () => expect(glue.PythonVersion.THREE).toEqual('3'));
+
+  test('.THREE_NINE should set the name correctly', () => expect(glue.PythonVersion.THREE_NINE).toEqual('3.9'));
+});
+
 describe('JobType', () => {
   test('.ETL should set the name correctly', () => expect(glue.JobType.ETL.name).toEqual('glueetl'));
 
@@ -101,6 +109,26 @@ describe('JobExecutable', () => {
           glueVersion,
         })).toThrow(`Specified GlueVersion ${glueVersion.name} does not support PythonVersion 2`);
       });
+    });
+
+    test('with PythonVersion set to PythonVersion.THREE_NINE and JobType not pythonshell should throw', () => {
+      expect(() => glue.JobExecutable.of({
+        type: glue.JobType.ETL,
+        language: glue.JobLanguage.PYTHON,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
+        script,
+        glueVersion: glue.GlueVersion.V1_0,
+      })).toThrow('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell');
+    });
+
+    test('with PythonVersion PythonVersion.THREE_NINE and JobType pythonshell should succeed', () => {
+      expect(glue.JobExecutable.of({
+        type: glue.JobType.PYTHON_SHELL,
+        glueVersion: glue.GlueVersion.V1_0,
+        language: glue.JobLanguage.PYTHON,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
+        script,
+      })).toBeDefined();
     });
   });
 });

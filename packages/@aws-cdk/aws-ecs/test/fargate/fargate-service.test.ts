@@ -587,13 +587,16 @@ describe('fargate service', () => {
         },
       });
 
+      // Errors on validation, not on construction.
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
+      });
+
       // THEN
       expect(() => {
-        new ecs.FargateService(stack, 'FargateService', {
-          cluster,
-          taskDefinition,
-          platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
-        });
+        Template.fromStack(stack);
       }).toThrow(new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
     });
 
@@ -741,14 +744,50 @@ describe('fargate service', () => {
       new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
-        minHealthyPercent: 0,
+        assignPublicIp: true,
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-        DeploymentConfiguration: {
-          MinimumHealthyPercent: 0,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'ENABLED',
+          },
         },
+      });
+    });
+
+    test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::ECS::Service', {
+        Properties: {
+          TaskDefinition: 'FargateTaskDef',
+          DeploymentController: {
+            Type: 'CODE_DEPLOY',
+          },
+        },
+        DependsOn: [
+          'FargateTaskDefC6FB60B4',
+          'FargateTaskDefTaskRole0B257552',
+        ],
       });
     });
 
@@ -1262,7 +1301,7 @@ describe('fargate service', () => {
               containerPort: 8001,
             })],
           });
-        }).toThrow(/No container named 'SideContainer'. Did you call "addContainer()"?/);
+        }).toThrow(/No container named 'SideContainer'. Did you call "addContainer\(\)"?/);
       });
     });
 
@@ -2178,7 +2217,7 @@ describe('fargate service', () => {
           ],
         });
       });
-    }),
+    });
 
     test('with serviceArn old format', () => {
       // GIVEN

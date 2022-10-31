@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-servicediscovery-integ": {
@@ -91,8 +91,8 @@
                     "id": "Acl",
                     "path": "aws-servicediscovery-integ/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +258,8 @@
                     "id": "Acl",
                     "path": "aws-servicediscovery-integ/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +425,8 @@
                     "id": "Acl",
                     "path": "aws-servicediscovery-integ/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +544,8 @@
                     "id": "Acl",
                     "path": "aws-servicediscovery-integ/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "RouteTable": {
@@ -765,6 +765,69 @@
                   "fqn": "@aws-cdk/aws-servicediscovery.Service",
                   "version": "0.0.0"
                 }
+              },
+              "ArnService": {
+                "id": "ArnService",
+                "path": "aws-servicediscovery-integ/Namespace/ArnService",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-servicediscovery-integ/Namespace/ArnService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Service",
+                      "aws:cdk:cloudformation:props": {
+                        "namespaceId": {
+                          "Fn::GetAtt": [
+                            "Namespace9B63B8C8",
+                            "Id"
+                          ]
+                        },
+                        "type": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NonIpInstance": {
+                    "id": "NonIpInstance",
+                    "path": "aws-servicediscovery-integ/Namespace/ArnService/NonIpInstance",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-servicediscovery-integ/Namespace/ArnService/NonIpInstance/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Instance",
+                          "aws:cdk:cloudformation:props": {
+                            "instanceAttributes": {
+                              "arn": "arn://"
+                            },
+                            "serviceId": {
+                              "Fn::GetAtt": [
+                                "NamespaceArnService1F427735",
+                                "Id"
+                              ]
+                            },
+                            "instanceId": "awsservicediscoveryintegNamespaceArnServiceNonIpInstance80DE1A4E"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-servicediscovery.CfnInstance",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.NonIpInstance",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -857,14 +920,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

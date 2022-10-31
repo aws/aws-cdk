@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.58"
+          "version": "10.1.85"
         }
       },
       "cdk-integ-lambda-bundling-docker-bundling-opts": {
@@ -103,41 +103,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParametersbadc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668S3BucketFA35C5ED"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersbadc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668S3VersionKeyE3A69E58"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersbadc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668S3VersionKeyE3A69E58"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -160,50 +128,6 @@
               "version": "0.0.0"
             }
           },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "cdk-integ-lambda-bundling-docker-bundling-opts/AssetParameters",
-            "children": {
-              "badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668": {
-                "id": "badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668",
-                "path": "cdk-integ-lambda-bundling-docker-bundling-opts/AssetParameters/badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "cdk-integ-lambda-bundling-docker-bundling-opts/AssetParameters/badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "cdk-integ-lambda-bundling-docker-bundling-opts/AssetParameters/badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "cdk-integ-lambda-bundling-docker-bundling-opts/AssetParameters/badc2d9df4b50b7ee1eaf05b055fa93217d48bfecf7ad59a8fdac427eea82668/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.58"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.58"
-            }
-          },
           "Exports": {
             "id": "Exports",
             "path": "cdk-integ-lambda-bundling-docker-bundling-opts/Exports",
@@ -219,7 +143,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.58"
+              "version": "10.1.85"
             }
           }
         },
@@ -241,7 +165,7 @@
                 "path": "Bundling/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.58"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
@@ -261,7 +185,7 @@
                             "path": "Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.58"
+                              "version": "10.1.85"
                             }
                           }
                         },
@@ -309,7 +233,7 @@
                                 "path": "Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.58"
+                                  "version": "10.1.85"
                                 }
                               }
                             },
@@ -387,51 +311,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.58"
-                    }
-                  },
-                  "AssetParameters": {
-                    "id": "AssetParameters",
-                    "path": "Bundling/DefaultTest/DeployAssert/AssetParameters",
-                    "children": {
-                      "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd": {
-                        "id": "0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
-                        "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd",
-                        "children": {
-                          "S3Bucket": {
-                            "id": "S3Bucket",
-                            "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3Bucket",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "S3VersionKey": {
-                            "id": "S3VersionKey",
-                            "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/S3VersionKey",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "ArtifactHash": {
-                            "id": "ArtifactHash",
-                            "path": "Bundling/DefaultTest/DeployAssert/AssetParameters/0d8d96305807ac805d23c6d7b279eef238715605efad63c839ad1e7e8236bdbd/ArtifactHash",
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnParameter",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.58"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.58"
+                      "version": "10.1.85"
                     }
                   }
                 },

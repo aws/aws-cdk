@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "TokenAuthorizerIAMRoleInteg": {
@@ -77,8 +77,8 @@
                     "id": "Stage",
                     "path": "TokenAuthorizerIAMRoleInteg/MyAuthorizerFunction/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.85"
                     }
                   },
                   "AssetBucket": {
@@ -103,41 +103,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -157,50 +125,6 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "TokenAuthorizerIAMRoleInteg/AssetParameters",
-            "children": {
-              "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3": {
-                "id": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
-                "path": "TokenAuthorizerIAMRoleInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "TokenAuthorizerIAMRoleInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "TokenAuthorizerIAMRoleInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "TokenAuthorizerIAMRoleInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
               "version": "0.0.0"
             }
           },
@@ -530,8 +454,8 @@
                 "id": "Endpoint",
                 "path": "TokenAuthorizerIAMRoleInteg/MyRestApi/Endpoint",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "Default": {
@@ -606,14 +530,50 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "iam-token-authorizer": {
+        "id": "iam-token-authorizer",
+        "path": "iam-token-authorizer",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "iam-token-authorizer/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "iam-token-authorizer/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "iam-token-authorizer/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

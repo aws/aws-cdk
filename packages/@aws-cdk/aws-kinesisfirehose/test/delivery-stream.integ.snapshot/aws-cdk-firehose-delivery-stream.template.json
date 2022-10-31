@@ -217,6 +217,9 @@
    "ap-southeast-2": {
     "FirehoseCidrBlock": "13.210.67.224/27"
    },
+   "ap-southeast-3": {
+    "FirehoseCidrBlock": "108.136.221.64/27"
+   },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
    },
@@ -268,6 +271,40 @@
    "us-west-2": {
     "FirehoseCidrBlock": "52.89.255.224/27"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

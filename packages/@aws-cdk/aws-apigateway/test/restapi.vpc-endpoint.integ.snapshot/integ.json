@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.restapi.vpc-endpoint": {
+    "apigateway-vpcendpoint/DefaultTest": {
       "stacks": [
         "test-apigateway-vpcendpoint"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "apigateway-vpcendpoint/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

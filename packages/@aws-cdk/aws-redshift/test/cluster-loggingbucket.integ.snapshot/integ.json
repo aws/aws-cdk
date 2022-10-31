@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "LoggingBucketInteg/DefaultTest": {
+      "stacks": [
+        "redshift-loggingbucket-integ"
+      ],
+      "assertionStack": "LoggingBucketInteg/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -31,7 +31,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     vpc,
   },
@@ -49,6 +49,22 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
+
+To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property:
+
+```ts
+declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  instanceProps: {
+    vpc,
+    publiclyAccessible: false,
+  },
+  networkType: rds.NetworkType.DUAL,
+});
+```
+
+For more information about dual-stack mode, see [Working with a DB cluster in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
 
 Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 
@@ -99,7 +115,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   }
 });
 ```
@@ -128,6 +144,20 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   maxAllocatedStorage: 200,
 });
 ```
+
+To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property:
+
+```ts
+declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_14_4 }),
+  vpc,
+  networkType: rds.NetworkType.DUAL,
+  publiclyAccessible: false,
+});
+```
+
+For more information about dual-stack mode, see [Working with a DB instance in a VPC](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html).
 
 Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
 a source database respectively:
@@ -175,7 +205,7 @@ new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
   publiclyAccessible: true,
 });
@@ -186,7 +216,7 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   instanceProps: {
     vpc,
     vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     publiclyAccessible: true,
   },
@@ -355,7 +385,7 @@ declare const instance: rds.DatabaseInstance;
 declare const myEndpoint: ec2.InterfaceVpcEndpoint;
 
 instance.addRotationSingleUser({
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }, // Place rotation Lambda in private subnets
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }, // Place rotation Lambda in private subnets
   endpoint: myEndpoint, // Use VPC interface endpoint
 });
 ```

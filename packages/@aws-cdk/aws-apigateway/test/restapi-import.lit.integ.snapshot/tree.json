@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "integ-restapi-import-RootStack": {
@@ -261,22 +261,22 @@
                 "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
                 "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "reference-to-integrestapiimportRootStackRestApi2647DA4CRef": {
                 "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
                 "path": "integ-restapi-import-RootStack/integ-restapi-import-PetsStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "integ-restapi-import-PetsStack.NestedStack": {
@@ -303,35 +303,9 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParametersc6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1efS3BucketFE7B8A1B"
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/",
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParametersc6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1efS3VersionKeyB80604FE"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParametersc6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1efS3VersionKeyB80604FE"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef.json"
                         ]
                       ]
                     },
@@ -349,14 +323,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "integ-restapi-import-BooksStack": {
@@ -465,22 +439,22 @@
                 "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
                 "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRootResourceId",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               },
               "reference-to-integrestapiimportRootStackRestApi2647DA4CRef": {
                 "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
                 "path": "integ-restapi-import-RootStack/integ-restapi-import-BooksStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "integ-restapi-import-BooksStack.NestedStack": {
@@ -507,35 +481,9 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141S3Bucket74F8A623"
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/",
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameters480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141S3VersionKeyC855AC3B"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameters480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141S3VersionKeyC855AC3B"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141.json"
                         ]
                       ]
                     },
@@ -553,14 +501,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "integ-restapi-import-DeployStack": {
@@ -635,14 +583,14 @@
                 "id": "reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
                 "path": "integ-restapi-import-RootStack/integ-restapi-import-DeployStack/reference-to-integrestapiimportRootStackRestApi2647DA4CRef",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "integ-restapi-import-DeployStack.NestedStack": {
@@ -669,35 +617,9 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86abS3BucketADE4C6AE"
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/",
-                          {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameters04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86abS3VersionKeyF36B0062"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "Fn::Select": [
-                              1,
-                              {
-                                "Fn::Split": [
-                                  "||",
-                                  {
-                                    "Ref": "AssetParameters04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86abS3VersionKeyF36B0062"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab.json"
                         ]
                       ]
                     },
@@ -709,154 +631,42 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "PetsURL": {
             "id": "PetsURL",
             "path": "integ-restapi-import-RootStack/PetsURL",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "BooksURL": {
             "id": "BooksURL",
             "path": "integ-restapi-import-RootStack/BooksURL",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "integ-restapi-import-RootStack/AssetParameters",
-            "children": {
-              "c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef": {
-                "id": "c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef",
-                "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/c6464ef3a9925cfe5c28d912ee7fc0952eb5135b281419c8d450a3aa8825e1ef/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              },
-              "480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141": {
-                "id": "480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141",
-                "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/480caddfb9aa669df64905982e75c672d967ce9d9ed261ee8c73f6bdcaf97141/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              },
-              "04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab": {
-                "id": "04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab",
-                "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "integ-restapi-import-RootStack/AssetParameters/04407a85c5bf6d4da110e25ee35b1f67903f760cd7835965518b0f7ad37e86ab/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Construct",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.Construct",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

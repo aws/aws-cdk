@@ -4,13 +4,11 @@ import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
-  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour,
+  DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType,
 } from '../lib';
 
 describe('cluster', () => {
@@ -459,6 +457,44 @@ describe('cluster', () => {
     }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
+  test('instance with IPv4 network type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      networkType: NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      NetworkType: 'IPV4',
+    });
+  });
+
+  test('instance with dual-stack network type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      networkType: NetworkType.DUAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      NetworkType: 'DUAL',
+    });
+  });
+
   describe('performance insights', () => {
     test('cluster with all performance insights properties', () => {
       // GIVEN
@@ -734,7 +770,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_5_7_12 }),
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_02_0 }),
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -947,7 +983,7 @@ describe('cluster', () => {
     cluster.addRotationSingleUser({
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -1004,7 +1040,7 @@ describe('cluster', () => {
       secret: userSecret.attach(cluster),
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
     // THEN
@@ -1424,9 +1460,9 @@ describe('cluster', () => {
     });
   });
 
-  testFutureBehavior('create a cluster with s3 export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
+  test('create a cluster with s3 export buckets', () => {
     // GIVEN
-    const stack = testStack(app);
+    const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const bucket = new s3.Bucket(stack, 'Bucket');
@@ -2427,7 +2463,7 @@ describe('cluster', () => {
       instanceProps: {
         vpc,
         vpcSubnets: {
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
         },
         publiclyAccessible: true,
       },
@@ -2484,12 +2520,9 @@ describe('cluster', () => {
     });
   });
 
-  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+  test('changes the case of the cluster identifier', () => {
     // GIVEN
-    const app = new cdk.App({
-      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
-    });
-    const stack = testStack(app);
+    const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
@@ -2602,6 +2635,22 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       BacktrackWindow: 24 * 60 * 60,
+    });
+  });
+
+  test('DB instances should not have engine version set when part of a cluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EngineVersion: Match.absent(),
     });
   });
 });

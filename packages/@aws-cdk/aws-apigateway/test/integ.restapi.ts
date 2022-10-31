@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as apigateway from '../lib';
 
 class Test extends cdk.Stack {
@@ -8,6 +9,7 @@ class Test extends cdk.Stack {
 
     const api = new apigateway.RestApi(this, 'my-api', {
       retainDeployments: true,
+      cloudWatchRole: true,
       deployOptions: {
         cacheClusterEnabled: true,
         stageName: 'beta',
@@ -37,7 +39,7 @@ class Test extends cdk.Stack {
     toys.addMethod('POST');
     toys.addMethod('PUT');
 
-    const appliances = v1.addResource('appliances');
+    const appliances = v1.addResource('appliances:all');
     appliances.addMethod('GET');
 
     const books = v1.addResource('books');
@@ -76,11 +78,22 @@ class Test extends cdk.Stack {
         },
       ],
     });
+
+    const testDeploy = new apigateway.Deployment(this, 'TestDeployment', {
+      api,
+      retainDeployments: false,
+    });
+    const testStage = new apigateway.Stage(this, 'TestStage', {
+      deployment: testDeploy,
+    });
+    testStage.addApiKey('MyTestApiKey');
   }
 }
 
 const app = new cdk.App();
 
-new Test(app, 'test-apigateway-restapi');
+const testCase = new Test(app, 'test-apigateway-restapi');
+new IntegTest(app, 'apigateway-restapi', {
+  testCases: [testCase],
+});
 
-app.synth();

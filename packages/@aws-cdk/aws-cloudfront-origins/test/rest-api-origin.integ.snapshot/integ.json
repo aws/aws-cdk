@@ -1,14 +1,11 @@
 {
   "version": "20.0.0",
   "testCases": {
-    "integ.rest-api-origin": {
+    "rest-api-origin/DefaultTest": {
       "stacks": [
         "integ-cloudfront-rest-api-origin"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "rest-api-origin/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

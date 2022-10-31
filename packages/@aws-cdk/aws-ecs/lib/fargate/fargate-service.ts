@@ -128,11 +128,6 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    if (props.taskDefinition.referencesSecretJsonField
-        && props.platformVersion
-        && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)) {
-      throw new Error(`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`);
-    }
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount,
@@ -153,6 +148,14 @@ export class FargateService extends BaseService implements IFargateService {
     }
 
     this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+
+    this.node.addValidation({
+      validate: () => this.taskDefinition.referencesSecretJsonField
+      && props.platformVersion
+      && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)
+        ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
+        : [],
+    });
 
     this.node.addValidation({
       validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],

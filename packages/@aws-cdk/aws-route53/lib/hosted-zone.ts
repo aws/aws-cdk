@@ -112,6 +112,10 @@ export class HostedZone extends Resource implements IHostedZone {
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
+    if (!query.domainName) {
+      throw new Error('Cannot use undefined value for attribute `domainName`');
+    }
+
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
       Id: 'DUMMY',
       Name: query.domainName,
@@ -177,7 +181,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * @param vpc the other VPC to add.
    */
   public addVpc(vpc: ec2.IVpc) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: Stack.of(vpc).region });
+    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 }
 
@@ -289,6 +293,12 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
               new iam.PolicyStatement({
                 actions: ['route53:ChangeResourceRecordSets'],
                 resources: [this.hostedZoneArn],
+                conditions: {
+                  'ForAllValues:StringEquals': {
+                    'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+                    'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+                  },
+                },
               }),
               new iam.PolicyStatement({
                 actions: ['route53:ListHostedZonesByName'],
