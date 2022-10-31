@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.eks-cluster-private-endpoint": {
+    "aws-cdk-eks-cluster-private-endpoint/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-cluster-private-endpoint-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

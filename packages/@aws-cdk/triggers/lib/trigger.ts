@@ -86,7 +86,7 @@ export class Trigger extends Construct implements ITrigger {
         {
           Effect: 'Allow',
           Action: ['lambda:InvokeFunction'],
-          Resource: [handlerArn],
+          Resource: [`${props.handler.functionArn}:*`],
         },
       ],
     });

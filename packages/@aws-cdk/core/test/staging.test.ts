@@ -21,6 +21,8 @@ enum DockerStubCommand {
 const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
 const FIXTURE_TEST1_HASH = '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00';
 const FIXTURE_TARBALL = path.join(__dirname, 'fs', 'fixtures.tar.gz');
+const NOT_ARCHIVED_ZIP_TXT_HASH = '95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df';
+const ARCHIVE_TARBALL_TEST_HASH = '3e948ff54a277d6001e2452fdbc4a9ef61f916ff662ba5e05ece1e2ec6dec9f5';
 
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
@@ -86,6 +88,43 @@ describe('staging', () => {
 
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(true);
+  });
+
+  test('staging of an archive with multiple extension name correctly sets packaging and isArchive', () => {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePathTarGz1 = path.join(__dirname, 'archive', 'artifact.tar.gz');
+    const sourcePathTarGz2 = path.join(__dirname, 'archive', 'artifact.da.vinci.monalisa.tar.gz');
+    const sourcePathTgz = path.join(__dirname, 'archive', 'artifact.tgz');
+    const sourcePathTar = path.join(__dirname, 'archive', 'artifact.tar');
+    const sourcePathNotArchive = path.join(__dirname, 'archive', 'artifact.zip.txt');
+    const sourcePathDockerFile = path.join(__dirname, 'archive', 'DockerFile');
+
+    // WHEN
+    const stagingTarGz1 = new AssetStaging(stack, 's1', { sourcePath: sourcePathTarGz1 });
+    const stagingTarGz2 = new AssetStaging(stack, 's2', { sourcePath: sourcePathTarGz2 });
+    const stagingTgz = new AssetStaging(stack, 's3', { sourcePath: sourcePathTgz });
+    const stagingTar = new AssetStaging(stack, 's4', { sourcePath: sourcePathTar });
+    const stagingNotArchive = new AssetStaging(stack, 's5', { sourcePath: sourcePathNotArchive });
+    const stagingDockerFile = new AssetStaging(stack, 's6', { sourcePath: sourcePathDockerFile });
+
+    expect(stagingTarGz1.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingTarGz1.isArchive).toEqual(true);
+    expect(stagingTarGz2.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(path.basename(stagingTarGz2.absoluteStagedPath)).toEqual(`asset.${ARCHIVE_TARBALL_TEST_HASH}.tar.gz`);
+    expect(path.basename(stagingTarGz2.relativeStagedPath(stack))).toEqual(`asset.${ARCHIVE_TARBALL_TEST_HASH}.tar.gz`);
+    expect(stagingTarGz2.isArchive).toEqual(true);
+    expect(stagingTgz.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingTgz.isArchive).toEqual(true);
+    expect(stagingTar.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingTar.isArchive).toEqual(true);
+    expect(stagingNotArchive.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(path.basename(stagingNotArchive.absoluteStagedPath)).toEqual(`asset.${NOT_ARCHIVED_ZIP_TXT_HASH}.txt`);
+    expect(path.basename(stagingNotArchive.relativeStagedPath(stack))).toEqual(`asset.${NOT_ARCHIVED_ZIP_TXT_HASH}.txt`);
+    expect(stagingNotArchive.isArchive).toEqual(false);
+    expect(stagingDockerFile.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(stagingDockerFile.isArchive).toEqual(false);
+
   });
 
   test('asset packaging type is correct when staging is skipped because of memory cache', () => {
@@ -175,7 +214,7 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       `asset.${FIXTURE_TEST1_HASH}`,
-      'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
+      'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.tar.gz',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -221,6 +260,24 @@ describe('staging', () => {
     expect(withoutExtra.assetHash).not.toEqual(withExtra.assetHash);
     expect(withoutExtra.assetHash).toEqual(FIXTURE_TEST1_HASH);
     expect(withExtra.assetHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
+  });
+
+  test('can specify extra asset salt via context key', () => {
+    // GIVEN
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    const saltedApp = new App({ context: { '@aws-cdk/core:assetHashSalt': 'magic' } });
+    const saltedStack = new Stack(saltedApp, 'stack');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'X', { sourcePath: directory });
+    const saltedAsset = new AssetStaging(saltedStack, 'X', { sourcePath: directory });
+
+    // THEN
+    expect(asset.assetHash).not.toEqual(saltedAsset.assetHash);
   });
 
   test('with bundling', () => {
@@ -542,7 +599,7 @@ describe('staging', () => {
     ]);
   });
 
-  test('bundling throws when /asset-ouput is empty', () => {
+  test('bundling throws when /asset-output is empty', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -608,6 +665,31 @@ describe('staging', () => {
     expect(
       readDockerStubInput()).toEqual(
       `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+  });
+
+  test('bundling with docker entrypoint', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        entrypoint: [DockerStubCommand.SUCCESS],
+        command: [DockerStubCommand.SUCCESS],
+      },
+      assetHashType: AssetHashType.OUTPUT,
+    });
+
+    // THEN
+    expect(
+      readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -848,6 +930,155 @@ describe('staging', () => {
     expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
+  test('correctly skips bundling with stack under stage and custom stack name', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
+
+    const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
+    const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly bundles with stack under stage and the default stack pattern', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+
+    const stack1 = new Stack(stage, 'Stack1');
+    const stack2 = new Stack(stage, 'Stack2');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker ran for the asset in Stack2
+    expect(dockerStubInput).toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly bundles with stack under stage and partial globstar wildcard', () => {
+    // GIVEN
+    const app = new App();
+
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['**/Stack1']); // a single wildcard prefix ('*Stack1') won't match
+
+    const stack1 = new Stack(stage, 'Stack1');
+    const stack2 = new Stack(stage, 'Stack2');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    // THEN
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
+  test('correctly bundles selected stacks nested in Stack/Stage/Stack', () => {
+    // GIVEN
+    const app = new App();
+
+    const topStack = new Stack(app, 'TopStack');
+    topStack.node.setContext(cxapi.BUNDLING_STACKS, ['TopStack/MiddleStage/BottomStack']);
+
+    const middleStage = new Stage(topStack, 'MiddleStage');
+    const bottomStack = new Stack(middleStage, 'BottomStack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    new AssetStaging(bottomStack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+    new AssetStaging(topStack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in BottomStack
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // Docker did not run for the asset in TopStack
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
+  });
+
   test('bundling still occurs with partial wildcard', () => {
     // GIVEN
     const app = new App();
@@ -872,7 +1103,7 @@ describe('staging', () => {
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
 
-  test('bundling still occurs with full wildcard', () => {
+  test('bundling still occurs with a single wildcard', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
@@ -1017,7 +1248,7 @@ describe('staging', () => {
         command: [DockerStubCommand.MULTIPLE_FILES],
         outputType: BundlingOutput.ARCHIVED,
       },
-    })).toThrow(/Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`/);
+    })).toThrow(/Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`/);
   });
 });
 

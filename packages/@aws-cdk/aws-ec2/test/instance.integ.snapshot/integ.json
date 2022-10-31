@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "aws-ec2/test/integ.instance": {
+    "instance-test/DefaultTest": {
       "stacks": [
-        "*"
+        "integ-ec2-instance"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "instance-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancetestDefaultTestDeployAssert5516EAF1"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

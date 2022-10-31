@@ -86,6 +86,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -126,6 +127,10 @@
     "exclude": [
       "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretFullArn",
       "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretName",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseClusterFromSnapshot.dbInstanceEndpointHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstance.dbInstanceEndpointHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.dbInstanceEndpointHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.dbInstanceEndpointHostedZoneId",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterFromSnapshotProps",

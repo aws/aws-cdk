@@ -70,9 +70,9 @@ export class ApiDestination implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const httpParameters: events.CfnRule.HttpParametersProperty | undefined =
-      !!this.props.headerParameters ??
-      !!this.props.pathParameterValues ??
-      !!this.props.queryStringParameters
+      this.props.headerParameters ??
+      this.props.pathParameterValues ??
+      this.props.queryStringParameters
         ? {
           headerParameters: this.props.headerParameters,
           pathParameterValues: this.props.pathParameterValues,

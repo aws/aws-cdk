@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigateway/test/integ.restapi.multiuse": {
+    "restapi-multiuse/DefaultTest": {
       "stacks": [
         "restapi-multiuse-example"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "restapi-multiuse/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

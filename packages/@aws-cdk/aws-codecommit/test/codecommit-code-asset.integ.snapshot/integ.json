@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-codecommit/test/integ.codecommit-code-asset": {
+    "integ.codecommit-code-asset": {
       "stacks": [
         "aws-cdk-codecommit-repo-contents-assets"
       ],

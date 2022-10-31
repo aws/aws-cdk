@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.eks-helm-asset": {
+    "aws-cdk-eks-helm/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-helm-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-cdk-eks-helm/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkekshelmDefaultTestDeployAssert044A589A"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

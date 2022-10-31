@@ -12,6 +12,9 @@ import { IWebSocketRoute } from './route';
 export enum WebSocketAuthorizerType {
   /** Lambda Authorizer */
   LAMBDA = 'REQUEST',
+
+  /** IAM Authorizer */
+  IAM = 'AWS_IAM',
 }
 
 /**
@@ -22,12 +25,12 @@ export interface WebSocketAuthorizerProps {
    * Name of the authorizer
    * @default - id of the WebSocketAuthorizer construct.
    */
-  readonly authorizerName?: string
+  readonly authorizerName?: string;
 
   /**
    * WebSocket Api to attach the authorizer to
    */
-  readonly webSocketApi: IWebSocketApi
+  readonly webSocketApi: IWebSocketApi;
 
   /**
    * The type of authorizer
@@ -53,8 +56,7 @@ export interface WebSocketAuthorizerProps {
 /**
  * An authorizer for WebSocket APIs
  */
-export interface IWebSocketAuthorizer extends IAuthorizer {
-}
+export interface IWebSocketAuthorizer extends IAuthorizer {}
 
 /**
  * Reference to an WebSocket authorizer
@@ -63,7 +65,7 @@ export interface WebSocketAuthorizerAttributes {
   /**
    * Id of the Authorizer
    */
-  readonly authorizerId: string
+  readonly authorizerId: string;
 
   /**
    * Type of authorizer
@@ -72,7 +74,7 @@ export interface WebSocketAuthorizerAttributes {
    * - CUSTOM - Lambda Authorizer
    * - NONE - No Authorization
    */
-  readonly authorizerType: string
+  readonly authorizerType: string;
 }
 
 /**

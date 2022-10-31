@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigatewayv2/test/http/integ.stage": {
+    "integ.stage": {
       "stacks": [
         "aws-cdk-aws-apigatewayv2-http-stage"
       ],

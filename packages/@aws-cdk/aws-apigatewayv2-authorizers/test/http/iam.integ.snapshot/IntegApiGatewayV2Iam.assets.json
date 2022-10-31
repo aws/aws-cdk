@@ -1,7 +1,7 @@
 {
-  "version": "17.0.0",
+  "version": "20.0.0",
   "files": {
-    "1a1ff3e923d227bda4bd3820b81a866729ac8bc87820ccf9b81469aa5d4de29d": {
+    "7332d1f16eb3c30dc1e90813757b35ed0f36282e60246f0d439a027d7963089a": {
       "source": {
         "path": "IntegApiGatewayV2Iam.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1a1ff3e923d227bda4bd3820b81a866729ac8bc87820ccf9b81469aa5d4de29d.json",
+          "objectKey": "7332d1f16eb3c30dc1e90813757b35ed0f36282e60246f0d439a027d7963089a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

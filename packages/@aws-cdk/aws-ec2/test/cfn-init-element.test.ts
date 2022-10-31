@@ -264,6 +264,9 @@ describe('InitFile', () => {
     const content = {
       version: '1234',
       secretsFile: '/tmp/secrets',
+      maxThreads: 15,
+      isEnabled: true,
+      floatNumber: 23.18,
     };
     const file = ec2.InitFile.fromObject('/tmp/foo', content);
 
@@ -276,6 +279,9 @@ describe('InitFile', () => {
         content: {
           version: '1234',
           secretsFile: '/tmp/secrets',
+          maxThreads: 15,
+          isEnabled: true,
+          floatNumber: 23.18,
         },
         owner: 'root',
         group: 'root',

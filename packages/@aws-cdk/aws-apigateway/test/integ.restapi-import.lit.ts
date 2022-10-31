@@ -17,6 +17,7 @@ class RootStack extends Stack {
     super(scope, 'integ-restapi-import-RootStack');
 
     const restApi = new RestApi(this, 'RestApi', {
+      cloudWatchRole: true,
       deploy: false,
     });
     restApi.root.addMethod('ANY');

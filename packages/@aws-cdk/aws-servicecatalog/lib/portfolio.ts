@@ -329,7 +329,7 @@ export class Portfolio extends PortfolioBase {
     });
     this.portfolioId = this.portfolio.ref;
     this.portfolioArn = cdk.Stack.of(this).formatArn({
-      service: 'servicecatalog',
+      service: 'catalog',
       resource: 'portfolio',
       resourceName: this.portfolioId,
     });

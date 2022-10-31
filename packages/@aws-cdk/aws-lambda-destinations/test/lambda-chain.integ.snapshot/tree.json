@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.102"
         }
       },
       "aws-cdk-lambda-chain": {
@@ -134,7 +134,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -531,7 +531,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -760,7 +760,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -843,7 +843,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+                      "zipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -889,10 +889,362 @@
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-lambda-chain/Exports",
+            "children": {
+              "Output{\"Ref\":\"First8D4707F1\"}": {
+                "id": "Output{\"Ref\":\"First8D4707F1\"}",
+                "path": "aws-cdk-lambda-chain/Exports/Output{\"Ref\":\"First8D4707F1\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"Third1125870F\"}": {
+                "id": "Output{\"Ref\":\"Third1125870F\"}",
+                "path": "aws-cdk-lambda-chain/Exports/Output{\"Ref\":\"Third1125870F\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.102"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LambdaDestChain3": {
+        "id": "LambdaDestChain3",
+        "path": "LambdaDestChain3",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaDestChain3/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaDestChain3/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.102"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaDestChain3/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvoke56ff6291852e7537dce00fa6e862a00b": {
+                    "id": "LambdaInvoke56ff6291852e7537dce00fa6e862a00b",
+                    "path": "LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.102"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/LambdaInvoke56ff6291852e7537dce00fa6e862a00b/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.102"
+                    }
+                  },
+                  "AwsApiCallCloudWatchLogsfilterLogEvents": {
+                    "id": "AwsApiCallCloudWatchLogsfilterLogEvents",
+                    "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.102"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.102"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.102"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.102"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "LambdaDestChain3/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.102"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

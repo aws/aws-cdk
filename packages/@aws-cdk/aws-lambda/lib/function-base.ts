@@ -618,9 +618,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
     if (!conditions) { return undefined; }
 
-    const sourceArn = conditions.ArnLike ? conditions.ArnLike['aws:SourceArn'] : undefined;
-    const sourceAccount = conditions.StringEquals ? conditions.StringEquals['aws:SourceAccount'] : undefined;
-    const principalOrgID = conditions.StringEquals ? conditions.StringEquals['aws:PrincipalOrgID'] : undefined;
+    const sourceArn = requireString(requireObject(conditions.ArnLike)?.['aws:SourceArn']);
+    const sourceAccount = requireString(requireObject(conditions.StringEquals)?.['aws:SourceAccount']);
+    const principalOrgID = requireString(requireObject(conditions.StringEquals)?.['aws:PrincipalOrgID']);
 
     // PrincipalOrgID cannot be combined with any other conditions
     if (principalOrgID && (sourceArn || sourceAccount)) {
@@ -767,4 +767,12 @@ class LatestVersion extends FunctionBase implements IVersion {
   public addAlias(aliasName: string, options: AliasOptions = {}) {
     return addAlias(this, this, aliasName, options);
   }
+}
+
+function requireObject(x: unknown): Record<string, unknown> | undefined {
+  return x && typeof x === 'object' && !Array.isArray(x) ? x as any : undefined;
+}
+
+function requireString(x: unknown): string | undefined {
+  return x && typeof x === 'string' ? x : undefined;
 }

@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "applicationLoadBalancedEc2ServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb"
+      ],
+      "assertionStack": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert"
+    }
+  }
+}

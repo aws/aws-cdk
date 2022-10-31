@@ -1,14 +1,11 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-apigateway/test/integ.stepfunctions-api": {
+    "step-functions-restapi/DefaultTest": {
       "stacks": [
         "StepFunctionsRestApiDeploymentStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "step-functions-restapi/DefaultTest/DeployAssert"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

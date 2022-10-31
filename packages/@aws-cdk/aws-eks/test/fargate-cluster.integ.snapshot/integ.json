@@ -1,14 +1,12 @@
 {
-  "version": "18.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "integ.fargate-cluster": {
+    "aws-cdk-eks-fargate-cluster/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-fargate-cluster-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-cdk-eks-fargate-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksfargateclusterDefaultTestDeployAssert7DCC5E4C"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

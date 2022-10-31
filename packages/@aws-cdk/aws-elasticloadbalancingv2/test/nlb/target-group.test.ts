@@ -220,6 +220,52 @@ describe('tests', () => {
     }).toThrow('Target group name: "my target group" must contain only alphanumeric characters or hyphens.');
   });
 
+  test('Disable deregistration_delay.connection_termination.enabled attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      connectionTermination: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'deregistration_delay.connection_termination.enabled',
+          Value: 'false',
+        },
+      ],
+    });
+  });
+
+  test('Enable deregistration_delay.connection_termination.enabled attribute for target group', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      connectionTermination: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'deregistration_delay.connection_termination.enabled',
+          Value: 'true',
+        },
+      ],
+    });
+  });
+
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
     'Throws validation error, when `healthCheck` has `protocol` set to %s',
     (protocol) => {
@@ -588,5 +634,52 @@ describe('tests', () => {
 
     // THEN
     expect(importedTg.targetGroupName).toEqual('myNlbTargetGroup');
+  });
+
+  test('imported targetGroup with imported ARN has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTgArn = cdk.Fn.importValue('ImportTargetGroupArn');
+    const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: importedTgArn,
+    });
+    new cdk.CfnOutput(stack, 'TargetGroupOutput', {
+      value: importedTg.targetGroupName,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasOutput('TargetGroupOutput', {
+      Value: {
+        'Fn::Select': [
+          // myNlbTargetGroup
+          1,
+          {
+            'Fn::Split': [
+              // [targetgroup, myNlbTargetGroup, 73e2d6bc24d8a067]
+              '/',
+              {
+                'Fn::Select': [
+                  // targetgroup/myNlbTargetGroup/73e2d6bc24d8a067
+                  5,
+                  {
+                    'Fn::Split': [
+                      // [arn, aws, elasticloadbalancing, us-west-2, 123456789012, targetgroup/myNlbTargetGroup/73e2d6bc24d8a067]
+                      ':',
+                      {
+                        // arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myNlbTargetGroup/73e2d6bc24d8a067
+                        'Fn::ImportValue': 'ImportTargetGroupArn',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
   });
 });

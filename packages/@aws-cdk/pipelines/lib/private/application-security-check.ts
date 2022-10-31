@@ -77,6 +77,7 @@ export class ApplicationSecurityCheck extends Construct {
       'aws lambda invoke' +
       ` --function-name ${this.preApproveLambda.functionName}` +
       ' --invocation-type Event' +
+      ' --cli-binary-format raw-in-base64-out' +
       ' --payload "$payload"' +
       ' lambda.out';
 

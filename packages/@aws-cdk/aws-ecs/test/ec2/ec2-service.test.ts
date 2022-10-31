@@ -9,6 +9,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
+import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
@@ -843,7 +845,7 @@ describe('ec2 service', () => {
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
         deploymentController: {
-          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          type: ecs.DeploymentControllerType.ECS,
         },
         securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
@@ -871,7 +873,7 @@ describe('ec2 service', () => {
           MinimumHealthyPercent: 55,
         },
         DeploymentController: {
-          Type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          Type: ecs.DeploymentControllerType.ECS,
         },
         DesiredCount: 2,
         LaunchType: LaunchType.EC2,
@@ -1089,6 +1091,42 @@ describe('ec2 service', () => {
       });
 
 
+    });
+
+    test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::ECS::Service', {
+        Properties: {
+          TaskDefinition: 'Ec2TaskDef',
+          DeploymentController: {
+            Type: 'CODE_DEPLOY',
+          },
+        },
+        DependsOn: [
+          'Ec2TaskDef0226F28C',
+          'Ec2TaskDefTaskRole400FA349',
+        ],
+      });
     });
 
     testDeprecated('throws when both securityGroup and securityGroups are supplied', () => {
@@ -1934,7 +1972,7 @@ describe('ec2 service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
-          Field: 'cpu',
+          Field: 'CPU',
           Type: 'binpack',
         }],
       });
@@ -1965,7 +2003,7 @@ describe('ec2 service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
-          Field: 'memory',
+          Field: 'MEMORY',
           Type: 'binpack',
         }],
       });
@@ -1996,7 +2034,7 @@ describe('ec2 service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
-          Field: 'memory',
+          Field: 'MEMORY',
           Type: 'binpack',
         }],
       });
@@ -3227,7 +3265,103 @@ describe('ec2 service', () => {
   });
 
   describe('When import an EC2 Service', () => {
-    test('with serviceArn', () => {
+    test('fromEc2ServiceArn old format', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+
+      // THEN
+      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      expect(service.serviceName).toEqual('my-http-service');
+    });
+
+    test('fromEc2ServiceArn new format', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-cluster-name/my-http-service');
+
+      // THEN
+      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-cluster-name/my-http-service');
+      expect(service.serviceName).toEqual('my-http-service');
+    });
+
+    describe('fromEc2ServiceArn tokenized ARN', () => {
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
+
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            1,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+      });
+
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format', () => {
+        // GIVEN
+        const app = new App({
+          context: {
+            [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
+          },
+        });
+
+        const stack = new cdk.Stack(app);
+
+        // WHEN
+        const service = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
+
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            2,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+      });
+    });
+
+    test('with serviceArn old format', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -3247,23 +3381,189 @@ describe('ec2 service', () => {
 
     });
 
-    test('with serviceName', () => {
+    test('with serviceArn new format', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const pseudo = new cdk.ScopedAws(stack);
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
       const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
-        serviceName: 'my-http-service',
+        serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-cluster-name/my-http-service',
         cluster,
       });
 
       // THEN
-      expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-cluster-name/my-http-service');
       expect(service.serviceName).toEqual('my-http-service');
 
+      expect(service.env.account).toEqual('123456789012');
+      expect(service.env.region).toEqual('us-west-2');
+    });
 
+    describe('with serviceArn tokenized ARN', () => {
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+        // WHEN
+        const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+          serviceArn: new cdk.CfnParameter(stack, 'ARN').valueAsString,
+          cluster,
+        });
+
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            1,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+
+        expect(stack.resolve(service.env.account)).toEqual({
+          'Fn::Select': [
+            4,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+        expect(stack.resolve(service.env.region)).toEqual({
+          'Fn::Select': [
+            3,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+      });
+
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format', () => {
+        // GIVEN
+        const app = new App({
+          context: {
+            [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
+          },
+        });
+        const stack = new cdk.Stack(app);
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+        // WHEN
+        const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+          serviceArn: new cdk.CfnParameter(stack, 'ARN').valueAsString,
+          cluster,
+        });
+
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
+        expect(stack.resolve(service.serviceName)).toEqual({
+          'Fn::Select': [
+            2,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::Select': [
+                    5,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        { Ref: 'ARN' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+
+        expect(stack.resolve(service.env.account)).toEqual({
+          'Fn::Select': [
+            4,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+        expect(stack.resolve(service.env.region)).toEqual({
+          'Fn::Select': [
+            3,
+            {
+              'Fn::Split': [
+                ':',
+                { Ref: 'ARN' },
+              ],
+            },
+          ],
+        });
+      });
+    });
+
+    describe('with serviceName', () => {
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is disabled, use old ARN format', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const pseudo = new cdk.ScopedAws(stack);
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+        // WHEN
+        const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+          serviceName: 'my-http-service',
+          cluster,
+        });
+
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+        expect(service.serviceName).toEqual('my-http-service');
+      });
+
+      test('when @aws-cdk/aws-ecs:arnFormatIncludesClusterName is enabled, use new ARN format', () => {
+        // GIVEN
+        const app = new App({
+          context: {
+            [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
+          },
+        });
+        const stack = new cdk.Stack(app);
+        const pseudo = new cdk.ScopedAws(stack);
+        const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+        // WHEN
+        const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+          serviceName: 'my-http-service',
+          cluster,
+        });
+
+        // THEN
+        expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/${cluster.clusterName}/my-http-service`));
+        expect(service.serviceName).toEqual('my-http-service');
+      });
     });
 
     test('throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes', () => {

@@ -205,6 +205,7 @@ describe('scaling', () => {
         namespace: 'Henk',
         dimensionsMap: { Mustache: 'Bushy' },
       }),
+      estimatedInstanceWarmup: cdk.Duration.seconds(150),
       // Adjust the number of legs to be closer to 2
       scalingSteps: [
         { lower: 0, upper: 2, change: +1 },
@@ -241,6 +242,7 @@ describe('scaling', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
       MetricAggregationType: 'Average',
       PolicyType: 'StepScaling',
+      EstimatedInstanceWarmup: 150,
       StepAdjustments: [
         {
           MetricIntervalUpperBound: 0,

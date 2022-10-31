@@ -8,8 +8,8 @@
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Construct",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "aws-stepfunctions-integ": {
@@ -187,7 +187,7 @@
                           {
                             "Ref": "CheckJob5FFC1D6F"
                           },
-                          "\"}},\"TimeoutSeconds\":300}"
+                          "\",\"Parameters\":{\"input.$\":\"$\",\"stringArgument\":\"inital-task\",\"numberArgument\":123,\"booleanArgument\":true,\"arrayArgument\":[\"a\",\"b\",\"c\"],\"jsonPath.$\":\"$.status\"}}},\"TimeoutSeconds\":300}"
                         ]
                       ]
                     }
@@ -208,28 +208,28 @@
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           },
           "Service-principalMap": {
             "id": "Service-principalMap",
             "path": "aws-stepfunctions-integ/Service-principalMap",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -92,10 +92,31 @@ export class Memory {
  * The code runtimes
  */
 export class Runtime {
+
+  /**
+   * CORRETTO 8
+   */
+  public static readonly CORRETTO_8 = Runtime.of('CORRETTO_8')
+
+  /**
+   * CORRETTO 11
+   */
+  public static readonly CORRETTO_11 = Runtime.of('CORRETTO_11')
+
   /**
    * NodeJS 12
    */
   public static readonly NODEJS_12 = Runtime.of('NODEJS_12')
+
+  /**
+   * NodeJS 14
+   */
+  public static readonly NODEJS_14 = Runtime.of('NODEJS_14')
+
+  /**
+   * NodeJS 16
+   */
+  public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
 
   /**
    * Python 3

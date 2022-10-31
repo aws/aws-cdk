@@ -128,13 +128,13 @@ You can use Amazon API Gateway with AWS Step Functions as the backend integratio
 
 The `StepFunctionsRestApi` only supports integration with Synchronous Express state machine. The `StepFunctionsRestApi` construct makes this easy by setting up input, output and error mapping.
 
-The construct sets up an API endpoint and maps the `ANY` HTTP method and any calls to the API endpoint starts an express workflow execution for the underlying state machine. 
+The construct sets up an API endpoint and maps the `ANY` HTTP method and any calls to the API endpoint starts an express workflow execution for the underlying state machine.
 
 Invoking the endpoint with any HTTP method (`GET`, `POST`, `PUT`, `DELETE`, ...) in the example below will send the request to the state machine as a new execution. On success, an HTTP code `200` is returned with the execution output as the Response Body.
 
 If the execution fails, an HTTP `500` response is returned with the `error` and `cause` from the execution output as the Response Body. If the request is invalid (ex. bad execution input) HTTP code `400` is returned.
 
-The response from the invocation contains only the `output` field from the 
+The response from the invocation contains only the `output` field from the
 [StartSyncExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartSyncExecution.html#API_StartSyncExecution_ResponseSyntax) API.
 In case of failures, the fields `error` and `cause` are returned as part of the response.
 Other metadata such as billing details, AWS account ID and resource ARNs are not returned in the API response.
@@ -154,7 +154,7 @@ const stateMachine: stepfunctions.IStateMachine = new stepfunctions.StateMachine
   definition: stateMachineDefinition,
   stateMachineType: stepfunctions.StateMachineType.EXPRESS,
 });
-    
+
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
   deploy: true,
   stateMachine: stateMachine,
@@ -172,7 +172,7 @@ AWS Step Functions will receive the request body in its input as follows:
 ```json
 {
   "body": {
-    "customerId": 1 
+    "customerId": 1
   },
   "path": "/",
   "querystring": {}
@@ -389,6 +389,22 @@ declare const lambdaFn: lambda.Function;
 importedKey.grantRead(lambdaFn);
 ```
 
+### Adding an API Key to an imported RestApi
+
+API Keys are added to ApiGateway Stages, not to the API itself. When you import a RestApi
+it does not have any information on the Stages that may be associated with it. Since adding an API
+Key requires a stage, you should instead add the Api Key to the imported Stage.
+
+```ts
+declare const restApi: apigateway.IRestApi;
+const importedStage = apigateway.Stage.fromStageAttributes(this, 'imported-stage', {
+  stageName: 'myStageName',
+  restApi,
+});
+
+importedStage.addApiKey('MyApiKey');
+```
+
 ### ⚠️ Multiple API Keys
 
 It is possible to specify multiple API keys for a given Usage Plan, by calling `usagePlan.addApiKey()`.
@@ -426,7 +442,7 @@ declare const api: apigateway.RestApi;
 
 const key = new apigateway.RateLimitedApiKey(this, 'rate-limited-api-key', {
   customerId: 'hello-customer',
-  resources: [api],
+  stages: [api.deploymentStage],
   quota: {
     limit: 10000,
     period: apigateway.Period.MONTH
@@ -724,7 +740,51 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 
 A full working example is shown below.
 
-[Full token authorizer example](test/authorizers/integ.token-authorizer.lit.ts).
+```ts
+import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { App, Stack } from '@aws-cdk/core';
+import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from '../../lib';
+
+/// !show
+const app = new App();
+const stack = new Stack(app, 'TokenAuthorizerInteg');
+
+const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
+});
+
+const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
+  handler: authorizerFn,
+});
+
+const restapi = new RestApi(stack, 'MyRestApi', {
+  cloudWatchRole: true,
+  defaultMethodOptions: {
+    authorizer,
+  },
+  defaultCorsPreflightOptions: {
+    allowOrigins: Cors.ALL_ORIGINS,
+  },
+});
+
+
+restapi.root.addMethod('ANY', new MockIntegration({
+  integrationResponses: [
+    { statusCode: '200' },
+  ],
+  passthroughBehavior: PassthroughBehavior.NEVER,
+  requestTemplates: {
+    'application/json': '{ "statusCode": 200 }',
+  },
+}), {
+  methodResponses: [
+    { statusCode: '200' },
+  ],
+});
+```
 
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
@@ -842,18 +902,29 @@ API.
 The following example will configure API Gateway to emit logs and data traces to
 AWS CloudWatch for all API calls:
 
-> By default, an IAM role will be created and associated with API Gateway to
-allow it to write logs and metrics to AWS CloudWatch unless `cloudWatchRole` is
-set to `false`.
+> Note: whether or not this is enabled or disabled by default is controlled by the
+`@aws-cdk/aws-apigateway:disableCloudWatchRole` feature flag. When this feature flag
+is set to `false` the default behavior will set `cloudWatchRole=true`
+
+This is controlled via the `@aws-cdk/aws-apigateway:disableCloudWatchRole` feature flag and
+is disabled by default. When enabled (or `@aws-cdk/aws-apigateway:disableCloudWatchRole=false`),
+an IAM role will be created and associated with API Gateway to allow it to write logs and metrics to AWS CloudWatch.
 
 ```ts
 const api = new apigateway.RestApi(this, 'books', {
+  cloudWatchRole: true,
   deployOptions: {
     loggingLevel: apigateway.MethodLoggingLevel.INFO,
     dataTraceEnabled: true
   }
 })
 ```
+
+> Note: there can only be a single apigateway.CfnAccount per AWS environment
+so if you create multiple `RestApi`s with `cloudWatchRole=true` each new `RestApi`
+will overwrite the `CfnAccount`. It is recommended to set `cloudWatchRole=false`
+(the default behavior if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled)
+and only create a single CloudWatch role and account per environment.
 
 ### Deep dive: Invalidation of deployments
 
@@ -939,8 +1010,8 @@ domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
 domain.addBasePathMapping(api2, { basePath: 'boom' });
 ```
 
-You can specify the API `Stage` to which this base path URL will map to. By default, this will be the
-`deploymentStage` of the `RestApi`.
+By default, the base path URL will map to the `deploymentStage` of the `RestApi`.
+You can specify a different API `Stage` to which the base path URL will map to.
 
 ```ts
 declare const domain: apigateway.DomainName;
@@ -955,6 +1026,19 @@ const betaStage = new apigateway.Stage(this, 'beta-stage', {
 domain.addBasePathMapping(restapi, { basePath: 'api/beta', stage: betaStage });
 ```
 
+It is possible to create a base path mapping without associating it with a
+stage by using the `attachToStage` property. When set to `false`, the stage must be
+included in the URL when invoking the API. For example,
+<https://example.com/myapi/prod> will invoke the stage named `prod` from the
+`myapi` base path mapping.
+
+```ts
+declare const domain: apigateway.DomainName;
+declare const api: apigateway.RestApi;
+
+domain.addBasePathMapping(api, { basePath: 'myapi', attachToStage: false });
+```
+
 If you don't specify `basePath`, all URLs under this domain will be mapped
 to the API, and you won't be able to map another API to the same domain:
 
@@ -966,6 +1050,23 @@ domain.addBasePathMapping(api);
 
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
+
+Base path mappings can also be created with the `BasePathMapping` resource.
+
+```ts
+declare const api: apigateway.RestApi;
+
+const domainName = apigateway.DomainName.fromDomainNameAttributes(this, 'DomainName', {
+  domainName: 'domainName',
+  domainNameAliasHostedZoneId: 'domainNameAliasHostedZoneId',
+  domainNameAliasTarget: 'domainNameAliasTarget',
+});
+
+new apigateway.BasePathMapping(this, 'BasePathMapping', {
+  domainName: domainName,
+  restApi: api,
+});
+```
 
 If you wish to setup this domain with an Amazon Route53 alias, use the `targets.ApiGatewayDomain`:
 
@@ -982,14 +1083,53 @@ new route53.ARecord(this, 'CustomDomainAliasRecord', {
 });
 ```
 
+### Custom Domains with multi-level api mapping
+
+Additional requirements for creating multi-level path mappings for RestApis:
+
+(both are defaults)
+
+- Must use `SecurityPolicy.TLS_1_2`
+- DomainNames must be `EndpointType.REGIONAL`
+
+```ts
+declare const acmCertificateForExampleCom: any;
+declare const restApi: apigateway.RestApi;
+
+new apigateway.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  mapping: restApi,
+  basePath: 'orders/v1/api',
+});
+```
+
+To then add additional mappings to a domain you can use the `addApiMapping` method.
+
+```ts
+declare const acmCertificateForExampleCom: any;
+declare const restApi: apigateway.RestApi;
+declare const secondRestApi: apigateway.RestApi;
+
+const domain = new apigateway.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  mapping: restApi,
+});
+
+domain.addApiMapping(secondRestApi.deploymentStage, {
+  basePath: 'orders/v2/api',
+});
+```
+
 ## Access Logging
 
 Access logging creates logs every time an API method is accessed. Access logs can have information on
 who has accessed the API, how the caller accessed the API and what responses were generated.
 Access logs are configured on a Stage of the RestApi.
 Access logs can be expressed in a format of your choosing, and can contain any access details, with a
-minimum that it must include the 'requestId'. The list of  variables that can be expressed in the access
-log can be found
+minimum that it must include either 'requestId' or 'extendedRequestId'. The list of  variables that
+can be expressed in the access log can be found
 [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference).
 Read more at [Setting Up CloudWatch API Logging in API
 Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
@@ -1000,9 +1140,9 @@ const prdLogGroup = new logs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
-    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields()
-  }
-})
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
+  },
+});
 const deployment = new apigateway.Deployment(this, 'Deployment', {api});
 
 // development stage
@@ -1019,8 +1159,8 @@ new apigateway.Stage(this, 'dev', {
     resourcePath: true,
     responseLength: true,
     status: true,
-    user: true
-  })
+    user: true,
+  }),
 });
 ```
 
@@ -1044,7 +1184,8 @@ new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.custom(
-      `${apigateway.AccessLogField.contextRequestId()} ${apigateway.AccessLogField.contextErrorMessage()} ${apigateway.AccessLogField.contextErrorMessageString()}`
+      `${apigateway.AccessLogField.contextRequestId()} ${apigateway.AccessLogField.contextErrorMessage()} ${apigateway.AccessLogField.contextErrorMessageString()}
+      ${apigateway.AccessLogField.contextAuthorizerError()} ${apigateway.AccessLogField.contextAuthorizerIntegrationStatus()}`
     )
   }
 });
@@ -1237,8 +1378,8 @@ api.addGatewayResponse('test-response', {
   type: apigateway.ResponseType.ACCESS_DENIED,
   statusCode: '500',
   responseHeaders: {
-    'Access-Control-Allow-Origin': "test.com",
-    'test-key': 'test-value'
+    'Access-Control-Allow-Origin': 'test.com',
+    'test-key': 'test-value',
   },
   templates: {
     'application/json': '{ "message": $context.error.messageString, "statusCode": "488", "type": "$context.error.responseType" }'
@@ -1305,13 +1446,19 @@ in your openApi file.
 ## Metrics
 
 The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
-These metrics can be referred to using the metric APIs available on the `RestApi` construct.
-The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
-the method below refers to the client side errors metric for this API.
+These metrics can be referred to using the metric APIs available on the `RestApi`, `Stage` and `Method` constructs.
+Note that detailed metrics must be enabled for a stage to use the `Method` metrics.
+Read more about [API Gateway metrics](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html), including enabling detailed metrics.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example:
 
 ```ts
 const api = new apigateway.RestApi(this, 'my-api');
-const clientErrorMetric = api.metricClientError();
+const stage = api.deploymentStage;
+const method = api.root.addMethod('GET');
+
+const clientErrorApiMetric = api.metricClientError();
+const serverErrorStageMetric = stage.metricServerError();
+const latencyMethodMetric = method.metricLatency(stage);
 ```
 
 ## APIGateway v2

@@ -12,7 +12,7 @@ const oai = new cloudfront.CfnCloudFrontOriginAccessIdentity(stack, 'OAI', {
   },
 });
 
-const oaiImported = cloudfront.OriginAccessIdentity.fromOriginAccessIdentityName(
+const oaiImported = cloudfront.OriginAccessIdentity.fromOriginAccessIdentityId(
   stack,
   'OAIImported',
   oai.ref,

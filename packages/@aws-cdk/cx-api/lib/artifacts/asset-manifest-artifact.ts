@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
@@ -38,7 +39,7 @@ export class AssetManifestArtifact extends CloudArtifact {
   /**
    * Version of bootstrap stack required to deploy this stack
    */
-  public readonly requiresBootstrapStackVersion: number;
+  public readonly requiresBootstrapStackVersion: number | undefined;
 
   /**
    * Name of SSM parameter with bootstrap stack version
@@ -46,6 +47,8 @@ export class AssetManifestArtifact extends CloudArtifact {
    * @default - Discover SSM parameter by reading stack
    */
   public readonly bootstrapStackVersionSsmParameter?: string;
+
+  private _contents?: cxschema.AssetManifest;
 
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, name, artifact);
@@ -55,9 +58,22 @@ export class AssetManifestArtifact extends CloudArtifact {
       throw new Error('Invalid AssetManifestArtifact. Missing "file" property');
     }
     this.file = path.resolve(this.assembly.directory, properties.file);
-    this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion ?? 1;
+    this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
     this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
   }
+
+  /**
+   * The Asset Manifest contents
+   */
+  public get contents(): cxschema.AssetManifest {
+    if (this._contents !== undefined) {
+      return this._contents;
+    }
+
+    const contents = this._contents = JSON.parse(fs.readFileSync(this.file, 'utf-8'));
+    return contents;
+  }
+
 }
 
 /**

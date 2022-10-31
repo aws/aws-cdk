@@ -50,9 +50,22 @@ export interface CfnIncludeProps {
    * If you include a parameter here with an ID that isn't in the template,
    * template creation will fail and an error will be thrown.
    *
-   * @default - no parameters will be replaced
+   * If you are importing a parameter from a live stack, we cannot know the value of that
+   * parameter. You will need to supply a value for your parameters, else the default
+   * value will be used.
+   *
+   * @default - parameters will retain their original definitions
    */
   readonly parameters?: { [parameterName: string]: any };
+
+  /**
+   * Specifies whether to allow cyclical references, effectively disregarding safeguards meant to avoid undeployable
+   * templates. This should only be set to true in the case of templates utilizing cloud transforms (e.g. SAM) that
+   * after processing the transform will no longer contain any circular references.
+   *
+   * @default - will throw an error on detecting any cyclical references
+   */
+  readonly allowCyclicalReferences?: boolean;
 }
 
 /**
@@ -95,9 +108,15 @@ export class CfnInclude extends core.CfnElement {
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
+  private readonly allowCyclicalReferences: boolean;
+  private logicalIdToPlaceholderMap: Map<string, string>;
 
   constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
+
+    this.allowCyclicalReferences = props.allowCyclicalReferences ?? false;
+
+    this.logicalIdToPlaceholderMap = new Map<string, string>();
 
     this.parametersToReplace = props.parameters || {};
 
@@ -580,29 +599,36 @@ export class CfnInclude extends core.CfnElement {
     return cfnCondition;
   }
 
+  private getPlaceholderID(): string {
+    return `Placeholder${this.logicalIdToPlaceholderMap.size}`;
+  }
+
   private getOrCreateResource(logicalId: string, cycleChain: string[] = []): core.CfnResource {
     cycleChain = cycleChain.concat([logicalId]);
     if (cycleChain.length !== new Set(cycleChain).size) {
-      throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+      if (!this.allowCyclicalReferences) {
+        throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+      }
+      //only allow one placeholder per logical id
+      if (this.logicalIdToPlaceholderMap.get(logicalId)) {
+        return this.resources[this.logicalIdToPlaceholderMap.get(logicalId)!];
+      }
+      let placeholderResourceAttributes: any = this.template.Resources[logicalId];
+      let placeholderId: string = this.getPlaceholderID();
+      this.logicalIdToPlaceholderMap.set(logicalId, placeholderId);
+      let placeholderInstance = new core.CfnResource(this, placeholderId, {
+        type: placeholderResourceAttributes.Type,
+        properties: {},
+      });
+      placeholderInstance.overrideLogicalId(placeholderId);
+      this.resources[placeholderId] = placeholderInstance;
+
+      return placeholderInstance;
     }
 
     const ret = this.resources[logicalId];
     if (ret) {
       return ret;
-    }
-
-    const resourceAttributes: any = this.template.Resources[logicalId];
-
-    // fail early for resource attributes we don't support yet
-    const knownAttributes = [
-      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
-      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
-    ];
-    for (const attribute of Object.keys(resourceAttributes)) {
-      if (!knownAttributes.includes(attribute)) {
-        throw new Error(`The '${attribute}' resource attribute is not supported by cloudformation-include yet. ` +
-          'Either remove it from the template, or use the CdkInclude class from the core package instead.');
-      }
     }
 
     const self = this;
@@ -635,6 +661,7 @@ export class CfnInclude extends core.CfnElement {
       parameters: this.parametersToReplace,
     });
 
+    const resourceAttributes: any = this.template.Resources[logicalId];
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
@@ -661,8 +688,31 @@ export class CfnInclude extends core.CfnElement {
       }
     }
 
+    /*
+    1. remove placeholder version of object created for cycle breaking
+    2. override logical id before deletion so references to the placeholder instead reference the original
+     */
+    if (this.logicalIdToPlaceholderMap.get(logicalId)) {
+      let placeholderId: string = this.logicalIdToPlaceholderMap.get(logicalId)!;
+      this.resources[placeholderId].overrideLogicalId(logicalId);
+      this.node.tryRemoveChild(placeholderId);
+      delete this.resources[placeholderId];
+    }
+
     this.overrideLogicalIdIfNeeded(l1Instance, logicalId);
     this.resources[logicalId] = l1Instance;
+
+    // handle any unknown attributes using overrides
+    const knownAttributes = [
+      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
+      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
+    ];
+    for (const [attrName, attrValue] of Object.entries(resourceAttributes)) {
+      if (!knownAttributes.includes(attrName)) {
+        l1Instance.addOverride(attrName, cfnParser.parseValue(attrValue));
+      }
+    }
+
     return l1Instance;
   }
 

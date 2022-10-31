@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-iotevents-actions/test/iot/integ.set-variable-action": {
+    "integ.set-variable-action": {
       "stacks": [
         "iotevents-set-variable-action-test-stack"
       ],

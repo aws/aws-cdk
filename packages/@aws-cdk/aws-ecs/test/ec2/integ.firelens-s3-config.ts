@@ -28,6 +28,7 @@ taskDefinition.addFirelensLogRouter('log_router', {
     options: {
       enableECSLogMetadata: false,
       configFileValue: `${asset.bucket.bucketArn}/${asset.s3ObjectKey}`,
+      configFileType: ecs.FirelensConfigFileType.S3,
     },
   },
   logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),

@@ -2,9 +2,7 @@ import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
-import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
 
 let stack = new Stack();
@@ -15,26 +13,8 @@ beforeEach(() => {
   vpc = new ec2.Vpc(stack, 'VPC');
 });
 
-testFutureBehavior(
-  'when @aws-cdk/aws-efs:defaultEncryptionAtRest is enabled, encryption is enabled by default',
-  { [cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST]: true },
-  App,
-  (app) => {
-    const customStack = new Stack(app);
-
-    const customVpc = new ec2.Vpc(customStack, 'VPC');
-    new FileSystem(customVpc, 'EfsFileSystem', {
-      vpc: customVpc,
-    });
-
-    Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-      Encrypted: true,
-    });
-
-  });
-
-testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, encryption is disabled by default', App, (app) => {
-  const customStack = new Stack(app);
+test('encryption is enabled by default', () => {
+  const customStack = new Stack();
 
   const customVpc = new ec2.Vpc(customStack, 'VPC');
   new FileSystem(customVpc, 'EfsFileSystem', {
@@ -42,9 +22,8 @@ testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, en
   });
 
   Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-    Encrypted: Match.absent(),
+    Encrypted: true,
   });
-
 });
 
 test('default file system is created correctly', () => {

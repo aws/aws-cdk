@@ -616,6 +616,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('preserves unknown resource attributes', () => {
+    includeTestTemplate(stack, 'non-existent-resource-attribute.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('non-existent-resource-attribute.json'),
+    );
+  });
+
   test("correctly handles referencing the ingested template's resources across Stacks", () => {
     // for cross-stack sharing to work, we need an App
     const app = new core.App();

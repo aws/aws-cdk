@@ -75,7 +75,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -344,7 +344,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -489,7 +489,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -539,7 +539,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
+     "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event.status === 'error') throw new Error('UnkownError');\n        return event;\n      };"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -570,6 +570,56 @@
    "Value": {
     "Ref": "ErrorD9F0B79D"
    }
+  },
+  "ExportsOutputRefFirst8D4707F1B3E37FDF": {
+   "Value": {
+    "Ref": "First8D4707F1"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-chain:ExportsOutputRefFirst8D4707F1B3E37FDF"
+   }
+  },
+  "ExportsOutputRefThird1125870FF05390B4": {
+   "Value": {
+    "Ref": "Third1125870F"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-chain:ExportsOutputRefThird1125870FF05390B4"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

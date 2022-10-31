@@ -487,6 +487,32 @@ describe('User Pool', () => {
     });
   });
 
+  test('can use same lambda as trigger for multiple user pools', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = fooFunction(stack, 'preSignUp');
+
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      lambdaTriggers: { preSignUp: fn },
+    });
+    new UserPool(stack, 'Pool2', {
+      lambdaTriggers: { preSignUp: fn },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::GetAtt': ['Pool1E3396DF1', 'Arn'],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::GetAtt': ['Pool28D850567', 'Arn'],
+      },
+    });
+  });
+
   test('fails when the same trigger is added twice', () => {
     // GIVEN
     const stack = new Stack();
@@ -1817,6 +1843,28 @@ test('device tracking is configured correctly', () => {
     DeviceConfiguration: {
       ChallengeRequiredOnNewDevice: true,
       DeviceOnlyRememberedOnUserPrompt: true,
+    },
+  });
+});
+
+test('keep original attrs is configured correctly', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    signInAliases: { username: true },
+    autoVerify: { email: true, phone: true },
+    keepOriginal: {
+      email: true,
+      phone: true,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserAttributeUpdateSettings: {
+      AttributesRequireVerificationBeforeUpdate: ['email', 'phone_number'],
     },
   });
 });

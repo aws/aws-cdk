@@ -207,9 +207,9 @@ export class Stack extends Construct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.region` when the stack is defined. This can
-   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.region`
+   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.REGION`
    *    token.
-   * 3. `Aws.region`, which is represents the CloudFormation intrinsic reference
+   * 3. `Aws.REGION`, which is represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::Region" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
@@ -229,9 +229,9 @@ export class Stack extends Construct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.account` when the stack is defined. This can
-   *    either be a concerete account (e.g. `585695031111`) or the
-   *    `Aws.accountId` token.
-   * 3. `Aws.accountId`, which represents the CloudFormation intrinsic reference
+   *    either be a concrete account (e.g. `585695031111`) or the
+   *    `Aws.ACCOUNT_ID` token.
+   * 3. `Aws.ACCOUNT_ID`, which represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::AccountId" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
@@ -254,7 +254,7 @@ export class Stack extends Construct implements ITaggable {
    * environment.
    *
    * If either `stack.account` or `stack.region` are not concrete values (e.g.
-   * `Aws.account` or `Aws.region`) the special strings `unknown-account` and/or
+   * `Aws.ACCOUNT_ID` or `Aws.REGION`) the special strings `unknown-account` and/or
    * `unknown-region` will be used respectively to indicate this stack is
    * region/account-agnostic.
    */
@@ -501,7 +501,7 @@ export class Stack extends Construct implements ITaggable {
    * scheme based on the construct path to ensure uniqueness.
    *
    * If you wish to obtain the deploy-time AWS::StackName intrinsic,
-   * you can use `Aws.stackName` directly.
+   * you can use `Aws.STACK_NAME` directly.
    */
   public get stackName(): string {
     return this._stackName;
@@ -511,10 +511,15 @@ export class Stack extends Construct implements ITaggable {
    * The partition in which this stack is defined
    */
   public get partition(): string {
-    // Always return a non-scoped partition intrinsic. These will usually
-    // be used to construct an ARN, but there are no cross-partition
-    // calls anyway.
-    return Aws.PARTITION;
+    // Return a non-scoped partition intrinsic when the stack's region is
+    // unresolved or unknown.  Otherwise we will return the partition name as
+    // a literal string.
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ENABLE_PARTITION_LITERALS) || Token.isUnresolved(this.region)) {
+      return Aws.PARTITION;
+    } else {
+      const partition = RegionInfo.get(this.region).partition;
+      return partition ?? Aws.PARTITION;
+    }
   }
 
   /**
@@ -561,7 +566,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * The ARN will be formatted as follows:
    *
-   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
    *
    * The required ARN pieces that are omitted will be taken from the stack that
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
@@ -723,6 +728,19 @@ export class Stack extends Construct implements ITaggable {
       this.templateOptions.transforms = [];
     }
     this.templateOptions.transforms.push(transform);
+  }
+
+  /**
+   * Adds an arbitary key-value pair, with information you want to record about the stack.
+   * These get translated to the Metadata section of the generated template.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   */
+  public addMetadata(key: string, value: any) {
+    if (!this.templateOptions.metadata) {
+      this.templateOptions.metadata = {};
+    }
+    this.templateOptions.metadata[key] = value;
   }
 
   /**
@@ -1166,12 +1184,11 @@ export class Stack extends Construct implements ITaggable {
    * Indicates whether the stack requires bundling or not
    */
   public get bundlingRequired() {
-    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['**'];
 
-    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
     return bundlingStacks.some(pattern => minimatch(
-      this.stackName,
-      pattern.replace('/', '-'),
+      this.node.path, // use the same value for pattern matching as the aws-cdk CLI (displayName / hierarchicalId)
+      pattern,
     ));
   }
 }
@@ -1315,7 +1332,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  */
 function makeStackName(components: string[]) {
   if (components.length === 1) { return components[0]; }
-  return makeUniqueId(components);
+  return makeUniqueResourceName(components, { maxLength: 128 });
 }
 
 function getCreateExportsScope(stack: Stack) {
@@ -1388,4 +1405,5 @@ import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
+import { makeUniqueResourceName } from './private/unique-resource-name';
 

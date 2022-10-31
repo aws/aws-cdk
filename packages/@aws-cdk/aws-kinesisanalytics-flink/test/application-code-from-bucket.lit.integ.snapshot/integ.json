@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-kinesisanalytics-flink/test/integ.application-code-from-bucket.lit": {
+    "integ.application-code-from-bucket.lit": {
       "stacks": [
         "FlinkAppCodeFromBucketTest"
       ],

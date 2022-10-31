@@ -123,8 +123,15 @@ export abstract class Resource extends Construct implements IResource {
   /**
    * Check whether the given construct is a Resource
    */
-  public static isResource(construct: IConstruct): construct is CfnResource {
+  public static isResource(construct: IConstruct): construct is Resource {
     return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
+  }
+
+  /**
+   * Returns true if the construct was created by CDK, and false otherwise
+   */
+  public static isOwnedResource(construct: IConstruct): boolean {
+    return construct.node.defaultChild ? CfnResource.isCfnResource(construct.node.defaultChild) : false;
   }
 
   public readonly stack: Stack;

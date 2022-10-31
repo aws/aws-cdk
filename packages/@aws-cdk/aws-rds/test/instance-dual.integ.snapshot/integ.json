@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "instance-dual-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-dual-integ"
+      ],
+      "assertionStack": "instance-dual-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancedualtestDefaultTestDeployAssertD87FA35D"
+    }
+  }
+}

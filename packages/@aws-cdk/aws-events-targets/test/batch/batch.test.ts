@@ -237,4 +237,56 @@ describe('Batch job event target', () => {
       ],
     });
   });
+
+  test('specifying retry policy with 0 retryAttempts', () => {
+    // GIVEN
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 hour)'),
+    });
+
+    // WHEN
+    const eventInput = {
+      buildspecOverride: 'buildspecs/hourly.yml',
+    };
+
+    rule.addTarget(new targets.BatchJob(
+      jobQueue.jobQueueArn,
+      jobQueue,
+      jobDefinition.jobDefinitionArn,
+      jobDefinition, {
+        event: events.RuleTargetInput.fromObject(eventInput),
+        retryAttempts: 0,
+      },
+    ));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      ScheduleExpression: 'rate(1 hour)',
+      State: 'ENABLED',
+      Targets: [
+        {
+          Arn: {
+            Ref: 'MyQueueE6CA6235',
+          },
+          BatchParameters: {
+            JobDefinition: {
+              Ref: 'MyJob8719E923',
+            },
+            JobName: 'Rule',
+          },
+          Id: 'Target0',
+          Input: JSON.stringify(eventInput),
+          RetryPolicy: {
+            MaximumRetryAttempts: 0,
+          },
+          RoleArn: {
+            'Fn::GetAtt': [
+              'MyJobEventsRoleCF43C336',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    });
+  });
 });

@@ -37,7 +37,7 @@ export interface AttributionsProps {
    *
    */
   readonly allowedLicenses: string[];
-   /**
+  /**
    * Dependencies matching this pattern will be excluded from attribution.
    *
    * @default - no exclusions.

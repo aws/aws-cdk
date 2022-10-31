@@ -81,6 +81,16 @@ new lambda.DockerImageFunction(this, 'ECRFunction', {
 The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
 configurations as well as choosing a specific tag or digest. See their docs for more information.
 
+To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
+This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
+
+```ts
+new DockerImageFunction(this, 'AssetFunction', {
+  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
+  architecture: Architecture.ARM_64,
+});
+```
+
 ## Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda
@@ -105,7 +115,7 @@ it appropriate permissions:
 
 ```ts
 const myRole = new iam.Role(this, 'My Role', {
-  assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -619,6 +629,26 @@ const bucket = new s3.Bucket(this, 'Bucket');
 fn.addEventSource(new eventsources.S3EventSource(bucket, {
   events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
   filters: [ { prefix: 'subdir/' } ] // optional
+}));
+```
+
+The following code adds an DynamoDB notification as an event source filtering insert events:
+
+```ts
+import * as eventsources from '@aws-cdk/aws-lambda-event-sources';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+declare const fn: lambda.Function;
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  stream: dynamodb.StreamViewType.NEW_IMAGE,
+});
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [{ eventName: lambda.FilterRule.isEqual('INSERT') }],
 }));
 ```
 

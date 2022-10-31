@@ -12,7 +12,10 @@ export class LambdaFunctionAction implements iot.IAction {
    */
   constructor(private readonly func: lambda.IFunction) {}
 
-  bind(topicRule: iot.ITopicRule): iot.ActionConfig {
+  /**
+   * @internal
+   */
+  public _bind(topicRule: iot.ITopicRule): iot.ActionConfig {
     this.func.addPermission(`${Names.nodeUniqueId(topicRule.node)}:IotLambdaFunctionAction`, {
       action: 'lambda:InvokeFunction',
       principal: new iam.ServicePrincipal('iot.amazonaws.com'),

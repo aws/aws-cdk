@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.0.9"
+          "version": "10.1.123"
         }
       },
       "integ-user-pool": {
@@ -91,33 +91,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              },
-              "CreateAuthChallengeCognito": {
-                "id": "CreateAuthChallengeCognito",
-                "path": "integ-user-pool/createAuthChallenge/CreateAuthChallengeCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "createAuthChallengeB185B225",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
@@ -204,33 +177,6 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
                   "version": "0.0.0"
                 }
-              },
-              "CustomMessageCognito": {
-                "id": "CustomMessageCognito",
-                "path": "integ-user-pool/customMessage/CustomMessageCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "customMessage52BA91E2",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -313,33 +259,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              },
-              "DefineAuthChallengeCognito": {
-                "id": "DefineAuthChallengeCognito",
-                "path": "integ-user-pool/defineAuthChallenge/DefineAuthChallengeCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "defineAuthChallengeAE7BCDA1",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
@@ -426,33 +345,6 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
                   "version": "0.0.0"
                 }
-              },
-              "PostAuthenticationCognito": {
-                "id": "PostAuthenticationCognito",
-                "path": "integ-user-pool/postAuthentication/PostAuthenticationCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "postAuthentication741BD8E3",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -535,33 +427,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              },
-              "PostConfirmationCognito": {
-                "id": "PostConfirmationCognito",
-                "path": "integ-user-pool/postConfirmation/PostConfirmationCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "postConfirmationD5E3F1DD",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
@@ -648,33 +513,6 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
                   "version": "0.0.0"
                 }
-              },
-              "PreAuthenticationCognito": {
-                "id": "PreAuthenticationCognito",
-                "path": "integ-user-pool/preAuthentication/PreAuthenticationCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "preAuthentication56F78C81",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -757,33 +595,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              },
-              "PreSignUpCognito": {
-                "id": "PreSignUpCognito",
-                "path": "integ-user-pool/preSignUp/PreSignUpCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "preSignUp1934B27C",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
@@ -870,33 +681,6 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
                   "version": "0.0.0"
                 }
-              },
-              "PreTokenGenerationCognito": {
-                "id": "PreTokenGenerationCognito",
-                "path": "integ-user-pool/preTokenGeneration/PreTokenGenerationCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "preTokenGeneration1E968302",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -979,33 +763,6 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              },
-              "UserMigrationCognito": {
-                "id": "UserMigrationCognito",
-                "path": "integ-user-pool/userMigration/UserMigrationCognito",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "userMigrationAAA960EC",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "cognito-idp.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "myuserpool01998219",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
@@ -1092,10 +849,263 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
                   "version": "0.0.0"
                 }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "myuserpool": {
+            "id": "myuserpool",
+            "path": "integ-user-pool/myuserpool",
+            "children": {
+              "CreateAuthChallengeCognito": {
+                "id": "CreateAuthChallengeCognito",
+                "path": "integ-user-pool/myuserpool/CreateAuthChallengeCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "createAuthChallengeB185B225",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "CustomMessageCognito": {
+                "id": "CustomMessageCognito",
+                "path": "integ-user-pool/myuserpool/CustomMessageCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "customMessage52BA91E2",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "DefineAuthChallengeCognito": {
+                "id": "DefineAuthChallengeCognito",
+                "path": "integ-user-pool/myuserpool/DefineAuthChallengeCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "defineAuthChallengeAE7BCDA1",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "PostAuthenticationCognito": {
+                "id": "PostAuthenticationCognito",
+                "path": "integ-user-pool/myuserpool/PostAuthenticationCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "postAuthentication741BD8E3",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "PostConfirmationCognito": {
+                "id": "PostConfirmationCognito",
+                "path": "integ-user-pool/myuserpool/PostConfirmationCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "postConfirmationD5E3F1DD",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "PreAuthenticationCognito": {
+                "id": "PreAuthenticationCognito",
+                "path": "integ-user-pool/myuserpool/PreAuthenticationCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "preAuthentication56F78C81",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "PreSignUpCognito": {
+                "id": "PreSignUpCognito",
+                "path": "integ-user-pool/myuserpool/PreSignUpCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "preSignUp1934B27C",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "PreTokenGenerationCognito": {
+                "id": "PreTokenGenerationCognito",
+                "path": "integ-user-pool/myuserpool/PreTokenGenerationCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "preTokenGeneration1E968302",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "UserMigrationCognito": {
+                "id": "UserMigrationCognito",
+                "path": "integ-user-pool/myuserpool/UserMigrationCognito",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "userMigrationAAA960EC",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "cognito-idp.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "myuserpool01998219",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
               },
               "VerifyAuthChallengeResponseCognito": {
                 "id": "VerifyAuthChallengeResponseCognito",
-                "path": "integ-user-pool/verifyAuthChallengeResponse/VerifyAuthChallengeResponseCognito",
+                "path": "integ-user-pool/myuserpool/VerifyAuthChallengeResponseCognito",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -1119,17 +1129,7 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnPermission",
                   "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "myuserpool": {
-            "id": "myuserpool",
-            "path": "integ-user-pool/myuserpool",
-            "children": {
+              },
               "smsRole": {
                 "id": "smsRole",
                 "path": "integ-user-pool/myuserpool/smsRole",
@@ -1350,6 +1350,12 @@
                       }
                     },
                     "smsVerificationMessage": "verification sms message from the integ test. Code is {####}.",
+                    "userAttributeUpdateSettings": {
+                      "attributesRequireVerificationBeforeUpdate": [
+                        "email",
+                        "phone_number"
+                      ]
+                    },
                     "userPoolName": "MyUserPool",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",

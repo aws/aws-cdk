@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "import-default-vpc/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-import"
+      ],
+      "assertionStack": "import-default-vpc/DefaultTest/DeployAssert"
+    }
+  }
+}

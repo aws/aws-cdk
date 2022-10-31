@@ -118,7 +118,7 @@ export class CfnReference extends Reference {
   private readonly replacementTokens: Map<Stack, IResolvable>;
   private readonly targetStack: Stack;
 
-  protected constructor(value: any, displayName: string, target: IConstruct) {
+  protected constructor(value: any, displayName: string, public readonly target: IConstruct) {
     // prepend scope path to display name
     super(value, target, displayName);
 

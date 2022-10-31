@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-autoscaling/test/integ.spot-instances": {
+    "integ.spot-instances": {
       "stacks": [
         "aws-cdk-autoscaling-integ"
       ],

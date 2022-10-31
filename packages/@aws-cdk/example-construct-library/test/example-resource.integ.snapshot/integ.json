@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "example-construct-library/test/integ.example-resource": {
+    "integ.example-resource": {
       "stacks": [
         "ExampleResourceIntegTestStack"
       ],

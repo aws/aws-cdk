@@ -1,5 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as apigw from '../lib';
 
@@ -25,6 +26,7 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
 
     const api = new apigw.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
       deploy: false,
+      cloudWatchRole: true,
       stateMachine: stateMachine,
       headers: true,
       path: false,
@@ -48,5 +50,9 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new StepFunctionsRestApiDeploymentStack(app);
+const testCase = new StepFunctionsRestApiDeploymentStack(app);
+
+new IntegTest(app, 'step-functions-restapi', {
+  testCases: [testCase],
+});
 app.synth();

@@ -215,6 +215,31 @@ describe('IAM policy statement', () => {
       .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
   });
 
+  test('throws error when an invalid \'Action\' or \'NotAction\' is added', () => {
+    const policyStatement = new PolicyStatement();
+    const invalidAction = 'xyz';
+    expect(() => policyStatement.addActions(invalidAction))
+      .toThrow(`Action '${invalidAction}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+    expect(() => policyStatement.addNotActions(invalidAction))
+      .toThrow(`Action '${invalidAction}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+  });
+
+  test('multiple identical entries render to a scalar (instead of a singleton list)', () => {
+    const stack = new Stack();
+    const policyStatement = new PolicyStatement({
+      actions: ['aws:Action'],
+    });
+
+    policyStatement.addResources('asdf');
+    policyStatement.addResources('asdf');
+    policyStatement.addResources('asdf');
+
+    expect(stack.resolve(policyStatement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: 'aws:Action',
+      Resource: 'asdf',
+    });
+  });
 
   test('a frozen policy statement cannot be modified any more', () => {
     // GIVEN

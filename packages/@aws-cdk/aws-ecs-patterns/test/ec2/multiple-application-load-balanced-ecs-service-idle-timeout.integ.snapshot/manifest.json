@@ -1,0 +1,525 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-ecs-integ-alb-idle-timeout.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ-alb-idle-timeout.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-integ-alb-idle-timeout": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ-alb-idle-timeout.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a389d7e9f2a0c88704abdc26f4d459304fb00ac5e25b50f81ebb1e0c39670def.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ-alb-idle-timeout.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-integ-alb-idle-timeout.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbidletimeoutmyServicelbSecurityGroupDA02006B:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbidletimeoutmyServicelbSecurityGroupDA02006B327686553535B38FF6"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbidletimeoutmyServicelb2SecurityGroupE659E2B0:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbidletimeoutmyServicelb2SecurityGroupE659E2B032768655353074D3D1"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupASG0F98E147"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegalbidletimeoutClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicB6B50466": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicB6B50466A7AEB964"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb360A9ADD"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelbSecurityGroup97C897CA"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb/SecurityGroup/to awsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelbSecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE3276865535B06FECE0"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelblistener1D7944F2"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb80Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb90Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb90Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelblistenerECSTargetGroupweb90Rule68215E8D"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/DNSlb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceDNSlb1E167074"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/LoadBalancerDNSlb": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceLoadBalancerDNSlbDE816AD2"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/ServiceURLlbhttps": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceServiceURLlbhttps4348F098"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2C84C7BCB"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2SecurityGroupEB00B5B9"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb2/SecurityGroup/to awsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE:32768-65535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2SecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE32768655351C694EBD"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb2/listener2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2AA6970EB"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb2/listener2/ECSTargetGroupweb443Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2ECSTargetGroupweb443Group8FAB1268"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb2/listener2/ECSTargetGroupweb80Group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb2/listener2/ECSTargetGroupweb80Rule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2listener2ECSTargetGroupweb80Rule2490715C"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/DNSlb2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceDNSlb2811DE909"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/LoadBalancerDNSlb2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceLoadBalancerDNSlb2DDCE46C8"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/ServiceURLlb2https": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceServiceURLlb2https8BC76F76"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefTaskRole1C1DE6CC"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDef7FB8322A"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefwebLogGroupA1767F2C"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefExecutionRole618CD311"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceB0B6FAA0"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ-alb-idle-timeout"
+    },
+    "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0.assets"
+      ],
+      "metadata": {
+        "/multiAlbEcsEc2Test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/multiAlbEcsEc2Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "multiAlbEcsEc2Test/DefaultTest/DeployAssert"
+    }
+  }
+}

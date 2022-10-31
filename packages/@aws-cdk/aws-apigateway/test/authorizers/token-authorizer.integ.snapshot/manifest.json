@@ -1,0 +1,262 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "TokenAuthorizerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TokenAuthorizerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TokenAuthorizerInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TokenAuthorizerInteg.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d48b90b340d35b9bc726b78e652d17148e2449f6f756e4377428635071f68d09.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TokenAuthorizerInteg.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TokenAuthorizerInteg.assets"
+      ],
+      "metadata": {
+        "/TokenAuthorizerInteg/MyAuthorizerFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionServiceRole8A34C19E"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyAuthorizerFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunction70F1223E"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyAuthorizerFunction/TokenAuthorizerIntegMyAuthorizer793B1D5F:Permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAuthorizer6575980E"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApi2D1F47A9"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiCloudWatchRoleD4042E8E"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiAccount2FB6DB7A"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentB555B582464879c8d1f9fcce2500f142532cdaec"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentStageprodC33B8E5F"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiOPTIONS43BD7BF4"
+          }
+        ],
+        "/TokenAuthorizerInteg/MyRestApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiANY05143F93"
+          }
+        ],
+        "/TokenAuthorizerInteg/InvokeFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvokeFunctionServiceRole3B980FD2"
+          }
+        ],
+        "/TokenAuthorizerInteg/InvokeFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvokeFunctionC517E46D"
+          }
+        ],
+        "/TokenAuthorizerInteg/Exports/Output{\"Ref\":\"InvokeFunctionC517E46D\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefInvokeFunctionC517E46D32C855B5"
+          }
+        ],
+        "/TokenAuthorizerInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TokenAuthorizerInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TokenAuthorizerInteg"
+    },
+    "apigwtokenauthDefaultTestDeployAssert2CF60E05.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigwtokenauthDefaultTestDeployAssert2CF60E05.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigwtokenauthDefaultTestDeployAssert2CF60E05": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigwtokenauthDefaultTestDeployAssert2CF60E05.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/663a8c1a16f9e427d0ecfe2215cb471b582dfce87e95f6bbf85d32c371692ece.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigwtokenauthDefaultTestDeployAssert2CF60E05.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TokenAuthorizerInteg",
+        "apigwtokenauthDefaultTestDeployAssert2CF60E05.assets"
+      ],
+      "metadata": {
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke3deec958b1e945795e38da5fc2f86753"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke3deec958b1e945795e38da5fc2f86753InvokeCB0E5D28"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke3deec958b1e945795e38da5fc2f86753"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8e1b9f979f2329abf1ed6574d33d391aInvokeCCB91944"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke8e1b9f979f2329abf1ed6574d33d391a"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke0532e3d95b2a56b147278c621e5800c4"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke0532e3d95b2a56b147278c621e5800c4Invoke73472D9F"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke0532e3d95b2a56b147278c621e5800c4"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigw-token-auth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigw-token-auth/DefaultTest/DeployAssert"
+    }
+  }
+}

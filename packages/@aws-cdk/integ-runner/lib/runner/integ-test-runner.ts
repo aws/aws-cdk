@@ -3,7 +3,7 @@ import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { DeployOptions, DestroyOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import * as logger from '../logger';
-import { chain, exec } from '../utils';
+import { chunks, exec } from '../utils';
 import { DestructiveChange, AssertionResults, AssertionResult } from '../workers/common';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 
@@ -48,6 +48,13 @@ export interface RunOptions {
    * @default true
    */
   readonly updateWorkflow?: boolean;
+
+  /**
+   * The level of verbosity for logging.
+   *
+   * @default 0
+   */
+  readonly verbosity?: number;
 }
 
 /**
@@ -148,6 +155,11 @@ export class IntegTestRunner extends IntegRunner {
     const clean = options.clean ?? true;
     const updateWorkflowEnabled = (options.updateWorkflow ?? true)
       && (actualTestCase.stackUpdateWorkflow ?? true);
+    const enableForVerbosityLevel = (needed = 1) => {
+      const verbosity = options.verbosity ?? 0;
+      return (verbosity >= needed) ? true : undefined;
+    };
+
     try {
       if (!options.dryRun && (actualTestCase.cdkCommandOptions?.deploy?.enabled ?? true)) {
         assertionResults = this.deploy(
@@ -155,6 +167,8 @@ export class IntegTestRunner extends IntegRunner {
             ...this.defaultArgs,
             profile: this.profile,
             requireApproval: RequireApproval.NEVER,
+            verbose: enableForVerbosityLevel(3),
+            debug: enableForVerbosityLevel(4),
           },
           updateWorkflowEnabled,
           options.testCaseName,
@@ -162,7 +176,9 @@ export class IntegTestRunner extends IntegRunner {
       } else {
         const env: Record<string, any> = {
           ...DEFAULT_SYNTH_OPTIONS.env,
-          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext({
+            ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
+          })),
         };
         this.cdk.synthFast({
           execCmd: this.cdkApp.split(' '),
@@ -170,9 +186,9 @@ export class IntegTestRunner extends IntegRunner {
           output: path.relative(this.directory, this.cdkOutDir),
         });
       }
-      // only create the snapshot if there are no assertion assertion results
+      // only create the snapshot if there are no failed assertion results
       // (i.e. no failures)
-      if (!assertionResults) {
+      if (!assertionResults || !Object.values(assertionResults).some(result => result.status === 'fail')) {
         this.createSnapshot();
       }
     } catch (e) {
@@ -189,6 +205,8 @@ export class IntegTestRunner extends IntegRunner {
             output: path.relative(this.directory, this.cdkOutDir),
             ...actualTestCase.cdkCommandOptions?.destroy?.args,
             context: this.getContext(actualTestCase.cdkCommandOptions?.destroy?.args?.context),
+            verbose: enableForVerbosityLevel(3),
+            debug: enableForVerbosityLevel(4),
           });
         }
       }
@@ -204,8 +222,10 @@ export class IntegTestRunner extends IntegRunner {
     const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     try {
       if (actualTestCase.hooks?.preDestroy) {
-        exec([chain(actualTestCase.hooks.preDestroy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.preDestroy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
       this.cdk.destroy({
@@ -213,8 +233,10 @@ export class IntegTestRunner extends IntegRunner {
       });
 
       if (actualTestCase.hooks?.postDestroy) {
-        exec([chain(actualTestCase.hooks.postDestroy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.postDestroy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
     } catch (e) {
@@ -237,8 +259,10 @@ export class IntegTestRunner extends IntegRunner {
     const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     try {
       if (actualTestCase.hooks?.preDeploy) {
-        exec([chain(actualTestCase.hooks?.preDeploy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.preDeploy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
       // if the update workflow is not disabled, first
@@ -279,14 +303,17 @@ export class IntegTestRunner extends IntegRunner {
       });
 
       if (actualTestCase.hooks?.postDeploy) {
-        exec([chain(actualTestCase.hooks?.postDeploy)], {
-          cwd: path.dirname(this.snapshotDir),
+        actualTestCase.hooks.postDeploy.forEach(cmd => {
+          exec(chunks(cmd), {
+            cwd: path.dirname(this.snapshotDir),
+          });
         });
       }
 
-      if (actualTestCase.assertionStack) {
+      if (actualTestCase.assertionStack && actualTestCase.assertionStackName) {
         return this.processAssertionResults(
           path.join(this.cdkOutDir, 'assertion-results.json'),
+          actualTestCase.assertionStackName,
           actualTestCase.assertionStack,
         );
       }
@@ -303,17 +330,17 @@ export class IntegTestRunner extends IntegRunner {
    * Process the outputsFile which contains the assertions results as stack
    * outputs
    */
-  private processAssertionResults(file: string, assertionStackId: string): AssertionResults | undefined {
+  private processAssertionResults(file: string, assertionStackName: string, assertionStackId: string): AssertionResults | undefined {
     const results: AssertionResults = {};
     if (fs.existsSync(file)) {
       try {
         const outputs: { [key: string]: { [key: string]: string } } = fs.readJSONSync(file);
 
-        if (assertionStackId in outputs) {
-          for (const [assertionId, result] of Object.entries(outputs[assertionStackId])) {
+        if (assertionStackName in outputs) {
+          for (const [assertionId, result] of Object.entries(outputs[assertionStackName])) {
             if (assertionId.startsWith('AssertionResults')) {
               const assertionResult: AssertionResult = JSON.parse(result.replace(/\n/g, '\\n'));
-              if (assertionResult.status === 'fail') {
+              if (assertionResult.status === 'fail' || assertionResult.status === 'success') {
                 results[assertionId] = assertionResult;
               }
             }

@@ -80,18 +80,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/lambda-layer-kubectl-v23": "^2.0.0",
+    "aws-cdk-lib": "2.47.0",
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.99",
+    "@types/aws-lambda": "^8.10.108",
     "@types/jest": "^27.5.2",
     "@types/sinon": "^9.0.11",
     "@types/yaml": "1.9.6",
-    "aws-sdk": "^2.848.0",
-    "cdk8s": "^1.6.21",
-    "cdk8s-plus-21": "^1.0.0-beta.186",
+    "aws-sdk": "^2.1211.0",
+    "cdk8s": "^2.5.28",
+    "cdk8s-plus-21": "^2.0.0-beta.12",
+    "cdk8s-plus-23": "2.0.2",
     "jest": "^27.5.1",
     "sinon": "^9.2.4"
   },
@@ -109,9 +113,11 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "constructs": "^10.0.0",
+    "semver": "^7.3.8",
     "yaml": "1.10.2"
   },
   "bundledDependencies": [
+    "semver",
     "yaml"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
@@ -139,7 +145,9 @@
       "props-physical-name:@aws-cdk/aws-eks.OpenIdConnectProviderProps",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterKubernetesNetworkConfigServiceIpv6Cidr",
       "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterKubernetesNetworkConfigServiceIpv6Cidr",
-      "resource-attribute:@aws-cdk/aws-eks.Nodegroup.nodegroupId"
+      "resource-attribute:@aws-cdk/aws-eks.Nodegroup.nodegroupId",
+      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterId",
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterId"
     ]
   },
   "stability": "stable",

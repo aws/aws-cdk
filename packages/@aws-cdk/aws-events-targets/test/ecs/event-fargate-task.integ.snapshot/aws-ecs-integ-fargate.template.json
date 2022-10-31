@@ -117,7 +117,11 @@
       "Value": "aws-ecs-integ-fargate/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ]
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -213,6 +217,50 @@
   "EcsCluster97242B84": {
    "Type": "AWS::ECS::Cluster"
   },
+  "MyDeadLetterQueueD997968A": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyDeadLetterQueuePolicyCC35D52C": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Rule4C995B7F",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventRuleawsecsintegfargateRule16FD584B"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "MyDeadLetterQueueD997968A"
+     }
+    ]
+   }
+  },
   "TaskDefTaskRole1EDB4A67": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -237,23 +285,7 @@
      {
       "Essential": true,
       "Image": {
-       "Fn::Join": [
-        "",
-        [
-         {
-          "Ref": "AWS::AccountId"
-         },
-         ".dkr.ecr.",
-         {
-          "Ref": "AWS::Region"
-         },
-         ".",
-         {
-          "Ref": "AWS::URLSuffix"
-         },
-         "/aws-cdk/assets:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
-        ]
-       ]
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -341,7 +373,10 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":repository/aws-cdk/assets"
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
          ]
         ]
        }
@@ -472,6 +507,14 @@
         "Arn"
        ]
       },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "MyDeadLetterQueueD997968A",
+         "Arn"
+        ]
+       }
+      },
       "EcsParameters": {
        "LaunchType": "FARGATE",
        "NetworkConfiguration": {
@@ -508,6 +551,40 @@
      }
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
-    "@aws-cdk/aws-eks/test/integ.alb-controller": {
+    "aws-cdk-cluster-alb-controller/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-cluster-alb-controller-test"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": false
+      "assertionStack": "aws-cdk-cluster-alb-controller/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkclusteralbcontrollerDefaultTestDeployAssert78AE94CA"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

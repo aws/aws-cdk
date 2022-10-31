@@ -1,7 +1,7 @@
 {
-  "version": "18.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "aws-cloudwatch/test/integ.alarm-and-dashboard": {
+    "integ.alarm-and-dashboard": {
       "stacks": [
         "aws-cdk-cloudwatch-alarms"
       ],
