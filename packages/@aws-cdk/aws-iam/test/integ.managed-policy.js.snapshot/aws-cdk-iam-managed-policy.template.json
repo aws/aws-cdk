@@ -31,6 +31,16 @@
        "Action": "sqs:SendMessage",
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Role1ABCC5F0",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -60,6 +70,23 @@
     },
     "Description": "",
     "Path": "/"
+   }
+  },
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
    }
   }
  },

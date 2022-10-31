@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { Grant, Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -608,6 +608,32 @@ describe('managed policy', () => {
                 ':iam::1234:policy/mystackmystackpolicy17395e221b1b6deaf875',
               ],
             ],
+          },
+        },
+      },
+    });
+  });
+
+  test('can be passed as a grantee to Grant.addToPrincipal', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+    Grant.addToPrincipal({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'] });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        Policy23B91518: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            ManagedPolicyName: 'MyManagedPolicyName',
+            PolicyDocument: {
+              Statement: [
+                { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+              ],
+              Version: '2012-10-17',
+            },
+            Path: '/',
+            Description: '',
           },
         },
       },

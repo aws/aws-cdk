@@ -7,7 +7,7 @@ import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, IComparablePrincipal } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, IComparablePrincipal, IGrantable } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
@@ -493,7 +493,7 @@ export class Role extends Resource implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(grantee: IPrincipal, ...actions: string[]) {
+  public grant(grantee: IGrantable, ...actions: string[]) {
     return Grant.addToPrincipal({
       grantee,
       actions,
@@ -505,14 +505,14 @@ export class Role extends Resource implements IRole {
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  public grantPassRole(identity: IPrincipal) {
+  public grantPassRole(identity: IGrantable) {
     return this.grant(identity, 'iam:PassRole');
   }
 
   /**
    * Grant permissions to the given principal to assume this role.
    */
-  public grantAssumeRole(identity: IPrincipal) {
+  public grantAssumeRole(identity: IGrantable) {
     return this.grant(identity, 'sts:AssumeRole');
   }
 
@@ -615,17 +615,17 @@ export interface IRole extends IIdentity {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  grant(grantee: IPrincipal, ...actions: string[]): Grant;
+  grant(grantee: IGrantable, ...actions: string[]): Grant;
 
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  grantPassRole(grantee: IPrincipal): Grant;
+  grantPassRole(grantee: IGrantable): Grant;
 
   /**
    * Grant permissions to the given principal to assume this role.
    */
-  grantAssumeRole(grantee: IPrincipal): Grant;
+  grantAssumeRole(grantee: IGrantable): Grant;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {

@@ -4,6 +4,7 @@ import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
+import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole } from './role';
 import { IUser } from './user';
 import { undefinedIfEmpty } from './util';
@@ -99,7 +100,7 @@ export interface ManagedPolicyProps {
  * Managed policy
  *
  */
-export class ManagedPolicy extends Resource implements IManagedPolicy {
+export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantable {
   /**
    * Import a customer managed policy from the managedPolicyName.
    *
@@ -201,6 +202,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    */
   public readonly path: string;
 
+  public readonly grantPrincipal: IPrincipal;
+
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<IUser>();
   private readonly groups = new Array<IGroup>();
@@ -251,6 +254,28 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
       resource: 'policy',
       resourceName: this.physicalName,
     });
+
+    const self = this;
+
+    class GrantPrincipal implements IPrincipal {
+      public readonly grantPrincipal: IPrincipal = this;
+
+      public get assumeRoleAction(): string {
+        throw new Error('ManagedPolicy has no principals.');
+      }
+      public get policyFragment(): PrincipalPolicyFragment {
+        throw new Error('ManagedPolicy has no principals.');
+      }
+      public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToPrincipalPolicy(statement).statementAdded;
+      }
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+        self.addStatements(statement);
+        return { statementAdded: true, policyDependable: self };
+      }
+    }
+
+    this.grantPrincipal = new GrantPrincipal();
 
     this.node.addValidation({ validate: () => this.validateManagedPolicy() });
   }
