@@ -662,15 +662,15 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this._configureDeployment(props);
-    if (props.domainName) {
-      this.addDomainName('CustomDomain', props.domainName);
-    }
-
     const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
     const cloudWatchRole = props.cloudWatchRole ?? cloudWatchRoleDefault;
     if (cloudWatchRole) {
       this._configureCloudWatchRole(resource);
+    }
+
+    this._configureDeployment(props);
+    if (props.domainName) {
+      this.addDomainName('CustomDomain', props.domainName);
     }
   }
 }

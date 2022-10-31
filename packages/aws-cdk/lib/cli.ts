@@ -155,7 +155,8 @@ async function parseCommandLineArguments() {
           "'true' by default, use --no-logs to turn off. " +
           "Only in effect if specified alongside the '--watch' option",
       })
-      .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true }),
+      .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true })
+      .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -514,6 +515,7 @@ async function initCommandLine() {
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
+          assetParallelism: args.assetParallelism,
         });
 
       case 'import':
