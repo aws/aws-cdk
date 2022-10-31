@@ -4,6 +4,7 @@ import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
+import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole } from './role';
 import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
@@ -100,7 +101,7 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Resource implements IPolicy {
+export class Policy extends Resource implements IPolicy, IGrantable {
 
   /**
    * Import a policy in this app based on its name
@@ -117,6 +118,8 @@ export class Policy extends Resource implements IPolicy {
    * The policy document.
    */
   public readonly document = new PolicyDocument();
+
+  public readonly grantPrincipal: IPrincipal;
 
   private readonly _policyName: string;
   private readonly roles = new Array<IRole>();
@@ -177,6 +180,26 @@ export class Policy extends Resource implements IPolicy {
     if (props.statements) {
       props.statements.forEach(p => this.addStatements(p));
     }
+
+    class GrantPrincipal implements IPrincipal {
+      public readonly grantPrincipal: IPrincipal = this;
+
+      public get assumeRoleAction(): string {
+        throw new Error('Policy has no principals.');
+      }
+      public get policyFragment(): PrincipalPolicyFragment {
+        throw new Error('Policy has no principals.');
+      }
+      public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToPrincipalPolicy(statement).statementAdded;
+      }
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+        self.addStatements(statement);
+        return { statementAdded: true, policyDependable: self };
+      }
+    }
+
+    this.grantPrincipal = new GrantPrincipal();
 
     this.node.addValidation({ validate: () => this.validatePolicy() });
   }

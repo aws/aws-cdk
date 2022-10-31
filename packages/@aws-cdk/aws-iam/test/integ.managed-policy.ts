@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import { AnyPrincipal, ManagedPolicy, PolicyStatement, Role } from '../lib';
+import { AccountRootPrincipal, ManagedPolicy, PolicyStatement, Role } from '../lib';
 import { User } from '../lib/user';
 
 const app = new App();
@@ -24,7 +24,7 @@ user.addManagedPolicy(policy2);
 const policy3 = ManagedPolicy.fromAwsManagedPolicyName('SecurityAudit');
 user.addManagedPolicy(policy3);
 
-const role = new Role(stack, 'Role', { assumedBy: new AnyPrincipal() });
+const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
 role.grantAssumeRole(policy);
 
 new IntegTest(app, 'ManagedPolicyInteg', {

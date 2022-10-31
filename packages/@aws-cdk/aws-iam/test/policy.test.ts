@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { App, CfnResource, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { AnyPrincipal, CfnPolicy, Grant, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -439,6 +439,31 @@ describe('IAM policy', () => {
     });
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  test('can be passed as a grantee to Grant.addToPrincipal', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+    Grant.addToPrincipal({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'] });
+    pol.attachToUser(new User(stack, 'User'));
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        Policy23B91518: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyName: 'MyPolicyName',
+            PolicyDocument: {
+              Statement: [
+                { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      },
+    });
   });
 });
 
