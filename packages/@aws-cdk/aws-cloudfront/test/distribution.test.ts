@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
@@ -1023,5 +1024,64 @@ describe('supported HTTP versions', () => {
         HttpVersion: 'http2and3',
       },
     });
+  });
+});
+
+test('grants custom actions', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+  distribution.grant(role, 'cloudfront:ListInvalidations', 'cloudfront:GetInvalidation');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'cloudfront:ListInvalidations',
+            'cloudfront:GetInvalidation',
+          ],
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                { Ref: 'Distribution830FAC52' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('grants createInvalidation', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+  distribution.grantCreateInvalidation(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'cloudfront:CreateInvalidation',
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                { Ref: 'Distribution830FAC52' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
   });
 });
