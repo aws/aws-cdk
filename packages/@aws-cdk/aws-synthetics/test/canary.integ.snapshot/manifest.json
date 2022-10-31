@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/38dcc41263b1a009e2d7560d81dee9041f4f7941b66cd73b63df402a6fe3c22d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/32cb6cc1550e67ae5e77eb85a64192d2aa44c328b778079b139e3965fb042575.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -151,6 +151,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyCanaryFour15095F40"
+          }
+        ],
+        "/canary-one/MyCanaryRuntime38/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCanaryRuntime38ArtifactsBucket66BD74F0"
+          }
+        ],
+        "/canary-one/MyCanaryRuntime38/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCanaryRuntime38ArtifactsBucketPolicy9D7ABC32"
+          }
+        ],
+        "/canary-one/MyCanaryRuntime38/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCanaryRuntime38ServiceRole9FE5290C"
+          }
+        ],
+        "/canary-one/MyCanaryRuntime38/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCanaryRuntime388C091D7C"
           }
         ],
         "/canary-one/MyPythonCanary/ArtifactsBucket/Resource": [
