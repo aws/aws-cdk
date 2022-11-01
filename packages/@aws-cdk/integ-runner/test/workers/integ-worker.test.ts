@@ -142,7 +142,7 @@ describe('test runner', () => {
       ]),
       expect.arrayContaining([
         expect.stringMatching(/git/),
-        ['checkout', 'abc', '--', 'test-with-snapshot.integ.snapshot'],
+        ['checkout', 'abc', '--', 'xxxxx.test-with-snapshot.js.snapshot'],
         expect.objectContaining({
           cwd: 'test/test-data',
         }),
