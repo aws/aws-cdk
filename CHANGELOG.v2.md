@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **cli:** allow disabling parallel asset publishing ([#22579](https://github.com/aws/aws-cdk/issues/22579)) ([69981ac](https://github.com/aws/aws-cdk/commit/69981ac07b40ce3f690f6c1ad0010b51f29103a6)), closes [#19367](https://github.com/aws/aws-cdk/issues/19367)
 * **ec2:** Vpc supports allocating CIDR from AWS IPAM ([#22458](https://github.com/aws/aws-cdk/issues/22458)) ([7ed9cd1](https://github.com/aws/aws-cdk/commit/7ed9cd14aa5aaff90badb6438a0941fbca2d370c))
 * **eks:** support for Kubernetes version 1.22 ([#22604](https://github.com/aws/aws-cdk/issues/22604)) ([91704aa](https://github.com/aws/aws-cdk/commit/91704aa3632dd6424017ae7aafebda832f309315)), closes [#20263](https://github.com/aws/aws-cdk/issues/20263)
-* **rds:** dual-stack mode support ([#22596](https://github.com/aws/aws-cdk/issues/22596)) ([89a7365](https://github.com/aws/aws-cdk/commit/89a73651ccd619b9b1878c40214e4647095803de)), closes [#19525](https://github.com/aws/aws-cdk/issues/19525)
+* **rds:** dual-stack mode support ([#22596](https://github.com/aws/aws-cdk/issues/22596)) ([89a7365](https://github.com/aws/aws-cdk/commit/89a73651ccd619b9b1878c40214e4647095803de))
 
 
 ### Bug Fixes
