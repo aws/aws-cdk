@@ -27,7 +27,7 @@ junit.xml
 # Ignore this symlink, we recreate it at test time
 test/test-archive-follow/data/linked
 
-!**/*.integ.snapshot/**/asset.*/*.js
-!**/*.integ.snapshot/**/asset.*/*.d.ts
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
 
-!**/*.integ.snapshot/**/asset.*/**
+!**/*.snapshot/**/asset.*/**

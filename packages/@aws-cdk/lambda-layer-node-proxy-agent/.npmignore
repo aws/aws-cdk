@@ -31,5 +31,4 @@ test/
 
 layer/node_modules
 
-**/*.integ.snapshot
-**/*.integ.snapshot
+**/*.snapshot

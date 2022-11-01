@@ -349,7 +349,7 @@ function integTestChanged(files: GitHubFile[]): boolean {
 }
 
 function integTestSnapshotChanged(files: GitHubFile[]): boolean {
-  return files.filter(f => f.filename.toLowerCase().includes("integ.snapshot")).length != 0;
+  return files.filter(f => f.filename.toLowerCase().includes(".snapshot")).length != 0;
 }
 
 function readmeChanged(files: GitHubFile[]): boolean {
