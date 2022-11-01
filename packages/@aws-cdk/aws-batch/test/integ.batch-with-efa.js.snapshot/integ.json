@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "BatchWithEFATest/DefaultTest": {
       "stacks": [
         "batch-stack"
       ],
-      "assertionStack": "BatchWithEFATest/DefaultTest/DeployAssert"
+      "assertionStack": "BatchWithEFATest/DefaultTest/DeployAssert",
+      "assertionStackName": "BatchWithEFATestDefaultTestDeployAssertDAD33663"
     }
   }
 }
