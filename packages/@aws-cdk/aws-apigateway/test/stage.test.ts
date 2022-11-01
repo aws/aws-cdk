@@ -70,7 +70,7 @@ describe('stage', () => {
     });
   });
 
-  test('stage depends on the CloudWatch role when it exists', () => {
+  test('RestApi - stage depends on the CloudWatch role when it exists', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: true, deploy: false });
@@ -80,6 +80,23 @@ describe('stage', () => {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', { deployment });
 
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::ApiGateway::Stage', {
+      DependsOn: ['testapiAccount9B907665'],
+    });
+  });
+
+  test('SpecRestApi - stage depends on the CloudWatch role when it exists', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.SpecRestApi(stack, 'test-api', { apiDefinition: apigateway.ApiDefinition.fromInline( { foo: 'bar' }) });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    new apigateway.Stage(stack, 'my-stage', { deployment });
+
+    // THEN
     Template.fromStack(stack).hasResource('AWS::ApiGateway::Stage', {
       DependsOn: ['testapiAccount9B907665'],
     });
@@ -343,59 +360,146 @@ describe('stage', () => {
     });
   });
 
-  test('fails when access log format does not contain `AccessLogFormat.contextRequestId()`', () => {
+  describe('access log check', () => {
+    test('fails when access log format does not contain `contextRequestId()` or `contextExtendedRequestId()', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
+
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom('');
+
+      // THEN
+      expect(() => new apigateway.Stage(stack, 'my-stage', {
+        deployment,
+        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+        accessLogFormat: testFormat,
+      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+    });
+
+    test('succeeds when access log format contains `contextRequestId()`', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
+
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        requestId: apigateway.AccessLogField.contextRequestId(),
+      }));
+
+      // THEN
+      expect(() => new apigateway.Stage(stack, 'my-stage', {
+        deployment,
+        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+        accessLogFormat: testFormat,
+      })).not.toThrow();
+    });
+
+    test('succeeds when access log format contains `contextExtendedRequestId()`', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
+
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
+      }));
+
+      // THEN
+      expect(() => new apigateway.Stage(stack, 'my-stage', {
+        deployment,
+        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+        accessLogFormat: testFormat,
+      })).not.toThrow();
+    });
+
+    test('succeeds when access log format contains both `contextRequestId()` and `contextExtendedRequestId`', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
+
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        requestId: apigateway.AccessLogField.contextRequestId(),
+        extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
+      }));
+
+      // THEN
+      expect(() => new apigateway.Stage(stack, 'my-stage', {
+        deployment,
+        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+        accessLogFormat: testFormat,
+      })).not.toThrow();
+    });
+
+    test('fails when access log format contains `contextRequestIdXxx`', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
+
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
+        requestIdXxx: '$context.requestIdXxx',
+      }));
+
+      // THEN
+      expect(() => new apigateway.Stage(stack, 'my-stage', {
+        deployment,
+        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+        accessLogFormat: testFormat,
+      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+    });
+
+    test('does not fail when access log format is a token', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-    api.root.addMethod('GET');
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
 
-    // WHEN
-    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-    const testFormat = apigateway.AccessLogFormat.custom('');
+      // WHEN
+      const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+      const testFormat = apigateway.AccessLogFormat.custom(cdk.Lazy.string({ produce: () => 'test' }));
 
-    // THEN
-    expect(() => new apigateway.Stage(stack, 'my-stage', {
-      deployment,
-      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-      accessLogFormat: testFormat,
-    })).toThrow(/Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
-  });
+      // THEN
+      expect(() => new apigateway.Stage(stack, 'my-stage', {
+        deployment,
+        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+        accessLogFormat: testFormat,
+      })).not.toThrow();
+    });
 
-  test('does not fail when access log format is a token', () => {
+    test('fails when access log destination is empty', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-    api.root.addMethod('GET');
+      const stack = new cdk.Stack();
+      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+      const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+      api.root.addMethod('GET');
 
-    // WHEN
-    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-    const testFormat = apigateway.AccessLogFormat.custom(cdk.Lazy.string({ produce: () => 'test' }));
+      // WHEN
+      const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
 
-    // THEN
-    expect(() => new apigateway.Stage(stack, 'my-stage', {
-      deployment,
-      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-      accessLogFormat: testFormat,
-    })).not.toThrow();
-  });
-
-  test('fails when access log destination is empty', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
-    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-    api.root.addMethod('GET');
-
-    // WHEN
-    const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
-
-    // THEN
-    expect(() => new apigateway.Stage(stack, 'my-stage', {
-      deployment,
-      accessLogFormat: testFormat,
-    })).toThrow(/Access log format is specified without a destination/);
+      // THEN
+      expect(() => new apigateway.Stage(stack, 'my-stage', {
+        deployment,
+        accessLogFormat: testFormat,
+      })).toThrow(/Access log format is specified without a destination/);
+    });
   });
 
   test('default throttling settings', () => {

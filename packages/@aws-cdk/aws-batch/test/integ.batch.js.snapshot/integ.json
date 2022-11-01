@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "batch-tests/DefaultTest": {
+      "stacks": [
+        "batch-stack"
+      ],
+      "assertionStack": "batch-tests/DefaultTest/DeployAssert",
+      "assertionStackName": "batchtestsDefaultTestDeployAssertA73A8412"
+    }
+  }
+}

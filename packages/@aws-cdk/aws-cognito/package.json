@@ -122,6 +122,7 @@
     "exclude": [
       "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
       "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
+      "resource-attribute:@aws-cdk/aws-cognito.UserPoolDomain.userPoolDomainCloudFrontDistribution",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps",
