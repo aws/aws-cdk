@@ -2,6 +2,7 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { ScheduledFargateTask } from '../../lib';
 
@@ -411,6 +412,61 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
         Id: 'Target0',
         Input: '{}',
         RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] },
+      },
+    ],
+  });
+});
+
+test('Scheduled Fargate Task - with executionRole defined', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    executionRole: role,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              AssignPublicIp: 'DISABLED',
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': [
+                    'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
+                    'GroupId',
+                  ],
+                },
+              ],
+              Subnets: [
+                {
+                  Ref: 'VpcPrivateSubnet1Subnet536B997A',
+                },
+              ],
+            },
+          },
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' },
+        },
+        Id: 'Target0',
+        Input: '{}',
+        RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       },
     ],
   });
