@@ -1,0 +1,237 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codepipeline-elastic-beanstalk-deploy.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codepipeline-elastic-beanstalk-deploy.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-codepipeline-elastic-beanstalk-deploy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codepipeline-elastic-beanstalk-deploy.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b00687c12baf1ec25bfba12e5b684ec552113ec1ac24c1b5128ba6098925458.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codepipeline-elastic-beanstalk-deploy.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codepipeline-elastic-beanstalk-deploy.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBucketB967BD35"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBucketPolicyD65CDEF5"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBucketAutoDeleteObjectsCustomResource5F37E165"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployAppAwsCliLayerAEF99B2F"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployAppCustomResourceDEE6DDD6"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/service-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "servicerole2C3CD20E"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "instanceprofilerole786BCBC7"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "instanceprofile"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/beastalk-app": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "beastalkapp"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/beanstlk-env": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "beanstlkenv"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleDefaultPolicyC7A05455"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineC660917D"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Source/Source/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Deploy/Deploy/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineDeployCodePipelineActionRole8B83082E"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Deploy/Deploy/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineDeployCodePipelineActionRoleDefaultPolicyEE6D615B"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codepipeline-elastic-beanstalk-deploy/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codepipeline-elastic-beanstalk-deploy"
+    },
+    "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B.assets"
+      ],
+      "metadata": {
+        "/codepipeline-elastic-beanstalk-deploy/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/codepipeline-elastic-beanstalk-deploy/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "codepipeline-elastic-beanstalk-deploy/DefaultTest/DeployAssert"
+    }
+  }
+}
