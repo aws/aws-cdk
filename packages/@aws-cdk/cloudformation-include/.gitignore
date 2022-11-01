@@ -22,7 +22,7 @@ cfn-types-2-classes.json
 
 junit.xml
 
-!**/*.integ.snapshot/**/asset.*/*.js
-!**/*.integ.snapshot/**/asset.*/*.d.ts
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
 
-!**/*.integ.snapshot/**/asset.*/**
+!**/*.snapshot/**/asset.*/**
