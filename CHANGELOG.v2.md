@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.49.1](https://github.com/aws/aws-cdk/compare/v2.49.0...v2.49.1) (2022-10-31)
+
+
+### Bug Fixes
+
+* revert jsii to version 1.69.0 ([#22715](https://github.com/aws/aws-cdk/issues/22715)) ([2b45931](https://github.com/aws/aws-cdk/commit/2b4593125b5b219fcb59d5224a4beea1d0905d0d))
+
 ## [2.49.0](https://github.com/aws/aws-cdk/compare/v2.48.0...v2.49.0) (2022-10-27)
 
 
