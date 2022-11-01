@@ -3,9 +3,138 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Location } from './location';
-import { ResourceCreationLimitPolicy } from './resource-creation-limit-policy';
-import { RuntimeConfiguration } from './runtime-configuration';
+import { GameLiftMetrics } from './gamelift-canned-metrics.generated';
+import { CfnFleet } from './gamelift.generated';
+
+
+/**
+ * Current resource capacity settings in a specified fleet or location.
+ * The location value might refer to a fleet's remote location or its home Region.
+ */
+export interface LocationCapacity {
+  /**
+       * The number of Amazon EC2 instances you want to maintain in the specified fleet location.
+       * This value must fall between the minimum and maximum size limits.
+       *
+       * @default the default value is 0
+       */
+  readonly desiredCapacity?: number;
+  /**
+       * The maximum number of instances that are allowed in the specified fleet location.
+       *
+       * @default the default value is 1
+       */
+  readonly maxSize?: number;
+  /**
+       * The minimum number of instances that are allowed in the specified fleet location.
+       *
+       * @default the default value is 0
+       */
+  readonly minSize?: number;
+}
+
+/**
+   * A remote location where a multi-location fleet can deploy EC2 instances for game hosting.
+   */
+export interface Location {
+  /**
+       * An AWS Region code
+       */
+  readonly region: string;
+  /**
+     * Current resource capacity settings in a specified fleet or location.
+     * The location value might refer to a fleet's remote location or its home Region.
+     *
+     * @default no capacity settings on the specified location
+     */
+  readonly capacity?: LocationCapacity;
+}
+
+/**
+ * Configuration of a fleet server process
+ */
+export interface ServerProcess {
+  /**
+       * The number of server processes using this configuration that run concurrently on each instance.
+       * Minimum is `1`
+       *
+       * @default 1
+       */
+  readonly concurrentExecutions?: number;
+  /**
+       * The location of a game build executable or the Realtime script file that contains the Init() function. Game builds and Realtime scripts are installed on instances at the root:
+       * - Windows (custom game builds only): `C:\game`. Example: `C:\game\MyGame\server.exe`
+       * - Linux: `/local/game`. Examples: `/local/game/MyGame/server.exe` or `/local/game/MyRealtimeScript.js`
+       */
+  readonly launchPath: string;
+
+  /**
+       * An optional list of parameters to pass to the server executable or Realtime script on launch.
+       *
+       * @default no parameters
+       */
+  readonly parameters?: string;
+}
+
+/**
+   * A collection of server process configurations that describe the set of processes to run on each instance in a fleet.
+   * Server processes run either an executable in a custom game build or a Realtime Servers script.
+   * GameLift launches the configured processes, manages their life cycle, and replaces them as needed.
+   * Each instance checks regularly for an updated runtime configuration.
+   *
+   * A GameLift instance is limited to 50 processes running concurrently.
+   * To calculate the total number of processes in a runtime configuration, add the values of the `ConcurrentExecutions` parameter for each `ServerProcess`.
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-multiprocess.html
+   */
+export interface RuntimeConfiguration {
+  /**
+       * The maximum amount of time allowed to launch a new game session and have it report ready to host players.
+       * During this time, the game session is in status `ACTIVATING`.
+       *
+       * If the game session does not become active before the timeout, it is ended and the game session status is changed to `TERMINATED`.
+       *
+       * @default by default game session activation timeout is 300 seconds
+       */
+  readonly gameSessionActivationTimeout?: cdk.Duration;
+  /**
+       * The number of game sessions in status `ACTIVATING` to allow on an instance.
+       *
+       * This setting limits the instance resources that can be used for new game activations at any one time.
+       *
+       * @default no limit
+       */
+  readonly maxConcurrentGameSessionActivations?: number;
+
+  /**
+       * A collection of server process configurations that identify what server processes to run on each instance in a fleet.
+       */
+  readonly serverProcesses: ServerProcess[];
+}
+
+/**
+ * A policy that limits the number of game sessions a player can create on the same fleet.
+ * This optional policy gives game owners control over how players can consume available game server resources.
+ * A resource creation policy makes the following statement: "An individual player can create a maximum number of new game sessions within a specified time period".
+ *
+ * The policy is evaluated when a player tries to create a new game session.
+ * For example, assume you have a policy of 10 new game sessions and a time period of 60 minutes.
+ * On receiving a `CreateGameSession` request, Amazon GameLift checks that the player (identified by CreatorId) has created fewer than 10 game sessions in the past 60 minutes.
+ */
+export interface ResourceCreationLimitPolicy {
+  /**
+       * The maximum number of game sessions that an individual can create during the policy period.
+       *
+       * @default no limit on the number of game sessions that an individual can create during the policy period
+       */
+  readonly newGameSessionsPerCreator?: number;
+  /**
+     * The time span used in evaluating the resource creation limit policy.
+     *
+     * @default no policy period
+     */
+  readonly policyPeriod?: cdk.Duration,
+}
 
 /**
  * Represents a Gamelift fleet
@@ -34,6 +163,55 @@ export interface IFleet extends cdk.IResource, iam.IGrantable {
    * Return the given named metric for this fleet.
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Instances with `ACTIVE` status, which means they are running active server processes.
+   * The count includes idle instances and those that are hosting one or more game sessions.
+   * This metric measures current total instance capacity.
+   *
+   * This metric can be used with automatic scaling.
+   */
+  metricActiveInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Percentage of all active instances that are idle (calculated as IdleInstances / ActiveInstances).
+   * This metric can be used for automatic scaling.
+   */
+  metricPercentIdleInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Target number of active instances that GameLift is working to maintain in the fleet.
+   * With automatic scaling, this value is determined based on the scaling policies currently in force.
+   * Without automatic scaling, this value is set manually.
+   * This metric is not available when viewing data for fleet metric groups.
+   */
+  metricDesiredInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Active instances that are currently hosting zero (0) game sessions.
+   * This metric measures capacity that is available but unused.
+   * This metric can be used with automatic scaling.
+   */
+  metricIdleInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Number of spot instances that have been interrupted.
+   */
+  metricInstanceInterruptions(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Maximum number of instances that are allowed for the fleet.
+   * A fleet's instance maximum determines the capacity ceiling during manual or automatic scaling up.
+   * This metric is not available when viewing data for fleet metric groups.
+   */
+  metricMaxInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Minimum number of instances allowed for the fleet.
+   * A fleet's instance minimum determines the capacity floor during manual or automatic scaling down.
+   * This metric is not available when viewing data for fleet metric groups.
+   */
+  metricMinInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -143,7 +321,7 @@ export interface FleetProps {
    *
    * @default the default is 0
    */
-  readonly minSize: number;
+  readonly minSize?: number;
 
   /**
    * The maximum number of instances that are allowed in the specified fleet location.
@@ -171,7 +349,7 @@ export interface FleetProps {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-multiprocess.html
    */
-  readonly runtimeConfigurations: RuntimeConfiguration;
+  readonly runtimeConfiguration: RuntimeConfiguration;
 
   /**
    * A set of remote locations to deploy additional instances to and manage as part of the fleet.
@@ -230,7 +408,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
    * Import an existing fleet from its attributes.
    */
   static fromFleetAttributes(scope: Construct, id: string, attrs: FleetAttributes): IFleet {
-    if (!attrs.fleetId && !attrs.fleetId) {
+    if (!attrs.fleetId && !attrs.fleetArn) {
       throw new Error('Either fleetId or fleetArn must be provided in FleetAttributes');
     }
     const fleetId = attrs.fleetId ??
@@ -239,6 +417,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     if (!fleetId) {
       throw new Error(`No fleet identifier found in ARN: '${attrs.fleetArn}'`);
     }
+
     const fleetArn = attrs.fleetArn ?? cdk.Stack.of(scope).formatArn({
       service: 'gamelift',
       resource: 'fleet',
@@ -246,9 +425,16 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
     class Import extends FleetBase {
-      public readonly fleetId = fleetId;
+      public readonly fleetId = fleetId!;
       public readonly fleetArn = fleetArn;
       public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
+      public readonly role = attrs.role;
+
+      constructor(s: Construct, i: string) {
+        super(s, i, {
+          environmentFromArn: fleetArn,
+        });
+      }
     }
     return new Import(scope, id);
   }
@@ -267,6 +453,8 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  private readonly locations: Location[] = [];
+
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       resourceArns: [this.fleetArn],
@@ -284,6 +472,137 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       },
       ...props,
     }).attachTo(this);
+  }
+
+  public metricActiveInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(GameLiftMetrics.activeInstancesAverage, props);
+  }
+
+  public metricPercentIdleInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(GameLiftMetrics.percentIdleInstancesAverage, props);
+  }
+
+  public metricDesiredInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(GameLiftMetrics.desiredInstancesAverage, props);
+  }
+
+  public metricIdleInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(GameLiftMetrics.idleInstancesAverage, props);
+  }
+
+  public metricInstanceInterruptions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(GameLiftMetrics.instanceInterruptionsSum, props);
+  }
+
+  public metricMaxInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(GameLiftMetrics.maxInstancesAverage, props);
+  }
+
+  public metricMinInstances(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(GameLiftMetrics.minInstancesAverage, props);
+  }
+
+  private cannedMetric(fn: (dims: { FleetId: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ FleetId: this.fleetId }),
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Adds a remote locations to deploy additional instances to and manage as part of the fleet.
+   *
+   * @param region The AWS region to add
+   */
+  public addLocation(region: string, desiredCapacity?: number, minSize?: number, maxSize?: number) {
+    this.addInternalLocation({
+      region: region,
+      capacity: {
+        desiredCapacity: desiredCapacity,
+        minSize: minSize,
+        maxSize: maxSize,
+      },
+    });
+  }
+
+  /**
+   * Adds a remote locations to deploy additional instances to and manage as part of the fleet.
+   *
+   * @param location The location to add
+   */
+  public addInternalLocation(location: Location) {
+    if (this.locations.length == 100) {
+      throw new Error('No more than 100 locations are allowed per fleet');
+    }
+
+    this.locations.push(location);
+  }
+
+  protected parseResourceCreationLimitPolicy(props: FleetProps): CfnFleet.ResourceCreationLimitPolicyProperty | undefined {
+    if (!props.resourceCreationLimitPolicy ||
+        (!props.resourceCreationLimitPolicy.newGameSessionsPerCreator
+            && !props.resourceCreationLimitPolicy.policyPeriod)) {
+      return undefined;
+    }
+
+    return {
+      newGameSessionsPerCreator: props.resourceCreationLimitPolicy.newGameSessionsPerCreator,
+      policyPeriodInMinutes: props.resourceCreationLimitPolicy.policyPeriod?.toMinutes(),
+    };
+  }
+
+  protected parseLocations(): CfnFleet.LocationConfigurationProperty[] | undefined {
+    if (!this.locations || this.locations.length === 0) {
+      return undefined;
+    }
+
+    const self = this;
+
+    return this.locations.map(parseLocation);
+
+    function parseLocation(location: Location): CfnFleet.LocationConfigurationProperty {
+      return {
+        location: location.region,
+        locationCapacity: self.parseLocationCapacity(location.capacity),
+      };
+    }
+  }
+
+  protected parseLocationCapacity(capacity?: LocationCapacity): CfnFleet.LocationCapacityProperty | undefined {
+    if (!capacity ||
+        (!capacity.desiredCapacity
+            && !capacity.minSize
+            && !capacity.maxSize)) {
+      return undefined;
+    }
+
+    return {
+      desiredEc2Instances: capacity.desiredCapacity ?? 0,
+      minSize: capacity.minSize ?? 0,
+      maxSize: capacity.maxSize ?? 1,
+    };
+
+  }
+  protected parseRuntimeConfiguration(props: FleetProps): CfnFleet.RuntimeConfigurationProperty | undefined {
+    if (!props.runtimeConfiguration ||
+        (!props.runtimeConfiguration.gameSessionActivationTimeout
+            && !props.runtimeConfiguration.maxConcurrentGameSessionActivations
+            && props.runtimeConfiguration.serverProcesses.length == 0)) {
+      return undefined;
+    }
+    return {
+      gameSessionActivationTimeoutSeconds: props.runtimeConfiguration.gameSessionActivationTimeout?.toSeconds(),
+      maxConcurrentGameSessionActivations: props.runtimeConfiguration.maxConcurrentGameSessionActivations,
+      serverProcesses: props.runtimeConfiguration.serverProcesses.map(parseServerProcess),
+    };
+
+    function parseServerProcess(serverProcess: ServerProcess): CfnFleet.ServerProcessProperty {
+      return {
+        parameters: serverProcess.parameters,
+        launchPath: serverProcess.launchPath,
+        concurrentExecutions: serverProcess.concurrentExecutions ?? 1,
+      };
+    }
   }
 
   protected warnVpcPeeringAuthorizations(scope: Construct): void {

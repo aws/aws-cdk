@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { IBuild } from './build';
 import { FleetBase, FleetProps, IFleet } from './fleet-base';
 import { CfnFleet } from './gamelift.generated';
-import { InboundPermission } from './inbound-permission';
+import { Port, IPeer, IngressRule } from './ingress-rule';
 
 /**
  * Represents a GameLift Fleet used to run a custom game build.
@@ -28,8 +28,10 @@ export interface BuildFleetProps extends FleetProps {
    * The allowed IP address ranges and port settings that allow inbound traffic to access game sessions on this fleet.
    *
    * This property must be set before players can connect to game sessions.
+   *
+   * @default no inbound traffic allowed
    */
-  readonly inboundPermission: InboundPermission[];
+  readonly ingressRules?: IngressRule[];
 }
 
 /**
@@ -83,6 +85,8 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
+  private readonly ingressRules: IngressRule[] = [];
+
   constructor(scope: Construct, id: string, props: BuildFleetProps) {
     super(scope, id, {
       physicalName: props.fleetName,
@@ -104,13 +108,18 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       this.warnVpcPeeringAuthorizations(this);
     }
 
-    if (props.inboundPermission && props.inboundPermission?.length > 50) {
-      throw new Error(`No more than 50 inbound traffic permission rules are allowed per fleet, given ${props.inboundPermission.length}`);
-    }
-
+    // Add all locations
     if (props.locations && props.locations?.length > 100) {
       throw new Error(`No more than 100 locations are allowed per fleet, given ${props.locations.length}`);
     }
+    (props.locations || []).forEach(this.addInternalLocation.bind(this));
+
+
+    // Add all Ingress rules
+    if (props.ingressRules && props.ingressRules?.length > 50) {
+      throw new Error(`No more than 50 ingress rules are allowed per fleet, given ${props.ingressRules.length}`);
+    }
+    (props.ingressRules || []).forEach(this.addInternalIngressRule.bind(this));
 
     this.content = props.content;
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
@@ -125,19 +134,19 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       },
       description: props.description,
       desiredEc2Instances: props.desiredCapacity,
-      ec2InboundPermissions: props.inboundPermission.map((value) => value.toJson()),
+      ec2InboundPermissions: cdk.Lazy.any({ produce: () => this.parseIngressRules() }),
       ec2InstanceType: props.instanceType.toString(),
       fleetType: props.useSpot ? 'SPOT' : 'ON_DEMAND',
       instanceRoleArn: this.role.roleArn,
-      locations: props.locations && props.locations.map((value) => value.toJson()),
-      maxSize: props.maxSize,
-      minSize: props.minSize,
+      locations: cdk.Lazy.any({ produce: () => this.parseLocations() }),
+      maxSize: props.maxSize ? props.maxSize : 1,
+      minSize: props.minSize ? props.minSize : 0,
       name: this.physicalName,
       newGameSessionProtectionPolicy: props.protectNewGameSession ? 'FULL_PROTECTION' : 'NO_PROTECTION',
       peerVpcAwsAccountId: props.peerVpc && props.peerVpc.env.account,
       peerVpcId: props.peerVpc && props.peerVpc.vpcId,
-      resourceCreationLimitPolicy: props.resourceCreationLimitPolicy && props.resourceCreationLimitPolicy.toJson(),
-      runtimeConfiguration: props.runtimeConfigurations.toJson(),
+      resourceCreationLimitPolicy: this.parseResourceCreationLimitPolicy(props),
+      runtimeConfiguration: this.parseRuntimeConfiguration(props),
     });
 
     this.fleetId = this.getResourceNameAttribute(resource.ref);
@@ -147,5 +156,40 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       resourceName: this.fleetId,
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
+  }
+
+  /**
+   * Adds an ingress rule to allow inbound traffic to access game sessions on this fleet.
+   *
+   * @param source A range of allowed IP addresses
+   * @param port The port range used for ingress traffic
+   */
+  public addIngressRule(source: IPeer, port: Port) {
+    this.addInternalIngressRule({
+      source: source,
+      port: port,
+    });
+  }
+
+  private addInternalIngressRule(ingressRule: IngressRule) {
+    if (this.ingressRules.length == 50) {
+      throw new Error('No more than 50 ingress rules are allowed per fleet');
+    }
+    this.ingressRules.push(ingressRule);
+  }
+
+  private parseIngressRules(): CfnFleet.IpPermissionProperty[] | undefined {
+    if (!this.ingressRules || this.ingressRules.length === 0) {
+      return undefined;
+    }
+
+    return this.ingressRules.map(parseIngressRule);
+
+    function parseIngressRule(ingressRule: IngressRule): CfnFleet.IpPermissionProperty {
+      return {
+        ...ingressRule.port.toJson(),
+        ...ingressRule.source.toJson(),
+      };
+    }
   }
 }

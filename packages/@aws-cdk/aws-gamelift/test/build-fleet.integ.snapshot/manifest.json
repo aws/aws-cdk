@@ -1,0 +1,88 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-gamelift-build-fleet.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-gamelift-build-fleet.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-gamelift-build-fleet": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-gamelift-build-fleet.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d369dc5e9ca07d23c2c72c8b6fd1b6cbeb8fb758f513faefc68dcff34f256c15.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-gamelift-build-fleet.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-gamelift-build-fleet.assets"
+      ],
+      "metadata": {
+        "/aws-gamelift-build-fleet/Build/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRole1F57E904"
+          }
+        ],
+        "/aws-gamelift-build-fleet/Build/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildServiceRoleDefaultPolicyCB7101C6"
+          }
+        ],
+        "/aws-gamelift-build-fleet/Build/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Build45A36621"
+          }
+        ],
+        "/aws-gamelift-build-fleet/BuildFleet/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildFleetServiceRole32D49FB4"
+          }
+        ],
+        "/aws-gamelift-build-fleet/BuildFleet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildFleet027ED403"
+          }
+        ],
+        "/aws-gamelift-build-fleet/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-gamelift-build-fleet/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-gamelift-build-fleet"
+    }
+  }
+}

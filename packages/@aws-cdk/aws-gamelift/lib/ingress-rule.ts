@@ -1,5 +1,4 @@
 import * as cdk from '@aws-cdk/core';
-import { CfnFleet } from './gamelift.generated';
 
 /**
  * Protocol for use in Connection Rules
@@ -115,9 +114,9 @@ export class Port {
    */
   public toJson(): any {
     return {
-      ipProtocol: this.props.protocol,
+      protocol: this.props.protocol,
       fromPort: this.props.fromPort,
-      toPort: this.props.toPort ?? this.props.fromPort,
+      toPort: this.props.toPort,
     };
   }
 }
@@ -206,9 +205,13 @@ class AnyIPv4 extends CidrIPv4 {
 }
 
 /**
- * Configuration of a Gamelift fleet inbound permission
+ * A range of IP addresses and port settings that allow inbound traffic to connect to server processes on an instance in a fleet.
+ * New game sessions are assigned an IP address/port number combination, which must fall into the fleet's allowed ranges.
+ *
+ * Fleets with custom game builds must have permissions explicitly set.
+ * For Realtime Servers fleets, GameLift automatically opens two port ranges, one for TCP messaging and one for UDP.
  */
-export interface InboundPermissionConfig {
+export interface IngressRule {
   /**
      * The port range used for ingress traffic
      */
@@ -218,23 +221,4 @@ export interface InboundPermissionConfig {
    * A range of allowed IP addresses .
    */
   readonly source: IPeer;
-}
-
-/**
- * A range of IP addresses and port settings that allow inbound traffic to connect to server processes on an instance in a fleet.
- * New game sessions are assigned an IP address/port number combination, which must fall into the fleet's allowed ranges.
- * Fleets with custom game builds must have permissions explicitly set.
- */
-export class InboundPermission {
-  constructor(private readonly props: InboundPermissionConfig) {}
-
-  /**
-   * Convert a inbound permission entity to its Json representation
-   */
-  public toJson(): CfnFleet.IpPermissionProperty {
-    return {
-      ...this.props.source.toJson(),
-      ...this.props.port.toJson(),
-    };
-  }
 }
