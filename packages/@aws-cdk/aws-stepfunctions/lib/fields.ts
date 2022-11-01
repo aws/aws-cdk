@@ -104,6 +104,161 @@ export class JsonPath {
   }
 
   /**
+   * Make an intrinsic States.ArrayPartition expression
+   *
+   * Use this function to partition a large array. You can also use this intrinsic to slice the data and then send the payload in smaller chunks.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static arrayPartition(array: any, chunkSize: number): string {
+    return new JsonPathToken(`States.ArrayPartition(${[array, chunkSize].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.ArrayContains expression
+   *
+   * Use this function to determine if a specific value is present in an array. For example, you can use this function to detect if there was an error in a Map state iteration.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static arrayContains(array: any, value: any): string {
+    return new JsonPathToken(`States.ArrayContains(${[array, value].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.ArrayRange expression
+   *
+   * Use this function to create a new array containing a specific range of elements. The new array can contain up to 1000 elements.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static arrayRange(start: number, end: number, step: number): string {
+    return new JsonPathToken(`States.ArrayRange(${[start, end, step].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.ArrayGetItem expression
+   *
+   * Use this function to get a specified index's value in an array.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static arrayGetItem(array: any, index: number): string {
+    return new JsonPathToken(`States.ArrayGetItem(${[array, index].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.ArrayLength expression
+   *
+   * Use this function to get the length of an array.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static arrayLength(array: any): string {
+    return new JsonPathToken(`States.ArrayLength(${renderInExpression(array)})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.ArrayUnique expression
+   *
+   * Use this function to get the length of an array.
+   * Use this function to remove duplicate values from an array and returns an array containing only unique elements. This function takes an array, which can be unsorted, as its sole argument.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static arrayUnique(array: any): string {
+    return new JsonPathToken(`States.ArrayUnique(${renderInExpression(array)})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.Base64Encode expression
+   *
+   * Use this function to encode data based on MIME Base64 encoding scheme. You can use this function to pass data to other AWS services without using an AWS Lambda function.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static base64Encode(input: string): string {
+    return new JsonPathToken(`States.Base64Encode(${renderInExpression(input)})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.Base64Decode expression
+   *
+   * Use this function to decode data based on MIME Base64 decoding scheme. You can use this function to pass data to other AWS services without using a Lambda function.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static base64Decode(base64: string): string {
+    return new JsonPathToken(`States.Base64Decode(${renderInExpression(base64)})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.Hash expression
+   *
+   * Use this function to calculate the hash value of a given input. You can use this function to pass data to other AWS services without using a Lambda function.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static hash(data: any, algorithm: string): string {
+    return new JsonPathToken(`States.Hash(${[data, algorithm].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.JsonMerge expression
+   *
+   * Use this function to merge two JSON objects into a single object.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static jsonMerge(value1: any, value2: any): string {
+    return new JsonPathToken(`States.JsonMerge(${[value1, value2].map(renderInExpression).join(', ')}, false)`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.MathRandom expression
+   *
+   * Use this function to return a random number between the specified start and end number. For example, you can use this function to distribute a specific task between two or more resources.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static mathRandom(start: number, end: number): string {
+    return new JsonPathToken(`States.MathRandom(${[start, end].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.MathAdd expression
+   *
+   * Use this function to return the sum of two numbers. For example, you can use this function to increment values inside a loop without invoking a Lambda function.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static mathAdd(num1: number, num2: number): string {
+    return new JsonPathToken(`States.MathAdd(${[num1, num2].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.StringSplit expression
+   *
+   * Use this function to split a string into an array of values. This function takes two arguments.The first argument is a string and the second argument is the delimiting character that the function will use to divide the string.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static stringSplit(inputString: string, splitter: string): string {
+    return new JsonPathToken(`States.StringSplit(${[inputString, splitter].map(renderInExpression).join(', ')})`).toString();
+  }
+
+  /**
+   * Make an intrinsic States.UUID expression
+   *
+   * Use this function to return a version 4 universally unique identifier (v4 UUID) generated using random numbers. For example, you can use this function to call other AWS services or resources that need a UUID parameter or insert items in a DynamoDB table.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
+   */
+  public static uuid(): string {
+    return new JsonPathToken('States.UUID()').toString();
+  }
+
+  /**
    * Make an intrinsic States.Format expression
    *
    * This can be used to embed JSON Path variables inside a format string.
@@ -298,14 +453,45 @@ export class FieldUtils {
 }
 
 function validateJsonPath(path: string) {
+  const intrinsicFunctionNames = [
+    // Intrinsics for arrays
+    'Array',
+    'ArrayPartition',
+    'ArrayContains',
+    'ArrayRange',
+    'ArrayGetItem',
+    'ArrayLength',
+    'ArrayUnique',
+    // Intrinsics for data encoding and decoding
+    'Base64Encode',
+    'Base64Decode',
+    // Intrinsic for hash calculation
+    'Hash',
+    // Intrinsics for JSON data manipulation
+    'JsonMerge',
+    'StringToJson',
+    'JsonToString',
+    // Intrinsics for Math operations
+    'MathRandom',
+    'MathAdd',
+    // Intrinsic for String operation
+    'StringSplit',
+    // Intrinsic for unique identifier generation
+    'UUID',
+    // Intrinsic for generic operation
+    'Format',
+  ];
+  const intrinsicFunctionFullNames = intrinsicFunctionNames.map((fn) => `States.${fn}`);
   if (path !== '$'
     && !path.startsWith('$.')
     && path !== '$$'
     && !path.startsWith('$$.')
     && !path.startsWith('$[')
-    && ['Format', 'StringToJson', 'JsonToString', 'Array'].every(fn => !path.startsWith(`States.${fn}`))
+    && intrinsicFunctionFullNames.every(fn => !path.startsWith(fn))
   ) {
-    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array. Received: ${path}`);
+    const lastItem = intrinsicFunctionFullNames.pop();
+    const intrinsicFunctionsStr = intrinsicFunctionFullNames.join(', ') + ', or ' + lastItem;
+    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
   }
 }
 

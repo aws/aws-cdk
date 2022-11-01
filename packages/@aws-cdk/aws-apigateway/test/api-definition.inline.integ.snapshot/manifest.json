@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/43fa955c096081646078278a942ed067da2e8d4eb1d70897d691852a07063bb6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3150fcf8006f26abb83d3525cd55948b2e4643294d8f6e1e93931bb2469e58b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,6 +45,18 @@
             "data": "myapi4C7BF186"
           }
         ],
+        "/integtest-restapi-fromdefinition-inline/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5"
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A"
+          }
+        ],
         "/integtest-restapi-fromdefinition-inline/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -61,18 +73,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiEndpoint3628AFE3"
-          }
-        ],
-        "/integtest-restapi-fromdefinition-inline/my-api/CloudWatchRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiCloudWatchRole095452E5"
-          }
-        ],
-        "/integtest-restapi-fromdefinition-inline/my-api/Account": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiAccountEC421A0A"
           }
         ],
         "/integtest-restapi-fromdefinition-inline/PetsURL": [
