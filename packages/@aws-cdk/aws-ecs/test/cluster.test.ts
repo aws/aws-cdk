@@ -119,7 +119,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -288,7 +288,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -652,7 +652,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -1619,17 +1619,7 @@ describe('cluster', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'ec2.',
-                    {
-                      Ref: 'AWS::URLSuffix',
-                    },
-                  ],
-                ],
-              },
+              Service: 'ec2.amazonaws.com',
             },
           },
         ],

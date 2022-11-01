@@ -10,17 +10,7 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": "*",
-        "Service": {
-         "Fn::Join": [
-          "",
-          [
-           "ec2.",
-           {
-            "Ref": "AWS::URLSuffix"
-           }
-          ]
-         ]
-        }
+        "Service": "ec2.amazonaws.com"
        }
       }
      ],
