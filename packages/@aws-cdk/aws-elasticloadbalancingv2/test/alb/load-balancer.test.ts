@@ -82,6 +82,7 @@ describe('tests', () => {
       http2Enabled: false,
       idleTimeout: cdk.Duration.seconds(1000),
       dropInvalidHeaderFields: true,
+      desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
     });
 
     // THEN
@@ -102,6 +103,10 @@ describe('tests', () => {
         {
           Key: 'routing.http.drop_invalid_header_fields.enabled',
           Value: 'true',
+        },
+        {
+          Key: 'routing.http.desync_mitigation_mode',
+          Value: 'defensive',
         },
       ],
     });

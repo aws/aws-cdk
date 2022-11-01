@@ -6,7 +6,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { IpAddressType, ApplicationProtocol } from '../shared/enums';
+import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 
@@ -51,6 +51,14 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    * @default false
    */
   readonly dropInvalidHeaderFields?: boolean;
+
+  /**
+   * Determines how the load balancer handles requests that
+   * might pose a security risk to your application
+   *
+   * @default DesyncMitigationMode.DEFENSIVE
+   */
+  readonly desyncMitigationMode?: DesyncMitigationMode;
 }
 
 /**
@@ -109,6 +117,17 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
     if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
+    switch (props.desyncMitigationMode) {
+      case DesyncMitigationMode.MONITOR:
+        this.setAttribute('routing.http.desync_mitigation_mode', 'monitor');
+        break;
+      case DesyncMitigationMode.DEFENSIVE:
+        this.setAttribute('routing.http.desync_mitigation_mode', 'defensive');
+        break;
+      case DesyncMitigationMode.STRICTEST:
+        this.setAttribute('routing.http.desync_mitigation_mode', 'strictest');
+        break;
+    }
   }
 
   /**
