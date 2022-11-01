@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.50.0](https://github.com/aws/aws-cdk/compare/v2.49.1...v2.50.0) (2022-11-01)
+
+
+### Features
+
+* **aws-ecs-patterns:** entryPoint and command support within ApplicationLoadBalancedFargateService and ApplicationLoadBalancedEc2Service ([#22609](https://github.com/aws/aws-cdk/issues/22609)) ([6925293](https://github.com/aws/aws-cdk/commit/6925293047ff02fbe68234740327f3513a86ef74)), closes [#17092](https://github.com/aws/aws-cdk/issues/17092)
+* **codedeploy:** CodeDeploy deployment group construct for ECS ([#22295](https://github.com/aws/aws-cdk/issues/22295)) ([efd24d1](https://github.com/aws/aws-cdk/commit/efd24d1bb9bc1c113e81e033012d99b7d5f8a146)), closes [#1559](https://github.com/aws/aws-cdk/issues/1559)
+* **core:** automatic cross stack, cross region references (under feature flag) ([#22008](https://github.com/aws/aws-cdk/issues/22008)) ([f1b5497](https://github.com/aws/aws-cdk/commit/f1b5497879b4ba117723dad4255082f081d4fec7))
+* **ec2:** Vpc supports reserving space for future AZs ([#22705](https://github.com/aws/aws-cdk/issues/22705)) ([7b51ea9](https://github.com/aws/aws-cdk/commit/7b51ea9ae1e61d57b8ed6b99510cf26d423bb991))
+* **stepfunctions:**  add intrinsic functions ([#22431](https://github.com/aws/aws-cdk/issues/22431)) ([8f85b08](https://github.com/aws/aws-cdk/commit/8f85b081724d425f452babe1f38f4cda211c17b9)), closes [#22068](https://github.com/aws/aws-cdk/issues/22068) [#22629](https://github.com/aws/aws-cdk/issues/22629)
+
+
+### Bug Fixes
+
+* **opensearch:** log group policies ignore incorrect error code on delete ([#22364](https://github.com/aws/aws-cdk/issues/22364)) ([ebba9e3](https://github.com/aws/aws-cdk/commit/ebba9e371c22542a5ae98bbd0e6a2f130eef77d6))
+* revert jsii to version 1.69.0 ([#22715](https://github.com/aws/aws-cdk/issues/22715)) ([0837c1a](https://github.com/aws/aws-cdk/commit/0837c1a6af705474dfe127203c2b99a6ff201d77))
+* **apigateway:** race condition exists between stage and cfnaccount in specrestapi ([#22671](https://github.com/aws/aws-cdk/issues/22671)) ([4cb008b](https://github.com/aws/aws-cdk/commit/4cb008bd6d27a8e3366ea600a8b9027f15ae6dcd)), closes [#18925](https://github.com/aws/aws-cdk/issues/18925)
+* **aws-events:** restrict eventbus statementId to 64 characters ([#22296](https://github.com/aws/aws-cdk/issues/22296)) ([fadbfc1](https://github.com/aws/aws-cdk/commit/fadbfc1eb07f4f2daecfe623812fee029c81e31a)), closes [#22120](https://github.com/aws/aws-cdk/issues/22120) [#21808](https://github.com/aws/aws-cdk/issues/21808)
+* **stepfunctions-tasks:** athenaStartQueryExecution task generates invalid s3 arn ([#22692](https://github.com/aws/aws-cdk/issues/22692)) ([6e0cb2b](https://github.com/aws/aws-cdk/commit/6e0cb2ba2e1bfb55d183e65c811d4e17a80cc4b8)), closes [#22608](https://github.com/aws/aws-cdk/issues/22608)
+
 ## [2.49.1](https://github.com/aws/aws-cdk/compare/v2.49.0...v2.49.1) (2022-10-31)
 
 
