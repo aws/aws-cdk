@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "5320a4b1cf45da124dd243ae544c2028dd0a11b8ab55996fcdc72ad27d3d4912": {
+      "source": {
+        "path": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5320a4b1cf45da124dd243ae544c2028dd0a11b8ab55996fcdc72ad27d3d4912.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
