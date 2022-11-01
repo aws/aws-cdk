@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.50.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.1-alpha.0...v2.50.0-alpha.0) (2022-11-01)
+
+
+### Features
+
+* **synthetics:** aws synthetics runtime version syn-nodejs-puppeteer-3.8 ([#22707](https://github.com/aws/aws-cdk/issues/22707)) ([228c865](https://github.com/aws/aws-cdk/commit/228c86532118b143e365b2268d06ee3a36fcf3a7))
+
+## [2.49.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.0-alpha.0...v2.49.1-alpha.0) (2022-10-31) 
+
 ## [2.49.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.48.0-alpha.0...v2.49.0-alpha.0) (2022-10-27)
 
 ## [2.48.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.47.0-alpha.0...v2.48.0-alpha.0) (2022-10-27)

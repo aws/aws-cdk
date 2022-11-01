@@ -26,8 +26,7 @@ junit.xml
 test/
 !*.lit.ts
 jest.config.js
-**/*.integ.snapshot
-**/*.integ.snapshot
+**/*.snapshot
 
 # Don't pack node_modules directories of the lambdas in there. They should only be dev dependencies.
 lambda-packages/ecs-deployment-provider/node_modules
