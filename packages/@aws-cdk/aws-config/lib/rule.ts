@@ -1398,6 +1398,16 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly SHIELD_DRT_ACCESS = 'SHIELD_DRT_ACCESS';
   /**
+   * Checks if a recovery point was created for AWS Backup-Gateway VirtualMachines.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/virtualmachine-last-backup-recovery-point-created.html
+   */
+  public static readonly VIRTUALMACHINE_LAST_BACKUP_RECOVERY_POINT_CREATED = 'VIRTUALMACHINE_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
+   * Checks if AWS Backup-Gateway VirtualMachines are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/virtualmachine-resources-protected-by-backup-plan.html
+   */
+  public static readonly VIRTUALMACHINE_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'VIRTUALMACHINE_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  /**
    * Checks that the default security group of any Amazon Virtual Private Cloud (VPC) does not
    * allow inbound or outbound traffic. The rule returns NOT_APPLICABLE if the security group
    * is not default.
@@ -1409,6 +1419,16 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/vpc-flow-logs-enabled.html
    */
   public static readonly VPC_FLOW_LOGS_ENABLED = 'VPC_FLOW_LOGS_ENABLED';
+  /**
+   * Checks if there are unused network access control lists (network ACLs).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/vpc-network-acl-unused-check.html
+   */
+  public static readonly VPC_NETWORK_ACL_UNUSED_CHECK = 'VPC_NETWORK_ACL_UNUSED_CHECK';
+  /**
+   * Checks if DNS resolution from accepter/requester VPC to private IP is enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/vpc-peering-dns-resolution-check.html
+   */
+  public static readonly VPC_PEERING_DNS_RESOLUTION_CHECK = 'VPC_PEERING_DNS_RESOLUTION_CHECK';
   /**
    * Checks whether the security group with 0.0.0.0/0 of any Amazon Virtual Private Cloud (Amazon VPC)
    * allows only specific inbound TCP or UDP traffic.
