@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.33"
+          "version": "10.1.140"
         }
       },
       "aws-gamelift-build-fleet": {
@@ -63,8 +63,8 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "s3:GetBucket*",
                                     "s3:GetObject*",
+                                    "s3:GetBucket*",
                                     "s3:List*"
                                   ],
                                   "Effect": "Allow",
@@ -80,8 +80,7 @@
                                           ":s3:::",
                                           {
                                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                          },
-                                          "/*"
+                                          }
                                         ]
                                       ]
                                     },
@@ -96,7 +95,8 @@
                                           ":s3:::",
                                           {
                                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                          }
+                                          },
+                                          "/*"
                                         ]
                                       ]
                                     }
