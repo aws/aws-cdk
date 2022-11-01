@@ -4,7 +4,7 @@ import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
 /**
@@ -108,21 +108,21 @@ export class LazyRole extends cdk.Resource implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(identity: IGrantable, ...actions: string[]): Grant {
+  public grant(identity: IPrincipal, ...actions: string[]): Grant {
     return this.instantiate().grant(identity, ...actions);
   }
 
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  public grantPassRole(identity: IGrantable): Grant {
+  public grantPassRole(identity: IPrincipal): Grant {
     return this.instantiate().grantPassRole(identity);
   }
 
   /**
    * Grant permissions to the given principal to assume this role.
    */
-  public grantAssumeRole(identity: IGrantable): Grant {
+  public grantAssumeRole(identity: IPrincipal): Grant {
     return this.instantiate().grantAssumeRole(identity);
   }
 

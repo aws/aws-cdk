@@ -54,6 +54,16 @@
                           "Action": "sqs:SendMessage",
                           "Effect": "Allow",
                           "Resource": "*"
+                        },
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Resource": {
+                            "Fn::GetAtt": [
+                              "Role1ABCC5F0",
+                              "Arn"
+                            ]
+                          }
                         }
                       ],
                       "Version": "2012-10-17"
@@ -95,7 +105,7 @@
                           "Resource": "*"
                         },
                         {
-                          "Action": "sts:AssumeRole",
+                          "Action": "iam:*",
                           "Effect": "Allow",
                           "Resource": {
                             "Fn::GetAtt": [
@@ -178,8 +188,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       },
       "PolicyInteg": {
@@ -202,8 +212,8 @@
                 "id": "DeployAssert",
                 "path": "PolicyInteg/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
                 }
               }
             },
@@ -220,8 +230,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.140"
     }
   }
 }

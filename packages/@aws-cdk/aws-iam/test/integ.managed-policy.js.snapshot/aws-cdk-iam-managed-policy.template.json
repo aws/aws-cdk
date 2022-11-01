@@ -64,6 +64,16 @@
        "Action": "lambda:InvokeFunction",
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": "iam:*",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Role1ABCC5F0",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

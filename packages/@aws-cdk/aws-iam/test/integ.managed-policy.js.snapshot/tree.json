@@ -123,6 +123,16 @@
                           "Action": "lambda:InvokeFunction",
                           "Effect": "Allow",
                           "Resource": "*"
+                        },
+                        {
+                          "Action": "iam:*",
+                          "Effect": "Allow",
+                          "Resource": {
+                            "Fn::GetAtt": [
+                              "Role1ABCC5F0",
+                              "Arn"
+                            ]
+                          }
                         }
                       ],
                       "Version": "2012-10-17"
@@ -194,8 +204,8 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       },
       "ManagedPolicyInteg": {
@@ -218,8 +228,8 @@
                 "id": "DeployAssert",
                 "path": "ManagedPolicyInteg/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
                 }
               }
             },
@@ -236,8 +246,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.140"
     }
   }
 }

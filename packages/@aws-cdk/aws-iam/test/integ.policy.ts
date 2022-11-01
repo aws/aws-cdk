@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import { AccountRootPrincipal, Policy, PolicyStatement, Role } from '../lib';
+import { AccountRootPrincipal, Grant, Policy, PolicyStatement, Role } from '../lib';
 import { User } from '../lib/user';
 
 const app = new App();
@@ -18,7 +18,8 @@ policy2.addStatements(new PolicyStatement({ resources: ['*'], actions: ['lambda:
 policy2.attachToUser(user);
 
 const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
-role.grantAssumeRole(policy2);
+role.grantAssumeRole(policy.grantPrincipal);
+Grant.addToPrincipal({ actions: ['iam:*'], resourceArns: [role.roleArn], grantee: policy2 });
 
 new IntegTest(app, 'PolicyInteg', {
   testCases: [stack],
