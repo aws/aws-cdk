@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "testCases": {
     "restapi-fromdefinition/DefaultTest": {
       "stacks": [
         "integtest-restapi-fromdefinition-asset"
       ],
-      "assertionStack": "restapi-fromdefinition/DefaultTest/DeployAssert"
+      "assertionStack": "restapi-fromdefinition/DefaultTest/DeployAssert",
+      "assertionStackName": "restapifromdefinitionDefaultTestDeployAssertDF3B0845"
     }
   }
 }

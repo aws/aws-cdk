@@ -70,7 +70,7 @@ describe('stage', () => {
     });
   });
 
-  test('stage depends on the CloudWatch role when it exists', () => {
+  test('RestApi - stage depends on the CloudWatch role when it exists', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: true, deploy: false });
@@ -80,6 +80,23 @@ describe('stage', () => {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', { deployment });
 
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::ApiGateway::Stage', {
+      DependsOn: ['testapiAccount9B907665'],
+    });
+  });
+
+  test('SpecRestApi - stage depends on the CloudWatch role when it exists', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.SpecRestApi(stack, 'test-api', { apiDefinition: apigateway.ApiDefinition.fromInline( { foo: 'bar' }) });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    new apigateway.Stage(stack, 'my-stage', { deployment });
+
+    // THEN
     Template.fromStack(stack).hasResource('AWS::ApiGateway::Stage', {
       DependsOn: ['testapiAccount9B907665'],
     });

@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "StateMachineIntrinsicsTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-intrinsics-integ"
+      ],
+      "assertionStack": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "StateMachineIntrinsicsTestDefaultTestDeployAssert1C1E1D7E"
+    }
+  }
+}

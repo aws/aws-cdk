@@ -312,17 +312,22 @@ function pathFromToken(token: IResolvable | undefined) {
 }
 
 /**
- * Render the string in a valid JSON Path expression.
+ * Render the string or number value in a valid JSON Path expression.
  *
- * If the string is a Tokenized JSON path reference -- return the JSON path reference inside it.
- * Otherwise, single-quote it.
+ * If the value is a Tokenized JSON path reference -- return the JSON path reference inside it.
+ * If the value is a number -- convert it to string.
+ * If the value is a string -- single-quote it.
+ * Otherwise, throw errors.
  *
  * Call this function whenever you're building compound JSONPath expressions, in
  * order to avoid having tokens-in-tokens-in-tokens which become very hard to parse.
  */
-export function renderInExpression(x: string) {
-  const path = jsonPathString(x);
-  return path ?? singleQuotestring(x);
+export function renderInExpression(x: any) {
+  const path = jsonPathFromAny(x);
+  if (path) return path;
+  if (typeof x === 'number') return x.toString(10);
+  if (typeof x === 'string') return singleQuotestring(x);
+  throw new Error('Unxexpected value.');
 }
 
 function singleQuotestring(x: string) {

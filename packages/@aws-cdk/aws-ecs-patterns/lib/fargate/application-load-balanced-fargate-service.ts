@@ -86,6 +86,8 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         dockerLabels: taskImageOptions.dockerLabels,
+        command: taskImageOptions.command,
+        entryPoint: taskImageOptions.entryPoint,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,

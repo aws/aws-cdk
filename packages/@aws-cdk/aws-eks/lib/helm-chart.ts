@@ -30,7 +30,7 @@ export interface HelmChartOptions {
   readonly version?: string;
 
   /**
-   * The repository which contains the chart. For example: https://kubernetes-charts.storage.googleapis.com/
+   * The repository which contains the chart. For example: https://charts.helm.sh/stable/
    * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
   readonly repository?: string;

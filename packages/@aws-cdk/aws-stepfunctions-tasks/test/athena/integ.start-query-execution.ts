@@ -20,6 +20,10 @@ const startQueryExecutionJob = new AthenaStartQueryExecution(stack, 'Start Athen
     encryptionConfiguration: {
       encryptionOption: EncryptionOption.S3_MANAGED,
     },
+    outputLocation: {
+      bucketName: 'query-results-bucket',
+      objectKey: 'folder',
+    },
   },
 });
 

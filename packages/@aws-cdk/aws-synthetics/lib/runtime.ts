@@ -150,9 +150,26 @@ export class Runtime {
    * - Puppeteer-core version 10.1.0
    * - Chromium version 92.0.4512
    *
+   * New Features:
+   * - **Logging enhancement**: The canary will upload logs to Amazon S3 even if it times out or crashes.
+   * - **Lambda layer size reduced**: The size of the Lambda layer used for canaries is reduced by 34%.
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.7
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_7 = new Runtime('syn-nodejs-puppeteer-3.7', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-3.8` includes the following:
+   * - Lambda runtime Node.js 14.x
+   * - Puppeteer-core version 10.1.0
+   * - Chromium version 92.0.4512
+   *
+   * New Features:
+   * - **Profile cleanup**: Chromium profiles are now cleaned up after each canary run.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.8
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_8 = new Runtime('syn-nodejs-puppeteer-3.8', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:

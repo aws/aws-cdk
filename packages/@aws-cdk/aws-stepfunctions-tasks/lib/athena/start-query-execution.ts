@@ -109,6 +109,10 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         resources: [
           this.props.resultConfiguration?.outputLocation?.bucketName
             ? cdk.Stack.of(this).formatArn({
+              // S3 Bucket names are globally unique in a partition,
+              // and so their ARNs have empty region and account components
+              region: '',
+              account: '',
               service: 's3',
               resource: this.props.resultConfiguration?.outputLocation?.bucketName,
               resourceName: this.props.resultConfiguration?.outputLocation?.objectKey,

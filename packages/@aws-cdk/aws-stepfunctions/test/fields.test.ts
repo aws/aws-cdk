@@ -1,7 +1,7 @@
 import { FieldUtils, JsonPath, TaskInput } from '../lib';
 
 describe('Fields', () => {
-  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array./;
+  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Array, States.ArrayPartition, States.ArrayContains, States.ArrayRange, States.ArrayGetItem, States.ArrayLength, States.ArrayUnique, States.Base64Encode, States.Base64Decode, States.Hash, States.JsonMerge, States.StringToJson, States.JsonToString, States.MathRandom, States.MathAdd, States.StringSplit, States.UUID, or States.Format./;
 
   test('deep replace correctly handles fields in arrays', () => {
     expect(
@@ -81,6 +81,20 @@ describe('Fields', () => {
     expect(JsonPath.stringAt('States.StringToJson')).toBeDefined();
     expect(JsonPath.stringAt('States.JsonToString')).toBeDefined();
     expect(JsonPath.stringAt('States.Array')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayPartition')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayContains')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayRange')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayGetItem')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayLength')).toBeDefined();
+    expect(JsonPath.stringAt('States.ArrayUnique')).toBeDefined();
+    expect(JsonPath.stringAt('States.Base64Encode')).toBeDefined();
+    expect(JsonPath.stringAt('States.Base64Decode')).toBeDefined();
+    expect(JsonPath.stringAt('States.Hash')).toBeDefined();
+    expect(JsonPath.stringAt('States.JsonMerge')).toBeDefined();
+    expect(JsonPath.stringAt('States.MathRandom')).toBeDefined();
+    expect(JsonPath.stringAt('States.MathAdd')).toBeDefined();
+    expect(JsonPath.stringAt('States.StringSplit')).toBeDefined();
+    expect(JsonPath.stringAt('States.UUID')).toBeDefined();
 
     expect(() => JsonPath.stringAt('$hello')).toThrowError(jsonPathValidationErrorMsg);
     expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
@@ -226,6 +240,184 @@ describe('intrinsics constructors', () => {
       Field: JsonPath.array('asdf', JsonPath.stringAt('$.Id')),
     })).toEqual({
       'Field.$': "States.Array('asdf', $.Id)",
+    });
+  });
+
+  test('arrayPartition', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayPartition(JsonPath.listAt('$.inputArray'), 4),
+    })).toEqual({
+      'Field.$': 'States.ArrayPartition($.inputArray, 4)',
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayPartition(JsonPath.listAt('$.inputArray'), JsonPath.numberAt('$.chunkSize')),
+    })).toEqual({
+      'Field.$': 'States.ArrayPartition($.inputArray, $.chunkSize)',
+    });
+  });
+
+  test('arrayContains', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayContains(JsonPath.listAt('$.inputArray'), 5),
+    })).toEqual({
+      'Field.$': 'States.ArrayContains($.inputArray, 5)',
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayContains(JsonPath.listAt('$.inputArray'), 'a'),
+    })).toEqual({
+      'Field.$': "States.ArrayContains($.inputArray, 'a')",
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayContains(JsonPath.listAt('$.inputArray'), JsonPath.numberAt('$.lookingFor')),
+    })).toEqual({
+      'Field.$': 'States.ArrayContains($.inputArray, $.lookingFor)',
+    });
+  });
+
+  test('arrayRange', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayRange(1, 9, 2),
+    })).toEqual({
+      'Field.$': 'States.ArrayRange(1, 9, 2)',
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayRange(JsonPath.numberAt('$.start'), JsonPath.numberAt('$.end'), JsonPath.numberAt('$.step')),
+    })).toEqual({
+      'Field.$': 'States.ArrayRange($.start, $.end, $.step)',
+    });
+  });
+
+  test('arrayGetItem', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayGetItem(JsonPath.listAt('$.inputArray'), 5),
+    })).toEqual({
+      'Field.$': 'States.ArrayGetItem($.inputArray, 5)',
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayGetItem(JsonPath.numberAt('$.inputArray'), JsonPath.numberAt('$.index')),
+    })).toEqual({
+      'Field.$': 'States.ArrayGetItem($.inputArray, $.index)',
+    });
+  });
+
+  test('arrayLength', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayLength(JsonPath.listAt('$.inputArray')),
+    })).toEqual({
+      'Field.$': 'States.ArrayLength($.inputArray)',
+    });
+  });
+
+  test('arrayUnique', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.arrayUnique(JsonPath.listAt('$.inputArray')),
+    })).toEqual({
+      'Field.$': 'States.ArrayUnique($.inputArray)',
+    });
+  });
+
+  test('base64Encode', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.base64Encode('Data to encode'),
+    })).toEqual({
+      'Field.$': "States.Base64Encode('Data to encode')",
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.base64Encode(JsonPath.stringAt('$.input')),
+    })).toEqual({
+      'Field.$': 'States.Base64Encode($.input)',
+    });
+  });
+
+  test('base64Decode', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.base64Decode('RGF0YSB0byBlbmNvZGU='),
+    })).toEqual({
+      'Field.$': "States.Base64Decode('RGF0YSB0byBlbmNvZGU=')",
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.base64Decode(JsonPath.stringAt('$.base64')),
+    })).toEqual({
+      'Field.$': 'States.Base64Decode($.base64)',
+    });
+  });
+
+  test('hash', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.hash('Input data', 'SHA-1'),
+    })).toEqual({
+      'Field.$': "States.Hash('Input data', 'SHA-1')",
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.hash(JsonPath.objectAt('$.Data'), JsonPath.stringAt('$.Algorithm')),
+    })).toEqual({
+      'Field.$': 'States.Hash($.Data, $.Algorithm)',
+    });
+  });
+
+  test('jsonMerge', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.jsonMerge(JsonPath.objectAt('$.Obj1'), JsonPath.objectAt('$.Obj2')),
+    })).toEqual({
+      'Field.$': 'States.JsonMerge($.Obj1, $.Obj2, false)',
+    });
+  });
+
+  test('mathRandom', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.mathRandom(1, 999),
+    })).toEqual({
+      'Field.$': 'States.MathRandom(1, 999)',
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.mathRandom(JsonPath.numberAt('$.start'), JsonPath.numberAt('$.end')),
+    })).toEqual({
+      'Field.$': 'States.MathRandom($.start, $.end)',
+    });
+  });
+
+  test('mathAdd', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.mathAdd(1, 999),
+    })).toEqual({
+      'Field.$': 'States.MathAdd(1, 999)',
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.mathAdd(JsonPath.numberAt('$.value1'), JsonPath.numberAt('$.step')),
+    })).toEqual({
+      'Field.$': 'States.MathAdd($.value1, $.step)',
+    });
+  });
+
+  test('stringSplit', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.stringSplit('1,2,3,4,5', ','),
+    })).toEqual({
+      'Field.$': "States.StringSplit('1,2,3,4,5', ',')",
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.stringSplit(JsonPath.stringAt('$.inputString'), JsonPath.stringAt('$.splitter')),
+    })).toEqual({
+      'Field.$': 'States.StringSplit($.inputString, $.splitter)',
+    });
+  });
+
+  test('uuid', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.uuid(),
+    })).toEqual({
+      'Field.$': 'States.UUID()',
     });
   });
 
