@@ -28,5 +28,4 @@ jest.config.js
 **/cdk.out
 junit.xml
 test/
-**/*.integ.snapshot
-**/*.integ.snapshot
+**/*.snapshot
