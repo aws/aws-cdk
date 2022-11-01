@@ -543,7 +543,7 @@ This feature is currently in preview. Be aware of the following limitations:
 
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress
-information similar to what `cdk deploy` provides.
+information similar to what `cdk deploy` provides as well as a list of all retained resources.
 
 ```console
 $ cdk destroy --app='node bin/main.js' MyStackName
