@@ -83,17 +83,34 @@
       {
        "Action": [
         "lakeformation:GetDataAccess",
-        "s3:AbortMultipartUpload",
         "s3:CreateBucket",
         "s3:GetBucketLocation",
         "s3:GetObject",
-        "s3:ListBucket",
+        "s3:ListBucket"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:AbortMultipartUpload",
         "s3:ListBucketMultipartUploads",
         "s3:ListMultipartUploadParts",
         "s3:PutObject"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::query-results-bucket/folder"
+         ]
+        ]
+       }
       },
       {
        "Action": [
@@ -229,7 +246,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"}}}}},\"TimeoutSeconds\":30}"
+       ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}}},\"TimeoutSeconds\":30}"
       ]
      ]
     }

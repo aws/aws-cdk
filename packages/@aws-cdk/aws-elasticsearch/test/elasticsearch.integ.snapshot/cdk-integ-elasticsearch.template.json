@@ -69,7 +69,7 @@
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6\"},\"ignoreErrorCodesMatching\":\"400\"}",
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
@@ -377,7 +377,7 @@
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc8405238e455eeabd840cf6933e1814efc51d2de71\"},\"ignoreErrorCodesMatching\":\"400\"}",
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc8405238e455eeabd840cf6933e1814efc51d2de71\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
