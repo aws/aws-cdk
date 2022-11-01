@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.108"
+          "version": "10.1.140"
         }
       },
       "aws-cdk-codepipeline-elastic-beanstalk-deploy": {
@@ -577,17 +577,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "Service": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "ec2.",
-                                  {
-                                    "Ref": "AWS::URLSuffix"
-                                  }
-                                ]
-                              ]
-                            }
+                            "Service": "ec2.amazonaws.com"
                           }
                         }
                       ],
@@ -1086,13 +1076,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.108"
+                      "version": "10.1.140"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.140"
                 }
               },
               "Deploy": {
@@ -1223,13 +1213,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.108"
+                      "version": "10.1.140"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.140"
                 }
               }
             },
@@ -1257,7 +1247,7 @@
                 "path": "codepipeline-elastic-beanstalk-deploy/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
