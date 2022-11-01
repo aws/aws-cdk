@@ -22,7 +22,7 @@ junit.xml
 
 !test/allow-listed-image/node_modules
 
-!**/*.integ.snapshot/**/asset.*/*.js
-!**/*.integ.snapshot/**/asset.*/*.d.ts
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
 
-!**/*.integ.snapshot/**/asset.*/**
+!**/*.snapshot/**/asset.*/**
