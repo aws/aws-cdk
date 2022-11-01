@@ -259,6 +259,7 @@ export class CdkToolkit {
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
           buildAssets: false,
+          assetParallelism: options.assetParallelism,
         });
 
         const message = result.noOp
@@ -788,7 +789,7 @@ export class CdkToolkit {
     }
   }
 
-  private async buildAllAssetsForSingleStack(stack: cxapi.CloudFormationStackArtifact, options: Pick<DeployOptions, 'roleArn' | 'toolkitStackName'>): Promise<void> {
+  private async buildAllAssetsForSingleStack(stack: cxapi.CloudFormationStackArtifact, options: Pick<DeployOptions, 'roleArn' | 'toolkitStackName' | 'assetParallelism'>): Promise<void> {
     // Check whether the stack has an asset manifest before trying to build and publish.
     if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
       return;
@@ -799,6 +800,9 @@ export class CdkToolkit {
       stack,
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
+      buildOptions: {
+        parallel: options.assetParallelism,
+      },
     });
     print('\n%s: assets built\n', chalk.bold(stack.displayName));
   }
@@ -1053,6 +1057,15 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Build/publish assets for a single stack in parallel
+   *
+   * Independent of whether stacks are being done in parallel or no.
+   *
+   * @default true
+   */
+  readonly assetParallelism?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {

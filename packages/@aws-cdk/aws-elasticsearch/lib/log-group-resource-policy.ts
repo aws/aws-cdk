@@ -42,7 +42,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
         parameters: {
           policyName: props.policyName,
         },
-        ignoreErrorCodesMatching: '400',
+        ignoreErrorCodesMatching: 'ResourceNotFoundException',
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: ['*'] }),
     });

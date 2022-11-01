@@ -209,7 +209,7 @@ export class CustomResourceProvider extends Construct {
     }
 
     const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
-    fse.copySync(props.codeDirectory, stagingDirectory);
+    fse.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
     fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
 
     const staging = new AssetStaging(this, 'Staging', {
