@@ -1,0 +1,19 @@
+{
+ "Resources": {
+  "NestedIntegQueue0DFF7C28": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NestedIntegQueue0DFF7C28",
+     "QueueName"
+    ]
+   }
+  }
+ }
+}
