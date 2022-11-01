@@ -1432,6 +1432,36 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/wafv2-logging-enabled.html
    */
   public static readonly WAFV2_LOGGING_ENABLED = 'WAFV2_LOGGING_ENABLED';
+  /**
+   * Checks if an AWS WAF Classic rule group contains any rules.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/waf-global-rulegroup-not-empty.html
+   */
+  public static readonly WAF_GLOBAL_RULEGROUP_NOT_EMPTY = 'WAF_GLOBAL_RULEGROUP_NOT_EMPTY';
+  /**
+   * Checks if an AWS WAF global rule contains any conditions.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/waf-global-rule-not-empty.html
+   */
+  public static readonly WAF_GLOBAL_RULE_NOT_EMPTY = 'WAF_GLOBAL_RULE_NOT_EMPTY';
+  /**
+   * Checks whether a WAF Global Web ACL contains any WAF rules or rule groups.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/waf-global-webacl-not-empty.html
+   */
+  public static readonly WAF_GLOBAL_WEBACL_NOT_EMPTY = 'WAF_GLOBAL_WEBACL_NOT_EMPTY';
+  /**
+   * Checks if WAF Regional rule groups contain any rules.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/waf-regional-rulegroup-not-empty.html
+   */
+  public static readonly WAF_REGIONAL_RULEGROUP_NOT_EMPTY = 'WAF_REGIONAL_RULEGROUP_NOT_EMPTY';
+  /**
+   * Checks whether WAF regional rule contains conditions.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/waf-regional-rule-not-empty.html
+   */
+  public static readonly WAF_REGIONAL_RULE_NOT_EMPTY = 'WAF_REGIONAL_RULE_NOT_EMPTY';
+  /**
+   * Checks if a WAF regional Web ACL contains any WAF rules or rule groups.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/waf-regional-webacl-not-empty.html
+   */
+  public static readonly WAF_REGIONAL_WEBACL_NOT_EMPTY = 'WAF_REGIONAL_WEBACL_NOT_EMPTY';
 
   // utility class
   private constructor() { }
