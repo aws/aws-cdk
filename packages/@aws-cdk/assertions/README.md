@@ -34,6 +34,11 @@ const templateJson = '{ "Resources": ... }'; /* The CloudFormation template as J
 const template = Template.fromString(templateJson);
 ```
 
+**Cyclical Resources Note**
+
+If allowing cyclical references is desired, for example in the case of unprocessed Transform templates, supply TemplateParsingOptions and
+set skipCyclicalDependenciesCheck to true. In all other cases, will fail on detecting cyclical dependencies.
+
 ## Full Template Match
 
 The simplest assertion would be to assert that the template matches a given
@@ -74,6 +79,17 @@ in a template.
 
 ```ts
 template.resourceCountIs('Foo::Bar', 2);
+```
+
+You can also count the number of resources of a specific type whose `Properties`
+section contains the specified properties:
+
+```ts
+template.resourcePropertiesCountIs('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+}, 1);
 ```
 
 ## Resource Matching & Retrieval

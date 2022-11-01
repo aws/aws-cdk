@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -7,32 +7,38 @@
         "file": "tree.json"
       }
     },
+    "aws-cdk-lambda-runtime-inlinecode.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-lambda-runtime-inlinecode.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "aws-cdk-lambda-runtime-inlinecode": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-runtime-inlinecode.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33c56e02291eaea4afa147afc5d42ce6d80c4f482906b78fa47ddbe2582f19bc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda-runtime-inlinecode.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "aws-cdk-lambda-runtime-inlinecode.assets"
+      ],
       "metadata": {
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12XServiceRole59E71436"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12X8B8075A4"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_12_X-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS12XfunctionName"
-          }
-        ],
         "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_7/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -123,19 +129,31 @@
             "data": "NODEJS16XfunctionName"
           }
         ],
-        "PYTHON36ServiceRole814B3AD9": [
+        "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PYTHON36ServiceRole814B3AD9",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "NODEJS12XServiceRole59E71436": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS12XServiceRole59E71436",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "PYTHON364935EF15": [
+        "NODEJS12X8B8075A4": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PYTHON364935EF15",
+            "data": "NODEJS12X8B8075A4",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

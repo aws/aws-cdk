@@ -167,7 +167,8 @@ Nested stacks also support the use of Docker image and file assets.
 ## Accessing resources in a different stack
 
 You can access resources in a different stack, as long as they are in the
-same account and AWS Region. The following example defines the stack `stack1`,
+same account and AWS Region (see [next section](#accessing-resources-in-a-different-stack-and-region) for an exception).
+The following example defines the stack `stack1`,
 which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
 which takes the bucket from stack1 as a constructor property.
 
@@ -191,6 +192,56 @@ in the producing stack and an
 [Fn::ImportValue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
 in the consuming stack to transfer that information from one stack to the
 other.
+
+## Accessing resources in a different stack and region
+
+> **This feature is currently experimental**
+
+You can enable the Stack property `crossRegionReferences`
+in order to access resources in a different stack _and_ region. With this feature flag
+enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
+an ACM certificate in `us-east-1`.
+
+```ts
+const stack1 = new Stack(app, 'Stack1', {
+  env: {
+    region: 'us-east-1',
+  },
+  crossRegionReferences: true,
+});
+const cert = new acm.Certificate(stack1, 'Cert', {
+  domainName: '*.example.com',
+  validation: acm.CertificateValidation.fromDns(route53.PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'Z0329774B51CGXTDQV3X')),
+});
+
+const stack2 = new Stack(app, 'Stack2', {
+  env: {
+    region: 'us-east-2',
+  },
+  crossRegionReferences: true,
+});
+new cloudfront.Distribution(stack2, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('example.com'),
+  },
+  domainNames: ['dev.example.com'],
+  certificate: cert,
+});
+```
+
+When the AWS CDK determines that the resource is in a different stack _and_ is in a different
+region, it will "export" the value by creating a custom resource in the producing stack which
+creates SSM Parameters in the consuming region for each exported value. The parameters will be
+created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
+In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
+is used to reference the SSM parameter which was created.
+
+In order to mimic strong references, a Custom Resource is also created in the consuming
+stack which marks the SSM parameters as being "imported". When a parameter has been successfully
+imported, the producing stack cannot update the value.
+
+See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
+for more details on this feature.
 
 ### Removing automatic cross-stack references
 
@@ -1115,5 +1166,75 @@ When deploying to AWS CloudFormation, it needs to keep in check the amount of re
 It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
 
 Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.
+
+## App Context
+
+[Context values](https://docs.aws.amazon.com/cdk/v2/guide/context.html) are key-value pairs that can be associated with an app, stack, or construct.
+One common use case for context is to use it for enabling/disabling [feature flags](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html). There are several places
+where context can be specified. They are listed below in the order they are evaluated (items at the
+top take precedence over those below).
+
+- The `node.setContext()` method
+- The `postCliContext` prop when you create an `App`
+- The CLI via the `--context` CLI argument
+- The `cdk.json` file via the `context` key:
+- The `cdk.context.json` file:
+- The `~/.cdk.json` file via the `context` key:
+- The `context` prop when you create an `App`
+
+### Examples of setting context
+
+```ts
+new App({
+  context: {
+    '@aws-cdk/core:newStyleStackSynthesis': true,
+  },
+});
+```
+
+```ts
+const app = new App();
+app.node.setContext('@aws-cdk/core:newStyleStackSynthesis', true);
+```
+
+```ts
+new App({
+  postCliContext: {
+    '@aws-cdk/core:newStyleStackSynthesis': true,
+  },
+});
+```
+
+```console
+cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
+```
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
+```
+
+_cdk.context.json_
+
+```json
+{
+  "@aws-cdk/core:newStyleStackSynthesis": true
+}
+```
+
+_~/.cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
+```
 
 <!--END CORE DOCUMENTATION-->

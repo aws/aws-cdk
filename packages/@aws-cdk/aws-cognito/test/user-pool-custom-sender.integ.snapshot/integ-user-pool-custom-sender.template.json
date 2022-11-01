@@ -50,25 +50,6 @@
     "emailLambdaServiceRole7569D9F6"
    ]
   },
-  "emailLambdaCustomEmailSenderCognito5E15D907": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "emailLambda61F82360",
-      "Arn"
-     ]
-    },
-    "Principal": "cognito-idp.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "pool056F3F7E",
-      "Arn"
-     ]
-    }
-   }
-  },
   "keyFEDD6EC0": {
    "Type": "AWS::KMS::Key",
    "Properties": {
@@ -103,6 +84,25 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "poolCustomEmailSenderCognitoE3D88E99": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "emailLambda61F82360",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "pool056F3F7E",
+      "Arn"
+     ]
+    }
+   }
   },
   "pool056F3F7E": {
    "Type": "AWS::Cognito::UserPool",
@@ -199,6 +199,40 @@
    "Value": {
     "Ref": "poolclient2623294C"
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

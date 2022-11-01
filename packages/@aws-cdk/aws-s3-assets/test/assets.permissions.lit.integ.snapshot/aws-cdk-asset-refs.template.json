@@ -1,18 +1,4 @@
 {
- "Parameters": {
-  "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
-  },
-  "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
-  },
-  "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197\""
-  }
- },
  "Resources": {
   "MyUserGroupDA7A39B2": {
    "Type": "AWS::IAM::Group"
@@ -40,7 +26,7 @@
            },
            ":s3:::",
            {
-            "Ref": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            },
            "/*"
           ]
@@ -56,7 +42,7 @@
            },
            ":s3:::",
            {
-            "Ref": "AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
            }
           ]
          ]
@@ -73,6 +59,40 @@
      }
     ]
    }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
   }
  }
 }

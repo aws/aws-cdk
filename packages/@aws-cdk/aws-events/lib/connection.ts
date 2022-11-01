@@ -199,6 +199,7 @@ export abstract class HttpParameter {
         return {
           key: name,
           value,
+          isValueSecret: false,
         } as CfnConnection.ParameterProperty;
       }
     }();

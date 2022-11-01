@@ -1,4 +1,5 @@
 {
+ "Description": "This is secound nested stack.",
  "Parameters": {
   "TopicNamePrefix": {
    "Type": "String"

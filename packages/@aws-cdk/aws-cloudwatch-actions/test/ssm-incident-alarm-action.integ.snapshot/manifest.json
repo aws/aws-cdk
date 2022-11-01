@@ -7,14 +7,50 @@
         "file": "tree.json"
       }
     },
+    "SsmIncidentAlarmActionIntegrationTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SsmIncidentAlarmActionIntegrationTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "SsmIncidentAlarmActionIntegrationTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "SsmIncidentAlarmActionIntegrationTestStack.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2628895c3e6f126a07c479ecfe543745996b37a7d3f44962d0c644198503db3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SsmIncidentAlarmActionIntegrationTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
+      "dependencies": [
+        "SsmIncidentAlarmActionIntegrationTestStack.assets"
+      ],
       "metadata": {
+        "/SsmIncidentAlarmActionIntegrationTestStack/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/SsmIncidentAlarmActionIntegrationTestStack/ReplicationSet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicationSet"
+          }
+        ],
         "/SsmIncidentAlarmActionIntegrationTestStack/ResponsePlan": [
           {
             "type": "aws:cdk:logicalId",
@@ -26,16 +62,66 @@
             "type": "aws:cdk:logicalId",
             "data": "Alarm1F9009D71"
           }
+        ],
+        "/SsmIncidentAlarmActionIntegrationTestStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SsmIncidentAlarmActionIntegrationTestStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "SsmIncidentAlarmActionIntegrationTestStack"
+    },
+    "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SsmIncidentManagerAlarmActionTestDefaultTestDeployAssert9DC05EC0.assets"
+      ],
+      "metadata": {
+        "/SsmIncidentManagerAlarmActionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SsmIncidentManagerAlarmActionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
       },
       "displayName": "SsmIncidentManagerAlarmActionTest/DefaultTest/DeployAssert"
     }

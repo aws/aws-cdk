@@ -1,7 +1,7 @@
 import { IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
-import { BackupPlanRule } from './rule';
+import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
 
@@ -191,7 +191,18 @@ export class BackupPlan extends Resource implements IBackupPlan {
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
       enableContinuousBackup: rule.props.enableContinuousBackup,
       targetBackupVault: vault.backupVaultName,
+      copyActions: rule.props.copyActions?.map(this.planCopyActions),
     });
+  }
+
+  private planCopyActions(props: BackupPlanCopyActionProps): CfnBackupPlan.CopyActionResourceTypeProperty {
+    return {
+      destinationBackupVaultArn: props.destinationBackupVault.backupVaultArn,
+      lifecycle: (props.deleteAfter || props.moveToColdStorageAfter) && {
+        deleteAfterDays: props.deleteAfter?.toDays(),
+        moveToColdStorageAfterDays: props.moveToColdStorageAfter?.toDays(),
+      },
+    };
   }
 
   /**

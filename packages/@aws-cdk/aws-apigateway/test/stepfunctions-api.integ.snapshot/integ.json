@@ -5,7 +5,7 @@
       "stacks": [
         "StepFunctionsRestApiDeploymentStack"
       ],
-      "assertionStack": "stepfunctionsrestapiDefaultTestDeployAssert53C3797F"
+      "assertionStack": "step-functions-restapi/DefaultTest/DeployAssert"
     }
   }
 }

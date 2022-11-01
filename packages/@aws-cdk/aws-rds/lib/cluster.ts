@@ -11,6 +11,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
+import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
@@ -280,6 +281,13 @@ interface DatabaseClusterBaseProps {
    * @default - true
    */
   readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The network type of the DB instance.
+   *
+   * @default - IPV4
+   */
+  readonly networkType?: NetworkType;
 }
 
 /**
@@ -481,6 +489,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableIamDatabaseAuthentication: props.iamAuthentication,
+      networkType: props.networkType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -738,7 +747,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       Annotations.of(this).addWarning('Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
     }
     if (!props.credentials && !props.snapshotCredentials) {
-      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on tbis cluster.');
+      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
     }
     const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
 
@@ -890,7 +899,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster
       engine: props.engine.engineType,
-      engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: cluster.clusterIdentifier,
       dbInstanceIdentifier: instanceIdentifier,
       // Instance properties

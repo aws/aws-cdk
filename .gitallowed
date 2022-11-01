@@ -25,6 +25,7 @@ account: '422531588944'
 account: '924023996002'
 account: '919366029133' #cn-north-1
 account: '919830735681' #cn-northwest-1
+account: '909464085924' #ap-southeast-3
 
 # The account IDs of password rotation applications of Serverless Application Repository
 # https://docs.aws.amazon.com/secretsmanager/latest/userguide/enable-rotation-rds.html

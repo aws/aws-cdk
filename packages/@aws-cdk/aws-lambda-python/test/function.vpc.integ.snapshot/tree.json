@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.71"
+          "version": "10.1.95"
         }
       },
       "cdk-integ-lambda-python-vpc": {
@@ -43,13 +43,13 @@
                   "version": "0.0.0"
                 }
               },
-              "ingressSubnet1": {
-                "id": "ingressSubnet1",
-                "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1",
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/Subnet",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -64,12 +64,12 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.0.0.0/24",
+                        "cidrBlock": "10.0.0.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "ingress"
+                            "value": "Public"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
@@ -77,7 +77,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1"
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -89,7 +89,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/Acl",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -97,7 +97,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/RouteTable",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -107,7 +107,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1"
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -119,15 +119,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/RouteTableAssociation",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myvpcingressSubnet1RouteTableD6322DD5"
+                          "Ref": "myvpcPublicSubnet1RouteTableF7E8D7F1"
                         },
                         "subnetId": {
-                          "Ref": "myvpcingressSubnet1Subnet82F0259C"
+                          "Ref": "myvpcPublicSubnet1Subnet6BD75C12"
                         }
                       }
                     },
@@ -138,12 +138,12 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet1/DefaultRoute",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myvpcingressSubnet1RouteTableD6322DD5"
+                          "Ref": "myvpcPublicSubnet1RouteTableF7E8D7F1"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
@@ -155,6 +155,54 @@
                       "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "myvpcPublicSubnet1Subnet6BD75C12"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "myvpcPublicSubnet1EIP88D18203",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -162,13 +210,13 @@
                   "version": "0.0.0"
                 }
               },
-              "ingressSubnet2": {
-                "id": "ingressSubnet2",
-                "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2",
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/Subnet",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -183,12 +231,12 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.0.1.0/24",
+                        "cidrBlock": "10.0.64.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "ingress"
+                            "value": "Public"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
@@ -196,7 +244,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2"
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -208,7 +256,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/Acl",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -216,7 +264,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/RouteTable",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -226,7 +274,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2"
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -238,15 +286,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/RouteTableAssociation",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myvpcingressSubnet2RouteTable2112B53A"
+                          "Ref": "myvpcPublicSubnet2RouteTable9A4CA50C"
                         },
                         "subnetId": {
-                          "Ref": "myvpcingressSubnet2Subnet56945106"
+                          "Ref": "myvpcPublicSubnet2Subnet844B7F05"
                         }
                       }
                     },
@@ -257,12 +305,12 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cdk-integ-lambda-python-vpc/my_vpc/ingressSubnet2/DefaultRoute",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "myvpcingressSubnet2RouteTable2112B53A"
+                          "Ref": "myvpcPublicSubnet2RouteTable9A4CA50C"
                         },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
@@ -274,10 +322,296 @@
                       "fqn": "@aws-cdk/aws-ec2.CfnRoute",
                       "version": "0.0.0"
                     }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "myvpcPublicSubnet2Subnet844B7F05"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "myvpcPublicSubnet2EIPA3AF827D",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "myvpc9455A260"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "myvpc9455A260"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "myvpcPrivateSubnet1RouteTable991B69A9"
+                        },
+                        "subnetId": {
+                          "Ref": "myvpcPrivateSubnet1SubnetAE3DECEE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "myvpcPrivateSubnet1RouteTable991B69A9"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "myvpcPublicSubnet1NATGatewayD3DC5B8D"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "myvpc9455A260"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.192.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "myvpc9455A260"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "myvpcPrivateSubnet2RouteTableF2B44BF5"
+                        },
+                        "subnetId": {
+                          "Ref": "myvpcPrivateSubnet2SubnetE09939FB"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "cdk-integ-lambda-python-vpc/my_vpc/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "myvpcPrivateSubnet2RouteTableF2B44BF5"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "myvpcPublicSubnet2NATGateway45472CCD"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -458,41 +792,9 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3Bucket3A6D55B5"
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3VersionKey300CDB6A"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParameters7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983bS3VersionKey300CDB6A"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
+                      "s3Key": "3b4e770c8242272e96f6faafd45d2446549a060a25dcce2d246445447e356ca9.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -505,10 +807,10 @@
                     "vpcConfig": {
                       "subnetIds": [
                         {
-                          "Ref": "myvpcingressSubnet1Subnet82F0259C"
+                          "Ref": "myvpcPrivateSubnet1SubnetAE3DECEE"
                         },
                         {
-                          "Ref": "myvpcingressSubnet2Subnet56945106"
+                          "Ref": "myvpcPrivateSubnet2SubnetE09939FB"
                         }
                       ],
                       "securityGroupIds": [
@@ -533,61 +835,207 @@
               "version": "0.0.0"
             }
           },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "cdk-integ-lambda-python-vpc/AssetParameters",
+          "Exports": {
+            "id": "Exports",
+            "path": "cdk-integ-lambda-python-vpc/Exports",
             "children": {
-              "7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b": {
-                "id": "7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b",
-                "path": "cdk-integ-lambda-python-vpc/AssetParameters/7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b/S3Bucket",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b/S3VersionKey",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "cdk-integ-lambda-python-vpc/AssetParameters/7641c95c909cbd220aa45f8b7dca8606bd48b9a84f0c5d28fa697c90c810983b/ArtifactHash",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
+              "Output{\"Ref\":\"myhandlerD202FA8E\"}": {
+                "id": "Output{\"Ref\":\"myhandlerD202FA8E\"}",
+                "path": "cdk-integ-lambda-python-vpc/Exports/Output{\"Ref\":\"myhandlerD202FA8E\"}",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.71"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.71"
-            }
-          },
-          "FunctionArn": {
-            "id": "FunctionArn",
-            "path": "cdk-integ-lambda-python-vpc/FunctionArn",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "version": "10.1.95"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "lambda-python-vpc": {
+        "id": "lambda-python-vpc",
+        "path": "lambda-python-vpc",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "lambda-python-vpc/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "lambda-python-vpc/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.95"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "lambda-python-vpc/DefaultTest/DeployAssert",
+                "children": {
+                  "LambdaInvoke431773224924ebf10c8a31d363a6bf16": {
+                    "id": "LambdaInvoke431773224924ebf10c8a31d363a6bf16",
+                    "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.95"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertEqualsLambdainvoke": {
+                        "id": "AssertEqualsLambdainvoke",
+                        "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke",
+                        "children": {
+                          "AssertionProvider": {
+                            "id": "AssertionProvider",
+                            "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.95"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/Default",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/Default/Default",
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/core.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CustomResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssertionResults": {
+                            "id": "AssertionResults",
+                            "path": "lambda-python-vpc/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionResults",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnOutput",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.EqualsAssertion",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "lambda-python-vpc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "lambda-python-vpc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "lambda-python-vpc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "lambda-python-vpc/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.95"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

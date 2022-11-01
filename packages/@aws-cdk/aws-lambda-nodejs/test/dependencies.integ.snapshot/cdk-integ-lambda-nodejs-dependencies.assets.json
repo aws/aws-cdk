@@ -1,20 +1,20 @@
 {
   "version": "20.0.0",
   "files": {
-    "e235181b37d83d303912716cfb12d07f09f5fc6ff3da14badbb0fff37db69424": {
+    "f078d47ca35d3ee8cf531975a21ac17857ee7d4afc2c1a5a01ccc8b597b9ba88": {
       "source": {
-        "path": "/Users/rdjurasaj/code/robertd/aws-cdk",
+        "path": "asset.f078d47ca35d3ee8cf531975a21ac17857ee7d4afc2c1a5a01ccc8b597b9ba88",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e235181b37d83d303912716cfb12d07f09f5fc6ff3da14badbb0fff37db69424.zip",
+          "objectKey": "f078d47ca35d3ee8cf531975a21ac17857ee7d4afc2c1a5a01ccc8b597b9ba88.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "94cd95ecab796a9093e0e0f6a867e989f5a5340b74bc179f5d38026dcef48daf": {
+    "2211ee96578399d927407352779c284056e2d7ef714dad838a81e531f403edde": {
       "source": {
         "path": "cdk-integ-lambda-nodejs-dependencies.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "94cd95ecab796a9093e0e0f6a867e989f5a5340b74bc179f5d38026dcef48daf.json",
+          "objectKey": "2211ee96578399d927407352779c284056e2d7ef714dad838a81e531f403edde.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

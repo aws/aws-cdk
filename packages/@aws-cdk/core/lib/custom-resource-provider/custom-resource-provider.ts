@@ -209,7 +209,7 @@ export class CustomResourceProvider extends Construct {
     }
 
     const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
-    fse.copySync(props.codeDirectory, stagingDirectory);
+    fse.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
     fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
 
     const staging = new AssetStaging(this, 'Staging', {
@@ -319,6 +319,11 @@ export class CustomResourceProvider extends Construct {
     if (!env || Object.keys(env).length === 0) {
       return undefined;
     }
+
+    env = { ...env }; // Copy
+
+    // Always use regional endpoints
+    env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
 
     // Sort environment so the hash of the function used to create
     // `currentVersion` is not affected by key order (this is how lambda does

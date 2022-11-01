@@ -7,28 +7,38 @@
         "file": "tree.json"
       }
     },
+    "TokenAuthorizerIAMRoleInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TokenAuthorizerIAMRoleInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
     "TokenAuthorizerIAMRoleInteg": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "TokenAuthorizerIAMRoleInteg.template.json",
-        "validateOnSynth": false
-      },
-      "metadata": {
-        "/TokenAuthorizerIAMRoleInteg": [
-          {
-            "type": "aws:cdk:asset",
-            "data": {
-              "path": "asset.fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.handler",
-              "id": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
-              "packaging": "zip",
-              "sourceHash": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3",
-              "s3BucketParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38",
-              "s3KeyParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621",
-              "artifactHashParameter": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9"
-            }
-          }
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca126ba9a02884a8dc3612e63dc5ab11b76fc4f7b3e1901d9081bac728c3a32a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TokenAuthorizerIAMRoleInteg.assets"
         ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TokenAuthorizerIAMRoleInteg.assets"
+      ],
+      "metadata": {
         "/TokenAuthorizerIAMRoleInteg/MyAuthorizerFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -39,24 +49,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAuthorizerFunction70F1223E"
-          }
-        ],
-        "/TokenAuthorizerIAMRoleInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3Bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38"
-          }
-        ],
-        "/TokenAuthorizerIAMRoleInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/S3VersionKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
-          }
-        ],
-        "/TokenAuthorizerIAMRoleInteg/AssetParameters/fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3/ArtifactHash": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9"
           }
         ],
         "/TokenAuthorizerIAMRoleInteg/authorizerRole/Resource": [
@@ -118,16 +110,66 @@
             "type": "aws:cdk:logicalId",
             "data": "MyRestApiANY05143F93"
           }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TokenAuthorizerIAMRoleInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
         ]
       },
       "displayName": "TokenAuthorizerIAMRoleInteg"
+    },
+    "iamtokenauthorizerDefaultTestDeployAssert87D47FBB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "iamtokenauthorizerDefaultTestDeployAssert87D47FBB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
     },
     "iamtokenauthorizerDefaultTestDeployAssert87D47FBB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "iamtokenauthorizerDefaultTestDeployAssert87D47FBB.template.json",
-        "validateOnSynth": false
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "iamtokenauthorizerDefaultTestDeployAssert87D47FBB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "iamtokenauthorizerDefaultTestDeployAssert87D47FBB.assets"
+      ],
+      "metadata": {
+        "/iam-token-authorizer/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/iam-token-authorizer/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
       },
       "displayName": "iam-token-authorizer/DefaultTest/DeployAssert"
     }
