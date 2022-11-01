@@ -255,27 +255,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
       resourceName: this.physicalName,
     });
 
-    const self = this;
-
-    class GrantPrincipal implements IPrincipal {
-      public readonly grantPrincipal: IPrincipal = this;
-
-      public get assumeRoleAction(): string {
-        throw new Error('ManagedPolicy has no principals.');
-      }
-      public get policyFragment(): PrincipalPolicyFragment {
-        throw new Error('ManagedPolicy has no principals.');
-      }
-      public addToPolicy(statement: PolicyStatement): boolean {
-        return this.addToPrincipalPolicy(statement).statementAdded;
-      }
-      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-        self.addStatements(statement);
-        return { statementAdded: true, policyDependable: self };
-      }
-    }
-
-    this.grantPrincipal = new GrantPrincipal();
+    this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
 
     this.node.addValidation({ validate: () => this.validateManagedPolicy() });
   }
@@ -322,5 +302,27 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     result.push(...this.document.validateForIdentityPolicy());
 
     return result;
+  }
+}
+
+/**
+ * A `grantPrincipal` of ManagedPolicy.
+ */
+class ManagedPolicyGrantPrincipal implements IPrincipal {
+  public readonly grantPrincipal: IPrincipal = this;
+
+  constructor(private policy: ManagedPolicy) { }
+  public get assumeRoleAction(): string {
+    throw new Error('Cannot use ManagedPolicy as a principal.');
+  }
+  public get policyFragment(): PrincipalPolicyFragment {
+    throw new Error('Cannot use ManagedPolicy as a resource policy.');
+  }
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    this.policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
   }
 }

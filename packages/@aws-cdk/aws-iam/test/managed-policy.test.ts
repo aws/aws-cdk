@@ -1,6 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 describe('managed policy', () => {
@@ -647,9 +646,6 @@ describe('managed policy', () => {
     });
 
     class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      constructor(scope: Construct, id: string) {
-        super(scope, id);
-      }
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
@@ -658,7 +654,7 @@ describe('managed policy', () => {
 
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow('ManagedPolicy has no principals.');
+    }).toThrow('Cannot use ManagedPolicy as a resource policy.');
   });
 
   test('fails when passed as a grantee to Grant.addToPrincipalOrResource', () => {
@@ -667,9 +663,6 @@ describe('managed policy', () => {
     });
 
     class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      constructor(scope: Construct, id: string) {
-        super(scope, id);
-      }
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
@@ -678,7 +671,7 @@ describe('managed policy', () => {
 
     expect(() => {
       Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow('ManagedPolicy has no principals.');
+    }).toThrow('Cannot use ManagedPolicy as a resource policy.');
   });
 });
 

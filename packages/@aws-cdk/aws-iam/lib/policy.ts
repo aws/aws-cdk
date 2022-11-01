@@ -181,25 +181,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
       props.statements.forEach(p => this.addStatements(p));
     }
 
-    class GrantPrincipal implements IPrincipal {
-      public readonly grantPrincipal: IPrincipal = this;
-
-      public get assumeRoleAction(): string {
-        throw new Error('Policy has no principals.');
-      }
-      public get policyFragment(): PrincipalPolicyFragment {
-        throw new Error('Policy has no principals.');
-      }
-      public addToPolicy(statement: PolicyStatement): boolean {
-        return this.addToPrincipalPolicy(statement).statementAdded;
-      }
-      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-        self.addStatements(statement);
-        return { statementAdded: true, policyDependable: self };
-      }
-    }
-
-    this.grantPrincipal = new GrantPrincipal();
+    this.grantPrincipal = new PolicyGrantPrincipal(this);
 
     this.node.addValidation({ validate: () => this.validatePolicy() });
   }
@@ -281,5 +263,27 @@ export class Policy extends Resource implements IPolicy, IGrantable {
    */
   private get isAttached() {
     return this.groups.length + this.users.length + this.roles.length > 0;
+  }
+}
+
+/**
+ * A `grantPrincipal` of Policy.
+ */
+class PolicyGrantPrincipal implements IPrincipal {
+  public readonly grantPrincipal: IPrincipal = this;
+
+  constructor(private policy: Policy) { }
+  public get assumeRoleAction(): string {
+    throw new Error('Cannot use Policy as a principal.');
+  }
+  public get policyFragment(): PrincipalPolicyFragment {
+    throw new Error('Cannot use Policy as a resource policy.');
+  }
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    this.policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
   }
 }
