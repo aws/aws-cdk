@@ -1,0 +1,406 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-autoscalinghook-queue.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-autoscalinghook-queue.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-autoscalinghook-queue": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-autoscalinghook-queue.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a3db2dee171afc18cb3c206a03f7f70b4bda8fd9614c0da580b2f78810392fa.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-autoscalinghook-queue.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-autoscalinghook-queue.assets"
+      ],
+      "metadata": {
+        "/integ-autoscalinghook-queue/HookQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HookQueue3D68F56B"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupInstanceSecurityGroupBAF83E2C"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupInstanceRole918A2AF7"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupInstanceProfileA2F3B693"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupLaunchConfigEA6271FF"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupASG3C6DFE3B"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/LifecycleHookscaleout/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupLifecycleHookscaleoutRoleA934DDFC"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/LifecycleHookscaleout/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupLifecycleHookscaleoutRoleDefaultPolicyCA2A774A"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Group/LifecycleHookscaleout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GroupLifecycleHookscaleoutB603BFDE"
+          }
+        ],
+        "/integ-autoscalinghook-queue/al2022AMI.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2022AMIParameter"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Exports/Output{\"Ref\":\"GroupASG3C6DFE3B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefGroupASG3C6DFE3B7A0874DF"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Exports/Output{\"Ref\":\"HookQueue3D68F56B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefHookQueue3D68F56BCF6354BE"
+          }
+        ],
+        "/integ-autoscalinghook-queue/Exports/Output{\"Ref\":\"GroupLifecycleHookscaleoutB603BFDE\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefGroupLifecycleHookscaleoutB603BFDE12D86BC4"
+          }
+        ],
+        "/integ-autoscalinghook-queue/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-autoscalinghook-queue/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-autoscalinghook-queue"
+    },
+    "queuehooktestDefaultTestDeployAssertCF5493DF.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "queuehooktestDefaultTestDeployAssertCF5493DF.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "queuehooktestDefaultTestDeployAssertCF5493DF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "queuehooktestDefaultTestDeployAssertCF5493DF.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bdae540cd4baafd04bde1c5823b5c218b9a79b8d856a8e9a26151bedc547eacd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "queuehooktestDefaultTestDeployAssertCF5493DF.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-autoscalinghook-queue",
+        "queuehooktestDefaultTestDeployAssertCF5493DF.assets"
+      ],
+      "metadata": {
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallAutoScalingsetDesiredCapacity/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallAutoScalingsetDesiredCapacity"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessage"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessageWaitForIsCompleteProviderInvoke92C9A498"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessageWaitForTimeoutProviderInvoke88C69E59"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessageWaitForRole90A5ABAA"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessageWaitFor10141935"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSQSreceiveMessage"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/AwsApiCallAutoScalingcompleteLifecycleAction/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallAutoScalingcompleteLifecycleAction"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/queue-hook-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "queue-hook-test/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -139,6 +139,18 @@ export interface StackProps {
    * 'aws:cdk:version-reporting' context key
    */
   readonly analyticsReporting?: boolean;
+
+  /**
+   * Enable this flag to allow native cross region stack references.
+   *
+   * Enabling this will create a CloudFormation custom resource
+   * in both the producing stack and consuming stack in order to perform the export/import
+   *
+   * This feature is currently experimental
+   *
+   * @default false
+   */
+  readonly crossRegionReferences?: boolean;
 }
 
 /**
@@ -301,6 +313,13 @@ export class Stack extends Construct implements ITaggable {
   public readonly _versionReportingEnabled: boolean;
 
   /**
+   * Whether cross region references are enabled for this stack
+   *
+   * @internal
+   */
+  public readonly _crossRegionReferences: boolean;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -344,6 +363,7 @@ export class Stack extends Construct implements ITaggable {
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };
     this.templateOptions = { };
+    this._crossRegionReferences = !!props.crossRegionReferences;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
@@ -920,17 +940,9 @@ export class Stack extends Construct implements ITaggable {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
     }
 
-    // if exportValue is being called manually (which is pre onPrepare) then the logicalId
-    // could potentially be changed by a call to overrideLogicalId. This would cause our Export/Import
-    // to have an incorrect id. For a better user experience, lock the logicalId and throw an error
-    // if the user tries to override the id _after_ calling exportValue
-    if (CfnElement.isCfnElement(resolvable.target)) {
-      resolvable.target._lockLogicalId();
-    }
-
     // "teleport" the value here, in case it comes from a nested stack. This will also
     // ensure the value is from our own scope.
-    const exportable = referenceNestedStackValueInParent(resolvable, this);
+    const exportable = getExportable(this, resolvable);
 
     // Ensure a singleton "Exports" scoping Construct
     // This mostly exists to trigger LogicalID munging, which would be
@@ -1402,7 +1414,7 @@ import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacySt
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { referenceNestedStackValueInParent } from './private/refs';
+import { getExportable } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
