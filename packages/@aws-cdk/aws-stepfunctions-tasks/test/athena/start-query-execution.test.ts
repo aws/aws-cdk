@@ -216,15 +216,7 @@ describe('Start Query Execution', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':s3:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':query-results-bucket/folder',
+                  ':s3:::query-results-bucket/folder',
                 ],
               ],
             },

@@ -409,6 +409,50 @@ test('setting ALB deployment controller', () => {
   });
 });
 
+test('setting a command for taskImageOptions in an ApplicationLoadBalancedFargateService works', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      command: ['./app/bin/start.sh', '--foo'],
+    },
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      Match.objectLike({
+        Image: '/aws/aws-example-app',
+        Command: ['./app/bin/start.sh', '--foo'],
+      }),
+    ],
+  });
+});
+
+test('setting an entryPoint for taskImageOptions in an ApplicationLoadBalancedFargateService works', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      entryPoint: ['echo', 'foo'],
+    },
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      Match.objectLike({
+        Image: '/aws/aws-example-app',
+        EntryPoint: ['echo', 'foo'],
+      }),
+    ],
+  });
+});
+
 test('setting NLB deployment controller', () => {
   // GIVEN
   const stack = new cdk.Stack();

@@ -59,7 +59,7 @@ test('minimal example renders correctly', () => {
       parameters: {
         policyName: 'TestPolicy',
       },
-      ignoreErrorCodesMatching: '400',
+      ignoreErrorCodesMatching: 'ResourceNotFoundException',
     }),
   });
 });

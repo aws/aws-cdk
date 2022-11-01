@@ -1,4 +1,8 @@
 import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as route53 from '@aws-cdk/aws-route53';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
 import * as customresources from '@aws-cdk/custom-resources';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';

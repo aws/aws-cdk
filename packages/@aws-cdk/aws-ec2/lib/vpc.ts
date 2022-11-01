@@ -21,6 +21,7 @@ import { VpcLookupOptions } from './vpc-lookup';
 import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
+const FAKE_AZ_NAME = 'fake-az';
 
 export interface ISubnet extends IResource {
   /**
@@ -889,6 +890,16 @@ export interface VpcProps {
   readonly maxAzs?: number;
 
   /**
+   * Define the number of AZs to reserve.
+   *
+   * When specified, the IP space is reserved for the azs but no actual
+   * resources are provisioned.
+   *
+   * @default 0
+   */
+  readonly reservedAzs?: number;
+
+  /**
    * Availability zones this VPC spans.
    *
    * Specify this option only if you do not specify `maxAzs`.
@@ -1396,6 +1407,9 @@ export class Vpc extends VpcBase {
       const maxAZs = props.maxAzs ?? 3;
       this.availabilityZones = stack.availabilityZones.slice(0, maxAZs);
     }
+    for (let i = 0; props.reservedAzs && i < props.reservedAzs; i++) {
+      this.availabilityZones.push(FAKE_AZ_NAME);
+    }
 
 
     this.vpcId = this.resource.ref;
@@ -1559,6 +1573,10 @@ export class Vpc extends VpcBase {
 
       if (subnetConfig.reserved === true) {
         // For reserved subnets, do not create any resources
+        return;
+      }
+      if (availabilityZone === FAKE_AZ_NAME) {
+        // For reserved azs, do not create any resources
         return;
       }
 

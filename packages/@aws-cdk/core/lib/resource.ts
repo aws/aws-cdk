@@ -256,7 +256,9 @@ export abstract class Resource extends Construct implements IResource {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 
-        if (this.stack.environment !== consumingStack.environment) {
+        if (this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region &&
+            !consumingStack._crossRegionReferences)) {
           this._enableCrossEnvironment();
           return this.physicalName;
         } else {
@@ -287,7 +289,9 @@ export abstract class Resource extends Construct implements IResource {
     return mimicReference(arnAttr, {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
-        if (this.stack.environment !== consumingStack.environment) {
+        if (this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region &&
+            !consumingStack._crossRegionReferences)) {
           this._enableCrossEnvironment();
           return this.stack.formatArn(arnComponents);
         } else {
