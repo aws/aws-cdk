@@ -4,7 +4,6 @@ import * as mocks from './cluster-resource-handler-mocks';
 describe('cluster resource provider', () => {
   beforeEach(() => {
     mocks.reset();
-
   });
 
   describe('create', () => {
@@ -25,8 +24,6 @@ describe('cluster resource provider', () => {
         },
         name: 'MyResourceId-fakerequestid',
       });
-
-
     });
 
     test('generated cluster name does not exceed 100 characters', async () => {
@@ -53,7 +50,6 @@ describe('cluster resource provider', () => {
       // THEN
       expect(mocks.actualRequest.createClusterRequest?.name.length).toEqual(100);
       expect(mocks.actualRequest.createClusterRequest?.name).toEqual('hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
-
     });
 
     test('onCreate: explicit cluster name', async () => {
@@ -64,7 +60,6 @@ describe('cluster resource provider', () => {
       await handler.onEvent();
 
       expect(mocks.actualRequest.createClusterRequest!.name).toEqual('ExplicitCustomName');
-
     });
 
     test('with no specific version', async () => {
@@ -75,7 +70,6 @@ describe('cluster resource provider', () => {
       await handler.onEvent();
 
       expect(mocks.actualRequest.createClusterRequest!.version).toEqual('12.34.56');
-
     });
 
     test('isCreateComplete still not complete if cluster is not ACTIVE', async () => {
@@ -84,21 +78,18 @@ describe('cluster resource provider', () => {
       const resp = await handler.isComplete();
       expect(mocks.actualRequest.describeClusterRequest!.name).toEqual('physical-resource-id');
       expect(resp).toEqual({ IsComplete: false });
-
     });
 
     test('isCreateComplete throws if cluster is FAILED', async () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create'));
       mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
       await expect(handler.isComplete()).rejects.toThrow('Cluster is in a FAILED status');
-
     });
 
     test('isUpdateComplete throws if cluster is FAILED', async () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update'));
       mocks.simulateResponse.describeClusterResponseMockStatus = 'FAILED';
       await expect(handler.isComplete()).rejects.toThrow('Cluster is in a FAILED status');
-
     });
 
     test('isCreateComplete is complete when cluster is ACTIVE', async () => {
@@ -118,7 +109,6 @@ describe('cluster resource provider', () => {
           OpenIdConnectIssuer: '',
         },
       });
-
     });
 
     test('encryption config', async () => {
@@ -138,10 +128,7 @@ describe('cluster resource provider', () => {
         encryptionConfig: [{ provider: { keyArn: 'aws:kms:key' }, resources: ['secrets'] }],
         name: 'MyResourceId-fakerequestid',
       });
-
-
     });
-
   });
 
   describe('delete', () => {
@@ -150,14 +137,12 @@ describe('cluster resource provider', () => {
       const resp = await handler.onEvent();
       expect(mocks.actualRequest.deleteClusterRequest!.name).toEqual('physical-resource-id');
       expect(resp).toEqual({ PhysicalResourceId: 'physical-resource-id' });
-
     });
 
     test('onDelete ignores ResourceNotFoundException', async () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Delete'));
       mocks.simulateResponse.deleteClusterErrorCode = 'ResourceNotFoundException';
       await handler.onEvent();
-
     });
 
     test('isDeleteComplete returns false as long as describeCluster succeeds', async () => {
@@ -165,7 +150,6 @@ describe('cluster resource provider', () => {
       const resp = await handler.isComplete();
       expect(mocks.actualRequest.describeClusterRequest!.name).toEqual('physical-resource-id');
       expect(resp.IsComplete).toEqual(false);
-
     });
 
     test('isDeleteComplete returns true when describeCluster throws a ResourceNotFound exception', async () => {
@@ -173,7 +157,6 @@ describe('cluster resource provider', () => {
       mocks.simulateResponse.describeClusterExceptionCode = 'ResourceNotFoundException';
       const resp = await handler.isComplete();
       expect(resp.IsComplete).toEqual(true);
-
     });
 
     test('isDeleteComplete propagates other errors', async () => {
@@ -186,12 +169,10 @@ describe('cluster resource provider', () => {
         error = e;
       }
       expect(error.code).toEqual('OtherException');
-
     });
   });
 
   describe('update', () => {
-
     test('no change', async () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', mocks.MOCK_PROPS, mocks.MOCK_PROPS));
       const resp = await handler.onEvent();
@@ -199,7 +180,6 @@ describe('cluster resource provider', () => {
       expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
       expect(mocks.actualRequest.updateClusterConfigRequest).toEqual(undefined);
       expect(mocks.actualRequest.updateClusterVersionRequest).toEqual(undefined);
-
     });
 
     test('isUpdateComplete is not complete when status is not ACTIVE', async () => {
@@ -207,7 +187,6 @@ describe('cluster resource provider', () => {
       mocks.simulateResponse.describeClusterResponseMockStatus = 'UPDATING';
       const resp = await handler.isComplete();
       expect(resp.IsComplete).toEqual(false);
-
     });
 
     test('isUpdateComplete waits for ACTIVE', async () => {
@@ -215,13 +194,10 @@ describe('cluster resource provider', () => {
       mocks.simulateResponse.describeClusterResponseMockStatus = 'ACTIVE';
       const resp = await handler.isComplete();
       expect(resp.IsComplete).toEqual(true);
-
     });
 
     describe('requires replacement', () => {
-
       describe('name change', () => {
-
         test('explicit name change', async () => {
           // GIVEN
           const req = mocks.newRequest('Update', {
@@ -246,7 +222,6 @@ describe('cluster resource provider', () => {
             },
           });
           expect(resp).toEqual({ PhysicalResourceId: 'new-cluster-name-1234' });
-
         });
 
         test('from auto-gen name to explicit name', async () => {
@@ -274,9 +249,7 @@ describe('cluster resource provider', () => {
             },
           });
           expect(resp).toEqual({ PhysicalResourceId: 'MyResourceId-fakerequestid' });
-
         });
-
       });
 
       test('subnets or security groups requires a replacement', async () => {
@@ -305,7 +278,6 @@ describe('cluster resource provider', () => {
             securityGroupIds: ['sg1'],
           },
         });
-
       });
 
       test('"roleArn" requires a replacement', async () => {
@@ -321,7 +293,6 @@ describe('cluster resource provider', () => {
           name: 'MyResourceId-fakerequestid',
           roleArn: 'new-arn',
         });
-
       });
 
       test('fails if cluster has an explicit "name" that is the same as the old "name"', async () => {
@@ -343,7 +314,6 @@ describe('cluster resource provider', () => {
         }
 
         expect(err?.message).toEqual('Cannot replace cluster "explicit-cluster-name" since it has an explicit physical name. Either rename the cluster or remove the "name" configuration');
-
       });
 
       test('succeeds if cluster had an explicit "name" and now it does not', async () => {
@@ -365,7 +335,6 @@ describe('cluster resource provider', () => {
           name: 'MyResourceId-fakerequestid',
           roleArn: 'new-arn',
         });
-
       });
 
       test('succeeds if cluster had an explicit "name" and now it has a different name', async () => {
@@ -387,7 +356,6 @@ describe('cluster resource provider', () => {
           name: 'new-explicit-cluster-name',
           roleArn: 'new-arn',
         });
-
       });
     });
 
@@ -410,11 +378,9 @@ describe('cluster resource provider', () => {
       // THEN
       expect(error).toBeDefined();
       expect(error.message).toEqual('Cannot update cluster encryption configuration');
-
     });
 
     describe('isUpdateComplete with EKS update ID', () => {
-
       test('with "Failed" status', async () => {
         const event = mocks.newRequest('Update');
         const isCompleteHandler = new ClusterResourceHandler(mocks.client, {
@@ -442,7 +408,6 @@ describe('cluster resource provider', () => {
         expect(error).toBeDefined();
         expect(mocks.actualRequest.describeUpdateRequest).toEqual({ name: 'physical-resource-id', updateId: 'foobar' });
         expect(error.message).toEqual('cluster update id "foobar" failed with errors: [{"errorMessage":"errorMessageMock","errorCode":"errorCodeMock","resourceIds":["foo","bar"]}]');
-
       });
 
       test('with "InProgress" status, returns IsComplete=false', async () => {
@@ -458,7 +423,6 @@ describe('cluster resource provider', () => {
 
         expect(mocks.actualRequest.describeUpdateRequest).toEqual({ name: 'physical-resource-id', updateId: 'foobar' });
         expect(response.IsComplete).toEqual(false);
-
       });
 
       test('with "Successful" status, returns IsComplete=true with "Data"', async () => {
@@ -486,13 +450,10 @@ describe('cluster resource provider', () => {
             OpenIdConnectIssuer: '',
           },
         });
-
       });
-
     });
 
     describe('in-place', () => {
-
       describe('version change', () => {
         test('from undefined to a specific value', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -507,7 +468,6 @@ describe('cluster resource provider', () => {
             version: '12.34',
           });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
-
         });
 
         test('from a specific value to another value', async () => {
@@ -524,7 +484,6 @@ describe('cluster resource provider', () => {
             version: '2.0',
           });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
-
         });
 
         test('to a new value that is already the current version', async () => {
@@ -536,7 +495,6 @@ describe('cluster resource provider', () => {
           expect(mocks.actualRequest.describeClusterRequest).toEqual({ name: 'physical-resource-id' });
           expect(mocks.actualRequest.updateClusterVersionRequest).toEqual(undefined);
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
-
         });
 
         test('fails from specific value to undefined', async () => {
@@ -553,7 +511,6 @@ describe('cluster resource provider', () => {
           }
 
           expect(error.message).toEqual('Cannot remove cluster version configuration. Current version is 1.2');
-
         });
       });
 
@@ -585,7 +542,6 @@ describe('cluster resource provider', () => {
             },
           });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
-
         });
 
         test('from partial vpc configuration to only private access enabled', async () => {
@@ -611,7 +567,6 @@ describe('cluster resource provider', () => {
             },
           });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
-
         });
 
         test('from undefined to both logging and access fully enabled', async () => {
@@ -653,7 +608,6 @@ describe('cluster resource provider', () => {
             },
           });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
-
         });
       });
     });
