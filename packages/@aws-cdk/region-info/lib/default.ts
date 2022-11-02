@@ -94,10 +94,6 @@ export class Default {
         case 'states':
           return regional;
 
-        // Services with a partitional principal
-        case 'ec2':
-          return partitional;
-
         case 'elasticmapreduce':
           return region.startsWith('cn-')
             ? partitional
