@@ -35,6 +35,11 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-cdk/asset-kubectl-v20@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-kubectl-v20/-/asset-kubectl-v20-2.1.0.tgz#b3b315657018ed3f7acffc154c4e527c7bf11ba3"
+  integrity sha512-EWhMI+WuLq9q8QoFi0gxdqHc7ud95DQcMUnkpTD6JcpPQ03TT9dBm2H6ywj652+Q5b+MSRtsre1NTH0SLm9eCw==
+
 "@aws-cdk/lambda-layer-kubectl-v23@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v23/-/lambda-layer-kubectl-v23-2.0.0.tgz#8e46c505c8ba106d7589c9bebda824b8d963463c"
@@ -1749,7 +1754,7 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.108":
+"@types/aws-lambda@^8.10.101", "@types/aws-lambda@^8.10.108":
   version "8.10.108"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.108.tgz#ddadf0d9182f2f5e689ce5fc05b5f711fad6d115"
   integrity sha512-1yh1W1WoqK3lGHy+V/Fi55zobxrDHUUsluCWdMlOXkCvtsCmHPXOG+CQ2STIL4B1g6xi6I6XzxaF8V9+zeIFLA==
@@ -1945,6 +1950,11 @@
   version "18.11.6"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.11.6.tgz#4f91b0b30d405fdf76e0029b11ef5df6a0da4261"
   integrity sha512-j3CEDa2vd96K0AXF8Wur7UucACvnjkk8hYyQAHhUNciabZLDl9nfAEVUSwmh245OOZV15bRA3Y590Gi5jUcDJg==
+
+"@types/node@^14.18.23":
+  version "14.18.33"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.18.33.tgz#8c29a0036771569662e4635790ffa9e057db379b"
+  integrity sha512-qelS/Ra6sacc4loe/3MSjXNL1dNQ/GjxNHVzuChwMfmk7HuycRLVQN2qNY3XahK+fZc5E2szqQSKUyAF0E+2bg==
 
 "@types/node@^14.18.32":
   version "14.18.32"
@@ -2645,6 +2655,22 @@ aws-sdk-mock@5.6.0:
     aws-sdk "^2.928.0"
     sinon "^11.1.1"
     traverse "^0.6.6"
+
+aws-sdk@^2.1093.0, aws-sdk@^2.848.0:
+  version "2.1246.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1246.0.tgz#c32f66e02bfa1a5a16cd907690f964247968d911"
+  integrity sha512-knOW3OsR5G67vc7RsGG7NJiukW2IKBQM5WiQo5SpWCO6PgNcpqnjqbfBEphFIzcwE5WYutHB6Ic1zW0yx27feQ==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.4.19"
 
 aws-sdk@^2.1211.0, aws-sdk@^2.596.0, aws-sdk@^2.928.0:
   version "2.1240.0"
