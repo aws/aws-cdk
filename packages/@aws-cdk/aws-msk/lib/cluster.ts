@@ -446,13 +446,6 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      props.clientAuthentication?.saslProps?.iam &&
-      props.clientAuthentication?.saslProps?.scram
-    ) {
-      throw Error('Only one client authentication method can be enabled.');
-    }
-
-    if (
       props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.PLAINTEXT &&
       props.clientAuthentication
@@ -623,38 +616,19 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    let clientAuthentication;
-    if (props.clientAuthentication?.saslProps?.iam) {
-      clientAuthentication = {
-        sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
+    let clientAuthentication: any;
+    if (props.clientAuthentication?.saslProps?.iam || props.clientAuthentication?.saslProps?.scram) {
+      clientAuthentication = {};
+      clientAuthentication.sasl = {
+        ...(props.clientAuthentication?.saslProps?.iam ? { iam: { enabled: props.clientAuthentication.saslProps.iam } } : {}),
+        ...(props.clientAuthentication?.saslProps?.scram ? { scram: { enabled: props.clientAuthentication.saslProps.scram } } : {}),
       };
-      if (props.clientAuthentication?.tlsProps) {
-        clientAuthentication = {
-          sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
-          tls: {
-            certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
-              (ca) => ca.certificateAuthorityArn,
-            ),
-          },
-        };
-      }
-    } else if (props.clientAuthentication?.saslProps?.scram) {
-      clientAuthentication = {
-        sasl: {
-          scram: {
-            enabled: props.clientAuthentication.saslProps.scram,
-          },
-        },
-      };
-    } else if (
-      props.clientAuthentication?.tlsProps?.certificateAuthorities !== undefined
-    ) {
-      clientAuthentication = {
-        tls: {
-          certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities.map(
-            (ca) => ca.certificateAuthorityArn,
-          ),
-        },
+    }
+    if (props.clientAuthentication?.tlsProps?.certificateAuthorities !== undefined) {
+      clientAuthentication = { ...clientAuthentication } || {};
+      clientAuthentication.tls = {
+        certificateAuthorityArnList: props.clientAuthentication.tlsProps.certificateAuthorities
+          .map((ca) => ca.certificateAuthorityArn),
       };
     }
 
