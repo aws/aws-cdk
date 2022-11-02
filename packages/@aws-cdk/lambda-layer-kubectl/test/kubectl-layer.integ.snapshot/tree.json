@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.123"
+          "version": "10.1.140"
         }
       },
       "lambda-layer-kubectl-integ-stack": {
@@ -56,7 +56,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed.zip"
+                      "s3Key": "7e5f48d1e79c915595d938c932b6f0101715a162780d01a55845367e014fbcda.zip"
                     },
                     "description": "/opt/kubectl/kubectl and /opt/helm/helm"
                   }
@@ -753,7 +753,7 @@
                 "path": "lambda-layer-kubectl-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.123"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
