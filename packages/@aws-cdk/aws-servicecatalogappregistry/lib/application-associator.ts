@@ -38,7 +38,7 @@ export class ApplicationAssociator extends Construct {
     super(scope, id);
 
     if (props.applications.length != 1) {
-      throw new Error('Please provide either ARN or application name.');
+      throw new Error('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
     }
 
     const targetApplication = props.applications[0];

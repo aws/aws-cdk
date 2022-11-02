@@ -60,7 +60,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       new appreg.ApplicationAssociator(app, 'MyApplication', {
         applications: [],
       });
-    }).toThrow(/Please provide either ARN or application name./);
+    }).toThrow('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
   });
 
   test('ApplicationAssociator creation failed when both Application name and ARN is provided', () => {
@@ -73,7 +73,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
           applicationName: 'MyAssociatedApplication',
         })],
       });
-    }).toThrow(/Please provide either ARN or application name./);
+    }).toThrow('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
   });
 
   test('associate resource on imported application', () => {
