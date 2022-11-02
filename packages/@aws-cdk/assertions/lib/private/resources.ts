@@ -1,6 +1,6 @@
 import { Match, Matcher } from '..';
 import { AbsentMatch } from './matchers/absent';
-import { formatFailure, matchSection } from './section';
+import { formatAllMismatches, formatFailure, matchSection } from './section';
 import { Resource, Template } from './template';
 
 export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
@@ -13,6 +13,42 @@ export function findResources(template: Template, type: string, props: any = {})
 
   return result.matches;
 }
+
+export function allResources(template: Template, type: string, props: any): string | void {
+  const section = template.Resources ?? {};
+  const result = matchSection(filterType(section, type), props);
+  if (result.match) {
+    const matchCount = Object.keys(result.matches).length;
+    if (result.analyzedCount > matchCount) {
+      return [
+        `Template has ${result.analyzedCount} resource(s) with type ${type}, but only ${matchCount} match as expected.`,
+        formatAllMismatches(result.analyzed, result.matches),
+      ].join('\n');
+    }
+  } else {
+    return [
+      `Template has ${result.analyzedCount} resource(s) with type ${type}, but none match as expected.`,
+      formatAllMismatches(result.analyzed),
+    ].join('\n');
+  }
+}
+
+export function allResourcesProperties(template: Template, type: string, props: any): string | void {
+  let amended = template;
+
+  // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
+  if (!Matcher.isMatcher(props) || !(props instanceof AbsentMatch)) {
+    // amended needs to be a deep copy to avoid modifying the template.
+    amended = JSON.parse(JSON.stringify(template));
+    amended = addEmptyProperties(amended);
+  }
+
+  return allResources(amended, type, Match.objectLike({
+    Properties: props,
+  }));
+
+}
+
 
 export function hasResource(template: Template, type: string, props: any): string | void {
   const section = template.Resources ?? {};

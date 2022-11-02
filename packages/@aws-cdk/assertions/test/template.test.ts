@@ -553,6 +553,174 @@ describe('Template', () => {
     });
   });
 
+  describe('allResources', () => {
+    test('all resource of type match', () => {
+      const stack = new Stack();
+      const partialProps = { baz: 'qux', fred: 'waldo' };
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { ...partialProps, lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: partialProps,
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResources('Foo::Bar', { Properties: partialProps }));
+    });
+
+    test('no resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResources('Foo::Bar', { Properties: { fred: 'waldo' } }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but none match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo/,
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('some resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResources('Foo::Bar', { Properties: { lorem: 'ipsum' } }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('using a "not" matcher ', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'baz' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResources('Foo::Bar', Match.not({ Properties: { baz: 'qux' } })));
+    });
+  });
+
+  describe('allResourcesProperties', () => {
+    test('all resource of type match', () => {
+      const stack = new Stack();
+      const partialProps = { baz: 'qux', fred: 'waldo' };
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { ...partialProps, lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: partialProps,
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResourcesProperties('Foo::Bar', partialProps));
+    });
+
+    test('no resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+      new CfnResource(stack, 'NotFoo', {
+        type: 'NotFoo::NotBar',
+        properties: { fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResourcesProperties('Foo::Bar', { fred: 'waldo' }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but none match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo/,
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('some resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResourcesProperties('Foo::Bar', { lorem: 'ipsum' }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('using a "not" matcher ', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'baz' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResourcesProperties('Foo::Bar', Match.not({ baz: 'qux' })));
+    });
+  });
+
   describe('hasOutput', () => {
     test('matching', () => {
       const stack = new Stack();
