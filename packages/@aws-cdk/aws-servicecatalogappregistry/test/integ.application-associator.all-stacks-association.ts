@@ -7,7 +7,8 @@ const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
 
 
 new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
-  applications: [appreg.ApplicationBuilder.createApplication('AppRegistryAssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    applicationName: 'AppRegistryAssociatedApplication',
     stackName: 'AppRegistryApplicationAssociatorStack',
   })],
 });

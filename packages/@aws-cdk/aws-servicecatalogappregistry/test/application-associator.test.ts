@@ -16,7 +16,8 @@ describe('Scope based Associations with Application within Same Account', () => 
   });
   test('ApplicationAssociator will associate allStacks created inside cdkApp', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
       })],
     });
@@ -39,7 +40,8 @@ describe('Scope based Associations with Application with Cross Region/Account', 
   });
   test('ApplicationAssociator in cross-account associates all stacks created inside cdk app', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
       })],
     });
@@ -64,11 +66,11 @@ describe('Scope based Associations with Application with Cross Region/Account', 
   test('ApplicationAssociator creation failed when both Application name and ARN is provided', () => {
     expect(() => {
       new appreg.ApplicationAssociator(app, 'MyApplication', {
-        applications: [appreg.ApplicationBuilder.importApplicationFromArn('arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9', {
-          stackName: 'MyAssociatedApplicationStack',
+        applications: [appreg.TargetApplication.existingApplicationFromArn({
+          applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
         }),
-        appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
-          stackName: 'MyAssociatedApplicationStack',
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
         })],
       });
     }).toThrow(/Please provide either ARN or application name./);
@@ -78,9 +80,9 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const resource = new cdk.Stack(app, 'MyStack');
 
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.ApplicationBuilder.importApplicationFromArn('arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9', {
-        stackName: 'MyAssociatedApplicationStack',
-      }, 'MyStackId')],
+      applications: [appreg.TargetApplication.existingApplicationFromArn({
+        applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+      })],
     });
 
     Template.fromStack(resource).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
@@ -91,7 +93,8 @@ describe('Scope based Associations with Application with Cross Region/Account', 
 
   test('ApplicationAssociator with cross region stacks inside cdkApp throws error', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
         env: { account: 'account2', region: 'region2' },
       })],
@@ -105,7 +108,8 @@ describe('Scope based Associations with Application with Cross Region/Account', 
 
   test('Environment Agnostic ApplicationAssociator with cross region stacks inside cdkApp gives warning', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
       })],
     });
@@ -118,7 +122,8 @@ describe('Scope based Associations with Application with Cross Region/Account', 
 
   test('Cdk App Containing Pipeline with stage but stage not associated throws error', () => {
     const application = new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
       })],
     });
@@ -133,7 +138,8 @@ describe('Scope based Associations with Application with Cross Region/Account', 
 
   test('Cdk App Containing Pipeline with stage and stage associated successfully gets synthesized', () => {
     const application = new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
+      applications: [appreg.TargetApplication.createApplicationStack({
+        applicationName: 'MyAssociatedApplication',
         stackName: 'MyAssociatedApplicationStack',
       })],
     });

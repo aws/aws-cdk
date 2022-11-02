@@ -73,7 +73,8 @@ and want to associate all stacks in the `App` scope to `MyAssociatedApplication`
 ```ts
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
-  applications: [appreg.ApplicationBuilder.createApplication('MyAssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    applicationName: 'MyAssociatedApplication',
     stackName: 'MyAssociatedApplicationStack',
     env: { account: '123456789012', region: 'us-east-1' },
   })],
@@ -86,7 +87,8 @@ and want to associate all stacks in the `App` scope to your imported application
 ```ts
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
-  applications: [appreg.ApplicationBuilder.importApplicationFromArn('arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId', {
+  applications: [appreg.TargetApplication.existingApplicationFromArn({
+    applicationArnValue: 'arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId',
     stackName: 'MyAssociatedApplicationStack',
   })],
 });
@@ -119,7 +121,8 @@ interface ApplicationPipelineStackProps extends cdk.StackProps {
 
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
-  applications: [appreg.ApplicationBuilder.createApplication('MyPipelineAssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
+    applicationName: 'MyPipelineAssociatedApplication',
     stackName: 'MyPipelineAssociatedApplicationStack',
     env: { account: '123456789012', region: 'us-east-1' },
   })],
