@@ -1,11 +1,11 @@
 import * as events from '@aws-cdk/aws-events';
+import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { ArnFormat, Stack } from '@aws-cdk/core';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { TargetBaseProps, bindBaseTargetConfig } from './util';
-import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '@aws-cdk/aws-events';
 
 /**
  * Options used when creating a target input template
