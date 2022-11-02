@@ -82,7 +82,6 @@ describe('tests', () => {
       http2Enabled: false,
       idleTimeout: cdk.Duration.seconds(1000),
       dropInvalidHeaderFields: true,
-      desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
     });
 
     // THEN
@@ -104,11 +103,85 @@ describe('tests', () => {
           Key: 'routing.http.drop_invalid_header_fields.enabled',
           Value: 'true',
         },
-        {
-          Key: 'routing.http.desync_mitigation_mode',
-          Value: 'defensive',
-        },
       ],
+    });
+  });
+
+  describe('Desync mitigation mode', () => {
+    test('Defensive', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'defensive',
+          },
+        ],
+      });
+    });
+    test('Monitor', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.MONITOR,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'monitor',
+          },
+        ],
+      });
+    });
+    test('Strictest', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.STRICTEST,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'strictest',
+          },
+        ],
+      });
     });
   });
 
