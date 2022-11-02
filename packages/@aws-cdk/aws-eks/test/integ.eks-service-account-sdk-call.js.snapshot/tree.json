@@ -24,8 +24,8 @@
                 "id": "Staging",
                 "path": "aws-eks-service-account-sdk-calls-test/sdk-call-making-docker-image/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "Repository": {
@@ -121,8 +121,8 @@
                     "id": "Acl",
                     "path": "aws-eks-service-account-sdk-calls-test/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.133"
                     }
                   },
                   "RouteTable": {
@@ -304,8 +304,8 @@
                     "id": "Acl",
                     "path": "aws-eks-service-account-sdk-calls-test/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.133"
                     }
                   },
                   "RouteTable": {
@@ -431,8 +431,8 @@
                     "id": "Acl",
                     "path": "aws-eks-service-account-sdk-calls-test/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.133"
                     }
                   },
                   "RouteTable": {
@@ -558,8 +558,8 @@
                     "id": "Acl",
                     "path": "aws-eks-service-account-sdk-calls-test/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.133"
                     }
                   },
                   "RouteTable": {
@@ -937,8 +937,8 @@
                 "id": "ClusterSecurityGroup",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/ClusterSecurityGroup",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "MastersRole": {
@@ -1166,16 +1166,16 @@
                 "id": "ConfigCommand",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/ConfigCommand",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "GetTokenCommand": {
                 "id": "GetTokenCommand",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/GetTokenCommand",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "my-service-account": {
@@ -1206,8 +1206,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnJson",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.133"
                     }
                   },
                   "Role": {
@@ -1406,8 +1406,8 @@
                         "id": "Stage",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.133"
                         }
                       },
                       "AssetBucket": {
@@ -1552,8 +1552,8 @@
                         "id": "Stage",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.133"
                         }
                       },
                       "AssetBucket": {
@@ -1717,8 +1717,8 @@
                         "id": "Stage",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.133"
                         }
                       },
                       "AssetBucket": {
@@ -1932,8 +1932,8 @@
                             "id": "Stage",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.133"
                             }
                           },
                           "AssetBucket": {
@@ -2145,8 +2145,8 @@
                             "id": "Stage",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.133"
                             }
                           },
                           "AssetBucket": {
@@ -2355,8 +2355,8 @@
                             "id": "Stage",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.133"
                             }
                           },
                           "AssetBucket": {
@@ -2575,16 +2575,16 @@
                 "id": "Service-principalMap",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": {
                 "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "reference-to-awseksserviceaccountsdkcallstestClusterCreationRoleABCB465FArn": {
@@ -2597,8 +2597,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.133"
             }
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
@@ -2789,8 +2789,8 @@
                         "id": "Stage",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.133"
                         }
                       },
                       "AssetBucket": {
@@ -2817,7 +2817,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d01d4b7367b49a3e222279017fe50e41d6b2272d436b2e82038d0036deb2cdcb.zip"
+                          "s3Key": "1f175bea1cef6137d882d0090f49e27e44bbb46a678a86fd5d6fb29ade070a33.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -2878,8 +2878,8 @@
                         "id": "Stage",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.133"
                         }
                       },
                       "AssetBucket": {
@@ -2934,8 +2934,8 @@
                         "id": "Stage",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.133"
                         }
                       },
                       "AssetBucket": {
@@ -3115,8 +3115,8 @@
                             "id": "Stage",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.133"
                             }
                           },
                           "AssetBucket": {
@@ -3203,8 +3203,8 @@
                 "id": "awseksserviceaccountsdkcallstestawscdkawseksKubectlProviderframeworkonEvent905838A2Arn",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/awseksserviceaccountsdkcallstestawscdkawseksKubectlProviderframeworkonEvent905838A2Arn",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "reference-to-awseksserviceaccountsdkcallstestCluster5552283BArn": {
@@ -3279,7 +3279,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/707032c0816cf6f713b20544843217edeca300e36b5d36336c9aa0ec9114f418.json"
+                          "/43282bb612fbe7b4fd592a9a5265e33f7e3a9f258887baf499c13a55aca0d383.json"
                         ]
                       ]
                     },
@@ -3330,8 +3330,8 @@
                 "id": "Staging",
                 "path": "aws-eks-service-account-sdk-calls-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "Role": {
@@ -3352,8 +3352,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.133"
             }
           },
           "AWSCDKCfnUtilsProviderCustomResourceProvider": {
@@ -3364,8 +3364,8 @@
                 "id": "Staging",
                 "path": "aws-eks-service-account-sdk-calls-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               },
               "Role": {
@@ -3386,8 +3386,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.133"
             }
           },
           "S3BucketPinger": {
@@ -3509,8 +3509,8 @@
                         "id": "Stage",
                         "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/Code/Stage",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.133"
                         }
                       },
                       "AssetBucket": {
@@ -3738,8 +3738,8 @@
                             "id": "Stage",
                             "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.133"
                             }
                           },
                           "AssetBucket": {
@@ -3835,14 +3835,14 @@
             "id": "PingerResponse",
             "path": "aws-eks-service-account-sdk-calls-test/PingerResponse",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.133"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.133"
         }
       },
       "aws-cdk-eks-service-account-sdk-call": {
@@ -3865,8 +3865,8 @@
                 "id": "DeployAssert",
                 "path": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.133"
                 }
               }
             },
