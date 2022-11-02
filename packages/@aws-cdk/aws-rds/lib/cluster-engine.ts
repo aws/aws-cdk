@@ -245,6 +245,16 @@ export class AuroraEngineVersion {
   public static readonly VER_1_22_4 = AuroraEngineVersion.builtIn_5_6('1.22.4');
   /** Version "5.6.mysql_aurora.1.22.5". */
   public static readonly VER_1_22_5 = AuroraEngineVersion.builtIn_5_6('1.22.5');
+  /** Version "5.6.mysql_aurora.1.23.0". */
+  public static readonly VER_1_23_0 = AuroraEngineVersion.builtIn_5_6('1.23.0');
+  /** Version "5.6.mysql_aurora.1.23.1". */
+  public static readonly VER_1_23_1 = AuroraEngineVersion.builtIn_5_6('1.23.1');
+  /** Version "5.6.mysql_aurora.1.23.2". */
+  public static readonly VER_1_23_2 = AuroraEngineVersion.builtIn_5_6('1.23.2');
+  /** Version "5.6.mysql_aurora.1.23.3". */
+  public static readonly VER_1_23_3 = AuroraEngineVersion.builtIn_5_6('1.23.3');
+  /** Version "5.6.mysql_aurora.1.23.4". */
+  public static readonly VER_1_23_4 = AuroraEngineVersion.builtIn_5_6('1.23.4');
 
   /**
    * Create a new AuroraEngineVersion with an arbitrary version.
@@ -406,6 +416,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_01_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.01.1');
   /** Version "8.0.mysql_aurora.3.02.0". */
   public static readonly VER_3_02_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.02.0');
+  /** Version "8.0.mysql_aurora.3.02.1". */
+  public static readonly VER_3_02_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.02.1');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -657,6 +669,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_13_7 = AuroraPostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true });
   /** Version "14.3". */
   public static readonly VER_14_3 = AuroraPostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
+  /** Version "14.4". */
+  public static readonly VER_14_4 = AuroraPostgresEngineVersion.of('14.4', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.

@@ -11,6 +11,24 @@
 
 <!--END STABILITY BANNER-->
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- Deploying to Amazon EC2 and on-premise instances
+  - [EC2/on-premise Applications](#ec2on-premise-applications)
+  - [EC2/on-premise Deployment Groups](#ec2on-premise-deployment-groups)
+  - [EC2/on-premise Deployment Configurations](#ec2on-premise-deployment-configurations)
+- Deploying to AWS Lambda functions
+  - [Lambda Applications](#lambda-applications)
+  - [Lambda Deployment Groups](#lambda-deployment-groups)
+  - [Lambda Deployment Configurations](#lambda-deployment-configurations)
+- Deploying to Amazon ECS services
+  - [ECS Applications](#ecs-applications)
+  - [ECS Deployment Groups](#ecs-deployment-groups)
+  - [ECS Deployment Configurations](#ecs-deployment-configurations)
+
+## Introduction
+
 AWS CodeDeploy is a deployment service that automates application deployments to
 Amazon EC2 instances, on-premises instances, serverless Lambda functions, or
 Amazon ECS services.
@@ -98,7 +116,7 @@ To import an already existing Deployment Group:
 ```ts
 declare const application: codedeploy.ServerApplication;
 const deploymentGroup = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(
-  this, 
+  this,
   'ExistingCodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyExistingDeploymentGroup',
@@ -226,7 +244,7 @@ In order to deploy a new version of this function:
 2. Re-deploy the stack (this will trigger a deployment).
 3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
 
-### Rollbacks and Alarms
+### Lambda Deployment Rollbacks and Alarms
 
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:
 
@@ -281,7 +299,7 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDep
 deploymentGroup.addPostHook(endToEndValidation);
 ```
 
-### Import an existing Deployment Group
+### Import an existing Lambda Deployment Group
 
 To import an already existing Deployment Group:
 
@@ -371,6 +389,235 @@ const application = codedeploy.EcsApplication.fromEcsApplicationName(
   'ExistingCodeDeployApplication',
   'MyExistingApplication',
 );
+```
+
+## ECS Deployment Groups
+
+CodeDeploy can be used to deploy to load-balanced ECS services.
+CodeDeploy performs ECS blue-green deployments by managing ECS task sets and load balancer
+target groups.  During a blue-green deployment, one task set and target group runs the
+original version of your ECS task definition ('blue') and another task set and target group
+runs the new version of your ECS task definition ('green').
+
+CodeDeploy orchestrates traffic shifting during ECS blue-green deployments by using
+a load balancer listener to balance incoming traffic between the 'blue' and 'green' task sets/target groups
+running two different versions of your ECS task definition.
+Before deployment, the load balancer listener sends 100% of requests to the 'blue' target group.
+When you publish a new version of the task definition and start a CodeDeploy deployment,
+CodeDeploy can send a small percentage of traffic to the new 'green' task set behind the 'green' target group,
+monitor, and validate before shifting 100% of traffic to the new version.
+
+To create a new CodeDeploy Deployment Group that deploys to an ECS service:
+
+```ts
+declare const myApplication: codedeploy.EcsApplication;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.FargateTaskDefinition;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentController: {
+    type: ecs.DeploymentControllerType.CODE_DEPLOY,
+  },
+});
+
+new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+  service,
+  blueGreenDeploymentConfig: {
+    blueTargetGroup,
+    greenTargetGroup,
+    listener,
+  },
+  deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+});
+```
+
+In order to deploy a new task definition version to the ECS service,
+deploy the changes directly through CodeDeploy using the CodeDeploy APIs or console.
+When the `CODE_DEPLOY` deployment controller is used, the ECS service cannot be
+deployed with a new task definition version through CloudFormation.
+
+For more information on the behavior of CodeDeploy blue-green deployments for ECS, see
+[What happens during an Amazon ECS deployment](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-steps-ecs.html#deployment-steps-what-happens)
+in the CodeDeploy user guide.
+
+Note: If you wish to deploy updates to your ECS service through CDK and CloudFormation instead of directly through CodeDeploy,
+using the [`CfnCodeDeployBlueGreenHook`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.CfnCodeDeployBlueGreenHook.html)
+construct is the recommended approach instead of using the `EcsDeploymentGroup` construct.  For a comparison
+of ECS blue-green deployments through CodeDeploy (using `EcsDeploymentGroup`) and through CloudFormation (using `CfnCodeDeployBlueGreenHook`),
+see [Create an Amazon ECS blue/green deployment through AWS CloudFormation](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-create-ecs-cfn.html#differences-ecs-bg-cfn)
+in the CloudFormation user guide.
+
+### ECS Deployment Rollbacks and Alarms
+
+CodeDeploy will automatically roll back if a deployment fails.
+You can optionally trigger an automatic rollback when one or more alarms are in a failed state during a deployment, or if the deployment stops.
+
+In this example, CodeDeploy will monitor and roll back on alarms set for the
+number of unhealthy ECS tasks in each of the blue and green target groups,
+as well as alarms set for the number HTTP 5xx responses seen in each of the blue
+and green target groups.
+
+```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+// Alarm on the number of unhealthy ECS tasks in each target group
+const blueUnhealthyHosts = new cloudwatch.Alarm(stack, 'BlueUnhealthyHosts', {
+  alarmName: stack.stackName + '-Unhealthy-Hosts-Blue',
+  metric: blueTargetGroup.metricUnhealthyHostCount(),
+  threshold: 1,
+  evaluationPeriods: 2,
+});
+
+const greenUnhealthyHosts = new cloudwatch.Alarm(stack, 'GreenUnhealthyHosts', {
+  alarmName: stack.stackName + '-Unhealthy-Hosts-Green',
+  metric: greenTargetGroup.metricUnhealthyHostCount(),
+  threshold: 1,
+  evaluationPeriods: 2,
+});
+
+// Alarm on the number of HTTP 5xx responses returned by each target group
+const blueApiFailure = new cloudwatch.Alarm(stack, 'Blue5xx', {
+  alarmName: stack.stackName + '-Http-5xx-Blue',
+  metric: blueTargetGroup.metricHttpCodeTarget(
+    elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
+    { period: cdk.Duration.minutes(1) },
+  ),
+  threshold: 1,
+  evaluationPeriods: 1,
+});
+
+const greenApiFailure = new cloudwatch.Alarm(stack, 'Green5xx', {
+  alarmName: stack.stackName + '-Http-5xx-Green',
+  metric: greenTargetGroup.metricHttpCodeTarget(
+    elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
+    { period: cdk.Duration.minutes(1) },
+  ),
+  threshold: 1,
+  evaluationPeriods: 1,
+});
+
+new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+  // CodeDeploy will monitor these alarms during a deployment and automatically roll back
+  alarms: [blueUnhealthyHosts, greenUnhealthyHosts, blueApiFailure, greenApiFailure],
+  autoRollback: {
+    // CodeDeploy will automatically roll back if a deployment is stopped
+    stoppedDeployment: true,
+  },
+  service,
+  blueGreenDeploymentConfig: {
+    blueTargetGroup,
+    greenTargetGroup,
+    listener,
+  },
+  deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+});
+```
+
+### Deployment validation and manual deployment approval
+
+CodeDeploy blue-green deployments provide an opportunity to validate the new task definition version running on
+the 'green' ECS task set prior to shifting any production traffic to the new version.  A second 'test' listener
+serving traffic on a different port be added to the load balancer. For example, the test listener can serve
+test traffic on port 9001 while the main listener serves production traffic on port 443.
+During a blue-green deployment, CodeDeploy can then shift 100% of test traffic over to the 'green'
+task set/target group prior to shifting any production traffic during the deployment.
+
+```ts
+declare const myApplication: codedeploy.EcsApplication;
+declare const service: ecs.FargateService;
+declare const blueTargetGroup: elbv2.ITargetGroup;
+declare const greenTargetGroup: elbv2.ITargetGroup;
+declare const listener: elbv2.IApplicationListener;
+declare const testListener: elbv2.IApplicationListener;
+
+new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+  service,
+  blueGreenDeploymentConfig: {
+    blueTargetGroup,
+    greenTargetGroup,
+    listener,
+    testListener,
+  },
+  deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+});
+```
+
+Automated validation steps can run during the CodeDeploy deployment after shifting test traffic and before
+shifting production traffic.  CodeDeploy supports registering Lambda functions as lifecycle hooks for
+an ECS deployment.  These Lambda functions can run automated validation steps against the test traffic
+port, for example in response to the `AfterAllowTestTraffic` lifecycle hook.  For more information about
+how to specify the Lambda functions to run for each CodeDeploy lifecycle hook in an ECS deployment, see the
+[AppSpec 'hooks' for an Amazon ECS deployment](https://docs.aws.amazon.com/codedeploy/latest/userguide/reference-appspec-file-structure-hooks.html#appspec-hooks-ecs)
+section in the CodeDeploy user guide.
+
+After provisioning the 'green' ECS task set and re-routing test traffic during a blue-green deployment,
+CodeDeploy can wait for approval before continuing the deployment and re-routing production traffic.
+During this approval wait time, you can complete additional validation steps prior to exposing the new
+'green' task set to production traffic, such as manual testing through the test listener port or
+running automated integration test suites.
+
+To approve the deployment, validation steps use the CodeDeploy
+[ContinueDeployment API(https://docs.aws.amazon.com/codedeploy/latest/APIReference/API_ContinueDeployment.html).
+If the ContinueDeployment API is not called within the approval wait time period, CodeDeploy will stop the
+deployment and can automatically roll back the deployment.
+
+```ts
+new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+  // The deployment will wait for approval for up to 8 hours before stopping the deployment
+  deploymentApprovalWaitTime: Duration.hours(8),
+  autoRollback: {
+    // CodeDeploy will automatically roll back if the 8-hour approval period times out and the deployment stops
+    stoppedDeployment: true,
+  },
+  service,
+  blueGreenDeploymentConfig: {
+    blueTargetGroup,
+    greenTargetGroup,
+    listener,
+    testListener,
+  },
+  deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+});
+```
+
+### Deployment bake time
+
+You can specify how long CodeDeploy waits before it terminates the original 'blue' ECS task set when a blue-green deployment
+is complete in order to let the deployment "bake" a while. During this bake time, CodeDeploy will continue to monitor any
+CloudWatch alarms specified for the deployment group and will automatically roll back if those alarms go into a failed state.
+
+```ts
+new codedeploy.EcsDeploymentGroup(stack, 'BlueGreenDG', {
+  service,
+  blueGreenDeploymentConfig: {
+    blueTargetGroup,
+    greenTargetGroup,
+    listener,
+    // CodeDeploy will wait for 30 minutes after completing the blue-green deployment before it terminates the blue tasks
+    terminationWaitTime: Duration.minutes(30),
+  },
+  // CodeDeploy will continue to monitor these alarms during the 30-minute bake time and will automatically
+  // roll back if they go into a failed state at any point during the deployment.
+  alarms: [blueUnhealthyHosts, greenUnhealthyHosts, blueApiFailure, greenApiFailure],
+  deploymentConfig: codedeploy.EcsDeploymentConfig.CANARY_10PERCENT_5MINUTES,
+});
+```
+
+### Import an existing ECS Deployment Group
+
+To import an already existing Deployment Group:
+
+```ts
+declare const application: codedeploy.EcsApplication;
+const deploymentGroup = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(this, 'ExistingCodeDeployDeploymentGroup', {
+  application,
+  deploymentGroupName: 'MyExistingDeploymentGroup',
+});
 ```
 
 ## ECS Deployment Configurations
