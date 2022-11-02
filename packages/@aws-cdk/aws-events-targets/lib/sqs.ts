@@ -1,7 +1,8 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Aws } from '@aws-cdk/core';
+import { Aws, FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
@@ -53,14 +54,19 @@ export class SqsQueue implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const conditions = this.queue.encryptionMasterKey
-      ? {
-        // In this case, we only add the account id as a condition, to avoid circular dependency. See issue #11158.
-        StringEquals: { 'aws:SourceAccount': Aws.ACCOUNT_ID },
-      }
-      : {
+    const foo = FeatureFlags.of(rule).isEnabled(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT);
+
+    let conditions: any = {};
+    if (!this.queue.encryptionMasterKey) {
+      conditions = {
         ArnEquals: { 'aws:SourceArn': rule.ruleArn },
       };
+    } else if (foo) {
+      // Aadd only the account id as a condition, to avoid circular dependency. See issue #11158.
+      conditions = {
+        StringEquals: { 'aws:SourceAccount': Aws.ACCOUNT_ID },
+      };
+    }
 
     // deduplicated automatically
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', { conditions }));
