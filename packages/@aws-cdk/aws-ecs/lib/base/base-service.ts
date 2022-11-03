@@ -65,18 +65,6 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
-
-  /**
-   * Whether to use the explicit DeploymentControllerType.ECS when defining the circuit breaker.
-   * To avoid a service replacement when adding a CircuitBreaker to an existing ECS service, set this to false.
-   * If the feature flag:
-   *    @aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker
-   * Is not set, the behaviour will be to use the explicit ECS Controller (true).
-   *
-   * @default false
-   */
-  readonly useExplicitEcsDeploymentController?: boolean;
-
 }
 
 export interface EcsTarget {
@@ -544,16 +532,9 @@ export abstract class BaseService extends Resource
     const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
         FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
 
-    // If the circuit breaker is set, there are 2 cases we should set the deployment controller
-    //  1. The prop has been set to true
-    //  2. The feature flag has been set to false
-    const setEcsDeploymentControllerWithCircuitBreaker = (props.circuitBreaker
-        && (props.circuitBreaker.useExplicitEcsDeploymentController === true
-            || !disableCircuitBreakerEcsDeploymentControllerFeatureFlag)
-    );
-    return setEcsDeploymentControllerWithCircuitBreaker ? {
+    return disableCircuitBreakerEcsDeploymentControllerFeatureFlag ? undefined : {
       type: DeploymentControllerType.ECS,
-    } : props.deploymentController;
+    };
   }
 
   private executeCommandLogConfiguration() {
