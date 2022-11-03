@@ -139,7 +139,7 @@ export class Bootstrapper {
           undefined);
 
     /* A permissions boundary can be provided via:
-    *    - the flag indicating the dafult one should be used
+    *    - the flag indicating the default one should be used
     *    - the name indicating the custom permissions boundary to be used
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions boundary.
     */
