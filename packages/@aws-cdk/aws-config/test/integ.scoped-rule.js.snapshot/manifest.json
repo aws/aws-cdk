@@ -1,0 +1,91 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-config-rule-scoped-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-config-rule-scoped-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-config-rule-scoped-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-config-rule-scoped-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce24448515abcdc66d5b46f4e7b5a3a4bad2eda8fa9f00dde24710cbc9860c87.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-config-rule-scoped-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-config-rule-scoped-integ.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-config-rule-scoped-integ/CustomFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionServiceRoleD3F73B79"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/CustomFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionBADD59E7"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/CustomFunction/CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/Custom/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Custom8166710A"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-config-rule-scoped-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "CustomFunctionPermission41887A5E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomFunctionPermission41887A5E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-config-rule-scoped-integ"
+    }
+  }
+}

@@ -1,0 +1,406 @@
+{
+ "Resources": {
+  "myhandlerinlineServiceRole10C681F6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerinline53D120C7": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "08c3ae261768dd649ee56933737731af6e347329cb3e1faae2d767714e16c4ca.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerinlineServiceRole10C681F6",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "myhandlerinlineServiceRole10C681F6"
+   ]
+  },
+  "myhandlerinlinewithhashesServiceRoleDC418F75": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerinlinewithhashes352ED54D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "14d630e3e802caab7154afce187aade52a56a39aa16c7e510afbfdd6e1e7594e.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerinlinewithhashesServiceRoleDC418F75",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "myhandlerinlinewithhashesServiceRoleDC418F75"
+   ]
+  },
+  "myhandlerpython38ServiceRole2049AFF7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerpython384D62BBB5": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1b8c70cb81031c22ef2063a87fcf090a5ce97ad10dcd400e98b01d902760ed35.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerpython38ServiceRole2049AFF7",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "myhandlerpython38ServiceRole2049AFF7"
+   ]
+  },
+  "myhandlerpython38withhashesServiceRoleFE19CA7C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerpython38withhashesF2275091": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b973a843566f0b8fcccb1188a899a6ee551a5a57d9460ee11c6270226fa2c745.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerpython38withhashesServiceRoleFE19CA7C",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "myhandlerpython38withhashesServiceRoleFE19CA7C"
+   ]
+  },
+  "myhandlerpython37ServiceRole45CBD18D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerpython37C34039A7": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "65a6feb33ba221a1468300006b7fd9b123b8894e7eeb1be0e63ef23f6cf9b63e.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerpython37ServiceRole45CBD18D",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.7"
+   },
+   "DependsOn": [
+    "myhandlerpython37ServiceRole45CBD18D"
+   ]
+  },
+  "myhandlerpython37withhashesServiceRoleD9828997": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myhandlerpython37withhashesE95C48AC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "12b313bdc8543ea07689a76b42fb9faa74b6dfb6775de53df4e33d1041b8fe12.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myhandlerpython37withhashesServiceRoleD9828997",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "python3.7"
+   },
+   "DependsOn": [
+    "myhandlerpython37withhashesServiceRoleD9828997"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefmyhandlerinline53D120C7B0898676": {
+   "Value": {
+    "Ref": "myhandlerinline53D120C7"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinline53D120C7B0898676"
+   }
+  },
+  "ExportsOutputRefmyhandlerinlinewithhashes352ED54DCDE8C1A6": {
+   "Value": {
+    "Ref": "myhandlerinlinewithhashes352ED54D"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerinlinewithhashes352ED54DCDE8C1A6"
+   }
+  },
+  "ExportsOutputRefmyhandlerpython384D62BBB58AA8B940": {
+   "Value": {
+    "Ref": "myhandlerpython384D62BBB5"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython384D62BBB58AA8B940"
+   }
+  },
+  "ExportsOutputRefmyhandlerpython38withhashesF2275091B829511A": {
+   "Value": {
+    "Ref": "myhandlerpython38withhashesF2275091"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython38withhashesF2275091B829511A"
+   }
+  },
+  "ExportsOutputRefmyhandlerpython37C34039A7BB71D94D": {
+   "Value": {
+    "Ref": "myhandlerpython37C34039A7"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37C34039A7BB71D94D"
+   }
+  },
+  "ExportsOutputRefmyhandlerpython37withhashesE95C48AC15D1F7B4": {
+   "Value": {
+    "Ref": "myhandlerpython37withhashesE95C48AC"
+   },
+   "Export": {
+    "Name": "integ-lambda-python-poetry:ExportsOutputRefmyhandlerpython37withhashesE95C48AC15D1F7B4"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

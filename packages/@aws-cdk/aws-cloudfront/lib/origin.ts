@@ -81,6 +81,13 @@ export interface OriginOptions {
    * @default - origin shield not enabled
    */
   readonly originShieldRegion?: string;
+
+  /**
+   * A unique identifier for the origin. This value must be unique within the distribution.
+   *
+   * @default - an originid will be generated for you
+   */
+  readonly originId?: string;
 }
 
 /**
@@ -118,6 +125,7 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
   private readonly originShieldRegion?: string
+  private readonly originId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
@@ -130,6 +138,7 @@ export abstract class OriginBase implements IOrigin {
     this.connectionAttempts = props.connectionAttempts;
     this.customHeaders = props.customHeaders;
     this.originShieldRegion = props.originShieldRegion;
+    this.originId = props.originId;
   }
 
   /**
@@ -146,7 +155,7 @@ export abstract class OriginBase implements IOrigin {
     return {
       originProperty: {
         domainName: this.domainName,
-        id: options.originId,
+        id: this.originId ?? options.originId,
         originPath: this.originPath,
         connectionAttempts: this.connectionAttempts,
         connectionTimeout: this.connectionTimeout?.toSeconds(),
