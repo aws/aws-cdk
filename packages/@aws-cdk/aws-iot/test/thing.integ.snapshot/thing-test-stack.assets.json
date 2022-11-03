@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "c167859c8b774e1498992721a8415b44ba5503a3ad1c72134ff624f141962208": {
+      "source": {
+        "path": "thing-test-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c167859c8b774e1498992721a8415b44ba5503a3ad1c72134ff624f141962208.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

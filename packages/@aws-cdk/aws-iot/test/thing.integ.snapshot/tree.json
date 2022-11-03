@@ -1,0 +1,97 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      },
+      "thing-test-stack": {
+        "id": "thing-test-stack",
+        "path": "thing-test-stack",
+        "children": {
+          "Thing": {
+            "id": "Thing",
+            "path": "thing-test-stack/Thing",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "thing-test-stack/Thing/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::Thing",
+                  "aws:cdk:cloudformation:props": {
+                    "attributePayload": {
+                      "attributes": {
+                        "attr1": "attr1-value",
+                        "attr2": "attr2-value",
+                        "attr3": "attr3-value"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iot.CfnThing",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot.Thing",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Thing": {
+        "id": "Thing",
+        "path": "Thing",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Thing/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Thing/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Thing/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

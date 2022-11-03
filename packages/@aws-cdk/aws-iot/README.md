@@ -83,3 +83,16 @@ new iot.TopicRule(this, 'TopicRule', {
 ```
 
 See also [@aws-cdk/aws-iot-actions](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-iot-actions-readme.html) for other actions.
+
+## Thing
+
+```ts
+new iot.Thing(this, 'Thing', {
+  thingName: 'my-thing', // optional property, default is a generated name
+  attributes: { // optional property, default is none
+    attr1: 'attr1-value',
+    attr2: 'attr2-value',
+    attr3: 'attr3-value',
+  },
+});
+```

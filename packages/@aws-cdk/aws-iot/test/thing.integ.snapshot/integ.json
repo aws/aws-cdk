@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "Thing/DefaultTest": {
+      "stacks": [
+        "thing-test-stack"
+      ],
+      "assertionStack": "Thing/DefaultTest/DeployAssert",
+      "assertionStackName": "ThingDefaultTestDeployAssert5C6DE4BE"
+    }
+  }
+}
