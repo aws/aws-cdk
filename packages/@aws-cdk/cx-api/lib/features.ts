@@ -354,7 +354,7 @@ export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals'
 
 /**
  * This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
- * from the same account as the Queue can send messages. If a queue is unencrypted, this restriction will
+ * from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
  * always apply, regardless of the value of this flag.
  */
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
