@@ -38,7 +38,7 @@ integ-runner [ARGS] [TEST...]
 This will look for all files that match the naming convention of `/integ.*.js$/`. Each of these files will be expected
 to be a self contained CDK app. The runner will execute the following for each file (app):
 
-1. Check if a snapshot file exists (i.e. `/*.integ.snapshot$/`)
+1. Check if a snapshot file exists (i.e. `/*.snapshot$/`)
 2. If the snapshot does not exist
 	2a. Synth the integ app which will produce the `integ.json` file
 3. Read the `integ.json` file which contains instructions on what the runner should do.

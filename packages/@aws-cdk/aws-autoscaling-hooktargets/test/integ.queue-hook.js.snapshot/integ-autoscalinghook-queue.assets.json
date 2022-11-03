@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "8a3db2dee171afc18cb3c206a03f7f70b4bda8fd9614c0da580b2f78810392fa": {
+      "source": {
+        "path": "integ-autoscalinghook-queue.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8a3db2dee171afc18cb3c206a03f7f70b4bda8fd9614c0da580b2f78810392fa.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

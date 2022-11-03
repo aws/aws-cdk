@@ -50,7 +50,7 @@ describe('IntegTest runSnapshotTests', () => {
         fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
         discoveryRoot: 'test/test-data',
       }),
-      integOutDir: 'test/test-data/test-with-snapshot.integ.snapshot',
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot.js.snapshot',
     });
     const results = integTest.testSnapshot();
 
@@ -62,7 +62,7 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_REGION: 'test-region',
       }),
       execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
-      output: 'test-with-snapshot.integ.snapshot',
+      output: 'xxxxx.test-with-snapshot.js.snapshot',
     });
     expect(results.diagnostics).toEqual([]);
   });
@@ -86,7 +86,7 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_REGION: 'test-region',
       }),
       execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
-      output: 'cdk-integ.out.test-with-snapshot',
+      output: 'cdk-integ.out.xxxxx.test-with-snapshot.js.snapshot',
     });
     expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
@@ -103,7 +103,7 @@ describe('IntegTest runSnapshotTests', () => {
         fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
         discoveryRoot: 'test/test-data',
       }),
-      integOutDir: 'test/test-data/test-with-snapshot-diff.integ.snapshot',
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot-diff.js.snapshot',
     });
     const results = integTest.testSnapshot();
 
@@ -115,7 +115,7 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      output: 'test-with-snapshot-diff.integ.snapshot',
+      output: 'xxxxx.test-with-snapshot-diff.js.snapshot',
     });
     expect(results.diagnostics).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -144,7 +144,7 @@ describe('IntegTest runSnapshotTests', () => {
         fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets-diff.js'),
         discoveryRoot: 'test/test-data',
       }),
-      integOutDir: 'test/test-data/cdk-integ.out.test-with-new-assets',
+      integOutDir: 'test/test-data/cdk-integ.out.xxxxx.test-with-new-assets.js.snapshot',
     });
     const results = integTest.testSnapshot();
     expect(results.diagnostics).toEqual([]);
@@ -157,7 +157,7 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      output: 'cdk-integ.out.test-with-new-assets',
+      output: 'cdk-integ.out.xxxxx.test-with-new-assets.js.snapshot',
     });
   });
 
@@ -169,7 +169,7 @@ describe('IntegTest runSnapshotTests', () => {
         fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets.js'),
         discoveryRoot: 'test/test-data',
       }),
-      integOutDir: 'test/test-data/cdk-integ.out.test-with-new-assets-diff',
+      integOutDir: 'test/test-data/cdk-integ.out.xxxxx.test-with-new-assets-diff.js.snapshot',
     });
     const results = integTest.testSnapshot();
 
@@ -189,7 +189,7 @@ describe('IntegTest runSnapshotTests', () => {
         fileName: path.join(__dirname, '../test-data/xxxxx.test-with-snapshot-assets-diff.js'),
         discoveryRoot: 'test/test-data',
       }),
-      integOutDir: 'test/test-data/test-with-snapshot-assets.integ.snapshot',
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot-assets.js.snapshot',
     });
     const results = integTest.testSnapshot();
     expect(results.diagnostics).toEqual([]);
@@ -202,7 +202,7 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      output: 'test-with-snapshot-assets.integ.snapshot',
+      output: 'xxxxx.test-with-snapshot-assets.js.snapshot',
     });
   });
 
@@ -266,7 +266,7 @@ describe('IntegTest runSnapshotTests', () => {
         fileName: path.join(__dirname, '../test-data/xxxxx.test-with-snapshot-assets.js'),
         discoveryRoot: 'test/test-data',
       }),
-      integOutDir: 'test/test-data/test-with-snapshot-assets-diff.integ.snapshot',
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot-assets-diff.js.snapshot',
     });
     const results = integTest.testSnapshot();
 
@@ -278,7 +278,7 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      output: 'test-with-snapshot-assets-diff.integ.snapshot',
+      output: 'xxxxx.test-with-snapshot-assets-diff.js.snapshot',
     });
     expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,

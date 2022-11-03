@@ -26,5 +26,4 @@ jest.config.js
 junit.xml
 !*.lit.ts
 test/
-**/*.integ.snapshot
-**/*.integ.snapshot
+**/*.snapshot
