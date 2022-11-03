@@ -1,0 +1,1151 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      },
+      "test-apigateway-spec-restapi": {
+        "id": "test-apigateway-spec-restapi",
+        "path": "test-apigateway-spec-restapi",
+        "children": {
+          "my-api": {
+            "id": "my-api",
+            "path": "test-apigateway-spec-restapi/my-api",
+            "children": {
+              "APIDefinition": {
+                "id": "APIDefinition",
+                "path": "test-apigateway-spec-restapi/my-api/APIDefinition",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "test-apigateway-spec-restapi/my-api/APIDefinition/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "test-apigateway-spec-restapi/my-api/APIDefinition/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "test-apigateway-spec-restapi/my-api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "bodyS3Location": {
+                      "bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "key": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml"
+                    },
+                    "disableExecuteApiEndpoint": true,
+                    "name": "my-api"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "test-apigateway-spec-restapi/my-api/Default",
+                "children": {
+                  "v1": {
+                    "id": "v1",
+                    "path": "test-apigateway-spec-restapi/my-api/Default/v1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "test-apigateway-spec-restapi/my-api/Default/v1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "myapi4C7BF186",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "v1",
+                            "restApiId": {
+                              "Ref": "myapi4C7BF186"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "toys": {
+                        "id": "toys",
+                        "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Ref": "myapiv113487378"
+                                },
+                                "pathPart": "toys",
+                                "restApiId": {
+                                  "Ref": "myapi4C7BF186"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/GET",
+                            "children": {
+                              "ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.toys": {
+                                "id": "ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.toys",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/GET/ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.toys",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "MyHandler6B74D312",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "myapi4C7BF186"
+                                          },
+                                          "/",
+                                          {
+                                            "Ref": "myapiDeploymentStagebeta96434BEB"
+                                          },
+                                          "/GET/v1/toys"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.toys": {
+                                "id": "ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.toys",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/GET/ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.toys",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "MyHandler6B74D312",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "myapi4C7BF186"
+                                          },
+                                          "/test-invoke-stage/GET/v1/toys"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "myapiv1toysA55FCBC4"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
+                                    },
+                                    "apiKeyRequired": true,
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "AWS_PROXY",
+                                      "uri": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":apigateway:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":lambda:path/2015-03-31/functions/",
+                                            {
+                                              "Fn::GetAtt": [
+                                                "MyHandler6B74D312",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "/invocations"
+                                          ]
+                                        ]
+                                      },
+                                      "integrationHttpMethod": "POST"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "POST": {
+                            "id": "POST",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/POST",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/POST/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "POST",
+                                    "resourceId": {
+                                      "Ref": "myapiv1toysA55FCBC4"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "MOCK"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "PUT": {
+                            "id": "PUT",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/PUT",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/toys/PUT/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "PUT",
+                                    "resourceId": {
+                                      "Ref": "myapiv1toysA55FCBC4"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "MOCK"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "appliances": {
+                        "id": "appliances",
+                        "path": "test-apigateway-spec-restapi/my-api/Default/v1/appliances",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/appliances/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Ref": "myapiv113487378"
+                                },
+                                "pathPart": "appliances",
+                                "restApiId": {
+                                  "Ref": "myapi4C7BF186"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/appliances/GET",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/appliances/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "myapiv1appliances507FEFF4"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "MOCK"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "books": {
+                        "id": "books",
+                        "path": "test-apigateway-spec-restapi/my-api/Default/v1/books",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                              "aws:cdk:cloudformation:props": {
+                                "parentId": {
+                                  "Ref": "myapiv113487378"
+                                },
+                                "pathPart": "books",
+                                "restApiId": {
+                                  "Ref": "myapi4C7BF186"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "GET": {
+                            "id": "GET",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/GET",
+                            "children": {
+                              "ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.books": {
+                                "id": "ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.books",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/GET/ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.books",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "MyHandler6B74D312",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "myapi4C7BF186"
+                                          },
+                                          "/",
+                                          {
+                                            "Ref": "myapiDeploymentStagebeta96434BEB"
+                                          },
+                                          "/GET/v1/books"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.books": {
+                                "id": "ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.books",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/GET/ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.GET..v1.books",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "MyHandler6B74D312",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "myapi4C7BF186"
+                                          },
+                                          "/test-invoke-stage/GET/v1/books"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/GET/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "GET",
+                                    "resourceId": {
+                                      "Ref": "myapiv1books1D4BE6C1"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "AWS_PROXY",
+                                      "uri": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":apigateway:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":lambda:path/2015-03-31/functions/",
+                                            {
+                                              "Fn::GetAtt": [
+                                                "MyHandler6B74D312",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "/invocations"
+                                          ]
+                                        ]
+                                      },
+                                      "integrationHttpMethod": "POST"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "POST": {
+                            "id": "POST",
+                            "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/POST",
+                            "children": {
+                              "ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.POST..v1.books": {
+                                "id": "ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.POST..v1.books",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/POST/ApiPermission.testapigatewayspecrestapimyapiA4A36FD7.POST..v1.books",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "MyHandler6B74D312",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "myapi4C7BF186"
+                                          },
+                                          "/",
+                                          {
+                                            "Ref": "myapiDeploymentStagebeta96434BEB"
+                                          },
+                                          "/POST/v1/books"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.POST..v1.books": {
+                                "id": "ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.POST..v1.books",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/POST/ApiPermission.Test.testapigatewayspecrestapimyapiA4A36FD7.POST..v1.books",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                  "aws:cdk:cloudformation:props": {
+                                    "action": "lambda:InvokeFunction",
+                                    "functionName": {
+                                      "Fn::GetAtt": [
+                                        "MyHandler6B74D312",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "principal": "apigateway.amazonaws.com",
+                                    "sourceArn": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":execute-api:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "myapi4C7BF186"
+                                          },
+                                          "/test-invoke-stage/POST/v1/books"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                                  "version": "0.0.0"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "test-apigateway-spec-restapi/my-api/Default/v1/books/POST/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                  "aws:cdk:cloudformation:props": {
+                                    "httpMethod": "POST",
+                                    "resourceId": {
+                                      "Ref": "myapiv1books1D4BE6C1"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "myapi4C7BF186"
+                                    },
+                                    "authorizationType": "NONE",
+                                    "integration": {
+                                      "type": "AWS_PROXY",
+                                      "uri": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":apigateway:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":lambda:path/2015-03-31/functions/",
+                                            {
+                                              "Fn::GetAtt": [
+                                                "MyHandler6B74D312",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "/invocations"
+                                          ]
+                                        ]
+                                      },
+                                      "integrationHttpMethod": "POST"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-apigateway.Method",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-apigateway.Resource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.Resource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "version": "0.0.0"
+                }
+              },
+              "CloudWatchRole": {
+                "id": "CloudWatchRole",
+                "path": "test-apigateway-spec-restapi/my-api/CloudWatchRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-spec-restapi/my-api/CloudWatchRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Account": {
+                "id": "Account",
+                "path": "test-apigateway-spec-restapi/my-api/Account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "myapiCloudWatchRole095452E5",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "test-apigateway-spec-restapi/my-api/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-spec-restapi/my-api/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "myapi4C7BF186"
+                        },
+                        "description": "Automatically created by the RestApi construct"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentStage.beta": {
+                "id": "DeploymentStage.beta",
+                "path": "test-apigateway-spec-restapi/my-api/DeploymentStage.beta",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-spec-restapi/my-api/DeploymentStage.beta/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "restApiId": {
+                          "Ref": "myapi4C7BF186"
+                        },
+                        "cacheClusterEnabled": true,
+                        "cacheClusterSize": "0.5",
+                        "deploymentId": {
+                          "Ref": "myapiDeployment92F2CB49e2ce3595b92ff44fad021c2e55149db1"
+                        },
+                        "description": "beta stage",
+                        "methodSettings": [
+                          {
+                            "httpMethod": "*",
+                            "resourcePath": "/*",
+                            "dataTraceEnabled": true,
+                            "loggingLevel": "INFO"
+                          },
+                          {
+                            "httpMethod": "GET",
+                            "resourcePath": "/~1api~1appliances",
+                            "cachingEnabled": true,
+                            "dataTraceEnabled": false
+                          }
+                        ],
+                        "stageName": "beta"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "version": "0.0.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "test-apigateway-spec-restapi/my-api/Endpoint",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "ApiKey": {
+                "id": "ApiKey",
+                "path": "test-apigateway-spec-restapi/my-api/ApiKey",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-spec-restapi/my-api/ApiKey/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::ApiKey",
+                      "aws:cdk:cloudformation:props": {
+                        "enabled": true,
+                        "stageKeys": [
+                          {
+                            "restApiId": {
+                              "Ref": "myapi4C7BF186"
+                            },
+                            "stageName": {
+                              "Ref": "myapiDeploymentStagebeta96434BEB"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnApiKey",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.ApiKey",
+                  "version": "0.0.0"
+                }
+              },
+              "UsagePlan": {
+                "id": "UsagePlan",
+                "path": "test-apigateway-spec-restapi/my-api/UsagePlan",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-spec-restapi/my-api/UsagePlan/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlan",
+                      "aws:cdk:cloudformation:props": {
+                        "apiStages": [
+                          {
+                            "apiId": {
+                              "Ref": "myapi4C7BF186"
+                            },
+                            "stage": {
+                              "Ref": "myapiDeploymentStagebeta96434BEB"
+                            },
+                            "throttle": {
+                              "/v1/toys/GET": {
+                                "burstLimit": 2,
+                                "rateLimit": 10
+                              }
+                            }
+                          }
+                        ],
+                        "description": "Free tier monthly usage plan",
+                        "quota": {
+                          "limit": 10000,
+                          "period": "MONTH"
+                        },
+                        "throttle": {
+                          "rateLimit": 5
+                        },
+                        "usagePlanName": "Basic"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnUsagePlan",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "UsagePlanKeyResource:testapigatewayspecrestapimyapiApiKey950FF760": {
+                    "id": "UsagePlanKeyResource:testapigatewayspecrestapimyapiApiKey950FF760",
+                    "path": "test-apigateway-spec-restapi/my-api/UsagePlan/UsagePlanKeyResource:testapigatewayspecrestapimyapiApiKey950FF760",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::UsagePlanKey",
+                      "aws:cdk:cloudformation:props": {
+                        "keyId": {
+                          "Ref": "myapiApiKey43446CCF"
+                        },
+                        "keyType": "API_KEY",
+                        "usagePlanId": {
+                          "Ref": "myapiUsagePlan56F9C4F2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigateway.CfnUsagePlanKey",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.UsagePlan",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.SpecRestApi",
+              "version": "0.0.0"
+            }
+          },
+          "MyHandler": {
+            "id": "MyHandler",
+            "path": "test-apigateway-spec-restapi/MyHandler",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "test-apigateway-spec-restapi/MyHandler/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-spec-restapi/MyHandler/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "test-apigateway-spec-restapi/MyHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event),\n            });\n        }"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyHandlerServiceRoleFFA06653",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "apigateway-spec-restapi": {
+        "id": "apigateway-spec-restapi",
+        "path": "apigateway-spec-restapi",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "apigateway-spec-restapi/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "apigateway-spec-restapi/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "apigateway-spec-restapi/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -132,6 +132,7 @@ export class Dashboard extends Resource {
     this.dashboardArn = Stack.of(this).formatArn({
       service: 'cloudwatch',
       resource: 'dashboard',
+      region: '',
       resourceName: this.physicalName,
     });
   }

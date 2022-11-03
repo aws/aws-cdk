@@ -93,6 +93,18 @@ describe('custom resource', () => {
     })).toThrow(/Custom resource type must begin with "Custom::"/);
   });
 
+  test('Custom resource type length must be less than 60 characters', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new CustomResource(stack, 'MyCustomResource', {
+      resourceType: 'Custom::Adding_An_Additional_Fifty_Three_Characters_For_Error',
+      serviceToken: 'FooBar',
+      // THEN
+    })).toThrow(/Custom resource type length > 60/);
+  });
+
   test('properties can be pascal-cased', () => {
     // GIVEN
     const stack = new Stack();
