@@ -1468,4 +1468,17 @@ describe('volume', () => {
     }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);
   });
 
+  test('Invalid iops to throughput ratio', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new Volume(stack, 'Volume', {
+        availabilityZone: 'us-east-1a',
+        size: cdk.Size.gibibytes(125),
+        volumeType: EbsDeviceVolumeType.GP3,
+        iops: 3000,
+        throughput: 751,
+      });
+    }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
+  });
+
 });

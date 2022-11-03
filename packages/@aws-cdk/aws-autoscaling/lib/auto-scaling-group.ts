@@ -2172,15 +2172,26 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
       if (throughput) {
         const throughputRange = { Min: 125, Max: 1000 };
         const { Min, Max } = throughputRange;
+
         if (volumeType != EbsDeviceVolumeType.GP3) {
           throw new Error('throughput property requires volumeType: EbsDeviceVolumeType.GP3');
         }
+
         if (throughput < Min || throughput > Max) {
           throw new Error(
-            `throughput property takes a minimum of ${Min} and a maximum of ${Max}`
+            `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
           );
         }
+
+        const maximumThroughputRatio = 0.25;
+        if (iops) {
+          const iopsRatio = (throughput / iops);
+          if (iopsRatio > maximumThroughputRatio) {
+            throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
+          }
+        }
       }
+
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {

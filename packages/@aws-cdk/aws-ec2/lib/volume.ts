@@ -713,6 +713,17 @@ export class Volume extends VolumeBase {
       if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
         throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
       }
+
+      const maximumThroughputRatios: { [key: string]: number } = {};
+      maximumThroughputRatios[EbsDeviceVolumeType.GP3] = 0.25;
+      const maximumThroughputRatio = maximumThroughputRatios[volumeType];
+      if (props.throughput && props.iops) {
+        const iopsRatio = (props.throughput / props.iops);
+        if (iopsRatio > maximumThroughputRatio) {
+          throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
+        }
+
+      }
     }
 
     if (props.enableMultiAttach) {

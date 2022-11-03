@@ -867,6 +867,27 @@ describe('auto scaling group', () => {
     }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);
   });
 
+  test('throws if throughput / iops ratio is greater than 0.25', () => {
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        machineImage: new ec2.AmazonLinuxImage(),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        vpc,
+        maxInstanceLifetime: cdk.Duration.days(0),
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+            throughput: 751,
+            iops: 3000,
+          }),
+        }],
+      });
+    }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
+  });
+
   test('can configure instance monitoring', () => {
     // GIVEN
     const stack = new cdk.Stack();
