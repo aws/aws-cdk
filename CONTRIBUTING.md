@@ -953,9 +953,17 @@ changes are only allowed in major versions and those are rare.
 To address this need, we have a feature flags pattern/mechanism. It allows us to
 introduce new breaking behavior which is disabled by default (so existing
 projects will not be affected) but enabled automatically for new projects
-created through `cdk init`.
+created through `cdk init`. Existing users can selectively opt in to new
+behavior on their own schedule.
 
-The pattern is simple:
+Whenever a change leads to CloudFormation template differences that cause any of
+the following during an update, it is not safe to apply the new behavior
+automatically, and we have to use a feature flag:
+
+- Resources replacement leading to service disruption; or
+- Users could have taken assumptions on the old setup and the change will break them.
+
+Adding a new flag looks as follows:
 
 1. Define a new const under
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
@@ -964,10 +972,11 @@ The pattern is simple:
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
-3. Add your feature flag to the `FUTURE_FLAGS` map in
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts).
-   This map is inserted to generated `cdk.json` files for new projects created
-   through `cdk init`.
+3. Add your feature flag to the `FLAGS` map in
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts). In
+   your description, be sure to cover the following:
+   - Consciouscly pick the type of feature flag. Can the flag be removed in a future major version, or not?
+   - Motivate why the feature flag exists. What is the change to existing infrastructure and why is it not safe?
 4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/README.md) file.
 5. In your tests, ensure that you test your feature with and without the feature flag enabled. You can do this by passing the feature flag to the `context` property when instantiating an `App`.
    ```ts
