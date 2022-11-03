@@ -410,7 +410,7 @@ For this reason, only use it for development purposes.
 **⚠ Note #2**: This command is considered experimental,
 and might have breaking changes in the future.
 
-**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs. 
+**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs.
 
 ### `cdk watch`
 
@@ -568,7 +568,8 @@ $ cdk bootstrap --app='node bin/main.js' foo bar
 By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
 
-If you have specific needs, policies, or requirements not met by the default template, you can customize it
+If you have specific needs, policies, or requirements not met by the default template, you can
+[customize it](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html#bootstrapping-customizing)
 to fit your own situation, by exporting the default one to a file and either deploying it yourself
 using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
 
@@ -581,6 +582,11 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 # Tell CDK to use the customized template
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
+
+Out of the box customisation options are also available as arguments. In order to specify a permissions
+boundary, you can use either `--create-default-permissions-boundary` or `--permissions-boundary`. The
+first option will pass to the template the default boundary CDK recommends. The second option allows you
+to specify by name a predefined boundary that you manage.
 
 ### `cdk doctor`
 
