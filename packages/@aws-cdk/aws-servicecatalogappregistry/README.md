@@ -73,12 +73,11 @@ and want to associate all stacks in the `App` scope to `MyAssociatedApplication`
 ```ts
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
     applicationName: 'MyAssociatedApplication',
-    description: 'Testing associated application',
-    stackProps: {
-        stackName: 'MyAssociatedApplicationStack',
-        env: {account: '123456789012', region: 'us-east-1'},
-    },
+    stackName: 'MyAssociatedApplicationStack',
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
 });
 ```
 
@@ -88,15 +87,15 @@ and want to associate all stacks in the `App` scope to your imported application
 ```ts
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.existingApplicationFromArn({
     applicationArnValue: 'arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId',
-    stackProps: {
-        stackName: 'MyAssociatedApplicationStack',
-    },
+    stackName: 'MyAssociatedApplicationStack',
+  })],
 });
 ```
 
-If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and 
-ApplicationAssociator will not be able to find them. Call `associateStage` on each Stage object before adding it to the 
+If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and
+ApplicationAssociator will not be able to find them. Call `associateStage` on each Stage object before adding it to the
 Pipeline, as shown in the example below:
 
 ```ts
@@ -109,7 +108,7 @@ declare const beta: cdk.Stage;
 class ApplicationPipelineStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: ApplicationPipelineStackProps) {
     super(scope, id, props);
-    
+
    //associate the stage to application associator.
    props.application.associateStage(beta);
    pipeline.addStage(beta);
@@ -122,12 +121,11 @@ interface ApplicationPipelineStackProps extends cdk.StackProps {
 
 const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [appreg.TargetApplication.createApplicationStack({
     applicationName: 'MyPipelineAssociatedApplication',
-    description: 'Testing pipeline associated app',
-    stackProps: {
-        stackName: 'MyPipelineAssociatedApplicationStack',
-        env: {account: '123456789012', region: 'us-east-1'},
-    },
+    stackName: 'MyPipelineAssociatedApplicationStack',
+    env: { account: '123456789012', region: 'us-east-1' },
+  })],
 });
 
 const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineStack', {
