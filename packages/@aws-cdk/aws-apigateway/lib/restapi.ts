@@ -403,11 +403,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
-   * Add an ApiKey
+   * Add an ApiKey to the deploymentStage
    */
   public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
     return new ApiKey(this, id, {
-      resources: [this],
+      stages: [this.deploymentStage],
       ...options,
     });
   }
@@ -652,6 +652,7 @@ export class SpecRestApi extends RestApiBase {
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
+      disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
     });
 
     props.apiDefinition.bindAfterCreate(this, this);
@@ -661,15 +662,15 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this._configureDeployment(props);
-    if (props.domainName) {
-      this.addDomainName('CustomDomain', props.domainName);
-    }
-
     const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
     const cloudWatchRole = props.cloudWatchRole ?? cloudWatchRoleDefault;
     if (cloudWatchRole) {
       this._configureCloudWatchRole(resource);
+    }
+
+    this._configureDeployment(props);
+    if (props.domainName) {
+      this.addDomainName('CustomDomain', props.domainName);
     }
   }
 }

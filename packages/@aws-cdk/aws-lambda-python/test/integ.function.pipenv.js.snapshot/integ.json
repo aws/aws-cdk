@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "pipenv/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-pipenv"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "pipenv/DefaultTest/DeployAssert",
+      "assertionStackName": "pipenvDefaultTestDeployAssertF8231517"
+    }
+  }
+}

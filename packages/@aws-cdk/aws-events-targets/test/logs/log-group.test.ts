@@ -2,10 +2,10 @@ import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 import { LogGroupTargetInput } from '../../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 test('use log group as an event rule target', () => {
   // GIVEN
@@ -290,6 +290,70 @@ testDeprecated('specifying retry policy and dead letter queue', () => {
         RetryPolicy: {
           MaximumEventAgeInSeconds: 7200,
           MaximumRetryAttempts: 2,
+        },
+      },
+    ],
+  });
+});
+
+testDeprecated('specifying retry policy with 0 retryAttempts', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+    event: events.RuleTargetInput.fromObject({
+      timestamp: events.EventField.time,
+      message: events.EventField.fromPath('$'),
+    }),
+    retryAttempts: 0,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+            ],
+          ],
+        },
+        Id: 'Target0',
+        InputTransformer: {
+          InputPathsMap: {
+            time: '$.time',
+            f2: '$',
+          },
+          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
+        },
+        RetryPolicy: {
+          MaximumRetryAttempts: 0,
         },
       },
     ],

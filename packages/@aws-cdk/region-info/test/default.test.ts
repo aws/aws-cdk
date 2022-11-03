@@ -5,7 +5,7 @@ const urlSuffix = '.nowhere.null';
 
 describe('servicePrincipal', () => {
   for (const suffix of ['', '.amazonaws.com', '.amazonaws.com.cn']) {
-    for (const service of ['codedeploy', 'states', 'ssm']) {
+    for (const service of ['codedeploy', 'states']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.amazonaws.com`);
       });
@@ -18,7 +18,7 @@ describe('servicePrincipal', () => {
 
     for (const service of ['ec2']) {
       test(`${service}${suffix}`, () => {
-        expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${urlSuffix}`);
+        expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.amazonaws.com`);
       });
     }
 
@@ -58,11 +58,15 @@ describe('servicePrincipal', () => {
 
 describe('spot-check some service principals', () => {
   test('ssm', () => {
+    // SSM has advertised in its documentation that it is regional after a certain point, but that
+    // documentation only applies to SSM Inventory, not SSM Automation. Plus, there is no need for
+    // a different service principal, as all accounts are (at least currently) included in the global
+    // one.
     expectServicePrincipals('ssm.amazonaws.com', {
       'us-east-1': 'ssm.amazonaws.com',
       'eu-north-1': 'ssm.amazonaws.com',
-      'ap-east-1': 'ssm.ap-east-1.amazonaws.com',
-      'eu-south-1': 'ssm.eu-south-1.amazonaws.com',
+      'ap-east-1': 'ssm.amazonaws.com',
+      'eu-south-1': 'ssm.amazonaws.com',
     });
   });
 

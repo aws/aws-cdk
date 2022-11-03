@@ -40,14 +40,14 @@ id to look up the entry file. In `my-construct.ts` above we have:
 
 ```ts
 // automatic entry look up
-const apiHandler = new lambda.NodejsFunction(this, 'api');
-const authHandler = new lambda.NodejsFunction(this, 'auth');
+const apiHandler = new nodejs.NodejsFunction(this, 'api');
+const authHandler = new nodejs.NodejsFunction(this, 'auth');
 ```
 
 Alternatively, an entry file and handler can be specified:
 
 ```ts
-new lambda.NodejsFunction(this, 'MyFunction', {
+new nodejs.NodejsFunction(this, 'MyFunction', {
   entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts, .tsx and .mjs files
   handler: 'myExportedFunc', // defaults to 'handler'
 });
@@ -134,7 +134,7 @@ By default, all node modules are bundled except for `aws-sdk`. This can be confi
 `bundling.externalModules`:
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     externalModules: [
       'aws-sdk', // Use the 'aws-sdk' available in the Lambda runtime
@@ -152,7 +152,7 @@ bundled but instead included in the `node_modules` folder of the Lambda package.
 when working with native dependencies or when `esbuild` fails to bundle a module.
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     nodeModules: ['native-module', 'other-module'],
   },
@@ -174,11 +174,11 @@ The `NodejsFunction` construct exposes [esbuild options](https://esbuild.github.
 via properties under `bundling`:
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     minify: true, // minify code, defaults to false
     sourceMap: true, // include source map, defaults to false
-    sourceMapMode: lambda.SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
+    sourceMapMode: nodejs.SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
     sourcesContent: false, // do not include original source into source map, defaults to true
     target: 'es2020', // target environment for the generated JavaScript code
     loader: { // Use the 'dataurl' loader for '.png' files
@@ -189,14 +189,14 @@ new lambda.NodejsFunction(this, 'my-handler', {
       'process.env.PRODUCTION': JSON.stringify(true),
       'process.env.NUMBER': JSON.stringify(123),
     },
-    logLevel: lambda.LogLevel.SILENT, // defaults to LogLevel.WARNING
+    logLevel: nodejs.LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
     tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
     banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
-    charset: lambda.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
-    format: lambda.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js 14.x)
+    charset: nodejs.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
+    format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js 14.x)
     mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
     inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
     esbuildArgs: { // Pass additional arguments to esbuild
@@ -214,7 +214,7 @@ It is possible to run additional commands by specifying the `commandHooks` prop:
 ```text
 // This example only available in TypeScript
 // Run additional props via `commandHooks`
-new lambda.NodejsFunction(this, 'my-handler-with-commands', {
+new nodejs.NodejsFunction(this, 'my-handler-with-commands', {
   bundling: {
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
@@ -256,7 +256,7 @@ In some cases, `esbuild` may not yet support some newer features of the typescri
 In such cases, it is possible to run pre-compilation using `tsc` by setting the `preCompilation` flag.
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     preCompilation: true,
   },
@@ -270,7 +270,7 @@ Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsco
 Use `bundling.environment` to define environments variables when `esbuild` runs:
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     environment: {
       NODE_ENV: 'production',
@@ -282,7 +282,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 Use `bundling.buildArgs` to pass build arguments when building the Docker bundling image:
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     buildArgs: {
       HTTPS_PROXY: 'https://127.0.0.1:3001',
@@ -294,7 +294,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 Use `bundling.dockerImage` to use a custom Docker bundling image:
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     dockerImage: DockerImage.fromBuild('/path/to/Dockerfile'),
   },
@@ -314,7 +314,7 @@ By default the asset hash will be calculated based on the bundled output (`Asset
 Use the `assetHash` prop to pass a custom hash:
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     assetHash: 'my-custom-hash',
   },

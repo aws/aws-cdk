@@ -1,10 +1,15 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as route53 from '@aws-cdk/aws-route53';
-import { IResource, Token } from '@aws-cdk/core';
+import { IResource, Token, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * Represents a certificate in AWS Certificate Manager
@@ -87,6 +92,15 @@ export interface CertificateProps {
    * @default true
    */
   readonly transparencyLoggingEnabled?: boolean;
+
+  /**
+   * The Certifcate name.
+   *
+   * Since the Certifcate resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
+   *
+   * @default the full, absolute path of this construct
+   */
+  readonly certificateName?: string
 }
 
 /**
@@ -246,6 +260,8 @@ export class Certificate extends CertificateBase implements ICertificate {
       validationMethod: validation.method,
       certificateTransparencyLoggingPreference,
     });
+
+    Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path.slice(0, 255));
 
     this.certificateArn = cert.ref;
   }

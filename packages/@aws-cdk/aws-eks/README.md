@@ -535,7 +535,7 @@ From the docs:
 > * It satisfies Kubernetes Service resources by provisioning Network Load Balancers.
 
 To deploy the controller on your EKS cluster, configure the `albController` property:
- 
+
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
@@ -580,7 +580,7 @@ declare const vpc: ec2.Vpc;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   vpc,
-  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
 });
 ```
 
@@ -676,14 +676,29 @@ The kubectl handler uses `kubectl`, `helm` and the `aws` CLI in order to
 interact with the cluster. These are bundled into AWS Lambda layers included in
 the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 
-You can specify a custom `lambda.LayerVersion` if you wish to use a different
-version of these tools. The handler expects the layer to include the following
-three executables:
+The version of kubectl used must be compatible with the Kubernetes version of the
+cluster. kubectl is supported within one minor version (older or newer) of Kubernetes
+(see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)).
+Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different
+version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
+
+```ts
+import { KubectlV23Layer } from '@aws-cdk/lambda-layer-kubectl-v23';
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_23,
+  kubectlLayer: new KubectlV23Layer(this, 'kubectl'),
+});
+```
+
+You can also specify a custom `lambda.LayerVersion` if you wish to use a
+different version of these tools, or a version not available in any of the
+`@aws-cdk/lambda-layer-kubectl-vXY` packages. The handler expects the layer to
+include the following two executables:
 
 ```text
 helm/helm
 kubectl/kubectl
-awscli/aws
 ```
 
 See more information in the
@@ -1157,6 +1172,23 @@ const chartAsset = new s3Assets.Asset(this, 'ChartAsset', {
 
 cluster.addHelmChart('test-chart', {
   chartAsset: chartAsset,
+});
+```
+
+Nested values passed to the `values` parameter should be provided as a nested dictionary:
+
+```ts
+cluster.addHelmChart('ExternalSecretsOperator', {
+  chart: 'external-secrets',
+  release: 'external-secrets',
+  repository: 'https://charts.external-secrets.io',
+  namespace: 'external-secrets',
+  values: {
+    installCRDs: true,
+    webhook: {
+      port: 9443
+    }
+  },
 });
 ```
 

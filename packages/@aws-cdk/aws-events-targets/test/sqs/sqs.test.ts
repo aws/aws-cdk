@@ -1,7 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
+import * as kms from '@aws-cdk/aws-kms';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as targets from '../../lib';
 
 test('sqs queue as an event rule target', () => {
@@ -141,6 +143,124 @@ test('multiple uses of a queue as a target results in multi policy statement bec
   });
 });
 
+test('Encrypted queues result in a policy statement with aws:sourceAccount condition when the feature flag is on', () => {
+  // GIVEN
+  const stack = new Stack();
+  stack.node.setContext(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT, true);
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    encryptionMasterKey: kms.Key.fromKeyArn(stack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
+  });
+
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
+          Condition: {
+            StringEquals: {
+              'aws:SourceAccount': { Ref: 'AWS::AccountId' },
+            },
+          },
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [{ Ref: 'MyQueueE6CA6235' }],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('Encrypted queues result in a permissive policy statement when the feature flag is off', () => {
+  // GIVEN
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    encryptionMasterKey: kms.Key.fromKeyArn(stack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
+  });
+
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [{ Ref: 'MyQueueE6CA6235' }],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
 test('fail if messageGroupId is specified on non-fifo queues', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
@@ -247,6 +367,38 @@ test('specifying retry policy', () => {
         RetryPolicy: {
           MaximumEventAgeInSeconds: 7200,
           MaximumRetryAttempts: 2,
+        },
+      },
+    ],
+  });
+});
+
+test('specifying retry policy with 0 retryAttempts', () => {
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    retryAttempts: 0,
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RetryPolicy: {
+          MaximumRetryAttempts: 0,
         },
       },
     ],
