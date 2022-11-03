@@ -14,6 +14,8 @@ This document describes how to set up a development environment and submit your 
 let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
 - [Getting Started](#getting-started)
+  - [Local setup](#setup)
+  - [Dev Container](#dev-container)
 - [Pull Requests](#pull-requests)
   - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
   - [Step 2: Design (optional)](#step-2-design)
@@ -23,7 +25,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
   - [Rosetta](#rosetta)
-- [Tools](#tools)
+- [Tools](#tools-advanced)
   - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
   - [scripts/foreach.sh](#scriptsforeachsh)
@@ -147,7 +149,14 @@ docker$ exit
 
 The `dist/` folder within each module contains the packaged up language artifacts.
 
-## Gitpod (Alternative)
+### Dev Container
+
+The AWS CDK provides a VS Code Dev Container with all dependencies pre-installed.
+Please follow the [setup instructions](https://code.visualstudio.com/docs/remote/containers-tutorial) to configure VS Code.
+
+With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choos "Dev Containers: Reopen in Container" from the VS Code command palette.
+
+### Gitpod (Alternative)
 
 You may also set up your local development environment using [Gitpod](http://gitpod.io) -
 a service that allows you to spin up an in-browser Visual Studio Code-compatible editor,
@@ -257,7 +266,7 @@ Work your magic. Here are some guidelines:
 
 Integration tests perform a few functions in the CDK code base -
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
-   the `*.integ.snapshot` directory. This highlights how a change affects the synthesized stacks.
+   the `*.snapshot` directory. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
    This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package. If you are developing a new integration test or for some other reason want to work on a single integration test over and over again without running through all the integration tests you can do so using `yarn integ integ.test-name.js`
    Remember to set up AWS credentials before doing this.
