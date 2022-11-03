@@ -76,13 +76,17 @@ export class Bootstrapper {
 
     const params = options.parameters ?? {};
 
-    const bootstrapTemplate = await this.loadTemplate();
-
-    const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
-
     if (params.createCustomerMasterKey !== undefined && params.kmsKeyId) {
       throw new Error('You cannot pass \'--bootstrap-kms-key-id\' and \'--bootstrap-customer-key\' together. Specify one or the other');
     }
+
+    if (!!params.defaultPermissionsBoundary === !!params.customPermissionBoundary) {
+      throw new Error('You cannot pass \'--create-default-permissions-boundary\' and \'--permissions-boundary\' together. Specify one or the other');
+    }
+
+    const bootstrapTemplate = await this.loadTemplate();
+
+    const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
 
     // If people re-bootstrap, existing parameter values are reused so that people don't accidentally change the configuration
     // on their bootstrap stack (this happens automatically in deployStack). However, to do proper validation on the
@@ -134,6 +138,17 @@ export class Bootstrapper {
         params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
           undefined);
 
+    /* A permissions boundary can be provided via:
+    *    - the flag indicating the dafult one should be used
+    *    - the name indicating the custom permissions boundary to be used
+    * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions boundary.
+    */
+    const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
+    const permissionsBoundary = params.defaultPermissionsBoundary ? USE_DEFAULT_PERMISSIONS_BOUNDARY : (params.customPermissionsBoundary ? params.customPermissionsBoundary : undefined);
+    if (currentPermissionsBoundary !== permissionsBoundary) {
+      warning(`Switching from ${currentPermissionsBoundary} to ${permissionsBoundary} as permissions boundary`);
+    }
+
     return current.update(
       bootstrapTemplate,
       {
@@ -145,6 +160,7 @@ export class Bootstrapper {
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
+        PermissionsBoundary: permissionsBoundary,
       }, {
         ...options,
         terminationProtection: options.terminationProtection ?? current.terminationProtection,
@@ -187,6 +203,11 @@ const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
  * Magic parameter value that will cause the bootstrap-template.yml to create a CMK
  */
 const CREATE_NEW_KEY = '';
+
+/**
+ * Parameter value that will cause the bootstrap-template.yml to use the default permissions boundary, as defined by CDK.
+ */
+const USE_DEFAULT_PERMISSIONS_BOUNDARY = 'DEFAULT_PERMISSIONS_BOUNDARY';
 
 /**
  * Split an array-like CloudFormation parameter on ,

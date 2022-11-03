@@ -101,4 +101,18 @@ export interface BootstrappingParameters {
    */
   readonly publicAccessBlockConfiguration?: boolean;
 
+  /**
+   * Flag for using the default permissions boundary for bootstrapping
+   *
+   * @default false
+   */
+  readonly defaultPermissionsBoundary?: boolean;
+
+  /**
+   * Name for the customer permissions boundary for bootstrapping
+   *
+   * @default - none
+   */
+  readonly customPermissionsBoundary?: string;
+
 }
