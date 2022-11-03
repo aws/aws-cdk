@@ -36,3 +36,4 @@ new IntegTest(app, 'GameServerGroup', {
 });
 
 app.synth();
+

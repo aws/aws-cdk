@@ -109,3 +109,168 @@ new gamelift.Script(this, 'Script', {
   content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
 });
 ```
+
+## GameLift FleetIQ
+
+The GameLift FleetIQ solution is a game hosting layer that supplements the full
+set of computing resource management tools that you get with Amazon EC2 and
+Auto Scaling. This solution lets you directly manage your Amazon EC2 and Auto
+Scaling resources and integrate as needed with other AWS services.
+
+### Defining a Game Server Group
+
+When using GameLift FleetIQ, you prepare to launch Amazon EC2 instances as
+usual: make an Amazon Machine Image (AMI) with your game server software,
+create an Amazon EC2 launch template, and define configuration settings for an
+Auto Scaling group. However, instead of creating an Auto Scaling group
+directly, you create a GameLift FleetIQ game server group with your Amazon EC2
+and Auto Scaling resources and configuration. All game server groups must have
+at least two instance types defined for it.
+
+Once a game server group and Auto Scaling group are up and running with
+instances deployed, when updating a Game Server Group instance, only certain
+properties in the Auto Scaling group may be overwrite. For all other Auto
+Scaling group properties, such as MinSize, MaxSize, and LaunchTemplate, you can
+modify these directly on the Auto Scaling group using the AWS Console or
+dedicated Api.
+
+```ts
+declare const launchTemplate: ec2.ILaunchTemplate;
+declare const vpc: ec2.IVpc;
+
+new gamelift.GameServerGroup(this, 'Game server group', {
+  gameServerGroupName: 'sample-gameservergroup-name',
+  instanceDefinitions: [{
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+  },
+  {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  }],
+  launchTemplate: launchTemplate,
+  vpc: vpc
+});
+```
+
+See [Manage game server groups](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-integrate-gameservergroup.html)
+in the *Amazon GameLift FleetIQ Developer Guide*.
+
+### Scaling Policy
+
+The scaling policy uses the metric `PercentUtilizedGameServers` to maintain a
+buffer of idle game servers that can immediately accommodate new games and
+players.
+
+```ts
+declare const launchTemplate: ec2.ILaunchTemplate;
+declare const vpc: ec2.IVpc;
+
+new gamelift.GameServerGroup(this, 'Game server group', {
+  gameServerGroupName: 'sample-gameservergroup-name',
+  instanceDefinitions: [{
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+  },
+  {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  }],
+  launchTemplate: launchTemplate,
+  vpc: vpc,
+  autoScalingPolicy: {
+    estimatedInstanceWarmup: Duration.minutes(5),
+    targetTrackingConfiguration: 5
+  }
+});
+```
+
+See [Manage game server groups](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-integrate-gameservergroup.html)
+in the *Amazon GameLift FleetIQ Developer Guide*.
+
+### Specifying an IAM role
+
+The GameLift FleetIQ class automatically creates an IAM role with all the minimum necessary
+permissions for GameLift to access your Amazon EC2 Auto Scaling groups. If you wish, you may
+specify your own IAM role. It must have the correct permissions, or FleetIQ creation or ressource usage may fail.
+
+```ts
+declare const launchTemplate: ec2.ILaunchTemplate;
+declare const vpc: ec2.IVpc;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('gamelift.amazonaws.com'),
+  new iam.ServicePrincipal('autoscaling.amazonaws.com'))
+});
+role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('GameLiftGameServerGroupPolicy'));
+
+new gamelift.GameServerGroup(this, 'Game server group', {
+  gameServerGroupName: 'sample-gameservergroup-name',
+  instanceDefinitions: [{
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+  },
+  {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  }],
+  launchTemplate: launchTemplate,
+  vpc: vpc,
+  role: role
+});
+```
+
+See [Controlling Access](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-iam-permissions-roles.html)
+in the *Amazon GameLift FleetIQ Developer Guide*.
+
+### Specifying VPC Subnets
+
+GameLift FleetIQ use by default, all supported GameLift FleetIQ Availability
+Zones in your chosen region. You can override this parameter to specify VPCs
+subnets that you've set up.
+
+This property cannot be updated after the game server group is created, and the
+corresponding Auto Scaling group will always use the property value that is set
+with this request, even if the Auto Scaling group is updated directly.
+
+```ts
+declare const launchTemplate: ec2.ILaunchTemplate;
+declare const vpc: ec2.IVpc;
+
+new gamelift.GameServerGroup(this, 'GameServerGroup', {
+  gameServerGroupName: 'sample-gameservergroup-name',
+  instanceDefinitions: [{
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+  },
+  {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  }],
+  launchTemplate: launchTemplate,
+  vpc: vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+});
+```
+
+### Monitoring
+
+GameLift FleetIQ sends metrics to CloudWatch so that you can collect and
+analyze the activity of your Game server fleet, including the number of
+utilized game servers, and the number of game server interruption due to
+limited Spot availability.
+
+You can then use CloudWatch alarms to alert you, for example, when the portion
+of game servers that are currently supporting game executions exceed a certain
+thresold which could means that your autoscaling policy need to be adjust to
+add more instances to match with player demand.
+
+CDK provides a generic `metric` method that can be used
+to produce metric configurations for any metric provided by GameLift FleetIQ;
+the configurations are pre-populated with the correct dimensions for the
+matchmaking configuration.
+
+```ts
+declare const gameServerGroup: gamelift.IGameServerGroup;
+// Alarm that triggers when the percent of utilized game servers exceed 90%
+new cloudwatch.Alarm(this, 'Alarm', {
+  metric: gameServerGroup.metric('UtilizedGameServers'),
+  threshold: 0.9,
+  evaluationPeriods: 2,
+});
+```
+
+See: [Monitoring with CloudWatch](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-metrics.html)
+in the *Amazon GameLift FleetIQ Developer Guide*.
