@@ -22,7 +22,6 @@ function defaultLogger(fmt: string, ...args: any[]) {
  * Downloads the CA thumbprint from the issuer URL
  */
 export async function downloadThumbprint(issuerUrl: string) {
-
   external.log(`Downloading certificate authority thumbprint for ${issuerUrl}`);
 
   return new Promise<string>((ok, ko) => {
@@ -37,7 +36,7 @@ export async function downloadThumbprint(issuerUrl: string) {
     socket.once('error', ko);
 
     socket.once('secureConnect', () => {
-      // This set to `true` would return the entire chain of certificates as a circular reference object
+      // This set to `true` will return the entire chain of certificates as a nested object
       let cert = socket.getPeerCertificate(true);
 
       const unqiueCerts = new Set<DetailedPeerCertificate>();
@@ -45,6 +44,10 @@ export async function downloadThumbprint(issuerUrl: string) {
         unqiueCerts.add(cert);
         cert = cert.issuerCertificate;
       } while ( cert && typeof cert === 'object' && !unqiueCerts.has(cert));
+
+      if (unqiueCerts.size == 0) {
+        return ko(new Error(`No certificates were returned for the mentioned url: ${issuerUrl}`));
+      }
 
       // The last `cert` obtained must be the root certificate in the certificate chain
       const rootCert = [...unqiueCerts].pop()!;
