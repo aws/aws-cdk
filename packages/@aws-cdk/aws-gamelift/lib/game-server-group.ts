@@ -451,7 +451,7 @@ export class GameServerGroup extends GameServerGroupBase {
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PUBLIC };
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(this.vpcSubnets);
 
     if (subnetIds.length > 20) {
       throw new Error(`No more than 20 subnets are allowed per game server group, given ${subnetIds.length}`);
@@ -479,7 +479,7 @@ export class GameServerGroup extends GameServerGroupBase {
       deleteOption: props.deleteOption,
       balancingStrategy: props.balancingStrategy,
       gameServerProtectionPolicy: props.protectGameServer ? 'FULL_PROTECTION' : 'NO_PROTECTION',
-      instanceDefinitions: this.parseInstanceDefinitions(),
+      instanceDefinitions: cdk.Lazy.any({ produce: () => this.parseInstanceDefinitions() }),
       launchTemplate: this.parseLaunchTemplate(props),
       minSize: props.minSize,
       maxSize: props.maxSize,
