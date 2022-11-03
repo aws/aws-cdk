@@ -46,5 +46,4 @@ export class Pinger extends CoreConstruct {
   public get response() {
     return Token.asString(this._resource.getAtt('Value'));
   }
-
 }
