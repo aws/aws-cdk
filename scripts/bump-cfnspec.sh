@@ -16,11 +16,8 @@ ${pwd}/install.sh
 # dependencies are in fact involved in the building of new construct libraries
 # created upon their introduction in the CFN Specification (they incur the
 # dependency, not `@aws-cdk/cfnspec` itself).
-yarn lerna run build --stream     \
-  --scope=@aws-cdk/cfnspec        \
-  --scope=@aws-cdk/cfn2ts         \
-  --scope=@aws-cdk/ubergen        \
-  --include-dependencies
+export AWSLINT_SAVE=true
+yarn lerna run build --stream --include-dependencies
 
 # Run the cfnspec update
 cd ${pwd}/packages/@aws-cdk/cfnspec
