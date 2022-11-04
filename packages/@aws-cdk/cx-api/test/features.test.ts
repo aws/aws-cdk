@@ -10,8 +10,14 @@ test('futureFlagDefault returns false if non existent flag was given', () => {
   expect(feats.futureFlagDefault('non-existent-flag')).toEqual(false);
 });
 
-// We could change these during v2 prerelease, but not anymore
 test('feature flag defaults may not be changed anymore', () => {
+  // In principle, these flags were decided upon during the v2 alpha period, and they are now frozen
+  // and may not be changed anymore.
+  //
+  // One exception is allowed: to avoid a double negative in your flag name (`disableOldBehavior: true`).
+  //
+  // In that case, it is permitted to name the flag `oldBehavior`, add a new default set to `true`,
+  // and have the recommended value be `false`.
   expect(feats.CURRENT_VERSION_FLAG_DEFAULTS).toEqual({
     [feats.APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
     [feats.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
