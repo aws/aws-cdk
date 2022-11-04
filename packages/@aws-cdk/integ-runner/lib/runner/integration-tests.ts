@@ -123,10 +123,9 @@ export class IntegTest {
 }
 
 /**
- * The list of tests to run can be provided in a file
- * instead of as command line arguments.
+ * Configuration options how integration test files are discovered
  */
-export interface IntegrationTestFileConfig {
+export interface IntegrationTestsDiscoveryOptions {
   /**
    * If this is set to true then the list of tests
    * provided will be excluded
@@ -135,6 +134,27 @@ export interface IntegrationTestFileConfig {
    */
   readonly exclude?: boolean;
 
+  /**
+    * List of tests to include (or exclude if `exclude=true`)
+    *
+    * @default - all matched files
+    */
+  readonly tests?: string[];
+
+  /**
+    * Detect integration test files matching any of these JavaScript regex patterns.
+    *
+    * @default
+    */
+  readonly testRegex?: string[];
+}
+
+
+/**
+ * The list of tests to run can be provided in a file
+ * instead of as command line arguments.
+ */
+export interface IntegrationTestFileConfig extends IntegrationTestsDiscoveryOptions {
   /**
    * List of tests to include (or exclude if `exclude=true`)
    */
@@ -154,7 +174,7 @@ export class IntegrationTests {
    */
   public async fromFile(fileName: string): Promise<IntegTest[]> {
     const file: IntegrationTestFileConfig = JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
-    const foundTests = await this.discover();
+    const foundTests = await this.discover(file.testRegex);
 
     const allTests = this.filterTests(foundTests, file.tests, file.exclude);
 
@@ -201,17 +221,20 @@ export class IntegrationTests {
    * @param tests Tests to include or exclude, undefined means include all tests.
    * @param exclude Whether the 'tests' list is inclusive or exclusive (inclusive by default).
    */
-  public async fromCliArgs(tests?: string[], exclude?: boolean): Promise<IntegTest[]> {
-    const discoveredTests = await this.discover();
+  public async fromCliArgs(options: IntegrationTestsDiscoveryOptions = {}): Promise<IntegTest[]> {
+    const discoveredTests = await this.discover(options.testRegex);
 
-    const allTests = this.filterTests(discoveredTests, tests, exclude);
+    const allTests = this.filterTests(discoveredTests, options.tests, options.exclude);
 
     return allTests;
   }
 
-  private async discover(): Promise<IntegTest[]> {
+  private async discover(patterns: string[] = ['^integ\\..*\\.js$']): Promise<IntegTest[]> {
     const files = await this.readTree();
-    const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
+    const integs = files.filter(fileName => patterns.some((p) => {
+      const regex = new RegExp(p);
+      return regex.test(fileName) || regex.test(path.basename(fileName));
+    }));
     return this.request(integs);
   }
 
@@ -228,7 +251,7 @@ export class IntegrationTests {
         const fullPath = path.join(dir, file);
         const statf = await fs.stat(fullPath);
         if (statf.isFile()) { ret.push(fullPath); }
-        if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
+        if (statf.isDirectory()) { await recurse(fullPath); }
       }
     }
 

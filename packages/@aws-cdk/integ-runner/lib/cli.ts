@@ -13,7 +13,7 @@ import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics, IntegTestWor
 const yargs = require('yargs');
 
 
-async function main() {
+export async function main(args: string[]) {
   const argv = yargs
     .usage('Usage: integ-runner [TEST...]')
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
@@ -31,14 +31,16 @@ async function main() {
     .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
     .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
+    .option('test-regex', { type: 'array', desc: 'Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.', default: [] })
     .strict()
-    .argv;
+    .parse(args);
 
   const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
     maxWorkers: argv['max-workers'],
   });
 
   // list of integration tests that will be executed
+  const testRegex = arrayFromYargs(argv['test-regex']);
   const testsToRun: IntegTestWorkerConfig[] = [];
   const destructiveChanges: DestructiveChange[] = [];
   const testsFromArgs: IntegTest[] = [];
@@ -57,7 +59,7 @@ async function main() {
   let testsSucceeded = false;
   try {
     if (argv.list) {
-      const tests = await new IntegrationTests(argv.directory).fromCliArgs();
+      const tests = await new IntegrationTests(argv.directory).fromCliArgs({ testRegex });
       process.stdout.write(tests.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
       return;
     }
@@ -69,7 +71,7 @@ async function main() {
       ? (await fs.readFile(fromFile, { encoding: 'utf8' })).split('\n').filter(x => x)
       : (argv._.length > 0 ? argv._ : undefined); // 'undefined' means no request
 
-    testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs(requestedTests, exclude)));
+    testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs({ testRegex, tests: requestedTests, exclude })));
 
     // always run snapshot tests, but if '--force' is passed then
     // run integration tests on all failed tests, not just those that
@@ -184,8 +186,8 @@ function mergeTests(testFromArgs: IntegTestInfo[], failedSnapshotTests: IntegTes
   return final;
 }
 
-export function cli() {
-  main().then().catch(err => {
+export function cli(args: string[] = process.argv.slice(2)) {
+  main(args).then().catch(err => {
     logger.error(err);
     process.exitCode = 1;
   });
