@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.95"
+          "version": "10.1.140"
         }
       },
       "aws-eks-oidc-provider-test": {
@@ -97,7 +97,7 @@
                 "path": "aws-cdk-eks-oidc-provider/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.95"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
