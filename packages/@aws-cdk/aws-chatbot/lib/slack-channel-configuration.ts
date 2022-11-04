@@ -135,6 +135,12 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
   /**
+   * Adds a SNS topic that deliver notifications to AWS Chatbot.
+   * @param notificationTopic
+   */
+  addNotificationTopic(notificationTopic: sns.ITopic): void
+
+  /**
    * Return the given named metric for this SlackChannelConfiguration
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
@@ -152,6 +158,8 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   abstract readonly role?: iam.IRole;
 
+  abstract readonly notificationTopics: sns.ITopic[];
+
   /**
    * Adds extra permission to iam-role of Slack channel configuration
    * @param statement
@@ -162,6 +170,14 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
     }
 
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Adds a SNS topic that deliver notifications to AWS Chatbot.
+   * @param notificationTopic
+   */
+  public addNotificationTopic(notificationTopic: sns.ITopic): void {
+    this.notificationTopics.push(notificationTopic);
   }
 
   /**

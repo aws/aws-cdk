@@ -118,6 +118,23 @@ describe('SlackChannelConfiguration', () => {
     });
   });
 
+  test('allows adding a Topic to the existing SlackChannel', () => {
+    const slackChannel = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::chatbot/test');
+
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    slackChannel.addNotificationTopic(topic);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
+      SnsTopicArns: [
+        {
+          Ref: 'MyTopic86869434',
+        },
+      ],
+    });
+  });
+
   test('created with existing role', () => {
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam:::role/test-role');
 
