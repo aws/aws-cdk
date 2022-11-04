@@ -15,7 +15,7 @@ tsc                                     \
   --resolveJsonModule                   \
   --strict                              \
   --strictNullChecks                    \
-  --target ES2018                       \
+  --target ES2020                       \
   build-tools/*.ts
 
 echo "⌛️ Generating the static data..."
