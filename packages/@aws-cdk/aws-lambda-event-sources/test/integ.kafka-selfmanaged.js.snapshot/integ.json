@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "LambdaEventSourceKafkaSelfManagedTest/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-kafka-self-managed"
+      ],
+      "assertionStack": "LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert"
+    }
+  }
+}

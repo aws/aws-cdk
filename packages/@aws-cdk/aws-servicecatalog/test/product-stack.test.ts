@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as servicecatalog from '../lib';
 
 /* eslint-disable quote-props */
@@ -34,7 +35,7 @@ describe('ProductStack', () => {
   test('fails if defined without a parent stack', () => {
     // GIVEN
     const app = new cdk.App();
-    const group = new cdk.Construct(app, 'group');
+    const group = new Construct(app, 'group');
 
     // THEN
     expect(() => {
@@ -62,7 +63,7 @@ describe('ProductStack', () => {
     const assembly = app.synth();
 
     // THEN
-    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.artifacts.length).toEqual(3);
   });
 
   test('the template of the product stack is synthesized into the cloud assembly', () => {

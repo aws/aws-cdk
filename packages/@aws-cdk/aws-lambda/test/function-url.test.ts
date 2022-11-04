@@ -10,7 +10,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -36,7 +36,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
 
     // WHEN
@@ -94,10 +94,11 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
+    const aliasName = 'prod';
     const alias = new lambda.Alias(stack, 'Alias', {
-      aliasName: 'prod',
+      aliasName,
       version: fn.currentVersion,
     });
 
@@ -107,10 +108,12 @@ describe('FunctionUrl', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
-      AuthType: 'AWS_IAM',
-      TargetFunctionArn: {
-        Ref: 'Alias325C5727',
+    Template.fromStack(stack).hasResource('AWS::Lambda::Url', {
+      DependsOn: ['Alias325C5727'],
+      Properties: {
+        AuthType: 'AWS_IAM',
+        TargetFunctionArn: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        Qualifier: aliasName,
       },
     });
   });
@@ -121,7 +124,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const version = new lambda.Version(stack, 'Version', {
       lambda: fn,
@@ -146,7 +149,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     });
     const fnUrl = new lambda.FunctionUrl(stack, 'FunctionUrl', {
       function: fn,

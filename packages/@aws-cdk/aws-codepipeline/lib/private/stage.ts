@@ -24,7 +24,7 @@ export class Stage implements IStage {
   public readonly stageName: string;
   public readonly transitionToEnabled: boolean;
   public readonly transitionDisabledReason: string;
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
   private readonly _pipeline: Pipeline;
   private readonly _actions = new Array<FullActionDescriptor>();
 
@@ -38,7 +38,7 @@ export class Stage implements IStage {
     this.transitionToEnabled = props.transitionToEnabled ?? true;
     this.transitionDisabledReason = props.transitionDisabledReason ?? 'Transition disabled';
     this._pipeline = pipeline;
-    this.scope = new cdk.Construct(pipeline, this.stageName);
+    this.scope = new Construct(pipeline, this.stageName);
 
     for (const action of props.actions || []) {
       this.addAction(action);
@@ -154,7 +154,7 @@ export class Stage implements IStage {
       if (Token.isUnresolved(id)) {
         id = findUniqueConstructId(this.scope, action.actionProperties.provider);
       }
-      actionScope = new cdk.Construct(this.scope, id);
+      actionScope = new Construct(this.scope, id);
     }
     return this._pipeline._attachActionToPipeline(this, action, actionScope);
   }

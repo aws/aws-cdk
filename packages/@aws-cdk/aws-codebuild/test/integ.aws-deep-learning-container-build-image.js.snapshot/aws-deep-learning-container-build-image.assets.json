@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "2d55991f8610bd09d69c691b23e8748b59d28510e4ad2e8aabf6aeb6eddd48fe": {
+      "source": {
+        "path": "aws-deep-learning-container-build-image.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2d55991f8610bd09d69c691b23e8748b59d28510e4ad2e8aabf6aeb6eddd48fe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

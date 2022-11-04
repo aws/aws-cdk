@@ -1,15 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
@@ -264,10 +261,16 @@ export interface AwsCustomResourceProps {
    * to note the that function's role will eventually accumulate the
    * permissions/grants from all resources.
    *
+   * Note that a policy must be specified if `role` is not provided, as
+   * by default a new role is created which requires policy changes to access
+   * resources.
+   *
+   * @default - no policy added
+   *
    * @see Policy.fromStatements
    * @see Policy.fromSdkCalls
    */
-  readonly policy: AwsCustomResourcePolicy;
+  readonly policy?: AwsCustomResourcePolicy;
 
   /**
    * The execution role for the singleton Lambda function implementing this custom
@@ -312,6 +315,23 @@ export interface AwsCustomResourceProps {
    * ID for the function's name. For more information, see Name Type.
    */
   readonly functionName?: string;
+
+  /**
+   * The vpc to provision the lambda function in.
+   *
+   * @default - the function is not provisioned inside a vpc.
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets from the VPC to place the lambda function in.
+   *
+   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+   * requires a NAT gateway, so picking Public subnets is not allowed.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
 /**
@@ -322,7 +342,7 @@ export interface AwsCustomResourceProps {
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
-export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
+export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
 
@@ -348,6 +368,10 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       throw new Error('At least `onCreate`, `onUpdate` or `onDelete` must be specified.');
     }
 
+    if (!props.role && !props.policy) {
+      throw new Error('At least one of `policy` or `role` (or both) must be specified.');
+    }
+
     for (const call of [props.onCreate, props.onUpdate]) {
       if (call && !call.physicalResourceId) {
         throw new Error('`physicalResourceId` must be specified for onCreate and onUpdate calls.');
@@ -370,7 +394,7 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
         exclude: ['*.ts'],
       }),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS',
@@ -378,40 +402,11 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       role: props.role,
       logRetention: props.logRetention,
       functionName: props.functionName,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    // Create the policy statements for the custom resource function role, or use the user-provided ones
-    const statements = [];
-    if (props.policy.statements.length !== 0) {
-      // Use custom statements provided by the user
-      for (const statement of props.policy.statements) {
-        statements.push(statement);
-      }
-    } else {
-      // Derive statements from AWS SDK calls
-      for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call && call.assumedRoleArn == null) {
-          const statement = new iam.PolicyStatement({
-            actions: [awsSdkToIamAction(call.service, call.action)],
-            resources: props.policy.resources,
-          });
-          statements.push(statement);
-        } else if (call && call.assumedRoleArn != null) {
-          const statement = new iam.PolicyStatement({
-            actions: ['sts:AssumeRole'],
-            resources: [call.assumedRoleArn],
-          });
-          statements.push(statement);
-        }
-      }
-    }
-    const policy = new iam.Policy(this, 'CustomResourcePolicy', {
-      statements: statements,
-    });
-    if (provider.role !== undefined) {
-      policy.attachToRole(provider.role);
-    }
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
@@ -425,9 +420,43 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       },
     });
 
-    // If the policy was deleted first, then the function might lose permissions to delete the custom resource
-    // This is here so that the policy doesn't get removed before onDelete is called
-    this.customResource.node.addDependency(policy);
+    // Create the policy statements for the custom resource function role, or use the user-provided ones
+    if (props.policy) {
+      const statements = [];
+      if (props.policy.statements.length !== 0) {
+        // Use custom statements provided by the user
+        for (const statement of props.policy.statements) {
+          statements.push(statement);
+        }
+      } else {
+        // Derive statements from AWS SDK calls
+        for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+          if (call && call.assumedRoleArn == null) {
+            const statement = new iam.PolicyStatement({
+              actions: [awsSdkToIamAction(call.service, call.action)],
+              resources: props.policy.resources,
+            });
+            statements.push(statement);
+          } else if (call && call.assumedRoleArn != null) {
+            const statement = new iam.PolicyStatement({
+              actions: ['sts:AssumeRole'],
+              resources: [call.assumedRoleArn],
+            });
+            statements.push(statement);
+          }
+        }
+      }
+      const policy = new iam.Policy(this, 'CustomResourcePolicy', {
+        statements: statements,
+      });
+      if (provider.role !== undefined) {
+        policy.attachToRole(provider.role);
+      }
+
+      // If the policy was deleted first, then the function might lose permissions to delete the custom resource
+      // This is here so that the policy doesn't get removed before onDelete is called
+      this.customResource.node.addDependency(policy);
+    }
   }
 
   /**

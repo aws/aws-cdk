@@ -21,7 +21,6 @@ test('built-in data is correct', () => {
       }
     };
 
-
     snapshot[name] = {
       cdkMetadataResourceAvailable: region.cdkMetadataResourceAvailable,
       domainSuffix: region.domainSuffix,

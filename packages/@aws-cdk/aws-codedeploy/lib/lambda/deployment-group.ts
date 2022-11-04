@@ -203,6 +203,8 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     if (this.deploymentConfig instanceof Construct) {
       this.node.addDependency(this.deploymentConfig);
     }
+
+    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
   }
 
   /**
@@ -253,10 +255,6 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       resourceArns: [this.deploymentGroupArn],
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
-  }
-
-  protected validate(): string[] {
-    return validateName('Deployment group', this.physicalName);
   }
 }
 

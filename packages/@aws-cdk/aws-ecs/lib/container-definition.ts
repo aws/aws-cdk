@@ -10,10 +10,6 @@ import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Specify the secret's version id or version stage
  */
@@ -370,7 +366,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends CoreConstruct {
+export class ContainerDefinition extends Construct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -440,12 +436,6 @@ export class ContainerDefinition extends CoreConstruct {
   public readonly logDriverConfig?: LogDriverConfig;
 
   /**
-   * Whether this container definition references a specific JSON field of a secret
-   * stored in Secrets Manager.
-   */
-  public readonly referencesSecretJsonField?: boolean;
-
-  /**
    * The name of the image referenced by this container.
    */
   public readonly imageName: string;
@@ -462,7 +452,7 @@ export class ContainerDefinition extends CoreConstruct {
 
   private readonly imageConfig: ContainerImageConfig;
 
-  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+  private readonly secrets: CfnTaskDefinition.SecretProperty[] = [];
 
   private readonly environment: { [key: string]: string };
 
@@ -490,16 +480,8 @@ export class ContainerDefinition extends CoreConstruct {
     }
 
     if (props.secrets) {
-      this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
-        if (secret.hasField) {
-          this.referencesSecretJsonField = true;
-        }
-        secret.grantRead(this.taskDefinition.obtainExecutionRole());
-        this.secrets.push({
-          name,
-          valueFrom: secret.arn,
-        });
+        this.addSecret(name, secret);
       }
     }
 
@@ -607,6 +589,18 @@ export class ContainerDefinition extends CoreConstruct {
   }
 
   /**
+   * This method adds a secret as environment variable to the container.
+   */
+  public addSecret(name: string, secret: Secret) {
+    secret.grantRead(this.taskDefinition.obtainExecutionRole());
+
+    this.secrets.push({
+      name,
+      valueFrom: secret.arn,
+    });
+  }
+
+  /**
    * This method adds one or more resources to the container.
    */
   public addInferenceAcceleratorResource(...inferenceAcceleratorResources: string[]) {
@@ -660,6 +654,19 @@ export class ContainerDefinition extends CoreConstruct {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Whether this container definition references a specific JSON field of a secret
+   * stored in Secrets Manager.
+   */
+  public get referencesSecretJsonField(): boolean | undefined {
+    for (const secret of this.secrets) {
+      if (secret.valueFrom.endsWith('::')) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -730,7 +737,7 @@ export class ContainerDefinition extends CoreConstruct {
       logConfiguration: this.logDriverConfig,
       environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
       environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
-      secrets: this.secrets,
+      secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),

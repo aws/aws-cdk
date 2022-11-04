@@ -10,7 +10,5 @@ describe('dynamic reference', () => {
 
     // THEN
     expect(stack.resolve(ref)).toEqual('{{resolve:ssm:a:b:c}}');
-
-
   });
 });

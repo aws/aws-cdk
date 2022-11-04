@@ -1,5 +1,5 @@
 import { throws } from 'assert';
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
@@ -70,13 +70,41 @@ describe('Batch Compute Environment', () => {
         });
       });
     });
-
     test('should deny if creating a managed environment with no provided compute resource props', () => {
       // THEN
       throws(() => {
         // WHEN
         new batch.ComputeEnvironment(stack, 'test-compute-env', {
           managed: true,
+        });
+      });
+    });
+    test('should fail setting launch template with name and id', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {
+              launchTemplateName: 'test-template-name',
+              launchTemplateId: 'test-template-id',
+            },
+          },
+        });
+      });
+    });
+    test('should fail setting launch template missing both template name or id', () => {
+      // THEN
+      throws(() => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {},
+          },
         });
       });
     });
@@ -347,7 +375,7 @@ describe('Batch Compute Environment', () => {
           ],
           type: batch.ComputeResourceType.ON_DEMAND,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.PRIVATE,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           },
         } as batch.ComputeResources,
         enabled: false,
@@ -555,5 +583,104 @@ describe('Batch Compute Environment', () => {
         });
       });
     });
+
+    describe('without useNetworkInterfaceSecurityGroups', () => {
+      test('should not have securityGroups', () => {
+        // THEN
+        throws(() => {
+          // WHEN
+          new batch.ComputeEnvironment(stack, 'test-compute-env', {
+            managed: true,
+            computeResources: {
+              vpc,
+              launchTemplate: {
+                useNetworkInterfaceSecurityGroups: true,
+                launchTemplateName: 'dummyname',
+              },
+              securityGroups: [],
+            },
+          });
+        });
+      });
+
+      test('should not have a SecurityGroupIds output', () => {
+        // WHEN
+        new batch.ComputeEnvironment(stack, 'efa-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            launchTemplate: {
+              useNetworkInterfaceSecurityGroups: true,
+              launchTemplateName: 'dummyname',
+            },
+          },
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties(
+          'AWS::Batch::ComputeEnvironment', {
+            ComputeResources: {
+              SecurityGroupIds: Match.absent(),
+            },
+          },
+        );
+      });
+    });
+
+    describe('connectable functions', () => {
+      test('ec2 ingress rule', () => {
+        const computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+          },
+        });
+
+        const sg1 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+        const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [sg1] }));
+
+        somethingConnectable.connections.allowFrom(computeEnvironment, ec2.Port.tcp(12345), 'connect to me');
+
+        Template.fromStack(stack).hasResourceProperties
+        ('AWS::EC2::SecurityGroupIngress', {
+          GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
+          IpProtocol: 'tcp',
+          Description: 'connect to me',
+          SourceSecurityGroupId: { 'Fn::GetAtt': ['testcomputeenvResourceSecurityGroup7615BA87', 'GroupId'] },
+          FromPort: 12345,
+          ToPort: 12345,
+        });
+      });
+
+      test('fargate ingress rule', () => {
+        const computeEnvironment = new batch.ComputeEnvironment(stack, 'test-fargate-env', {
+          managed: true,
+          computeResources: {
+            vpc,
+            type: batch.ComputeResourceType.FARGATE,
+          },
+        });
+
+        const sg1 = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
+        const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [sg1] }));
+
+        somethingConnectable.connections.allowFrom(computeEnvironment, ec2.Port.tcp(12345), 'connect to me');
+
+        Template.fromStack(stack).hasResourceProperties
+        ('AWS::EC2::SecurityGroupIngress', {
+          GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
+          IpProtocol: 'tcp',
+          Description: 'connect to me',
+          SourceSecurityGroupId: { 'Fn::GetAtt': ['testfargateenvResourceSecurityGroup66A2FC03', 'GroupId'] },
+          FromPort: 12345,
+          ToPort: 12345,
+        });
+      });
+    });
   });
 });
+
+class SomethingConnectable implements ec2.IConnectable {
+  constructor(public readonly connections: ec2.Connections) {
+  }
+}

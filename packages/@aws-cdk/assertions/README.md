@@ -10,7 +10,7 @@
 <!--END STABILITY BANNER-->
 
 If you're migrating from the old `assert` library, the migration guide can be found in
-[our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assertions/MIGRATING.md).
+[our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/assertions/MIGRATING.md).
 
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
@@ -33,6 +33,11 @@ Alternatively, assertions can be run on an existing CloudFormation template -
 const templateJson = '{ "Resources": ... }'; /* The CloudFormation template as JSON serialized string. */
 const template = Template.fromString(templateJson);
 ```
+
+**Cyclical Resources Note**
+
+If allowing cyclical references is desired, for example in the case of unprocessed Transform templates, supply TemplateParsingOptions and
+set skipCyclicalDependenciesCheck to true. In all other cases, will fail on detecting cyclical dependencies.
 
 ## Full Template Match
 
@@ -76,6 +81,17 @@ in a template.
 template.resourceCountIs('Foo::Bar', 2);
 ```
 
+You can also count the number of resources of a specific type whose `Properties`
+section contains the specified properties:
+
+```ts
+template.resourcePropertiesCountIs('Foo::Bar', {
+  Foo: 'Bar',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+}, 1);
+```
+
 ## Resource Matching & Retrieval
 
 Beyond resource counting, the module also allows asserting that a resource with
@@ -86,7 +102,18 @@ The following code asserts that the `Properties` section of a resource of type
 
 ```ts
 template.hasResourceProperties('Foo::Bar', {
-  Foo: 'Bar',
+  Lorem: 'Ipsum',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+});
+```
+
+You can also assert that the `Properties` section of all resources of type
+`Foo::Bar` contains the specified properties -
+
+```ts
+template.allResourcesProperties('Foo::Bar', {
+  Lorem: 'Ipsum',
   Baz: 5,
   Qux: [ 'Waldo', 'Fred' ],
 });
@@ -97,7 +124,17 @@ can use the `hasResource()` API.
 
 ```ts
 template.hasResource('Foo::Bar', {
-  Properties: { Foo: 'Bar' },
+  Properties: { Lorem: 'Ipsum' },
+  DependsOn: [ 'Waldo', 'Fred' ],
+});
+```
+
+You can also assert the definitions of all resources of a type using the 
+`allResources()` API.
+
+```ts
+template.allResources('Foo::Bar', {
+  Properties: { Lorem: 'Ipsum' },
   DependsOn: [ 'Waldo', 'Fred' ],
 });
 ```

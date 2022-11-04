@@ -77,9 +77,8 @@ export class ServerApplication extends Resource implements IServerApplication {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }
 
-  protected validate(): string[] {
-    return validateName('Application', this.physicalName);
-  }
 }

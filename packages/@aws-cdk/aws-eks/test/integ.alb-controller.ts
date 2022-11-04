@@ -1,9 +1,11 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-23';
 import * as eks from '../lib';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
 
 class EksClusterAlbControllerStack extends Stack {
@@ -16,7 +18,7 @@ class EksClusterAlbControllerStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
       albController: {
         version: eks.AlbControllerVersion.V2_4_1,
       },
@@ -57,5 +59,8 @@ class EksClusterAlbControllerStack extends Stack {
 }
 
 const app = new App();
-new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-test');
+const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-test');
+new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller', {
+  testCases: [stack],
+});
 app.synth();

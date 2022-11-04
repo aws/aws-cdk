@@ -14,10 +14,6 @@ import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Interface for CloudFront distributions
  */
@@ -357,9 +353,13 @@ export class Distribution extends Resource implements IDistribution {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
-      const scope = new CoreConstruct(this, `Origin${originIndex}`);
+      const scope = new Construct(this, `Origin${originIndex}`);
       const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const originBindConfig = origin.bind(scope, { originId });
+      const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
+      if (duplicateId) {
+        throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
+      }
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
       } else {
@@ -367,14 +367,14 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
+        const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
         return originGroupId;
       }
-      return originId;
+      return originBindConfig.originProperty?.id ?? originId;
     }
   }
 
@@ -490,7 +490,11 @@ export enum HttpVersion {
   /** HTTP 1.1 */
   HTTP1_1 = 'http1.1',
   /** HTTP 2 */
-  HTTP2 = 'http2'
+  HTTP2 = 'http2',
+  /** HTTP 2 and HTTP 3 */
+  HTTP2_AND_3 = 'http2and3',
+  /** HTTP 3 */
+  HTTP3 = 'http3'
 }
 
 /**

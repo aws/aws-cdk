@@ -10,7 +10,7 @@ const topic1 = new sns.Topic(stack, 'Topic1');
 const topic2 = new sns.Topic(stack, 'Topic2');
 
 const trigger = new triggers.TriggerFunction(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function() { console.log("hi"); };'),
   executeBefore: [topic1],

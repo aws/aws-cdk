@@ -2,6 +2,16 @@ version: 0.2
 
 # This buildspec is intended to be used by GitHub PR builds.
 
+env:
+  variables:
+    # Update package.json with "exclude" statements for all failing rules.
+    # Whenever a new attribute to any resource in the CFN spec, by default
+    # awslint will block the build because the attribute does not exist in 
+    # the corresponding L2 ('resource-attribute' rule). By ignoring it
+    # automatically, we save on-call time, and users who have lived without
+    # this attribute so far can wait for a bit longer.
+    AWSLINT_SAVE: "true"
+
 phases:
   install:
     commands:
@@ -9,6 +19,9 @@ phases:
       # baked in our image.
       # this also takes care of launching the docker daemon.
       - /root/ecr-proxy/start.sh
+
+      # CodeBuild always runs as root, allow npm to operate as such
+      - npm config set unsafe-perm true
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn

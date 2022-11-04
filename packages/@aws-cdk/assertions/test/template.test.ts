@@ -1,4 +1,4 @@
-import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -124,9 +124,99 @@ describe('Template', () => {
     });
   });
 
+  describe('resourcePropertiesCountIs', () => {
+    test('resource exists', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Resource', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 1);
+
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 0);
+      }).toThrow('Expected 0 resources of type Foo::Bar but found 1');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 2);
+      }).toThrow('Expected 2 resources of type Foo::Bar but found 1');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'nope' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Bar but found 0');
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Baz', { baz: 'qux' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Baz but found 0');
+    });
+    test('no resource', () => {
+      const stack = new Stack();
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 0);
+
+      expect(() => {
+        inspect.resourcePropertiesCountIs('Foo::Bar', { baz: 'qux' }, 1);
+      }).toThrow('Expected 1 resources of type Foo::Bar but found 0');
+    });
+    test('absent - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        bar: Match.absent(),
+      }, 1);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        baz: Match.absent(),
+      }, 0);
+    });
+    test('absent - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', {
+        bar: Match.absent(),
+        baz: 'qux',
+      }, 0);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.absent(), 1);
+    });
+    test('not - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
+        baz: 'boo',
+      }), 1);
+    });
+    test('not - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
+        baz: 'qux',
+      }), 1);
+    });
+  });
+
   describe('templateMatches', () => {
     test('matches', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        synthesizer: new LegacyStackSynthesizer(),
+      });
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },
@@ -460,6 +550,174 @@ describe('Template', () => {
       expect(Object.keys(result).length).toEqual(2);
       expect(result.Foo).toEqual({ Type: 'Foo::Bar' });
       expect(result.Bar).toEqual({ Type: 'Foo::Bar' });
+    });
+  });
+
+  describe('allResources', () => {
+    test('all resource of type match', () => {
+      const stack = new Stack();
+      const partialProps = { baz: 'qux', fred: 'waldo' };
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { ...partialProps, lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: partialProps,
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResources('Foo::Bar', { Properties: partialProps }));
+    });
+
+    test('no resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResources('Foo::Bar', { Properties: { fred: 'waldo' } }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but none match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo/,
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('some resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResources('Foo::Bar', { Properties: { lorem: 'ipsum' } }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('using a "not" matcher ', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'baz' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResources('Foo::Bar', Match.not({ Properties: { baz: 'qux' } })));
+    });
+  });
+
+  describe('allResourcesProperties', () => {
+    test('all resource of type match', () => {
+      const stack = new Stack();
+      const partialProps = { baz: 'qux', fred: 'waldo' };
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { ...partialProps, lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: partialProps,
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResourcesProperties('Foo::Bar', partialProps));
+    });
+
+    test('no resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+      new CfnResource(stack, 'NotFoo', {
+        type: 'NotFoo::NotBar',
+        properties: { fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResourcesProperties('Foo::Bar', { fred: 'waldo' }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but none match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo/,
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('some resources match', (done) => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.allResourcesProperties('Foo::Bar', { lorem: 'ipsum' }),
+        [
+          'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
+          'The following resources do not match the given definition:',
+          /Foo2/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('using a "not" matcher ', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { lorem: 'ipsum' },
+      });
+      new CfnResource(stack, 'Foo2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'baz' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.allResourcesProperties('Foo::Bar', Match.not({ baz: 'qux' })));
     });
   });
 
@@ -811,7 +1069,8 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.hasParameter('*', { Type: 'CommaDelimitedList' }),
         [
-          /2 parameters/,
+          // Third parameter is automatically included as part of DefaultSynthesizer
+          /3 parameters/,
           /Expected CommaDelimitedList but received String/,
         ],
         done,
@@ -1102,6 +1361,27 @@ describe('Template', () => {
         },
       });
     }).toThrow(/dependency cycle/);
+  });
+
+  test('does not throw when given a template with cyclic dependencies if check is skipped', () => {
+    expect(() => {
+      Template.fromJSON({
+        Resources: {
+          Res1: {
+            Type: 'Foo',
+            Properties: {
+              Thing: { Ref: 'Res2' },
+            },
+          },
+          Res2: {
+            Type: 'Foo',
+            DependsOn: ['Res1'],
+          },
+        },
+      }, {
+        skipCyclicalDependenciesCheck: true,
+      });
+    }).not.toThrow(/dependency cycle/);
   });
 });
 

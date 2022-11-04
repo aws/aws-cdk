@@ -235,6 +235,8 @@ export abstract class BaseLoadBalancer extends Resource {
     this.loadBalancerName = resource.attrLoadBalancerName;
     this.loadBalancerArn = resource.ref;
     this.loadBalancerSecurityGroups = resource.attrSecurityGroups;
+
+    this.node.addValidation({ validate: this.validateLoadBalancer.bind(this) });
   }
 
   /**
@@ -266,7 +268,7 @@ export abstract class BaseLoadBalancer extends Resource {
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
         resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.stack.account}/*`),
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
@@ -301,8 +303,8 @@ export abstract class BaseLoadBalancer extends Resource {
     this.setAttribute(key, undefined);
   }
 
-  protected validate(): string[] {
-    const ret = super.validate();
+  protected validateLoadBalancer(): string[] {
+    const ret = new Array<string>();
 
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html#cfn-elasticloadbalancingv2-loadbalancer-name
     const loadBalancerName = this.physicalName;

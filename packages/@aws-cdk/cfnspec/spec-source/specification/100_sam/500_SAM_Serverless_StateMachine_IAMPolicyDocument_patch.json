@@ -1,0 +1,24 @@
+{
+  "PropertyTypes": {
+      "AWS::Serverless::StateMachine.IAMPolicyDocument": {
+          "patch": {
+              "description": "This was once typed as Json, and adding types now is a breaking change. Keep them as Json forever",
+              "operations": [
+                  {
+                      "op": "remove",
+                      "path": "/Properties/Statement/Type"
+                  },
+                  {
+                      "op": "remove",
+                      "path": "/Properties/Statement/ItemType"
+                  },
+                  {
+                      "op": "add",
+                      "path": "/Properties/Statement/PrimitiveType",
+                      "value": "Json"
+                  }
+              ]
+          }
+      }
+  }
+}

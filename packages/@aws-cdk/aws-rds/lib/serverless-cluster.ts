@@ -151,6 +151,13 @@ interface ServerlessClusterNewProps {
    *   If the `vpc` property was not provided, no subnet group will be associated with the DB cluster
    */
   readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - true
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -426,6 +433,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     };
 
     this.connections = new ec2.Connections({

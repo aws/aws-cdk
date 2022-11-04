@@ -1,12 +1,9 @@
-import { Duration, IConstruct, SecretValue, Tokenization } from '@aws-cdk/core';
+import { Duration, SecretValue, Tokenization } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * What to do when a client makes a request to a listener
@@ -176,10 +173,7 @@ export class ListenerAction implements IListenerAction {
    * Called when the action is being used in a listener
    */
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
-    // Empty on purpose
-    Array.isArray(scope);
-    Array.isArray(listener);
-    Array.isArray(associatingConstruct);
+    this.next?.bind(scope, listener, associatingConstruct);
   }
 
   /**

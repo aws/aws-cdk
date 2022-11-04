@@ -1,0 +1,106 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-iam-user.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-iam-user.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-iam-user": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-iam-user.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9692d8fd69db850e4ebd363cc6957741c608548de4c92289ea7fac366f7669e0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-iam-user.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-iam-user.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-iam-user/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByArn"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByArnPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByArnPath"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByArnPathMultiple": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByArnPathMultiple"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByAttributes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByAttributes"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByAttributesPath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByAttributesPath"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByAttributesPathMultiple": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByAttributesPathMultiple"
+          }
+        ],
+        "/aws-cdk-iam-user/NameForUserImportedByName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NameForUserImportedByName"
+          }
+        ],
+        "/aws-cdk-iam-user/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-iam-user/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-iam-user"
+    }
+  }
+}

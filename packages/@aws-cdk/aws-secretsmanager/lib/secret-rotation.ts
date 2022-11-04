@@ -1,13 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Duration, Names, Stack, Token, CfnMapping, Aws } from '@aws-cdk/core';
+import { Duration, Names, Stack, Token, CfnMapping, Aws, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ISecret } from './secret';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for a SecretRotationApplication
@@ -266,7 +262,7 @@ export interface SecretRotationProps {
 /**
  * Secret rotation for a service or database
  */
-export class SecretRotation extends CoreConstruct {
+export class SecretRotation extends Construct {
   constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
@@ -333,6 +329,7 @@ export class SecretRotation extends CoreConstruct {
       },
       parameters,
     });
+    application.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     // This creates a CF a dependency between the rotation schedule and the
     // serverless application. This is needed because it's the application

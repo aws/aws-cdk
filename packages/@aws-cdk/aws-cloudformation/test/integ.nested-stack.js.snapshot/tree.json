@@ -1,0 +1,687 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "nested-stacks-test": {
+        "id": "nested-stacks-test",
+        "path": "nested-stacks-test",
+        "children": {
+          "SubscriberQueue": {
+            "id": "SubscriberQueue",
+            "path": "nested-stacks-test/SubscriberQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "nested-stacks-test/SubscriberQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "nested-stacks-test/SubscriberQueue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/SubscriberQueue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                                      "Outputs.nestedstackstestNestedStack1topic02C2D1254Ref"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "SubscriberQueueC193DC66",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                                      "Outputs.nestedstackstestNestedStack1topic1474E5389Ref"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "SubscriberQueueC193DC66",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                                      "Outputs.nestedstackstestNestedStack1topic22C710DC4Ref"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "SubscriberQueueC193DC66",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "SubscriberQueueC193DC66"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "nestedstackstestNestedStack1topic089C5EB13": {
+                "id": "nestedstackstestNestedStack1topic089C5EB13",
+                "path": "nested-stacks-test/SubscriberQueue/nestedstackstestNestedStack1topic089C5EB13",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/SubscriberQueue/nestedstackstestNestedStack1topic089C5EB13/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Fn::GetAtt": [
+                            "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                            "Outputs.nestedstackstestNestedStack1topic02C2D1254Ref"
+                          ]
+                        },
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "SubscriberQueueC193DC66",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Subscription",
+                  "version": "0.0.0"
+                }
+              },
+              "nestedstackstestNestedStack1topic1150E1A92": {
+                "id": "nestedstackstestNestedStack1topic1150E1A92",
+                "path": "nested-stacks-test/SubscriberQueue/nestedstackstestNestedStack1topic1150E1A92",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/SubscriberQueue/nestedstackstestNestedStack1topic1150E1A92/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Fn::GetAtt": [
+                            "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                            "Outputs.nestedstackstestNestedStack1topic1474E5389Ref"
+                          ]
+                        },
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "SubscriberQueueC193DC66",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Subscription",
+                  "version": "0.0.0"
+                }
+              },
+              "nestedstackstestNestedStack1topic209B87198": {
+                "id": "nestedstackstestNestedStack1topic209B87198",
+                "path": "nested-stacks-test/SubscriberQueue/nestedstackstestNestedStack1topic209B87198",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/SubscriberQueue/nestedstackstestNestedStack1topic209B87198/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Fn::GetAtt": [
+                            "NestedStack1NestedStackNestedStack1NestedStackResource7E64AD52",
+                            "Outputs.nestedstackstestNestedStack1topic22C710DC4Ref"
+                          ]
+                        },
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "SubscriberQueueC193DC66",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Subscription",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "NestedStack1": {
+            "id": "NestedStack1",
+            "path": "nested-stacks-test/NestedStack1",
+            "children": {
+              "TopicNamePrefix": {
+                "id": "TopicNamePrefix",
+                "path": "nested-stacks-test/NestedStack1/TopicNamePrefix",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "topic-0": {
+                "id": "topic-0",
+                "path": "nested-stacks-test/NestedStack1/topic-0",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/NestedStack1/topic-0/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "displayName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Ref": "TopicNamePrefix"
+                              },
+                              "-0"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "topic-1": {
+                "id": "topic-1",
+                "path": "nested-stacks-test/NestedStack1/topic-1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/NestedStack1/topic-1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "displayName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Ref": "TopicNamePrefix"
+                              },
+                              "-1"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "topic-2": {
+                "id": "topic-2",
+                "path": "nested-stacks-test/NestedStack1/topic-2",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/NestedStack1/topic-2/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "displayName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Ref": "TopicNamePrefix"
+                              },
+                              "-2"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "fn": {
+                "id": "fn",
+                "path": "nested-stacks-test/NestedStack1/fn",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "nested-stacks-test/NestedStack1/fn/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "nested-stacks-test/NestedStack1/fn/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/NestedStack1/fn/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "zipFile": "console.error(\"hi\")"
+                        },
+                        "role": {
+                          "Fn::GetAtt": [
+                            "fnServiceRole5D180AFD",
+                            "Arn"
+                          ]
+                        },
+                        "environment": {
+                          "variables": {
+                            "TOPIC_ARN": "",
+                            "QUEUE_URL": {
+                              "Ref": "referencetonestedstackstestSubscriberQueue39409787Ref"
+                            }
+                          }
+                        },
+                        "handler": "index.handler",
+                        "runtime": "nodejs14.x"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.Function",
+                  "version": "0.0.0"
+                }
+              },
+              "nestedstackstestNestedStack1topic02C2D1254Ref": {
+                "id": "nestedstackstestNestedStack1topic02C2D1254Ref",
+                "path": "nested-stacks-test/NestedStack1/nestedstackstestNestedStack1topic02C2D1254Ref",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "nestedstackstestNestedStack1topic1474E5389Ref": {
+                "id": "nestedstackstestNestedStack1topic1474E5389Ref",
+                "path": "nested-stacks-test/NestedStack1/nestedstackstestNestedStack1topic1474E5389Ref",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "nestedstackstestNestedStack1topic22C710DC4Ref": {
+                "id": "nestedstackstestNestedStack1topic22C710DC4Ref",
+                "path": "nested-stacks-test/NestedStack1/nestedstackstestNestedStack1topic22C710DC4Ref",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "reference-to-nestedstackstestSubscriberQueue39409787Ref": {
+                "id": "reference-to-nestedstackstestSubscriberQueue39409787Ref",
+                "path": "nested-stacks-test/NestedStack1/reference-to-nestedstackstestSubscriberQueue39409787Ref",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "NestedStack1.NestedStack": {
+            "id": "NestedStack1.NestedStack",
+            "path": "nested-stacks-test/NestedStack1.NestedStack",
+            "children": {
+              "NestedStack1.NestedStackResource": {
+                "id": "NestedStack1.NestedStackResource",
+                "path": "nested-stacks-test/NestedStack1.NestedStack/NestedStack1.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "/f5d931a1052f5b2b67e5e0a1fbde6756f92078c301af91c343f27533a7acdfbc.json"
+                        ]
+                      ]
+                    },
+                    "parameters": {
+                      "TopicNamePrefix": "Prefix1",
+                      "referencetonestedstackstestSubscriberQueue39409787Ref": {
+                        "Ref": "SubscriberQueueC193DC66"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "NestedStack2": {
+            "id": "NestedStack2",
+            "path": "nested-stacks-test/NestedStack2",
+            "children": {
+              "TopicNamePrefix": {
+                "id": "TopicNamePrefix",
+                "path": "nested-stacks-test/NestedStack2/TopicNamePrefix",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "topic-0": {
+                "id": "topic-0",
+                "path": "nested-stacks-test/NestedStack2/topic-0",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/NestedStack2/topic-0/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "displayName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Ref": "TopicNamePrefix"
+                              },
+                              "-0"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              },
+              "topic-1": {
+                "id": "topic-1",
+                "path": "nested-stacks-test/NestedStack2/topic-1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "nested-stacks-test/NestedStack2/topic-1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "displayName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Ref": "TopicNamePrefix"
+                              },
+                              "-1"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sns.Topic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "NestedStack2.NestedStack": {
+            "id": "NestedStack2.NestedStack",
+            "path": "nested-stacks-test/NestedStack2.NestedStack",
+            "children": {
+              "NestedStack2.NestedStackResource": {
+                "id": "NestedStack2.NestedStackResource",
+                "path": "nested-stacks-test/NestedStack2.NestedStack/NestedStack2.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "/9f9659202ccc2bb279918da510b11586ae01bee77af0729c8a1f313489d7cc29.json"
+                        ]
+                      ]
+                    },
+                    "parameters": {
+                      "TopicNamePrefix": "Prefix2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

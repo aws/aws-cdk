@@ -124,6 +124,10 @@ export interface UnionProperty extends PropertyBase {
   PrimitiveItemTypes?: PrimitiveType[];
   /** Valid list item types for the property */
   ItemTypes?: string[];
+  /** Valid complex types for this property */
+  InclusiveItemTypes?: string[];
+  /** Valid primitive item types for this property */
+  InclusivePrimitiveItemTypes?: PrimitiveType[];
 }
 
 export enum UpdateType {
@@ -163,7 +167,7 @@ export function isCollectionProperty(prop: Property): prop is CollectionProperty
   return isListProperty(prop)
     || isMapProperty(prop)
     // A UnionProperty is only Collection if it defines ItemTypes or PrimitiveItemTypes
-    || (isUnionProperty(prop) && !!(prop.ItemTypes || prop.PrimitiveItemTypes));
+    || (isUnionProperty(prop) && !!(prop.ItemTypes || prop.PrimitiveItemTypes || prop.InclusiveItemTypes || prop.InclusivePrimitiveItemTypes));
 }
 
 export function isListProperty(prop: Property): prop is ListProperty {
@@ -201,7 +205,14 @@ export function isMapOfListsOfPrimitivesProperty(prop: Property): prop is MapOfL
 
 export function isUnionProperty(prop: Property): prop is UnionProperty {
   const castProp = prop as UnionProperty;
-  return !!(castProp.ItemTypes || castProp.PrimitiveTypes || castProp.Types);
+  return !!(
+    castProp.ItemTypes ||
+    castProp.PrimitiveTypes ||
+    castProp.Types ||
+    castProp.PrimitiveItemTypes ||
+    castProp.InclusiveItemTypes ||
+    castProp.InclusivePrimitiveItemTypes
+  );
 }
 
 export enum PropertyScrutinyType {

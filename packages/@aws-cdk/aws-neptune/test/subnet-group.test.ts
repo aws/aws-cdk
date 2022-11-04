@@ -31,7 +31,7 @@ test('creates a subnet group from all properties', () => {
     description: 'My Shared Group',
     subnetGroupName: 'SharedGroup',
     vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBSubnetGroup', {

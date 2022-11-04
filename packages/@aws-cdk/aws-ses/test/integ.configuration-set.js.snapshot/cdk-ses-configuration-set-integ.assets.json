@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "b5e5a0cd52a1de800810ecf34d36ad67935830aaeee720ee998f4157431b1f25": {
+      "source": {
+        "path": "cdk-ses-configuration-set-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b5e5a0cd52a1de800810ecf34d36ad67935830aaeee720ee998f4157431b1f25.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

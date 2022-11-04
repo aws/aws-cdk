@@ -189,9 +189,7 @@ export class LayerVersion extends LayerVersionBase {
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to define a Lambda layer that supports no runtime!');
     }
-    if (props.code.isInline) {
-      throw new Error('Lambda layers cannot be created from inline code');
-    }
+
     // Allow usage of the code in this context...
     const code = props.code.bind(this);
     if (code.inlineCode) {

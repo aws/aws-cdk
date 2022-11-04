@@ -1,221 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import { describeDeprecated, testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAsset, NetworkMode } from '../lib';
-
-/* eslint-disable quote-props */
+import { DockerImageAsset } from '../lib';
 
 const DEMO_IMAGE_ASSET_HASH = '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14';
 
-const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
-
 describe('image asset', () => {
-  testFutureBehavior('test instantiating Asset Image', flags, App, (app) => {
-    // WHEN
-    const stack = new Stack(app);
-    new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-    });
-
-    // THEN
-    const asm = app.synth();
-    const artifact = asm.getStackArtifact(stack.artifactId);
-    expect(artifact.template).toEqual({});
-    expect(artifact.assets).toEqual([
-      {
-        repositoryName: 'aws-cdk/assets',
-        imageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-        id: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-        packaging: 'container-image',
-        path: 'asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-        sourceHash: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-      },
-    ]);
-
-  });
-
-  testFutureBehavior('with build args', flags, App, (app) => {
-    // WHEN
-    const stack = new Stack(app);
-    new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: {
-        a: 'b',
-      },
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs).toEqual({ a: 'b' });
-
-  });
-
-  testFutureBehavior('with hash options', flags, App, (app) => {
-    // WHEN
-    const stack = new Stack(app);
-    new DockerImageAsset(stack, 'Image1', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: {
-        a: 'b',
-      },
-      invalidation: {
-        buildArgs: false,
-      },
-    });
-    new DockerImageAsset(stack, 'Image2', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: {
-        a: 'c',
-      },
-      invalidation: {
-        buildArgs: false,
-      },
-    });
-    new DockerImageAsset(stack, 'Image3', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: {
-        a: 'b',
-      },
-    });
-
-    // THEN
-    const asm = app.synth();
-    const artifact = asm.getStackArtifact(stack.artifactId);
-    expect(artifact.template).toEqual({});
-    expect(artifact.assets).toEqual([
-      {
-        buildArgs: { 'a': 'b' },
-        id: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-        imageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-        packaging: 'container-image',
-        path: 'asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-        repositoryName: 'aws-cdk/assets',
-        sourceHash: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-      },
-      {
-        buildArgs: { 'a': 'b' },
-        id: '7f3aa0a36ecd282884e11463b3fde119d25d1ed424f934300f0c7b9cf6f63947',
-        imageTag: '7f3aa0a36ecd282884e11463b3fde119d25d1ed424f934300f0c7b9cf6f63947',
-        packaging: 'container-image',
-        path: 'asset.7f3aa0a36ecd282884e11463b3fde119d25d1ed424f934300f0c7b9cf6f63947',
-        repositoryName: 'aws-cdk/assets',
-        sourceHash: '7f3aa0a36ecd282884e11463b3fde119d25d1ed424f934300f0c7b9cf6f63947',
-      },
-    ]);
-  });
-
-  testFutureBehavior('with target', flags, App, (app) => {
-    // WHEN
-    const stack = new Stack(app);
-    new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: {
-        a: 'b',
-      },
-      target: 'a-target',
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).target).toEqual('a-target');
-
-  });
-
-  testFutureBehavior('with file', flags, App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
-    const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
-    // WHEN
-    new DockerImageAsset(stack, 'Image', {
-      directory: directoryPath,
-      file: 'Dockerfile.Custom',
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file).toEqual('Dockerfile.Custom');
-
-  });
-
-  testFutureBehavior('with networkMode', flags, App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
-    // WHEN
-    new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-      networkMode: NetworkMode.DEFAULT,
-    });
-
-    // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).networkMode).toEqual('default');
-  });
-
-  testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
-    const user = new iam.User(stack, 'MyUser');
-    const asset = new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image'),
-    });
-
-    // WHEN
-    asset.repository.grantPull(user);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        'Statement': [
-          {
-            'Action': [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    'Ref': 'AWS::Partition',
-                  },
-                  ':ecr:',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    'Ref': 'AWS::AccountId',
-                  },
-                  ':repository/aws-cdk/assets',
-                ],
-              ],
-            },
-          },
-          {
-            'Action': 'ecr:GetAuthorizationToken',
-            'Effect': 'Allow',
-            'Resource': '*',
-          },
-        ],
-        'Version': '2012-10-17',
-      },
-      'PolicyName': 'MyUserDefaultPolicy7B897426',
-      'Users': [
-        {
-          'Ref': 'MyUserDC45028B',
-        },
-      ],
-    });
-  });
-
   test('fails if the directory does not exist', () => {
     const stack = new Stack();
     // THEN
@@ -250,7 +43,8 @@ describe('image asset', () => {
 
   });
 
-  testFutureBehavior('docker directory is staged if asset staging is enabled', flags, App, (app) => {
+  test('docker directory is staged if asset staging is enabled', () => {
+    const app = new App();
     const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image'),
@@ -270,16 +64,19 @@ describe('image asset', () => {
     // Using a 'describeDeprecated' block here since there's no way to work around this craziness.
     // When the deprecated property is removed source code, this block can be dropped.
 
-    testFutureBehavior('docker directory is staged without files specified in .dockerignore', flags, App, (app) => {
+    test('docker directory is staged without files specified in .dockerignore', () => {
+      const app = new App();
       testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app);
     });
 
-    testFutureBehavior('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', flags, App, (app) => {
+    test('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', () => {
+      const app = new App();
       testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
     });
   });
 
-  testFutureBehavior('docker directory is staged with allow-listed files specified in .dockerignore', flags, App, (app) => {
+  test('docker directory is staged with allow-listed files specified in .dockerignore', () => {
+    const app = new App();
     const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'allow-listed-image'),
@@ -300,11 +97,13 @@ describe('image asset', () => {
     expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep', 'file'))).toBe(true);
   });
 
-  testFutureBehavior('docker directory is staged without files specified in exclude option', flags, App, (app) => {
+  test('docker directory is staged without files specified in exclude option', () => {
+    const app = new App();
     testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app);
   });
 
-  testFutureBehavior('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', flags, App, (app) => {
+  test('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', () => {
+    const app = new App();
     testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app, IgnoreMode.GLOB);
   });
 
@@ -338,8 +137,9 @@ describe('image asset', () => {
     })).toThrow(/Cannot use Token as value of 'repositoryName'/);
   });
 
-  testFutureBehavior('docker build options are included in the asset id', flags, App, (app) => {
+  test('docker build options are included in the asset id', () => {
     // GIVEN
+    const app = new App();
     const stack = new Stack(app);
     const directory = path.join(__dirname, 'demo-image-custom-docker-file');
 
@@ -366,8 +166,32 @@ describe('image asset', () => {
     const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
     const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, repositoryName: 'foo' });
 
-    expect(asset1.assetHash).toEqual('91cd042be26211c28488a6994327fc579e75e355d9d3bf7043fa6a0bc8ad4265');
-    expect(asset2.assetHash).toEqual('6a6cab989dda908fa3d132d58f402f714d79858f3c89473f2b050096954e6827');
+    expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    expect(asset2.assetHash).toEqual('b78978ca702a8eccd37804ce31d76cd83a695b557dbf95aeb109332ee8b1fd32');
+  });
+
+  describe('imageTag is correct for different stack synthesizers', () => {
+    const stack1 = new Stack();
+    const stack2 = new Stack(undefined, undefined, {
+      synthesizer: new DefaultStackSynthesizer({
+        dockerTagPrefix: 'banana',
+      }),
+    });
+
+    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+
+    const asset1 = new DockerImageAsset(stack1, 'Asset1', { directory });
+    const asset2 = new DockerImageAsset(stack2, 'Asset2', { directory });
+
+    test('stack with default synthesizer', () => {
+      expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+      expect(asset1.imageTag).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    });
+
+    test('stack with overwritten synthesizer', () => {
+      expect(asset2.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+      expect(asset2.imageTag).toEqual('banana13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    });
   });
 });
 
@@ -407,8 +231,9 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: Ap
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(true);
 }
 
-testFutureBehavior('nested assemblies share assets: legacy synth edition', flags, App, (app) => {
+test('nested assemblies share assets: legacy synth edition', () => {
   // GIVEN
+  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
 
@@ -433,8 +258,9 @@ testFutureBehavior('nested assemblies share assets: legacy synth edition', flags
   }
 });
 
-testFutureBehavior('nested assemblies share assets: default synth edition', flags, App, (app) => {
+test('nested assemblies share assets: default synth edition', () => {
   // GIVEN
+  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
 

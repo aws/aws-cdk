@@ -1,12 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.
@@ -166,100 +163,130 @@ abstract class InstanceEngineBase implements IInstanceEngine {
 export class MariaDbEngineVersion {
   /**
    * Version "10.0" (only a major version, without a specific minor version).
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0 = MariaDbEngineVersion.of('10.0', '10.0');
   /**
    * Version "10.0.17".
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0_17 = MariaDbEngineVersion.of('10.0.17', '10.0');
   /**
    * Version "10.0.24".
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0_24 = MariaDbEngineVersion.of('10.0.24', '10.0');
   /**
    * Version "10.0.28".
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0_28 = MariaDbEngineVersion.of('10.0.28', '10.0');
   /**
    * Version "10.0.31".
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0_31 = MariaDbEngineVersion.of('10.0.31', '10.0');
   /**
    * Version "10.0.32".
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0_32 = MariaDbEngineVersion.of('10.0.32', '10.0');
   /**
    * Version "10.0.34".
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0_34 = MariaDbEngineVersion.of('10.0.34', '10.0');
   /**
    * Version "10.0.35".
-   * @deprecated MariaDB 10.0 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_0_35 = MariaDbEngineVersion.of('10.0.35', '10.0');
 
   /**
    * Version "10.1" (only a major version, without a specific minor version).
-   * @deprecated MariaDB 10.1 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_1 = MariaDbEngineVersion.of('10.1', '10.1');
   /**
    * Version "10.1.14".
-   * @deprecated MariaDB 10.1 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_1_14 = MariaDbEngineVersion.of('10.1.14', '10.1');
   /**
    * Version "10.1.19".
-   * @deprecated MariaDB 10.1 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_1_19 = MariaDbEngineVersion.of('10.1.19', '10.1');
   /**
    * Version "10.1.23".
-   * @deprecated MariaDB 10.1 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_1_23 = MariaDbEngineVersion.of('10.1.23', '10.1');
   /**
    * Version "10.1.26".
-   * @deprecated MariaDB 10.1 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_1_26 = MariaDbEngineVersion.of('10.1.26', '10.1');
   /**
    * Version "10.1.31".
-   * @deprecated MariaDB 10.1 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_1_31 = MariaDbEngineVersion.of('10.1.31', '10.1');
   /**
    * Version "10.1.34".
-   * @deprecated MariaDB 10.1 will reach end of life on May 18, 2021
+   * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
   */
   public static readonly VER_10_1_34 = MariaDbEngineVersion.of('10.1.34', '10.1');
 
-  /** Version "10.2" (only a major version, without a specific minor version). */
+  /**
+   * Version "10.2" (only a major version, without a specific minor version)
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_2 = MariaDbEngineVersion.of('10.2', '10.2');
-  /** Version "10.2.11". */
+  /**
+   * Version "10.2.11".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+  */
   public static readonly VER_10_2_11 = MariaDbEngineVersion.of('10.2.11', '10.2');
-  /** Version "10.2.12". */
+  /**
+   * Version "10.2.12".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_2_12 = MariaDbEngineVersion.of('10.2.12', '10.2');
-  /** Version "10.2.15". */
+  /**
+   * Version "10.2.15".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_2_15 = MariaDbEngineVersion.of('10.2.15', '10.2');
-  /** Version "10.2.21". */
+  /**
+   * Version "10.2.21".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+  */
   public static readonly VER_10_2_21 = MariaDbEngineVersion.of('10.2.21', '10.2');
-  /** Version "10.2.32". */
+  /**
+   * Version "10.2.32".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+  */
   public static readonly VER_10_2_32 = MariaDbEngineVersion.of('10.2.32', '10.2');
-  /** Version "10.2.37". */
+  /**
+   * Version "10.2.37".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+  */
   public static readonly VER_10_2_37 = MariaDbEngineVersion.of('10.2.37', '10.2');
-  /** Version "10.2.39". */
+  /**
+   * Version "10.2.39".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_2_39 = MariaDbEngineVersion.of('10.2.39', '10.2');
-  /** Version "10.2.40". */
+  /**
+   * Version "10.2.40".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_2_40 = MariaDbEngineVersion.of('10.2.40', '10.2');
-  /** Version "10.2.41". */
+  /**
+   * Version "10.2.41".
+   * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_2_41 = MariaDbEngineVersion.of('10.2.41', '10.2');
 
   /** Version "10.3" (only a major version, without a specific minor version). */
@@ -278,6 +305,12 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_3_31 = MariaDbEngineVersion.of('10.3.31', '10.3');
   /** Version "10.3.32". */
   public static readonly VER_10_3_32 = MariaDbEngineVersion.of('10.3.32', '10.3');
+  /** Version "10.3.34". */
+  public static readonly VER_10_3_34 = MariaDbEngineVersion.of('10.3.34', '10.3');
+  /** Version "10.3.35". */
+  public static readonly VER_10_3_35 = MariaDbEngineVersion.of('10.3.35', '10.3');
+  /** Version "10.3.36". */
+  public static readonly VER_10_3_36 = MariaDbEngineVersion.of('10.3.36', '10.3');
 
   /** Version "10.4" (only a major version, without a specific minor version). */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
@@ -291,6 +324,12 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_4_21 = MariaDbEngineVersion.of('10.4.21', '10.4');
   /** Version "10.4.22". */
   public static readonly VER_10_4_22 = MariaDbEngineVersion.of('10.4.22', '10.4');
+  /** Version "10.4.24". */
+  public static readonly VER_10_4_24 = MariaDbEngineVersion.of('10.4.24', '10.4');
+  /** Version "10.4.25". */
+  public static readonly VER_10_4_25 = MariaDbEngineVersion.of('10.4.25', '10.4');
+  /** Version "10.4.26". */
+  public static readonly VER_10_4_26 = MariaDbEngineVersion.of('10.4.26', '10.4');
 
   /** Version "10.5" (only a major version, without a specific minor version). */
   public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
@@ -302,6 +341,23 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_12 = MariaDbEngineVersion.of('10.5.12', '10.5');
   /** Version "10.5.13". */
   public static readonly VER_10_5_13 = MariaDbEngineVersion.of('10.5.13', '10.5');
+  /** Version "10.5.15". */
+  public static readonly VER_10_5_15 = MariaDbEngineVersion.of('10.5.15', '10.5');
+  /** Version "10.5.16". */
+  public static readonly VER_10_5_16 = MariaDbEngineVersion.of('10.5.16', '10.5');
+  /** Version "10.5.17". */
+  public static readonly VER_10_5_17 = MariaDbEngineVersion.of('10.5.17', '10.5');
+
+  /** Version "10.6" (only a major version, without a specific minor version). */
+  public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
+  /** Version "10.6.5". */
+  public static readonly VER_10_6_5 = MariaDbEngineVersion.of('10.6.5', '10.6');
+  /** Version "10.6.7". */
+  public static readonly VER_10_6_7 = MariaDbEngineVersion.of('10.6.7', '10.6');
+  /** Version "10.6.8". */
+  public static readonly VER_10_6_8 = MariaDbEngineVersion.of('10.6.8', '10.6');
+  /** Version "10.6.10". */
+  public static readonly VER_10_6_10 = MariaDbEngineVersion.of('10.6.10', '10.6');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -367,98 +423,98 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
 export class MysqlEngineVersion {
   /**
    * Version "5.5" (only a major version, without a specific minor version).
-   * @deprecated MySQL 5.5 will reach end of life on May 25, 2021
+   * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_5 = MysqlEngineVersion.of('5.5', '5.5');
   /**
    * Version "5.5.46".
-   * @deprecated MySQL 5.5 will reach end of life on May 25, 2021
+   * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_5_46 = MysqlEngineVersion.of('5.5.46', '5.5');
   /**
    * Version "5.5.53".
-   * @deprecated MySQL 5.5 will reach end of life on May 25, 2021
+   * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_5_53 = MysqlEngineVersion.of('5.5.53', '5.5');
   /**
    * Version "5.5.57".
-   * @deprecated MySQL 5.5 will reach end of life on May 25, 2021
+   * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_5_57 = MysqlEngineVersion.of('5.5.57', '5.5');
   /**
    * Version "5.5.59".
-   * @deprecated MySQL 5.5 will reach end of life on May 25, 2021
+   * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_5_59 = MysqlEngineVersion.of('5.5.59', '5.5');
   /**
    * Version "5.5.61".
-   * @deprecated MySQL 5.5 will reach end of life on May 25, 2021
+   * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_5_61 = MysqlEngineVersion.of('5.5.61', '5.5');
 
   /**
    * Version "5.6" (only a major version, without a specific minor version).
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6 = MysqlEngineVersion.of('5.6', '5.6');
   /**
    * Version "5.6.34".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_34 = MysqlEngineVersion.of('5.6.34', '5.6');
   /**
    * Version "5.6.35".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_35 = MysqlEngineVersion.of('5.6.35', '5.6');
   /**
    * Version "5.6.37".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_37 = MysqlEngineVersion.of('5.6.37', '5.6');
   /**
    * Version "5.6.39".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_39 = MysqlEngineVersion.of('5.6.39', '5.6');
   /**
    * Version "5.6.40".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_40 = MysqlEngineVersion.of('5.6.40', '5.6');
   /**
    * Version "5.6.41".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_41 = MysqlEngineVersion.of('5.6.41', '5.6');
   /**
    * Version "5.6.43".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_43 = MysqlEngineVersion.of('5.6.43', '5.6');
   /**
    * Version "5.6.44".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_44 = MysqlEngineVersion.of('5.6.44', '5.6');
   /**
    * Version "5.6.46".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_46 = MysqlEngineVersion.of('5.6.46', '5.6');
   /**
    * Version "5.6.48".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_48 = MysqlEngineVersion.of('5.6.48', '5.6');
   /**
    * Version "5.6.49".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_49 = MysqlEngineVersion.of('5.6.49', '5.6');
   /**
    * Version "5.6.51".
-   * @deprecated MySQL 5.6 will reach end of life on August 3, 2021
+   * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_5_6_51 = MysqlEngineVersion.of('5.6.51', '5.6');
 
@@ -498,6 +554,10 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_36 = MysqlEngineVersion.of('5.7.36', '5.7');
   /** Version "5.7.37". */
   public static readonly VER_5_7_37 = MysqlEngineVersion.of('5.7.37', '5.7');
+  /** Version "5.7.38". */
+  public static readonly VER_5_7_38 = MysqlEngineVersion.of('5.7.38', '5.7');
+  /** Version "5.7.39". */
+  public static readonly VER_5_7_39 = MysqlEngineVersion.of('5.7.39', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -527,6 +587,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_27 = MysqlEngineVersion.of('8.0.27', '8.0');
   /** Version "8.0.28". */
   public static readonly VER_8_0_28 = MysqlEngineVersion.of('8.0.28', '8.0');
+  /** Version "8.0.30". */
+  public static readonly VER_8_0_30 = MysqlEngineVersion.of('8.0.30', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -605,213 +667,213 @@ export interface PostgresEngineFeatures {
 export class PostgresEngineVersion {
   /**
    * Version "9.5" (only a major version, without a specific minor version).
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5 = PostgresEngineVersion.of('9.5', '9.5');
   /**
    * Version "9.5.2".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_2 = PostgresEngineVersion.of('9.5.2', '9.5');
   /**
    * Version "9.5.4".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_4 = PostgresEngineVersion.of('9.5.4', '9.5');
   /**
    * Version "9.5.6".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_6 = PostgresEngineVersion.of('9.5.6', '9.5');
   /**
    * Version "9.5.7".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_7 = PostgresEngineVersion.of('9.5.7', '9.5');
   /**
    * Version "9.5.9".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_9 = PostgresEngineVersion.of('9.5.9', '9.5');
   /**
    * Version "9.5.10".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_10 = PostgresEngineVersion.of('9.5.10', '9.5');
   /**
    * Version "9.5.12".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_12 = PostgresEngineVersion.of('9.5.12', '9.5');
   /**
    * Version "9.5.13".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_13 = PostgresEngineVersion.of('9.5.13', '9.5');
   /**
    * Version "9.5.14".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_14 = PostgresEngineVersion.of('9.5.14', '9.5');
   /**
    * Version "9.5.15".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_15 = PostgresEngineVersion.of('9.5.15', '9.5');
   /**
    * Version "9.5.16".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_16 = PostgresEngineVersion.of('9.5.16', '9.5');
   /**
    * Version "9.5.18".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_18 = PostgresEngineVersion.of('9.5.18', '9.5');
   /**
    * Version "9.5.19".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_19 = PostgresEngineVersion.of('9.5.19', '9.5');
   /**
    * Version "9.5.20".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_20 = PostgresEngineVersion.of('9.5.20', '9.5');
   /**
    * Version "9.5.21".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_21 = PostgresEngineVersion.of('9.5.21', '9.5');
   /**
    * Version "9.5.22".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_22 = PostgresEngineVersion.of('9.5.22', '9.5');
   /**
    * Version "9.5.23".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_23 = PostgresEngineVersion.of('9.5.23', '9.5');
   /**
    * Version "9.5.24".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_24 = PostgresEngineVersion.of('9.5.24', '9.5');
   /**
    * Version "9.5.25".
-   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+   * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_5_25 = PostgresEngineVersion.of('9.5.25', '9.5');
 
   /**
    * Version "9.6" (only a major version, without a specific minor version).
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6 = PostgresEngineVersion.of('9.6', '9.6');
   /**
    * Version "9.6.1".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_1 = PostgresEngineVersion.of('9.6.1', '9.6');
   /**
    * Version "9.6.2".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_2 = PostgresEngineVersion.of('9.6.2', '9.6');
   /**
    * Version "9.6.3".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_3 = PostgresEngineVersion.of('9.6.3', '9.6');
   /**
    * Version "9.6.5".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_5 = PostgresEngineVersion.of('9.6.5', '9.6');
   /**
    * Version "9.6.6".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_6 = PostgresEngineVersion.of('9.6.6', '9.6');
   /**
    * Version "9.6.8".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_8 = PostgresEngineVersion.of('9.6.8', '9.6');
   /**
    * Version "9.6.9".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_9 = PostgresEngineVersion.of('9.6.9', '9.6');
   /**
    * Version "9.6.10".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_10 = PostgresEngineVersion.of('9.6.10', '9.6');
   /**
    * Version "9.6.11".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_11 = PostgresEngineVersion.of('9.6.11', '9.6');
   /**
    * Version "9.6.12".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_12 = PostgresEngineVersion.of('9.6.12', '9.6');
   /**
    * Version "9.6.14".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_14 = PostgresEngineVersion.of('9.6.14', '9.6');
   /**
    * Version "9.6.15".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_15 = PostgresEngineVersion.of('9.6.15', '9.6');
   /**
    * Version "9.6.16".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_16 = PostgresEngineVersion.of('9.6.16', '9.6');
   /**
    * Version "9.6.17".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_17 = PostgresEngineVersion.of('9.6.17', '9.6');
   /**
    * Version "9.6.18".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_18 = PostgresEngineVersion.of('9.6.18', '9.6');
   /**
    * Version "9.6.19".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_19 = PostgresEngineVersion.of('9.6.19', '9.6');
   /**
    * Version "9.6.20".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_20 = PostgresEngineVersion.of('9.6.20', '9.6');
   /**
    * Version "9.6.21".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_21 = PostgresEngineVersion.of('9.6.21', '9.6');
   /**
    * Version "9.6.22".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_22 = PostgresEngineVersion.of('9.6.22', '9.6');
   /**
    * Version "9.6.23".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_23 = PostgresEngineVersion.of('9.6.23', '9.6');
   /**
    * Version "9.6.24".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+   * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
   */
   public static readonly VER_9_6_24 = PostgresEngineVersion.of('9.6.24', '9.6');
 
@@ -884,6 +946,8 @@ export class PostgresEngineVersion {
   public static readonly VER_11_14 = PostgresEngineVersion.of('11.14', '11', { s3Import: true, s3Export: true });
   /** Version "11.15". */
   public static readonly VER_11_15 = PostgresEngineVersion.of('11.15', '11', { s3Import: true, s3Export: true });
+  /** Version "11.16". */
+  public static readonly VER_11_16 = PostgresEngineVersion.of('11.16', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -905,6 +969,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_9 = PostgresEngineVersion.of('12.9', '12', { s3Import: true, s3Export: true });
   /** Version "12.10". */
   public static readonly VER_12_10 = PostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true });
+  /** Version "12.11". */
+  public static readonly VER_12_11 = PostgresEngineVersion.of('12.11', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
   public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
@@ -920,6 +986,8 @@ export class PostgresEngineVersion {
   public static readonly VER_13_5 = PostgresEngineVersion.of('13.5', '13', { s3Import: true, s3Export: true });
   /** Version "13.6". */
   public static readonly VER_13_6 = PostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
+  /** Version "13.7". */
+  public static readonly VER_13_7 = PostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true });
 
   /** Version "14" (only a major version, without a specific minor version). */
   public static readonly VER_14 = PostgresEngineVersion.of('14', '14', { s3Import: true, s3Export: true });
@@ -927,6 +995,10 @@ export class PostgresEngineVersion {
   public static readonly VER_14_1 = PostgresEngineVersion.of('14.1', '14', { s3Import: true, s3Export: true });
   /** Version "14.2". */
   public static readonly VER_14_2 = PostgresEngineVersion.of('14.2', '14', { s3Import: true, s3Export: true });
+  /** Version "14.3". */
+  public static readonly VER_14_3 = PostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
+  /** Version "14.4". */
+  public static readonly VER_14_4 = PostgresEngineVersion.of('14.4', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -1071,9 +1143,12 @@ export class OracleLegacyEngineVersion {
 }
 
 /**
- * The versions for the Oracle instance engines
- * (those returned by {@link DatabaseInstanceEngine.oracleSe2} and
- * {@link DatabaseInstanceEngine.oracleEe}).
+ * The versions for the Oracle instance engines.
+ * Those returned by the following list.
+ * - {@link DatabaseInstanceEngine.oracleSe2}
+ * - {@link DatabaseInstanceEngine.oracleSe2Cdb}
+ * - {@link DatabaseInstanceEngine.oracleEe}
+ * - {@link DatabaseInstanceEngine.oracleEeCdb}.
  */
 export class OracleEngineVersion {
   /** Version "12.1" (only a major version, without a specific minor version). */
@@ -1186,7 +1261,17 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2021_01_R2 = OracleEngineVersion.of('19.0.0.0.ru-2021-01.rur-2021-01.r2', '19');
   /** Version "19.0.0.0.ru-2021-01.rur-2021-04.r1". */
   public static readonly VER_19_0_0_0_2021_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-04.rur-2021-04.r1', '19');
+  /** Version "19.0.0.0.ru-2021-07.rur-2021-07.r1". */
+  public static readonly VER_19_0_0_0_2021_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-07.rur-2021-07.r1', '19');
+  /** Version "19.0.0.0.ru-2021-10.rur-2021-10.r1". */
+  public static readonly VER_19_0_0_0_2021_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-10.rur-2021-10.r1', '19');
+  /** Version "19.0.0.0.ru-2022-01.rur-2022-01.r1". */
+  public static readonly VER_19_0_0_0_2022_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-01.rur-2022-01.r1', '19');
 
+  /** Version "21" (only a major version, without a specific minor version). */
+  public static readonly VER_21 = OracleEngineVersion.of('21', '21');
+  /** Version "21.0.0.0.ru-2022-01.rur-2022-01.r1". */
+  public static readonly VER_21_0_0_0_2022_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-01.rur-2022-01.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -1338,6 +1423,27 @@ class OracleSe2InstanceEngine extends OracleInstanceEngineBase {
 }
 
 /**
+ * Properties for Oracle Standard Edition 2 (CDB) instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleSe2Cdb}.
+ */
+export interface OracleSe2CdbInstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleSe2CdbInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-se2-cdb',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
  * Properties for Oracle Enterprise Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleEe}.
  */
@@ -1348,6 +1454,27 @@ class OracleEeInstanceEngine extends OracleInstanceEngineBase {
   constructor(version?: OracleEngineVersion) {
     super({
       engineType: 'oracle-ee',
+      version: version
+        ? {
+          fullVersion: version.oracleFullVersion,
+          majorVersion: version.oracleMajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * Properties for Oracle Enterprise Edition (CDB) instance engines.
+ * Used in {@link DatabaseInstanceEngine.oracleEeCdb}.
+ */
+export interface OracleEeCdbInstanceEngineProps extends OracleInstanceEngineProps {
+}
+
+class OracleEeCdbInstanceEngine extends OracleInstanceEngineBase {
+  constructor(version?: OracleEngineVersion) {
+    super({
+      engineType: 'oracle-ee-cdb',
       version: version
         ? {
           fullVersion: version.oracleFullVersion,
@@ -1390,6 +1517,10 @@ export class SqlServerEngineVersion {
   public static readonly VER_12_00_6293_0_V1 = SqlServerEngineVersion.of('12.00.6293.0.v1', '12.00');
   /** Version "12.00.6329.1.v1". */
   public static readonly VER_12_00_6329_1_V1 = SqlServerEngineVersion.of('12.00.6329.1.v1', '12.00');
+  /** Version "12.00.6433.1.v1". */
+  public static readonly VER_12_00_6433_1_V1 = SqlServerEngineVersion.of('12.00.6433.1.v1', '12.00');
+  /** Version "12.00.6439.10.v1". */
+  public static readonly VER_12_00_6439_10_V1 = SqlServerEngineVersion.of('12.00.6439.10.v1', '12.00');
 
   /** Version "13.00" (only a major version, without a specific minor version). */
   public static readonly VER_13 = SqlServerEngineVersion.of('13.00', '13.00');
@@ -1419,6 +1550,10 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_5850_14_V1 = SqlServerEngineVersion.of('13.00.5850.14.v1', '13.00');
   /** Version "13.00.5882.1.v1". */
   public static readonly VER_13_00_5882_1_V1 = SqlServerEngineVersion.of('13.00.5882.1.v1', '13.00');
+  /** Version "13.00.6300.2.v1". */
+  public static readonly VER_13_00_6300_2_V1 = SqlServerEngineVersion.of('13.00.6300.2.v1', '13.00');
+  /** Version "13.00.6419.1.v1". */
+  public static readonly VER_13_00_6419_1_V1 = SqlServerEngineVersion.of('13.00.6419.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -1445,6 +1580,12 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3356_20_V1 = SqlServerEngineVersion.of('14.00.3356.20.v1', '14.00');
   /** Version "14.00.3381.3.v1". */
   public static readonly VER_14_00_3381_3_V1 = SqlServerEngineVersion.of('14.00.3381.3.v1', '14.00');
+  /** Version "14.00.3401.7.v1". */
+  public static readonly VER_14_00_3401_7_V1 = SqlServerEngineVersion.of('14.00.3401.7.v1', '14.00');
+  /** Version "14.00.3421.10.v1". */
+  public static readonly VER_14_00_3421_10_V1 = SqlServerEngineVersion.of('14.00.3421.10.v1', '14.00');
+  /** Version "14.00.3451.2.v1". */
+  public static readonly VER_14_00_3451_2_V1 = SqlServerEngineVersion.of('14.00.3451.2.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
@@ -1457,6 +1598,13 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4043_23_V1 = SqlServerEngineVersion.of('15.00.4043.23.v1', '15.00');
   /** Version "15.00.4073.23.v1". */
   public static readonly VER_15_00_4073_23_V1 = SqlServerEngineVersion.of('15.00.4073.23.v1', '15.00');
+  /** Version "15.00.4153.1.v1". */
+  public static readonly VER_15_00_4153_1_V1 = SqlServerEngineVersion.of('15.00.4153.1.v1', '15.00');
+  /** Version "15.00.4198.2.v1". */
+  public static readonly VER_15_00_4198_2_V1 = SqlServerEngineVersion.of('15.00.4198.2.v1', '15.00');
+  /** Version "15.00.4236.7.v1". */
+  public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of('15.00.4236.7.v1', '15.00');
+
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
@@ -1643,12 +1791,28 @@ export class DatabaseInstanceEngine {
   public static readonly ORACLE_EE: IInstanceEngine = new OracleEeInstanceEngine();
 
   /**
+   * The unversioned 'oracle-ee-cdb' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleEeCdb()} method
+   */
+  public static readonly ORACLE_EE_CDB: IInstanceEngine = new OracleEeCdbInstanceEngine();
+
+  /**
    * The unversioned 'oracle-se2' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link oracleSe2()} method
    */
   public static readonly ORACLE_SE2: IInstanceEngine = new OracleSe2InstanceEngine();
+
+  /**
+   * The unversioned 'oracle-se2-cdb' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the {@link oracleSe2Cdb()} method
+   */
+  public static readonly ORACLE_SE2_CDB: IInstanceEngine = new OracleSe2CdbInstanceEngine();
 
   /**
    * The unversioned 'oracle-se1' instance engine.
@@ -1735,14 +1899,24 @@ export class DatabaseInstanceEngine {
     return new OracleSe1InstanceEngine(props.version);
   }
 
-  /** Creates a new Oracle Standard Edition 1 instance engine. */
+  /** Creates a new Oracle Standard Edition 2 instance engine. */
   public static oracleSe2(props: OracleSe2InstanceEngineProps): IInstanceEngine {
     return new OracleSe2InstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Standard Edition 2 (CDB) instance engine. */
+  public static oracleSe2Cdb(props: OracleSe2CdbInstanceEngineProps): IInstanceEngine {
+    return new OracleSe2CdbInstanceEngine(props.version);
   }
 
   /** Creates a new Oracle Enterprise Edition instance engine. */
   public static oracleEe(props: OracleEeInstanceEngineProps): IInstanceEngine {
     return new OracleEeInstanceEngine(props.version);
+  }
+
+  /** Creates a new Oracle Enterprise Edition (CDB) instance engine. */
+  public static oracleEeCdb(props: OracleEeCdbInstanceEngineProps): IInstanceEngine {
+    return new OracleEeCdbInstanceEngine(props.version);
   }
 
   /** Creates a new SQL Server Standard Edition instance engine. */

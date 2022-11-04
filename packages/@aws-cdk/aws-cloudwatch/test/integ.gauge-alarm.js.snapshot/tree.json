@@ -1,0 +1,118 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.102"
+        }
+      },
+      "gauge-alarm": {
+        "id": "gauge-alarm",
+        "path": "gauge-alarm",
+        "children": {
+          "queue": {
+            "id": "queue",
+            "path": "gauge-alarm/queue",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnResource",
+              "version": "0.0.0"
+            }
+          },
+          "Dash": {
+            "id": "Dash",
+            "path": "gauge-alarm/Dash",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "gauge-alarm/Dash/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardBody": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"widgets\":[{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"gauge\",\"region\":\"",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+                          {
+                            "Fn::GetAtt": [
+                              "queue",
+                              "QueueName"
+                            ]
+                          },
+                          "\"]],\"yAxis\":{\"left\":{\"max\":500,\"min\":0}}}}]}"
+                        ]
+                      ]
+                    },
+                    "dashboardName": "MyCustomGaugeAlarm"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboard",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Dashboard",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "GaugeAlarmIntegrationTest": {
+        "id": "GaugeAlarmIntegrationTest",
+        "path": "GaugeAlarmIntegrationTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "GaugeAlarmIntegrationTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "GaugeAlarmIntegrationTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.102"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "GaugeAlarmIntegrationTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

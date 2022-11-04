@@ -762,7 +762,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(this, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.currentVersion;
@@ -942,6 +942,28 @@ new codepipeline.Pipeline(this, 'Pipeline', {
       ],
     },
   ],
+});
+```
+
+### Elastic Beanstalk Deployment
+
+To deploy an Elastic Beanstalk Application in CodePipeline:
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const targetBucket = new s3.Bucket(this, 'MyBucket');
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployAction = new codepipeline_actions.ElasticBeanstalkDeployAction({
+  actionName: 'ElasticBeanstalkDeploy',
+  input: sourceOutput,
+  environmentName: 'envName',
+  applicationName: 'appName',
+});
+
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [deployAction],
 });
 ```
 
@@ -1125,7 +1147,7 @@ Example:
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
         const AWS = require('aws-sdk');

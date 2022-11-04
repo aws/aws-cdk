@@ -1,9 +1,8 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
-
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
-
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksFargateClusterStack extends Stack {
 
@@ -11,7 +10,7 @@ class EksFargateClusterStack extends Stack {
     super(scope, id);
 
     new eks.FargateCluster(this, 'FargateCluster', {
-      version: CLUSTER_VERSION,
+      ...getClusterVersionConfig(this),
       prune: false,
     });
   }
@@ -19,6 +18,9 @@ class EksFargateClusterStack extends Stack {
 
 const app = new App();
 
-new EksFargateClusterStack(app, 'aws-cdk-eks-fargate-cluster-test');
+const stack = new EksFargateClusterStack(app, 'aws-cdk-eks-fargate-cluster-test');
+new integ.IntegTest(app, 'aws-cdk-eks-fargate-cluster', {
+  testCases: [stack],
+});
 
 app.synth();

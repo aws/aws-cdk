@@ -3,11 +3,8 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { IResource, Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Artifact } from './artifact';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 export enum ActionCategory {
   SOURCE = 'Source',

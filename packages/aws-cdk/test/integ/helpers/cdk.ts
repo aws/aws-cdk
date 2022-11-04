@@ -223,6 +223,14 @@ export interface ShellOptions extends child_process.SpawnOptions {
    * Pass output here
    */
   output?: NodeJS.WritableStream;
+
+  /**
+   * Only return stderr. For example, this is used to validate
+   * that when CI=true, all logs are sent to stdout.
+   *
+   * @default false
+   */
+  onlyStderr?: boolean;
 }
 
 export interface CdkCliOptions extends ShellOptions {
@@ -629,7 +637,9 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     child.once('error', reject);
 
     child.once('close', code => {
-      const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
+      const stderrOutput = Buffer.concat(stderr).toString('utf-8');
+      const stdoutOutput = Buffer.concat(stdout).toString('utf-8');
+      const output = (options.onlyStderr ? stderrOutput : stdoutOutput + stderrOutput).trim();
       if (code === 0 || options.allowErrExit) {
         resolve(output);
       } else {

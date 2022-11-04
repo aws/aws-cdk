@@ -1,5 +1,6 @@
 import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '@aws-cdk/aws-ecs';
 import { ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import {
@@ -91,6 +92,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   public readonly taskDefinition: Ec2TaskDefinition;
   /**
    * The default target group for the service.
+   * @deprecated - Use `targetGroups` instead.
    */
   public readonly targetGroup: ApplicationTargetGroup;
 
@@ -154,7 +156,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   }
 
   private createEc2Service(props: ApplicationMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
 
     return new Ec2Service(this, 'Service', {
       cluster: this.cluster,
@@ -166,6 +168,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      enableExecuteCommand: props.enableExecuteCommand,
       placementConstraints: props.placementConstraints,
       placementStrategies: props.placementStrategies,
     });

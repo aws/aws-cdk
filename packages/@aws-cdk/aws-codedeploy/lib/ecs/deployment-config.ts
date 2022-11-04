@@ -1,52 +1,74 @@
 import { Construct } from 'constructs';
-import { arnForDeploymentConfig } from '../utils';
+import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
+import { TrafficRouting } from '../traffic-routing-config';
+import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of an ECS Deployment Group.
+ *
+ * If you're managing the Deployment Configuration alongside the rest of your CDK resources,
+ * use the {@link EcsDeploymentConfig} class.
+ *
+ * If you want to reference an already existing deployment configuration,
+ * or one defined in a different CDK Stack,
+ * use the {@link EcsDeploymentConfig#fromEcsDeploymentConfigName} method.
+ *
  * The default, pre-defined Configurations are available as constants on the {@link EcsDeploymentConfig} class
  * (for example, `EcsDeploymentConfig.AllAtOnce`).
- *
- * Note: CloudFormation does not currently support creating custom ECS configs outside
- * of using a custom resource. You can import custom deployment config created outside the
- * CDK or via a custom resource with {@link EcsDeploymentConfig#fromEcsDeploymentConfigName}.
  */
-export interface IEcsDeploymentConfig {
-  readonly deploymentConfigName: string;
-  readonly deploymentConfigArn: string;
+export interface IEcsDeploymentConfig extends IBaseDeploymentConfig {
+}
+
+/**
+ * Construction properties of {@link EcsDeploymentConfig}.
+ */
+export interface EcsDeploymentConfigProps extends BaseDeploymentConfigOptions {
+  /**
+   * The configuration that specifies how traffic is shifted from the 'blue'
+   * target group to the 'green' target group during a deployment.
+   * @default AllAtOnce
+   */
+  readonly trafficRouting?: TrafficRouting;
 }
 
 /**
  * A custom Deployment Configuration for an ECS Deployment Group.
  *
- * Note: This class currently stands as namespaced container of the default configurations
- * until CloudFormation supports custom ECS Deployment Configs. Until then it is closed
- * (private constructor) and does not extend {@link cdk.Construct}
- *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
-export class EcsDeploymentConfig {
-  public static readonly ALL_AT_ONCE = deploymentConfig('CodeDeployDefault.ECSAllAtOnce');
+export class EcsDeploymentConfig extends BaseDeploymentConfig implements IEcsDeploymentConfig {
+  /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated ECS task set at once. */
+  public static readonly ALL_AT_ONCE = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSAllAtOnce');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every minute until all traffic is shifted. */
+  public static readonly LINEAR_10PERCENT_EVERY_1MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSLinear10PercentEvery1Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every three minutes until all traffic is shifted. */
+  public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSLinear10PercentEvery3Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed five minutes later. */
+  public static readonly CANARY_10PERCENT_5MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSCanary10Percent5Minutes');
+  /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 15 minutes later. */
+  public static readonly CANARY_10PERCENT_15MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSCanary10Percent15Minutes');
 
   /**
    * Import a custom Deployment Configuration for an ECS Deployment Group defined outside the CDK.
    *
-   * @param _scope the parent Construct for this new Construct
-   * @param _id the logical ID of this new Construct
+   * @param scope the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
    * @param ecsDeploymentConfigName the name of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static fromEcsDeploymentConfigName(_scope: Construct, _id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
-    return deploymentConfig(ecsDeploymentConfigName);
+  public static fromEcsDeploymentConfigName(scope: Construct, id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
+    return this.fromDeploymentConfigName(scope, id, ecsDeploymentConfigName);
   }
 
-  private constructor() {
-    // nothing to do until CFN supports custom ECS deployment configurations
+  private static deploymentConfig(name: string): IEcsDeploymentConfig {
+    return deploymentConfig(name);
   }
-}
 
-function deploymentConfig(name: string): IEcsDeploymentConfig {
-  return {
-    deploymentConfigName: name,
-    deploymentConfigArn: arnForDeploymentConfig(name),
-  };
+  public constructor(scope: Construct, id: string, props?: EcsDeploymentConfigProps) {
+    super(scope, id, {
+      ...props,
+      computePlatform: ComputePlatform.ECS,
+      trafficRouting: props?.trafficRouting ?? TrafficRouting.allAtOnce(),
+    });
+  }
 }

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { DockerImageDestination } from '@aws-cdk/cloud-assembly-schema';
+import type * as AWS from 'aws-sdk';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
@@ -7,8 +8,15 @@ import { Docker } from '../docker';
 import { replaceAwsPlaceholders } from '../placeholders';
 import { shell } from '../shell';
 
+interface ContainerImageAssetHandlerInit {
+  readonly ecr: AWS.ECR;
+  readonly repoUri: string;
+  readonly imageUri: string;
+  readonly destinationAlreadyExists: boolean;
+}
+
 export class ContainerImageAssetHandler implements IAssetHandler {
-  private readonly docker = new Docker(m => this.host.emitMessage(EventType.DEBUG, m));
+  private init?: ContainerImageAssetHandlerInit;
 
   constructor(
     private readonly workDir: string,
@@ -16,47 +24,101 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     private readonly host: IHandlerHost) {
   }
 
+  public async build(): Promise<void> {
+    const initOnce = await this.initOnce();
+
+    if (initOnce.destinationAlreadyExists) { return; }
+    if (this.host.aborted) { return; }
+
+    const dockerForBuilding = await this.host.dockerFactory.forBuild({
+      repoUri: initOnce.repoUri,
+      logger: (m: string) => this.host.emitMessage(EventType.DEBUG, m),
+      ecr: initOnce.ecr,
+    });
+
+    const builder = new ContainerImageBuilder(dockerForBuilding, this.workDir, this.asset, this.host);
+    const localTagName = await builder.build();
+
+    if (localTagName === undefined || this.host.aborted) { return; }
+    if (this.host.aborted) { return; }
+
+    await dockerForBuilding.tag(localTagName, initOnce.imageUri);
+  }
+
   public async publish(): Promise<void> {
+    const initOnce = await this.initOnce();
+
+    if (initOnce.destinationAlreadyExists) { return; }
+    if (this.host.aborted) { return; }
+
+    const dockerForPushing = await this.host.dockerFactory.forEcrPush({
+      repoUri: initOnce.repoUri,
+      logger: (m: string) => this.host.emitMessage(EventType.DEBUG, m),
+      ecr: initOnce.ecr,
+    });
+
+    if (this.host.aborted) { return; }
+
+    this.host.emitMessage(EventType.UPLOAD, `Push ${initOnce.imageUri}`);
+    await dockerForPushing.push(initOnce.imageUri);
+  }
+
+  private async initOnce(): Promise<ContainerImageAssetHandlerInit> {
+    if (this.init) {
+      return this.init;
+    }
+
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const ecr = await this.host.aws.ecrClient(destination);
     const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
-    const repoUri = await repositoryUri(ecr, destination.repositoryName);
 
+    const repoUri = await repositoryUri(ecr, destination.repositoryName);
     if (!repoUri) {
       throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${await account()}. Is this account bootstrapped?`);
     }
 
     const imageUri = `${repoUri}:${destination.imageTag}`;
 
-    if (await this.destinationAlreadyExists(ecr, destination, imageUri)) { return; }
-    if (this.host.aborted) { return; }
+    this.init = {
+      imageUri,
+      ecr,
+      repoUri,
+      destinationAlreadyExists: await this.destinationAlreadyExists(ecr, destination, imageUri),
+    };
 
-    // Default behavior is to login before build so that the Dockerfile can reference images in the ECR repo
-    // However, if we're in a pipelines environment (for example),
-    // we may have alternative credentials to the default ones to use for the build itself.
-    // If the special config file is present, delay the login to the default credentials until the push.
-    // If the config file is present, we will configure and use those credentials for the build.
-    let cdkDockerCredentialsConfigured = this.docker.configureCdkCredentials();
-    if (!cdkDockerCredentialsConfigured) { await this.docker.login(ecr); }
+    return this.init;
+  }
 
-    const localTagName = this.asset.source.executable
-      ? await this.buildExternalAsset(this.asset.source.executable)
-      : await this.buildDirectoryAsset();
-
-    if (localTagName === undefined || this.host.aborted) {
-      return;
+  /**
+   * Check whether the image already exists in the ECR repo
+   *
+   * Use the fields from the destination to do the actual check. The imageUri
+   * should correspond to that, but is only used to print Docker image location
+   * for user benefit (the format is slightly different).
+   */
+  private async destinationAlreadyExists(ecr: AWS.ECR, destination: DockerImageDestination, imageUri: string): Promise<boolean> {
+    this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
+    if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
+      this.host.emitMessage(EventType.FOUND, `Found ${imageUri}`);
+      return true;
     }
 
-    this.host.emitMessage(EventType.UPLOAD, `Push ${imageUri}`);
-    if (this.host.aborted) { return; }
-    await this.docker.tag(localTagName, imageUri);
+    return false;
+  }
+}
 
-    if (cdkDockerCredentialsConfigured) {
-      this.docker.resetAuthPlugins();
-      await this.docker.login(ecr);
-    }
+class ContainerImageBuilder {
+  constructor(
+    private readonly docker: Docker,
+    private readonly workDir: string,
+    private readonly asset: DockerImageManifestEntry,
+    private readonly host: IHandlerHost) {
+  }
 
-    await this.docker.push(imageUri);
+  async build(): Promise<string | undefined> {
+    return this.asset.source.executable
+      ? this.buildExternalAsset(this.asset.source.executable)
+      : this.buildDirectoryAsset();
   }
 
   /**
@@ -84,30 +146,12 @@ export class ContainerImageAssetHandler implements IAssetHandler {
    * and is expected to return the generated image identifier on stdout.
    */
   private async buildExternalAsset(executable: string[], cwd?: string): Promise<string | undefined> {
-
     const assetPath = cwd ?? this.workDir;
 
     this.host.emitMessage(EventType.BUILD, `Building Docker image using command '${executable}'`);
     if (this.host.aborted) { return undefined; }
 
     return (await shell(executable, { cwd: assetPath, quiet: true })).trim();
-  }
-
-  /**
-   * Check whether the image already exists in the ECR repo
-   *
-   * Use the fields from the destination to do the actual check. The imageUri
-   * should correspond to that, but is only used to print Docker image location
-   * for user benefit (the format is slightly different).
-   */
-  private async destinationAlreadyExists(ecr: AWS.ECR, destination: DockerImageDestination, imageUri: string): Promise<boolean> {
-    this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
-    if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
-      this.host.emitMessage(EventType.FOUND, `Found ${imageUri}`);
-      return true;
-    }
-
-    return false;
   }
 
   private async buildImage(localTagName: string): Promise<void> {
@@ -126,6 +170,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       target: source.dockerBuildTarget,
       file: source.dockerFile,
       networkMode: source.networkMode,
+      platform: source.platform,
     });
   }
 

@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Aws, Token } from '@aws-cdk/core';
+import { IBaseDeploymentConfig } from './base-deployment-config';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
@@ -24,6 +25,13 @@ CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
       enabled: true,
       ignorePollAlarmFailure,
     };
+}
+
+export function deploymentConfig(name: string): IBaseDeploymentConfig {
+  return {
+    deploymentConfigName: name,
+    deploymentConfigArn: arnForDeploymentConfig(name),
+  };
 }
 
 enum AutoRollbackEvent {
@@ -56,6 +64,14 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
         'at least one CloudWatch alarm with the Deployment Group');
     }
+  }
+
+  if (autoRollbackConfig.failedDeployment === false
+    && autoRollbackConfig.stoppedDeployment !== true
+    && autoRollbackConfig.deploymentInAlarm === false) {
+    return {
+      enabled: false,
+    };
   }
 
   return events.length > 0

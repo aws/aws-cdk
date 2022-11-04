@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-cdk-eks-handlers-in-vpc/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-handlers-in-vpc-test"
+      ],
+      "assertionStack": "aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkekshandlersinvpcDefaultTestDeployAssert40766711"
+    }
+  }
+}

@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import * as https from 'https';
 import * as url from 'url';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as AWS from 'aws-sdk';
 
 interface HandlerResponse {
   readonly status: 'SUCCESS' | 'FAILED';
@@ -27,22 +29,55 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
 
-  public async handle(): Promise<void> {
+  /**
+   * Handles executing the custom resource event. If `stateMachineArn` is present
+   * in the props then trigger the waiter statemachine
+   */
+  public async handle(): Promise<Response | undefined> {
     try {
-      console.log(`Event: ${JSON.stringify(this.event)}`);
-      const response = await this.processEvent(this.event.ResourceProperties as unknown as Request);
-      console.log(`Event output : ${JSON.stringify(response)}`);
-      await this.respond({
-        status: 'SUCCESS',
-        reason: 'OK',
-        data: response,
-      });
+      if ('stateMachineArn' in this.event.ResourceProperties) {
+        const req: AWS.StepFunctions.StartExecutionInput = {
+          stateMachineArn: this.event.ResourceProperties.stateMachineArn,
+          name: this.event.RequestId,
+          input: JSON.stringify(this.event),
+        };
+        await this.startExecution(req);
+        return;
+      } else {
+        const response = await this.processEvent(this.event.ResourceProperties as unknown as Request);
+        return response;
+      }
     } catch (e) {
       console.log(e);
-      await this.respond({
-        status: 'FAILED',
-        reason: e.message ?? 'Internal Error',
-      });
+      throw e;
+    } finally {
+      clearTimeout(this.timeout);
+    }
+  }
+
+  /**
+   * Handle async requests from the waiter state machine
+   */
+  public async handleIsComplete(): Promise<Response | undefined> {
+    try {
+      const result = await this.processEvent(this.event.ResourceProperties as unknown as Request);
+      return result;
+    } catch (e) {
+      console.log(e);
+      return;
+    } finally {
+      clearTimeout(this.timeout);
+    }
+  }
+
+  /**
+   * Start a step function state machine which will wait for the request
+   * to be successful.
+   */
+  private async startExecution(req: AWS.StepFunctions.StartExecutionInput): Promise<void> {
+    try {
+      const sfn = new AWS.StepFunctions();
+      await sfn.startExecution(req).promise();
     } finally {
       clearTimeout(this.timeout);
     }
@@ -50,7 +85,7 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
 
   protected abstract processEvent(request: Request): Promise<Response | undefined>;
 
-  private respond(response: HandlerResponse) {
+  public respond(response: HandlerResponse) {
     if (this.timedOut) {
       return;
     }
@@ -84,6 +119,8 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
         request.end();
       } catch (e) {
         reject(e);
+      } finally {
+        clearTimeout(this.timeout);
       }
     });
   }

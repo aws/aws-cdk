@@ -212,6 +212,15 @@ export interface DockerImageAssetSource {
    * @default - no networking mode specified
    */
   readonly networkMode?: string;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: string;
 }
 
 /**
@@ -302,7 +311,7 @@ export interface FileAssetLocation {
  */
 export interface DockerImageAssetLocation {
   /**
-   * The URI of the image in Amazon ECR.
+   * The URI of the image in Amazon ECR (including a tag).
    */
   readonly imageUri: string;
 
@@ -310,4 +319,10 @@ export interface DockerImageAssetLocation {
    * The name of the ECR repository.
    */
   readonly repositoryName: string;
+
+  /**
+   * The tag of the image in Amazon ECR.
+   * @default - the hash of the asset, or the `dockerTagPrefix` concatenated with the asset hash if a `dockerTagPrefix` is specified in the stack synthesizer
+   */
+  readonly imageTag?: string;
 }

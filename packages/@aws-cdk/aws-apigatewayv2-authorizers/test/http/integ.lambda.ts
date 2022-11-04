@@ -31,7 +31,7 @@ const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_12_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '../integ.lambda.handler')),
 });

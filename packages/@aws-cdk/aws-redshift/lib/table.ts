@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
@@ -7,10 +7,6 @@ import { HandlerName } from './private/database-query-provider/handler-name';
 import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.
@@ -124,7 +120,7 @@ export interface TableProps extends DatabaseOptions {
 /**
  * Represents a table in a Redshift database.
  */
-export interface ITable extends cdk.IConstruct {
+export interface ITable extends IConstruct {
   /**
    * Name of the table.
    */
@@ -176,7 +172,7 @@ export interface TableAttributes {
   readonly databaseName: string;
 }
 
-abstract class TableBase extends CoreConstruct implements ITable {
+abstract class TableBase extends Construct implements ITable {
   abstract readonly tableName: string;
   abstract readonly tableColumns: Column[];
   abstract readonly cluster: ICluster;

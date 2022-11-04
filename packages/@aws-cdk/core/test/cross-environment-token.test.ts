@@ -1,4 +1,5 @@
-import { App, CfnOutput, CfnResource, Construct, PhysicalName, Resource, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /* eslint-disable quote-props */
@@ -47,8 +48,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference a fixed physical name directly in a different account', () => {
@@ -81,8 +80,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference an ARN with an assigned physical name directly in a different account', () => {
@@ -127,8 +124,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
 
     test('can reference an assigned physical name directly in a different account', () => {
@@ -161,8 +156,6 @@ describe('cross environment', () => {
           },
         },
       });
-
-
     });
   });
 
@@ -191,8 +184,99 @@ describe('cross environment', () => {
     // THEN
     expect(() => toCloudFormation(stack2)).toThrow(
       /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
+  });
 
+  test('can reference a deploy-time physical name across regions, when crossRegionReferences=true', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
+      },
+      crossRegionReferences: true,
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-42',
+      },
+      crossRegionReferences: true,
+    });
 
+    // WHEN
+    const myResource = new MyResource(stack1, 'MyResource');
+    new CfnOutput(stack2, 'Output', {
+      value: myResource.name,
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    expect(template1?.Resources).toMatchObject({
+      'ExportsWriterbermudatriangle42E59594276156AC73': {
+        'DeletionPolicy': 'Delete',
+        'Properties': {
+          'WriterProps': {
+            'exports': {
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887': {
+                'Ref': 'MyResource6073B41F',
+              },
+            },
+            'region': 'bermuda-triangle-42',
+          },
+          'ServiceToken': {
+            'Fn::GetAtt': [
+              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+              'Arn',
+            ],
+          },
+        },
+        'Type': 'Custom::CrossRegionExportWriter',
+        'UpdateReplacePolicy': 'Delete',
+      },
+    });
+    expect(template2?.Outputs).toEqual({
+      'Output': {
+        'Value': {
+          'Fn::GetAtt': [
+            'ExportsReader8B249524',
+            '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887',
+          ],
+        },
+      },
+    });
+  });
+
+  test('cannot reference a deploy-time physical name across regions, when crossRegionReferences=false', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
+      },
+      crossRegionReferences: true,
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-42',
+      },
+      crossRegionReferences: false,
+    });
+
+    // WHEN
+    const myResource = new MyResource(stack1, 'MyResource');
+    new CfnOutput(stack2, 'Output', {
+      value: myResource.name,
+    });
+
+    // THEN
+    expect(() => toCloudFormation(stack2)).toThrow(
+      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
   });
 
   test('cross environment when stack is a substack', () => {
@@ -217,29 +301,23 @@ describe('cross environment', () => {
 
     const assembly = app.synth();
 
-    expect(assembly.getStackByName(parentStack.stackName).template).toEqual({
-      Resources: {
-        ParentResource: {
-          Type: 'Parent::Resource',
-          Properties: {
-            RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
-          },
+    expect(assembly.getStackByName(parentStack.stackName).template?.Resources).toEqual({
+      ParentResource: {
+        Type: 'Parent::Resource',
+        Properties: {
+          RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
         },
       },
     });
 
-    expect(assembly.getStackByName(childStack.stackName).template).toEqual({
-      Resources: {
-        ChildResource8C37244D: {
-          Type: 'My::Resource',
-          Properties: {
-            resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
-          },
+    expect(assembly.getStackByName(childStack.stackName).template?.Resources).toEqual({
+      ChildResource8C37244D: {
+        Type: 'My::Resource',
+        Properties: {
+          resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
         },
       },
     });
-
-
   });
 });
 

@@ -6,8 +6,10 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
+import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
@@ -21,12 +23,8 @@ import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
-import { Runtime } from './runtime';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line
 import { LogRetentionRetryOptions } from './log-retention';
-import { AliasOptions, Alias } from './alias';
+import { Runtime } from './runtime';
 import { addAlias } from './util';
 
 /**
@@ -135,6 +133,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * VPC network to place Lambda network interfaces
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
+   * This is required when `vpcSubnets` is specified.
    *
    * @default - Function is not placed within a VPC.
    */
@@ -143,8 +142,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * Where to place the network interfaces within the VPC.
    *
-   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
-   * requires a NAT gateway, so picking Public subnets is not allowed.
+   * This requires `vpc` to be specified in order for interfaces to actually be
+   * placed in the subnets. If `vpc` is not specify, this will raise an error.
+   *
+   * Note: Internet access for Lambda Functions requires a NAT Gateway, so picking
+   * public subnets is not allowed (unless `allowPublicSubnet` is set to `true`).
    *
    * @default - the Vpc default strategy if not specified
    */
@@ -356,7 +358,7 @@ export interface FunctionProps extends FunctionOptions {
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
    *
-   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
+   * Use `Runtime.FROM_IMAGE` when defining a function from a Docker image.
    */
   readonly runtime: Runtime;
 
@@ -371,7 +373,7 @@ export interface FunctionProps extends FunctionOptions {
    * The name of the method within your code that Lambda calls to execute
    * your function. The format includes the file name. It can also include
    * namespaces and other qualifiers, depending on the runtime.
-   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
+   * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/foundation-progmodel.html.
    *
    * Use `Handler.FROM_IMAGE` when defining a function from a Docker image.
    *
@@ -637,10 +639,10 @@ export class Function extends FunctionBase {
 
   public readonly permissionsNode = this.node;
 
-
   protected readonly canCreatePermissions = true;
 
-  private readonly layers: ILayerVersion[] = [];
+  /** @internal */
+  public readonly _layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
 
@@ -665,6 +667,12 @@ export class Function extends FunctionBase {
       }
       if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
         throw new Error(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`);
+      }
+    }
+
+    if (props.description && !Token.isUnresolved(props.description)) {
+      if (props.description.length > 256) {
+        throw new Error(`Function description can not be longer than 256 characters but has ${props.description.length} characters.`);
       }
     }
 
@@ -771,7 +779,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
       },
-      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }), // Evaluated on synthesis
+      layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
@@ -890,6 +898,30 @@ export class Function extends FunctionBase {
    * @param options Environment variable options.
    */
   public addEnvironment(key: string, value: string, options?: EnvironmentOptions): this {
+    // Reserved environment variables will fail during cloudformation deploy if they're set.
+    // This check is just to allow CDK to fail faster when these are specified.
+    const reservedEnvironmentVariables = [
+      '_HANDLER',
+      '_X_AMZN_TRACE_ID',
+      'AWS_REGION',
+      'AWS_EXECUTION_ENV',
+      'AWS_LAMBDA_FUNCTION_NAME',
+      'AWS_LAMBDA_FUNCTION_MEMORY_SIZE',
+      'AWS_LAMBDA_FUNCTION_VERSION',
+      'AWS_LAMBDA_INITIALIZATION_TYPE',
+      'AWS_LAMBDA_LOG_GROUP_NAME',
+      'AWS_LAMBDA_LOG_STREAM_NAME',
+      'AWS_ACCESS_KEY',
+      'AWS_ACCESS_KEY_ID',
+      'AWS_SECRET_ACCESS_KEY',
+      'AWS_SESSION_TOKEN',
+      'AWS_LAMBDA_RUNTIME_API',
+      'LAMBDA_TASK_ROOT',
+      'LAMBDA_RUNTIME_DIR',
+    ];
+    if (reservedEnvironmentVariables.includes(key)) {
+      throw new Error(`${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`);
+    }
     this.environment[key] = { value, ...options };
     return this;
   }
@@ -903,7 +935,7 @@ export class Function extends FunctionBase {
    */
   public addLayers(...layers: ILayerVersion[]): void {
     for (const layer of layers) {
-      if (this.layers.length === 5) {
+      if (this._layers.length === 5) {
         throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
       }
       if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
@@ -914,8 +946,7 @@ export class Function extends FunctionBase {
       // Currently no validations for compatible architectures since Lambda service
       // allows layers configured with one architecture to be used with a Lambda function
       // from another architecture.
-
-      this.layers.push(layer);
+      this._layers.push(layer);
     }
   }
 
@@ -978,6 +1009,7 @@ export class Function extends FunctionBase {
    *   aliasName: 'Live',
    *   version: fn.currentVersion,
    * });
+   * ```
    *
    * @param aliasName The name of the alias
    * @param options Alias options
@@ -1044,6 +1076,18 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
 
+  private renderLayers() {
+    if (!this._layers || this._layers.length === 0) {
+      return undefined;
+    }
+
+    if (FeatureFlags.of(this).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
+      this._layers.sort();
+    }
+
+    return this._layers.map(layer => layer.layerVersionArn);
+  }
+
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
@@ -1078,7 +1122,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
-    if (!props.vpc) { return undefined; }
+    if (!props.vpc) {
+      if (props.vpcSubnets) {
+        throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
+      }
+      return undefined;
+    }
+
 
     if (props.securityGroup && props.allowAllOutbound !== undefined) {
       throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
@@ -1110,21 +1160,22 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
-    for (const subnetId of subnetIds) {
+    for (const subnetId of selectedSubnets.subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
         throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
-          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
+          'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true');
       }
     }
+    this.node.addDependency(selectedSubnets.internetConnectivityEstablished);
 
     // List can't be empty here, if we got this far you intended to put your Lambda
     // in subnets. We're going to guarantee that we get the nice error message by
     // making VpcNetwork do the selection again.
 
     return {
-      subnetIds,
+      subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }
@@ -1262,4 +1313,24 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
 function undefinedIfNoKeys<A>(struct: A): A | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+
+/**
+ * Aspect for upgrading function versions when the feature flag
+ * provided feature flag present. This can be necessary when the feature flag
+ * changes the function hash, as such changes must be associated with a new
+ * version. This aspect will change the function description in these cases,
+ * which "validates" the new function hash.
+ */
+export class FunctionVersionUpgrade implements IAspect {
+  constructor(private readonly featureFlag: string, private readonly enabled=true) {}
+
+  public visit(node: IConstruct): void {
+    if (node instanceof Function &&
+      this.enabled === FeatureFlags.of(node).isEnabled(this.featureFlag)) {
+      const cfnFunction = node.node.defaultChild as CfnFunction;
+      const desc = cfnFunction.description ? `${cfnFunction.description} ` : '';
+      cfnFunction.addPropertyOverride('Description', `${desc}version-hash:${calculateFunctionHash(node)}`);
+    }
+  };
 }

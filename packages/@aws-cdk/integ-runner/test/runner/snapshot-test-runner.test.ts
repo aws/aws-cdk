@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as path from 'path';
 import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import { IntegSnapshotRunner } from '../../lib/runner';
+import { IntegSnapshotRunner, IntegTest } from '../../lib/runner';
 import { DiagnosticReason } from '../../lib/workers/common';
 import { MockCdkProvider } from '../helpers';
 
@@ -46,9 +46,11 @@ describe('IntegTest runSnapshotTests', () => {
     // WHEN
     const integTest = new IntegSnapshotRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
-      integOutDir: 'test-with-snapshot.integ.snapshot',
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot.js.snapshot',
     });
     const results = integTest.testSnapshot();
 
@@ -59,8 +61,8 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      execCmd: ['node', 'integ.test-with-snapshot.js'],
-      output: 'test-with-snapshot.integ.snapshot',
+      execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
+      output: 'xxxxx.test-with-snapshot.js.snapshot',
     });
     expect(results.diagnostics).toEqual([]);
   });
@@ -69,8 +71,10 @@ describe('IntegTest runSnapshotTests', () => {
     // WHEN
     const integTest = new IntegSnapshotRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
     });
     const results = integTest.testSnapshot();
 
@@ -81,8 +85,8 @@ describe('IntegTest runSnapshotTests', () => {
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      execCmd: ['node', 'integ.test-with-snapshot.js'],
-      output: 'cdk-integ.out.test-with-snapshot',
+      execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
+      output: 'cdk-integ.out.xxxxx.test-with-snapshot.js.snapshot',
     });
     expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
@@ -95,21 +99,23 @@ describe('IntegTest runSnapshotTests', () => {
     // WHEN
     const integTest = new IntegSnapshotRunner({
       cdk: cdkMock.cdk,
-      fileName: 'test/test-data/integ.test-with-snapshot.js',
-      directory: 'test/test-data',
-      integOutDir: 'test-with-snapshot-diff.integ.snapshot',
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot-diff.js.snapshot',
     });
     const results = integTest.testSnapshot();
 
     // THEN
     expect(synthFastMock).toHaveBeenCalledTimes(2);
     expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'integ.test-with-snapshot.js'],
+      execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
       env: expect.objectContaining({
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      output: 'test-with-snapshot-diff.integ.snapshot',
+      output: 'xxxxx.test-with-snapshot-diff.js.snapshot',
     });
     expect(results.diagnostics).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -130,27 +136,125 @@ describe('IntegTest runSnapshotTests', () => {
     }]);
   });
 
-  test('dont diff asset hashes', () => {
+  test('dont diff new asset hashes', () => {
     // WHEN
     const integTest = new IntegSnapshotRunner({
       cdk: cdkMock.cdk,
-      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets-diff.js'),
-      directory: 'test/test-data',
-      integOutDir: 'test-with-snapshot-assets.integ.snapshot',
+      test: new IntegTest({
+        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets-diff.js'),
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/cdk-integ.out.xxxxx.test-with-new-assets.js.snapshot',
     });
-    expect(() => {
-      integTest.testSnapshot();
-    }).not.toThrow();
+    const results = integTest.testSnapshot();
+    expect(results.diagnostics).toEqual([]);
 
     // THEN
     expect(synthFastMock).toHaveBeenCalledTimes(2);
     expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'integ.test-with-snapshot-assets-diff.js'],
+      execCmd: ['node', 'xxxxx.test-with-new-assets-diff.js'],
       env: expect.objectContaining({
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      output: 'test-with-snapshot-assets.integ.snapshot',
+      output: 'cdk-integ.out.xxxxx.test-with-new-assets.js.snapshot',
+    });
+  });
+
+  test('diff new asset hashes', () => {
+    // WHEN
+    const integTest = new IntegSnapshotRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets.js'),
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/cdk-integ.out.xxxxx.test-with-new-assets-diff.js.snapshot',
+    });
+    const results = integTest.testSnapshot();
+
+    // THEN
+    expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+      reason: DiagnosticReason.SNAPSHOT_FAILED,
+      testName: integTest.testName,
+      message: expect.stringContaining('S3Key'),
+    })]));
+  });
+
+  test('dont diff asset hashes', () => {
+    // WHEN
+    const integTest = new IntegSnapshotRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-snapshot-assets-diff.js'),
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot-assets.js.snapshot',
+    });
+    const results = integTest.testSnapshot();
+    expect(results.diagnostics).toEqual([]);
+
+    // THEN
+    expect(synthFastMock).toHaveBeenCalledTimes(2);
+    expect(synthFastMock).toHaveBeenCalledWith({
+      execCmd: ['node', 'xxxxx.test-with-snapshot-assets-diff.js'],
+      env: expect.objectContaining({
+        CDK_INTEG_ACCOUNT: '12345678',
+        CDK_INTEG_REGION: 'test-region',
+      }),
+      output: 'xxxxx.test-with-snapshot-assets.js.snapshot',
+    });
+  });
+
+  test('determine test stack via pragma', () => {
+    // WHEN
+    const integTest = new IntegSnapshotRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.integ-test1.js',
+        discoveryRoot: 'test',
+      }),
+      integOutDir: 'does/not/exist',
+    });
+
+    // THEN
+    expect(integTest.actualTests()).toEqual(expect.objectContaining({
+      'xxxxx.integ-test1': {
+        diffAssets: false,
+        stackUpdateWorkflow: true,
+        stacks: ['stack1'],
+      },
+    }));
+    expect(listMock).toHaveBeenCalledTimes(0);
+  });
+
+  test('get stacks from list, no pragma', async () => {
+    // WHEN
+    const integTest = new IntegSnapshotRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.integ-test2.js',
+        discoveryRoot: 'test',
+      }),
+      integOutDir: 'does/not/exist',
+    });
+
+    // THEN
+    expect(integTest.actualTests()).toEqual(expect.objectContaining({
+      'xxxxx.integ-test2': {
+        diffAssets: false,
+        stackUpdateWorkflow: true,
+        stacks: ['stackabc'],
+      },
+    }));
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
+    expect(synthFastMock).toHaveBeenCalledWith({
+      execCmd: ['node', 'xxxxx.integ-test2.js'],
+      env: expect.objectContaining({
+        CDK_INTEG_ACCOUNT: '12345678',
+        CDK_INTEG_REGION: 'test-region',
+      }),
+      output: '../../does/not/exist',
     });
   });
 
@@ -158,21 +262,23 @@ describe('IntegTest runSnapshotTests', () => {
     // WHEN
     const integTest = new IntegSnapshotRunner({
       cdk: cdkMock.cdk,
-      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets.js'),
-      directory: 'test/test-data',
-      integOutDir: 'test-with-snapshot-assets-diff.integ.snapshot',
+      test: new IntegTest({
+        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-snapshot-assets.js'),
+        discoveryRoot: 'test/test-data',
+      }),
+      integOutDir: 'test/test-data/xxxxx.test-with-snapshot-assets-diff.js.snapshot',
     });
     const results = integTest.testSnapshot();
 
     // THEN
     expect(synthFastMock).toHaveBeenCalledTimes(2);
     expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'integ.test-with-snapshot-assets.js'],
+      execCmd: ['node', 'xxxxx.test-with-snapshot-assets.js'],
       env: expect.objectContaining({
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
       }),
-      output: 'test-with-snapshot-assets-diff.integ.snapshot',
+      output: 'xxxxx.test-with-snapshot-assets-diff.js.snapshot',
     });
     expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,

@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
 import { ManualApprovalStep, Step } from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
@@ -289,7 +288,7 @@ describe('options for other engines', () => {
     // THEN
     expect(() => new PipelineGraph(blueprint, {
       prepareStep: false,
-    })).toThrow('Your pipeline engine does not support changeSet steps');
+    })).toThrow(/Cannot use 'changeSet' steps/);
   });
 });
 

@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "b2c5db18abb1478d7cca3eb711b4e8ff99a12163544663e0b8e9d0513d818011": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-sqs-send-message-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b2c5db18abb1478d7cca3eb711b4e8ff99a12163544663e0b8e9d0513d818011.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

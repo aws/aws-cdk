@@ -305,6 +305,7 @@ You may specify one `instanceType` in the launch template or multiple `instanceT
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
+Graviton 3 instance types are supported including `c7g`.
 
 ### Fargate profiles
 
@@ -579,7 +580,7 @@ declare const vpc: ec2.Vpc;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   vpc,
-  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }],
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
 });
 ```
 
@@ -675,20 +676,35 @@ The kubectl handler uses `kubectl`, `helm` and the `aws` CLI in order to
 interact with the cluster. These are bundled into AWS Lambda layers included in
 the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 
-You can specify a custom `lambda.LayerVersion` if you wish to use a different
-version of these tools. The handler expects the layer to include the following
-three executables:
+The version of kubectl used must be compatible with the Kubernetes version of the
+cluster. kubectl is supported within one minor version (older or newer) of Kubernetes
+(see [Kubernetes version skew policy](https://kubernetes.io/releases/version-skew-policy/#kubectl)).
+Only version 1.20 of kubectl is available in `aws-cdk-lib`. If you need a different
+version, you will need to use one of the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
+
+```ts
+import { KubectlV23Layer } from '@aws-cdk/lambda-layer-kubectl-v23';
+
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_23,
+  kubectlLayer: new KubectlV23Layer(this, 'kubectl'),
+});
+```
+
+You can also specify a custom `lambda.LayerVersion` if you wish to use a
+different version of these tools, or a version not available in any of the
+`@aws-cdk/lambda-layer-kubectl-vXY` packages. The handler expects the layer to
+include the following two executables:
 
 ```text
 helm/helm
 kubectl/kubectl
-awscli/aws
 ```
 
 See more information in the
-[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-awscli/layer) for @aws-cdk/lambda-layer-awscli
+[Dockerfile](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/lambda-layer-awscli/layer) for @aws-cdk/lambda-layer-awscli
 and the
-[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-kubectl/layer) for @aws-cdk/lambda-layer-kubectl.
+[Dockerfile](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/lambda-layer-kubectl/layer) for @aws-cdk/lambda-layer-kubectl.
 
 ```ts
 const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
@@ -945,7 +961,7 @@ bucket.grantReadWrite(serviceAccount);
 
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster.
-See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/master/packages/@aws-cdk/aws-eks#using-existing-clusters).
+See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/aws-eks#using-existing-clusters).
 
 ## Applying Kubernetes Resources
 
@@ -1159,6 +1175,23 @@ cluster.addHelmChart('test-chart', {
 });
 ```
 
+Nested values passed to the `values` parameter should be provided as a nested dictionary:
+
+```ts
+cluster.addHelmChart('ExternalSecretsOperator', {
+  chart: 'external-secrets',
+  release: 'external-secrets',
+  repository: 'https://charts.external-secrets.io',
+  namespace: 'external-secrets',
+  values: {
+    installCRDs: true,
+    webhook: {
+      port: 9443
+    }
+  },
+});
+```
+
 ### OCI Charts
 
 OCI charts are also supported.
@@ -1218,32 +1251,29 @@ To get started, add the following dependencies to your `package.json` file:
 
 ```json
 "dependencies": {
-  "cdk8s": "^1.0.0",
-  "cdk8s-plus-21": "^1.0.0-beta.38",
-  "constructs": "^3.3.69"
+  "cdk8s": "^2.0.0",
+  "cdk8s-plus-22": "^2.0.0-rc.30",
+  "constructs": "^10.0.0"
 }
 ```
 
-Note that here we are using `cdk8s-plus-21` as we are targeting Kubernetes version 1.21.0. If you operate a different kubernetes version, you should
+Note that here we are using `cdk8s-plus-22` as we are targeting Kubernetes version 1.22.0. If you operate a different kubernetes version, you should
 use the corresponding `cdk8s-plus-XX` library.
 See [Select the appropriate cdk8s+ library](https://cdk8s.io/docs/latest/plus/#i-operate-kubernetes-version-1xx-which-cdk8s-library-should-i-be-using)
 for more details.
 
-Similarly to how you would create a stack by extending `@aws-cdk/core.Stack`, we recommend you create a chart of your own that extends `cdk8s.Chart`,
+Similarly to how you would create a stack by extending `aws-cdk-lib.Stack`, we recommend you create a chart of your own that extends `cdk8s.Chart`,
 and add your kubernetes resources to it. You can use `aws-cdk` construct attributes and properties inside your `cdk8s` construct freely.
 
 In this example we create a chart that accepts an `s3.Bucket` and passes its name to a kubernetes pod as an environment variable.
 
-Notice that the chart must accept a `constructs.Construct` type as its scope, not an `@aws-cdk/core.Construct` as you would normally use.
-For this reason, to avoid possible confusion, we will create the chart in a separate file:
-
 `+ my-chart.ts`
 
 ```ts nofixture
-import * as s3 from '@aws-cdk/aws-s3';
+import { aws_s3 as s3 } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-22';
 
 export interface MyChartProps {
   readonly bucket: s3.Bucket;
@@ -1255,12 +1285,12 @@ export class MyChart extends cdk8s.Chart {
 
     new kplus.Pod(this, 'Pod', {
       containers: [
-        new kplus.Container({
+        {
           image: 'my-image',
           env: {
             BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
           },
-        }),
+        }
       ],
     });
   }

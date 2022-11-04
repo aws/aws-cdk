@@ -1,0 +1,82 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-compilations-lambda-nodejs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-compilations-lambda-nodejs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-compilations-lambda-nodejs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-compilations-lambda-nodejs.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a5fb46bb5c70411499bb17cafda8537c5326fc1a8fee6822310feef3f2ec18da.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-compilations-lambda-nodejs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-compilations-lambda-nodejs.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlerServiceRole61E9E52C"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlerC8E2F076"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlertsconfigServiceRoleC4AE481E"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "tsdecoratorhandlertsconfig68EC191E"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-compilations-lambda-nodejs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-compilations-lambda-nodejs"
+    }
+  }
+}

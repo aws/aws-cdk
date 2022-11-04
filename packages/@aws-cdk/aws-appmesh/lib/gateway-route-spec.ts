@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
@@ -6,10 +7,6 @@ import { validateGrpcMatchArrayLength, validateGrpcGatewayRouteMatch } from './p
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Configuration for gateway route host name match.

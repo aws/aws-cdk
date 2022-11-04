@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as process from 'process';
 import * as fs from 'fs-extra';
-import { shell } from './os';
+import { shell, escape } from './os';
 import { CDKBuildOptions, CompilerOverrides } from './package-info';
 
 export async function lintCurrentPackage(options: CDKBuildOptions, compilers: CompilerOverrides & { fix?: boolean } = {}): Promise<void> {
@@ -27,7 +27,7 @@ export async function lintCurrentPackage(options: CDKBuildOptions, compilers: Co
 
   if (await fs.pathExists('README.md')) {
     await shell([
-      process.execPath,
+      escape(process.execPath),
       ...process.execArgv,
       '--',
       require.resolve('markdownlint-cli'),

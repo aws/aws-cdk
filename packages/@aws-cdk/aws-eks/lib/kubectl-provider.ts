@@ -1,19 +1,15 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Stack, NestedStack, Names, IConstruct } from '@aws-cdk/core';
+import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
- * Kubectl Provider Properties
+ * Properties for a KubectlProvider
  */
 export interface KubectlProviderProps {
   /**
@@ -123,7 +119,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
   public readonly handlerRole: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
-    super(scope as CoreConstruct, id);
+    super(scope, id);
 
     const cluster = props.cluster;
 
@@ -153,13 +149,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
-    // allow user to customize the layer
-    if (!props.cluster.kubectlLayer) {
-      handler.addLayers(new AwsCliLayer(this, 'AwsCliLayer'));
-      handler.addLayers(new KubectlLayer(this, 'KubectlLayer'));
-    } else {
-      handler.addLayers(props.cluster.kubectlLayer);
-    }
+    // allow user to customize the layers with the tools we need
+    handler.addLayers(props.cluster.awscliLayer ?? new AwsCliLayer(this, 'AwsCliLayer'));
+    handler.addLayers(props.cluster.kubectlLayer ?? new KubectlLayer(this, 'KubectlLayer'));
 
     this.handlerRole = handler.role!;
 
@@ -189,7 +181,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
 }
 
-class ImportedKubectlProvider extends CoreConstruct implements IKubectlProvider {
+class ImportedKubectlProvider extends Construct implements IKubectlProvider {
 
   /**
    * The custom resource provider's service token.

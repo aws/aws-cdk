@@ -1,4 +1,8 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as core from '../lib';
+import { getWarnings } from './util';
 
 describe('cfn resource', () => {
   describe('._toCloudFormation', () => {
@@ -13,16 +17,12 @@ describe('cfn resource', () => {
         expect(val).not.toBeNull();
       };
 
-      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-        Resources: {
-          DefaultResource: {
-            Type: 'Test::Resource::Fake',
-          },
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
         },
       });
       expect(called).toEqual(true);
-
-
     });
 
     test('renders "Properties" for a resource that has only properties set to "false"', () => {
@@ -35,18 +35,104 @@ describe('cfn resource', () => {
         },
       });
 
-      expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-        Resources: {
-          Resource: {
-            Type: 'Test::Resource::Fake',
-            Properties: {
-              FakeProperty: false,
-            },
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        Resource: {
+          Type: 'Test::Resource::Fake',
+          Properties: {
+            FakeProperty: false,
           },
         },
       });
+    });
+  });
 
+  describe('snapshot removal policy', () => {
+    const supportedResources = [
+      'AWS::EC2::Volume',
+      'AWS::ElastiCache::CacheCluster',
+      'AWS::ElastiCache::ReplicationGroup',
+      'AWS::Neptune::DBCluster',
+      'AWS::RDS::DBCluster',
+      'AWS::RDS::DBInstance',
+      'AWS::Redshift::Cluster',
+    ];
 
+    test.each(supportedResources) (
+      'works as expected when used on supported resources (old behavior)', (resourceType) => {
+        // GIVEN
+        const app = new core.App();
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test.each(supportedResources) (
+      'works as expected when used on supported resources (under feature flag)', (resourceType) => {
+        // GIVEN
+        const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+        const stack = new core.Stack(app, 'TestStack');
+        const resource = new core.CfnResource(stack, 'Resource', {
+          type: resourceType,
+        });
+
+        // WHEN
+        resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+        // THEN
+        expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+          Resource: {
+            Type: resourceType,
+            DeletionPolicy: 'Snapshot',
+            UpdateReplacePolicy: 'Snapshot',
+          },
+        });
+      },
+    );
+
+    test('warns on unsupported resources (without feature flag)', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // WHEN
+      resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+      // THEN
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          path: '/Default/Resource',
+          message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored.',
+        },
+      ]);
+    });
+
+    test('fails on unsupported resources (under feature flag)', () => {
+      // GIVEN
+      const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+
+      // THEN
+      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrowError('AWS::Lambda::Function does not support snapshot removal policy');
     });
   });
 
@@ -60,17 +146,13 @@ describe('cfn resource', () => {
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain',
-        },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can switch off updating Update policy', () => {
@@ -85,16 +167,12 @@ describe('cfn resource', () => {
     });
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-        },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
       },
     });
-
-
   });
 
   test('can add metadata', () => {
@@ -107,18 +185,14 @@ describe('cfn resource', () => {
     resource.addMetadata('Beep', 'Boop');
 
     // THEN
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          Metadata: {
-            Beep: 'Boop',
-          },
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        Metadata: {
+          Beep: 'Boop',
         },
       },
     });
-
-
   });
 
   test('can read metadata', () => {
@@ -130,8 +204,6 @@ describe('cfn resource', () => {
 
     // THEN
     expect(resource.getMetadata('Beep')).toEqual('Boop');
-
-
   });
 
   test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
@@ -144,7 +216,7 @@ describe('cfn resource', () => {
 
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
-    const subtree = new core.Construct(stack, 'subtree');
+    const subtree = new Construct(stack, 'subtree');
 
     // WHEN
     new HiddenCfnResource(subtree, 'R1', { type: 'Foo::R1' });
@@ -154,13 +226,12 @@ describe('cfn resource', () => {
     r2.node.addDependency(subtree);
 
     // THEN - only R2 is synthesized
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual({
-      Resources: { R2: { Type: 'Foo::R2' } },
-
-      // No DependsOn!
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+      R2: {
+        Type: 'Foo::R2',
+        // No DependsOn!
+      },
     });
-
-
   });
 
   test('CfnResource cannot be created outside Stack', () => {
@@ -170,8 +241,6 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
-
-
   });
 
   /**
@@ -186,7 +255,24 @@ describe('cfn resource', () => {
         type: 'Some::Resource',
       });
     }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
+  });
 
+  test('CfnResource has logical ID metadata with stack trace attached', () => {
+    process.env.CDK_DEBUG = '1';
+    try {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack');
+      const res = new core.CfnResource(stack, 'SomeCfnResource', {
+        type: 'Some::Resource',
+      });
 
+      // THEN
+      const metadata = res.node.metadata.find(m => m.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
+      expect(metadata).toBeDefined();
+      expect(metadata?.trace).toBeDefined();
+      expect(metadata?.trace?.length).toBeGreaterThan(0);
+    } finally {
+      delete process.env.CDK_DEBUG;
+    }
   });
 });

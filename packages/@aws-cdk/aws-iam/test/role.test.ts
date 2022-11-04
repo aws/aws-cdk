@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack, App, CfnResource } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
@@ -50,6 +50,30 @@ describe('IAM role', () => {
         Statement: [
           {
             Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('a role can grant AssumeRole permissions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('henk.amazonaws.com') });
+    const user = new User(stack, 'User');
+
+    // WHEN
+    role.grantAssumeRole(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
           },
@@ -233,6 +257,72 @@ describe('IAM role', () => {
         ],
       },
     });
+  });
+
+  test('role path can be used to specify the path', () => {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', { path: '/', assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Path: '/',
+    });
+  });
+
+  test('role path can be 1 character', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' })).not.toThrowError();
+  });
+
+  test('role path cannot be empty', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '' }))
+      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 0 characters.');
+  });
+
+  test('role path must be less than or equal to 512', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' + Array(512).join('a') + '/' }))
+      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 513 characters.');
+  });
+
+  test('role path must start with a forward slash', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: 'aaa' })).toThrow(expected('aaa'));
+  });
+
+  test('role path must end with a forward slash', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/a' })).toThrow(expected('/a'));
+  });
+
+  test('role path must contain unicode chars within [\\u0021-\\u007F]', () => {
+    const stack = new Stack();
+
+    const assumedBy = new ServicePrincipal('bla');
+
+    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/\u0020\u0080/' })).toThrow(expected('/\u0020\u0080/'));
   });
 
   describe('maxSessionDuration', () => {
@@ -569,6 +659,87 @@ test('managed policy ARNs are deduplicated', () => {
       },
     ],
   });
+});
+
+describe('role with too large inline policy', () => {
+  const N = 100;
+
+  let app: App;
+  let stack: Stack;
+  let role: Role;
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'my-stack');
+    role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+
+    for (let i = 0; i < N; i++) {
+      role.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:DoAThing'],
+        resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${i}`],
+      }));
+    }
+  });
+
+  test('excess gets split off into ManagedPolicies', () => {
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Resource: `arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${N - 1}`,
+          }),
+        ]),
+      },
+      Roles: [{ Ref: 'MyRoleF48FFE04' }],
+    });
+  });
+
+  test('Dependables track the final declaring construct', () => {
+    // WHEN
+    const result = role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['aws:DoAThing'],
+      resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${N}`],
+    }));
+
+    const res = new CfnResource(stack, 'Depender', {
+      type: 'AWS::Some::Resource',
+    });
+
+    expect(result.policyDependable).toBeTruthy();
+    res.node.addDependency(result.policyDependable!);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::Some::Resource', {
+      DependsOn: [
+        'MyRoleOverflowPolicy13EF5596A',
+      ],
+    });
+  });
+});
+
+test('many copies of the same statement do not result in overflow policies', () => {
+  const N = 100;
+
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('service.amazonaws.com'),
+  });
+
+  for (let i = 0; i < N; i++) {
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['aws:DoAThing'],
+      resources: ['arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource'],
+    }));
+  }
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::IAM::ManagedPolicy', 0);
 });
 
 test('cross-env role ARNs include path', () => {

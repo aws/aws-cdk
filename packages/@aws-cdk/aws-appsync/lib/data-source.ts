@@ -5,16 +5,12 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { IDomain as IOpenSearchDomain } from '@aws-cdk/aws-opensearchservice';
 import { IServerlessCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { IResolvable, Lazy, Stack } from '@aws-cdk/core';
+import { IResolvable, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base properties for an AppSync datasource
@@ -100,7 +96,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends CoreConstruct {
+export abstract class BaseDataSource extends Construct {
   /**
    * the name of the data source
    */
@@ -120,10 +116,11 @@ export abstract class BaseDataSource extends CoreConstruct {
       this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
     }
     // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
-    const name = (props.name ?? id).replace(/[\W]+/g, '');
+    const name = (props.name ?? id);
+    const supportedName = Token.isUnresolved(name) ? name : name.replace(/[\W]+/g, '');
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
-      name: name,
+      name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
@@ -219,7 +216,7 @@ export class DynamoDbDataSource extends BackedDataSource {
       type: 'AMAZON_DYNAMODB',
       dynamoDbConfig: {
         tableName: props.table.tableName,
-        awsRegion: props.table.stack.region,
+        awsRegion: props.table.env.region,
         useCallerCredentials: props.useCallerCredentials,
       },
     });
@@ -337,7 +334,7 @@ export class RdsDataSource extends BackedDataSource {
       type: 'RELATIONAL_DATABASE',
       relationalDatabaseConfig: {
         rdsHttpEndpointConfig: {
-          awsRegion: props.serverlessCluster.stack.region,
+          awsRegion: props.serverlessCluster.env.region,
           dbClusterIdentifier: Lazy.string({
             produce: () => {
               return Stack.of(this).formatArn({
@@ -399,7 +396,7 @@ export class ElasticsearchDataSource extends BackedDataSource {
     super(scope, id, props, {
       type: 'AMAZON_ELASTICSEARCH',
       elasticsearchConfig: {
-        awsRegion: props.domain.stack.region,
+        awsRegion: props.domain.env.region,
         endpoint: `https://${props.domain.domainEndpoint}`,
       },
     });
@@ -426,7 +423,7 @@ export class OpenSearchDataSource extends BackedDataSource {
     super(scope, id, props, {
       type: 'AMAZON_OPENSEARCH_SERVICE',
       openSearchServiceConfig: {
-        awsRegion: props.domain.stack.region,
+        awsRegion: props.domain.env.region,
         endpoint: `https://${props.domain.domainEndpoint}`,
       },
     });

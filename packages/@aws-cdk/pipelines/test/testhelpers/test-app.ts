@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -225,4 +223,10 @@ export class PlainStackApp extends Stage {
   }
 }
 
-
+export class MultiStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new BucketStack(this, 'Stack1');
+    new BucketStack(this, 'Stack2');
+  }
+}

@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnService } from './apprunner.generated';
+import { IVpcConnector } from './vpc-connector';
 
 /**
  * The image repository types
@@ -91,10 +92,31 @@ export class Memory {
  * The code runtimes
  */
 export class Runtime {
+
+  /**
+   * CORRETTO 8
+   */
+  public static readonly CORRETTO_8 = Runtime.of('CORRETTO_8')
+
+  /**
+   * CORRETTO 11
+   */
+  public static readonly CORRETTO_11 = Runtime.of('CORRETTO_11')
+
   /**
    * NodeJS 12
    */
   public static readonly NODEJS_12 = Runtime.of('NODEJS_12')
+
+  /**
+   * NodeJS 14
+   */
+  public static readonly NODEJS_14 = Runtime.of('NODEJS_14')
+
+  /**
+   * NodeJS 16
+   */
+  public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
 
   /**
    * Python 3
@@ -524,6 +546,13 @@ export interface ServiceProps {
    * @default - auto-generated if undefined.
    */
   readonly serviceName?: string;
+
+  /**
+   * Settings for an App Runner VPC connector to associate with the service.
+   *
+   * @default - no VPC connector, uses the DEFAULT egress type instead
+   */
+  readonly vpcConnector?: IVpcConnector;
 }
 
 /**
@@ -791,6 +820,12 @@ export class Service extends cdk.Resource {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
         imageRepository: source.imageRepository ? this.renderImageRepository() : undefined,
         codeRepository: source.codeRepository ? this.renderCodeConfiguration() : undefined,
+      },
+      networkConfiguration: {
+        egressConfiguration: {
+          egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
+          vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
+        },
       },
     });
 

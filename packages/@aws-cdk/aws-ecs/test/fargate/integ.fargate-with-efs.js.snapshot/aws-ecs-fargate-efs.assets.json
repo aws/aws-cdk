@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "b1edd83a738f14bf7faf27a98a7ff437aa9b1a003f15e438e837a28247d7a45b": {
+      "source": {
+        "path": "aws-ecs-fargate-efs.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b1edd83a738f14bf7faf27a98a7ff437aa9b1a003f15e438e837a28247d7a45b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -172,6 +172,15 @@ export interface TableProps {
    * @default false
    */
   readonly storedAsSubDirectories?: boolean;
+
+  /**
+   * Enables partition filtering.
+   *
+   * @see https://docs.aws.amazon.com/athena/latest/ug/glue-best-practices.html#glue-best-practices-partition-index
+   *
+   * @default - The parameter is not defined
+   */
+  readonly enablePartitionFiltering?: boolean;
 }
 
 /**
@@ -302,8 +311,9 @@ export class Table extends Resource implements ITable {
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
-          classification: props.dataFormat.classificationString?.value,
-          has_encrypted_data: this.encryption !== TableEncryption.UNENCRYPTED,
+          'classification': props.dataFormat.classificationString?.value,
+          'has_encrypted_data': this.encryption !== TableEncryption.UNENCRYPTED,
+          'partition_filtering.enabled': props.enablePartitionFiltering,
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,

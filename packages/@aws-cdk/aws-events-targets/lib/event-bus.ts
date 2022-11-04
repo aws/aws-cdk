@@ -36,10 +36,8 @@ export class EventBus implements events.IRuleTarget {
   constructor(private readonly eventBus: events.IEventBus, private readonly props: EventBusProps = {}) { }
 
   bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    if (this.props.role) {
-      this.props.role.addToPrincipalPolicy(this.putEventStatement());
-    }
-    const role = this.props.role ?? singletonEventRole(rule, [this.putEventStatement()]);
+    const role = this.props.role ?? singletonEventRole(rule);
+    role.addToPrincipalPolicy(this.putEventStatement());
 
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);

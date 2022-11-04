@@ -522,7 +522,7 @@ by deploying with CDK version `1.126.0` or later **before** switching this value
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-   transferAcceleration: true,
+  transferAcceleration: true,
 });
 ```
 
@@ -530,7 +530,7 @@ To access the bucket that is enabled for Transfer Acceleration, you must use a s
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-   transferAcceleration: true,
+  transferAcceleration: true,
 });
 bucket.transferAccelerationUrlForObject('objectname');
 ```
@@ -540,14 +540,52 @@ bucket.transferAccelerationUrlForObject('objectname');
 [Intelligent Tiering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html) can be configured to automatically move files to glacier:
 
 ```ts
-    new s3.Bucket(this, 'MyBucket', {
-   intelligentTieringConfigurations: [{
-      name: 'foo',
-      prefix: 'folder/name',
-      archiveAccessTierTime: cdk.Duration.days(90),
-      deepArchiveAccessTierTime: cdk.Duration.days(180),
-      tags: [{key: 'tagname', value: 'tagvalue'}]
-   }],
+new s3.Bucket(this, 'MyBucket', {
+  intelligentTieringConfigurations: [{
+    name: 'foo',
+    prefix: 'folder/name',
+    archiveAccessTierTime: cdk.Duration.days(90),
+    deepArchiveAccessTierTime: cdk.Duration.days(180),
+    tags: [{key: 'tagname', value: 'tagvalue'}]
+  }],
 });
 
+```
+
+## Lifecycle Rule
+
+[Managing lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) can be configured transition or expiration actions.
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  lifecycleRules: [{
+    abortIncompleteMultipartUploadAfter: cdk.Duration.minutes(30),
+    enabled: false,
+    expiration: cdk.Duration.days(30),
+    expirationDate: new Date(),
+    expiredObjectDeleteMarker: false,
+    id: 'id',
+    noncurrentVersionExpiration: cdk.Duration.days(30),
+
+    // the properties below are optional
+    noncurrentVersionsToRetain: 123,
+    noncurrentVersionTransitions: [{
+      storageClass: s3.StorageClass.GLACIER,
+      transitionAfter: cdk.Duration.days(30),
+
+      // the properties below are optional
+      noncurrentVersionsToRetain: 123,
+    }],
+    objectSizeGreaterThan: 500, 
+    prefix: 'prefix',
+    objectSizeLessThan: 10000, 
+    transitions: [{
+      storageClass: s3.StorageClass.GLACIER,
+
+      // the properties below are optional
+      transitionAfter: cdk.Duration.days(30),
+      transitionDate: new Date(),
+    }],
+  }]
+});
 ```

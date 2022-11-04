@@ -36,7 +36,7 @@ describe('Rds Data Source configuration', () => {
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
@@ -235,7 +235,7 @@ describe('adding rds data source from imported api', () => {
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });

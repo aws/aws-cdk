@@ -2,7 +2,7 @@ import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-c
 import { IVpc } from '@aws-cdk/aws-ec2';
 import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret,
+  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
@@ -12,11 +12,8 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -93,7 +90,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - No certificate associated with the load balancer, if using
    * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
-   * created for the load balancer's specified domain name.
+   * created for the load balancer's specified domain name if a domain name
+   * and domain zone are specified.
    */
   readonly certificate?: ICertificate;
 
@@ -109,8 +107,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   /**
    * The protocol for connections from clients to the load balancer.
    * The load balancer port is determined from the protocol (port 80 for
-   * HTTP, port 443 for HTTPS).  A domain name and zone must be also be
-   * specified if using HTTPS.
+   * HTTP, port 443 for HTTPS).  If HTTPS, either a certificate or domain
+   * name and domain zone must also be specified.
    *
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
@@ -252,12 +250,33 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly circuitBreaker?: DeploymentCircuitBreaker;
 
   /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
    * Name of the load balancer
    *
    * @default - Automatically generated name.
    */
   readonly loadBalancerName?: string;
 
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The load balancer idle timeout, in seconds. Can be between 1 and 4000 seconds
+   *
+   * @default - CloudFormation sets idle timeout to 60 seconds
+   */
+  readonly idleTimeout?: Duration;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -346,12 +365,39 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default - No labels.
    */
   readonly dockerLabels?: { [key: string]: string };
+
+  /**
+  * The entry point that's passed to the container.
+  *
+  * This parameter maps to `Entrypoint` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `--entrypoint` option to
+  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+  *
+  * For more information about the Docker `ENTRYPOINT` parameter, see https://docs.docker.com/engine/reference/builder/#entrypoint.
+  *
+  * @default none
+  */
+  readonly entryPoint?: string[];
+
+  /**
+  * The command that's passed to the container. If there are multiple arguments, make sure that each argument is a separated string in the array.
+  *
+  * This parameter maps to `Cmd` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `COMMAND` parameter to
+  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+  *
+  * For more information about the Docker `CMD` parameter, see https://docs.docker.com/engine/reference/builder/#cmd.
+  *
+  * @default none
+  */
+  readonly command?: string[];
 }
 
 /**
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
-export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
+export abstract class ApplicationLoadBalancedServiceBase extends Construct {
+
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -422,10 +468,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
+    if (props.idleTimeout) {
+      const idleTimeout = props.idleTimeout.toSeconds();
+      if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
+        throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
+      }
+    }
+
     const lbProps = {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
       internetFacing,
+      idleTimeout: props.idleTimeout,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
@@ -523,7 +577,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);

@@ -1,8 +1,10 @@
+import { ClientRequest } from 'http';
 import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print, trace } from './logging';
+import { debug, print } from './logging';
+import { some, ConstructTreeNode, loadTreeFromDir } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -78,7 +80,7 @@ export function filterNotices(data: Notice[], options: FilterNoticeOptions): Not
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
-    tree: loadTree(options.outdir ?? 'cdk.out').tree,
+    tree: loadTreeFromDir(options.outdir ?? 'cdk.out'),
   });
   return data.filter(notice => filter.apply(notice));
 }
@@ -108,9 +110,18 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     const timeout = 3000;
     return new Promise((resolve, reject) => {
+      let req: ClientRequest | undefined;
+
+      let timer = setTimeout(() => {
+        if (req) {
+          req.destroy(new Error('Request timed out'));
+        }
+      }, timeout);
+
+      timer.unref();
+
       try {
-        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
-          { timeout },
+        req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
           res => {
             if (res.statusCode === 200) {
               res.setEncoding('utf8');
@@ -138,20 +149,6 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
             }
           });
         req.on('error', reject);
-        req.on('timeout', () => {
-          // The 'timeout' event doesn't stop anything by itself, it just
-          // notifies that it has been long time since we saw bytes.
-          // In our case, we want to give up.
-          req.destroy(new Error('Request timed out'));
-        });
-
-        // It's not like I don't *trust* the 'timeout' event... but I don't trust it.
-        // Add a backup timer that will destroy the request after all.
-        // (This is at least necessary to make the tests pass, but that's probably because of 'nock'.
-        // It's not clear whether users will hit this).
-        setTimeout(() => {
-          req.destroy(new Error('Request timed out. You should never see this message; if you do, please let us know at https://github.com/aws/aws-cdk/issues'));
-        }, timeout + 200);
       } catch (e) {
         reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
@@ -338,53 +335,5 @@ function match(query: Component[], tree: ConstructTreeNode): boolean {
 
   function compareVersions(pattern: string, target: string | undefined): boolean {
     return semver.satisfies(target ?? '', pattern);
-  }
-}
-
-function loadTree(outdir: string) {
-  try {
-    return fs.readJSONSync(path.join(outdir, 'tree.json'));
-  } catch (e) {
-    trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
-    return {};
-  }
-}
-
-/**
- * Source information on a construct (class fqn and version)
- */
-interface ConstructInfo {
-  readonly fqn: string;
-  readonly version: string;
-}
-
-/**
- * A node in the construct tree.
- * @internal
- */
-interface ConstructTreeNode {
-  readonly id: string;
-  readonly path: string;
-  readonly children?: { [key: string]: ConstructTreeNode };
-  readonly attributes?: { [key: string]: any };
-
-  /**
-   * Information on the construct class that led to this node, if available
-   */
-  readonly constructInfo?: ConstructInfo;
-}
-
-function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) => boolean): boolean {
-  return node != null && (predicate(node) || findInChildren());
-
-  function findInChildren(): boolean {
-    if (node.children == null) { return false; }
-
-    for (const name in node.children) {
-      if (some(node.children[name], predicate)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

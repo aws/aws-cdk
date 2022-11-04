@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IConstruct } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { CfnRule } from './events.generated';
 import { RuleTargetInput } from './input';
 import { IRule } from './rule-ref';

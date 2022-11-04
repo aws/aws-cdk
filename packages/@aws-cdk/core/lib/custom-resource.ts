@@ -33,7 +33,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * AWS Lambda function:
+   * AWS Lambda function (not recommended to use AWS Lambda Functions directly,
+   * see the module README):
    *
    * ```ts
    * // invoke an AWS Lambda function when a lifecycle event occurs:
@@ -42,7 +43,8 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * SNS topic:
+   * SNS topic (not recommended to use AWS Lambda Functions directly, see the
+   * module README):
    *
    * ```ts
    * // publish lifecycle events to an SNS topic:
@@ -201,11 +203,11 @@ function renderResourceType(resourceType?: string) {
     throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
   }
 
-  const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
-  if (typeName.length > 60) {
+  if (resourceType.length > 60) {
     throw new Error(`Custom resource type length > 60 (${resourceType})`);
   }
 
+  const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
   if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
     throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
   }

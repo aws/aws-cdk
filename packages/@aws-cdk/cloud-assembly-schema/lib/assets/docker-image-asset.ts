@@ -71,6 +71,15 @@ export interface DockerImageSource {
    * @default - no networking mode specified
    */
   readonly networkMode?: string;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform/architecture.
+   *
+   * @default - current machine platform
+   */
+  readonly platform?: string;
 }
 
 /**

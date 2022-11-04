@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Certificate, CertificateValidation } from '../lib';
@@ -80,6 +80,17 @@ test('can configure validation method', () => {
     ValidationMethod: 'DNS',
   });
 });
+
+test('throws when domain name is longer than 64 characters', () => {
+  const stack = new Stack();
+
+  expect(() => {
+    new Certificate(stack, 'Certificate', {
+      domainName: 'example.com'.repeat(7),
+    });
+  }).toThrow(/Domain name must be 64 characters or less/);
+});
+
 
 test('needs validation domain supplied if domain contains a token', () => {
   const stack = new Stack();
@@ -322,3 +333,81 @@ test('CertificateValidation.fromDnsMultiZone', () => {
     ValidationMethod: 'DNS',
   });
 });
+
+describe('Transparency logging settings', () => {
+  test('leaves transparency logging untouched by default', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+    });
+
+    const certificateNodes = Template.fromStack(stack).findResources('AWS::CertificateManager::Certificate');
+    expect(certificateNodes.Certificate4E7ABB08).toBeDefined();
+    expect(certificateNodes.Certificate4E7ABB08.CertificateTransparencyLoggingPreference).toBeUndefined();
+  });
+
+  test('can enable transparency logging', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      transparencyLoggingEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateTransparencyLoggingPreference: 'ENABLED',
+    });
+  });
+
+  test('can disable transparency logging', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      transparencyLoggingEnabled: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateTransparencyLoggingPreference: 'DISABLED',
+    });
+  });
+});
+
+
+describe('Certifcate Name setting', () => {
+  test('the Name tag is defaulted to path', () => {
+    const stack = new Stack(undefined, 'TestStack');
+
+    new Certificate(stack, 'TheCertificate', {
+      domainName: 'test.example.com',
+    });
+
+    Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate',
+      hasTags([{ Key: 'Name', Value: 'TestStack/TheCertificate' }]),
+    );
+  });
+
+  test('Can provide a custom certificate name', () => {
+    const stack = new Stack(undefined, 'TestStack');
+
+    new Certificate(stack, 'TheCertificate', {
+      domainName: 'test.example.com',
+      certificateName: 'Custom Certificate Name',
+    });
+
+    Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate',
+      hasTags([{ Key: 'Name', Value: 'Custom Certificate Name' }]),
+    );
+  });
+});
+
+function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
+  return {
+    Properties: {
+      Tags: Match.arrayWith(expectedTags),
+    },
+  };
+}

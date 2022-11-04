@@ -10,7 +10,6 @@ describe('tokens', () => {
   test('resolve a plain old object should just return the object', () => {
     const obj = { PlainOldObject: 123, Array: [1, 2, 3] };
     expect(resolve(obj)).toEqual(obj);
-
   });
 
   test('if a value is an object with a token value, it will be evaluated', () => {
@@ -23,8 +22,6 @@ describe('tokens', () => {
       RegularValue: 'hello',
       LazyValue: 'World',
     });
-
-
   });
 
   test('tokens are evaluated anywhere in the object tree', () => {
@@ -49,8 +46,6 @@ describe('tokens', () => {
         },
       ],
     });
-
-
   });
 
   test('tokens are evaluated recursively', () => {
@@ -75,8 +70,6 @@ describe('tokens', () => {
         },
       ],
     });
-
-
   });
 
   test('empty arrays or objects are kept', () => {
@@ -110,34 +103,28 @@ describe('tokens', () => {
         },
       },
     });
-
-
   });
 
   test('if an object has a "resolve" property that is not a function, it is not considered a token', () => {
     expect(resolve({ a_token: { resolve: () => 78787 } })).toEqual({ a_token: 78787 });
     expect(resolve({ not_a_token: { resolve: 12 } })).toEqual({ not_a_token: { resolve: 12 } });
-
   });
 
   // eslint-disable-next-line max-len
   test('if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")', () => {
     expect(resolve({ prop: new DataType() })).toEqual({ prop: { foo: 12, goo: 'hello' } });
-
   });
 
   test('isToken(obj) can be used to determine if an object is a token', () => {
     expect(isResolvableObject({ resolve: () => 123 })).toEqual(true);
     expect(isResolvableObject({ a: 1, b: 2, resolve: () => 'hello' })).toEqual(true);
     expect(isResolvableObject({ a: 1, b: 2, resolve: 3 })).toEqual(false);
-
   });
 
   test('Token can be used to create tokens that contain a constant value', () => {
     expect(resolve(new Intrinsic(12))).toEqual(12);
     expect(resolve(new Intrinsic('hello'))).toEqual('hello');
     expect(resolve(new Intrinsic(['hi', 'there']))).toEqual(['hi', 'there']);
-
   });
 
   test('resolving leaves a Date object in working order', () => {
@@ -145,7 +132,6 @@ describe('tokens', () => {
     const resolved = resolve(date);
 
     expect(date.toString()).toEqual(resolved.toString());
-
   });
 
   test('tokens can be stringified and evaluated to conceptual value', () => {
@@ -158,7 +144,6 @@ describe('tokens', () => {
 
     // THEN
     expect(evaluateCFN(resolved)).toEqual('The dog says: woof woof');
-
   });
 
   test('tokens stringification can be reversed', () => {
@@ -167,7 +152,6 @@ describe('tokens', () => {
 
     // THEN
     expect(token).toEqual(Tokenization.reverseString(`${token}`).firstToken);
-
   });
 
   test('Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join', () => {
@@ -182,7 +166,6 @@ describe('tokens', () => {
     expect(resolved).toEqual({
       'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]],
     });
-
   });
 
   test('Doubly nested strings evaluate correctly in scalar context', () => {
@@ -197,8 +180,6 @@ describe('tokens', () => {
     // THEN
     expect(evaluateCFN(resolved1)).toEqual('hello world');
     expect(evaluateCFN(resolved2)).toEqual('hello world');
-
-
   });
 
   test('integer Tokens can be stringified and evaluate to conceptual value', () => {
@@ -211,7 +192,6 @@ describe('tokens', () => {
       // THEN
       expect(evaluateCFN(resolved)).toEqual('the number is 1');
     }
-
   });
 
   test('intrinsic Tokens can be stringified and evaluate to conceptual value', () => {
@@ -224,8 +204,6 @@ describe('tokens', () => {
       const context = { MyBucket: 'TheName' };
       expect(evaluateCFN(resolved, context)).toEqual('my bucket is named TheName');
     }
-
-
   });
 
   test('tokens resolve properly in initial position', () => {
@@ -237,8 +215,6 @@ describe('tokens', () => {
       // THEN
       expect(evaluateCFN(resolved)).toEqual('Hello world');
     }
-
-
   });
 
   test('side-by-side Tokens resolve correctly', () => {
@@ -252,8 +228,6 @@ describe('tokens', () => {
         expect(evaluateCFN(resolved)).toEqual('Hello world');
       }
     }
-
-
   });
 
   test('tokens can be used in hash keys but must resolve to a string', () => {
@@ -267,7 +241,6 @@ describe('tokens', () => {
 
     // THEN
     expect(resolve(s)).toEqual({ 'I am a string': 'boom I am a string' });
-
   });
 
   test('tokens can be nested in hash keys', () => {
@@ -281,7 +254,6 @@ describe('tokens', () => {
 
     // THEN
     expect(resolve(s)).toEqual({ 'I am a string': 'boom I am a string' });
-
   });
 
   test('Function passed to Lazy.uncachedString() is evaluated multiple times', () => {
@@ -292,8 +264,6 @@ describe('tokens', () => {
     // THEN
     expect(resolve(counterString)).toEqual('1');
     expect(resolve(counterString)).toEqual('2');
-
-
   });
 
   test('Function passed to Lazy.string() is only evaluated once', () => {
@@ -304,8 +274,6 @@ describe('tokens', () => {
     // THEN
     expect(resolve(counterString)).toEqual('1');
     expect(resolve(counterString)).toEqual('1');
-
-
   });
 
   test('Uncached tokens returned by cached tokens are still evaluated multiple times', () => {
@@ -329,8 +297,6 @@ describe('tokens', () => {
     expect(resolve(counterString2)).toEqual('->3');
     expect(resolve(counterString2)).toEqual('->4');
     expect(resolve(counterObject)).toEqual({ finalCount: '5' });
-
-
   });
 
   test('tokens can be nested and concatenated in hash keys', () => {
@@ -345,7 +311,6 @@ describe('tokens', () => {
 
     // THEN
     expect(resolve(s)).toEqual({ 'toot the woot': 'boom chicago' });
-
   });
 
   test('can find nested tokens in hash keys', () => {
@@ -362,7 +327,6 @@ describe('tokens', () => {
     const tokens = findTokens(new Stack(), () => s);
     expect(tokens.some(t => t === innerToken)).toEqual(true);
     expect(tokens.some(t => t === token)).toEqual(true);
-
   });
 
   test('fails if token in a hash key resolves to a non-string', () => {
@@ -376,7 +340,6 @@ describe('tokens', () => {
 
     // THEN
     expect(() => resolve(s)).toThrow('is used as the key in a map so must resolve to a string, but it resolves to:');
-
   });
 
   describe('list encoding', () => {
@@ -393,8 +356,6 @@ describe('tokens', () => {
       expect(resolve(struct)).toEqual({
         XYZ: { Ref: 'Other' },
       });
-
-
     });
 
     test('cannot add to encoded list', () => {
@@ -409,8 +370,6 @@ describe('tokens', () => {
       expect(() => {
         resolve(encoded);
       }).toThrow(/Cannot add elements to list token/);
-
-
     });
 
     test('cannot add to strings in encoded list', () => {
@@ -425,8 +384,6 @@ describe('tokens', () => {
       expect(() => {
         resolve(encoded);
       }).toThrow(/concatenate strings in/);
-
-
     });
 
     test('can pass encoded lists to FnSelect', () => {
@@ -440,8 +397,6 @@ describe('tokens', () => {
       expect(resolve(struct)).toEqual({
         'Fn::Select': [1, { Ref: 'Other' }],
       });
-
-
     });
 
     test('can pass encoded lists to FnJoin', () => {
@@ -455,8 +410,6 @@ describe('tokens', () => {
       expect(resolve(struct)).toEqual({
         'Fn::Join': ['/', { Ref: 'Other' }],
       });
-
-
     });
 
     test('can pass encoded lists to FnJoin, even if join is stringified', () => {
@@ -470,8 +423,6 @@ describe('tokens', () => {
       expect(resolve(struct)).toEqual({
         'Fn::Join': ['/', { Ref: 'Other' }],
       });
-
-
     });
 
     test('detect and error when list token values are illegally extracted', () => {
@@ -619,11 +570,9 @@ describe('tokens', () => {
     const token = fn1();
     restoreStackTraceColection(previousValue);
     expect(() => token.throwError('message!')).toThrow(/Token created:/);
-
   });
 
   describe('type coercion', () => {
-
     const inputs = [
       'a string',
       1234,
@@ -643,50 +592,40 @@ describe('tokens', () => {
 
       test(`${input}<string>.toNumber()`, () => {
         expect(resolve(Token.asNumber(new Intrinsic(stringToken)))).toEqual(expected);
-
       });
 
       test(`${input}<list>.toNumber()`, () => {
         expect(resolve(Token.asNumber(new Intrinsic(listToken)))).toEqual(expected);
-
       });
 
       test(`${input}<number>.toNumber()`, () => {
         expect(resolve(Token.asNumber(new Intrinsic(numberToken)))).toEqual(expected);
-
       });
 
       test(`${input}<string>.toString()`, () => {
         expect(resolve(new Intrinsic(stringToken).toString())).toEqual(expected);
-
       });
 
       test(`${input}<list>.toString()`, () => {
         expect(resolve(new Intrinsic(listToken).toString())).toEqual(expected);
-
       });
 
       test(`${input}<number>.toString()`, () => {
         expect(resolve(new Intrinsic(numberToken).toString())).toEqual(expected);
-
       });
 
       test(`${input}<string>.toList()`, () => {
         expect(resolve(Token.asList(new Intrinsic(stringToken)))).toEqual(expected);
-
       });
 
       test(`${input}<list>.toList()`, () => {
         expect(resolve(Token.asList(new Intrinsic(listToken)))).toEqual(expected);
-
       });
 
       test(`${input}<number>.toList()`, () => {
         expect(resolve(Token.asList(new Intrinsic(numberToken)))).toEqual(expected);
-
       });
     }
-
   });
 
   test('creation stack is attached to errors emitted during resolve with CDK_DEBUG=true', () => {
@@ -708,7 +647,6 @@ describe('tokens', () => {
     }
 
     expect(message && message.includes('showMeInTheStackTrace')).toEqual(true);
-
   });
 
   test('creation stack is omitted without CDK_DEBUG=true', () => {
@@ -730,7 +668,6 @@ describe('tokens', () => {
     }
 
     expect(message && message.includes('Execute again with CDK_DEBUG=true')).toEqual(true);
-
   });
 
   describe('stringifyNumber', () => {
@@ -761,7 +698,6 @@ describe('tokens', () => {
       const res = Tokenization.stringifyNumber(tokenizedVal as any) as any;
       expect(res).not.toEqual(resolvedVal);
       expect(resolve(res)).toEqual(resolvedVal);
-
     });
 
     test('tokenized Ref remains the same', () => {
@@ -770,7 +706,6 @@ describe('tokens', () => {
       const res = Tokenization.stringifyNumber(tokenizedVal) as any;
       expect(res).not.toEqual(resolvedVal);
       expect(resolve(res)).toEqual(resolvedVal);
-
     });
   });
 });

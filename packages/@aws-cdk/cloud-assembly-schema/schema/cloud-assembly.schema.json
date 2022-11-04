@@ -230,6 +230,10 @@
                     "description": "Networking mode for the RUN commands during build. (Default - no networking mode specified)",
                     "type": "string"
                 },
+                "platform": {
+                    "description": "Platform to build for. _Requires Docker Buildx_. (Default - current machine platform)",
+                    "type": "string"
+                },
                 "id": {
                     "description": "Logical identifier for the asset",
                     "type": "string"
@@ -635,7 +639,7 @@
                     }
                 },
                 "returnAsymmetricSubnets": {
-                    "description": "Whether to populate the subnetGroups field of the{@linkVpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
                     "default": false,
                     "type": "boolean"
                 },

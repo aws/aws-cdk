@@ -15,8 +15,6 @@ describeDeprecated('include', () => {
         MyResource2: { Type: 'ResourceType2' },
       },
     });
-
-
   });
 
   test('included templates can co-exist with elements created programmatically', () => {
@@ -39,8 +37,6 @@ describeDeprecated('include', () => {
       },
       Outputs: { MyOutput: { Description: 'Out!', Value: 'hey' } },
     });
-
-
   });
 
   test('exception is thrown in construction if an entity from an included template has the same id as a programmatic entity', () => {
@@ -52,7 +48,6 @@ describeDeprecated('include', () => {
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!
 
     expect(() => toCloudFormation(stack)).toThrow();
-
   });
 
   test('correctly merges template sections that contain strings', () => {
@@ -75,8 +70,6 @@ describeDeprecated('include', () => {
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'Test 1\nTest 2',
     });
-
-
   });
 });
 

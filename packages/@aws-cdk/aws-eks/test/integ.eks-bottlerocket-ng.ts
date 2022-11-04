@@ -1,10 +1,11 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
 import { NodegroupAmiType } from '../lib';
-
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
 
@@ -27,7 +28,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
     });
 
     this.cluster.addNodegroupCapacity('BottlerocketNG1', {
@@ -41,6 +42,8 @@ class EksClusterStack extends Stack {
 
 const app = new App();
 
-new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
-
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-bottlerocket-ng-test');
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-bottlerocket-ng', {
+  testCases: [stack],
+});
 app.synth();

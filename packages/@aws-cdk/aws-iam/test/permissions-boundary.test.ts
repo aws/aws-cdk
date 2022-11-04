@@ -76,7 +76,7 @@ test('apply boundary to role created by a custom resource', () => {
   // GIVEN
   const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Empty', {
     codeDirectory: path.join(__dirname, 'custom-resource'),
-    runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+    runtime: CustomResourceProviderRuntime.NODEJS_14_X,
   });
 
   // WHEN

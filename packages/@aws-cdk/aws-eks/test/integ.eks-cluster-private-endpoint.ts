@@ -1,11 +1,10 @@
-/// !cdk-integ pragma:ignore-assets pragma:disable-update-workflow
+/// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as eks from '../lib';
-
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
-
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
@@ -23,7 +22,7 @@ class EksClusterStack extends Stack {
       vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: CLUSTER_VERSION,
+      ...getClusterVersionConfig(this),
       endpointAccess: eks.EndpointAccess.PRIVATE,
       prune: false,
     });
@@ -46,6 +45,9 @@ class EksClusterStack extends Stack {
 
 const app = new App();
 
-new EksClusterStack(app, 'aws-cdk-eks-cluster-private-endpoint-test');
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-private-endpoint-test');
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-private-endpoint', {
+  testCases: [stack],
+});
 
 app.synth();

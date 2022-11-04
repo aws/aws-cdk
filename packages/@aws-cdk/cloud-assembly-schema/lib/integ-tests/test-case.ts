@@ -73,6 +73,21 @@ export interface TestCase extends TestOptions {
    * `exclusively` is passed
    */
   readonly stacks: string[];
+
+  /**
+   * The node id of the stack that contains assertions.
+   * This is the value that can be used to deploy the stack with the CDK CLI
+   *
+   * @default - no assertion stack
+   */
+  readonly assertionStack?: string;
+
+  /**
+   * The name of the stack that contains assertions
+   *
+   * @default - no assertion stack
+   */
+  readonly assertionStackName?: string;
 }
 
 /**

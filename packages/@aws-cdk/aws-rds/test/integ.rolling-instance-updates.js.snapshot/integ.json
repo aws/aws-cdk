@@ -1,0 +1,12 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "InstanceUpdateBehaviorTests/DefaultTest": {
+      "stacks": [
+        "BulkUpdate",
+        "RollingUpdate"
+      ],
+      "assertionStack": "InstanceUpdateBehaviorTests/DefaultTest/DeployAssert"
+    }
+  }
+}

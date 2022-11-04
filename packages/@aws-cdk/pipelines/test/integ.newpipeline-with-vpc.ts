@@ -17,7 +17,7 @@ class PipelineStack extends Stack {
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       codeBuildDefaults: { vpc },
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('rix0rrr/cdk-pipelines-demo', 'main'),
+        input: pipelines.CodePipelineSource.gitHub('aws/aws-cdk', 'v2-main'),
         commands: [
           'npm ci',
           'npm run build',
@@ -51,7 +51,5 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
   },
 });
-new PipelineStack(app, 'PipelineStack', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-});
+new PipelineStack(app, 'PipelineStack');
 app.synth();

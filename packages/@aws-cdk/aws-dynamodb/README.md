@@ -36,6 +36,8 @@ If you intend to use the `tableStreamArn` (including indirectly, for example by 
 `@aws-cdk/aws-lambda-event-source.DynamoEventSource` on the imported table), you *must* use the
 `Table.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
 
+In order to grant permissions to indexes on imported tables you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
+
 ## Keys
 
 When a table is defined, you must define it's schema using the `partitionKey`
@@ -204,5 +206,28 @@ const stream = new kinesis.Stream(this, 'Stream');
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   kinesisStream: stream,
+});
+```
+
+## Alarm metrics
+
+Alarms can be configured on the DynamoDB table to captured metric data
+
+```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+});
+
+const metric = table.metricThrottledRequestsForOperations({
+  operations: [dynamodb.Operation.PUT_ITEM],
+  period: Duration.minutes(1),
+});
+
+new cloudwatch.Alarm(stack, 'Alarm', {
+  metric: metric,
+  evaluationPeriods: 1,
+  threshold: 1,
 });
 ```

@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-python-vpc/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-python-vpc"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-vpc/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonvpcDefaultTestDeployAssert54E0DCFB"
+    }
+  }
+}

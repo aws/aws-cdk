@@ -4,12 +4,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
+import { TrafficRouting } from '../../lib';
 
 function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.fromInline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
   });
 }
 function mockAlias(stack: cdk.Stack) {
@@ -627,5 +628,33 @@ describe('imported with fromLambdaDeploymentGroupAttributes', () => {
     });
 
     expect(importedGroup.deploymentConfig).toEqual(codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+  });
+});
+
+test('dependency on the config exists to ensure ordering', () => {
+  // WHEN
+  const stack = new cdk.Stack();
+  const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+  const alias = mockAlias(stack);
+  const config = new codedeploy.LambdaDeploymentConfig(stack, 'MyConfig', {
+    trafficRouting: TrafficRouting.timeBasedCanary({
+      interval: cdk.Duration.minutes(1),
+      percentage: 5,
+    }),
+  });
+  new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+    application,
+    alias,
+    deploymentConfig: config,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::CodeDeploy::DeploymentGroup', {
+    Properties: {
+      DeploymentConfigName: stack.resolve(config.deploymentConfigName),
+    },
+    DependsOn: [
+      stack.getLogicalId(config.node.defaultChild as codedeploy.CfnDeploymentConfig),
+    ],
   });
 });

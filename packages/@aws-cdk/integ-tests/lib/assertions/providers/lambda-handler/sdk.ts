@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
-import { SdkRequest, SdkResult } from './types';
+import { AwsApiCallRequest, AwsApiCallResult } from './types';
+import { decode } from './utils';
 
 /**
  * Flattens a nested object
@@ -14,7 +15,12 @@ export function flatten(object: object): { [key: string]: any } {
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
         .map(key => {
-          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          let childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          // if the value is a json string then treat it as an object
+          // and keep recursing. This allows for easier assertions against complex json strings
+          if (typeof childKey === 'string') {
+            childKey = isJsonString(childKey);
+          }
           return typeof childKey === 'object' && childKey !== null
             ? _flatten(childKey, path.concat([key]))
             : ({ [path.concat([key]).join('.')]: childKey });
@@ -24,13 +30,18 @@ export function flatten(object: object): { [key: string]: any } {
 }
 
 
-export class SdkHandler extends CustomResourceHandler<SdkRequest, SdkResult | { [key: string]: string }> {
-  protected async processEvent(request: SdkRequest): Promise<SdkResult | { [key: string]: string } | undefined> {
+export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: string }> {
+  protected async processEvent(request: AwsApiCallRequest): Promise<AwsApiCallResult | { [key: string]: string } | undefined> {
     // eslint-disable-next-line
     const AWS: any = require('aws-sdk');
     console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
 
-    const service = new AWS[request.service]();
+
+    if (!Object.prototype.hasOwnProperty.call(AWS, request.service)) {
+      throw Error(`Service ${request.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+    }
+
+    const service = new (AWS as any)[request.service]();
     const response = await service[request.api](request.parameters && decode(request.parameters)).promise();
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.ResponseMetadata;
@@ -41,19 +52,16 @@ export class SdkHandler extends CustomResourceHandler<SdkRequest, SdkResult | { 
       ...flatten(respond),
     };
 
-    return request.flattenResponse === 'true' ? flatData : respond;
+    const resp = request.flattenResponse === 'true' ? flatData : respond;
+    console.log(`Returning result ${JSON.stringify(resp)}`);
+    return resp;
   }
 }
 
-function decode(object: Record<string, unknown>) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case 'TRUE:BOOLEAN':
-        return true;
-      case 'FALSE:BOOLEAN':
-        return false;
-      default:
-        return v;
-    }
-  });
+function isJsonString(value: string): any {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
 }

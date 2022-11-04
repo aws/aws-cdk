@@ -75,6 +75,11 @@ export enum PythonVersion {
    * Python 3 (the exact version depends on GlueVersion and JobCommand used)
    */
   THREE = '3',
+
+  /**
+   * Python 3.9 (the exact version depends on GlueVersion and JobCommand used)
+   */
+  THREE_NINE = '3.9',
 }
 
 /**
@@ -299,6 +304,9 @@ export class JobExecutable {
     }
     if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
       throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
+    }
+    if (config.pythonVersion === PythonVersion.THREE_NINE && config.type !== JobType.PYTHON_SHELL) {
+      throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell');
     }
     this.config = config;
   }
