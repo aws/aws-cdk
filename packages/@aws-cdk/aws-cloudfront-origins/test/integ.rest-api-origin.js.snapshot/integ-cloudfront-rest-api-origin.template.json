@@ -162,9 +162,6 @@
         ]
        },
        "Id": "integcloudfrontrestapioriginDistributionOrigin1B3EE0E72",
-       "OriginShield": {
-        "Enabled": false
-       },
        "OriginPath": {
         "Fn::Join": [
          "",
