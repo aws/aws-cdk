@@ -515,7 +515,7 @@ async function initCommandLine() {
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
-          assetParallelism: args.assetParallelism,
+          assetParallelism: configuration.settings.get(['assetParallelism']),
         });
 
       case 'import':
