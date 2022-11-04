@@ -975,7 +975,7 @@ Adding a new flag looks as follows:
 3. Add your feature flag to the `FLAGS` map in
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts). In
    your description, be sure to cover the following:
-   - Consciouscly pick the type of feature flag. Can the flag be removed in a future major version, or not?
+   - Consciously pick the type of feature flag. Can the flag be removed in a future major version, or not?
    - Motivate why the feature flag exists. What is the change to existing infrastructure and why is it not safe?
 4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/README.md) file.
 5. In your tests, ensure that you test your feature with and without the feature flag enabled. You can do this by passing the feature flag to the `context` property when instantiating an `App`.
