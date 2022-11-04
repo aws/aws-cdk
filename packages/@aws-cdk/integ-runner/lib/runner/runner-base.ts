@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { flatten } from '../utils';
@@ -356,15 +356,22 @@ export abstract class IntegRunner {
   }
 
   protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
-    const futureFlags: { [key: string]: any } = {};
-    Object.entries(FUTURE_FLAGS)
-      .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
-      .forEach(([k, v]) => futureFlags[k] = v);
-
     return {
-      ...futureFlags,
+      ...NEW_PROJECT_CONTEXT,
       ...this.legacyContext,
       ...additionalContext,
+
+      // We originally had PLANNED to set this to ['aws', 'aws-cn'], but due to a programming mistake
+      // it was set to everything. In this PR, set it to everything to not mess up all the snapshots.
+      [TARGET_PARTITIONS]: undefined,
+
+      /* ---------------- THE FUTURE LIVES BELOW----------------------------
+      // Restricting to these target partitions makes most service principals synthesize to
+      // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
+      // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
+      // most existing integ tests contain, and we want to disturb as few as possible.
+      // [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
+      /* ---------------- END OF THE FUTURE ------------------------------- */
     };
   }
 }
@@ -407,12 +414,6 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-
-    // Restricting to these target partitions makes most service principals synthesize to
-    // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
-    // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
-    // most existing integ tests contain, and we want to disturb as few as possible.
-    [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
