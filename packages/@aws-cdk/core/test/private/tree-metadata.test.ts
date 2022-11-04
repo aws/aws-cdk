@@ -44,6 +44,22 @@ describe('tree metadata', () => {
             id: 'mystack',
             path: 'mystack',
             children: {
+              BootstrapVersion: {
+                constructInfo: {
+                  fqn: '@aws-cdk/core.CfnParameter',
+                  version: '0.0.0',
+                },
+                id: 'BootstrapVersion',
+                path: 'mystack/BootstrapVersion',
+              },
+              CheckBootstrapVersion: {
+                constructInfo: {
+                  fqn: '@aws-cdk/core.CfnRule',
+                  version: '0.0.0',
+                },
+                id: 'CheckBootstrapVersion',
+                path: 'mystack/CheckBootstrapVersion',
+              },
               myconstruct: expect.objectContaining({
                 id: 'myconstruct',
                 path: 'mystack/myconstruct',
@@ -53,7 +69,6 @@ describe('tree metadata', () => {
         },
       }),
     });
-
   });
 
   test('tree metadata for a Cfn resource', () => {
@@ -91,7 +106,7 @@ describe('tree metadata', () => {
           mystack: expect.objectContaining({
             id: 'mystack',
             path: 'mystack',
-            children: {
+            children: expect.objectContaining({
               mycfnresource: expect.objectContaining({
                 id: 'mycfnresource',
                 path: 'mystack/mycfnresource',
@@ -107,7 +122,7 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
         },
       }),
@@ -156,14 +171,14 @@ describe('tree metadata', () => {
               fqn: expect.stringMatching(codeBuild ? /\bStack$/ : /\bStack$|^constructs.Construct$/),
               version: expect.any(String),
             },
-            children: {
+            children: expect.objectContaining({
               myconstruct: expect.objectContaining({
                 constructInfo: {
                   fqn: expect.stringMatching(codeBuild ? /\bCfnResource$/ : /\bCfnResource$|^constructs.Construct$/),
                   version: expect.any(String),
                 },
               }),
-            },
+            }),
           }),
         }),
       }),
@@ -205,7 +220,7 @@ describe('tree metadata', () => {
           mystack: expect.objectContaining({
             id: 'mystack',
             path: 'mystack',
-            children: {
+            children: expect.objectContaining({
               mycfnparam: expect.objectContaining({
                 id: 'mycfnparam',
                 path: 'mystack/mycfnparam',
@@ -221,7 +236,7 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
         },
       }),
@@ -283,7 +298,7 @@ describe('tree metadata', () => {
           myfirststack: expect.objectContaining({
             id: 'myfirststack',
             path: 'myfirststack',
-            children: {
+            children: expect.objectContaining({
               myfirstresource: expect.objectContaining({
                 id: 'myfirstresource',
                 path: 'myfirststack/myfirstresource',
@@ -294,12 +309,12 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
           mysecondstack: expect.objectContaining({
             id: 'mysecondstack',
             path: 'mysecondstack',
-            children: {
+            children: expect.objectContaining({
               mysecondresource: expect.objectContaining({
                 id: 'mysecondresource',
                 path: 'mysecondstack/mysecondresource',
@@ -310,13 +325,28 @@ describe('tree metadata', () => {
                   },
                 },
               }),
-            },
+            }),
           }),
         },
       }),
     });
+  });
 
+  test('tree metadata can be disabled', () => {
+    // GIVEN
+    const app = new App({
+      treeMetadata: false,
+    });
 
+    // WHEN
+    const stack = new Stack(app, 'mystack');
+    new Construct(stack, 'myconstruct');
+
+    const assembly = app.synth();
+    const treeArtifact = assembly.tree();
+
+    // THEN
+    expect(treeArtifact).not.toBeDefined();
   });
 
   test('failing nodes', () => {
