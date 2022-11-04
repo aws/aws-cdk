@@ -300,7 +300,7 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
   readonly template?: string;
 
   /**
-   * @default false
+   * @default undefined
    */
   readonly terminationProtection?: boolean;
 
@@ -428,9 +428,9 @@ export class TestFixture {
     if (options.defaultPermissionsBoundary) {
       args.push('--create-default-permissions-boundary');
     }
-    if (options.customPermissionsBoundary) {
-      args.push('--create-default-permissions-boundary', options.customPermissionsBoundary);
-    }
+    // if (options.customPermissionsBoundary) {
+    //   args.push('--permissions-boundary', options.customPermissionsBoundary);
+    // }
 
     return this.cdk(args, {
       ...options.cliOptions,
