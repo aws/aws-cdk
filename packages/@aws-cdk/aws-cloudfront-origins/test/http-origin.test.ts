@@ -21,9 +21,6 @@ test('Renders minimal example with just a domain name', () => {
     domainName: 'www.example.com',
     originCustomHeaders: undefined,
     originPath: undefined,
-    originShield: {
-      enabled: false,
-    },
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
       originSslProtocols: [

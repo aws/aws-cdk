@@ -19,10 +19,7 @@
         "OriginProtocolPolicy": "https-only"
        },
        "DomainName": "www.example.com",
-       "Id": "integdistributionhttpversionHttp11Origin117833241",
-       "OriginShield": {
-        "Enabled": false
-       }
+       "Id": "integdistributionhttpversionHttp11Origin117833241"
       }
      ]
     }
@@ -47,10 +44,7 @@
         "OriginProtocolPolicy": "https-only"
        },
        "DomainName": "www.example.com",
-       "Id": "integdistributionhttpversionHttp2Origin15C0A1B66",
-       "OriginShield": {
-        "Enabled": false
-       }
+       "Id": "integdistributionhttpversionHttp2Origin15C0A1B66"
       }
      ]
     }
@@ -75,10 +69,7 @@
         "OriginProtocolPolicy": "https-only"
        },
        "DomainName": "www.example.com",
-       "Id": "integdistributionhttpversionHttp2and3Origin1487BBB15",
-       "OriginShield": {
-        "Enabled": false
-       }
+       "Id": "integdistributionhttpversionHttp2and3Origin1487BBB15"
       }
      ]
     }
@@ -103,10 +94,7 @@
         "OriginProtocolPolicy": "https-only"
        },
        "DomainName": "www.example.com",
-       "Id": "integdistributionhttpversionHttp3Origin10970C9C4",
-       "OriginShield": {
-        "Enabled": false
-       }
+       "Id": "integdistributionhttpversionHttp3Origin10970C9C4"
       }
      ]
     }

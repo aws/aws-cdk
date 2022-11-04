@@ -25,9 +25,6 @@ test('Renders minimal example with just a load balancer', () => {
   expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: loadBalancer.loadBalancerDnsName,
-    originShield: {
-      enabled: false,
-    },
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
       originSslProtocols: [
