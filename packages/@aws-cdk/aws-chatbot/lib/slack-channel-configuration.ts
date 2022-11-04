@@ -129,6 +129,15 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
    */
   readonly role?: iam.IRole;
 
+
+  /**
+   * List of SNS topic that deliver notifications to AWS Chatbot.
+   * @attribute
+   * 
+   * @default - Empty list by default.
+   */
+  readonly notificationTopics: sns.ITopic[];
+
   /**
    * Adds a statement to the IAM role.
    */
@@ -234,6 +243,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       readonly slackChannelConfigurationArn = slackChannelConfigurationArn;
       readonly role?: iam.IRole = undefined;
       readonly grantPrincipal: iam.IPrincipal;
+      readonly notificationTopics: sns.ITopic[] = [];
 
       /**
        * Returns a name of Slack channel configuration
@@ -287,7 +297,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    * The SNS topic that deliver notifications to AWS Chatbot.
    * @attribute
    */
-  private readonly notificationTopics: sns.ITopic[];
+  readonly notificationTopics: sns.ITopic[];
 
   constructor(scope: Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
