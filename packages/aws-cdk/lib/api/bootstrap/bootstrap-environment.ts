@@ -144,7 +144,7 @@ export class Bootstrapper {
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions boundary.
     */
     const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
-    const permissionsBoundary = params.defaultPermissionsBoundary ? USE_DEFAULT_PERMISSIONS_BOUNDARY : (params.customPermissionsBoundary ? params.customPermissionsBoundary : undefined);
+    const permissionsBoundary = params.defaultPermissionsBoundary ? USE_DEFAULT_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
     if (currentPermissionsBoundary !== permissionsBoundary) {
       warning(`Switching from ${currentPermissionsBoundary} to ${permissionsBoundary} as permissions boundary`);
     }
