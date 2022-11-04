@@ -90,6 +90,13 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
  * Define a scheduled scaling action
  */
 export class ScheduledAction extends Resource {
+  /**
+   * The name of the scheduled action.
+   *
+   * @attribute
+   */
+  public readonly scheduledActionName: string;
+
   constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
 
@@ -100,7 +107,7 @@ export class ScheduledAction extends Resource {
     // add a warning on synth when minute is not defined in a cron schedule
     props.schedule._bind(this);
 
-    new CfnScheduledAction(this, 'Resource', {
+    const resource = new CfnScheduledAction(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       startTime: formatISO(props.startTime),
       endTime: formatISO(props.endTime),
@@ -110,6 +117,8 @@ export class ScheduledAction extends Resource {
       recurrence: props.schedule.expressionString,
       timeZone: props.timeZone,
     });
+
+    this.scheduledActionName = resource.attrScheduledActionName;
   }
 }
 

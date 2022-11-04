@@ -498,7 +498,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'Event Rules may only push to encrypted SQS queues in the same account',
     details: `
       This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
-      from the same account as the Queue can send messages. If a queue is unencrypted, this restriction will
+      from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
       `,
     introducedIn: { v2: '2.51.0' },

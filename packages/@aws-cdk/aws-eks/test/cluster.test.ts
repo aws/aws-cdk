@@ -2156,9 +2156,6 @@ describe('cluster', () => {
         ClientIDList: [
           'sts.amazonaws.com',
         ],
-        ThumbprintList: [
-          '9e99a48a9960b14926bb7f3b02e22da2b0ab7280',
-        ],
         Url: {
           'Fn::GetAtt': [
             'Cluster9EE0221C',
