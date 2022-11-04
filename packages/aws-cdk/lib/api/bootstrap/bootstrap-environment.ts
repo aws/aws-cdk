@@ -80,7 +80,8 @@ export class Bootstrapper {
       throw new Error('You cannot pass \'--bootstrap-kms-key-id\' and \'--bootstrap-customer-key\' together. Specify one or the other');
     }
 
-    if (!!params.defaultPermissionsBoundary === !!params.customPermissionsBoundary) {
+    // Both being unspecified is acceptable, the only conflict condition is if they are both set
+    if (!params.defaultPermissionsBoundary || !params.customPermissionsBoundary) {
       throw new Error('You cannot pass \'--create-default-permissions-boundary\' and \'--permissions-boundary\' together. Specify one or the other');
     }
 
