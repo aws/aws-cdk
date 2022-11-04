@@ -551,3 +551,16 @@ export function futureFlagDefault(flag: string): boolean {
   }
   return value;
 }
+
+// Nobody should have been using any of this, but you never know
+
+/** @deprecated use CURRENT_VERSION_EXPIRED_FLAGS instead */
+export const FUTURE_FLAGS_EXPIRED = CURRENT_VERSION_EXPIRED_FLAGS;
+
+/** @deprecated use NEW_PROJECT_CONTEXT instead */
+export const FUTURE_FLAGS = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+  .filter(([_, v]) => typeof v === 'boolean'));
+
+/** @deprecated use NEW_PROJECT_CONTEXT instead */
+export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+  .filter(([_, v]) => typeof v !== 'boolean'));

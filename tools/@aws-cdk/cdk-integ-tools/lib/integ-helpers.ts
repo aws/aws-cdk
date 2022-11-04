@@ -330,11 +330,6 @@ export class IntegrationTest {
   }
 }
 
-const futureFlags: {[key: string]: any} = {};
-Object.entries(cxapi.FUTURE_FLAGS)
-  .filter(([k, _]) => !cxapi.FUTURE_FLAGS_EXPIRED.includes(k))
-  .forEach(([k, v]) => futureFlags[k] = v);
-
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {
@@ -374,12 +369,12 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
+    ...cxapi.NEW_RPOJECT_CONTEXT,
     // Restricting to these target partitions makes most service principals synthesize to
     // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
     // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
     // most existing integ tests contain, and we want to disturb as few as possible.
     [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
-    ...futureFlags,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',

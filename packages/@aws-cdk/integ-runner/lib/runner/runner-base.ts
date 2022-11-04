@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { flatten } from '../utils';
@@ -356,13 +356,8 @@ export abstract class IntegRunner {
   }
 
   protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
-    const futureFlags: { [key: string]: any } = {};
-    Object.entries(FUTURE_FLAGS)
-      .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
-      .forEach(([k, v]) => futureFlags[k] = v);
-
     return {
-      ...futureFlags,
+      ...NEW_PROJECT_CONTEXT,
       ...this.legacyContext,
       ...additionalContext,
     };
