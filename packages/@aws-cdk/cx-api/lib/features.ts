@@ -353,6 +353,13 @@ export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disab
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 
 /**
+ * This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
+ * from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
+ * always apply, regardless of the value of this flag.
+ */
+export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -387,6 +394,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true,
   [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: true,
   [ENABLE_PARTITION_LITERALS]: true,
+  [EVENTS_TARGET_QUEUE_SAME_ACCOUNT]: true,
 };
 
 /**
