@@ -1,8 +1,8 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as targets from '../../lib';
 
@@ -144,24 +144,38 @@ test('multiple uses of a queue as a target results in multi policy statement bec
 });
 
 test('Encrypted queues result in a policy statement with aws:sourceAccount condition when the feature flag is on', () => {
+  const app = new App();
   // GIVEN
-  const stack = new Stack();
-  stack.node.setContext(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT, true);
-  const queue = new sqs.Queue(stack, 'MyQueue', {
-    encryptionMasterKey: kms.Key.fromKeyArn(stack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
+  const ruleStack = new Stack(app, 'ruleStack', {
+    env: {
+      account: '111111111111',
+      region: 'us-east-1',
+    },
   });
+  ruleStack.node.setContext(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT, true);
 
-  const rule = new events.Rule(stack, 'MyRule', {
+  const rule = new events.Rule(ruleStack, 'MyRule', {
     schedule: events.Schedule.rate(Duration.hours(1)),
   });
+
+  const queueStack = new Stack(app, 'queueStack', {
+    env: {
+      account: '222222222222',
+      region: 'us-east-1',
+    },
+  });
+  const queue = new sqs.Queue(queueStack, 'MyQueue', {
+    encryptionMasterKey: kms.Key.fromKeyArn(queueStack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
+  });
+
 
   // WHEN
   rule.addTarget(new targets.SqsQueue(queue));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+  Template.fromStack(queueStack).hasResourceProperties('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
-      Statement: [
+      Statement: Match.arrayWith([
         {
           Action: [
             'sqs:SendMessage',
@@ -170,7 +184,7 @@ test('Encrypted queues result in a policy statement with aws:sourceAccount condi
           ],
           Condition: {
             StringEquals: {
-              'aws:SourceAccount': { Ref: 'AWS::AccountId' },
+              'aws:SourceAccount': '111111111111',
             },
           },
           Effect: 'Allow',
@@ -182,26 +196,10 @@ test('Encrypted queues result in a policy statement with aws:sourceAccount condi
             ],
           },
         },
-      ],
+      ]),
       Version: '2012-10-17',
     },
     Queues: [{ Ref: 'MyQueueE6CA6235' }],
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-    ScheduleExpression: 'rate(1 hour)',
-    State: 'ENABLED',
-    Targets: [
-      {
-        Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
-        },
-        Id: 'Target0',
-      },
-    ],
   });
 });
 
