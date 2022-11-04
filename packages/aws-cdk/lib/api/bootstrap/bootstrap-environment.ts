@@ -81,8 +81,8 @@ export class Bootstrapper {
     }
 
     // Both being unspecified is acceptable, the only conflict condition is if they are both set
-    if (!params.defaultPermissionsBoundary || !params.customPermissionsBoundary) {
-      throw new Error('You cannot pass \'--create-default-permissions-boundary\' and \'--permissions-boundary\' together. Specify one or the other');
+    if (!(!params.defaultPermissionsBoundary || !params.customPermissionsBoundary)) {
+      throw new Error(`You can pass at most one of the \'--create-default-permissions-boundary\' and \'--permissions-boundary\' arguments`);
     }
 
     const bootstrapTemplate = await this.loadTemplate();

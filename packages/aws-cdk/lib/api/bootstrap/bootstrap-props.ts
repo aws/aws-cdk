@@ -104,14 +104,14 @@ export interface BootstrappingParameters {
   /**
    * Flag for using the default permissions boundary for bootstrapping
    *
-   * @default false
+   * @default - No value, optional argument
    */
   readonly defaultPermissionsBoundary?: boolean;
 
   /**
    * Name for the customer's custom permissions boundary for bootstrapping
    *
-   * @default - none
+   * @default - No value, optional argument
    */
   readonly customPermissionsBoundary?: string;
 
