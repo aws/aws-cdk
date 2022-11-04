@@ -410,7 +410,7 @@ For this reason, only use it for development purposes.
 **⚠ Note #2**: This command is considered experimental,
 and might have breaking changes in the future.
 
-**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs.
+**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs. 
 
 ### `cdk watch`
 
@@ -583,10 +583,13 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
 
-Out of the box customization options are also available as arguments. In order to specify a permissions
-boundary, you can use either `--create-default-permissions-boundary` or `--permissions-boundary`. The
-first option will pass to the template the default boundary CDK recommends. The second option allows you
-to specify by name a predefined boundary that you manage.
+Out of the box customisation options are also available as arguments. To use a permissions boundary:
+
+- `--create-default-permissions-boundary` indicates the default permissions boundary, supplied by CDK
+- `--permissions-boundary` specifies, by name, a predefined customer maintained boundary
+
+Note that a later edit of a permissions boundary will mean re-bootstrapping your environments in order
+for the changes to be applied.
 
 ### `cdk doctor`
 
