@@ -376,7 +376,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 
 <!-- END diff -->
 
-Here is an example of a `cdk.json` file that restores v1 behavior for thesse flags:
+Here is an example of a `cdk.json` file that restores v1 behavior for these flags:
 
 <!-- BEGIN migratejson -->
 ```json
