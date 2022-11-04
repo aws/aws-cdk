@@ -50,6 +50,7 @@ export async function main(args: string[]) {
   const runUpdateOnFailed = argv['update-on-failed'] ?? false;
   const fromFile: string | undefined = argv['from-file'];
   const exclude: boolean = argv.exclude;
+  const app: string | undefined = argv.app;
 
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   if (argv['max-workers'] < testRegions.length * (profiles ?? [1]).length) {
@@ -59,7 +60,7 @@ export async function main(args: string[]) {
   let testsSucceeded = false;
   try {
     if (argv.list) {
-      const tests = await new IntegrationTests(argv.directory).fromCliArgs({ testRegex });
+      const tests = await new IntegrationTests(argv.directory).fromCliArgs({ testRegex, app });
       process.stdout.write(tests.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
       return;
     }
@@ -71,7 +72,12 @@ export async function main(args: string[]) {
       ? (await fs.readFile(fromFile, { encoding: 'utf8' })).split('\n').filter(x => x)
       : (argv._.length > 0 ? argv._ : undefined); // 'undefined' means no request
 
-    testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs({ testRegex, tests: requestedTests, exclude })));
+    testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs({
+      app,
+      testRegex,
+      tests: requestedTests,
+      exclude,
+    })));
 
     // always run snapshot tests, but if '--force' is passed then
     // run integration tests on all failed tests, not just those that
@@ -79,7 +85,6 @@ export async function main(args: string[]) {
     failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
       retain: argv['inspect-failures'],
       verbose: Boolean(argv.verbose),
-      appCommand: argv.app,
     });
     for (const failure of failedSnapshots) {
       destructiveChanges.push(...failure.destructiveChanges ?? []);
@@ -103,7 +108,6 @@ export async function main(args: string[]) {
         dryRun: argv['dry-run'],
         verbosity: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
-        appCommand: argv.app,
       });
       testsSucceeded = success;
 

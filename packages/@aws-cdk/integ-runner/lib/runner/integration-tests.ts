@@ -23,6 +23,14 @@ export interface IntegTestInfo {
    * Path is relative to the current working directory.
    */
   readonly discoveryRoot: string;
+
+  /**
+   * The CLI command used to run this test.
+   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
+   *
+   * @default - test run command will be `node {filePath}`
+   */
+  readonly appCommand?: string;
 }
 
 /**
@@ -79,7 +87,16 @@ export class IntegTest {
    */
   public readonly temporaryOutputDir: string;
 
+  /**
+   * The CLI command used to run this test.
+   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
+   *
+   * @default - test run command will be `node {filePath}`
+   */
+  readonly appCommand: string;
+
   constructor(public readonly info: IntegTestInfo) {
+    this.appCommand = info.appCommand ?? 'node {filePath}';
     this.absoluteFileName = path.resolve(info.fileName);
     this.fileName = path.relative(process.cwd(), info.fileName);
 
@@ -147,6 +164,14 @@ export interface IntegrationTestsDiscoveryOptions {
     * @default
     */
   readonly testRegex?: string[];
+
+  /**
+   * The CLI command used to run this test.
+   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
+   *
+   * @default - test run command will be `node {filePath}`
+   */
+  readonly app?: string;
 }
 
 
@@ -174,11 +199,8 @@ export class IntegrationTests {
    */
   public async fromFile(fileName: string): Promise<IntegTest[]> {
     const file: IntegrationTestFileConfig = JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
-    const foundTests = await this.discover(file.testRegex);
 
-    const allTests = this.filterTests(foundTests, file.tests, file.exclude);
-
-    return allTests;
+    return this.discover(file);
   }
 
   /**
@@ -222,24 +244,30 @@ export class IntegrationTests {
    * @param exclude Whether the 'tests' list is inclusive or exclusive (inclusive by default).
    */
   public async fromCliArgs(options: IntegrationTestsDiscoveryOptions = {}): Promise<IntegTest[]> {
-    const discoveredTests = await this.discover(options.testRegex);
-
-    const allTests = this.filterTests(discoveredTests, options.tests, options.exclude);
-
-    return allTests;
+    return this.discover(options);
   }
 
-  private async discover(patterns: string[] = ['^integ\\..*\\.js$']): Promise<IntegTest[]> {
+  private async discover(options: IntegrationTestsDiscoveryOptions): Promise<IntegTest[]> {
+    const patterns = options.testRegex ?? ['^integ\\..*\\.js$'];
+
     const files = await this.readTree();
     const integs = files.filter(fileName => patterns.some((p) => {
       const regex = new RegExp(p);
       return regex.test(fileName) || regex.test(path.basename(fileName));
     }));
-    return this.request(integs);
+
+    return this.request(integs, options);
   }
 
-  private request(files: string[]): IntegTest[] {
-    return files.map(fileName => new IntegTest({ discoveryRoot: this.directory, fileName }));
+  private request(files: string[], options: IntegrationTestsDiscoveryOptions): IntegTest[] {
+    const discoveredTests = files.map(fileName => new IntegTest({
+      discoveryRoot: this.directory,
+      fileName,
+      appCommand: options.app,
+    }));
+
+
+    return this.filterTests(discoveredTests, options.tests, options.exclude);
   }
 
   private async readTree(): Promise<string[]> {

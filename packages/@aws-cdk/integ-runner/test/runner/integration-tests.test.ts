@@ -1,6 +1,6 @@
 import { writeFileSync } from 'fs';
 import * as mockfs from 'mock-fs';
-import { IntegrationTests } from '../../lib/runner/integration-tests';
+import { IntegrationTests, IntegrationTestsDiscoveryOptions } from '../../lib/runner/integration-tests';
 
 describe('IntegrationTests', () => {
   const tests = new IntegrationTests('test');
@@ -81,11 +81,19 @@ describe('IntegrationTests', () => {
       expect(integTests.length).toEqual(1);
       expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.other-test1.js$/));
     });
+
+    test('can set app command', async () => {
+      const otherTestDir = new IntegrationTests('test');
+      const integTests = await otherTestDir.fromCliArgs({ app: 'node --no-warnings {filePath}' });
+
+      expect(integTests.length).toEqual(3);
+      expect(integTests[0].appCommand).toEqual('node --no-warnings {filePath}');
+    });
   });
 
   describe('from file', () => {
     const configFile = 'integ.config.json';
-    const writeConfig = (settings: any, fileName = configFile) => {
+    const writeConfig = (settings: IntegrationTestsDiscoveryOptions, fileName = configFile) => {
       writeFileSync(fileName, JSON.stringify(settings, null, 2), { encoding: 'utf-8' });
     };
 
@@ -149,6 +157,14 @@ describe('IntegrationTests', () => {
 
       expect(integTests.length).toEqual(1);
       expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.other-test1.js$/));
+    });
+
+    test('can set app command', async () => {
+      writeConfig({ app: 'node --no-warnings {filePath}' });
+      const integTests = await tests.fromFile(configFile);
+
+      expect(integTests.length).toEqual(3);
+      expect(integTests[0].appCommand).toEqual('node --no-warnings {filePath}');
     });
   });
 });
