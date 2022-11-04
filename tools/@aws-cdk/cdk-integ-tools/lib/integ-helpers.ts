@@ -369,7 +369,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-    ...cxapi.NEW_RPOJECT_CONTEXT,
+    ...cxapi.NEW_PROJECT_CONTEXT,
     // Restricting to these target partitions makes most service principals synthesize to
     // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
     // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
