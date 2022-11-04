@@ -51,7 +51,7 @@ new glue.Table(stack, 'CSVTable', {
     indexName: 'index2',
     keyNames: ['month', 'year'],
   }],
-  dataFormat: glue.DataFormat.CSV,
+  dataFormat: glue.DataFormat.csv(),
 });
 
 const jsonTable = new glue.Table(stack, 'JSONTable', {
@@ -60,7 +60,7 @@ const jsonTable = new glue.Table(stack, 'JSONTable', {
   tableName: 'json_table',
   columns,
   partitionKeys,
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 
 jsonTable.addPartitionIndex({

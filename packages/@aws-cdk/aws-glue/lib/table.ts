@@ -324,7 +324,9 @@ export class Table extends Resource implements ITable {
           outputFormat: props.dataFormat.outputFormat.className,
           serdeInfo: {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
+            ...(props.dataFormat.serDeProperties && { parameters: props.dataFormat.serDeProperties }),
           },
+          ...(props.dataFormat.tableSerDeProperties && { parameters: props.dataFormat.tableSerDeProperties }),
         },
 
         tableType: 'EXTERNAL_TABLE',

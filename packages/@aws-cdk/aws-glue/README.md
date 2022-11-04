@@ -191,7 +191,7 @@ new glue.Table(this, 'MyTable', {
     type: glue.Schema.array(glue.Schema.STRING),
     comment: 'col2 is an array of strings' // comment is optional
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
@@ -210,11 +210,47 @@ new glue.Table(this, 'MyTable', {
     name: 'col1',
     type: glue.Schema.STRING,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
-By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
+### DataFormat
+
+Several Table DataFormats are predefined and available :
+
+ * `glue.DataFormat.apacheLogs()`
+ * `glue.DataFormat.avro()`
+ * `glue.DataFormat.cloudtrailsLogs()`
+ * `glue.DataFormat.csv()`
+ * `glue.DataFormat.json()`
+ * `glue.DataFormat.logstash()`
+ * `glue.DataFormat.orc()`
+ * `glue.DataFormat.parquet()`
+ * `glue.DataFormat.tsv()`
+
+Options can be passed to serde dataFormats :
+
+```ts
+declare const myBucket: s3.Bucket;
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  bucket: myBucket,
+  s3Prefix: 'my-table/',
+  // ...
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.json({
+    caseInsensitive: false,
+    mappings: {
+      col: 'Col',
+    },
+  }),
+});
+```
 
 ### Partition Keys
 
@@ -236,7 +272,7 @@ new glue.Table(this, 'MyTable', {
     name: 'month',
     type: glue.Schema.SMALL_INT,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
@@ -272,7 +308,7 @@ new glue.Table(this, 'MyTable', {
     indexName: 'my-index', // optional
     keyNames: ['year'],
   }], // supply up to 3 indexes
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
@@ -306,7 +342,7 @@ new glue.Table(this, 'MyTable', {
         name: 'month',
         type: glue.Schema.SMALL_INT,
     }],
-    dataFormat: glue.DataFormat.JSON,
+    dataFormat: glue.DataFormat.json(),
     enablePartitionFiltering: true,
 });
 ```
@@ -329,7 +365,7 @@ new glue.Table(this, 'MyTable', {
     name: 'col1',
     type: glue.Schema.STRING,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
@@ -347,7 +383,7 @@ new glue.Table(this, 'MyTable', {
     name: 'col1',
     type: glue.Schema.STRING,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 
 // with an explicit KMS key
@@ -361,7 +397,7 @@ new glue.Table(this, 'MyTable', {
     name: 'col1',
     type: glue.Schema.STRING,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
@@ -378,7 +414,7 @@ new glue.Table(this, 'MyTable', {
     name: 'col1',
     type: glue.Schema.STRING,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
@@ -396,7 +432,7 @@ new glue.Table(this, 'MyTable', {
     name: 'col1',
     type: glue.Schema.STRING,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 
 // with an explicit KMS key
@@ -410,7 +446,7 @@ new glue.Table(this, 'MyTable', {
     name: 'col1',
     type: glue.Schema.STRING,
   }],
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });
 ```
 
@@ -448,7 +484,7 @@ new glue.Table(this, 'MyTable', {
   // ...
   database: myDatabase,
   tableName: 'my_table',
-  dataFormat: glue.DataFormat.JSON,
+  dataFormat: glue.DataFormat.json(),
 });  
 ```
 

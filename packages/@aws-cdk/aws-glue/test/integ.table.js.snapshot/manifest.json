@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eef5abdc0f1ee16e5be447f60688757df6726f3c2d1d06c136e9bbdb99d96e1f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a13a52899f9200eaa86bc22259bb74ebe234edbc03ad34b86c4c90aff73b55d0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,28 +51,46 @@
             "data": "MyDatabase1E2517DB"
           }
         ],
-        "/aws-cdk-glue/AVROTable/Table": [
+        "/aws-cdk-glue/SerDeAvroTable/Table": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AVROTable58646ABF"
+            "data": "SerDeAvroTable765085E2"
           }
         ],
-        "/aws-cdk-glue/CSVTable/Table": [
+        "/aws-cdk-glue/SerDeCsvTable/Table": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSVTableE499CABA"
+            "data": "SerDeCsvTableEFB05F66"
           }
         ],
-        "/aws-cdk-glue/JSONTable/Table": [
+        "/aws-cdk-glue/SerDeJsonTable/Table": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "JSONTable00348F1D"
+            "data": "SerDeJsonTableEF37446D"
           }
         ],
-        "/aws-cdk-glue/ParquetTable/Table": [
+        "/aws-cdk-glue/SerDeLogstashTable/Table": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ParquetTableE84E985F"
+            "data": "SerDeLogstashTable4B68BC56"
+          }
+        ],
+        "/aws-cdk-glue/SerDeOrcTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SerDeOrcTableB062D9AA"
+          }
+        ],
+        "/aws-cdk-glue/SerDeParquetTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SerDeParquetTable009BECD1"
+          }
+        ],
+        "/aws-cdk-glue/SerDeTsvTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SerDeTsvTableFD02C35B"
           }
         ],
         "/aws-cdk-glue/MyKey/Resource": [
@@ -103,6 +121,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyPartitionFilteredTable324BA27A"
+          }
+        ],
+        "/aws-cdk-glue/TableWithSerDeParameters/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithSerDeParametersBucket2664E720"
+          }
+        ],
+        "/aws-cdk-glue/TableWithSerDeParameters/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableWithSerDeParametersTableAC870DF9"
           }
         ],
         "/aws-cdk-glue/MyUser/Resource": [
@@ -139,6 +169,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "AVROTable58646ABF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AVROTable58646ABF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CSVTableE499CABA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSVTableE499CABA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "JSONTable00348F1D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JSONTable00348F1D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ParquetTableE84E985F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParquetTableE84E985F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
