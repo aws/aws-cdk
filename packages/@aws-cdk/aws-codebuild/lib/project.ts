@@ -692,6 +692,26 @@ export interface CommonProjectProps {
    * @default - no explicit limit is set
    */
   readonly concurrentBuildLimit?: number
+
+  /**
+   * Add the permissions necessary for debugging builds with SSM Session Manager
+   *
+   * If the following prerequisites have been met:
+   *
+   * - The necessary permissions have been added by setting this flag to true.
+   * - The build image has the SSM agent installed (true for default CodeBuild images).
+   * - The build is started with [debugSessionEnabled](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuild.html#CodeBuild-StartBuild-request-debugSessionEnabled) set to true.
+   *
+   * Then the build container can be paused and inspected using Session Manager
+   * by invoking the `codebuild-breakpoint` command somewhere during the build.
+   *
+   * `codebuild-breakpoint` commands will be ignored if the build is not started
+   * with `debugSessionEnabled=true`.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html
+   * @default false
+   */
+  readonly ssmSessionPermissions?: boolean;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -1126,6 +1146,27 @@ export class Project extends ProjectBase {
           'codebuild:BatchPutCodeCoverages',
         ],
         resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
+      }));
+    }
+
+    // https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html
+    if (props.ssmSessionPermissions) {
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: [
+          // For the SSM channel
+          'ssmmessages:CreateControlChannel',
+          'ssmmessages:CreateDataChannel',
+          'ssmmessages:OpenControlChannel',
+          'ssmmessages:OpenDataChannel',
+          // In case the SSM session is set up to log commands to CloudWatch
+          'logs:DescribeLogGroups',
+          'logs:CreateLogStream',
+          'logs:PutLogEvents',
+          // In case the SSM session is set up to log commands to S3.
+          's3:GetEncryptionConfiguration',
+          's3:PutObject',
+        ],
+        resources: ['*'],
       }));
     }
 
