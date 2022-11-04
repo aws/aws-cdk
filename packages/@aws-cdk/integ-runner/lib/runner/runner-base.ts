@@ -360,6 +360,18 @@ export abstract class IntegRunner {
       ...NEW_PROJECT_CONTEXT,
       ...this.legacyContext,
       ...additionalContext,
+
+      // We originally had PLANNED to set this to ['aws', 'aws-cn'], but due to a programming mistake
+      // it was set to everything. In this PR, set it to everything to not mess up all the snapshots.
+      [TARGET_PARTITIONS]: undefined,
+
+      /* ---------------- THE FUTURE LIVES BELOW----------------------------
+      // Restricting to these target partitions makes most service principals synthesize to
+      // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
+      // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
+      // most existing integ tests contain, and we want to disturb as few as possible.
+      // [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
+      /* ---------------- END OF THE FUTURE ------------------------------- */
     };
   }
 }
@@ -402,12 +414,6 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-
-    // Restricting to these target partitions makes most service principals synthesize to
-    // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
-    // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
-    // most existing integ tests contain, and we want to disturb as few as possible.
-    [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
