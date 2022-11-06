@@ -133,7 +133,7 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
   /**
    * List of SNS topic that deliver notifications to AWS Chatbot.
    * @attribute
-   * 
+   *
    * @default - Empty list by default.
    */
   readonly notificationTopics: sns.ITopic[];

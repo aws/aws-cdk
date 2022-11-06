@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { CfnOutput } from '@aws-cdk/core';
 import * as chatbot from '../lib';
 
 describe('SlackChannelConfiguration', () => {
@@ -119,11 +120,11 @@ describe('SlackChannelConfiguration', () => {
   });
 
   test('allows adding a Topic to the existing SlackChannel', () => {
-    const slackChannel = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::chatbot/test');
+    const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'RetrievedSlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    slackChannel.addNotificationTopic(topic);
+    slackChannelFromArn.addNotificationTopic(topic);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
