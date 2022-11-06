@@ -18,6 +18,7 @@
     "AdminCreateUserConfig": {
      "AllowAdminCreateUserOnly": true
     },
+    "DeletionProtection": "INACTIVE",
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
