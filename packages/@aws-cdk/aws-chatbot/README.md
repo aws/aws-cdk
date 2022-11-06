@@ -37,7 +37,8 @@ slackChannel.addToRolePolicy(new iam.PolicyStatement({
 slackChannel.addNotificationTopic(new sns.Topic(this, 'MyTopic'));
 ```
 
-### Alternative SNS topic assignment from AWS Chatbot's ARN
+Alternative SNS topic assignment from AWS Chatbot's ARN
+
 ```ts
 const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(this, 'SlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
 

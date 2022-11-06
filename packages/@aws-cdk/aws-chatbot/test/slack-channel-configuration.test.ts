@@ -125,14 +125,7 @@ describe('SlackChannelConfiguration', () => {
 
     slackChannelFromArn.addNotificationTopic(topic);
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
-      ConfigurationName: 'Test',
-      SnsTopicArns: [
-        {
-          Ref: 'MyTopic86869434',
-        },
-      ],
-    });
+    Template.fromStack(stack).resourceCountIs('AWS::Chatbot::SlackChannelConfiguration', 0);
   });
 
   test('created with existing role', () => {
