@@ -4,7 +4,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { CfnOutput } from '@aws-cdk/core';
 import * as chatbot from '../lib';
 
 describe('SlackChannelConfiguration', () => {

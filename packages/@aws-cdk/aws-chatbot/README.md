@@ -37,6 +37,15 @@ slackChannel.addToRolePolicy(new iam.PolicyStatement({
 slackChannel.addNotificationTopic(new sns.Topic(this, 'MyTopic'));
 ```
 
+### Alternative SNS topic assignment from AWS Chatbot's ARN
+```
+const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(this, 'SlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+
+const topic = new sns.Topic(stack, 'MyTopic');
+
+slackChannelFromArn.addNotificationTopic(topic);
+```
+
 ## Log Group
 
 Slack channel configuration automatically create a log group with the name `/aws/chatbot/<configuration-name>` in `us-east-1` upon first execution with
