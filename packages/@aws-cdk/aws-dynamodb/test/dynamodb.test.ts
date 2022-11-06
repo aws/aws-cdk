@@ -969,6 +969,49 @@ test('when adding a global secondary index on a table with PAY_PER_REQUEST billi
   );
 });
 
+test('when adding a global secondary index with contributor insights', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: GSI_NAME,
+    partitionKey: GSI_PARTITION_KEY,
+    readCapacity: 42,
+    writeCapacity: 1337,
+    contributorInsightsEnabled: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+        { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'MyGSI',
+          KeySchema: [
+            { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+          ],
+          Projection: { ProjectionType: 'ALL' },
+          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          ContributorInsightsSpecification: { Enabled: true },
+        },
+      ],
+    },
+  );
+});
+
 test('error when adding a global secondary index with projection type INCLUDE, but without specifying non-key attributes', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });

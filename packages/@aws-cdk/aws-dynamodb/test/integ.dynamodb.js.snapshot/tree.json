@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-dynamodb": {
         "id": "aws-cdk-dynamodb",
         "path": "aws-cdk-dynamodb",
@@ -53,8 +45,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -327,8 +319,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -375,6 +367,9 @@
                         "projection": {
                           "projectionType": "ALL"
                         },
+                        "contributorInsightsSpecification": {
+                          "enabled": true
+                        },
                         "provisionedThroughput": {
                           "readCapacityUnits": 5,
                           "writeCapacityUnits": 5
@@ -396,8 +391,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -473,8 +468,8 @@
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -582,17 +577,41 @@
               "fqn": "@aws-cdk/aws-iam.User",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-dynamodb/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-dynamodb/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.140"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

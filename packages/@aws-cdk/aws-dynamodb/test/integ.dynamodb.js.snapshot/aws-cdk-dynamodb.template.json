@@ -294,6 +294,9 @@
     ],
     "GlobalSecondaryIndexes": [
      {
+      "ContributorInsightsSpecification": {
+       "Enabled": true
+      },
       "IndexName": "GSI-PartitionKeyOnly",
       "KeySchema": [
        {

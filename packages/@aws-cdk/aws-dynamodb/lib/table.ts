@@ -148,6 +148,13 @@ export interface SchemaOptions {
    * @default no sort key
    */
   readonly sortKey?: Attribute;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -284,13 +291,6 @@ export interface TableOptions extends SchemaOptions {
    * @default true
    */
   readonly waitForReplicationToFinish?: boolean;
-
-  /**
-   * Whether CloudWatch contributor insights is enabled.
-   *
-   * @default false
-   */
-  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1288,6 +1288,7 @@ export class Table extends TableBase {
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
