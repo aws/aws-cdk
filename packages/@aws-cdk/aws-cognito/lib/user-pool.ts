@@ -685,6 +685,14 @@ export interface UserPoolProps {
    * @default - no key ID configured
    */
   readonly customSenderKmsKey?: IKey;
+
+
+  /**
+   * When active, DeletionProtection prevents accidental deletion of your user pool.
+   *
+   * @default - not set.
+   */
+  readonly isDeletionProtection?: Boolean;
 }
 
 /**
@@ -776,6 +784,21 @@ abstract class UserPoolBase extends Resource implements IUserPool {
       scope: this,
     });
   }
+}
+
+/**
+ * Deletion Protection for UserPool
+ */
+enum DeletionProtection {
+  /**
+   * Active
+   */
+  ACTIVE = 'ACTIVE',
+
+  /**
+   * Inactive
+   */
+  INACTIVE = 'INACTIVE',
 }
 
 /**
@@ -914,6 +937,15 @@ export class UserPool extends UserPoolBase {
       replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
     });
 
+    let dp: DeletionProtection | undefined;
+    if (props.isDeletionProtection === undefined) {
+      dp = undefined;
+    } else if (props.isDeletionProtection) {
+      dp = DeletionProtection.ACTIVE;
+    } else {
+      dp = DeletionProtection.INACTIVE;
+    }
+
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
       usernameAttributes: signIn.usernameAttrs,
@@ -938,6 +970,7 @@ export class UserPool extends UserPoolBase {
       accountRecoverySetting: this.accountRecovery(props),
       deviceConfiguration: props.deviceTracking,
       userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
+      deletionProtection: dp,
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 

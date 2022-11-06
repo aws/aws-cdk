@@ -1921,3 +1921,73 @@ function fooFunction(scope: Construct, name: string): lambda.IFunction {
 function fooKey(scope: Construct, name: string): kms.Key {
   return new kms.Key(scope, name);
 }
+
+test('setup with deletionprotection Active', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    isDeletionProtection: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    AdminCreateUserConfig: {
+      AllowAdminCreateUserOnly: true,
+      InviteMessageTemplate: Match.absent(),
+    },
+    EmailVerificationMessage: 'The verification code to your new account is {####}',
+    EmailVerificationSubject: 'Verify your new account',
+    SmsVerificationMessage: 'The verification code to your new account is {####}',
+    VerificationMessageTemplate: {
+      DefaultEmailOption: 'CONFIRM_WITH_CODE',
+      EmailMessage: 'The verification code to your new account is {####}',
+      EmailSubject: 'Verify your new account',
+      SmsMessage: 'The verification code to your new account is {####}',
+    },
+    SmsAuthenticationMessage: Match.absent(),
+    SmsConfiguration: Match.absent(),
+    lambdaTriggers: Match.absent(),
+    DeletionProtection: 'ACTIVE',
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Cognito::UserPool', {
+    DeletionPolicy: 'Retain',
+  });
+});
+
+test('setup with deletionprotection Inactive', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    isDeletionProtection: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    AdminCreateUserConfig: {
+      AllowAdminCreateUserOnly: true,
+      InviteMessageTemplate: Match.absent(),
+    },
+    EmailVerificationMessage: 'The verification code to your new account is {####}',
+    EmailVerificationSubject: 'Verify your new account',
+    SmsVerificationMessage: 'The verification code to your new account is {####}',
+    VerificationMessageTemplate: {
+      DefaultEmailOption: 'CONFIRM_WITH_CODE',
+      EmailMessage: 'The verification code to your new account is {####}',
+      EmailSubject: 'Verify your new account',
+      SmsMessage: 'The verification code to your new account is {####}',
+    },
+    SmsAuthenticationMessage: Match.absent(),
+    SmsConfiguration: Match.absent(),
+    lambdaTriggers: Match.absent(),
+    DeletionProtection: 'INACTIVE',
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Cognito::UserPool', {
+    DeletionPolicy: 'Retain',
+  });
+});

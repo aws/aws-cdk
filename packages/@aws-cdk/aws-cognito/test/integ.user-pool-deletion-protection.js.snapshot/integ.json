@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-cdk-config-custompolicy-integ/DefaultTest": {
+      "stacks": [
+        "integ-user-pool"
+      ],
+      "assertionStack": "aws-cdk-config-custompolicy-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkconfigcustompolicyintegDefaultTestDeployAssert4EE21D3A"
+    }
+  }
+}

@@ -869,3 +869,13 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
+
+### Deletion protection 
+
+Activate deletion protection for your Amazon Cognito user pools.
+
+```ts
+new UserPool(stack, 'myuserpool', {
+  isDeletionProtection: true,
+});
+```
