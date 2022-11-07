@@ -1,11 +1,11 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
 import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
 export interface BucketPingerProps {
-  readonly bucket: s3.IBucket;
+  readonly bucketName: string;
 }
 export class BucketPinger extends Construct {
 
@@ -20,7 +20,7 @@ export class BucketPinger extends Construct {
       runtime: lambda.Runtime.PYTHON_3_9,
       timeout: Duration.minutes(1),
       environment: {
-        BUCKET_NAME: props.bucket.bucketName,
+        BUCKET_NAME: props.bucketName,
       },
     });
 
@@ -28,8 +28,10 @@ export class BucketPinger extends Construct {
       throw new Error('pinger lambda has no execution role!');
     }
 
-    props.bucket.grantRead(func.role);
-    props.bucket.grantDelete(func.role);
+    func.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['s3:DeleteBucket', 's3:ListBucket'],
+      resources: [`arn:aws:s3:::${props.bucketName}`],
+    }));
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: func,
