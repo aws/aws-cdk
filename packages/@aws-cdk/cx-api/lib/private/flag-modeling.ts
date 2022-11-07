@@ -37,7 +37,12 @@ export interface FlagInfoBase {
 
 /** Flag information, adding required fields if present */
 export type FlagInfo = FlagInfoBase & (
-  | { readonly type: FlagType.ApiDefault; readonly compatibilityWithOldBehavior: string }
-  | { readonly type: FlagType.BugFix; readonly compatibilityWithOldBehavior?: string }
+  | { readonly type: FlagType.ApiDefault;
+
+    /** Describe restoring old behavior or dealing with the change (Markdown) */
+    readonly compatibilityWithOldBehaviorMd: string }
+  | { readonly type: FlagType.BugFix;
+    /** Describe restoring old behavior or dealing with the change (Markdown) */
+    readonly compatibilityWithOldBehaviorMd?: string }
   | { readonly type: FlagType.VisibleContext }
 );

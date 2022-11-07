@@ -73,7 +73,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     introducedIn: { v1: '1.16.0' },
     defaults: { v2: true },
-    compatibilityWithOldBehavior: 'Pass stack identifiers to the CLI instead of stack names.',
+    compatibilityWithOldBehaviorMd: 'Pass stack identifiers to the CLI instead of stack names.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.19.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'Specify `--fail` to the CLI.',
+    compatibilityWithOldBehaviorMd: 'Specify `--fail` to the CLI.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.73.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.',
+    compatibilityWithOldBehaviorMd: 'Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -153,7 +153,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.77.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.',
+    compatibilityWithOldBehaviorMd: 'Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -175,7 +175,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.78.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.',
+    compatibilityWithOldBehaviorMd: 'Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -191,7 +191,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.85.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.',
+    compatibilityWithOldBehaviorMd: 'Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -211,7 +211,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.92.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
+    compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -265,7 +265,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.98.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.',
+    compatibilityWithOldBehaviorMd: 'Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -341,7 +341,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the new behavior provides a better default experience for the users.`,
     introducedIn: { v1: '1.140.0', v2: '2.8.0' },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'Specify a log driver explicitly.',
+    compatibilityWithOldBehaviorMd: 'Specify a log driver explicitly.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -397,7 +397,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the snapshot removal policy.`,
     introducedIn: { v2: '2.28.0' },
     recommendedValue: true,
-    compatibilityWithOldBehavior: 'The old behavior was incorrect. Update your source to not specify SNAPSHOT policies on resources that do not support it.',
+    compatibilityWithOldBehaviorMd: 'The old behavior was incorrect. Update your source to not specify SNAPSHOT policies on resources that do not support it.',
   },
 
   //////////////////////////////////////////////////////////////////////

@@ -107,8 +107,8 @@ function flagsDetails() {
 
 function oldBehavior(flag: FlagInfo): string | undefined {
   switch (flag.type) {
-    case FlagType.ApiDefault: return flag.compatibilityWithOldBehavior;
-    case FlagType.BugFix: return flag.compatibilityWithOldBehavior;
+    case FlagType.ApiDefault: return flag.compatibilityWithOldBehaviorMd;
+    case FlagType.BugFix: return flag.compatibilityWithOldBehaviorMd;
     case FlagType.VisibleContext: return undefined;
   }
 }
