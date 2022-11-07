@@ -35,6 +35,11 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-cdk/asset-awscli-v1@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.0.tgz#3982f8a2391aeedc3240da6d548c55f2190df0fa"
+  integrity sha512-mTmuXlnRMlbMwW8IzNlFXoZpfNEQ1RPLKRpJNQeB+dlDOEXllETIFomEyINM1LMpUmNMOOdbtO+vPKRZHCmMOQ==
+
 "@aws-cdk/lambda-layer-kubectl-v23@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v23/-/lambda-layer-kubectl-v23-2.0.0.tgz#8e46c505c8ba106d7589c9bebda824b8d963463c"
