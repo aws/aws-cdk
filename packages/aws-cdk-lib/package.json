@@ -113,7 +113,8 @@
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
     "semver": "^7.3.8",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+    "@aws-cdk/asset-awscli-v1": "^2.2.0"
   },
   "devDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
