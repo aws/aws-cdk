@@ -22,13 +22,11 @@ export enum FlagType {
   VisibleContext,
 };
 
-export interface FlagInfo {
-  /** Flag type */
-  readonly type: FlagType;
+export interface FlagInfoBase {
   /** Single-line description for the flag */
   readonly summary: string;
-  /** Detailed description for the flag */
-  readonly details: string;
+  /** Detailed description for the flag (Markdown) */
+  readonly detailsMd: string;
   /** Version number the flag was introduced in each version line. `undefined` means flag does not exist in that line. */
   readonly introducedIn: { v1?: string; v2?: string };
   /** Default value, if flag is unset by user. Adding a flag with a default may not change behavior after GA! */
@@ -37,3 +35,9 @@ export interface FlagInfo {
   readonly recommendedValue: any;
 };
 
+/** Flag information, adding required fields if present */
+export type FlagInfo = FlagInfoBase & (
+  | { readonly type: FlagType.ApiDefault; readonly compatibilityWithOldBehavior: string }
+  | { readonly type: FlagType.BugFix; readonly compatibilityWithOldBehavior?: string }
+  | { readonly type: FlagType.VisibleContext }
+);

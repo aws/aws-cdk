@@ -18,7 +18,13 @@ function flagsTable() {
   return renderTable([
     ['Flag', 'Summary', 'Since', 'Type', 'Recommended'],
     ...v2flags().map(([name, flag]) =>
-      [name, flag.summary, flag.introducedIn.v2 ?? '', renderType(flag.type), '`' + JSON.stringify(flag.recommendedValue) + '`'],
+      [
+        renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
+        flag.summary,
+        flag.introducedIn.v2 ?? '',
+        renderType(flag.type),
+        '`' + JSON.stringify(flag.recommendedValue) + '`',
+      ],
     ),
   ]);
 }
@@ -28,9 +34,13 @@ function removedFlags() {
 
   return renderTable([
     ['Flag', 'Summary', 'Type', 'Since', 'Value in v2'],
-    ...removedInV2.map(([name, flag]) =>
-      [name, flag.summary, renderType(flag.type), flag.introducedIn.v1 ?? '', renderValue(flag.defaults?.v2)],
-    ),
+    ...removedInV2.map(([name, flag]) => [
+      renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
+      flag.summary,
+      renderType(flag.type),
+      flag.introducedIn.v1 ?? '',
+      renderValue(flag.defaults?.v2),
+    ]),
   ]);
 }
 
@@ -39,9 +49,14 @@ function changedFlags() {
 
   return renderTable([
     ['Flag', 'Summary', 'Type', 'Since', 'v1 default', 'v2 default'],
-    ...changedInV2.map(([name, flag]) =>
-      [name, flag.summary, renderType(flag.type), flag.introducedIn.v1 ?? '', renderValue(false), renderValue(flag.defaults?.v2)],
-    ),
+    ...changedInV2.map(([name, flag]) => [
+      renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
+      flag.summary,
+      renderType(flag.type),
+      flag.introducedIn.v1 ?? '',
+      renderValue(false),
+      renderValue(flag.defaults?.v2),
+    ]),
   ]);
 }
 
@@ -58,16 +73,44 @@ function migrateJson() {
 }
 
 function flagsDetails() {
-  return v2flags().flatMap(([name, flag]) => [
-    `### ${name}`,
+  const allFlags = flags(_ => true);
+
+  return allFlags.flatMap(([name, flag]) => [
+    `### ${flagDetailsHeading(name, flag)}`,
     '',
-    `${flag.summary} ${renderType(flag.type)}`,
+    `*${flag.summary}* ${renderType(flag.type)}`,
     '',
-    dedent(flag.details),
+    dedent(flag.detailsMd),
     '',
-    `Introduced in **${flag.introducedIn.v2}**, recommended value ${renderValue(flag.recommendedValue)}.`,
+    renderTable([
+      ['Since', 'Default', 'Recommended'],
+
+      // V1
+      flag.introducedIn.v1
+        ? [flag.introducedIn.v1, renderValue(false), renderValue(flag.recommendedValue)]
+        : ['(not in v1)', '', ''],
+
+      // V2
+      flag.introducedIn.v2
+        ? [flag.introducedIn.v2, renderValue(flag.defaults?.v2 ?? false), renderValue(flag.recommendedValue)]
+        : flag.defaults?.v2 !== undefined
+          ? ['(default in v2)', renderValue(flag.defaults?.v2), '']
+          : ['(not in v2)', '', ''],
+    ]),
+    ...oldBehavior(flag) ? [
+      `**Compatibility with old behavior:** ${oldBehavior(flag)}`,
+      '',
+    ] : [],
     '',
   ]).join('\n');
+}
+
+function oldBehavior(flag: FlagInfo): string | undefined {
+  switch (flag.type) {
+    case FlagType.ApiDefault: return flag.compatibilityWithOldBehavior;
+    case FlagType.BugFix: return flag.compatibilityWithOldBehavior;
+    case FlagType.VisibleContext: return undefined;
+  }
 }
 
 function recommendedJson() {
@@ -115,6 +158,20 @@ function renderTable(rows: string[][]) {
 }
 
 /**
+ * Return the heading that will be used to caption this flag's details
+ */
+function flagDetailsHeading(name: string, _: FlagInfo) {
+  return name;
+}
+
+/**
+ * Return a link that is valid on GitHub to refer to a heading
+ */
+function githubHeadingLink(heading: string) {
+  return `#${heading.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]/g, '')}`;
+}
+
+/**
  * Remove shared leading whitespace from all non-empty lines
  */
 function dedent(body: string) {
@@ -127,6 +184,14 @@ function dedent(body: string) {
 
 function renderValue(x: any) {
   return `\`${JSON.stringify(x)}\``;
+}
+
+function renderLink(caption: string, link: string) {
+  return `[${caption}](${link})`;
+}
+
+function mdEsc(x: string) {
+  return x.replace(/_/g, '\\_');
 }
 
 async function updateMarkdownFile(filename: string, sections: Record<string, string>) {

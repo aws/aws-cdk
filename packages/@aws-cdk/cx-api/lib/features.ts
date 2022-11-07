@@ -65,7 +65,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: {
     type: FlagType.ApiDefault,
     summary: 'Allow multiple stacks with the same name',
-    details: `
+    detailsMd: `
       If this is set, multiple stacks can use the same stack name (e.g. deployed to
       different environments). This means that the name of the synthesized template
       file will be based on the construct path and not on the defined \`stackName\`
@@ -73,33 +73,35 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     introducedIn: { v1: '1.16.0' },
     defaults: { v2: true },
+    compatibilityWithOldBehavior: 'Pass stack identifiers to the CLI instead of stack names.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: {
     type: FlagType.ApiDefault,
     summary: 'Make `cdk diff` not fail when there are differences',
-    details: `
+    detailsMd: `
       Determines what status code \`cdk diff\` should return when the specified stack
       differs from the deployed stack or the local CloudFormation template:
 
-       * \`aws-cdk:enableDiffNoFail=true\` => status code == 0
-       * \`aws-cdk:enableDiffNoFail=false\` => status code == 1
+      * \`aws-cdk:enableDiffNoFail=true\` => status code == 0
+      * \`aws-cdk:enableDiffNoFail=false\` => status code == 1
 
       You can override this behavior with the --fail flag:
 
-       * \`--fail\` => status code == 1
-       * \`--no-fail\` => status code == 0`,
+      * \`--fail\` => status code == 1
+      * \`--no-fail\` => status code == 0`,
     introducedIn: { v1: '1.19.0' },
     defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'Specify `--fail` to the CLI.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: {
     type: FlagType.BugFix,
     summary: 'Switch to new stack synthesis method which enables CI/CD',
-    details: `
+    detailsMd: `
       If this flag is specified, all \`Stack\`s will use the \`DefaultStackSynthesizer\` by
       default. If it is not set, they will use the \`LegacyStackSynthesizer\`.`,
     introducedIn: { v1: '1.39.0', v2: '2.0.0' },
@@ -111,7 +113,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [STACK_RELATIVE_EXPORTS_CONTEXT]: {
     type: FlagType.BugFix,
     summary: 'Name exports based on the construct paths relative to the stack, rather than the global construct path',
-    details: `
+    detailsMd: `
       Combined with the stack name this relative construct path is good enough to
       ensure uniqueness, and makes the export names robust against refactoring
       the location of the stack in the construct tree (specifically, moving the Stack
@@ -125,7 +127,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [DOCKER_IGNORE_SUPPORT]: {
     type: FlagType.ApiDefault,
     summary: 'DockerImageAsset properly supports `.dockerignore` files by default',
-    details: `
+    detailsMd: `
       If this flag is not set, the default behavior for \`DockerImageAsset\` is to use
       glob semantics for \`.dockerignore\` files. If this flag is set, the default behavior
       is standard Docker ignore semantics.
@@ -135,13 +137,14 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.73.0' },
     defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'Update your `.dockerignore` file to match standard Docker ignore rules, if necessary.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: {
     type: FlagType.ApiDefault,
     summary: 'Fix the referencing of SecretsManager names from ARNs',
-    details: `
+    detailsMd: `
       Secret.secretName for an "owned" secret will attempt to parse the secretName from the ARN,
       rather than the default full resource name, which includes the SecretsManager suffix.
 
@@ -150,13 +153,14 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.77.0' },
     defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'Use `parseArn(secret.secretName).resourceName` to emulate the incorrect old parsing.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [KMS_DEFAULT_KEY_POLICIES]: {
     type: FlagType.ApiDefault,
     summary: 'Tighten default KMS key policies',
-    details: `
+    detailsMd: `
       KMS Keys start with a default key policy that grants the account access to administer the key,
       mirroring the behavior of the KMS SDK/CLI/Console experience. Users may override the default key
       policy by specifying their own.
@@ -171,13 +175,14 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.78.0' },
     defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'Pass `trustAccountIdentities: false` to `Key` construct to restore the old behavior.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [S3_GRANT_WRITE_WITHOUT_ACL]: {
     type: FlagType.ApiDefault,
     summary: 'Remove `PutObjectAcl` from Bucket.grantWrite',
-    details: `
+    detailsMd: `
       Change the old 's3:PutObject*' permission to 's3:PutObject' on Bucket,
       as the former includes 's3:PutObjectAcl',
       which could be used to grant read/write object access to IAM principals in other accounts.
@@ -186,13 +191,14 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.85.0' },
     defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'Call `bucket.grantPutAcl()` in addition to `bucket.grantWrite()` to grant ACL permissions.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: {
     type: FlagType.ApiDefault,
     summary: 'Do not specify a default DesiredCount for ECS services',
-    details: `
+    detailsMd: `
       ApplicationLoadBalancedServiceBase, ApplicationMultipleTargetGroupServiceBase,
       NetworkLoadBalancedServiceBase, NetworkMultipleTargetGroupServiceBase, and
       QueueProcessingServiceBase currently determine a default value for the desired count of
@@ -205,13 +211,14 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.92.0' },
     defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [RDS_LOWERCASE_DB_IDENTIFIER]: {
     type: FlagType.BugFix,
     summary: 'Force lowercasing of RDS Cluster names in CDK',
-    details: `
+    detailsMd: `
       Cluster names must be lowercase, and the service will lowercase the name when the cluster
       is created. However, CDK did not use to know about this, and would use the user-provided name
       referencing the cluster, which would fail if it happened to be mixed-case.
@@ -230,7 +237,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: {
     type: FlagType.BugFix,
     summary: 'Allow adding/removing multiple UsagePlanKeys independently',
-    details: `
+    detailsMd: `
       The UsagePlanKey resource connects an ApiKey with a UsagePlan. API Gateway does not allow more than one UsagePlanKey
       for any given UsagePlan and ApiKey combination. For this reason, CloudFormation cannot replace this resource without
       either the UsagePlan or ApiKey changing.
@@ -252,19 +259,20 @@ export const FLAGS: Record<string, FlagInfo> = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: {
     type: FlagType.ApiDefault,
     summary: 'Enable this feature flag to have elastic file systems encrypted at rest by default.',
-    details: `
+    detailsMd: `
       Encryption can also be configured explicitly using the \`encrypted\` property.
       `,
     introducedIn: { v1: '1.98.0' },
     defaults: { v2: true },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: {
     type: FlagType.BugFix,
     summary: 'Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`.',
-    details: `
+    detailsMd: `
       The previous calculation incorrectly considered properties of the \`AWS::Lambda::Function\` resource that did
       not constitute creating a new Version.
 
@@ -278,7 +286,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [LAMBDA_RECOGNIZE_LAYER_VERSION]: {
     type: FlagType.BugFix,
     summary: 'Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the `fn.currentVersion`.',
-    details: `
+    detailsMd: `
       This flag correct incorporates Lambda Layer properties into the Lambda Function Version.
 
       See 'currentVersion' section in the aws-lambda module's README for more details.`,
@@ -290,7 +298,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: {
     type: FlagType.BugFix,
     summary: 'Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.',
-    details: `
+    detailsMd: `
       The security policy can also be configured explicitly using the \`minimumProtocolVersion\` property.`,
     introducedIn: { v1: '1.117.0', v2: '2.0.0' },
     defaults: { v2: true },
@@ -301,7 +309,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [CHECK_SECRET_USAGE]: {
     type: FlagType.VisibleContext,
     summary: 'Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations',
-    details: `
+    detailsMd: `
       With this flag enabled, \`SecretValue\` instances can only be passed to
       constructs that accept \`SecretValue\`s; otherwise, \`unsafeUnwrap()\` must be
       called to use it as a regular string.`,
@@ -313,7 +321,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [TARGET_PARTITIONS]: {
     type: FlagType.VisibleContext,
     summary: 'What regions to include in lookup tables of environment agnostic stacks',
-    details: `
+    detailsMd: `
       Has no effect on stacks that have a defined region, but will limit the amount
       of unnecessary regions included in stacks without a known region.
 
@@ -326,20 +334,21 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: {
     type: FlagType.ApiDefault,
     summary: 'ECS extensions will automatically add an `awslogs` driver if no logging is specified',
-    details: `
+    detailsMd: `
       Enable this feature flag to configure default logging behavior for the ECS Service Extensions. This will enable the
       \`awslogs\` log driver for the application container of the service to send the container logs to CloudWatch Logs.
 
       This is a feature flag as the new behavior provides a better default experience for the users.`,
     introducedIn: { v1: '1.140.0', v2: '2.8.0' },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'Specify a log driver explicitly.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: {
     type: FlagType.BugFix,
     summary: 'Enable this feature flag to have Launch Templates generated by the `InstanceRequireImdsv2Aspect` use unique names.',
-    details: `
+    detailsMd: `
       Previously, the generated Launch Template names were only unique within a stack because they were based only on the
       \`Instance\` construct ID. If another stack that has an \`Instance\` with the same construct ID is deployed in the same
       account and region, the deployments would always fail as the generated Launch Template names were the same.
@@ -353,7 +362,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: {
     type: FlagType.BugFix,
     summary: 'ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID.',
-    details: `
+    detailsMd: `
       If this flag is not set, the old ARN format (without cluster name) for ECS is used.
       If this flag is set, the new ARN format (with cluster name) for ECS is used.
 
@@ -369,7 +378,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [IAM_MINIMIZE_POLICIES]: {
     type: FlagType.VisibleContext,
     summary: 'Minimize IAM policies by combining Statements',
-    details: `
+    detailsMd: `
       Minimize IAM policies by combining Principals, Actions and Resources of two
       Statements in the policies, as long as it doesn't change the meaning of the
       policy.`,
@@ -381,20 +390,21 @@ export const FLAGS: Record<string, FlagInfo> = {
   [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: {
     type: FlagType.ApiDefault,
     summary: 'Error on snapshot removal policies on resources that do not support it.',
-    details: `
+    detailsMd: `
       Makes sure we do not allow snapshot removal policy on resources that do not support it.
       If supplied on an unsupported resource, CloudFormation ignores the policy altogether.
       This flag will reduce confusion and unexpected loss of data when erroneously supplying
       the snapshot removal policy.`,
     introducedIn: { v2: '2.28.0' },
     recommendedValue: true,
+    compatibilityWithOldBehavior: 'The old behavior was incorrect. Update your source to not specify SNAPSHOT policies on resources that do not support it.',
   },
 
   //////////////////////////////////////////////////////////////////////
   [CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: {
     type: FlagType.BugFix,
     summary: 'Generate key aliases that include the stack name',
-    details: `
+    detailsMd: `
       Enable this feature flag to have CodePipeline generate a unique cross account key alias name using the stack name.
 
       Previously, when creating multiple pipelines with similar naming conventions and when crossAccountKeys is true,
@@ -410,7 +420,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [S3_CREATE_DEFAULT_LOGGING_POLICY]: {
     type: FlagType.BugFix,
     summary: 'Enable this feature flag to create an S3 bucket policy by default in cases where an AWS service would automatically create the Policy if one does not exist.',
-    details: `
+    detailsMd: `
       For example, in order to send VPC flow logs to an S3 bucket, there is a specific Bucket Policy
       that needs to be attached to the bucket. If you create the bucket without a policy and then add the
       bucket as the flow log destination, the service will automatically create the bucket policy with the
@@ -430,7 +440,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: {
     type: FlagType.BugFix,
     summary: 'Restrict KMS key policy for encrypted Queues a bit more',
-    details: `
+    detailsMd: `
       Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
       only the topic which it is subscribed to and not the whole SNS service of an account.
 
@@ -445,7 +455,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: {
     type: FlagType.BugFix,
     summary: 'Make default CloudWatch Role behavior safe for multiple API Gateways in one environment',
-    details: `
+    detailsMd: `
       Enable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi
       to _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS
       environment which means that each time you create a RestApi in your account the ApiGateway account
@@ -463,7 +473,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ENABLE_PARTITION_LITERALS]: {
     type: FlagType.BugFix,
     summary: 'Make ARNs concrete if AWS partition is known',
-    details: `
+    detailsMd: `
       Enable this feature flag to get partition names as string literals in Stacks with known regions defined in
       their environment, such as "aws" or "aws-cn".  Previously the CloudFormation intrinsic function
       "Ref: AWS::Partition" was used.  For example:
@@ -480,7 +490,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       becomes:
 
-      \`\`\`
+      \`\`\`yaml
       Principal:
         AWS: "arn:aws:iam::123456789876:root"
       \`\`\`
@@ -496,7 +506,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [EVENTS_TARGET_QUEUE_SAME_ACCOUNT]: {
     type: FlagType.BugFix,
     summary: 'Event Rules may only push to encrypted SQS queues in the same account',
-    details: `
+    detailsMd: `
       This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
