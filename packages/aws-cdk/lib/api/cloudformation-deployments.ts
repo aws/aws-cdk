@@ -418,8 +418,8 @@ export class CloudFormationDeployments {
     if (options.resourcesToImport === undefined) {
       await this.publishStackAssets(options.stack, toolkitInfo, {
         buildAssets: options.buildAssets ?? true,
-        quiet: options.quiet,
         publishOptions: {
+          quiet: options.quiet,
           parallel: options.assetParallelism,
         },
       });
