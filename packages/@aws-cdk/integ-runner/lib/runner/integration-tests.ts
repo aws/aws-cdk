@@ -97,10 +97,9 @@ export class IntegTest {
       ? parsed.name
       : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
 
-    const nakedTestName = parsed.name.slice(6); // Leave name without 'integ.' and '.ts'
     this.normalizedTestName = parsed.name;
-    this.snapshotDir = path.join(this.directory, `${nakedTestName}.integ.snapshot`);
-    this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${nakedTestName}`);
+    this.snapshotDir = path.join(this.directory, `${parsed.base}.snapshot`);
+    this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${parsed.base}.snapshot`);
   }
 
   /**
