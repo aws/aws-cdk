@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecrAssets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack, CfnOutput } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
@@ -12,7 +13,9 @@ import { BucketPinger } from './bucket-pinger/bucket-pinger';
 const app = new App();
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 
-const bucketName = `amazingly-made-sdk-call-created-eks-bucket_${stack.account}`;
+// this bucket gets created by a kubernetes pod.
+const bucketName = `amazingly-made-sdk-call-created-eks-bucket_${stack.account}_${stack.region}`;
+const bucket = s3.Bucket.fromBucketName(stack, 'ProbeBucket', bucketName);
 
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
   directory: path.join(__dirname, 'sdk-call-integ-test-docker-app/app'),
@@ -34,7 +37,7 @@ new kplus.Pod(chart, 'Pod', {
   containers: [{
     image: dockerImage.imageUri,
     envVariables: {
-      BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
+      BUCKET_NAME: kplus.EnvValue.fromValue(bucket.bucketName),
     },
   }],
   restartPolicy: kplus.RestartPolicy.NEVER,
@@ -46,7 +49,7 @@ cluster.addCdk8sChart('sdk-call', chart).node.addDependency(serviceAccount);
 serviceAccount.role.addToPrincipalPolicy(
   new iam.PolicyStatement({
     actions: ['s3:CreateBucket'],
-    resources: ['arn:aws:s3:::*'],
+    resources: [bucket.bucketArn],
   }),
 );
 
@@ -54,10 +57,7 @@ serviceAccount.role.addToPrincipalPolicy(
 // the bucket will be deleted when the custom resource is deleted
 // if the bucket does not exist, then it will throw an error and fail the deployment.
 const pinger = new BucketPinger(stack, 'S3BucketPinger', {
-  vpc: cluster.vpc,
-  env: {
-    BUCKET_NAME: bucketName,
-  },
+  bucket,
 });
 
 // the pinger must wait for the cluster to be updated.

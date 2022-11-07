@@ -5,7 +5,7 @@ import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
 export interface BucketPingerProps {
-  readonly bucketName: string;
+  readonly bucket: s3.IBucket;
 }
 export class BucketPinger extends Construct {
 
@@ -20,7 +20,7 @@ export class BucketPinger extends Construct {
       runtime: lambda.Runtime.PYTHON_3_9,
       timeout: Duration.minutes(1),
       environment: {
-        BUCKET_NAME: props.bucketName,
+        BUCKET_NAME: props.bucket.bucketName,
       },
     });
 
@@ -28,9 +28,8 @@ export class BucketPinger extends Construct {
       throw new Error('pinger lambda has no execution role!');
     }
 
-    const bucket = s3.Bucket.fromBucketName(this, 'Bucket', props.bucketName);
-    bucket.grantRead(func.role);
-    bucket.grantDelete(func.role);
+    props.bucket.grantRead(func.role);
+    props.bucket.grantDelete(func.role);
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: func,
