@@ -3,8 +3,6 @@ import * as sagemaker from '../lib';
 
 describe('When creating model data from a local asset', () => {
   test('by supplying a directory, an exception is thrown', () => {
-    // GIVEN
-
     // WHEN
     const when = () => sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artifacts'));
 
@@ -13,8 +11,6 @@ describe('When creating model data from a local asset', () => {
   });
 
   test('by supplying a zip file, an exception is thrown', () => {
-    // GIVEN
-
     // WHEN
     const when = () => sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artifacts', 'invalid-artifact.zip'));
 
@@ -23,8 +19,6 @@ describe('When creating model data from a local asset', () => {
   });
 
   test('by supplying a file with an unsupported extension, an exception is thrown', () => {
-    // GIVEN
-
     // WHEN
     const when = () => sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artifacts', 'invalid-artifact.tar'));
 
