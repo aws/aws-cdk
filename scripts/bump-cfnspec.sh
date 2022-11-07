@@ -22,7 +22,6 @@ yarn lerna run build --stream     \
   --scope=@aws-cdk/ubergen        \
   --include-dependencies
 
-
 # Run the cfnspec update
 cd ${pwd}/packages/@aws-cdk/cfnspec
 yarn update
