@@ -53,6 +53,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [App Clients](#app-clients)
   - [Resource Servers](#resource-servers)
   - [Domains](#domains)
+  - [Deletion protection](#deletion-protection)
 
 ## User Pools
 
@@ -869,3 +870,16 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
+
+### Deletion protection
+
+Deletion protection can be enabled on a user pool to prevent accidental deletion:
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool', {
+  // ...
+  deletionProtection: true,
+});
+```
+
+By default deletion protection is disabled.
