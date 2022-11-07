@@ -42,6 +42,10 @@ Parameters:
     Default: 'true'
     Type: 'String'
     AllowedValues: ['true', 'false']
+  PermissionsBoundary:
+    Description: Whether or not to use either the CDK supplied or custom permissions boundary
+    Default: ''
+    Type: 'String'
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -77,6 +81,20 @@ Conditions:
     Fn::Equals:
       - 'AWS_MANAGED_KEY'
       - Ref: FileAssetsBucketKmsKeyId
+  NoPermissionsBoundary:
+    Fn::Equals:
+      - ''
+      - Ref: PermissionsBoundary
+  DefaultPermissionsBoundary:
+    Fn::Equals:
+      - 'USE_DEFAULT_PERMISSIONS_BOUNDARY'
+      - Ref: PermissionsBoundary
+  CustomPermissionsBoundary:
+    Fn::And:
+      - Fn::Not:
+          - Condition: NoPermissionsBoundary
+      - FN::Not:
+          - Condition: DefaultPermissionsBoundary
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
       - Fn::Equals:
@@ -501,8 +519,12 @@ Resources:
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
       PermissionsBoundary:
-        Ref: PermissionBoundary
+        - Fn::If:
+            - NoPermissionsBoundary
+            - ''
+            - Ref: PermissionBoundary
   PermissionBoundary:
+    Condition: DefaultPermissionsBoundary
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
