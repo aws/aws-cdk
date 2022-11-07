@@ -59,6 +59,7 @@ export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscri
 export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
+export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -500,6 +501,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
+      `,
+    introducedIn: { v2: '2.51.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_STANDARDIZED_SERVICE_PRINCIPALS]: {
+    type: FlagType.BugFix,
+    summary: 'Use standardized (global) service principals everywhere',
+    details: `
+      We used to maintain a database of exceptions to Service Principal names in various regions. This database
+      is no longer necessary: all service principals names have been standardized to their global form (\`SERVICE.amazonaws.com\`).
+
+      This flag disables use of that exceptions database and always uses the global service principal.
       `,
     introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
