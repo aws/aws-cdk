@@ -105,7 +105,7 @@ export function contentFingerprint(file: string): string {
 
   // We also must suppress typescript typechecks as we are using a version of
   // @types/node that only supports node 10 declarations.
-  const stats = fs.statSync(file, { bigint: true });
+  const stats = fs.statSync(file/*, { bigint: true }*/);
   const cacheKey = JSON.stringify({
     mtime_unix: stats.mtime.toUTCString(),
     mtime_ms: stats.mtimeMs.toString(),

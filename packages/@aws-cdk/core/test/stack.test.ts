@@ -462,6 +462,55 @@ describe('stack', () => {
     });
   });
 
+  test('cross-stack references of lists work', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const exportResource = new CfnResource(stack1, 'exportedResource', {
+      type: 'BLA',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop1: exportResource.getAtt('List'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toEqual({
+      Outputs: {
+        ExportsOutputRefAWSAccountIdAD568057: {
+          Value: { Ref: 'AWS::AccountId' },
+          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          /*Prop1: {
+            'Fn::Split': [
+              'CDK-determined-super-magic-delimiter',
+              {
+                'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+              },
+            ],
+          },*/
+        },
+      },
+    });
+  });
+
   test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();

@@ -959,12 +959,26 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
     }
 
+    // determine if we're exporting a string list or a string
+    const availableCfnAttrs = exportedValue.target;
+    const desiredAttribute = 'attr' + resolved['Fn::GetAtt'][1];
+    const exportAttr = availableCfnAttrs[desiredAttribute];
+    const exportAttrIsStringList = Array.isArray(exportAttr) && typeof exportAttr[0] === 'string';
+    const delimiter = 'CDK-determined-super-magic-delimiter';
+
+    const valueToExport = exportAttrIsStringList ?
+      Fn.join(delimiter, Token.asList(exportable))
+      : Token.asString(exportable);
+
     const output = exportsScope.node.tryFindChild(id) as CfnOutput;
     if (!output) {
-      new CfnOutput(exportsScope, id, { value: Token.asString(exportable), exportName });
+      new CfnOutput(exportsScope, id, { value: valueToExport, exportName });
     }
 
-    return Fn.importValue(exportName);
+    // we don't use `Fn.importListValue()` since this array is a CFN attribute, and we don't know how long this attribute is
+    return exportAttrIsStringList ?
+      Fn.split(delimiter, Fn.importValue(exportName))
+      : Fn.importValue(exportName);
   }
 
   /**
