@@ -20,7 +20,7 @@ function defaultLogger(fmt: string, ...args: any[]) {
 /**
  * Downloads the CA thumbprint from the issuer URL
  */
-export async function downloadThumbprint(issuerUrl: string) {
+async function downloadThumbprint(issuerUrl: string) {
 
   return new Promise<string>((ok, ko) => {
     const purl = url.parse(issuerUrl);
@@ -36,7 +36,7 @@ export async function downloadThumbprint(issuerUrl: string) {
     socket.once('error', ko);
 
     socket.once('secureConnect', () => {
-      let cert = socket.getPeerX509Certificate();;
+      let cert = socket.getPeerX509Certificate();
       if (!cert) {
         throw new Error(`Unable to retrieve X509 certificate from host ${purl.host}`);
       }
