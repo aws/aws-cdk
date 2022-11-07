@@ -105,11 +105,7 @@
         }
       }
     },
-<<<<<<< HEAD
-    "95ac5e25f67e2477ca1e6c1f16fd1f215c4bc13dfdec7c4e01e18a58a1d99ce9": {
-=======
-    "d23a5ca748a8a6f0c768d89b4fd3069fac35fda4a25da81024e60798fa1642a0": {
->>>>>>> main
+    "4800d8504b5d0b7257180890807403f298995ab73b4cc7c85aeb52c5a844a4cc": {
       "source": {
         "path": "aws-stepfunctions-tasks-emr-containers-all-services-test.template.json",
         "packaging": "file"
@@ -117,11 +113,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD
-          "objectKey": "95ac5e25f67e2477ca1e6c1f16fd1f215c4bc13dfdec7c4e01e18a58a1d99ce9.json",
-=======
-          "objectKey": "d23a5ca748a8a6f0c768d89b4fd3069fac35fda4a25da81024e60798fa1642a0.json",
->>>>>>> main
+          "objectKey": "4800d8504b5d0b7257180890807403f298995ab73b4cc7c85aeb52c5a844a4cc.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
