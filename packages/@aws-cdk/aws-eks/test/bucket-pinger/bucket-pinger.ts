@@ -1,43 +1,37 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
 import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Env } from 'cdk8s-plus-23';
 import { Construct } from 'constructs';
 
-export interface PingerProps {
-  readonly securityGroup?: ec2.SecurityGroup;
-  readonly vpc?: ec2.IVpc;
-  readonly subnets?: ec2.ISubnet[];
-  readonly env: { [key: string]: string};
+export interface BucketPingerProps {
+  readonly bucketName: string;
 }
 export class BucketPinger extends Construct {
 
   private _resource: CustomResource;
 
-  constructor(scope: Construct, id: string, props: PingerProps) {
+  constructor(scope: Construct, id: string, props: BucketPingerProps) {
     super(scope, id);
 
     const func = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(`${__dirname}/function`),
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
-      vpc: props.vpc,
-      vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
-      securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
       timeout: Duration.minutes(1),
-      environment: props.env,
+      environment: {
+        BUCKET_NAME: props.bucketName,
+      },
     });
 
     if (!func.role) {
       throw new Error('pinger lambda has no execution role!');
     }
 
-    func.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:DeleteBucket', 's3:ListBucket'],
-      resources: ['arn:aws:s3:::*'],
-    }));
+    const bucket = s3.Bucket.fromBucketName(this, 'Bucket', props.bucketName);
+    bucket.grantRead(func.role);
+    bucket.grantDelete(func.role);
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: func,
