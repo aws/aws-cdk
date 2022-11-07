@@ -12,6 +12,8 @@ import { BucketPinger } from './bucket-pinger/bucket-pinger';
 const app = new App();
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 
+const bucketName = `amazingly-made-sdk-call-created-eks-bucket_${stack.account}`;
+
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
   directory: path.join(__dirname, 'sdk-call-integ-test-docker-app/app'),
 });
@@ -29,7 +31,12 @@ const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 const serviceAccount = cluster.addServiceAccount('my-service-account');
 const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(serviceAccount.serviceAccountName);
 new kplus.Pod(chart, 'Pod', {
-  containers: [{ image: dockerImage.imageUri }],
+  containers: [{
+    image: dockerImage.imageUri,
+    envVariables: {
+      BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
+    },
+  }],
   restartPolicy: kplus.RestartPolicy.NEVER,
   serviceAccount: kplusServiceAccount,
 });
@@ -48,6 +55,9 @@ serviceAccount.role.addToPrincipalPolicy(
 // if the bucket does not exist, then it will throw an error and fail the deployment.
 const pinger = new BucketPinger(stack, 'S3BucketPinger', {
   vpc: cluster.vpc,
+  env: {
+    BUCKET_NAME: bucketName,
+  },
 });
 
 // the pinger must wait for the cluster to be updated.

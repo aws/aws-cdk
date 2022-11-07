@@ -3,12 +3,14 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { Env } from 'cdk8s-plus-23';
 import { Construct } from 'constructs';
 
 export interface PingerProps {
   readonly securityGroup?: ec2.SecurityGroup;
   readonly vpc?: ec2.IVpc;
   readonly subnets?: ec2.ISubnet[];
+  readonly env: { [key: string]: string};
 }
 export class BucketPinger extends Construct {
 
@@ -25,6 +27,7 @@ export class BucketPinger extends Construct {
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
       timeout: Duration.minutes(1),
+      environment: props.env,
     });
 
     if (!func.role) {
