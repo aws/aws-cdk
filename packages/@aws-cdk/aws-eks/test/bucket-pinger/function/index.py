@@ -18,7 +18,7 @@ def handler(event, context):
 
   if request_type in ['Create', 'Update']:
     logger.info(f'making sdk call to check if bucket with name {s3_bucket_name} exists')
-    while (True):
+    while (True): # lambda will eventually time this out in case of consistent failures
       try:
         s3.head_bucket(Bucket=s3_bucket_name)
         return {'Data': {'Value': f'confirmed that bucket with name {s3_bucket_name} exists' }}
