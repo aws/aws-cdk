@@ -68,7 +68,8 @@ to be a self contained CDK app. The runner will execute the following for each f
   Read the list of tests from this file
 - `--disable-update-workflow` (default=`false`)
   If this is set to `true` then the [update workflow](#update-workflow) will be disabled
-
+- `--app`
+  The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".
 Example:
 
 ```bash
