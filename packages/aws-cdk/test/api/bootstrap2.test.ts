@@ -82,6 +82,34 @@ describe('Bootstrapping v2', () => {
     }));
   });
 
+  test('passes true to PermissionsBoundary', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        defaultPermissionsBoundary: true,
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        PermissionsBoundary: 'DEFAULT_PERMISSIONS_BOUNDARY',
+      }),
+    }));
+  });
+
+  test('passes value to PermissionsBoundary', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name',
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        PermissionsBoundary: 'permissions-boundary-name',
+      }),
+    }));
+  });
+
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
     await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
