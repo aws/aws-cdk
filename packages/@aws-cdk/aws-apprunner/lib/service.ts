@@ -104,6 +104,16 @@ export class Runtime {
   public static readonly CORRETTO_11 = Runtime.of('CORRETTO_11')
 
   /**
+   * .NET 6
+   */
+  public static readonly DOTNET_6 = Runtime.of('DOTNET_6')
+
+  /**
+   * Go 1.18
+   */
+  public static readonly GO_1 = Runtime.of('GO_1')
+
+  /**
    * NodeJS 12
    */
   public static readonly NODEJS_12 = Runtime.of('NODEJS_12')
@@ -119,9 +129,19 @@ export class Runtime {
   public static readonly NODEJS_16 = Runtime.of('NODEJS_16')
 
   /**
+   * PHP 8.1
+   */
+  public static readonly PHP_81 = Runtime.of('PHP_81')
+
+  /**
    * Python 3
    */
   public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
+
+  /**
+   * Ruby 3.1
+   */
+  public static readonly RUBY_31 = Runtime.of('RUBY_31')
 
   /**
    * Other runtimes
