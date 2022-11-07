@@ -36,6 +36,7 @@ Flags come in three types:
 | @aws-cdk/aws-ecs:arnFormatIncludesClusterName | ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID. | 2.35.0 | (fix) | `true` |
 | @aws-cdk/aws-apigateway:disableCloudWatchRole | Make default CloudWatch Role behavior safe for multiple API Gateways in one environment | 2.38.0 | (fix) | `true` |
 | @aws-cdk/core:enablePartitionLiterals | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) | `true` |
+| @aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) | `true` |
 | @aws-cdk/aws-events:eventsTargetQueueSameAccount | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) | `true` |
 
 <!-- END table -->
@@ -295,12 +296,24 @@ is unknown.
 
 Introduced in **2.38.0**, recommended value `true`.
 
+### @aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker
+
+Avoid setting the "ECS" deployment controller when adding a circuit breaker (fix)
+
+Enable this feature flag to avoid setting the "ECS" deployment controller when adding a circuit breaker to an
+ECS Service, as this will trigger a full replacement which fails to deploy when using set service names.
+This does not change any behaviour as the default deployment controller when it is not defined is ECS.
+
+This is a feature flag as the new behavior provides a better default experience for the users.
+
+Introduced in **2.51.0**, recommended value `true`.
+
 ### @aws-cdk/aws-events:eventsTargetQueueSameAccount
 
 Event Rules may only push to encrypted SQS queues in the same account (fix)
 
 This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
-from the same account as the Queue can send messages. If a queue is unencrypted, this restriction will
+from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
 always apply, regardless of the value of this flag.
 
 Introduced in **2.51.0**, recommended value `true`.
@@ -331,7 +344,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
-    "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true
+    "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
+    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true
   }
 }
 ```
