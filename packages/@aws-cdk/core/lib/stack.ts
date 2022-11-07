@@ -961,9 +961,13 @@ export class Stack extends Construct implements ITaggable {
 
     // determine if we're exporting a string list or a string
     const availableCfnAttrs = exportedValue.target;
-    const desiredAttribute = 'attr' + resolved['Fn::GetAtt'][1];
-    const exportAttr = availableCfnAttrs[desiredAttribute];
-    const exportAttrIsStringList = Array.isArray(exportAttr) && typeof exportAttr[0] === 'string';
+    const resolvedResourceName = resolved['Fn::GetAtt']; // ignoring Refs for now, only get atts are supported
+    let exportAttrIsStringList = false;
+    if (resolvedResourceName) {
+      const desiredAttribute = 'attr' + resolved['Fn::GetAtt'][1];
+      const exportAttr = availableCfnAttrs[desiredAttribute];
+      exportAttrIsStringList = Array.isArray(exportAttr) && typeof exportAttr[0] === 'string';
+    }
     const delimiter = 'CDK-determined-super-magic-delimiter';
 
     const valueToExport = exportAttrIsStringList ?

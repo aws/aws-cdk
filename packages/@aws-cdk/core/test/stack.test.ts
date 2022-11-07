@@ -477,6 +477,7 @@ describe('stack', () => {
       type: 'BLA',
       properties: {
         Prop1: exportResource.getAtt('List'),
+        Prop2: 'woowoowowow',
       },
     });
 
@@ -485,11 +486,20 @@ describe('stack', () => {
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     // THEN
-    expect(template1).toEqual({
+    expect(template1).toMatchObject({
       Outputs: {
-        ExportsOutputRefAWSAccountIdAD568057: {
-          Value: { Ref: 'AWS::AccountId' },
-          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' },
+        ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
+          Value: {
+            'Fn::Join': [
+              'CDK-determined-super-magic-delimiter', {
+                'Fn::GetAtt': [
+                  'exportedResource',
+                  'List',
+                ],
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9' },
         },
       },
     });
@@ -498,14 +508,14 @@ describe('stack', () => {
       Resources: {
         SomeResource: {
           Type: 'BLA',
-          /*Prop1: {
+          Prop1: {
             'Fn::Split': [
               'CDK-determined-super-magic-delimiter',
               {
                 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
               },
             ],
-          },*/
+          },
         },
       },
     });
