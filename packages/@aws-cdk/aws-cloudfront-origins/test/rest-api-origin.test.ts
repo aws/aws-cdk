@@ -17,9 +17,6 @@ test('Correctly renders the origin', () => {
 
   expect(stack.resolve(originBindConfig.originProperty)).toEqual({
     id: 'StackOrigin029E19582',
-    originShield: {
-      enabled: false,
-    },
     domainName: {
       'Fn::Select': [2, {
         'Fn::Split': ['/', {

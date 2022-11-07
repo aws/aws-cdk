@@ -113,9 +113,6 @@
         ]
        },
        "Id": "cloudfrontorigingroupDistributionOrigin137659A54",
-       "OriginShield": {
-        "Enabled": false
-       },
        "S3OriginConfig": {
         "OriginAccessIdentity": {
          "Fn::Join": [
@@ -138,10 +135,7 @@
         ]
        },
        "DomainName": "www.example.com",
-       "Id": "cloudfrontorigingroupDistributionOrigin2CCE5D500",
-       "OriginShield": {
-        "Enabled": false
-       }
+       "Id": "cloudfrontorigingroupDistributionOrigin2CCE5D500"
       }
      ]
     }

@@ -471,10 +471,7 @@
          "DNSName"
         ]
        },
-       "Id": "cloudfrontloadbalanceroriginDistributionOrigin1BCC75186",
-       "OriginShield": {
-        "Enabled": false
-       }
+       "Id": "cloudfrontloadbalanceroriginDistributionOrigin1BCC75186"
       }
      ]
     }
