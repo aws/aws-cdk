@@ -500,6 +500,59 @@ Resources:
             - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
+      PermissionsBoundary:
+        Ref: PermissionBoundary
+  PermissionBoundary:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          # If permission boundaries do not have an explicit `allow`, then the effect is `deny`
+          - Sid: ExplicitAllowAll
+            Action:
+              - "*"
+            Effect: Allow
+            Resource: "*"
+          # Add your specific organizational security policy
+          # here, for example denying access to AWS Config
+          - Sid: OrganizationalSecurityPolicy
+            Action:
+              - "config:*"
+            Effect: Deny
+            Resource: "*"
+          # Default permissions to prevent privilege escalation
+          - Sid: DenyAccessIfRequiredPermBoundaryIsNotBeingApplied
+            Action:
+              - iam:CreateUser
+              - iam:CreateRole
+              - iam:PutRolePermissionsBoundary
+              - iam:PutUserPermissionsBoundary
+            Condition:
+              StringEquals:
+                iam:PermissionsBoundary:
+                  Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
+            Effect: Allow
+            Resource: "*"
+          - Sid: DenyPermBoundaryIAMPolicyAlteration
+            Action:
+              - iam:CreatePolicyVersion
+              - iam:DeletePolicy
+              - iam:DeletePolicyVersion
+              - iam:SetDefaultPolicyVersion
+            Effect: Deny
+            Resource:
+              Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
+          - Sid: DenyRemovalOfPermBoundaryFromAnyUserOrRole
+            Action:
+              - iam:DeleteUserPermissionBoundary
+              - iam:DeleteRolePermissionBoundary
+            Effect: Deny
+            Resource: "*"
+        Version: "2012-10-17"
+      Description: "Bootstrap Permission Boundary"
+      ManagedPolicyName:
+        Fn::Sub: cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
+      Path: /
   # The SSM parameter is used in pipeline-deployed templates to verify the version
   # of the bootstrap resources.
   CdkBootstrapVersion:
