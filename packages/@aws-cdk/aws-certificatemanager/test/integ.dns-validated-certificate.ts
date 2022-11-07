@@ -1,7 +1,7 @@
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack, RemovalPolicy, CfnOutput, Fn } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import { DnsValidatedCertificate, CertificateValidation } from '../lib';
+import { DnsValidatedCertificate } from '../lib';
 
 /**
  * In order to test this you need to have a valid public hosted zone that you can use
@@ -36,7 +36,6 @@ const hostedZone = PublicHostedZone.fromHostedZoneAttributes(stack, 'HostedZone'
 const cert = new DnsValidatedCertificate(stack, 'Certificate', {
   domainName,
   hostedZone,
-  validation: CertificateValidation.fromDns(hostedZone),
 });
 cert.applyRemovalPolicy(RemovalPolicy.RETAIN);
 new CfnOutput(stack, 'CertificateArn', {

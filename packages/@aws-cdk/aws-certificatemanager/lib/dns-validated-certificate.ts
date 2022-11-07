@@ -4,14 +4,14 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CertificateProps, ICertificate } from './certificate';
-import { CertificateBase } from './certificate-base';
+import { ICertificate } from './certificate';
+import { CertificateBase, BaseCertificateProps } from './certificate-base';
 
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager
  *
  */
-export interface DnsValidatedCertificateProps extends CertificateProps {
+export interface DnsValidatedCertificateProps extends BaseCertificateProps {
   /**
    * Route 53 Hosted Zone used to perform DNS validation of the request.  The zone
    * must be authoritative for the domain name specified in the Certificate Request.

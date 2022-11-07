@@ -4,6 +4,53 @@ import { Duration, Resource } from '@aws-cdk/core';
 import { ICertificate } from './certificate';
 
 /**
+ * Shared properties for certificates
+ *
+ * @internal
+ */
+export interface BaseCertificateProps {
+  /**
+   * Fully-qualified domain name to request a certificate for.
+   *
+   * May contain wildcards, such as ``*.domain.com``.
+   */
+  readonly domainName: string;
+
+  /**
+   * Alternative domain names on your certificate.
+   *
+   * Use this to register alternative domain names that represent the same site.
+   *
+   * @default - No additional FQDNs will be included as alternative domain names.
+   */
+  readonly subjectAlternativeNames?: string[];
+
+  /**
+   * Enable or disable transparency logging for this certificate
+   *
+   * Once a certificate has been logged, it cannot be removed from the log.
+   * Opting out at that point will have no effect. If you opt out of logging
+   * when you request a certificate and then choose later to opt back in,
+   * your certificate will not be logged until it is renewed.
+   * If you want the certificate to be logged immediately, we recommend that you issue a new one.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+   *
+   * @default true
+   */
+  readonly transparencyLoggingEnabled?: boolean;
+
+  /**
+   * The Certifcate name.
+   *
+   * Since the Certifcate resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
+   *
+   * @default the full, absolute path of this construct
+   */
+  readonly certificateName?: string
+}
+
+/**
  * Shared implementation details of ICertificate implementations.
  *
  * @internal
