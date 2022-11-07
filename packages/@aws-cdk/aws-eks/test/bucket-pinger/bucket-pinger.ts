@@ -3,7 +3,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import { Env } from 'cdk8s-plus-23';
 import { Construct } from 'constructs';
 
 export interface PingerProps {
