@@ -2,7 +2,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
-import { TreeMetadata } from './private/tree-metadata';
 import { Stage } from './stage';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
@@ -134,6 +133,13 @@ export class App extends Stage {
   }
 
   /**
+   * Include construct tree metadata as part of the Cloud Assembly.
+   *
+   * @internal
+   */
+  public readonly _treeMetadata: boolean;
+
+  /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
@@ -163,9 +169,7 @@ export class App extends Stage {
       process.once('beforeExit', () => this.synth());
     }
 
-    if (props.treeMetadata === undefined || props.treeMetadata) {
-      new TreeMetadata(this);
-    }
+    this._treeMetadata = props.treeMetadata ?? true;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {
