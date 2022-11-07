@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Tags, Token, TokenComparison } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -284,8 +284,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given principal identity permissions to perform the actions on this repository
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    const accountToTrust = this.principalCannotBeSafelyAddedToResourcePolicy(grantee);
-    if (accountToTrust) {
+    const crossAccountPrincipal = this.unsafeCrossAccountResourcePolicyPrincipal(grantee);
+    if (crossAccountPrincipal) {
       // If the principal is from a different account,
       // that means addToPrincipalOrResource() will update the Resource Policy of this repo to trust that principal.
       // However, ECR verifies that the principal used in the Policy exists,
@@ -293,10 +293,18 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       // Because of that, if the principal is a newly created resource,
       // and there is not a dependency relationship between the Stacks of this repo and the principal,
       // trust the entire account of the principal instead
-      // (otherwise, deploying this repo will fail)
+      // (otherwise, deploying this repo will fail).
+      // To scope down the permissions as much as possible,
+      // only trust principals from that account with a specific tag
+      const crossAccountPrincipalStack = Stack.of(crossAccountPrincipal);
+      const roleTag = `${crossAccountPrincipalStack.stackName}_${crossAccountPrincipal.node.addr}`;
+      Tags.of(crossAccountPrincipal).add('aws-cdk:id', roleTag);
       this.addToResourcePolicy(new iam.PolicyStatement({
         actions,
-        principals: [new iam.AccountPrincipal(accountToTrust)],
+        principals: [new iam.AccountPrincipal(crossAccountPrincipalStack.account)],
+        conditions: {
+          StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+        },
       }));
 
       return iam.Grant.addToPrincipal({
@@ -345,14 +353,14 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
-   * Returns the account ID of the account to put into the Resource Policy
-   * if we cannot put a reference to the principal itself there,
+   * Returns the resource that backs the given IAM grantee if we cannot put a direct reference
+   * to the grantee in the resource policy of this ECR repository,
    * and 'undefined' in case we can.
    */
-  private principalCannotBeSafelyAddedToResourcePolicy(grantee: iam.IGrantable): string | undefined {
-    // A principal cannot be safely added to the Resource Policy of this repo if:
-    // 1. The principal is from a different account.
-    // 2. The principal is a new resource (meaning, not imported).
+  private unsafeCrossAccountResourcePolicyPrincipal(grantee: iam.IGrantable): IConstruct | undefined {
+    // A principal cannot be safely added to the Resource Policy of this ECR repository, if:
+    // 1. The principal is from a different account, and
+    // 2. The principal is a new resource (meaning, not just referenced), and
     // 3. The Stack this repo belongs to doesn't depend on the Stack the principal belongs to.
 
     // condition #1
@@ -378,7 +386,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       return undefined;
     }
 
-    return principalAccount;
+    return principal;
   }
 }
 

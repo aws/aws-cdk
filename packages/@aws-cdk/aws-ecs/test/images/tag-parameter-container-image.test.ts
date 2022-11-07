@@ -81,6 +81,11 @@ describe('tag parameter container image', () => {
                 ]],
               },
             },
+            Condition: {
+              StringEquals: {
+                'aws:PrincipalTag/aws-cdk:id': 'ServiceStack_c8a38b9d3ed0e8d960dd0d679c0bab1612dafa96f5',
+              },
+            },
           }],
         },
       });
@@ -110,6 +115,15 @@ describe('tag parameter container image', () => {
             }),
           ]),
         }),
+      });
+
+      Template.fromStack(serviceStack).hasResourceProperties('AWS::IAM::Role', {
+        Tags: [
+          {
+            Key: 'aws-cdk:id',
+            Value: 'ServiceStack_c8a38b9d3ed0e8d960dd0d679c0bab1612dafa96f5',
+          },
+        ],
       });
     });
   });
