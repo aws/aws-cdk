@@ -10,7 +10,6 @@ new Bucket(stack, 'MyBucket', {
     noncurrentVersionExpiration: Duration.days(30),
     noncurrentVersionsToRetain: 123,
   }],
-  versioned: true,
 });
 
 app.synth();
