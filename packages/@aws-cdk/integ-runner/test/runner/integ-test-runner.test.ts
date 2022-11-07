@@ -559,4 +559,33 @@ describe('IntegTest runIntegTests', () => {
       debug,
     }));
   });
+
+  test('with custom app run command for JavaScript', () => {
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      }),
+      appCommand: 'node --no-warnings {filePath}',
+    });
+    integTest.runIntegTestCase({
+      testCaseName: 'xxxxx.test-with-snapshot',
+    });
+
+    // THEN
+    expect(deployMock).toHaveBeenCalledTimes(2);
+    expect(destroyMock).toHaveBeenCalledTimes(1);
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
+    expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'node --no-warnings xxxxx.test-with-snapshot.js',
+    }));
+    expect(synthFastMock).toHaveBeenCalledWith(expect.objectContaining({
+      execCmd: ['node', '--no-warnings', 'xxxxx.test-with-snapshot.js'],
+    }));
+    expect(destroyMock).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'node --no-warnings xxxxx.test-with-snapshot.js',
+    }));
+  });
 });
