@@ -2,7 +2,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import { Env } from 'cdk8s-plus-23';
 import { Construct } from 'constructs';
 
 export interface BucketPingerProps {
