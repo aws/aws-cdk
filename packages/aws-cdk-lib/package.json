@@ -113,7 +113,8 @@
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
     "semver": "^7.3.8",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+    "@aws-cdk/asset-kubectl-v20": "^2.1.0"
   },
   "devDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -506,6 +507,7 @@
     "./aws-guardduty": "./aws-guardduty/index.js",
     "./aws-healthlake": "./aws-healthlake/index.js",
     "./aws-iam": "./aws-iam/index.js",
+    "./aws-identitystore": "./aws-identitystore/index.js",
     "./aws-imagebuilder": "./aws-imagebuilder/index.js",
     "./aws-inspector": "./aws-inspector/index.js",
     "./aws-inspectorv2": "./aws-inspectorv2/index.js",

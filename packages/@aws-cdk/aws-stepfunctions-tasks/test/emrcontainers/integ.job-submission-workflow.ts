@@ -89,6 +89,13 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 
 new integ.IntegTest(app, 'aws-stepfunctions-tasks-emr-containers-all-services', {
   testCases: [stack],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
 });
 
 app.synth();
