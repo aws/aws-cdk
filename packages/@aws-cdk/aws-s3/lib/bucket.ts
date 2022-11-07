@@ -1766,7 +1766,6 @@ export class Bucket extends BucketBase {
   protected disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
-  private readonly versioned?: boolean;
   private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
@@ -1807,7 +1806,6 @@ export class Bucket extends BucketBase {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
@@ -1872,12 +1870,6 @@ export class Bucket extends BucketBase {
    * @param rule The rule to add
    */
   public addLifecycleRule(rule: LifecycleRule) {
-    if ((rule.noncurrentVersionExpiration !== undefined
-      || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
-      && !this.versioned) {
-      throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
-    }
-
     this.lifecycleRules.push(rule);
   }
 
