@@ -13,9 +13,6 @@
        "Status": "Enabled"
       }
      ]
-    },
-    "VersioningConfiguration": {
-     "Status": "Enabled"
     }
    },
    "UpdateReplacePolicy": "Retain",
