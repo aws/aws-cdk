@@ -16,14 +16,13 @@ async function main() {
 
 function flagsTable() {
   return renderTable([
-    ['Flag', 'Summary', 'Since', 'Type', 'Recommended'],
+    ['Flag', 'Summary', 'Since', 'Type'],
     ...v2flags().map(([name, flag]) =>
       [
         renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
         flag.summary,
         flag.introducedIn.v2 ?? '',
         renderType(flag.type),
-        '`' + JSON.stringify(flag.recommendedValue) + '`',
       ],
     ),
   ]);
@@ -33,13 +32,12 @@ function removedFlags() {
   const removedInV2 = flags(flag => flag.introducedIn.v2 === undefined && flag.introducedIn.v1 !== undefined);
 
   return renderTable([
-    ['Flag', 'Summary', 'Type', 'Since', 'Value in v2'],
+    ['Flag', 'Summary', 'Type', 'Since'],
     ...removedInV2.map(([name, flag]) => [
       renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
       flag.summary,
       renderType(flag.type),
       flag.introducedIn.v1 ?? '',
-      renderValue(flag.defaults?.v2),
     ]),
   ]);
 }
