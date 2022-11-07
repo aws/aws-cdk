@@ -1,8 +1,8 @@
-import * as crypto from 'crypto';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as assets from '@aws-cdk/aws-ecr-assets';
 import { Construct } from 'constructs';
 import { Model } from './model';
+import { hashcode } from './private/util';
 
 /**
  * The configuration for creating a container image.
@@ -68,7 +68,7 @@ class AssetImage extends ContainerImage {
   public bind(scope: Construct, model: Model): ContainerImageConfig {
     // Retain the first instantiation of this asset
     if (!this.asset) {
-      this.asset = new assets.DockerImageAsset(scope, `ModelImage${this.hashcode(this.directory)}`, {
+      this.asset = new assets.DockerImageAsset(scope, `ModelImage${hashcode(this.directory)}`, {
         directory: this.directory,
         ...this.options,
       });
@@ -79,17 +79,5 @@ class AssetImage extends ContainerImage {
     return {
       imageName: this.asset.imageUri,
     };
-  }
-
-  /**
-   * Generates a hash from the provided string for the purposes of avoiding construct ID collision
-   * for models with multiple distinct images.
-   * @param s A string for which to generate a hash
-   * @returns A hex string representing the hash of the provided string
-   */
-  private hashcode(s: string): string {
-    const hash = crypto.createHash('md5');
-    hash.update(s);
-    return hash.digest('hex');
   }
 }

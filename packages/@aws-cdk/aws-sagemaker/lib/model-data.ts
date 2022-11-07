@@ -1,8 +1,8 @@
-import * as crypto from 'crypto';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from 'constructs';
 import { IModel } from './model';
+import { hashcode } from './private/util';
 
 // The only supported extension for local asset model data
 const ARTIFACT_EXTENSION = '.tar.gz';
@@ -77,7 +77,7 @@ class AssetModelData extends ModelData {
   public bind(scope: Construct, model: IModel): ModelDataConfig {
     // Retain the first instantiation of this asset
     if (!this.asset) {
-      this.asset = new assets.Asset(scope, `ModelData${this.hashcode(this.path)}`, {
+      this.asset = new assets.Asset(scope, `ModelData${hashcode(this.path)}`, {
         path: this.path,
         ...this.options,
       });
@@ -88,17 +88,5 @@ class AssetModelData extends ModelData {
     return {
       uri: this.asset.httpUrl,
     };
-  }
-
-  /**
-   * Generates a hash from the provided string for the purposes of avoiding construct ID collision
-   * for models with multiple distinct sets of model data.
-   * @param s A string for which to generate a hash
-   * @returns A hex string representing the hash of the provided string
-   */
-  private hashcode(s: string): string {
-    const hash = crypto.createHash('md5');
-    hash.update(s);
-    return hash.digest('hex');
   }
 }
