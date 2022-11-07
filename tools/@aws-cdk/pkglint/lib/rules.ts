@@ -1075,6 +1075,8 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/region-info',
       // Private packages
       ...fs.readdirSync(path.join(monoRepoRoot(), 'tools', '@aws-cdk')).map((name) => `@aws-cdk/${name}`),
+
+      '@aws-cdk/asset-awscli-v1',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
