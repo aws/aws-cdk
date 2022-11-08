@@ -1,5 +1,5 @@
 {
-  "$version": "92.0.0",
+  "$version": "96.0.0",
   "PropertyTypes": {
     "AWS::Rekognition::StreamProcessor.BoundingBox": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-boundingbox.html",
@@ -114,15 +114,15 @@
       "Properties": {
         "X": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-point.html#cfn-rekognition-streamprocessor-x",
-          "PrimitiveType": "Double",
+          "PrimitiveType": "Integer",
           "Required": true,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         },
         "Y": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-point.html#cfn-rekognition-streamprocessor-y",
-          "PrimitiveType": "Double",
+          "PrimitiveType": "Integer",
           "Required": true,
-          "UpdateType": "Immutable"
+          "UpdateType": "Mutable"
         }
       }
     },

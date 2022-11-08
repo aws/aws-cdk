@@ -5,6 +5,13 @@
       "stacks": [
         "aws-stepfunctions-tasks-emr-containers-all-services-test"
       ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
       "assertionStack": "aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/DeployAssert",
       "assertionStackName": "awsstepfunctionstasksemrcontainersallservicesDefaultTestDeployAssertE09C88B0"
     }
