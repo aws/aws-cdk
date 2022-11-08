@@ -146,6 +146,8 @@ export interface ModelProps {
   /**
    * The IAM role that the Amazon SageMaker service assumes.
    *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createmodel-perms
+   *
    * @default - a new IAM role will be created.
    */
   readonly role?: iam.IRole;
