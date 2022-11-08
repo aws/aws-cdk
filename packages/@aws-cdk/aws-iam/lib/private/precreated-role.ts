@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Resource, ISynthesisSession, attachCustomSynthesis, Stack, Reference, Tokenization, IResolvable, StringConcat } from '@aws-cdk/core';
+import { Resource, ISynthesisSession, attachCustomSynthesis, Stack, Reference, Tokenization, IResolvable, StringConcat, DefaultTokenResolver } from '@aws-cdk/core';
 import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
@@ -17,7 +17,11 @@ const POLICY_SYNTHESIZER_ID = 'PolicySynthesizer';
  */
 export interface PrecreatedRoleProps {
   /**
-   * The base role to use for the precreated role.
+   * The base role to use for the precreated role. In most cases this will be
+   * the `Role` or `IRole` that is being created by a construct. For example,
+   * users (or constructs) will create an IAM role with `new Role(this, 'MyRole', {...})`.
+   * That `Role` will be used as the base role for the `PrecreatedRole` meaning it be able
+   * to access any methods and properties on the base role.
    */
   readonly role: IRole;
 
@@ -79,10 +83,11 @@ export class PrecreatedRole extends Resource implements IRole {
     this.policySynthesizer = (this.node.root.node.tryFindChild(POLICY_SYNTHESIZER_ID)
       ?? new PolicySynthesizer(this.node.root)) as PolicySynthesizer;
     this.policySynthesizer.addRole(this.node.path, {
-      roleName: props.missing ? 'missing role' : this.roleName,
+      roleName: this.roleName,
       managedPolicies: this.managedPolicies,
       policyStatements: this.policyStatements,
       assumeRolePolicy: Stack.of(this).resolve(props.assumeRolePolicy?.toJSON()?.Statement),
+      missing: props.missing,
     });
   }
 
@@ -90,17 +95,17 @@ export class PrecreatedRole extends Resource implements IRole {
     const statements = policy.document.toJSON()?.Statement;
     if (statements && Array.isArray(statements)) {
       statements.forEach(statement => {
-        this.policyStatements.push(this.resolveJsonObject(statement));
+        this.policyStatements.push(statement);
       });
     }
   }
 
   public addManagedPolicy(policy: IManagedPolicy): void {
-    this.managedPolicies.push(this.resolveReferences(policy.managedPolicyArn));
+    this.managedPolicies.push(policy.managedPolicyArn);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    this.policyStatements.push(this.resolveReferences(statement.toStatementJson()));
+    this.policyStatements.push(statement.toStatementJson());
     return false;
   }
 
@@ -121,6 +126,96 @@ export class PrecreatedRole extends Resource implements IRole {
 
   public grantAssumeRole(identity: IPrincipal): Grant {
     return this.role.grantAssumeRole(identity);
+  }
+}
+
+/**
+ * Options for generating the role policy report
+ */
+interface RoleReportOptions {
+  /**
+   * The name of the IAM role.
+   *
+   * If this is not provided the role will be assumed
+   * to be missing.
+   *
+   * @default 'missing role'
+   */
+  readonly roleName?: string;
+
+  /**
+   * A list of IAM Policy Statements
+   */
+  readonly policyStatements: string[];
+
+  /**
+   * A list of IAM Managed Policy ARNs
+   */
+  readonly managedPolicies: string[];
+
+  /**
+   * The trust policy for the IAM Role.
+   *
+   * @default - no trust policy.
+   */
+  readonly assumeRolePolicy?: string;
+
+  /**
+   * Whether or not the role is missing from the list of
+   * precreated roles.
+   *
+   * @default false
+   */
+  readonly missing?: boolean;
+}
+
+/**
+ * A construct that is responsible for generating an IAM policy Report
+ * for all IAM roles that are created as part of the CDK application.
+ *
+ * The report will contain the following information for each IAM Role in the app:
+ *
+ * 1. Is the role "missing" (not provided in the customizeRoles.usePrecreatedRoles)?
+ * 2. The AssumeRole Policy (AKA Trust Policy)
+ * 3. Any "Identity" policies (i.e. policies attached to the role)
+ * 4. Any Managed policies
+ */
+class PolicySynthesizer extends Construct {
+  private readonly roleReport: { [roleName: string]: RoleReportOptions } = {};
+  constructor(scope: Construct) {
+    super(scope, POLICY_SYNTHESIZER_ID);
+
+    attachCustomSynthesis(this, {
+      onSynthesize: (session: ISynthesisSession) => {
+        const filePath = path.join(session.outdir, 'iam-policy-report.txt');
+        fs.writeFileSync(filePath, this.createReport());
+      },
+    });
+  }
+
+  private createReport(): string {
+    return Object.entries(this.roleReport).flatMap(([key, value]) => {
+      return [
+        `<${value.missing ? 'missing role' : value.roleName}> (${key})`,
+        '',
+        'AssumeRole Policy:',
+        ...this.toJsonString(value.assumeRolePolicy),
+        '',
+        'Managed Policies:',
+        ...this.toJsonString(value.managedPolicies),
+        '',
+        'Identity Policy:',
+        ...this.toJsonString(value.policyStatements),
+      ];
+    }).join('\n');
+  }
+
+  private toJsonString(value?: any): string[] {
+    if ((Array.isArray(value) && value.length === 0) || !value) {
+      return [];
+    }
+
+    return [JSON.stringify({ values: this.resolveReferences(value) }.values, undefined, 2)];
   }
 
   /**
@@ -176,7 +271,10 @@ export class PrecreatedRole extends Resource implements IRole {
           if (Reference.isReference(r)) {
             return `(${r.target.node.path}.${r.displayName})`;
           }
-          const resolved = Stack.of(this).resolve(r);
+          const resolved = Tokenization.resolve(r, {
+            scope: this,
+            resolver: new DefaultTokenResolver(new StringConcat()),
+          });
           if (typeof resolved === 'object' && resolved.hasOwnProperty('Ref')) {
             switch (resolved.Ref) {
               case 'AWS::AccountId':
@@ -202,95 +300,6 @@ export class PrecreatedRole extends Resource implements IRole {
       newStatement[key] = this.resolveReferences(value);
     }
     return newStatement;
-  }
-}
-
-/**
- * Options for generating the role policy report
- */
-interface RoleReportOptions {
-  /**
-   * The name of the IAM role.
-   *
-   * If this is not provided the role will be assumed
-   * to be missing.
-   *
-   * @default 'missing role'
-   */
-  readonly roleName?: string;
-
-  /**
-   * A list of IAM Policy Statements
-   */
-  readonly policyStatements: string[];
-
-  /**
-   * A list of IAM Managed Policy ARNs
-   */
-  readonly managedPolicies: string[];
-
-  /**
-   * The trust policy for the IAM Role.
-   *
-   * @default - no trust policy.
-   */
-  readonly assumeRolePolicy?: string;
-}
-
-/**
- * A construct that is responsible for generating an IAM policy Report
- * for all IAM roles that are created as part of the CDK application.
- *
- * The report will contain the following information for each IAM Role in the app:
- *
- * 1. Is the role "missing" (not provided in the customizeRoles.usePrecreatedRoles)?
- * 2. The AssumeRole Policy (AKA Trust Policy)
- * 3. Any "Identity" policies (i.e. policies attached to the role)
- * 4. Any Managed policies
- */
-class PolicySynthesizer extends Construct {
-  private readonly roleReport: { [roleName: string]: RoleReportOptions } = {};
-  constructor(scope: Construct) {
-    super(scope, POLICY_SYNTHESIZER_ID);
-
-    // attach a custom synthesis during validation, which happens
-    // _after_ all aspects are run and all references are resolved
-    this.node.addValidation({
-      validate: () => {
-        attachCustomSynthesis(this, {
-          onSynthesize: (session: ISynthesisSession) => {
-            const filePath = path.join(session.outdir, 'iam-policy-report.txt');
-            fs.writeFileSync(filePath, this.createReport());
-          },
-        });
-        return [];
-      },
-    });
-  }
-
-  private createReport(): string {
-    return Object.entries(this.roleReport).flatMap(([key, value]) => {
-      return [
-        `<${value.roleName}> (${key})`,
-        '',
-        'AssumeRole Policy:',
-        ...this.toJsonString(value.assumeRolePolicy),
-        '',
-        'Managed Policies:',
-        ...this.toJsonString(value.managedPolicies),
-        '',
-        'Identity Policy:',
-        ...this.toJsonString(value.policyStatements),
-      ];
-    }).join('\n');
-  }
-
-  private toJsonString(value?: any): string[] {
-    if ((Array.isArray(value) && value.length === 0) || !value) {
-      return [];
-    }
-
-    return [JSON.stringify({ values: value }.values, undefined, 2)];
   }
 
   /**
