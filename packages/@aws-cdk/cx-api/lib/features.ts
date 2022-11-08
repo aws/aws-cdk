@@ -520,7 +520,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: {
     type: FlagType.BugFix,
     summary: 'Avoid setting the "ECS" deployment controller when adding a circuit breaker',
-    details: `
+    detailsMd: `
       Enable this feature flag to avoid setting the "ECS" deployment controller when adding a circuit breaker to an
       ECS Service, as this will trigger a full replacement which fails to deploy when using set service names.
       This does not change any behaviour as the default deployment controller when it is not defined is ECS.
