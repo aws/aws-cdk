@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack, StackProps } from '@aws-cdk/core';
@@ -10,6 +11,8 @@ import * as lambda from '../lib';
  * * aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"OK"' response.json
  */
 
+const containerName = 'v2test';
+
 class TestStack extends Stack {
   public readonly functionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -18,12 +21,14 @@ class TestStack extends Stack {
     const entry = path.join(__dirname, 'lambda-handler-docker-volume');
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: entry,
-      bundling: { volumesFrom: process.env.HOSTNAME },
+      bundling: { volumesFrom: containerName },
       runtime: Runtime.PYTHON_3_8,
     });
     this.functionName = fn.functionName;
   }
 }
+
+spawn('docker', ['run', '--name', containerName, 'alpine', 'sleep 30']);
 
 const app = new App();
 const testCase = new TestStack(app, 'cdk-integ-lambda-docker-volume');
