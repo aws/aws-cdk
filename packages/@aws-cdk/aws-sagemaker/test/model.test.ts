@@ -205,7 +205,7 @@ describe('When accessing Connections object', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const importedModel = sagemaker.Model.fromModelAttributes(stack, 'Model', {
-      modelName: 'MyModel',
+      modelArn: 'arn:aws:sagemaker:us-west-2:123456789012:model/MyModel',
     });
 
     // WHEN
@@ -253,7 +253,7 @@ test('When allowing traffic from an imported model with a security group, an S3 
   // GIVEN
   const stack = new cdk.Stack();
   const model = sagemaker.Model.fromModelAttributes(stack, 'Model', {
-    modelName: 'MyModel',
+    modelArn: 'arn:aws:sagemaker:us-west-2:123456789012:model/MyModel',
     securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
       allowAllOutbound: false,
     })],
@@ -266,6 +266,17 @@ test('When allowing traffic from an imported model with a security group, an S3 
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
     GroupId: 'sg-123456789',
   });
+});
+
+test('When importing a model by ARN, the model name is determined correctly', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const model = sagemaker.Model.fromModelArn(stack, 'Model', 'arn:aws:sagemaker:us-west-2:123456789012:model/MyModel');
+
+  // THEN
+  expect(model.modelName).toEqual('MyModel');
 });
 
 test('When importing a model by name, the ARN is constructed correctly', () => {

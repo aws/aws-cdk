@@ -40,9 +40,9 @@ export interface IModel extends cdk.IResource, iam.IGrantable, ec2.IConnectable 
  */
 export interface ModelAttributes {
   /**
-   * The name of this model.
+   * The ARN of this model.
    */
-  readonly modelName: string;
+  readonly modelArn: string;
 
   /**
    * The IAM execution role associated with this model.
@@ -216,10 +216,25 @@ export class Model extends ModelBase {
    * Imports a Model defined either outside the CDK or in a different CDK stack.
    * @param scope the Construct scope.
    * @param id the resource id.
+   * @param modelArn the ARN of the model.
+   */
+  public static fromModelArn(scope: Construct, id: string, modelArn: string): IModel {
+    return Model.fromModelAttributes(scope, id, { modelArn });
+  }
+
+  /**
+   * Imports a Model defined either outside the CDK or in a different CDK stack.
+   * @param scope the Construct scope.
+   * @param id the resource id.
    * @param modelName the name of the model.
    */
   public static fromModelName(scope: Construct, id: string, modelName: string): IModel {
-    return Model.fromModelAttributes(scope, id, { modelName });
+    const modelArn = cdk.Stack.of(scope).formatArn({
+      service: 'sagemaker',
+      resource: 'model',
+      resourceName: modelName,
+    });
+    return Model.fromModelAttributes(scope, id, { modelArn });
   }
 
   /**
@@ -229,23 +244,21 @@ export class Model extends ModelBase {
    * @param attrs the attributes of the model to import.
    */
   public static fromModelAttributes(scope: Construct, id: string, attrs: ModelAttributes): IModel {
-    const modelName = attrs.modelName;
+    const modelArn = attrs.modelArn;
+    const modelName = cdk.Stack.of(scope).splitArn(modelArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
     const role = attrs.role;
 
     class Import extends ModelBase {
+      public readonly modelArn = modelArn;
       public readonly modelName = modelName;
       public readonly role = role;
       public readonly grantPrincipal: iam.IPrincipal;
-      public readonly modelArn: string;
 
       constructor(s: Construct, i: string) {
-        super(s, i);
-
-        this.modelArn = cdk.Stack.of(this).formatArn({
-          service: 'sagemaker',
-          resource: 'model',
-          resourceName: this.modelName,
+        super(s, i, {
+          environmentFromArn: attrs.modelArn,
         });
+
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
         if (attrs.securityGroups) {
           this._connections = new ec2.Connections({
