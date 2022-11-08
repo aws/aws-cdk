@@ -7,10 +7,12 @@ import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, IComparablePrincipal } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
+import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
+import { PrecreatedRole, getCustomizeRolesConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './util';
 
 const MAX_INLINE_SIZE = 10000;
@@ -177,6 +179,47 @@ export interface FromRoleArnOptions {
 }
 
 /**
+ * Options for customizing IAM role creation
+ */
+export interface CustomizeRolesOptions {
+  /**
+   * Whether or not to synthesize the resource into the CFN template.
+   *
+   * Set this to `false` if you still want to create the resources _and_
+   * you also want to create the policy report.
+   *
+   * @default true
+   */
+  readonly preventSynthesis?: boolean;
+
+  /**
+   * A list of precreated IAM roles to substitute for roles
+   * that CDK is creating.
+   *
+   * The constructPath can be either a relative or absolute path
+   * from the scope that `customizeRoles` is used on to the role being created.
+   *
+   * For example, if you were creating a role
+   *
+   * @example
+   * const stack = new Stack(app, 'MyStack');
+   * new Role(stack, 'MyRole');
+   *
+   * Role.customizeRoles(stack, {
+   *   usePrecreatedRoles: {
+   *      // absolute path
+   *     'MyStack/MyRole': 'my-precreated-role-name',
+   *     // or relative path from `stack`
+   *     'MyRole': 'my-precreated-role',
+   *   },
+   * });
+   *
+   * @default - there are no precreated roles. Synthesis will fail if `preventSynthesis=true`
+   */
+  readonly usePrecreatedRoles?: { [constructPath: string]: string };
+}
+
+/**
  * Options allowing customizing the behavior of {@link Role.fromRoleName}.
  */
 export interface FromRoleNameOptions extends FromRoleArnOptions { }
@@ -215,82 +258,16 @@ export class Role extends Resource implements IRole {
     // we want to support these as well, so we just use the element after the last slash as role name
     const roleName = resourceName.split('/').pop()!;
 
-    class Import extends Resource implements IRole, IComparablePrincipal {
-      public readonly grantPrincipal: IPrincipal = this;
-      public readonly principalAccount = roleAccount;
-      public readonly assumeRoleAction: string = 'sts:AssumeRole';
-      public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
-      public readonly roleArn = roleArn;
-      public readonly roleName = roleName;
-      private readonly attachedPolicies = new AttachedPolicies();
-      private readonly defaultPolicyName?: string;
-      private defaultPolicy?: Policy;
-
-      constructor(_scope: Construct, _id: string) {
-        super(_scope, _id, {
+    if (getCustomizeRolesConfig(scope).enabled) {
+      return new PrecreatedRole(scope, id, {
+        rolePath: `${scope.node.path}/${id}`,
+        role: new ImportedRole(scope, `Import${id}`, {
           account: roleAccount,
-        });
-
-        this.defaultPolicyName = options.defaultPolicyName;
-      }
-
-      public addToPolicy(statement: PolicyStatement): boolean {
-        return this.addToPrincipalPolicy(statement).statementAdded;
-      }
-
-      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-        if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, this.defaultPolicyName ?? 'Policy');
-          this.attachInlinePolicy(this.defaultPolicy);
-        }
-        this.defaultPolicy.addStatements(statement);
-        return { statementAdded: true, policyDependable: this.defaultPolicy };
-      }
-
-      public attachInlinePolicy(policy: Policy): void {
-        const thisAndPolicyAccountComparison = Token.compareStrings(this.env.account, policy.env.account);
-        const equalOrAnyUnresolved = thisAndPolicyAccountComparison === TokenComparison.SAME ||
-          thisAndPolicyAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
-          thisAndPolicyAccountComparison === TokenComparison.ONE_UNRESOLVED;
-        if (equalOrAnyUnresolved) {
-          this.attachedPolicies.attach(policy);
-          policy.attachToRole(this);
-        }
-      }
-
-      public addManagedPolicy(_policy: IManagedPolicy): void {
-        // FIXME: Add warning that we're ignoring this
-      }
-
-      /**
-       * Grant permissions to the given principal to pass this role.
-       */
-      public grantPassRole(identity: IPrincipal): Grant {
-        return this.grant(identity, 'iam:PassRole');
-      }
-
-      /**
-       * Grant permissions to the given principal to pass this role.
-       */
-      public grantAssumeRole(identity: IPrincipal): Grant {
-        return this.grant(identity, 'sts:AssumeRole');
-      }
-
-      /**
-       * Grant the actions defined in actions to the identity Principal on this resource.
-       */
-      public grant(grantee: IPrincipal, ...actions: string[]): Grant {
-        return Grant.addToPrincipal({
-          grantee,
-          actions,
-          resourceArns: [this.roleArn],
-          scope: this,
-        });
-      }
-
-      public dedupeString(): string | undefined {
-        return `ImportedRole:${roleArn}`;
-      }
+          roleArn,
+          roleName,
+          ...options,
+        }),
+      });
     }
 
     if (options.addGrantsToResources !== undefined && options.mutable !== false) {
@@ -305,7 +282,13 @@ export class Role extends Resource implements IRole {
     // if we are returning an immutable role then the 'importedRole' is just a throwaway construct
     // so give it a different id
     const mutableRoleId = (options.mutable !== false && equalOrAnyUnresolved) ? id : `MutableRole${id}`;
-    const importedRole = new Import(scope, mutableRoleId);
+    const importedRole = new ImportedRole(scope, mutableRoleId, {
+      roleArn,
+      roleName,
+      account: roleAccount,
+      ...options,
+    });
+
 
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
@@ -333,6 +316,47 @@ export class Role extends Resource implements IRole {
     }), options);
   }
 
+  /**
+   * Customize the creation of IAM roles within the given scope
+   *
+   * It is recommended that you **do not** use this method and instead allow
+   * CDK to manage role creation. This should only be used
+   * in environments where CDK applications are not allowed to created IAM roles.
+   *
+   * This can be used to prevent the CDK application from creating roles
+   * within the given scope and instead replace the references to the roles with
+   * precreated role names. A report will be synthesized in the cloud assembly (i.e. cdk.out)
+   * that will contain the list of IAM roles that would have been created along with the
+   * IAM policy statements that the role should contain. This report can then be used
+   * to create the IAM roles outside of CDK and then the created role names can be provided
+   * in `usePrecreatedRoles`.
+   *
+   * @example
+   * declare const app: App;
+   * Role.customizeRoles(app, {
+   *   usePrecreatedRoles: {
+   *     'ConstructPath/To/Role': 'my-precreated-role-name',
+   *   },
+   * });
+   *
+   * @param scope construct scope to customize role creation
+   * @param options options for configuring role creation
+   */
+  public static customizeRoles(scope: Construct, options?: CustomizeRolesOptions): void {
+    const preventSynthesis = options?.preventSynthesis ?? true;
+    const useRoles: { [constructPath: string]: string } = {};
+    for (const [constructPath, roleName] of Object.entries(options?.usePrecreatedRoles ?? {})) {
+      const absPath = constructPath.startsWith(scope.node.path)
+        ? constructPath
+        : `${scope.node.path}/${constructPath}`;
+      useRoles[absPath] = roleName;
+    }
+    scope.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
+      preventSynthesis,
+      usePrecreatedRoles: useRoles,
+    });
+  }
+
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = this.env.account;
 
@@ -347,14 +371,6 @@ export class Role extends Resource implements IRole {
    * Returns the ARN of this role.
    */
   public readonly roleArn: string;
-
-  /**
-   * Returns the stable and unique string identifying the role. For example,
-   * AIDAJQABLZS4A3QDU576Q.
-   *
-   * @attribute
-   */
-  public readonly roleId: string;
 
   /**
    * Returns the name of the role.
@@ -378,6 +394,9 @@ export class Role extends Resource implements IRole {
   private readonly dependables = new Map<PolicyStatement, DependencyGroup>();
   private immutableRole?: IRole;
   private _didSplit = false;
+  private readonly _roleId?: string;
+
+  private readonly _precreatedRole?: IRole;
 
   constructor(scope: Construct, id: string, props: RoleProps) {
     super(scope, id, {
@@ -403,26 +422,66 @@ export class Role extends Resource implements IRole {
 
     validateRolePath(props.path);
 
-    const role = new CfnRole(this, 'Resource', {
-      assumeRolePolicyDocument: this.assumeRolePolicy as any,
-      managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
-      policies: _flatten(this.inlinePolicies),
-      path: props.path,
-      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
-      roleName: this.physicalName,
-      maxSessionDuration,
-      description,
-    });
-
-    this.roleId = role.attrRoleId;
-    this.roleArn = this.getResourceArnAttribute(role.attrArn, {
-      region: '', // IAM is global in each partition
+    const config = this.getPrecreatedRoleConfig();
+    const roleArn = Stack.of(scope).formatArn({
+      region: '',
       service: 'iam',
       resource: 'role',
-      // Removes leading slash from path
-      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
+      resourceName: config.precreatedRoleName,
     });
-    this.roleName = this.getResourceNameAttribute(role.ref);
+    const importedRole = new ImportedRole(this, 'Import'+id, {
+      roleArn,
+      roleName: config.precreatedRoleName ?? id,
+      account: Stack.of(this).account,
+    });
+    this.roleName = importedRole.roleName;
+    this.roleArn = importedRole.roleArn;
+    if (config.enabled) {
+      const role = new PrecreatedRole(this, 'PrecreatedRole'+id, {
+        rolePath: this.node.path,
+        role: importedRole,
+        missing: !config.precreatedRoleName,
+        assumeRolePolicy: this.assumeRolePolicy,
+      });
+      this.managedPolicies.forEach(policy => role.addManagedPolicy(policy));
+      Object.entries(this.inlinePolicies).forEach(([name, policy]) => {
+        role.attachInlinePolicy(new Policy(this, name, { document: policy }));
+      });
+
+      this._precreatedRole = role;
+    }
+
+    // synthesize the resource if preventSynthesis=false
+    if (!config.preventSynthesis) {
+      const role = new CfnRole(this, 'Resource', {
+        assumeRolePolicyDocument: this.assumeRolePolicy as any,
+        managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
+        policies: _flatten(this.inlinePolicies),
+        path: props.path,
+        permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
+        roleName: this.physicalName,
+        maxSessionDuration,
+        description,
+      });
+
+      this._roleId = role.attrRoleId;
+      this.roleArn = this.getResourceArnAttribute(role.attrArn, {
+        region: '', // IAM is global in each partition
+        service: 'iam',
+        resource: 'role',
+        // Removes leading slash from path
+        resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
+      });
+      this.roleName = this.getResourceNameAttribute(role.ref);
+      Aspects.of(this).add({
+        visit: (c) => {
+          if (c === this) {
+            this.splitLargePolicy();
+          }
+        },
+      });
+    }
+
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
@@ -437,14 +496,6 @@ export class Role extends Resource implements IRole {
       return result;
     }
 
-    Aspects.of(this).add({
-      visit: (c) => {
-        if (c === this) {
-          this.splitLargePolicy();
-        }
-      },
-    });
-
     this.node.addValidation({ validate: () => this.validateRole() });
   }
 
@@ -454,22 +505,30 @@ export class Role extends Resource implements IRole {
    * @param statement The permission statement to add to the policy document
    */
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-    if (!this.defaultPolicy) {
-      this.defaultPolicy = new Policy(this, 'DefaultPolicy');
-      this.attachInlinePolicy(this.defaultPolicy);
+    if (this._precreatedRole) {
+      return this._precreatedRole.addToPrincipalPolicy(statement);
+    } else {
+      if (!this.defaultPolicy) {
+        this.defaultPolicy = new Policy(this, 'DefaultPolicy');
+        this.attachInlinePolicy(this.defaultPolicy);
+      }
+      this.defaultPolicy.addStatements(statement);
+
+      // We might split this statement off into a different policy, so we'll need to
+      // late-bind the dependable.
+      const policyDependable = new DependencyGroup();
+      this.dependables.set(statement, policyDependable);
+
+      return { statementAdded: true, policyDependable };
     }
-    this.defaultPolicy.addStatements(statement);
-
-    // We might split this statement off into a different policy, so we'll need to
-    // late-bind the dependable.
-    const policyDependable = new DependencyGroup();
-    this.dependables.set(statement, policyDependable);
-
-    return { statementAdded: true, policyDependable };
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToPrincipalPolicy(statement).statementAdded;
+    if (this._precreatedRole) {
+      return this._precreatedRole.addToPolicy(statement);
+    } else {
+      return this.addToPrincipalPolicy(statement).statementAdded;
+    }
   }
 
   /**
@@ -477,8 +536,12 @@ export class Role extends Resource implements IRole {
    * @param policy The the managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
-    if (this.managedPolicies.find(mp => mp === policy)) { return; }
-    this.managedPolicies.push(policy);
+    if (this._precreatedRole) {
+      return this._precreatedRole.addManagedPolicy(policy);
+    } else {
+      if (this.managedPolicies.find(mp => mp === policy)) { return; }
+      this.managedPolicies.push(policy);
+    }
   }
 
   /**
@@ -486,8 +549,12 @@ export class Role extends Resource implements IRole {
    * @param policy The policy to attach
    */
   public attachInlinePolicy(policy: Policy) {
-    this.attachedPolicies.attach(policy);
-    policy.attachToRole(this);
+    if (this._precreatedRole) {
+      this._precreatedRole.attachInlinePolicy(policy);
+    } else {
+      this.attachedPolicies.attach(policy);
+      policy.attachToRole(this);
+    }
   }
 
   /**
@@ -516,6 +583,18 @@ export class Role extends Resource implements IRole {
     return this.grant(identity, 'sts:AssumeRole');
   }
 
+  /**
+   * Returns the stable and unique string identifying the role. For example,
+   * AIDAJQABLZS4A3QDU576Q.
+   *
+   * @attribute
+   */
+  public get roleId(): string {
+    if (!this._roleId) {
+      throw new Error('"roleId" is not available on precreated roles');
+    }
+    return this._roleId;
+  }
 
   /**
    * Return a copy of this Role object whose Policies will not be updated
@@ -592,6 +671,48 @@ export class Role extends Resource implements IRole {
       }
     }
   }
+
+  /**
+   * Return configuration for precreated roles
+   */
+  private getPrecreatedRoleConfig(): CustomizeRoleConfig {
+    const customizeRolesContext = this.node.tryGetContext(CUSTOMIZE_ROLES_CONTEXT_KEY);
+    if (customizeRolesContext !== undefined) {
+      const customizeRoles = customizeRolesContext as CustomizeRolesOptions;
+      if (customizeRoles.preventSynthesis === false) {
+        return {
+          preventSynthesis: false,
+          enabled: true,
+        };
+      }
+      if (customizeRoles.usePrecreatedRoles?.hasOwnProperty(this.node.path)) {
+        if (Token.isUnresolved(customizeRoles.usePrecreatedRoles[this.node.path])) {
+          // we do not want to fail synthesis
+          Annotations.of(this).addError(
+            `Cannot resolve precreated role name at path "${this.node.path}". The value may be a token.`,
+          );
+        } else {
+          return {
+            enabled: true,
+            preventSynthesis: true,
+            precreatedRoleName: customizeRoles.usePrecreatedRoles[this.node.path],
+          };
+        }
+      } else {
+        // we do not want to fail synthesis
+        Annotations.of(this).addError(
+          `IAM Role is being created at path "${this.node.path}" and customizeRoles.preventSynthesis is enabled. ` +
+            'You must provide a precreated role name in customizeRoles.precreatedRoles',
+        );
+      }
+      return {
+        enabled: true,
+        preventSynthesis: true,
+      };
+    }
+    return { enabled: false };
+  }
+
 }
 
 /**

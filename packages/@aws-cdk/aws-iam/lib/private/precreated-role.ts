@@ -38,6 +38,16 @@ export interface PrecreatedRoleProps {
    * @default false
    */
   readonly missing?: boolean;
+
+  /**
+   * The construct path to display in the report.
+   * This should be the path that the user can trace to the
+   * role being created in their application
+   *
+   * @default the construct path of this construct
+   */
+  readonly rolePath?: string;
+
 }
 
 /**
@@ -59,7 +69,7 @@ export class PrecreatedRole extends Resource implements IRole {
 
   private readonly policySynthesizer: PolicySynthesizer;
   private readonly policyStatements: string[] = [];
-  private readonly managedPolicies: string[] = [];
+  private readonly managedPolicies: IManagedPolicy[] = [];
 
   private readonly role: IRole;
   constructor(scope: Construct, id: string, props: PrecreatedRoleProps) {
@@ -74,15 +84,15 @@ export class PrecreatedRole extends Resource implements IRole {
     this.roleArn = this.role.roleArn;
     this.roleName = this.role.roleName;
     this.stack = this.role.stack;
+    const rolePath = props.rolePath ?? this.node.path;
 
     Dependable.implement(this, {
       dependencyRoots: [this.role],
     });
 
     // add a single PolicySynthesizer under the `App` scope
-    this.policySynthesizer = (this.node.root.node.tryFindChild(POLICY_SYNTHESIZER_ID)
-      ?? new PolicySynthesizer(this.node.root)) as PolicySynthesizer;
-    this.policySynthesizer.addRole(this.node.path, {
+    this.policySynthesizer = PolicySynthesizer.getOrCreate(this);
+    this.policySynthesizer.addRole(rolePath, {
       roleName: this.roleName,
       managedPolicies: this.managedPolicies,
       policyStatements: this.policyStatements,
@@ -101,7 +111,7 @@ export class PrecreatedRole extends Resource implements IRole {
   }
 
   public addManagedPolicy(policy: IManagedPolicy): void {
-    this.managedPolicies.push(policy.managedPolicyArn);
+    this.managedPolicies.push(policy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -151,7 +161,7 @@ interface RoleReportOptions {
   /**
    * A list of IAM Managed Policy ARNs
    */
-  readonly managedPolicies: string[];
+  readonly managedPolicies: IManagedPolicy[];
 
   /**
    * The trust policy for the IAM Role.
@@ -169,6 +179,78 @@ interface RoleReportOptions {
   readonly missing?: boolean;
 }
 
+interface ManagedPolicyReportOptions {
+  /**
+   * A list of IAM Policy Statements attached to the
+   * managed policy
+   */
+  readonly policyStatements: string[];
+
+  /**
+   * A list of IAM role construct paths that are attached to the managed policy
+   *
+   * @default - no roles are attached to the policy
+   */
+  readonly roles?: string[];
+}
+
+interface PolicyReport {
+  readonly roles: PolicyReportRole[];
+}
+
+/**
+ * The structure of the policy report
+ */
+interface PolicyReportRole {
+  /**
+   * The absolute path of the role construct
+   */
+  readonly roleConstructPath: string;
+  /**
+   * The physical name of the IAM role
+   *
+   * If the user has not provided a precreated physical name
+   * this will be 'missing role'
+   */
+  readonly roleName: string;
+
+  /**
+   * Whether or not the user has provided a precreated physical name
+   *
+   * @default false
+   */
+  readonly missing?: boolean;
+
+  /**
+   * The assume role (trust) policy of the role
+   *
+   * @default - no assume role policy
+   */
+  readonly assumeRolePolicy?: string[];
+
+  /**
+   * The managed policy ARNs that have been attached to the role
+   *
+   * @default - no managed policy ARNs
+   */
+  readonly managedPolicyArns?: string[],
+
+  /**
+   * The managed policy statements that have been attached to the role
+   *
+   * @default - no managed policy statements
+   */
+  readonly managedPolicyStatements?: string[];
+
+  /**
+   * The policy statements that have been attached to the role
+   * as inline statements
+   *
+   * @default - no inline statements
+   */
+  readonly identityPolicyStatements?: string[];
+}
+
 /**
  * A construct that is responsible for generating an IAM policy Report
  * for all IAM roles that are created as part of the CDK application.
@@ -180,42 +262,131 @@ interface RoleReportOptions {
  * 3. Any "Identity" policies (i.e. policies attached to the role)
  * 4. Any Managed policies
  */
-class PolicySynthesizer extends Construct {
-  private readonly roleReport: { [roleName: string]: RoleReportOptions } = {};
+export class PolicySynthesizer extends Construct {
+  public static getOrCreate(scope: Construct): PolicySynthesizer {
+    const synthesizer = scope.node.root.node.tryFindChild(POLICY_SYNTHESIZER_ID);
+    if (synthesizer) {
+      return synthesizer as PolicySynthesizer;
+    }
+    return new PolicySynthesizer(scope.node.root);
+  }
+
+  private readonly roleReport: { [rolePath: string]: RoleReportOptions } = {};
+  private readonly managedPolicyReport: { [policyPath: string]: ManagedPolicyReportOptions } = {};
   constructor(scope: Construct) {
     super(scope, POLICY_SYNTHESIZER_ID);
 
     attachCustomSynthesis(this, {
       onSynthesize: (session: ISynthesisSession) => {
-        const filePath = path.join(session.outdir, 'iam-policy-report.txt');
-        fs.writeFileSync(filePath, this.createReport());
+        const report = this.createJsonReport();
+        if (report.roles?.length > 0) {
+          const filePath = path.join(session.outdir, 'iam-policy-report');
+          fs.writeFileSync(filePath+'.txt', this.createHumanReport(report));
+          fs.writeFileSync(filePath+'.json', JSON.stringify(report, undefined, 2));
+        }
       },
     });
   }
 
-  private createReport(): string {
-    return Object.entries(this.roleReport).flatMap(([key, value]) => {
-      return [
-        `<${value.missing ? 'missing role' : value.roleName}> (${key})`,
-        '',
-        'AssumeRole Policy:',
-        ...this.toJsonString(value.assumeRolePolicy),
-        '',
-        'Managed Policies:',
-        ...this.toJsonString(value.managedPolicies),
-        '',
-        'Identity Policy:',
-        ...this.toJsonString(value.policyStatements),
-      ];
-    }).join('\n');
+  private createJsonReport(): PolicyReport {
+    return Object.entries(this.roleReport).reduce((acc, [key, value]) => {
+      const { policyArns, policyStatements } = this.renderManagedPoliciesForRole(key, value.managedPolicies);
+      acc = {
+        roles: [
+          ...acc.roles ?? [],
+          {
+            roleConstructPath: key,
+            roleName: value.missing ? 'missing role' : value.roleName!,
+            missing: value.missing,
+            assumeRolePolicy: this.resolveReferences(value.assumeRolePolicy),
+            managedPolicyArns: this.resolveReferences(policyArns),
+            managedPolicyStatements: this.resolveReferences(policyStatements),
+            identityPolicyStatements: this.resolveReferences(value.policyStatements),
+          },
+        ],
+      };
+      return acc;
+    }, {} as PolicyReport);
   }
 
+  private createHumanReport(report: PolicyReport): string {
+    return report.roles.map(role => [
+      `<${role.missing ? 'missing role' : role.roleName}> (${role.roleConstructPath})`,
+      '',
+      'AssumeRole Policy:',
+      ...this.toJsonString(role.assumeRolePolicy),
+      '',
+      'Managed Policy ARNs:',
+      ...this.toJsonString(role.managedPolicyArns),
+      '',
+      'Managed Policies Statements:',
+      this.toJsonString(role.managedPolicyStatements),
+      '',
+      'Identity Policy Statements:',
+      this.toJsonString(role.identityPolicyStatements),
+    ].join('\n')).join('');
+  }
+
+  /**
+   * Takes a value and returns a formatted JSON string
+   */
   private toJsonString(value?: any): string[] {
     if ((Array.isArray(value) && value.length === 0) || !value) {
-      return [];
+      return ['NONE'];
     }
 
-    return [JSON.stringify({ values: this.resolveReferences(value) }.values, undefined, 2)];
+    return [JSON.stringify({ values: value }.values, undefined, 2)];
+  }
+
+  /**
+   * IAM managed policies can be attached to a role using a couple different methods.
+   *
+   * 1. You can use an existing managed policy, i.e. ManagedPolicy.fromManagedPolicyName()
+   * 2. You can create a managed policy and attach the role, i.e.
+   *   new ManagedPolicy(scope, 'ManagedPolicy', { roles: [myRole] });
+   * 3. You can create a managed policy and attach it to the role, i.e.
+   *   const role = new Role(...);
+   *   role.addManagedPolicy(new ManagedPolicy(...));
+   *
+   * For 1, CDK is not creating the managed policy so we just need to report the ARN
+   * of the policy that needs to be attached to the role.
+   *
+   * For 2 & 3, CDK _is_ creating the managed policy so instead of reporting the name or ARN of the
+   * policy (that we prevented being created) we should instead report the policy statements
+   * that are part of that document. It doesn't really matter if the admins creating the roles then
+   * decide to use managed policies or inline policies, etc.
+   *
+   * There could be managed policies that are created and _not_ attached to any roles, in that case
+   * we do not report anything. That managed policy is not being created automatically by our constructs.
+   */
+  private renderManagedPoliciesForRole(
+    rolePath: string,
+    managedPolicies: IManagedPolicy[],
+  ): { policyArns: string[], policyStatements: string[] } {
+    const policyStatements: string[] = [];
+    // managed policies that have roles attached to the policy
+    Object.values(this.managedPolicyReport).forEach(value => {
+      if (value.roles?.includes(rolePath)) {
+        policyStatements.push(...value.policyStatements);
+      }
+    });
+    const policyArns: string[] = [];
+    managedPolicies.forEach(policy => {
+      if (Construct.isConstruct(policy)) {
+        if (this.managedPolicyReport.hasOwnProperty(policy.node.path)) {
+          policyStatements.push(...this.managedPolicyReport[policy.node.path].policyStatements);
+        } else {
+          // just add the arn
+          policyArns.push(policy.managedPolicyArn);
+        }
+      } else {
+        policyArns.push(policy.managedPolicyArn);
+      }
+    });
+    return {
+      policyArns,
+      policyStatements,
+    };
   }
 
   /**
@@ -257,6 +428,9 @@ class PolicySynthesizer extends Construct {
    *     "(Path/To/SomeResource.Arn)"
    */
   private resolveReferences(ref: any): any {
+    if ((Array.isArray(ref) && ref.length === 0) || !ref) {
+      return [];
+    }
     if (Array.isArray(ref)) {
       return ref.map(r => this.resolveReferences(r));
     } else if (typeof ref === 'object') {
@@ -304,6 +478,9 @@ class PolicySynthesizer extends Construct {
 
   /**
    * Add an IAM role to the report
+   *
+   * @param rolePath the construct path of the role
+   * @param options the values associated with the role
    */
   public addRole(rolePath: string, options: RoleReportOptions): void {
     if (this.roleReport.hasOwnProperty(rolePath)) {
@@ -311,4 +488,50 @@ class PolicySynthesizer extends Construct {
     }
     this.roleReport[rolePath] = options;
   }
+
+  /**
+   * Add an IAM Managed Policy to the report
+   *
+   * @param policyPath the construct path of the managed policy
+   * @param options the values associated with the managed policy
+   */
+  public addManagedPolicy(policyPath: string, options: ManagedPolicyReportOptions): void {
+    if (this.managedPolicyReport.hasOwnProperty(policyPath)) {
+      throw new Error(`IAM Policy Report already has an entry for managed policy: ${policyPath}`);
+    }
+
+    this.managedPolicyReport[policyPath] = options;
+  }
+}
+
+export interface CustomizeRoleConfig {
+  /**
+   * Whether or not customized roles is enabled.
+   *
+   * This will be true if the user calls Role.customizeRoles()
+   */
+  readonly enabled: boolean;
+  /**
+   * Whether or not the role CFN resource should be synthesized
+   * in the template
+   *
+   * @default - false if enabled=false otherwise true
+   */
+  readonly preventSynthesis?: boolean;
+
+  /**
+   * The physical name of the precreated role.
+   *
+   * @default - no precreated role
+   */
+  readonly precreatedRoleName?: string;
+}
+
+export const CUSTOMIZE_ROLES_CONTEXT_KEY = '@aws-cdk/iam:customizeRoles';
+export function getCustomizeRolesConfig(scope: Construct): CustomizeRoleConfig {
+  const customizeRolesContext = scope.node.tryGetContext(CUSTOMIZE_ROLES_CONTEXT_KEY);
+  return {
+    preventSynthesis: customizeRolesContext !== undefined && customizeRolesContext.preventSynthesis !== false,
+    enabled: customizeRolesContext !== undefined,
+  };
 }
