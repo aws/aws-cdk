@@ -114,6 +114,7 @@ to fit your game's needs.
 
 ```ts
 new gamelift.BuildFleet(this, 'Game server fleet', {
+  fleetName: 'test-fleet',
   content: gamelift.Build.fromAsset(this, 'Build', path.join(__dirname, 'CustomerGameServer')),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
   runtimeConfiguration: {
@@ -145,6 +146,7 @@ A GameLift instance is limited to 50 processes running concurrently.
 declare const build: gamelift.Build;
 // Server processes can be delcared in a declarative way through the constructor
 const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  fleetName: 'test-fleet',
   content: build,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
   runtimeConfiguration: {
@@ -172,6 +174,7 @@ properties, but the type of resources cannot be changed.
 ```ts
 declare const build: gamelift.Build;
 new gamelift.BuildFleet(this, 'Game server fleet', {
+  fleetName: 'test-fleet',
   content: build,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
   runtimeConfiguration: {
@@ -192,6 +195,7 @@ By default, fleet are using on demand capacity.
 ```ts
 declare const build: gamelift.Build;
 new gamelift.BuildFleet(this, 'Game server fleet', {
+  fleetName: 'test-fleet',
   content: build,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
   runtimeConfiguration: {
@@ -217,6 +221,7 @@ automatically opens two port ranges, one for TCP messaging and one for UDP.
 declare const build: gamelift.Build;
 
 const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  fleetName: 'test-fleet',
   content: build,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
   runtimeConfiguration: {
@@ -250,6 +255,7 @@ declare const build: gamelift.Build;
 
 // Locations can be added directly through constructor
 const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  fleetName: 'test-fleet',
   content: build,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
   runtimeConfiguration: {
@@ -294,6 +300,7 @@ const role = new iam.Role(this, 'Role', {
 role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
 
 const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
+  fleetName: 'test-fleet',
   content: build,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
   runtimeConfiguration: {

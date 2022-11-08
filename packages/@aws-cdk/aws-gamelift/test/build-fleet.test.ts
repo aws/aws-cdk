@@ -17,6 +17,7 @@ describe('build fleet', () => {
 
     test('default build fleet', () => {
       new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
@@ -43,7 +44,7 @@ describe('build fleet', () => {
         Properties:
           {
             BuildId: { Ref: 'Build45A36621' },
-            NewGameSessionProtectionPolicy: 'NO_PROTECTION',
+            NewGameSessionProtectionPolicy: 'NoProtection',
             FleetType: 'ON_DEMAND',
             EC2InstanceType: 'c4.large',
             CertificateConfiguration: {
@@ -88,6 +89,7 @@ describe('build fleet', () => {
       }
 
       expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         description: incorrectDescription,
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
@@ -101,6 +103,7 @@ describe('build fleet', () => {
 
     test('with an incorrect minSize value', () => {
       expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
@@ -114,6 +117,7 @@ describe('build fleet', () => {
 
     test('with an incorrect maxSize value', () => {
       expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
@@ -134,6 +138,7 @@ describe('build fleet', () => {
       }
 
       expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         locations: incorrectLocations,
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
@@ -154,6 +159,7 @@ describe('build fleet', () => {
       }
 
       const fleet = new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         locations: locations,
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
@@ -177,6 +183,7 @@ describe('build fleet', () => {
       }
 
       expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         ingressRules: incorrectIngressRules,
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
@@ -196,6 +203,7 @@ describe('build fleet', () => {
     beforeEach(() => {
       stack = new cdk.Stack();
       fleet = new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
@@ -364,6 +372,7 @@ describe('build fleet', () => {
     beforeEach(() => {
       stack = new cdk.Stack();
       fleet = new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
@@ -454,6 +463,7 @@ describe('build fleet', () => {
     });
 
     const fleet = new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+      fleetName: 'test-fleet',
       content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
       runtimeConfiguration: {
@@ -486,6 +496,7 @@ describe('build fleet', () => {
     beforeEach(() => {
       stack = new cdk.Stack(undefined, undefined, { env: { account: '000000000000', region: 'us-west-1' } });
       fleet = new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
@@ -629,6 +640,7 @@ describe('build fleet', () => {
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
@@ -654,6 +666,7 @@ describe('build fleet', () => {
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+        fleetName: 'test-fleet',
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {

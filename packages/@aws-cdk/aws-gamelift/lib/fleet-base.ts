@@ -221,10 +221,8 @@ export interface FleetProps {
 
   /**
      * A descriptive label that is associated with a fleet. Fleet names do not need to be unique.
-     *
-     * @default No name
      */
-  readonly fleetName?: string;
+  readonly fleetName: string;
 
   /**
    * A human-readable description of the fleet.
@@ -376,9 +374,9 @@ export interface FleetAttributes {
   /**
      * The ARN of the fleet
      *
-     * At least one of `fleetArn` and `fleetName` must be provided.
+     * At least one of `fleetArn` and `fleetId` must be provided.
      *
-     * @default derived from `fleetName`.
+     * @default derived from `fleetId`.
      */
   readonly fleetArn?: string;
 

@@ -92,7 +92,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       physicalName: props.fleetName,
     });
 
-    if (props.fleetName && !cdk.Token.isUnresolved(props.fleetName)) {
+    if (!cdk.Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length > 1024) {
         throw new Error(`Fleet name can not be longer than 1024 characters but has ${props.fleetName.length} characters.`);
       }
@@ -131,7 +131,9 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
 
     this.content = props.content;
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal('gamelift.amazonaws.com'),
+        new iam.ServicePrincipal('ec2.amazonaws.com')),
     });
     this.grantPrincipal = this.role;
 
@@ -150,7 +152,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       maxSize: props.maxSize ? props.maxSize : 1,
       minSize: props.minSize ? props.minSize : 0,
       name: this.physicalName,
-      newGameSessionProtectionPolicy: props.protectNewGameSession ? 'FULL_PROTECTION' : 'NO_PROTECTION',
+      newGameSessionProtectionPolicy: props.protectNewGameSession ? 'FullProtection' : 'NoProtection',
       peerVpcAwsAccountId: props.peerVpc && props.peerVpc.env.account,
       peerVpcId: props.peerVpc && props.peerVpc.vpcId,
       resourceCreationLimitPolicy: this.parseResourceCreationLimitPolicy(props),

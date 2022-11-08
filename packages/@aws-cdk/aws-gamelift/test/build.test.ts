@@ -85,7 +85,7 @@ describe('build', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
           StorageLocation: {
             Bucket: {
-              Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
+              Ref: 'AssetParametersb9a6ac85861c7bf3d745d9866a46a450a1b14afa77e28d2c2767e74ce4e37c03S3BucketAE342E3D',
             },
           },
         });
