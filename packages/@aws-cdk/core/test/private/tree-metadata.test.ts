@@ -47,7 +47,7 @@ describe('tree metadata', () => {
               BootstrapVersion: {
                 constructInfo: {
                   fqn: '@aws-cdk/core.CfnParameter',
-                  version: '0.0.0',
+                  version: expect.any(String),
                 },
                 id: 'BootstrapVersion',
                 path: 'mystack/BootstrapVersion',
@@ -55,7 +55,7 @@ describe('tree metadata', () => {
               CheckBootstrapVersion: {
                 constructInfo: {
                   fqn: '@aws-cdk/core.CfnRule',
-                  version: '0.0.0',
+                  version: expect.any(String),
                 },
                 id: 'CheckBootstrapVersion',
                 path: 'mystack/CheckBootstrapVersion',
