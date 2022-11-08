@@ -47,37 +47,22 @@ describe('build', () => {
     const contentBucketName = 'bucketname';
     const contentBucketAccessStatement = {
       Action: [
-        's3:GetObject*',
-        's3:GetBucket*',
-        's3:List*',
+        's3:GetObject',
+        's3:GetObjectVersion',
       ],
       Effect: 'Allow',
-      Resource: [
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              `:s3:::${contentBucketName}`,
-            ],
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            `:s3:::${contentBucketName}/content`,
           ],
-        },
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              `:s3:::${contentBucketName}/content`,
-            ],
-          ],
-        },
-      ],
+        ],
+      },
     };
     let contentBucket: s3.IBucket;
     let content: gamelift.Content;
