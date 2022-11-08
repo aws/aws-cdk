@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as sns from '@aws-cdk/aws-sns';
+import * as cdk from '@aws-cdk/core';
 import * as chatbot from '../lib';
 
 class ChatbotFromArnInteg extends cdk.Stack {

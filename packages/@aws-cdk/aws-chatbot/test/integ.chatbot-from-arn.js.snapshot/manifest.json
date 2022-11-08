@@ -1,0 +1,76 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "ChatbotFromArnInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ChatbotFromArnInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ChatbotFromArnInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ChatbotFromArnInteg.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/207b91435d6b25385e3d42a7ef7462969194b429ecaa8ece1156b485f663f011.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ChatbotFromArnInteg.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ChatbotFromArnInteg.assets"
+      ],
+      "metadata": {
+        "/ChatbotFromArnInteg/MySlackChannel/ConfigurationRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySlackChannelConfigurationRole1D3F23AE"
+          }
+        ],
+        "/ChatbotFromArnInteg/MySlackChannel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySlackChannelA8E0B56C"
+          }
+        ],
+        "/ChatbotFromArnInteg/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/ChatbotFromArnInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ChatbotFromArnInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ChatbotFromArnInteg"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
