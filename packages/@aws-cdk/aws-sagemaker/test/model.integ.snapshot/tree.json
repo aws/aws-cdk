@@ -733,12 +733,6 @@
                             "ipProtocol": "-1"
                           }
                         ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-sagemaker-model/PrimaryContainerModel"
-                          }
-                        ],
                         "vpcId": {
                           "Ref": "VPCB9E5F0B4"
                         }
@@ -789,12 +783,6 @@
                                 ":iam::aws:policy/AmazonSageMakerFullAccess"
                               ]
                             ]
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-sagemaker-model/PrimaryContainerModel"
                           }
                         ]
                       }
@@ -978,12 +966,6 @@
                         ]
                       }
                     },
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "aws-cdk-sagemaker-model/PrimaryContainerModel"
-                      }
-                    ],
                     "vpcConfig": {
                       "subnets": [
                         {
@@ -1053,12 +1035,6 @@
                                 ":iam::aws:policy/AmazonSageMakerFullAccess"
                               ]
                             ]
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-sagemaker-model/InferencePipelineModel"
                           }
                         ]
                       }
@@ -1270,12 +1246,6 @@
                         "modelDataUrl": {
                           "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
                         }
-                      }
-                    ],
-                    "tags": [
-                      {
-                        "key": "Name",
-                        "value": "aws-cdk-sagemaker-model/InferencePipelineModel"
                       }
                     ]
                   }

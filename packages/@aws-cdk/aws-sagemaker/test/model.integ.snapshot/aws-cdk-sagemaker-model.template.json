@@ -402,12 +402,6 @@
       "IpProtocol": "-1"
      }
     ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-sagemaker-model/PrimaryContainerModel"
-     }
-    ],
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
@@ -440,12 +434,6 @@
         ":iam::aws:policy/AmazonSageMakerFullAccess"
        ]
       ]
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-sagemaker-model/PrimaryContainerModel"
      }
     ]
    }
@@ -597,12 +585,6 @@
       ]
      }
     },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-sagemaker-model/PrimaryContainerModel"
-     }
-    ],
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -654,12 +636,6 @@
         ":iam::aws:policy/AmazonSageMakerFullAccess"
        ]
       ]
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-sagemaker-model/InferencePipelineModel"
      }
     ]
    }
@@ -787,12 +763,6 @@
       "ModelDataUrl": {
        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
       }
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-sagemaker-model/InferencePipelineModel"
      }
     ]
    },

@@ -7,11 +7,6 @@ import { ModelData } from './model-data';
 import { CfnModel } from './sagemaker.generated';
 
 /**
- * Name tag constant
- */
-const NAME_TAG: string = 'Name';
-
-/**
  * Interface that defines a Model resource.
  */
 export interface IModel extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
@@ -290,9 +285,6 @@ export class Model extends ModelBase {
     this.grantPrincipal = this.role;
 
     (props.containers || []).map(c => this.addContainer(c));
-
-    // apply a name tag to the model resource
-    cdk.Tags.of(this).add(NAME_TAG, this.node.path);
 
     const model = new CfnModel(this, 'Model', {
       executionRoleArn: this.role.roleArn,
