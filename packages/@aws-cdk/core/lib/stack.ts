@@ -959,18 +959,13 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
     }
 
-    // determine if we're exporting a string list or a string
-    const availableCfnAttrs = exportedValue.target;
-    const resolvedResourceName = resolved['Fn::GetAtt']; // ignoring Refs for now, only get atts are supported
-    let exportAttrIsStringList = false;
-    if (resolvedResourceName) {
-      const desiredAttribute = 'attr' + resolved['Fn::GetAtt'][1];
-      const exportAttr = availableCfnAttrs[desiredAttribute];
-      exportAttrIsStringList = Array.isArray(exportAttr) && typeof exportAttr[0] === 'string';
-    }
+    const exportIsAList = isExportAList(exportedValue, resolved);
     const delimiter = 'CDK-determined-super-magic-delimiter';
 
-    const valueToExport = exportAttrIsStringList ?
+    // if it's a list, export an Fn::Join expression
+    // and import an Fn::Split expression,
+    // since CloudFormation Outputs can only be strings
+    const valueToExport = exportIsAList ?
       Fn.join(delimiter, Token.asList(exportable))
       : Token.asString(exportable);
 
@@ -980,7 +975,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     // we don't use `Fn.importListValue()` since this array is a CFN attribute, and we don't know how long this attribute is
-    return exportAttrIsStringList ?
+    return exportIsAList ?
       Fn.split(delimiter, Fn.importValue(exportName))
       : Fn.importValue(exportName);
   }
@@ -1389,6 +1384,43 @@ function generateExportName(stackExports: Construct, id: string) {
   const localPart = makeUniqueId(components);
   const maxLength = 255;
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+}
+
+function isExportAList(exportedValue: any, resolved: any) {
+  const availableCfnAttrs = exportedValue.target;
+  const resolvedGetAtt = resolved['Fn::GetAtt']; // ignoring Refs for now, only get atts are supported
+  const resolvedRef = (resolved['Fn::Ref'] ?? resolved.Ref);
+
+  if (resolvedGetAtt && resolvedRef) {
+    throw new Error(`found a reference with both 'Fn::GetAtt' and 'Fn::Ref' ${resolved}`);
+  }
+
+  if (resolvedGetAtt) {
+    const desiredAttribute = 'attr' + resolvedGetAtt[1];
+    const exportAttr = availableCfnAttrs[desiredAttribute];
+
+    return Array.isArray(exportAttr) && typeof exportAttr[0] === 'string';
+  } else if (resolvedRef) {
+    let valueAsList = undefined;
+    try {
+      // availableCfnAttrs might be a `CfnParameter`,
+      // which is the only case where a Ref to a List is possible
+      valueAsList = availableCfnAttrs.valueAsList;
+    } catch (e) {
+      // either `valueAsList` isn't defined,
+      // or if it is, then the parameter value
+      // isn't a list; either way, this parameter
+      // value is not a list.
+
+      return false;
+    }
+
+    if (valueAsList) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 interface StackDependency {

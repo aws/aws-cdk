@@ -462,7 +462,7 @@ describe('stack', () => {
     });
   });
 
-  test('cross-stack references of lists work', () => {
+  test('cross-stack references of lists returned from Fn::GetAtt work', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -476,8 +476,7 @@ describe('stack', () => {
     new CfnResource(stack2, 'SomeResource', {
       type: 'BLA',
       properties: {
-        Prop1: exportResource.getAtt('List'),
-        Prop2: 'woowoowowow',
+        Prop: exportResource.getAtt('List'),
       },
     });
 
@@ -508,13 +507,72 @@ describe('stack', () => {
       Resources: {
         SomeResource: {
           Type: 'BLA',
-          Prop1: {
-            'Fn::Split': [
-              'CDK-determined-super-magic-delimiter',
-              {
-                'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                'CDK-determined-super-magic-delimiter',
+                {
+                  'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of lists returned from Fn::Ref work', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const param = new CfnParameter(stack1, 'magicParameter', {
+      default: ['BLAT'],
+      type: 'List<String>',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: param.value,
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputRefmagicParameter4CC6F7BE: {
+          Value: {
+            'Fn::Join': [
+              'CDK-determined-super-magic-delimiter', {
+                Ref: 'magicParameter',
               },
             ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                'CDK-determined-super-magic-delimiter',
+                {
+                  'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
+                },
+              ],
+            },
           },
         },
       },

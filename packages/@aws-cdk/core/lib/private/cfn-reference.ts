@@ -66,11 +66,7 @@ export class CfnReference extends Reference {
               : [target.logicalId, attribute],
           }
         );
-        //////////////////////////////////
-        if (attribute == 'DnsEntries') {
-          console.log('sppok')
-        }
-        //////////////////////////////////
+
       return new CfnReference(cfnIntrinsic, attribute, target);
     });
   }

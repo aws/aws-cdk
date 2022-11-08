@@ -5,7 +5,7 @@ import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
-import { Token, Tokenization } from './token';
+import { Token } from './token';
 
 /* eslint-disable max-len */
 
@@ -131,16 +131,6 @@ export class Fn {
     if (!Token.isUnresolved(index) && !Token.isUnresolved(array) && !array.some(Token.isUnresolved)) {
       return array[index];
     }
-
-    /////////////////////////////////////////////////////////////////////////////////////////
-    if (array.length > index) {
-      // eslint-disable-next-line no-console
-      console.log(array);
-      const foobug = Tokenization.reverseCompleteString(array[index]);
-      // eslint-disable-next-line no-console
-      console.log(foobug);
-    }
-    /////////////////////////////////////////////////////////////////////////////////////////
 
     return new FnSelect(index, array).toString();
   }
