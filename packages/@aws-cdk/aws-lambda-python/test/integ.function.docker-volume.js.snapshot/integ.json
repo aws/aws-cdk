@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-python-docker-volume/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-docker-volume"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-docker-volume/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythondockervolumeDefaultTestDeployAssert3F59C307"
+    }
+  }
+}
