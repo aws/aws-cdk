@@ -1,14 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.build": {
+    "Build/DefaultTest": {
       "stacks": [
         "aws-gamelift-build"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "Build/DefaultTest/DeployAssert",
+      "assertionStackName": "BuildDefaultTestDeployAssert0688841C"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -1,14 +1,12 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.script": {
+    "Script/DefaultTest": {
       "stacks": [
         "aws-gamelift-script"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "Script/DefaultTest/DeployAssert",
+      "assertionStackName": "ScriptDefaultTestDeployAssert5DF38444"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

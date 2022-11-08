@@ -14,7 +14,7 @@
         }
       }
     },
-    "9c561e93c7a2947a15dba683670660e922cf493e17b2a6f8ca03cf221442c222": {
+    "439bb85886f61ae43e9d2c68c630173885845b15d18e3048b76531bdcac17954": {
       "source": {
         "path": "aws-gamelift-script.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9c561e93c7a2947a15dba683670660e922cf493e17b2a6f8ca03cf221442c222.json",
+          "objectKey": "439bb85886f61ae43e9d2c68c630173885845b15d18e3048b76531bdcac17954.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
