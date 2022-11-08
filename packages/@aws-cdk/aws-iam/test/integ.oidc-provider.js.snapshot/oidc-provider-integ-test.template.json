@@ -9,7 +9,8 @@
       "Arn"
      ]
     },
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2",
+    "CodeHash": "647cf8702cad2855240558bbd7ab1ab761343ce85795dc4e4187915bb26da9b4"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -64,7 +65,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "32b4e7e5942dfdcf9498c8109535da6aa0e15609428b96dd6c438514144e25b5.zip"
+     "S3Key": "647cf8702cad2855240558bbd7ab1ab761343ce85795dc4e4187915bb26da9b4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -94,7 +95,8 @@
      "foo",
      "bar"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3",
+    "CodeHash": "647cf8702cad2855240558bbd7ab1ab761343ce85795dc4e4187915bb26da9b4"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,10 +114,37 @@
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4",
+    "CodeHash": "647cf8702cad2855240558bbd7ab1ab761343ce85795dc4e4187915bb26da9b4"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "NoClientsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NoClientsNoThumbprint8BF1533F",
+     "Thumbprints"
+    ]
+   }
+  },
+  "ClientsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Clients67031123",
+     "Thumbprints"
+    ]
+   }
+  },
+  "ThumbprintsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Thumbprints9CD6AB02",
+     "Thumbprints"
+    ]
+   }
   }
  },
  "Parameters": {

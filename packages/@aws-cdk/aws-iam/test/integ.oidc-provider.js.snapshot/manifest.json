@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dbbbc3f14dbfad563696c89deb272e44e512f2a8cd971c97ae597810f1b6bd2d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b68ebf6777846af4ae1aa1ba14eb816f1d8030e5f2c615f06f166f787ed20ba.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -61,6 +61,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Thumbprints9CD6AB02"
+          }
+        ],
+        "/oidc-provider-integ-test/NoClientsThumbprints": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NoClientsThumbprints"
+          }
+        ],
+        "/oidc-provider-integ-test/ClientsThumbprints": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientsThumbprints"
+          }
+        ],
+        "/oidc-provider-integ-test/ThumbprintsThumbprints": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThumbprintsThumbprints"
           }
         ],
         "/oidc-provider-integ-test/BootstrapVersion": [

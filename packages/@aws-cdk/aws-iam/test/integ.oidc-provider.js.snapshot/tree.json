@@ -126,6 +126,30 @@
               "version": "0.0.0"
             }
           },
+          "NoClientsThumbprints": {
+            "id": "NoClientsThumbprints",
+            "path": "oidc-provider-integ-test/NoClientsThumbprints",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ClientsThumbprints": {
+            "id": "ClientsThumbprints",
+            "path": "oidc-provider-integ-test/ClientsThumbprints",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ThumbprintsThumbprints": {
+            "id": "ThumbprintsThumbprints",
+            "path": "oidc-provider-integ-test/ThumbprintsThumbprints",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "oidc-provider-integ-test/BootstrapVersion",

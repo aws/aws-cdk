@@ -13,7 +13,7 @@ const app = new App();
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 
 // this bucket gets created by a kubernetes pod.
-const bucketName = `amazingly-made-sdk-call-created-eks-bucket_${stack.account}_${stack.region}`;
+const bucketName = `eks-bucket-${stack.account}-${stack.region}`;
 
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
   directory: path.join(__dirname, 'sdk-call-integ-test-docker-app/app'),
@@ -31,14 +31,14 @@ const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
 
 const serviceAccount = cluster.addServiceAccount('my-service-account');
 const kplusServiceAccount = kplus.ServiceAccount.fromServiceAccountName(serviceAccount.serviceAccountName);
-new kplus.Pod(chart, 'Pod', {
+new kplus.Deployment(chart, 'Deployment', {
   containers: [{
     image: dockerImage.imageUri,
     envVariables: {
       BUCKET_NAME: kplus.EnvValue.fromValue(bucketName),
     },
   }],
-  restartPolicy: kplus.RestartPolicy.NEVER,
+  restartPolicy: kplus.RestartPolicy.ALWAYS,
   serviceAccount: kplusServiceAccount,
 });
 
