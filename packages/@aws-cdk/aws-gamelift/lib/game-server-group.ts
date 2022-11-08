@@ -320,18 +320,6 @@ export interface GameServerGroupProps {
     * @default SPOT_PREFERRED
     */
   readonly balancingStrategy?: BalancingStrategy;
-
-  /**
-   * A list of labels to assign to the new game server group resource.
-   * Tags are developer-defined key-value pairs.
-   * Tagging AWS resources is useful for resource management, access management, and cost allocation.
-   * Once the resource is created, you can use `TagResource`, `UntagResource`, and `ListTagsForResource` to add, remove, and view tags, respectively.
-   *
-   * @see https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html
-   *
-   * @default {} - no tags
-   */
-  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -429,11 +417,6 @@ export class GameServerGroup extends GameServerGroupBase {
     */
   public readonly vpcSubnets?: ec2.SubnetSelection;
 
-  /**
-   * The set of Amazon EC2 instance types that GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group.
-   */
-  private readonly instanceDefinitions: InstanceDefinition[] = [];
-
   constructor(scope: Construct, id: string, props: GameServerGroupProps) {
     super(scope, id, {
       physicalName: props.gameServerGroupName,
@@ -453,6 +436,14 @@ export class GameServerGroup extends GameServerGroupBase {
     this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PUBLIC };
     const { subnetIds } = props.vpc.selectSubnets(this.vpcSubnets);
 
+    if (props.minSize && props.minSize < 0) {
+      throw new Error(`The minimum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 0, given ${props.minSize}`);
+    }
+
+    if (props.maxSize && props.maxSize < 1) {
+      throw new Error(`The maximum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 1, given ${props.maxSize}`);
+    }
+
     if (subnetIds.length > 20) {
       throw new Error(`No more than 20 subnets are allowed per game server group, given ${subnetIds.length}`);
     }
@@ -461,7 +452,6 @@ export class GameServerGroup extends GameServerGroupBase {
     if (props.instanceDefinitions.length > 20) {
       throw new Error(`No more than 20 instance definitions are allowed per game server group, given ${props.instanceDefinitions.length}`);
     }
-    (props.instanceDefinitions || []).forEach(this.addInternalInstanceDefinition.bind(this));
 
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.CompositePrincipal(
@@ -479,7 +469,7 @@ export class GameServerGroup extends GameServerGroupBase {
       deleteOption: props.deleteOption,
       balancingStrategy: props.balancingStrategy,
       gameServerProtectionPolicy: props.protectGameServer ? 'FULL_PROTECTION' : 'NO_PROTECTION',
-      instanceDefinitions: cdk.Lazy.any({ produce: () => this.parseInstanceDefinitions() }),
+      instanceDefinitions: this.parseInstanceDefinitions(props),
       launchTemplate: this.parseLaunchTemplate(props),
       minSize: props.minSize,
       maxSize: props.maxSize,
@@ -503,32 +493,6 @@ export class GameServerGroup extends GameServerGroupBase {
 
   }
 
-  /**
-   * Adds an instance definition that GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group
-   *
-   * @param instanceType An Amazon EC2 instance type designation.
-   * @param weight Instance weighting that indicates how much this instance type contributes to the total capacity of a game server group.
-   */
-  public addInstanceDefinition(instanceType: ec2.InstanceType, weight?: number) {
-    this.addInternalInstanceDefinition({
-      instanceType: instanceType,
-      weight: weight,
-    });
-  }
-
-  /**
-   * Adds an instance definition that GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group
-   *
-   * @param instanceDefinition The instance definition to add
-   */
-  public addInternalInstanceDefinition(instanceDefinition: InstanceDefinition) {
-    if (this.instanceDefinitions.length == 20) {
-      throw new Error('No more than 20 instance definitions are allowed per game server group');
-    }
-
-    this.instanceDefinitions.push(instanceDefinition);
-  }
-
   protected parseLaunchTemplate(props: GameServerGroupProps): CfnGameServerGroup.LaunchTemplateProperty {
     return {
       launchTemplateId: props.launchTemplate.launchTemplateId,
@@ -550,8 +514,8 @@ export class GameServerGroup extends GameServerGroupBase {
     };
   }
 
-  protected parseInstanceDefinitions(): CfnGameServerGroup.InstanceDefinitionProperty[] {
-    return this.instanceDefinitions.map(parseInstanceDefinition);
+  protected parseInstanceDefinitions(props: GameServerGroupProps): CfnGameServerGroup.InstanceDefinitionProperty[] {
+    return props.instanceDefinitions.map(parseInstanceDefinition);
 
     function parseInstanceDefinition(instanceDefinition: InstanceDefinition): CfnGameServerGroup.InstanceDefinitionProperty {
       return {

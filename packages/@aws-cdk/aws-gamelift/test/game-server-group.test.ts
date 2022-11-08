@@ -182,75 +182,28 @@ describe('gameservergroup', () => {
       })).toThrow(/No more than 20 instance definitions are allowed per game server group, given 21/);
     });
 
-    test('with an incorrect instance definitions list', () => {
-      let incorrectInstanceDefinitions: gamelift.InstanceDefinition[] = [];
-      for (let i = 0; i < 20; i++) {
-        incorrectInstanceDefinitions.push({
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-        });
-      }
-      const gameServerGroup = new gamelift.GameServerGroup(stack, 'MyGameServerGroup', {
-        instanceDefinitions: incorrectInstanceDefinitions,
-        vpc: vpc,
-        launchTemplate: launchTemplate,
-        gameServerGroupName: 'test-name',
-      });
-      expect(() => gameServerGroup.addInstanceDefinition(ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)))
-        .toThrow(/No more than 20 instance definitions are allowed per game server group/);
-    });
-  });
-
-  describe('add instance definition', () => {
-    let stack: cdk.Stack;
-    let vpc: ec2.Vpc;
-    let launchTemplate: ec2.LaunchTemplate;
-    let gameServerGroup: gamelift.GameServerGroup;
-
-    beforeEach(() => {
-      stack = new cdk.Stack();
-      vpc = new ec2.Vpc(stack, 'vpc');
-      launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplte', {});
-      gameServerGroup = new gamelift.GameServerGroup(stack, 'MyGameServerGroup', {
+    test('with incorrect minSize', () => {
+      expect(() => new gamelift.GameServerGroup(stack, 'MyGameServerGroup', {
         instanceDefinitions: [{
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
         }],
         vpc: vpc,
         launchTemplate: launchTemplate,
-        gameServerGroupName: 'test-gameservergroup-name',
-      });
+        gameServerGroupName: 'test-name',
+        minSize: -1,
+      })).toThrow(/The minimum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 0, given -1/);
     });
 
-    test('add new instance definition', () => {
-      // Add a new location
-      gameServerGroup.addInstanceDefinition(ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE));
-
-      Template.fromStack(stack).hasResource('AWS::GameLift::GameServerGroup', {
-        Properties:
-              {
-                InstanceDefinitions: [
-                  { InstanceType: 'c5.large' },
-                  { InstanceType: 'c4.large' },
-                ],
-              },
-      });
-    });
-
-    test('add new instance definition with weight', () => {
-      // Add a new location
-      gameServerGroup.addInstanceDefinition(ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE), 10);
-
-      Template.fromStack(stack).hasResource('AWS::GameLift::GameServerGroup', {
-        Properties:
-              {
-                InstanceDefinitions: [
-                  { InstanceType: 'c5.large' },
-                  {
-                    InstanceType: 'c4.large',
-                    WeightedCapacity: '10',
-                  },
-                ],
-              },
-      });
+    test('with incorrect maxSize', () => {
+      expect(() => new gamelift.GameServerGroup(stack, 'MyGameServerGroup', {
+        instanceDefinitions: [{
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+        }],
+        vpc: vpc,
+        launchTemplate: launchTemplate,
+        gameServerGroupName: 'test-name',
+        maxSize: -1,
+      })).toThrow(/The maximum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 1, given -1/);
     });
   });
 
