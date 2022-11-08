@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/761e18d21259919474ba895aef92aed894a7b4b76db8f518555e4ced5a4b491d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04ed92d5e522e8537783d8925b612866c6368320a81f18a2f6c198eed159f427.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -381,6 +381,12 @@
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap"
+          }
+        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": [
           {
             "type": "aws:cdk:logicalId",
@@ -525,6 +531,12 @@
             "data": "S3BucketPingerFunctionServiceRoleDefaultPolicy0A5C5673"
           }
         ],
+        "/aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketPingerFunctionSecurityGroup470A4668"
+          }
+        ],
         "/aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -571,15 +583,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "S3BucketPingerFunctionSecurityGroup470A4668": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3BucketPingerFunctionSecurityGroup470A4668",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
