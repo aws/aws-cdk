@@ -38,37 +38,22 @@ describe('Code', () => {
           Statement: [
             {
               Action: [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
+                's3:GetObject',
+                's3:GetObjectVersion',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::bucketname',
-                    ],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::bucketname/content',
                   ],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::bucketname/content',
-                    ],
-                  ],
-                },
-              ],
+                ],
+              },
             },
           ],
         },
@@ -88,7 +73,7 @@ describe('Code', () => {
       content = gamelift.Content.fromAsset(directoryPath);
     });
 
-    test("with valid and existing file path and bound to job sets job's script location and permissions stack metadata", () => {
+    test('with valid and existing file path and bound to script location and permissions stack metadata', () => {
       new gamelift.Build(stack, 'Build1', {
         content: content,
       });
@@ -146,44 +131,52 @@ describe('Code', () => {
           Statement: [
             {
               Action: [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
+                's3:GetObject',
+                's3:GetObjectVersion',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::',
-                      {
-                        Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
-                      },
-                    ],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
+                    {
+                      Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
+                    },
+                    '/',
+                    {
+                      'Fn::Select': [
+                        0,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      'Fn::Select': [
+                        1,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                            },
+                          ],
+                        },
+                      ],
+                    },
                   ],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::',
-                      {
-                        Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
-                      },
-                      '/*',
-                    ],
-                  ],
-                },
-              ],
+                ],
+              },
             },
           ],
         },
@@ -257,7 +250,6 @@ describe('Code', () => {
       };
 
       expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
-      // Job1 and Job2 use reuse the asset
       Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
         StorageLocation,
       });
