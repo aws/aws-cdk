@@ -302,9 +302,6 @@ export class Model extends ModelBase {
       resourceName: this.physicalName,
     });
 
-    // post-construction validation
-    this.node.addValidation({ validate: () => this.validateContainers() });
-
     /*
      * SageMaker model creation will fail if the model's execution role does not have read access to
      * its model data in S3. Since the CDK uses a separate AWS::IAM::Policy CloudFormation resource
@@ -323,17 +320,13 @@ export class Model extends ModelBase {
     this.containers.push(this.renderContainer(container));
   }
 
-  private validateContainers(): string[] {
-    const result = Array<string>();
-
+  private validateContainers(): void {
     // validate number of containers
     if (this.containers.length < 1) {
-      result.push('Must configure at least 1 container for model');
+      throw new Error('Must configure at least 1 container for model');
     } else if (this.containers.length > 15) {
-      result.push('Cannot have more than 15 containers in inference pipeline');
+      throw new Error('Cannot have more than 15 containers in inference pipeline');
     }
-
-    return result;
   }
 
   private renderPrimaryContainer(): CfnModel.ContainerDefinitionProperty | undefined {
@@ -341,6 +334,7 @@ export class Model extends ModelBase {
   }
 
   private renderContainers(): CfnModel.ContainerDefinitionProperty[] | undefined {
+    this.validateContainers();
     return (this.containers.length === 1) ? undefined : this.containers;
   }
 
