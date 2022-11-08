@@ -30,6 +30,7 @@ async function main() {
     .options('from-file', { type: 'string', desc: 'Read TEST names from a file (one TEST per line)' })
     .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
+    .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
     .strict()
     .argv;
 
@@ -76,6 +77,7 @@ async function main() {
     failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
       retain: argv['inspect-failures'],
       verbose: Boolean(argv.verbose),
+      appCommand: argv.app,
     });
     for (const failure of failedSnapshots) {
       destructiveChanges.push(...failure.destructiveChanges ?? []);
@@ -99,6 +101,7 @@ async function main() {
         dryRun: argv['dry-run'],
         verbosity: argv.verbose,
         updateWorkflow: !argv['disable-update-workflow'],
+        appCommand: argv.app,
       });
       testsSucceeded = success;
 
