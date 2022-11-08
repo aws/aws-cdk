@@ -1,129 +1,115 @@
 {
-  "Resources": {
-   "BuildServiceRole1F57E904": {
-    "Type": "AWS::IAM::Role",
-    "Properties": {
-     "AssumeRolePolicyDocument": {
-      "Statement": [
-       {
-        "Action": "sts:AssumeRole",
-        "Effect": "Allow",
-        "Principal": {
-         "Service": "gamelift.amazonaws.com"
-        }
-       }
-      ],
-      "Version": "2012-10-17"
-     }
-    }
-   },
-   "BuildServiceRoleDefaultPolicyCB7101C6": {
-    "Type": "AWS::IAM::Policy",
-    "Properties": {
-     "PolicyDocument": {
-      "Statement": [
-       {
-        "Action": [
-          "s3:GetBucket*",
-         "s3:GetObject*",
-         "s3:List*"
-        ],
-        "Effect": "Allow",
-        "Resource": [
-          {
-            "Fn::Join": [
-             "",
-             [
-              "arn:",
-              {
-               "Ref": "AWS::Partition"
-              },
-              ":s3:::",
-              {
-               "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-              },
-              "/*"
-             ]
-            ]
-           },
-           {
-            "Fn::Join": [
-             "",
-             [
-              "arn:",
-              {
-               "Ref": "AWS::Partition"
-              },
-              ":s3:::",
-              {
-               "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-              }
-             ]
-            ]
-           }
-        ]
-       }
-      ],
-      "Version": "2012-10-17"
-     },
-     "PolicyName": "BuildServiceRoleDefaultPolicyCB7101C6",
-     "Roles": [
+ "Resources": {
+  "BuildServiceRole1F57E904": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
       {
-       "Ref": "BuildServiceRole1F57E904"
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "gamelift.amazonaws.com"
+       }
       }
-     ]
-    }
-   },
-   "Build45A36621": {
-    "Type": "AWS::GameLift::Build",
-    "Properties": {
-     "StorageLocation": {
-      "Bucket": {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-      },
-      "Key": "6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip",
-      "RoleArn": {
-       "Fn::GetAtt": [
-        "BuildServiceRole1F57E904",
-        "Arn"
-       ]
-      }
-     }
+     ],
+     "Version": "2012-10-17"
     }
    }
   },
-  "Parameters": {
-    "BootstrapVersion": {
-     "Type": "AWS::SSM::Parameter::Value<String>",
-     "Default": "/cdk-bootstrap/hnb659fds/version",
-     "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  "BuildServiceRoleDefaultPolicyCB7101C6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "/6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BuildServiceRoleDefaultPolicyCB7101C6",
+    "Roles": [
+     {
+      "Ref": "BuildServiceRole1F57E904"
+     }
+    ]
+   }
+  },
+  "Build45A36621": {
+   "Type": "AWS::GameLift::Build",
+   "Properties": {
+    "StorageLocation": {
+     "Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "Key": "6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "BuildServiceRole1F57E904",
+       "Arn"
+      ]
+     }
     }
    },
-   "Rules": {
-    "CheckBootstrapVersion": {
-     "Assertions": [
-      {
-       "Assert": {
-        "Fn::Not": [
+   "DependsOn": [
+    "BuildServiceRoleDefaultPolicyCB7101C6",
+    "BuildServiceRole1F57E904"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
          {
-          "Fn::Contains": [
-           [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5"
-           ],
-           {
-            "Ref": "BootstrapVersion"
-           }
-          ]
+          "Ref": "BootstrapVersion"
          }
         ]
-       },
-       "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-      }
-     ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
     }
-   }
+   ]
+  }
  }
+}

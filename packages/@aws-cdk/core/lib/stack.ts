@@ -870,8 +870,8 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const partitions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
-    if (partitions !== undefined && !Array.isArray(partitions)) {
-      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(cxapi.TARGET_PARTITIONS)}`);
+    if (partitions !== undefined && partitions !== 'undefined' && !Array.isArray(partitions)) {
+      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(partitions)}`);
     }
 
     const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
