@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "MskUsers/DefaultTest": {
+      "stacks": [
+        "aws-cdk-msk-user-integ"
+      ],
+      "assertionStack": "MskUsers/DefaultTest/DeployAssert",
+      "assertionStackName": "MskUsersDefaultTestDeployAssert86197E66"
+    }
+  }
+}
