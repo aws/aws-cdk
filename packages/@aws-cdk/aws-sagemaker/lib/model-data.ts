@@ -5,6 +5,7 @@ import { IModel } from './model';
 import { hashcode } from './private/util';
 
 // The only supported extension for local asset model data
+// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-model-containerdefinition.html#cfn-sagemaker-model-containerdefinition-modeldataurl
 const ARTIFACT_EXTENSION = '.tar.gz';
 
 /**
