@@ -831,7 +831,7 @@ export class Cluster extends ClusterBase {
    *
    * @param usernames - username(s) to register with the cluster
    */
-  public addUser(...usernames: string[]): void {
+  public addUser(...usernames: string[]): secretsmanager.Secret[] {
     if (this.saslScramAuthenticationKey) {
       const MSK_SECRET_PREFIX = 'AmazonMSK_'; // Required
       const secrets = usernames.map(
@@ -839,6 +839,7 @@ export class Cluster extends ClusterBase {
           new secretsmanager.Secret(this, `KafkaUser${username}`, {
             secretName: `${MSK_SECRET_PREFIX}${this.clusterName}_${username}`,
             generateSecretString: {
+              excludeCharacters: '"/\\',
               secretStringTemplate: JSON.stringify({ username }),
               generateStringKey: 'password',
             },
@@ -867,6 +868,7 @@ export class Cluster extends ClusterBase {
           }),
         ]),
       });
+      return secrets;
     } else {
       throw Error(
         'Cannot create users if an authentication KMS key has not been created/provided.',

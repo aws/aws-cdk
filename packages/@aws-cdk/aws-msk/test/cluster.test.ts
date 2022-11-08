@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -748,6 +748,27 @@ describe('MSK Cluster', () => {
         },
       });
     });
+
+    test('creates a secret excluding \'"/\\\' ', () => {
+      const cluster = new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
+        vpc,
+        clientAuthentication: msk.ClientAuthentication.sasl({
+          scram: true,
+        }),
+      });
+
+      const username = 'my-user';
+      cluster.addUser(username);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        'GenerateSecretString': Match.objectLike({
+          'ExcludeCharacters': '"/\\',
+        }),
+      });
+    });
+
   });
 });
 
