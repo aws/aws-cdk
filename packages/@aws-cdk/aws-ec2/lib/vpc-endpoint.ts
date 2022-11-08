@@ -266,7 +266,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly APP_RUNNER = new InterfaceVpcEndpointAwsService('apprunner');
   public static readonly APP_RUNNER_REQUESTS = new InterfaceVpcEndpointAwsService('apprunner.requests');
   public static readonly APPLICATION_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('mgn');
-  public static readonly APPSTREAM = new InterfaceVpcEndpointAwsService('appstream.api');
+  public static readonly APPSTREAM_API = new InterfaceVpcEndpointAwsService('appstream.api');
   public static readonly APPSTREAM_STREAMING = new InterfaceVpcEndpointAwsService('appstream.streaming');
   public static readonly ATHENA = new InterfaceVpcEndpointAwsService('athena');
   public static readonly AUDIT_MANAGER = new InterfaceVpcEndpointAwsService('auditmanager');
