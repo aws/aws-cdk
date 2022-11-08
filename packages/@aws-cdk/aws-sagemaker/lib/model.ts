@@ -124,9 +124,14 @@ export interface ContainerDefinition {
   readonly environment?: {[key: string]: string};
 
   /**
-   * Hostname of the container.
+   * Hostname of the container within an inference pipeline. For single container models, this field
+   * is ignored. When specifying a hostname for one ContainerDefinition in a pipeline, hostnames
+   * must be specified for all other ContainerDefinitions in that pipeline.
    *
-   * @default - none
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-model-containerdefinition.html#cfn-sagemaker-model-containerdefinition-containerhostname
+   *
+   * @default - Amazon SageMaker will automatically assign a unique name based on the position of
+   * this ContainerDefinition in an inference pipeline.
    */
   readonly containerHostname?: string;
 
