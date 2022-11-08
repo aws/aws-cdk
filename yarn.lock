@@ -35,6 +35,11 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-cdk/asset-awscli-v1@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.0.tgz#3982f8a2391aeedc3240da6d548c55f2190df0fa"
+  integrity sha512-mTmuXlnRMlbMwW8IzNlFXoZpfNEQ1RPLKRpJNQeB+dlDOEXllETIFomEyINM1LMpUmNMOOdbtO+vPKRZHCmMOQ==
+
 "@aws-cdk/asset-node-proxy-agent-v5@^2.0.2":
   version "2.0.2"
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v5/-/asset-node-proxy-agent-v5-2.0.2.tgz#d8f03d7d90ea436eb3ca9d24cf2eafc028217891"
