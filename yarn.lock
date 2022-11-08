@@ -35,6 +35,11 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-cdk/asset-node-proxy-agent-v5@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v5/-/asset-node-proxy-agent-v5-2.0.2.tgz#d8f03d7d90ea436eb3ca9d24cf2eafc028217891"
+  integrity sha512-rLV1lE4OV3edEpAon+zHOWZhe38BMtO2yvgVltwpJbkbIn0V5IDtQhtd14kpUlLhGmgrgzwCL7Ub6epCvelQGQ==
+
 "@aws-cdk/asset-kubectl-v20@^2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@aws-cdk/asset-kubectl-v20/-/asset-kubectl-v20-2.1.0.tgz#b3b315657018ed3f7acffc154c4e527c7bf11ba3"
