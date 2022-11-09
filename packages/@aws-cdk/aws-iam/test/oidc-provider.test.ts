@@ -309,10 +309,8 @@ describe('custom resource provider handler', () => {
     });
 
     // THEN
-    sinon.assert.notCalled(downloadThumbprint);
     sinon.assert.notCalled(createOpenIDConnectProvider);
     sinon.assert.notCalled(deleteOpenIDConnectProvider);
-    sinon.assert.notCalled(updateOpenIDConnectProviderThumbprint);
     sinon.assert.calledTwice(addClientIDToOpenIDConnectProvider);
     sinon.assert.calledWithExactly(addClientIDToOpenIDConnectProvider, {
       OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId', ClientID: 'B',
