@@ -360,7 +360,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly IAM_ROLES_ANYWHERE = new InterfaceVpcEndpointAwsService('rolesanywhere');
   public static readonly INSPECTOR = new InterfaceVpcEndpointAwsService('inspector2');
   public static readonly IOT_CORE = new InterfaceVpcEndpointAwsService('iot.data');
-  public static readonly IOT_LORAWAN = new InterfaceVpcEndpointAwsService('iotwireless.api');
+  public static readonly IOT_CORE_FOR_LORAWAN = new InterfaceVpcEndpointAwsService('iotwireless.api');
   public static readonly IOT_LORAWAN_CUPS = new InterfaceVpcEndpointAwsService('lorawan.cups');
   public static readonly IOT_LORAWAN_LNS = new InterfaceVpcEndpointAwsService('lorawan.lns');
   public static readonly IOT_GREENGRASS = new InterfaceVpcEndpointAwsService('greengrass');
