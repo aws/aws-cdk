@@ -1,4 +1,3 @@
-import { spawn } from 'child_process';
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack, StackProps } from '@aws-cdk/core';
@@ -27,8 +26,6 @@ class TestStack extends Stack {
     this.functionName = fn.functionName;
   }
 }
-
-spawn('docker', ['run', '--name', containerName, 'alpine', 'sleep 30']);
 
 const app = new App();
 const testCase = new TestStack(app, 'cdk-integ-lambda-docker-volume');

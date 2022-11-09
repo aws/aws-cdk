@@ -1,12 +1,6 @@
 {
   "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-lambda-docker-volume.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d323c84453a473bd19a2e7a0be4c3333c23ce2c5ffd51914bd3de042bb9b3966.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fadeaf172fbb7917ab825296c48b34e85c80b1e7ccaeb56edd7f4f68087b65d9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -68,49 +62,31 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "myhandler2ServiceRole0C463495": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandler2ServiceRole0C463495",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "myhandler292D4927D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandler292D4927D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "cdk-integ-lambda-docker-volume"
     },
-    "lambdapythondockervolumeDefaultTestDeployAssert3F59C307.assets": {
+    "lambdapythondockervolumeDefaultTestDeployAssertB2C35288.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "lambdapythondockervolumeDefaultTestDeployAssert3F59C307.assets.json",
+        "file": "lambdapythondockervolumeDefaultTestDeployAssertB2C35288.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "lambdapythondockervolumeDefaultTestDeployAssert3F59C307": {
+    "lambdapythondockervolumeDefaultTestDeployAssertB2C35288": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "lambdapythondockervolumeDefaultTestDeployAssert3F59C307.template.json",
+        "templateFile": "lambdapythondockervolumeDefaultTestDeployAssertB2C35288.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6beacef24c1aedda67c91937d03e9a75f0ac3628ce3a6454581350bd880618b2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3306f6630ff2d3cc33d25e2549e82f8cba4d7c93a7874779af4e9d367c97575e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "lambdapythondockervolumeDefaultTestDeployAssert3F59C307.assets"
+          "lambdapythondockervolumeDefaultTestDeployAssertB2C35288.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -120,7 +96,7 @@
       },
       "dependencies": [
         "cdk-integ-lambda-docker-volume",
-        "lambdapythondockervolumeDefaultTestDeployAssert3F59C307.assets"
+        "lambdapythondockervolumeDefaultTestDeployAssertB2C35288.assets"
       ],
       "metadata": {
         "/lambda-python-docker-volume/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/Default/Default": [
@@ -135,16 +111,10 @@
             "data": "LambdaInvoke431773224924ebf10c8a31d363a6bf16Invoke9BC0E67F"
           }
         ],
-        "/lambda-python-docker-volume/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/Default/Default": [
+        "/lambda-python-docker-volume/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke431773224924ebf10c8a31d363a6bf16AssertEqualsLambdainvokeF6179C6B"
-          }
-        ],
-        "/lambda-python-docker-volume/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/AssertEqualsLambdainvoke/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsLambdainvokef5fe78069daba2e1e1326b4e96756d0b"
+            "data": "AssertionResultsLambdaInvoke431773224924ebf10c8a31d363a6bf16"
           }
         ],
         "/lambda-python-docker-volume/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -173,6 +143,12 @@
         ]
       },
       "displayName": "lambda-python-docker-volume/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
