@@ -576,7 +576,7 @@ test('with custom log format set all default field, it not creates with cloudwat
     DeliverLogsPermissionArn: {
       'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
     },
-    LogFormat: '${version} ${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} ${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} ${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} ${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}',
+    LogFormat: '${version} ${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}',
     LogGroupName: {
       Ref: 'FlowLogsLogGroup9853A85F',
     },
