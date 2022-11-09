@@ -1321,6 +1321,8 @@ vpc.addFlowLog('FlowLogCloudWatch', {
 });
 ```
 
+### Custom Formatting
+
 You can also custom format flow logs.
 
 ```ts
