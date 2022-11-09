@@ -1327,25 +1327,25 @@ You can also custom format flow logs.
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 vpc.addFlowLog('FlowLog', {
-  customLogFormatFields: [
-    LogFormatField.SRC_PORT,
-    LogFormatField.DST_PORT,
+  logFormat: [
+    ec2.LogFormat.DST_PORT,
+    ec2.LogFormat.SRC_PORT,
   ],
 });
 
 // If you just want to add a field to the default field
 vpc.addFlowLog('FlowLog', {
-  customLogFormatFields: [
-    LogFormatField.VERSION,
-    LogFormatField.ALL_DEFAULT_FIELDS,
+  logFormat: [
+    ec2.LogFormat.VERSION,
+    ec2.LogFormat.ALL_DEFAULT_FIELDS,
   ],
 });
 
 // If AWS CDK does not support the new fields
 vpc.addFlowLog('FlowLog', {
-  customLogFormatFields: [
-    LogFormatField.SRC_PORT,
-    LogFormatField.custom('new-field'),
+  logFormat: [
+    ec2.LogFormat.SRC_PORT,
+    ec2.LogFormat.custom('new-field'),
   ],
 });
 ```
