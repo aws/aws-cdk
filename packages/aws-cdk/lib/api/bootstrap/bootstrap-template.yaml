@@ -526,7 +526,7 @@ Resources:
           - Ref: PermissionsBoundaryPolicy
           - Fn::If:
               - CustomPermissionsBoundary
-              - Fn::Sub: 'arn:${AWS::Partition}:iam:${AWS::Region}:${AWS::AccountId}:policy/${InputPermissionsBoundary}'
+              - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
               - Ref: AWS::NoValue
   PermissionsBoundaryPolicy:
     Condition: DefaultPermissionsBoundary
