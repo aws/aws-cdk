@@ -1347,7 +1347,7 @@ vpc.addFlowLog('FlowLog', {
 vpc.addFlowLog('FlowLog', {
   logFormat: [
     ec2.LogFormat.SRC_PORT,
-    ec2.LogFormat.custom('new-field'),
+    ec2.LogFormat.custom('${new-field}'),
   ],
 });
 ```

@@ -590,7 +590,7 @@ test('with custom log format set custom, it not creates with cloudwatch log dest
     resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
     logFormat: [
       LogFormat.SRC_PORT,
-      LogFormat.custom('new-field'),
+      LogFormat.custom('${new-field}'),
     ],
   });
 
