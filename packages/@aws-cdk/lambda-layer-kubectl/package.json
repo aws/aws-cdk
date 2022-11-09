@@ -90,14 +90,14 @@
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/asset-kubectl-v20": "^2.1.0",
+    "@aws-cdk/asset-kubectl-v20": "^2.1.1",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/asset-kubectl-v20": "^2.1.0",
+    "@aws-cdk/asset-kubectl-v20": "^2.1.1",
     "constructs": "^10.0.0"
   },
   "engines": {
