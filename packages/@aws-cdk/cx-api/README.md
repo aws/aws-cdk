@@ -105,3 +105,18 @@ becomes:
    AWS: "arn:aws:iam::123456789876:root"
 ```
 
+* `@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker`
+
+Enable this feature flag to avoid setting the "ECS" deployment controller when adding a circuit breaker to an
+ECS Service, as this will trigger a full replacement which fails to deploy when using set service names.
+This does not change any behaviour as the default deployment controller when it is not defined is ECS.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true
+  }
+}
+```
