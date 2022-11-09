@@ -234,9 +234,6 @@ const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
     port: gamelift.Port.tcpRange(100, 200),
   }]
 });
-// Allowing all IP Addresses from port 1111 to port 1122 on TCP Protocol
-fleet.addIngressRule(gamelift.Peer.anyIpv4(), gamelift.Port.tcpRange(100, 200));
-
 // Allowing a specific CIDR for port 1111 on UDP Protocol
 fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3.4/32'), gamelift.Port.udp(1111));
 ```
