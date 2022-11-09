@@ -198,13 +198,16 @@ export class IntegSnapshotRunner extends IntegRunner {
           });
           continue;
         } else {
+          const config = {
+            diffAssets: this.actualTestSuite.getOptionsForStack(stackId)?.diffAssets,
+          };
           let actualTemplate = actual[stackId].templates[templateId];
           let expectedTemplate = expected[stackId].templates[templateId];
 
           // if we are not verifying asset hashes then remove the specific
           // asset hashes from the templates so they are not part of the diff
           // comparison
-          if (!this.actualTestSuite.getOptionsForStack(stackId)?.diffAssets) {
+          if (!config.diffAssets) {
             actualTemplate = this.canonicalizeTemplate(actualTemplate, actual[stackId].assets);
             expectedTemplate = this.canonicalizeTemplate(expectedTemplate, expected[stackId].assets);
           }
@@ -250,6 +253,7 @@ export class IntegSnapshotRunner extends IntegRunner {
               message: writable.data,
               stackName: templateId,
               testName: this.testName,
+              config,
             });
           }
         }

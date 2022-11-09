@@ -245,6 +245,11 @@ export interface Diagnostic {
    * Additional messages to print
    */
   readonly additionalMessages?: string[];
+
+  /**
+   * Relevant config options that were used for the integ test
+   */
+  readonly config?: Record<string, any>;
 }
 
 export function printSummary(total: number, failed: number): void {

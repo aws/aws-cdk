@@ -65,6 +65,7 @@ describe('IntegTest runSnapshotTests', () => {
         reason: DiagnosticReason.SNAPSHOT_FAILED,
         testName: 'xxxxx.test-with-snapshot',
         message: expect.stringContaining('foobar'),
+        config: { diffAssets: true },
       }),
     ]));
     expect(results.destructiveChanges).not.toEqual([{
@@ -96,6 +97,13 @@ describe('IntegTest runSnapshotTests', () => {
       reason: DiagnosticReason.SNAPSHOT_FAILED,
       testName: 'xxxxx.test-with-new-assets',
       message: expect.stringContaining('S3Key'),
+      config: { diffAssets: true },
+    }),
+    expect.objectContaining({
+      reason: DiagnosticReason.SNAPSHOT_FAILED,
+      testName: 'xxxxx.test-with-new-assets',
+      message: expect.stringContaining('TemplateURL'),
+      config: { diffAssets: true },
     })]));
   });
 
@@ -110,6 +118,21 @@ describe('IntegTest runSnapshotTests', () => {
         testName: 'xxxxx.test-with-nested-stack',
         stackName: expect.stringContaining('teststacknested'),
         message: expect.stringContaining('AWS::SNS::Topic'),
+        config: { diffAssets: false },
+      })]));
+    });
+
+    test('it will diff assets for nested stacks', () => {
+      // WHEN
+      const results = cdkMock.snapshotTest('xxxxx.test-with-nested-stack.js', 'xxxxx.test-with-asset-in-nested-stack.js.snapshot');
+
+      // THEN
+      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+        reason: DiagnosticReason.SNAPSHOT_FAILED,
+        testName: 'xxxxx.test-with-nested-stack',
+        stackName: expect.stringContaining('teststacknested'),
+        message: expect.stringContaining('S3Key'),
+        config: { diffAssets: true },
       })]));
     });
   });
@@ -124,6 +147,7 @@ describe('IntegTest runSnapshotTests', () => {
         reason: DiagnosticReason.SNAPSHOT_FAILED,
         testName: 'xxxxx.test-with-snapshot-assets',
         message: expect.stringContaining('Parameters'),
+        config: { diffAssets: true },
       })]));
     });
 
