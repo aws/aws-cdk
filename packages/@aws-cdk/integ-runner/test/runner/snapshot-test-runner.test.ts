@@ -178,6 +178,11 @@ describe('IntegTest runSnapshotTests', () => {
       reason: DiagnosticReason.SNAPSHOT_FAILED,
       testName: integTest.testName,
       message: expect.stringContaining('S3Key'),
+    }),
+    expect.objectContaining({
+      reason: DiagnosticReason.SNAPSHOT_FAILED,
+      testName: integTest.testName,
+      message: expect.stringContaining('TemplateURL'),
     })]));
   });
 

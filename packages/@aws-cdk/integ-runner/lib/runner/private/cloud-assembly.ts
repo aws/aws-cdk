@@ -153,7 +153,7 @@ export class AssemblyManifestReader {
     assetManifest.entries.forEach(entry => {
       if (entry.type === 'file') {
         const source = (entry as FileManifestEntry).source;
-        if (source.path && source.path.startsWith('asset.')) {
+        if (source.path && (source.path.startsWith('asset.') || source.path.endsWith('nested.template.json'))) {
           assets.push(entry as FileManifestEntry);
         }
       } else if (entry.type === 'docker-image') {
