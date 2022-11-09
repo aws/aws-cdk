@@ -522,8 +522,11 @@ Resources:
         - Fn::If:
             - NoPermissionsBoundary
             - ''
-            - Ref: PermissionBoundary
-  PermissionBoundary:
+            - Fn::If:
+                - DefaultPermissionsBoundary
+                - Ref: PermissionsBoundaryPolicy
+                - Fn::Sub: arn:${AWS::Partition}:iam:${AWS::Region}:${AWS::AccountId}:policy/${PermissionsBoundary}
+  PermissionsBoundaryPolicy:
     Condition: DefaultPermissionsBoundary
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -616,3 +619,4 @@ Outputs:
       in this stack
     Value:
       Fn::GetAtt: [CdkBootstrapVersion, Value]
+
