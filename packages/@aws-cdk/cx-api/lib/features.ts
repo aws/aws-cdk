@@ -1,11 +1,24 @@
 import { FlagInfo, FlagType } from './private/flag-modeling';
 
-// --------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////
+//
 // This file defines context keys that enable certain features that are
 // implemented behind a flag in order to preserve backwards compatibility for
 // existing apps. When a new app is initialized through `cdk init`, the CLI will
 // automatically add enable these features by adding them to the generated
 // `cdk.json` file.
+//
+////////////////////////////////////////////////////////////////////////
+//
+//  !!! IMPORTANT !!!
+//
+//  When you introduce a new flag, set its 'introducedIn.v2' value to the literal string
+// 'V2·NEXT', without the dot.
+//
+//  DO NOT USE A VARIABLE. DO NOT DEFINE A CONSTANT. The actual value will be string-replaced at
+//  version bump time.
+//
+////////////////////////////////////////////////////////////////////////
 //
 // There are three types of flags: ApiDefault, BugFix, and VisibleContext flags.
 //
@@ -511,7 +524,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
       `,
-    introducedIn: { v2: '2.51.0' },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };

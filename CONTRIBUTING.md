@@ -967,9 +967,13 @@ Adding a new flag looks as follows:
 
 1. Define a new const under
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
-   with the name of the context key that **enables** this new feature (for
+   with the name of the context key that enables this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
+    - Set `introducedIn.v2` to the literal string `'V2NEXT'`.
+    - Double negatives should be avoided. If you want to add a flag that disables something that was previously
+      enabled, set `default.v2` to `true` and the `recommendedValue` to `false`. You will need to update
+      a test in `features.test.ts` -- this is okay if you have a good reason.
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FLAGS` map in
