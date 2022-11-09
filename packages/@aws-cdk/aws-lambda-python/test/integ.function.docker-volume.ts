@@ -1,3 +1,5 @@
+import { spawnSync } from 'child_process';
+import * as crypto from 'crypto';
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack, StackProps } from '@aws-cdk/core';
@@ -10,7 +12,11 @@ import * as lambda from '../lib';
  * * aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"OK"' response.json
  */
 
-const containerName = 'v2test';
+// We need to ensure the container name is unique and not re-used eg in parallel runs
+const containerName = crypto.randomBytes(12).toString('hex');
+
+// this is to simulate the situation that a volume can be mounted from another container
+spawnSync('docker', ['run', '-d', '--name', containerName, 'alpine', 'sleep 60']);
 
 class TestStack extends Stack {
   public readonly functionName: string;
