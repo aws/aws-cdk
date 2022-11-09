@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.50.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.1-alpha.0...v2.50.0-alpha.0) (2022-11-01)
+
+
+### Features
+
+* **synthetics:** aws synthetics runtime version syn-nodejs-puppeteer-3.8 ([#22707](https://github.com/aws/aws-cdk/issues/22707)) ([228c865](https://github.com/aws/aws-cdk/commit/228c86532118b143e365b2268d06ee3a36fcf3a7))
+
+## [2.49.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.0-alpha.0...v2.49.1-alpha.0) (2022-10-31) 
+
+## [2.49.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.48.0-alpha.0...v2.49.0-alpha.0) (2022-10-27)
+
+## [2.48.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.47.0-alpha.0...v2.48.0-alpha.0) (2022-10-27)
+
+
+### Features
+
+* **synthetics:** runtime version syn-nodejs-puppeteer-3.7 ([#22610](https://github.com/aws/aws-cdk/issues/22610)) ([326637c](https://github.com/aws/aws-cdk/commit/326637c2879657bfac33b5cc60dced7471abf7c8))
+
+## [2.47.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.46.0-alpha.0...v2.47.0-alpha.0) (2022-10-20)
+
+
+### Features
+
+* **redshift:** support enhanced vpc routing when creating redshift cluster ([#22499](https://github.com/aws/aws-cdk/issues/22499)) ([e2b18e7](https://github.com/aws/aws-cdk/commit/e2b18e7b47eb7a87ae37356a9719c055e58e6e6c))
+
+
+### Bug Fixes
+
+* **integ-runner:** Fix call to spawnSync for hooks commands ([#22429](https://github.com/aws/aws-cdk/issues/22429)) ([9139ca9](https://github.com/aws/aws-cdk/commit/9139ca96ffc010e13393aff927d7b7eacfbae4f9)), closes [#22344](https://github.com/aws/aws-cdk/issues/22344)
+* **lambda-python:** root-owned cache items not cleaned up after install ([#22512](https://github.com/aws/aws-cdk/issues/22512)) ([5ef65e0](https://github.com/aws/aws-cdk/commit/5ef65e042c747bedf9d770b47e540393454762f2)), closes [#22398](https://github.com/aws/aws-cdk/issues/22398)
+
 ## [2.46.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.45.0-alpha.0...v2.46.0-alpha.0) (2022-10-13)
 
 

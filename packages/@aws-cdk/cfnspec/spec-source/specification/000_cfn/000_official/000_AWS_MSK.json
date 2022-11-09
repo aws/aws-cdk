@@ -1,5 +1,5 @@
 {
-  "$version": "92.0.0",
+  "$version": "96.0.0",
   "PropertyTypes": {
     "AWS::MSK::Cluster.BrokerLogs": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-msk-cluster-brokerlogs.html",
@@ -554,6 +554,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-msk-cluster.html#cfn-msk-cluster-openmonitoring",
           "Required": false,
           "Type": "OpenMonitoring",
+          "UpdateType": "Mutable"
+        },
+        "StorageMode": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-msk-cluster.html#cfn-msk-cluster-storagemode",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "Tags": {
