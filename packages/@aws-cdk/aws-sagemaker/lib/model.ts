@@ -153,7 +153,7 @@ export interface ModelProps {
    *
    * @see https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createmodel-perms
    *
-   * @default - a new IAM role will be created.
+   * @default - a new IAM role will be created with the `AmazonSageMakerFullAccess` policy attached.
    */
   readonly role?: iam.IRole;
 
