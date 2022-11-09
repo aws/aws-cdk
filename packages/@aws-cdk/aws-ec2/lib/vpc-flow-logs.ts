@@ -550,7 +550,7 @@ export interface FlowLogOptions {
    *
    * @default - default log format is used.
    */
-  readonly customLogFormatFields?: LogFormatField[];
+  readonly logFormat?: LogFormat[];
 
   /**
    * The maximum interval of time during which a flow of packets is captured
