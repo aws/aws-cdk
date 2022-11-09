@@ -525,7 +525,7 @@ Resources:
             - Fn::If:
                 - DefaultPermissionsBoundary
                 - Ref: PermissionsBoundaryPolicy
-                - Fn::Sub: arn:${AWS::Partition}:iam:${AWS::Region}:${AWS::AccountId}:policy/${PermissionsBoundary}
+                - Fn::Sub: 'arn:${AWS::Partition}:iam:${AWS::Region}:${AWS::AccountId}:policy/${PermissionsBoundary}'
   PermissionsBoundaryPolicy:
     Condition: DefaultPermissionsBoundary
     Type: AWS::IAM::ManagedPolicy
