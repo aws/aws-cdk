@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as gamelift from '../lib';
 
-describe('Code', () => {
+describe('Content', () => {
   let stack: cdk.Stack;
   let content: gamelift.Content;
 
@@ -82,7 +82,7 @@ describe('Code', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
         StorageLocation: {
           Bucket: {
-            Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
+            Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3Bucket3626B74C',
           },
           Key: {
             'Fn::Join': [
@@ -95,7 +95,7 @@ describe('Code', () => {
                       'Fn::Split': [
                         '||',
                         {
-                          Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                          Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3VersionKey75334BA8',
                         },
                       ],
                     },
@@ -108,7 +108,7 @@ describe('Code', () => {
                       'Fn::Split': [
                         '||',
                         {
-                          Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                          Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3VersionKey75334BA8',
                         },
                       ],
                     },
@@ -145,7 +145,7 @@ describe('Code', () => {
                     },
                     ':s3:::',
                     {
-                      Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
+                      Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3Bucket3626B74C',
                     },
                     '/',
                     {
@@ -155,7 +155,7 @@ describe('Code', () => {
                           'Fn::Split': [
                             '||',
                             {
-                              Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                              Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3VersionKey75334BA8',
                             },
                           ],
                         },
@@ -168,7 +168,7 @@ describe('Code', () => {
                           'Fn::Split': [
                             '||',
                             {
-                              Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                              Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3VersionKey75334BA8',
                             },
                           ],
                         },
@@ -190,7 +190,7 @@ describe('Code', () => {
 
     test('with an unsupported file path throws', () => {
       // GIVEN
-      const fileAsset = gamelift.Content.fromAsset(path.join(__dirname, 'my-game-build', 'index.js'));
+      const fileAsset = gamelift.Content.fromAsset(path.join(__dirname, 'my-game-build', 'TestApplicationServer'));
 
       // THEN
       expect(() => new gamelift.Build(stack, 'Build1', { content: fileAsset }))
@@ -206,7 +206,7 @@ describe('Code', () => {
       });
       const StorageLocation = {
         Bucket: {
-          Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
+          Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3Bucket3626B74C',
         },
         Key: {
           'Fn::Join': [
@@ -219,7 +219,7 @@ describe('Code', () => {
                     'Fn::Split': [
                       '||',
                       {
-                        Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                        Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3VersionKey75334BA8',
                       },
                     ],
                   },
@@ -232,7 +232,7 @@ describe('Code', () => {
                     'Fn::Split': [
                       '||',
                       {
-                        Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3VersionKey720D3160',
+                        Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3VersionKey75334BA8',
                       },
                     ],
                   },

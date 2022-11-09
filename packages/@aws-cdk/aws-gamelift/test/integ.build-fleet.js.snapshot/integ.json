@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "BuildFleet/DefaultTest": {
+      "stacks": [
+        "aws-gamelift-build-fleet"
+      ],
+      "assertionStack": "BuildFleet/DefaultTest/DeployAssert",
+      "assertionStackName": "BuildFleetDefaultTestDeployAssert21E515CD"
+    }
+  }
+}

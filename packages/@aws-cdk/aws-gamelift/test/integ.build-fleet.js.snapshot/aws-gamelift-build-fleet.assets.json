@@ -1,0 +1,32 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "b9a6ac85861c7bf3d745d9866a46a450a1b14afa77e28d2c2767e74ce4e37c03": {
+      "source": {
+        "path": "asset.b9a6ac85861c7bf3d745d9866a46a450a1b14afa77e28d2c2767e74ce4e37c03",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b9a6ac85861c7bf3d745d9866a46a450a1b14afa77e28d2c2767e74ce4e37c03.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2e5a0771267aced2e9b389ead86c38dca7b794c5a9f6cc2011d0fb1301a533ec": {
+      "source": {
+        "path": "aws-gamelift-build-fleet.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2e5a0771267aced2e9b389ead86c38dca7b794c5a9f6cc2011d0fb1301a533ec.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
