@@ -93,7 +93,7 @@ Conditions:
     Fn::And:
       - Fn::Not:
           - Condition: NoPermissionsBoundary
-      - FN::Not:
+      - Fn::Not:
           - Condition: DefaultPermissionsBoundary
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
