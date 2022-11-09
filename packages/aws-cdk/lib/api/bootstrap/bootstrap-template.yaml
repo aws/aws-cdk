@@ -521,7 +521,7 @@ Resources:
       PermissionsBoundary:
         - Fn::If:
             - NoPermissionsBoundary
-            - ''
+            - AWS::NoValue
             - Fn::If:
                 - DefaultPermissionsBoundary
                 - Ref: PermissionsBoundaryPolicy
