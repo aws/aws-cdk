@@ -520,7 +520,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   [IAM_STANDARDIZED_SERVICE_PRINCIPALS]: {
     type: FlagType.BugFix,
     summary: 'Use standardized (global) service principals everywhere',
-    details: `
+    detailsMd: `
       We used to maintain a database of exceptions to Service Principal names in various regions. This database
       is no longer necessary: all service principals names have been standardized to their global form (\`SERVICE.amazonaws.com\`).
 
