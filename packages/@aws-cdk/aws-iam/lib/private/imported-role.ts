@@ -1,4 +1,4 @@
-import { Resource, Token, TokenComparison } from '@aws-cdk/core';
+import { Resource, Token, TokenComparison, Annotations } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
@@ -61,27 +61,18 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     }
   }
 
-  public addManagedPolicy(_policy: IManagedPolicy): void {
-    // FIXME: Add warning that we're ignoring this
+  public addManagedPolicy(policy: IManagedPolicy): void {
+    Annotations.of(this).addWarning(`Not adding managed policy: ${policy.managedPolicyArn} to imported role: ${this.roleName}`);
   }
 
-  /**
-       * Grant permissions to the given principal to pass this role.
-       */
   public grantPassRole(identity: IPrincipal): Grant {
     return this.grant(identity, 'iam:PassRole');
   }
 
-  /**
-       * Grant permissions to the given principal to pass this role.
-       */
   public grantAssumeRole(identity: IPrincipal): Grant {
     return this.grant(identity, 'sts:AssumeRole');
   }
 
-  /**
-       * Grant the actions defined in actions to the identity Principal on this resource.
-       */
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
