@@ -518,7 +518,7 @@ export class LogFormat {
    * The custom format. For users to specify unsupported fields.
    */
   public static custom(field: string): LogFormat {
-    return new LogFormat(`\${${field}}`);
+    return new LogFormat(`${field}`);
   }
 
   constructor(public readonly value: string) {}
