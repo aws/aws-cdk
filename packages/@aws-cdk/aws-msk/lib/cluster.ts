@@ -830,6 +830,7 @@ export class Cluster extends ClusterBase {
    * Must be using the SASL/SCRAM authentication mechanism.
    *
    * @param usernames - username(s) to register with the cluster
+   * @returns - Array of generated secrets.
    */
   public addUser(...usernames: string[]): secretsmanager.Secret[] {
     if (this.saslScramAuthenticationKey) {
