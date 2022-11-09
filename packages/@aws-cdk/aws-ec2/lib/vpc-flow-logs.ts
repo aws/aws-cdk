@@ -404,7 +404,7 @@ export enum FlowLogMaxAggregationInterval {
 /**
  * The following table describes all of the available fields for a flow log record.
  */
-export class LogFormatField {
+export class LogFormat {
   /**
    * The VPC Flow Logs version.
    */
