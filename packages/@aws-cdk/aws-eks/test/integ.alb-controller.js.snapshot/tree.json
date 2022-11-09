@@ -2336,12 +2336,15 @@
                                       "Effect": "Allow",
                                       "Principal": {
                                         "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "states.",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              },
+                                              ".amazonaws.com"
+                                            ]
                                           ]
                                         }
                                       }
@@ -2462,14 +2465,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn": {
                 "id": "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn",
                 "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn",
@@ -2518,7 +2513,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/2fed8ab1f03e158a5349a4c05f72e5af8058dfc121bb63ca21cb44060db0ba54.json"
+                          "/7baaab68d4f5675b111b55e052f5b7fa3b9511384dd321f87ac63e30d8b8de77.json"
                         ]
                       ]
                     },
