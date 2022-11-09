@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as feats from '../lib/features';
 import { FlagInfo, FlagType, compareVersions } from '../lib/private/flag-modeling';
 
-export async function main() {
+async function main() {
   await updateMarkdownFile(path.join(__dirname, '..', 'FEATURE_FLAGS.md'), {
     table: flagsTable(),
     details: flagsDetails(),

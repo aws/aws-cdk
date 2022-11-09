@@ -21,7 +21,3 @@ if [[ "${LEGACY_BUMP:-}" == "" ]]; then
   npx lerna run build --include-dependencies --scope @aws-cdk/cdk-release
 fi
 ${scriptdir}/scripts/bump.js ${1:-minor}
-
-# Run the 'cx-api' build tool that replaces the magic string with the current version number
-npx lerna run build --include-dependencies --scope @aws-cdk/cx-api
-node packages/@aws-cdk/cx-api/build-tools/update-vnext

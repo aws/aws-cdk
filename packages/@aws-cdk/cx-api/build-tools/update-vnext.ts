@@ -4,7 +4,6 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { MAGIC_V2NEXT } from '../lib/private/flag-modeling';
-import { main as updateFlagReport } from './flag-report';
 
 async function main() {
   const featuresSourceFile = path.join(__dirname, '..', 'lib', 'features.ts');
@@ -20,8 +19,6 @@ async function main() {
   source = source.replace(new RegExp(MAGIC_V2NEXT, 'g'), currentv2);
 
   await fs.writeFile(featuresSourceFile, source, { encoding: 'utf-8' });
-
-  await updateFlagReport();
 }
 
 main().catch(e => {
