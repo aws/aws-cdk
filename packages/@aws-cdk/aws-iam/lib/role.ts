@@ -1,4 +1,5 @@
 import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '@aws-cdk/core';
+import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -12,7 +13,7 @@ import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
-import { PrecreatedRole, getCustomizeRolesConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from './private/precreated-role';
+import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './util';
 
 const MAX_INLINE_SIZE = 10000;
@@ -676,41 +677,7 @@ export class Role extends Resource implements IRole {
    * Return configuration for precreated roles
    */
   private getPrecreatedRoleConfig(): CustomizeRoleConfig {
-    const customizeRolesContext = this.node.tryGetContext(CUSTOMIZE_ROLES_CONTEXT_KEY);
-    if (customizeRolesContext !== undefined) {
-      const customizeRoles = customizeRolesContext as CustomizeRolesOptions;
-      if (customizeRoles.preventSynthesis === false) {
-        return {
-          preventSynthesis: false,
-          enabled: true,
-        };
-      }
-      if (customizeRoles.usePrecreatedRoles?.hasOwnProperty(this.node.path)) {
-        if (Token.isUnresolved(customizeRoles.usePrecreatedRoles[this.node.path])) {
-          // we do not want to fail synthesis
-          Annotations.of(this).addError(
-            `Cannot resolve precreated role name at path "${this.node.path}". The value may be a token.`,
-          );
-        } else {
-          return {
-            enabled: true,
-            preventSynthesis: true,
-            precreatedRoleName: customizeRoles.usePrecreatedRoles[this.node.path],
-          };
-        }
-      } else {
-        // we do not want to fail synthesis
-        Annotations.of(this).addError(
-          `IAM Role is being created at path "${this.node.path}" and customizeRoles.preventSynthesis is enabled. ` +
-            'You must provide a precreated role name in customizeRoles.precreatedRoles',
-        );
-      }
-      return {
-        enabled: true,
-        preventSynthesis: true,
-      };
-    }
-    return { enabled: false };
+    return getPrecreatedRoleConfig(this);
   }
 
 }

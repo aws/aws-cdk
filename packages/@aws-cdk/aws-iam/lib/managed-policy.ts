@@ -1,10 +1,10 @@
 import { ArnFormat, Resource, Stack, Arn, Aws } from '@aws-cdk/core';
+import { getCustomizeRolesConfig, PolicySynthesizer } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { PolicySynthesizer, getCustomizeRolesConfig } from './private/precreated-role';
 import { IRole } from './role';
 import { IUser } from './user';
 import { undefinedIfEmpty } from './util';
