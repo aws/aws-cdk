@@ -122,21 +122,26 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 
 ### Customizing role creation
 
-It is best practice to allow CDK to manage IAM roles and permissions, but if you are using CDK in
-an environment where role creation is not allowed, or needs to be managed through a process outside
-of the CDK application, you can prevent CDK from creating roles by using the `customizeRoles` method.
+It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
+creating roles by using the `customizeRoles` method for special cases. One such case is using CDK in
+an environment where role creation is not allowed or needs to be managed through a process outside
+of the CDK application.
+
+An example of how to opt in to this behavior is below:
 
 ```ts
 declare const stack: Stack;
 iam.Role.customizeRoles(stack);
 ```
 
-This will prevent CDK from creating any IAM roles or policies with the `stack` scope. It will also
-fail synthesis and generate a policy report to the cloud assembly (i.e. cdk.out) with the name
-`iam-policy-report.txt`. The report will contain a list of IAM roles that would have been created
-along with the associated IAM permissions. This report can be used to create the roles with the
-appropriate permissions outside of CDK. Once those roles have been created, their names can
-be added to the `usePrecreatedRoles` property.
+CDK will not create any IAM roles or policies with the `stack` scope. `cdk synth` will fail and
+it will generate a policy report to the cloud assembly (i.e. cdk.out). The `iam-policy-report.txt`
+report will contain a list of IAM roles and associated permissions that would have been created.
+This report can be used to create the roles with the appropriate permissions outside of
+the CDK application. 
+
+Once the missing roles have been created, their names can be added to the `usePrecreatedRoles`
+property, like shown below:
 
 ```ts
 declare const app: App;
