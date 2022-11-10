@@ -567,8 +567,8 @@ describe('IntegTest runIntegTests', () => {
       test: new IntegTest({
         fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
         discoveryRoot: 'test/test-data',
+        appCommand: 'node --no-warnings {filePath}',
       }),
-      appCommand: 'node --no-warnings {filePath}',
     });
     integTest.runIntegTestCase({
       testCaseName: 'xxxxx.test-with-snapshot',
