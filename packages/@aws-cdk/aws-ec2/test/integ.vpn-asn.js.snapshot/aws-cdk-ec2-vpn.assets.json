@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "5765be9116732db82a2dbdb42ebc412e4b0079771be7768bf296f4b530b00593": {
+      "source": {
+        "path": "aws-cdk-ec2-vpn.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5765be9116732db82a2dbdb42ebc412e4b0079771be7768bf296f4b530b00593.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
