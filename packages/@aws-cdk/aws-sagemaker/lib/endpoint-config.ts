@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';
 import { IModel } from './model';
-import { sameEnvDimension } from './private/util';
+import { sameEnv } from './private/util';
 import { CfnEndpointConfig } from './sagemaker.generated';
 
 /**
@@ -284,9 +284,9 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
 
     // check environment compatibility with model
     const model = props.model;
-    if (!sameEnvDimension(model.env.account, this.env.account)) {
+    if (!sameEnv(model.env.account, this.env.account)) {
       errors.push(`Cannot use model in account ${model.env.account} for endpoint configuration in account ${this.env.account}`);
-    } else if (!sameEnvDimension(model.env.region, this.env.region)) {
+    } else if (!sameEnv(model.env.region, this.env.region)) {
       errors.push(`Cannot use model in region ${model.env.region} for endpoint configuration in region ${this.env.region}`);
     }
 

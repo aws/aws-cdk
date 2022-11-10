@@ -14,13 +14,13 @@ export function hashcode(s: string): string {
 }
 
 /**
- * Whether two strings probably contain the same environment dimension (region or account).
+ * Whether two strings probably contain the same environment attribute (region or account).
  *
  * Used to compare either accounts or regions, and also returns true if both
  * are unresolved (in which case both are expected to be "current region" or "current account").
- * @param dim1 The first dimension to compare
- * @param dim2 The second dimension to compare
+ * @param attr1 The first attribute to compare
+ * @param attr2 The second attribute to compare
  */
-export function sameEnvDimension(dim1: string, dim2: string): boolean {
-  return [cdk.TokenComparison.SAME, cdk.TokenComparison.BOTH_UNRESOLVED].includes(cdk.Token.compareStrings(dim1, dim2));
+export function sameEnv(attr1: string, attr2: string): boolean {
+  return [cdk.TokenComparison.SAME, cdk.TokenComparison.BOTH_UNRESOLVED].includes(cdk.Token.compareStrings(attr1, attr2));
 }
