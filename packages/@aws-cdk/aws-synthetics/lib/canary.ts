@@ -89,10 +89,12 @@ export interface ArtifactsBucketLocation {
  */
 export interface CanaryProps {
   /**
-   * Lifecycle rules for the generated canary artifact bucket.
+   * Lifecycle rules for the generated canary artifact bucket. Has no effect
+   * if a bucket is passed to `artifactsBucketLocation`. If you pass a bucket
+   * to `artifactsBucketLocation`, you can add lifecycle rules to the bucket
+   * itself.
    *
-   * @default - No rules applied. This has no effect if a bucket is passed
-   * to `artifactsBucketLocation`.
+   * @default - no rules applied to the generated bucket.
    */
   readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
 

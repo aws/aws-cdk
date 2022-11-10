@@ -167,7 +167,7 @@ test('An auto-generated bucket has lifecycle rules', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   });
 
   // THEN
