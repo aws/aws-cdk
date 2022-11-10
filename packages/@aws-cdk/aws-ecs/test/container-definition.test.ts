@@ -478,7 +478,7 @@ describe('container definition', () => {
         });
       });
     });
-    
+
     describe('With command and entrypoint', () => {
       test('Able to change command and entryPoint', () => {
         // GIVEN
@@ -486,23 +486,25 @@ describe('container definition', () => {
 
         // WHEN
         const container = new ecs.TaskDefinition(stack, 'TD', {
-          compatibility: ecs.Compatibility.EC2_AND_FARGATE
-        }).addContainer("Container", {
+          compatibility: ecs.Compatibility.FARGATE,
+          cpu: '128',
+          memoryMiB: '1024',
+        }).addContainer('Container', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-          command: ["echo", "before"],
-          entryPoint: ["/bin/bash", "-c"]
+          command: ['echo', 'before'],
+          entryPoint: ['/bin/bash', '-c'],
         });
 
-        container.entryPoint = ["/security-monitor", ...container.entryPoint!]
-        container.command = ["echo", "after"]
+        container.entryPoint = ['/security-monitor', ...container.entryPoint!];
+        container.command = ['echo', 'after'];
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             Match.objectLike({
-              Command: Match.arrayEquals(["echo", "after"]),
-              entryPoint: Match.arrayEquals(["/security-monitor", "/bin/bash", "-c"])
-            })
+              Command: Match.arrayEquals(['echo', 'after']),
+              EntryPoint: Match.arrayEquals(['/security-monitor', '/bin/bash', '-c']),
+            }),
           ],
         });
       });

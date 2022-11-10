@@ -1241,8 +1241,8 @@ command and entryPoint properties are public and can be defined after ContainerD
 ```ts
 const container = fargate.addContainer("Container", {
     image: ContainerImage.fromRegistry("test2"),
-})
+});
 
-container.entryPoint = ["/bin/bash", "-c"]
-container.command = ["echo", "hi"]
+container.entryPoint = ["/bin/bash", "-c"];
+container.command = ["echo", "hi"];
 ```
