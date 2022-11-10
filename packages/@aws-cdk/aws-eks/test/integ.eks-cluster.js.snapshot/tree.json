@@ -5279,7 +5279,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": "states.us-east-1.amazonaws.com"
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -5442,7 +5442,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/8ff62e31b56213066aa0cbeeec2d1b5b3d22d8d9ee3803ccb01387489438c2ff.json"
+                          "/69f164dd4dec7ac272dc31108c91cbd3f9192d3155d0b805cb41723b2e127ed1.json"
                         ]
                       ]
                     },

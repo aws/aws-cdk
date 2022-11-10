@@ -839,13 +839,15 @@
     "ClientIDList": [
      "sts.amazonaws.com"
     ],
+    "ThumbprintList": [
+     "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+    ],
     "Url": {
      "Fn::GetAtt": [
       "Cluster9EE0221C",
       "OpenIdConnectIssuerUrl"
      ]
-    },
-    "CodeHash": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1298,7 +1300,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9053a1de13f72ae060ed7f47a489a6baeadd924178447a4cc17858b20de26848.json"
+       "/160c5063e51e97adff360ac4e9bf20abf8cc478d5aaf57a42f93b48f6a2b4845.json"
       ]
      ]
     },
@@ -1853,7 +1855,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057.zip"
+     "S3Key": "8a0a8c03b198919a101198f32c18622186aec532054cb63937cc769635f8e7ef.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1864,7 +1866,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs14.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"

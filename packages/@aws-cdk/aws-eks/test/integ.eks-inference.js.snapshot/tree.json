@@ -697,7 +697,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v23.KubectlV23Layer",
-              "version": "2.0.1"
+              "version": "2.0.0"
             }
           },
           "Cluster": {
@@ -974,7 +974,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.154"
+                  "version": "10.1.140"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2784,18 +2784,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "states.",
-                                              {
-                                                "Ref": "AWS::Region"
-                                              },
-                                              ".amazonaws.com"
-                                            ]
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2905,7 +2894,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.154"
+                      "version": "10.1.140"
                     }
                   }
                 },
@@ -2962,7 +2951,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/9053a1de13f72ae060ed7f47a489a6baeadd924178447a4cc17858b20de26848.json"
+                          "/160c5063e51e97adff360ac4e9bf20abf8cc478d5aaf57a42f93b48f6a2b4845.json"
                         ]
                       ]
                     },
@@ -2984,7 +2973,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.154"
+              "version": "10.1.140"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3609,7 +3598,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.154"
+              "version": "10.1.140"
             }
           },
           "awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController": {
@@ -4083,7 +4072,7 @@
                 "path": "aws-cdk-eks-cluster-interence/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.154"
+                  "version": "10.1.140"
                 }
               },
               "DeployAssert": {
@@ -4129,7 +4118,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.154"
+          "version": "10.1.140"
         }
       }
     },
