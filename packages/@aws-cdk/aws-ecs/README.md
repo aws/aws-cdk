@@ -1233,3 +1233,16 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
   },
 });
 ```
+
+### Overwrite entryPoint or command
+
+command and entryPoint properties are public and can be defined after ContainerDefinition has been constructed.
+
+```ts
+const container = fargate.addContainer("Container", {
+    image: ContainerImage.fromRegistry("test2"),
+})
+
+container.entryPoint = ["/bin/bash", "-c"]
+container.command = ["echo", "hi"]
+```
