@@ -36,6 +36,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:arnFormatIncludesClusterName](#aws-cdkaws-ecsarnformatincludesclustername) | ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID. | 2.35.0 | (fix) |
 | [@aws-cdk/aws-apigateway:disableCloudWatchRole](#aws-cdkaws-apigatewaydisablecloudwatchrole) | Make default CloudWatch Role behavior safe for multiple API Gateways in one environment | 2.38.0 | (fix) |
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) |
+| [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
 
@@ -66,7 +67,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
-    "@aws-cdk/aws-iam:standardizedServicePrincipals": true
+    "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
+    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true
   }
 }
 ```
@@ -643,6 +645,23 @@ is unknown.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.38.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker
+
+*Avoid setting the "ECS" deployment controller when adding a circuit breaker* (fix)
+
+Enable this feature flag to avoid setting the "ECS" deployment controller when adding a circuit breaker to an
+ECS Service, as this will trigger a full replacement which fails to deploy when using set service names.
+This does not change any behaviour as the default deployment controller when it is not defined is ECS.
+
+This is a feature flag as the new behavior provides a better default experience for the users.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.51.0 | `false` | `true` |
 
 
 ### @aws-cdk/aws-events:eventsTargetQueueSameAccount
