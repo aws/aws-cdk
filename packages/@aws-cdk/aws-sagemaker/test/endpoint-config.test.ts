@@ -168,7 +168,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
         env:
           {
             region: 'us-west-2',
-            account: '123456789013',
+            account: '234567890123',
           },
       });
 
@@ -182,7 +182,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
         });
 
       // THEN
-      expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 123456789013/);
+      expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
     });
 
     test('across stack region boundaries, synthesis fails', () => {
@@ -240,7 +240,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
           env:
             {
               region: 'us-west-2',
-              account: '123456789013',
+              account: '234567890123',
             },
         });
 
@@ -254,7 +254,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
           });
 
         // THEN
-        expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 123456789013/);
+        expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
       });
 
       test('across stack region boundaries, synthesis fails', () => {
@@ -298,7 +298,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
           env:
             {
               region: 'us-west-2',
-              account: '123456789013',
+              account: '234567890123',
             },
         });
         const originStackModel = sagemaker.Model.fromModelArn(originStack, 'MyModel', 'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/explicitly-named-model');
@@ -306,7 +306,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
           env:
             {
               region: 'us-west-2',
-              account: '123456789013',
+              account: '234567890123',
             },
         });
 
@@ -320,7 +320,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
           });
 
         // THEN
-        expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 123456789013/);
+        expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
       });
 
       test('in a different region than both stacks, synthesis fails', () => {
