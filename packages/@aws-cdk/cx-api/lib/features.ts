@@ -530,7 +530,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
   },
-  
+
   //////////////////////////////////////////////////////////////////////
   [ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: {
     type: FlagType.BugFix,
