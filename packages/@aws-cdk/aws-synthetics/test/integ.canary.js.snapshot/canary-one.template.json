@@ -148,6 +148,14 @@
        }
       }
      ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 30,
+       "Status": "Enabled"
+      }
+     ]
     }
    },
    "UpdateReplacePolicy": "Retain",
