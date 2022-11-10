@@ -230,7 +230,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     if (props.variantName in this._instanceProductionVariants) {
       throw new Error(`There is already a Production Variant with name '${props.variantName}'`);
     }
-    this.validateProps(props);
+    this.validateInstanceProductionVariantProps(props);
     this._instanceProductionVariants[props.variantName] = {
       acceleratorType: props.acceleratorType,
       initialInstanceCount: props.initialInstanceCount || 1,
@@ -269,7 +269,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     }
   }
 
-  private validateProps(props: InstanceProductionVariantProps): void {
+  private validateInstanceProductionVariantProps(props: InstanceProductionVariantProps): void {
     const errors: string[] = [];
 
     // check instance count is greater than zero
