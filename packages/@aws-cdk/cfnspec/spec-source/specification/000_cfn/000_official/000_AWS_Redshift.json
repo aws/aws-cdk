@@ -1,5 +1,5 @@
 {
-  "$version": "91.0.0",
+  "$version": "96.0.0",
   "PropertyTypes": {
     "AWS::Redshift::Cluster.Endpoint": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshift-cluster-endpoint.html",
@@ -586,10 +586,6 @@
         },
         "Port": {
           "PrimitiveType": "Integer"
-        },
-        "VpcSecurityGroups": {
-          "ItemType": "VpcSecurityGroup",
-          "Type": "List"
         }
       },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-endpointaccess.html",
@@ -618,10 +614,23 @@
           "Required": true,
           "UpdateType": "Immutable"
         },
+        "VpcEndpoint": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-endpointaccess.html#cfn-redshift-endpointaccess-vpcendpoint",
+          "PrimitiveType": "Json",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "VpcSecurityGroupIds": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-endpointaccess.html#cfn-redshift-endpointaccess-vpcsecuritygroupids",
           "PrimitiveItemType": "String",
           "Required": true,
+          "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "VpcSecurityGroups": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshift-endpointaccess.html#cfn-redshift-endpointaccess-vpcsecuritygroups",
+          "ItemType": "VpcSecurityGroup",
+          "Required": false,
           "Type": "List",
           "UpdateType": "Mutable"
         }

@@ -52,6 +52,9 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
+  "cdk-build": {
+    "post": ["node ./build-tools/flag-report.js"]
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -71,7 +74,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
-    "@types/semver": "^7.3.12",
+    "@types/semver": "^7.3.13",
     "jest": "^27.5.1",
     "madge": "^5.0.1",
     "mock-fs": "^4.14.0"

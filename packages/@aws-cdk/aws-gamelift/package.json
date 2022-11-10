@@ -82,6 +82,7 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -125,7 +126,9 @@
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.AMAZON_LINUX",
       "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.AMAZON_LINUX_2",
-      "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.WINDOWS_2012"
+      "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.WINDOWS_2012",
+      "docs-public-apis:@aws-cdk/aws-gamelift.Protocol.TCP",
+      "docs-public-apis:@aws-cdk/aws-gamelift.Protocol.UDP"
     ]
   },
   "stability": "experimental",
