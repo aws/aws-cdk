@@ -113,7 +113,10 @@
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
     "semver": "^7.3.8",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+    "@aws-cdk/asset-awscli-v1": "^2.2.2",
+    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.8",
+    "@aws-cdk/asset-kubectl-v20": "^2.1.1"
   },
   "devDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -366,9 +369,9 @@
     "@aws-cdk/triggers": "0.0.0",
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/node": "^14.18.32",
+    "@types/node": "^14.18.33",
     "constructs": "^10.0.0",
-    "esbuild": "^0.15.12",
+    "esbuild": "^0.15.13",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
@@ -506,6 +509,7 @@
     "./aws-guardduty": "./aws-guardduty/index.js",
     "./aws-healthlake": "./aws-healthlake/index.js",
     "./aws-iam": "./aws-iam/index.js",
+    "./aws-identitystore": "./aws-identitystore/index.js",
     "./aws-imagebuilder": "./aws-imagebuilder/index.js",
     "./aws-inspector": "./aws-inspector/index.js",
     "./aws-inspectorv2": "./aws-inspectorv2/index.js",
