@@ -98,7 +98,7 @@ describe('When searching an EndpointConfig for a production variant', () => {
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
-    const variant = endpointConfig.findInstanceProductionVariant('variant');
+    const variant = endpointConfig._findInstanceProductionVariant('variant');
 
     // THEN
     expect(variant.variantName).toEqual('variant');
@@ -111,7 +111,7 @@ describe('When searching an EndpointConfig for a production variant', () => {
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
 
     // WHEN
-    const when = () => endpointConfig.findInstanceProductionVariant('missing-variant');
+    const when = () => endpointConfig._findInstanceProductionVariant('missing-variant');
 
     // THEN
     expect(when).toThrow(/No variant with name: 'missing-variant'/);

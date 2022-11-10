@@ -96,6 +96,8 @@ interface ProductionVariant {
 
 /**
  * Represents an instance production variant that has been associated with an EndpointConfig.
+ *
+ * @internal
  */
 export interface InstanceProductionVariant extends ProductionVariant {
   /**
@@ -198,7 +200,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   public readonly endpointConfigName: string;
 
-  private readonly _instanceProductionVariants: { [key: string]: InstanceProductionVariant; } = {};
+  private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant; } = {};
 
   constructor(scope: Construct, id: string, props: EndpointConfigProps = {}) {
     super(scope, id, {
@@ -227,11 +229,11 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    * @param props The properties of a production variant to add.
    */
   public addInstanceProductionVariant(props: InstanceProductionVariantProps): void {
-    if (props.variantName in this._instanceProductionVariants) {
+    if (props.variantName in this.instanceProductionVariantsByName) {
       throw new Error(`There is already a Production Variant with name '${props.variantName}'`);
     }
     this.validateInstanceProductionVariantProps(props);
-    this._instanceProductionVariants[props.variantName] = {
+    this.instanceProductionVariantsByName[props.variantName] = {
       acceleratorType: props.acceleratorType,
       initialInstanceCount: props.initialInstanceCount || 1,
       initialVariantWeight: props.initialVariantWeight || 1.0,
@@ -243,17 +245,21 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
 
   /**
    * Get instance production variants associated with endpoint configuration.
+   *
+   * @internal
    */
-  public get instanceProductionVariants(): InstanceProductionVariant[] {
-    return Object.values(this._instanceProductionVariants);
+  public get _instanceProductionVariants(): InstanceProductionVariant[] {
+    return Object.values(this.instanceProductionVariantsByName);
   }
 
   /**
    * Find instance production variant based on variant name
    * @param name Variant name from production variant
+   *
+   * @internal
    */
-  public findInstanceProductionVariant(name: string): InstanceProductionVariant {
-    const ret = this._instanceProductionVariants[name];
+  public _findInstanceProductionVariant(name: string): InstanceProductionVariant {
+    const ret = this.instanceProductionVariantsByName[name];
     if (!ret) {
       throw new Error(`No variant with name: '${name}'`);
     }
@@ -262,9 +268,9 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
 
   private validateProductionVariants(): void {
     // validate number of production variants
-    if (this.instanceProductionVariants.length < 1) {
+    if (this._instanceProductionVariants.length < 1) {
       throw new Error('Must configure at least 1 production variant');
-    } else if (this.instanceProductionVariants.length > 10) {
+    } else if (this._instanceProductionVariants.length > 10) {
       throw new Error('Can\'t have more than 10 production variants');
     }
   }
@@ -300,7 +306,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   private renderInstanceProductionVariants(): CfnEndpointConfig.ProductionVariantProperty[] {
     this.validateProductionVariants();
-    return this.instanceProductionVariants.map( v => ({
+    return this._instanceProductionVariants.map( v => ({
       acceleratorType: v.acceleratorType?.toString(),
       initialInstanceCount: v.initialInstanceCount,
       initialVariantWeight: v.initialVariantWeight,
