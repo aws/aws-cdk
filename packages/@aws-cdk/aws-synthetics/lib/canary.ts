@@ -89,6 +89,14 @@ export interface ArtifactsBucketLocation {
  */
 export interface CanaryProps {
   /**
+   * Lifecycle rules for the generated canary artifact bucket.
+   *
+   * @default - No rules applied. This has no effect if a bucket is passed
+   * to `artifactsBucketLocation`.
+   */
+  readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
+
+  /**
    * The s3 location that stores the data of the canary runs.
    *
    * @default - A new s3 bucket will be created without a prefix.
@@ -260,6 +268,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
       enforceSSL: true,
+      lifecycleRules: props.artifactsBucketLifecycleRules,
     });
 
     this.role = props.role ?? this.createDefaultRole(props);

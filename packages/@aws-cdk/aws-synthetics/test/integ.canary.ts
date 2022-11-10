@@ -41,6 +41,11 @@ new synthetics.Canary(stack, 'MyCanaryOne', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_2,
+  artifactsBucketLifecycleRules: [
+    {
+      expiration: cdk.Duration.days(30),
+    },
+  ],
 });
 
 new synthetics.Canary(stack, 'MyCanaryTwo', {

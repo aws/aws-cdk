@@ -151,6 +151,37 @@ test('An existing bucket and prefix can be specified instead of auto-created', (
   });
 });
 
+test('An auto-generated bucket has lifecycle rules', () => {
+  // GIVEN
+  const stack = new Stack();
+  const lifecycleRules: Array<s3.LifecycleRule> = [
+    {
+      expiration: Duration.days(30),
+    },
+  ];
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    artifactsBucketLifecycleRules: lifecycleRules,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    LifecycleConfiguration: {
+      Rules: [
+        {
+          ExpirationInDays: 30,
+        },
+      ],
+    },
+  });
+});
+
 test('Runtime can be specified', () => {
   // GIVEN
   const stack = new Stack();
