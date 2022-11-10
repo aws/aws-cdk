@@ -470,6 +470,7 @@ describe('stack', () => {
       type: 'BLA',
     });
     const stack2 = new Stack(app, 'Stack2');
+    // L1s represent attribute names with `attr${attributeName}`
     (exportResource as any).attrList = ['magic-attr-value'];
 
     // WHEN - used in another stack
@@ -527,7 +528,7 @@ describe('stack', () => {
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
     const param = new CfnParameter(stack1, 'magicParameter', {
-      default: ['BLAT'],
+      default: 'BLAT,BLAH',
       type: 'List<String>',
     });
     const stack2 = new Stack(app, 'Stack2');

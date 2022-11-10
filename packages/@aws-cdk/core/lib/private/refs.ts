@@ -198,7 +198,7 @@ function createImportValue(reference: Reference): Intrinsic {
   if (Array.isArray(importExpr)) {
     const foo = Tokenization.reverseList(importExpr);
     if (!foo) {
-      throw new Error('tokenization reverse list failed for importExpr ' + importExpr)
+      throw new Error('tokenization reverse list failed for importExpr ' + importExpr);
     }
 
     // I happen to know this returns a Fn.split() which implements Intrinsic.
