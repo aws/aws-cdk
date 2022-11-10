@@ -292,7 +292,6 @@ export class VpnConnection extends VpnConnectionBase {
     if (!props.vpc.vpnGatewayId) {
       props.vpc.enableVpnGateway({
         type: 'ipsec.1',
-        amazonSideAsn: props.asn,
       });
     }
 

@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
@@ -412,6 +412,32 @@ describe('vpn', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       IpAddress: '192.0.2.1',
     });
+
+  });
+  test('check if VPN Gateway does not have AmazonSideAsn set', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const vpc = new Vpc(stack, 'VpcNetwork');
+    new VpnConnection(stack, 'VpnConnection', {
+      ip: '192.0.2.1',
+      vpc: vpc,
+      asn: 65001,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
+      BgpAsn: 65001,
+      IpAddress: '192.0.2.1',
+      Type: 'ipsec.1',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNGateway', {
+      Type: 'ipsec.1',
+      AmazonSideAsn: Match.absent(),
+    });
+
 
   });
 });
