@@ -256,20 +256,42 @@ export interface ProcessorFeatures {
 
 /**
  * The type of storage.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html
  */
 export enum StorageType {
   /**
    * Standard.
+   *
+   * Amazon RDS supports magnetic storage for backward compatibility. It is recommended to use
+   * General Purpose SSD or Provisioned IOPS SSD for any new storage needs.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#CHAP_Storage.Magnetic
    */
   STANDARD = 'standard',
 
   /**
-   * General purpose (SSD).
+   * General purpose SSD (gp2).
+   *
+   * Baseline performance determined by volume size
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
    */
   GP2 = 'gp2',
 
   /**
+   * General purpose SSD (gp3).
+   *
+   * Performance scales independently from storage
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
+   */
+  GP3 = 'gp3',
+
+  /**
    * Provisioned IOPS (SSD).
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#USER_PIOPS
    */
   IO1 = 'io1'
 }

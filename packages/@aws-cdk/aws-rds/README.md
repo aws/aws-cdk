@@ -81,7 +81,7 @@ new rds.DatabaseClusterFromSnapshot(this, 'Database', {
 
 ### Updating the database instances in a cluster
 
-Database cluster instances may be updated in bulk or on a rolling basis. 
+Database cluster instances may be updated in bulk or on a rolling basis.
 
 An update to all instances in a cluster may cause significant downtime. To reduce the downtime, set the `instanceUpdateBehavior` property in `DatabaseClusterBaseProps` to `InstanceUpdateBehavior.ROLLING`. This adds a dependency between each instance so the update is performed on only one instance at a time.
 
@@ -187,6 +187,26 @@ if also enabled on the source instance.
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
+
+Use the `storageType` property to specify the [type of storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
+to use for the instance:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  storateType: rds.StorageType.IO1,
+  iops: 5000,
+});
+
+const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  storateType: rds.StorageType.GP3,
+});
+```
 
 ## Setting Public Accessibility
 
@@ -737,8 +757,8 @@ To learn more about using the Data API, see the [documentation](https://docs.aws
 
 ### Default VPC
 
-The `vpc` parameter is optional. 
+The `vpc` parameter is optional.
 
 If not provided, the cluster will be created in the default VPC of the account and region.
-As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster. 
+As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster.
 If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.

@@ -1708,6 +1708,19 @@ describe('instance', () => {
       Engine: 'postgres',
     });
   });
+
+  test('gp3 storage type', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      storageType: rds.StorageType.GP3,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageType: 'gp3',
+    });
+  });
 });
 
 test.each([
