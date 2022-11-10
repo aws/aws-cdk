@@ -68,7 +68,7 @@ export interface InstanceProductionVariantProps extends ProductionVariantProps {
   /**
    * Instance type of the production variant.
    *
-   * @default - ml.t2.medium instance type.
+   * @default InstanceType.T2_MEDIUM
    */
   readonly instanceType?: InstanceType;
 }
