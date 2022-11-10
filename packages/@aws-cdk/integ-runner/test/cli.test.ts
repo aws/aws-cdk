@@ -28,7 +28,6 @@ describe('CLI', () => {
   test('find by custom pattern', async () => {
     await main(['--list', '--directory=test/test-data', '--test-regex="^xxxxx\..*\.js$"']);
 
-    // Expect nothing to be found since this directory doesn't contain files with the default pattern
     expect(stdoutMock.mock.calls).toEqual([[
       [
         'xxxxx.integ-test1.js',
