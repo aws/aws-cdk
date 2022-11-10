@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-stepfunctions-tasks-sns-publish-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a8c3e8b112a33204a6ff969d2c19b32596222003f593476af2846825bb60b01.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e695642275eadadcd19f21540b32ba9ad6a6b1c32faf69ef3f5fcb5a5a6df17e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -93,12 +87,6 @@
             "data": "queueUrl"
           }
         ],
-        "/aws-stepfunctions-tasks-sns-publish-integ/Service-principalMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceprincipalMap"
-          }
-        ],
         "/aws-stepfunctions-tasks-sns-publish-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -113,6 +101,12 @@
         ]
       },
       "displayName": "aws-stepfunctions-tasks-sns-publish-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

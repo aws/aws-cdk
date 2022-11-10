@@ -1,12 +1,6 @@
 {
   "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-stepfunctions-tasks-eventbridge-put-events-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36859005b5dfd374b4d20f4ee0f299482365c936ff6e02e37645bfdd1f8f8f3c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/719684849f05595468ebad2915a5a588f7a4b642d84ea456eafecf522522a37f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,12 +57,6 @@
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-stepfunctions-tasks-eventbridge-put-events-integ/Service-principalMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceprincipalMap"
-          }
-        ],
         "/aws-stepfunctions-tasks-eventbridge-put-events-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -106,7 +94,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d789d0523f2d5ac213b4d4fa1c9785d4c7079cef347d17219f5d15c29cf88551.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aaa4cc846bc842df52f3f3b46815802ecf4b48a0c691686f6762d1f64e5b43e2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -147,16 +135,10 @@
             "data": "AwsApiCallStepFunctionsdescribeExecution"
           }
         ],
-        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/Default/Default": [
+        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69"
-          }
-        ],
-        "/PutEvents/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution/AssertEqualsStepFunctionsdescribeExecution/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsStepFunctionsdescribeExecution"
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution"
           }
         ],
         "/PutEvents/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -173,6 +155,12 @@
         ]
       },
       "displayName": "PutEvents/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

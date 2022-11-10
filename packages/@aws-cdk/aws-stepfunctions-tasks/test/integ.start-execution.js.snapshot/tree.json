@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-sfn-start-execution": {
         "id": "integ-sfn-start-execution",
         "path": "integ-sfn-start-execution",
@@ -44,15 +36,7 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": {
-                                  "Fn::FindInMap": [
-                                    "ServiceprincipalMap",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    "states"
-                                  ]
-                                }
+                                "Service": "states.amazonaws.com"
                               }
                             }
                           ],
@@ -125,15 +109,7 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": {
-                                  "Fn::FindInMap": [
-                                    "ServiceprincipalMap",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    "states"
-                                  ]
-                                }
+                                "Service": "states.amazonaws.com"
                               }
                             }
                           ],
@@ -307,28 +283,44 @@
             "id": "StateMachineARN",
             "path": "integ-sfn-start-execution/StateMachineARN",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
-          "Service-principalMap": {
-            "id": "Service-principalMap",
-            "path": "integ-sfn-start-execution/Service-principalMap",
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-sfn-start-execution/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-sfn-start-execution/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.140"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

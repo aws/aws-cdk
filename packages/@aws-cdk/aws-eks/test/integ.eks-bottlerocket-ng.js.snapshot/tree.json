@@ -2368,15 +2368,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2495,14 +2487,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderframeworkonEventCB851FF9Arn": {
                 "id": "awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderframeworkonEventCB851FF9Arn",
                 "path": "aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterbottlerocketngtestawscdkawseksClusterResourceProviderframeworkonEventCB851FF9Arn",
@@ -2551,7 +2535,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/ff4955fd4427545a62a90365250f6bc0df89b441ad79f100e0b4dbd8e22e00b5.json"
+                          "/71f37ec27bcc91052d7473953ff26acaf0809e05a170be3ea94b703361a557cb.json"
                         ]
                       ]
                     },

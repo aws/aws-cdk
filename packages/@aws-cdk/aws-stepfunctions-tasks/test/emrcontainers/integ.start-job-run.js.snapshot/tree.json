@@ -2306,15 +2306,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2433,14 +2425,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderframeworkonEventD72B3ABCArn": {
                 "id": "awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderframeworkonEventD72B3ABCArn",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersstartjobruntestawscdkawseksClusterResourceProviderframeworkonEventD72B3ABCArn",
@@ -2489,7 +2473,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/e0acbe3349ef20c5cfa8a0f8deeb064a74d5b88ad4e227c8a6542f95a87c2de2.json"
+                          "/35095179411a39bfcf3668f0b9792ab6c226f9bbfed6ed11f64266838c2fb3f3.json"
                         ]
                       ]
                     },
@@ -3222,15 +3206,7 @@
                               "Principal": {
                                 "Service": [
                                   "emr-containers.amazonaws.com",
-                                  {
-                                    "Fn::FindInMap": [
-                                      "ServiceprincipalMap",
-                                      {
-                                        "Ref": "AWS::Region"
-                                      },
-                                      "states"
-                                    ]
-                                  }
+                                  "states.amazonaws.com"
                                 ]
                               }
                             }
@@ -3994,15 +3970,7 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": {
-                                  "Fn::FindInMap": [
-                                    "ServiceprincipalMap",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    "states"
-                                  ]
-                                }
+                                "Service": "states.amazonaws.com"
                               }
                             }
                           ],
@@ -4185,14 +4153,6 @@
             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/stateMachineArn",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "Service-principalMap": {
-            "id": "Service-principalMap",
-            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-test/Service-principalMap",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
               "version": "0.0.0"
             }
           },

@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-stepfunctions-tasks-athena-start-query-execution-integ": {
         "id": "aws-stepfunctions-tasks-athena-start-query-execution-integ",
         "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ",
@@ -44,15 +36,7 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": {
-                                  "Fn::FindInMap": [
-                                    "ServiceprincipalMap",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    "states"
-                                  ]
-                                }
+                                "Service": "states.amazonaws.com"
                               }
                             }
                           ],
@@ -338,11 +322,19 @@
               "version": "0.0.0"
             }
           },
-          "Service-principalMap": {
-            "id": "Service-principalMap",
-            "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/Service-principalMap",
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
@@ -350,6 +342,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       }
     },

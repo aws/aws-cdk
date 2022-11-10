@@ -79,7 +79,7 @@
         }
       }
     },
-    "8b85ebd36683f9486a1d2128887b516ebedafa32542f577252b36e02cc6c31f9": {
+    "6d7f62a36035930aa6da6f24fbf4411286172b5a5f99993d9ab2f4369c81b1a2": {
       "source": {
         "path": "awscdkekshandlersinvpctestawscdkawseksClusterResourceProvider9260AB35.nested.template.json",
         "packaging": "file"
@@ -87,7 +87,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8b85ebd36683f9486a1d2128887b516ebedafa32542f577252b36e02cc6c31f9.json",
+          "objectKey": "6d7f62a36035930aa6da6f24fbf4411286172b5a5f99993d9ab2f4369c81b1a2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -105,7 +105,7 @@
         }
       }
     },
-    "8365295700205d11503d8cec5f55acf88717d4a6e8f84544ba6d1a5f1de1b4f0": {
+    "a9620743395d0d1ce32fcca29de8a2ea69b998829ed7c14dfbf7742d663e571e": {
       "source": {
         "path": "aws-cdk-eks-handlers-in-vpc-test.template.json",
         "packaging": "file"
@@ -113,7 +113,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8365295700205d11503d8cec5f55acf88717d4a6e8f84544ba6d1a5f1de1b4f0.json",
+          "objectKey": "a9620743395d0d1ce32fcca29de8a2ea69b998829ed7c14dfbf7742d663e571e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

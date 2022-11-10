@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-appsync-integ": {
         "id": "aws-appsync-integ",
         "path": "aws-appsync-integ",
@@ -121,8 +113,8 @@
                 "id": "LogGroup",
                 "path": "aws-appsync-integ/Api/LogGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "ds": {
@@ -145,7 +137,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync.amazonaws.com"
+                                    "Service": "appsync"
                                   }
                                 }
                               ],
@@ -412,8 +404,8 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/TestTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -438,7 +430,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "Service": "lambda.amazonaws.com"
+                            "Service": "lambda"
                           }
                         }
                       ],
@@ -594,8 +586,8 @@
                     "id": "Stage",
                     "path": "aws-appsync-integ/testQuery/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -716,8 +708,8 @@
                     "id": "Stage",
                     "path": "aws-appsync-integ/testFail/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -776,17 +768,41 @@
               "fqn": "@aws-cdk/aws-lambda.Function",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appsync-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appsync-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.140"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

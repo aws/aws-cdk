@@ -53,3 +53,12 @@ test('limitedRegionMap only returns information for certain regions', () => {
   expect(map2['us-east-1']).not.toBeDefined();
   expect(map2['cn-north-1']).toBeDefined();
 });
+
+
+test.each([
+  ['us-east-1', false],
+  ['me-south-1', true],
+  ['us-iso-west-1', false],
+])('%p should be opt-in: %p', (region, expected) => {
+  expect(RegionInfo.get(region).isOptInRegion).toEqual(expected);
+});

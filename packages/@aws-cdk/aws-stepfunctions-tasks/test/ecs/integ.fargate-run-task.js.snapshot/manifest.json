@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-sfn-tasks-ecs-fargate-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6150eda0985c6ae07e025f7ea5f584ded2b4f30cbfa1552bf682654d0035655.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/998dbb594bb7c679342b230e008a9707c46a79167240b84e7fd60529137d2fe5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,10 +186,7 @@
         "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TaskDef54694570"
           }
         ],
         "/aws-sfn-tasks-ecs-fargate-integ/TaskDef/TheContainer/LogGroup/Resource": [
@@ -246,12 +237,6 @@
             "data": "stateMachineArn"
           }
         ],
-        "/aws-sfn-tasks-ecs-fargate-integ/Service-principalMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceprincipalMap"
-          }
-        ],
         "/aws-sfn-tasks-ecs-fargate-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -266,6 +251,12 @@
         ]
       },
       "displayName": "aws-sfn-tasks-ecs-fargate-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

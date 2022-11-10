@@ -71,6 +71,13 @@ export class RegionInfo {
   }
 
   /**
+   * Whether the given region is an opt-in region
+   */
+  public get isOptInRegion(): boolean {
+    return Fact.find(this.name, FactName.IS_OPT_IN_REGION) === 'YES';
+  }
+
+  /**
    * The domain name suffix (e.g: amazonaws.com) for this region.
    */
   public get domainSuffix(): string | undefined {

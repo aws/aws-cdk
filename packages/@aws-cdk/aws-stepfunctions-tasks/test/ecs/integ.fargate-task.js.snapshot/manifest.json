@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a95a8adee2072c9ad7afdef5a8d219630effa0bb7d80da0516dfd2415ff6db4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d84e87fef79721717c4c5a825ab57809a18cbcd9dc338d3c558ac7167bf456b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,10 +186,7 @@
         "/aws-ecs-integ2/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TaskDef54694570"
           }
         ],
         "/aws-ecs-integ2/TaskDef/TheContainer/LogGroup/Resource": [
@@ -240,12 +231,6 @@
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-ecs-integ2/Service-principalMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceprincipalMap"
-          }
-        ],
         "/aws-ecs-integ2/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -260,6 +245,12 @@
         ]
       },
       "displayName": "aws-ecs-integ2"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

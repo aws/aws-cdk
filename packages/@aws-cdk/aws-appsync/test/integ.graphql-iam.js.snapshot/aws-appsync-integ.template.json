@@ -74,7 +74,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "appsync.amazonaws.com"
+        "Service": "appsync"
        }
       }
      ],
@@ -245,7 +245,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "lambda.amazonaws.com"
+        "Service": "lambda"
        }
       }
      ],
