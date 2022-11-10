@@ -446,6 +446,16 @@ export class ContainerDefinition extends Construct {
   private readonly inferenceAcceleratorResources: string[] = [];
 
   /**
+   * The container command
+   */
+  public command?: string[];
+
+  /**
+   * the container entrypoint
+   */
+  public entryPoint?: string[];
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
@@ -471,6 +481,8 @@ export class ContainerDefinition extends Construct {
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
+    this.command = props.command;
+    this.entryPoint = props.entryPoint;
 
     this.imageConfig = props.image.bind(this, this);
     this.imageName = this.imageConfig.imageName;
@@ -708,7 +720,7 @@ export class ContainerDefinition extends Construct {
    */
   public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
-      command: this.props.command,
+      command: this.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
       dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
@@ -716,7 +728,7 @@ export class ContainerDefinition extends Construct {
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
       dockerSecurityOptions: this.props.dockerSecurityOptions,
-      entryPoint: this.props.entryPoint,
+      entryPoint: this.entryPoint,
       essential: this.essential,
       hostname: this.props.hostname,
       image: this.imageConfig.imageName,

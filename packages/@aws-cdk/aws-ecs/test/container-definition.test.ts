@@ -478,6 +478,35 @@ describe('container definition', () => {
         });
       });
     });
+    
+    describe('With command and entrypoint', () => {
+      test('Able to change command and entryPoint', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const container = new ecs.TaskDefinition(stack, 'TD', {
+          compatibility: ecs.Compatibility.EC2_AND_FARGATE
+        }).addContainer("Container", {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          command: ["echo", "before"],
+          entryPoint: ["/bin/bash", "-c"]
+        });
+
+        container.entryPoint = ["/security-monitor", ...container.entryPoint!]
+        container.command = ["echo", "after"]
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+          ContainerDefinitions: [
+            Match.objectLike({
+              Command: Match.arrayEquals(["echo", "after"]),
+              entryPoint: Match.arrayEquals(["/security-monitor", "/bin/bash", "-c"])
+            })
+          ],
+        });
+      });
+    });
   });
 
   describe('Container Port', () => {
