@@ -515,14 +515,25 @@ export class LogFormat {
   public static readonly ALL_DEFAULT_FIELDS = new LogFormat('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}');
 
   /**
-   * The custom format. For users to specify unsupported fields.
+   * A custom format string.
+   *
+   * Gives full control over the format string fragment.
    */
-  public static custom(field: string): LogFormat {
-    return new LogFormat(`${field}`);
+  public static custom(formatString: string): LogFormat {
+    return new LogFormat(formatString);
   }
 
-  constructor(public readonly value: string) {}
+  /**
+   * A custom field name.
+   *
+   * If there is no ready-made constant for a new field yet, you can use this.
+   * The field name will automatically be wrapped in `${ ... }`.
+   */
+  public static field(field: string): LogFormat {
+    return new LogFormat(`\${${field}}`);
+  }
 
+  protected constructor(public readonly value: string) {}
 }
 
 /**
