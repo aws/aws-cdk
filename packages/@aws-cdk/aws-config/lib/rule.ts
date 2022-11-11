@@ -1121,6 +1121,11 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly INTERNET_GATEWAY_AUTHORIZED_VPC_ONLY = 'INTERNET_GATEWAY_AUTHORIZED_VPC_ONLY';
   /**
+   * Checks if Amazon Kinesis streams are encrypted at rest with server-side encryption.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/kinesis-stream-encrypted.html
+   */
+  public static readonly KINESIS_STREAM_ENCRYPTED = 'KINESIS_STREAM_ENCRYPTED';
+  /**
    * Checks whether customer master keys (CMKs) are not scheduled for deletion in AWS Key Management Service (KMS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/kms-cmk-not-scheduled-for-deletion.html
    */
@@ -1151,6 +1156,11 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly LAMBDA_INSIDE_VPC = 'LAMBDA_INSIDE_VPC';
   /**
+   * Checks if Lambda has more than 1 availability zone associated.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/lambda-vpc-multi-az-check.html
+   */
+  public static readonly LAMBDA_VPC_MULTI_AZ_CHECK = 'LAMBDA_VPC_MULTI_AZ_CHECK';
+  /**
    * Checks whether AWS Multi-Factor Authentication (MFA) is enabled for all IAM users that use a console password.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/mfa-enabled-for-iam-console-access.html
    */
@@ -1160,6 +1170,36 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/multi-region-cloudtrail-enabled.html
    */
   public static readonly CLOUDTRAIL_MULTI_REGION_ENABLED = 'MULTI_REGION_CLOUD_TRAIL_ENABLED';
+  /**
+   * Checks if default ports for SSH/RDP ingress traffic for network access control lists (NACLs) is unrestricted.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/nacl-no-unrestricted-ssh-rdp.html
+   */
+  public static readonly NACL_NO_UNRESTRICTED_SSH_RDP = 'NACL_NO_UNRESTRICTED_SSH_RDP';
+  /**
+   * Checks if an AWS Network Firewall policy is configured with a user defined stateless default action for fragmented packets.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-policy-default-action-fragment-packets.html
+   */
+  public static readonly NETFW_POLICY_DEFAULT_ACTION_FRAGMENT_PACKETS = 'NETFW_POLICY_DEFAULT_ACTION_FRAGMENT_PACKETS';
+  /**
+   * Checks if an AWS Network Firewall policy is configured with a user defined default stateless action for full packets.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-policy-default-action-full-packets.html
+   */
+  public static readonly NETFW_POLICY_DEFAULT_ACTION_FULL_PACKETS = 'NETFW_POLICY_DEFAULT_ACTION_FULL_PACKETS';
+  /**
+   * Check AWS Network Firewall policy is associated with stateful OR stateless rule groups.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-policy-rule-group-associated.html
+   */
+  public static readonly NETFW_POLICY_RULE_GROUP_ASSOCIATED = 'NETFW_POLICY_RULE_GROUP_ASSOCIATED';
+  /**
+   * Checks if a Stateless Network Firewall Rule Group contains rules.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-stateless-rule-group-not-empty.html
+   */
+  public static readonly NETFW_STATELESS_RULE_GROUP_NOT_EMPTY = 'NETFW_STATELESS_RULE_GROUP_NOT_EMPTY';
+  /**
+   * Checks if cross-zone load balancing is enabled on Network Load Balancers (NLBs).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/nlb-cross-zone-load-balancing-enabled.html
+   */
+  public static readonly NLB_CROSS_ZONE_LOAD_BALANCING_ENABLED = 'NLB_CROSS_ZONE_LOAD_BALANCING_ENABLED';
   /**
    * Checks if Amazon OpenSearch Service domains have fine-grained access control enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-access-control-enabled.html
