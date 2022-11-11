@@ -70,6 +70,9 @@ to be a self contained CDK app. The runner will execute the following for each f
   If this is set to `true` then the [update workflow](#update-workflow) will be disabled
 - `--app`
   The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".
+- `--test-regex`
+  Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.
+  
 Example:
 
 ```bash

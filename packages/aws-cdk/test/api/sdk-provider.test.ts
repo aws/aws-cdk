@@ -561,6 +561,18 @@ describe('with intercepted network calls', () => {
     // THEN
     await expect(provider.defaultAccount()).resolves.toBe(undefined);
   });
+
+  test('defaultAccount returns undefined, event if STS call fails with ExpiredToken', async () => {
+    // GIVEN
+    process.env.AWS_ACCESS_KEY_ID = `${uid}'<FAIL:ExpiredToken>'`;
+    process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+
+    // WHEN
+    const provider = await providerFromProfile(undefined);
+
+    // THEN
+    await expect(provider.defaultAccount()).resolves.toBe(undefined);
+  });
 });
 
 test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
