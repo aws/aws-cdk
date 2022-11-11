@@ -228,7 +228,8 @@ export class CdkToolkit {
         }
       }
 
-      print('%s: deploying...', chalk.bold(stack.displayName));
+      const stackIndex = stacks.indexOf(stack)+1;
+      print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
       const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
@@ -505,6 +506,8 @@ export class CdkToolkit {
 
     const action = options.fromDeploy ? 'deploy' : 'destroy';
     for (const stack of stacks.stackArtifacts) {
+      const stackIndex = stack.indexOf(stack)+1;
+      print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stacks.stackCount);
       success('%s: destroying...', chalk.blue(stack.displayName));
       try {
         await this.props.cloudFormation.destroyStack({
