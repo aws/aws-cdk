@@ -83,9 +83,9 @@ export interface OriginOptions {
   readonly originShieldRegion?: string;
 
   /**
-   * A flag for disabling Origin Shield on the origin.
+   * Origin Shield is enabled by setting originShieldRegion to a valid region, after this to disable Origin Shield again you must set this flag to false.
    *
-   * @default - Origin Shield not enabled
+   * @default - true
    */
   readonly originShieldEnabled?: boolean;
 
@@ -133,7 +133,7 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
   private readonly originShieldRegion?: string;
-  private readonly originShieldEnabled?: boolean;
+  private readonly originShieldEnabled?: (true | boolean);
   private readonly originId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
@@ -148,7 +148,7 @@ export abstract class OriginBase implements IOrigin {
     this.customHeaders = props.customHeaders;
     this.originShieldRegion = props.originShieldRegion;
     this.originId = props.originId;
-    this.originShieldEnabled = props.originShieldEnabled;
+    this.originShieldEnabled = props.originShieldEnabled ?? true;
   }
 
   /**
@@ -172,7 +172,7 @@ export abstract class OriginBase implements IOrigin {
         originCustomHeaders: this.renderCustomHeaders(),
         s3OriginConfig,
         customOriginConfig,
-        originShield: this.renderOriginShield(this.originShieldRegion, this.originShieldEnabled),
+        originShield: this.renderOriginShield(this.originShieldEnabled ?? true, this.originShieldRegion),
       },
     };
   }
@@ -210,8 +210,10 @@ export abstract class OriginBase implements IOrigin {
   /**
    * Takes origin shield region and converts to CfnDistribution.OriginShieldProperty
    */
-  private renderOriginShield(originShieldRegion?: string, originShieldEnabled?: boolean ): CfnDistribution.OriginShieldProperty | undefined {
-    if (originShieldEnabled === false) return { enabled: false };
+  private renderOriginShield(originShieldEnabled: boolean, originShieldRegion?: string): CfnDistribution.OriginShieldProperty | undefined {
+    if (!originShieldEnabled) {
+      return { enabled: false };
+    }
     return originShieldRegion ? { enabled: true, originShieldRegion } : undefined;
   }
 }
