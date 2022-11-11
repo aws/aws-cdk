@@ -1161,15 +1161,55 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly CLOUDTRAIL_MULTI_REGION_ENABLED = 'MULTI_REGION_CLOUD_TRAIL_ENABLED';
   /**
+   * Checks if Amazon OpenSearch Service domains have fine-grained access control enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-access-control-enabled.html
+   */
+  public static readonly OPENSEARCH_ACCESS_CONTROL_ENABLED = 'OPENSEARCH_ACCESS_CONTROL_ENABLED';
+  /**
+   * Checks if Amazon OpenSearch Service domains have audit logging enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-audit-logging-enabled.html
+   */
+  public static readonly OPENSEARCH_AUDIT_LOGGING_ENABLED = 'OPENSEARCH_AUDIT_LOGGING_ENABLED';
+  /**
+   * Checks if Amazon OpenSearch Service domains are configured with at least three data nodes and zoneAwarenessEnabled is true.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-data-node-fault-tolerance.html
+   */
+  public static readonly OPENSEARCH_DATA_NODE_FAULT_TOLERANCE = 'OPENSEARCH_DATA_NODE_FAULT_TOLERANCE';
+  /**
+   * Checks if Amazon OpenSearch Service domains have encryption at rest configuration enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-encrypted-at-rest.html
+   */
+  public static readonly OPENSEARCH_ENCRYPTED_AT_REST = 'OPENSEARCH_ENCRYPTED_AT_REST';
+  /**
+   * Checks whether connections to OpenSearch domains are using HTTPS.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-https-required.html
+   */
+  public static readonly OPENSEARCH_HTTPS_REQUIRED = 'OPENSEARCH_HTTPS_REQUIRED';
+  /**
+   * Checks if Amazon OpenSearch Service domains are in an Amazon Virtual Private Cloud (VPC).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-in-vpc-only.html
+   */
+  public static readonly OPENSEARCH_IN_VPC_ONLY = 'OPENSEARCH_IN_VPC_ONLY';
+  /**
+   * Checks if Amazon OpenSearch Service domains are configured to send logs to Amazon CloudWatch Logs.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-logs-to-cloudwatch.html
+   */
+  public static readonly OPENSEARCH_LOGS_TO_CLOUDWATCH = 'OPENSEARCH_LOGS_TO_CLOUDWATCH';
+  /**
+   * Check if Amazon OpenSearch Service nodes are encrypted end to end.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-node-to-node-encryption-check.html
+   */
+  public static readonly OPENSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK = 'OPENSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK';
+  /**
    * Checks if Amazon Relational Database Service (RDS) database instances are configured for automatic minor version upgrades.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-automatic-minor-version-upgrade-enabled.html
    */
-   public static readonly RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED = 'RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED';
+  public static readonly RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED = 'RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED';
   /**
    * Checks if an Amazon Relational Database Service (Amazon RDS) database cluster has changed the admin username from its default value.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-default-admin-check.html
    */
-   public static readonly RDS_CLUSTER_DEFAULT_ADMIN_CHECK = 'RDS_CLUSTER_DEFAULT_ADMIN_CHECK';
+  public static readonly RDS_CLUSTER_DEFAULT_ADMIN_CHECK = 'RDS_CLUSTER_DEFAULT_ADMIN_CHECK';
   /**
    * Checks if an Amazon Relational Database Service (Amazon RDS) cluster has deletion protection enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-deletion-protection-enabled.html
