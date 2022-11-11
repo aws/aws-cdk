@@ -620,23 +620,42 @@ describe('managed policy', () => {
     });
     Grant.addToPrincipal({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'] });
 
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        Policy23B91518: {
-          Type: 'AWS::IAM::ManagedPolicy',
-          Properties: {
-            ManagedPolicyName: 'MyManagedPolicyName',
-            PolicyDocument: {
-              Statement: [
-                { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
-              ],
-              Version: '2012-10-17',
-            },
-            Path: '/',
-            Description: '',
-          },
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      ManagedPolicyName: 'MyManagedPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
       },
+      Path: '/',
+      Description: '',
+    });
+  });
+
+  test('can be passed as a grantee to Grant.addToPrincipalOrResource', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+
+    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+    Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      ManagedPolicyName: 'MyManagedPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
+      },
+      Path: '/',
+      Description: '',
     });
   });
 
@@ -654,24 +673,7 @@ describe('managed policy', () => {
 
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow('Cannot use ManagedPolicy as a resource policy.');
-  });
-
-  test('fails when passed as a grantee to Grant.addToPrincipalOrResource', () => {
-    const mp = new ManagedPolicy(stack, 'Policy', {
-      managedPolicyName: 'MyManagedPolicyName',
-    });
-
-    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy');
-
-    expect(() => {
-      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow('Cannot use ManagedPolicy as a resource policy.');
+    }).toThrow('Cannot get policy fragment of ManagedPolicy MyStack/Policy');
   });
 });
 

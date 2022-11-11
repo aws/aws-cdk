@@ -448,20 +448,38 @@ describe('IAM policy', () => {
     Grant.addToPrincipal({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'] });
     pol.attachToUser(new User(stack, 'User'));
 
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        Policy23B91518: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyName: 'MyPolicyName',
-            PolicyDocument: {
-              Statement: [
-                { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
-              ],
-              Version: '2012-10-17',
-            },
-          },
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: 'MyPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('can be passed as a grantee to Grant.addToPrincipalOrResource', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+    pol.attachToUser(new User(stack, 'User'));
+
+    class DummyResource extends Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy');
+    Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resource, resourceArns: ['*'] });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: 'MyPolicyName',
+      PolicyDocument: {
+        Statement: [
+          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
@@ -480,24 +498,7 @@ describe('IAM policy', () => {
 
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow('Cannot use Policy as a resource policy.');
-  });
-
-  test('fails when passed as a grantee to Grant.addToPrincipalOrResource', () => {
-    const pol = new Policy(stack, 'Policy', {
-      policyName: 'MyPolicyName',
-    });
-
-    class DummyResource extends Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy');
-
-    expect(() => {
-      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow('Cannot use Policy as a resource policy.');
+    }).toThrow('Cannot get policy fragment of Policy MyStack/Policy');
   });
 });
 

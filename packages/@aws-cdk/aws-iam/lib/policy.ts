@@ -1,4 +1,4 @@
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
@@ -270,18 +270,23 @@ export class Policy extends Resource implements IPolicy, IGrantable {
  * A `grantPrincipal` of Policy.
  */
 class PolicyGrantPrincipal implements IPrincipal {
-  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction = 'sts:AssumeRole';
+  public readonly grantPrincipal: IPrincipal;
+  public readonly principalAccount?: string;
 
-  constructor(private policy: Policy) { }
-  public get assumeRoleAction(): string {
-    throw new Error('Cannot use Policy as a principal.');
+  constructor(private policy: Policy) {
+    this.grantPrincipal = this;
+    this.principalAccount = Stack.of(policy).account;
   }
+
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error('Cannot use Policy as a resource policy.');
+    throw new Error(`Cannot get policy fragment of Policy ${this.policy.node.path}`);
   }
+
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
   }
+
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     this.policy.addStatements(statement);
     return { statementAdded: true, policyDependable: this.policy };

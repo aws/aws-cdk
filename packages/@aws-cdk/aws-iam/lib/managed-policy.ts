@@ -309,20 +309,25 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
  * A `grantPrincipal` of ManagedPolicy.
  */
 class ManagedPolicyGrantPrincipal implements IPrincipal {
-  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction = 'sts:AssumeRole';
+  public readonly grantPrincipal: IPrincipal;
+  public readonly principalAccount?: string;
 
-  constructor(private policy: ManagedPolicy) { }
-  public get assumeRoleAction(): string {
-    throw new Error('Cannot use ManagedPolicy as a principal.');
+  constructor(private managedPolicy: ManagedPolicy) {
+    this.grantPrincipal = this;
+    this.principalAccount = Stack.of(managedPolicy).account;
   }
+
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error('Cannot use ManagedPolicy as a resource policy.');
+    throw new Error(`Cannot get policy fragment of ManagedPolicy ${this.managedPolicy.node.path}`);
   }
+
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
   }
+
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-    this.policy.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.policy };
+    this.managedPolicy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.managedPolicy };
   }
 }
