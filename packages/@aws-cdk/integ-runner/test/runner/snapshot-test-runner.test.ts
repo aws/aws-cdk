@@ -99,6 +99,21 @@ describe('IntegTest runSnapshotTests', () => {
     })]));
   });
 
+  describe('Nested Stacks', () => {
+    test('it will compare snapshots for nested stacks', () => {
+      // WHEN
+      const results = cdkMock.snapshotTest('xxxxx.test-with-nested-stack.js', 'xxxxx.test-with-nested-stack-changed.js.snapshot');
+
+      // THEN
+      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+        reason: DiagnosticReason.SNAPSHOT_FAILED,
+        testName: 'xxxxx.test-with-nested-stack',
+        stackName: expect.stringContaining('teststacknested'),
+        message: expect.stringContaining('AWS::SNS::Topic'),
+      })]));
+    });
+  });
+
   describe('Legacy parameter based assets ', () => {
     test('diff asset hashes', () => {
       // WHEN

@@ -32,6 +32,7 @@ describe('CLI', () => {
       [
         'xxxxx.integ-test1.js',
         'xxxxx.integ-test2.js',
+        'xxxxx.test-with-nested-stack.js',
         'xxxxx.test-with-new-assets-diff.js',
         'xxxxx.test-with-new-assets.js',
         'xxxxx.test-with-snapshot-assets-diff.js',

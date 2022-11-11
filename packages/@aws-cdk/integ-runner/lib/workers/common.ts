@@ -222,6 +222,11 @@ export interface Diagnostic {
   readonly testName: string;
 
   /**
+   * The name of the stack
+   */
+  readonly stackName: string;
+
+  /**
    * The diagnostic message
    */
   readonly message: string;

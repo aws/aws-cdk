@@ -68,6 +68,7 @@ export class MockCdkProvider {
       }),
       integOutDir: actualSnapshot ? 'test/test-data/' + actualSnapshot : undefined,
     });
+    integTest.actualTests();
     const results = integTest.testSnapshot();
 
     // THEN
