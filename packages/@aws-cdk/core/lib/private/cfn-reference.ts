@@ -66,7 +66,6 @@ export class CfnReference extends Reference {
               : [target.logicalId, attribute],
           }
         );
-
       return new CfnReference(cfnIntrinsic, attribute, target);
     });
   }
