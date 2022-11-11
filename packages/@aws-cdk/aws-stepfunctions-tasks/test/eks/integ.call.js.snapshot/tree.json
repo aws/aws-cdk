@@ -2310,15 +2310,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2437,14 +2429,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn": {
                 "id": "awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn",
                 "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn",
@@ -2493,7 +2477,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/1575b73035dbd1f51342d48a76c34d13ee2257c2535e0052c5935891bcb03eae.json"
+                          "/ab1f5372b52388fd8dceda376970ae31c23eff6f926bb1d1c90889974acd8aa6.json"
                         ]
                       ]
                     },
@@ -2772,7 +2756,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+                          "s3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3145,7 +3129,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/d107b4f5405dbf1b77dcc8edf350078b598fa865cc77542754d2a67303593d80.json"
+                          "/d9569b5b5ca48d9e729a43807b8481526445aa96dbdc41909c05a0685ca01a5a.json"
                         ]
                       ]
                     },
@@ -3204,15 +3188,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "Service": {
-                              "Fn::FindInMap": [
-                                "ServiceprincipalMap",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                "states"
-                              ]
-                            }
+                            "Service": "states.amazonaws.com"
                           }
                         }
                       ],
@@ -3304,14 +3280,6 @@
             "path": "aws-stepfunctions-tasks-eks-call-integ-test/stateMachineArn",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "Service-principalMap": {
-            "id": "Service-principalMap",
-            "path": "aws-stepfunctions-tasks-eks-call-integ-test/Service-principalMap",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
               "version": "0.0.0"
             }
           },

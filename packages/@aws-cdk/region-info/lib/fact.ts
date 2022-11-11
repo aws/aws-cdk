@@ -122,6 +122,12 @@ export class FactName {
   public static readonly CDK_METADATA_RESOURCE_AVAILABLE = 'cdk:metadata-resource:available';
 
   /**
+   * Whether the given region is an opt-in region or not. The value is a boolean
+   * modelled as `YES` or `NO`.
+   */
+  public static readonly IS_OPT_IN_REGION = 'aws:is-opt-in-region';
+
+  /**
    * The endpoint used for hosting S3 static websites
    */
   public static readonly S3_STATIC_WEBSITE_ENDPOINT = 's3-static-website:endpoint';
