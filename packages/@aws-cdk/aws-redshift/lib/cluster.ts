@@ -354,6 +354,15 @@ export interface ClusterProps {
    * @default - No Elastic IP
    */
   readonly elasticIp?: string
+
+  /**
+   * If this flag is set, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC).
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-routing.html
+   *
+   * @default - false
+   */
+  readonly enhancedVpcRouting?: boolean
 }
 
 /**
@@ -547,6 +556,7 @@ export class Cluster extends ClusterBase {
       encrypted: props.encrypted ?? true,
       classic: props.classicResizing,
       elasticIp: props.elasticIp,
+      enhancedVpcRouting: props.enhancedVpcRouting,
     });
 
     this.cluster.applyRemovalPolicy(removalPolicy, {

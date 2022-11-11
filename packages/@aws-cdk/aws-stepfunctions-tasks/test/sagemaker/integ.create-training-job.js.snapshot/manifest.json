@@ -1,0 +1,106 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "integ-stepfunctions-sagemaker.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-stepfunctions-sagemaker.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-stepfunctions-sagemaker": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-stepfunctions-sagemaker.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee50483be095ecd9aa75161bf81ea745fa603a9d8ba9262b4ba34c3d2b38e647.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-stepfunctions-sagemaker.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-stepfunctions-sagemaker.assets"
+      ],
+      "metadata": {
+        "/integ-stepfunctions-sagemaker/EncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptionKey1B843E66"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/TrainingData/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainingData3FDB6D34"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/TrainTask/SagemakerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainTaskSagemakerRole0A9B1CDD"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/TrainTask/SagemakerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainTaskSagemakerRoleDefaultPolicyA28F72FA"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-stepfunctions-sagemaker"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
