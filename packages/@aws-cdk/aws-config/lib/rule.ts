@@ -1085,6 +1085,11 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS = 'IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS';
   /**
+   * Checks if AWS Identity and Access Management (IAM) policies that you create grant permissions to all actions on individual AWS resources.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/iam-policy-no-statements-with-full-access.html
+   */
+  public static readonly IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS = 'IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS';
+  /**
    * Checks that AWS Identity and Access Management (IAM) policies in a list of policies are attached to all AWS roles.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/iam-role-managed-policy-check.html
    */
