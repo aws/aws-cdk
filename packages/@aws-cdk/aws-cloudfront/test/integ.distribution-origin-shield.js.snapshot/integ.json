@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "DistributionOriginShield/DefaultTest": {
+      "stacks": [
+        "integ-distribution-origin-shield"
+      ],
+      "assertionStack": "DistributionOriginShield/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributionOriginShieldDefaultTestDeployAssertDF7E33F9"
+    }
+  }
+}

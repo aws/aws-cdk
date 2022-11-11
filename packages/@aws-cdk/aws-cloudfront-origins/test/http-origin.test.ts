@@ -19,6 +19,8 @@ test('Renders minimal example with just a domain name', () => {
   expect(originBindConfig.originProperty).toEqual({
     id: 'StackOrigin029E19582',
     domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
       originSslProtocols: [
