@@ -1290,43 +1290,71 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly SNS_ENCRYPTED_KMS = 'SNS_ENCRYPTED_KMS';
   /**
+   * Checks if Amazon Simple Notification Service (SNS) logging is enabled 
+   * for the delivery status of notification messages sent to a topic for the endpoints.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/sns-topic-message-delivery-notification-enabled.html
+   */
+   public static readonly SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED = 'SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED';
+  /**
+   * Checks if AWS Systems Manager documents owned by the account are public.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ssm-document-not-public.html
+   */
+   public static readonly SSM_DOCUMENT_NOT_PUBLIC = 'SSM_DOCUMENT_NOT_PUBLIC';
+  /**
+   * Checks if a recovery point was created for AWS Storage Gateway volumes.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/storagegateway-last-backup-recovery-point-created.html
+   */
+   public static readonly STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED = 'STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
+   * hecks if Amazon Virtual Private Cloud (Amazon VPC) subnets are assigned a public IP address.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/subnet-auto-assign-public-ip-disabled.html
+   */
+   public static readonly SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED = 'SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED';
+  /**
    * Checks whether the required public access block settings are configured from account level.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-account-level-public-access-blocks.html
    */
   public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS';
   /**
-   * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible. This rule is
-   * NON_COMPLIANT if an Amazon S3 bucket is not listed in the excludedPublicBuckets parameter and bucket level
-   * settings are public.
+   * Checks if the required public access block settings are configured from account level.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-account-level-public-access-blocks-periodic.html
+   */
+  public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS_PERIODIC = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS_PERIODIC';
+  /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) Buckets allow user permissions through access control lists (ACLs).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-acl-prohibited.html
+   */
+  public static readonly S3_BUCKET_ACL_PROHIBITED = 'S3_BUCKET_ACL_PROHIBITED';
+  /**
+   * Checks if the Amazon Simple Storage Service bucket policy does not allow blacklisted bucket-level
+   * and object-level actions on resources in the bucket for principals from other AWS accounts.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-blacklisted-actions-prohibited.html
+   */
+  public static readonly S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED = 'S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED';
+  /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-level-public-access-prohibited.html
    */
   public static readonly S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED = 'S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED';
   /**
-   * Checks that the Amazon Simple Storage Service bucket policy does not allow
-   * blocked bucket-level and object-level actions on resources in the bucket
-   * for principals from other AWS accounts.
-   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-blacklisted-actions-prohibited.html
-   */
-  public static readonly S3_BUCKET_BLOCKED_ACTIONS_PROHIBITED = 'S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED';
-  /**
-   * Verifies that your Amazon Simple Storage Service bucket policies do not allow
-   * other inter-account permissions than the control Amazon S3 bucket policy provided.
-   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-policy-not-more-permissive.html
-   */
-  public static readonly S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE = 'S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE';
-  /**
    * Checks whether logging is enabled for your S3 buckets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-logging-enabled.html
    */
-  public static readonly S3_BUCKET_LOGGING_ENABLED = 'S3_BUCKET_LOGGING_ENABLED';
+  public static readonly  S3_BUCKET_LOGGING_ENABLED = ' S3_BUCKET_LOGGING_ENABLED';
   /**
-   * Checks that the access granted by the Amazon S3 bucket is restricted by any of the AWS principals,
-   * federated users, service principals, IP addresses, or VPCs that you provide.
+   * Checks that the access granted by the Amazon S3 bucket is restricted by any of the AWS principals, federated users,
+   * service principals, IP addresses, or VPCs that you provide.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-policy-grantee-check.html
    */
   public static readonly S3_BUCKET_POLICY_GRANTEE_CHECK = 'S3_BUCKET_POLICY_GRANTEE_CHECK';
   /**
-   * Checks that your Amazon S3 buckets do not allow public read access.
+   * Checks if your Amazon Simple Storage Service bucket policies do not allow other inter-account permissions 
+   * than the control Amazon S3 bucket policy that you provide.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-policy-not-more-permissive.html
+   */
+  public static readonly S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE = 'S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE';
+  /**
+   * Checks if your Amazon S3 buckets do not allow public read access.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-public-read-prohibited.html
    */
   public static readonly S3_BUCKET_PUBLIC_READ_PROHIBITED = 'S3_BUCKET_PUBLIC_READ_PROHIBITED';
@@ -1358,6 +1386,31 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly S3_BUCKET_VERSIONING_ENABLED = 'S3_BUCKET_VERSIONING_ENABLED';
   /**
+   * Checks if Amazon S3 Events Notifications are enabled on an S3 bucket.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-event-notifications-enabled.html
+   */
+   public static readonly S3_EVENT_NOTIFICATIONS_ENABLED = 'S3_EVENT_NOTIFICATIONS_ENABLED';
+  /**
+   * Checks if a recovery point was created for Amazon Simple Storage Service (Amazon S3).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-last-backup-recovery-point-created.html
+   */
+   public static readonly S3_LAST_BACKUP_RECOVERY_POINT_CREATED = 'S3_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
+   * Checks if a lifecycle rule is configured for an Amazon Simple Storage Service (Amazon S3) bucket.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-lifecycle-policy-check.html
+   */
+   public static readonly S3_LIFECYCLE_POLICY_CHECK = 'S3_LIFECYCLE_POLICY_CHECK';
+  /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) buckets are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-resources-protected-by-backup-plan.html
+   */
+   public static readonly S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) version enabled buckets have lifecycle policy configured.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-version-lifecycle-policy-check.html
+   */
+   public static readonly S3_VERSION_LIFECYCLE_POLICY_CHECK = 'S3_VERSION_LIFECYCLE_POLICY_CHECK';
+   /**
    * Checks whether AWS Key Management Service (KMS) key is configured for an Amazon SageMaker endpoint configuration.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/sagemaker-endpoint-configuration-kms-key-configured.html
    */
@@ -1382,6 +1435,22 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-scheduled-rotation-success-check.html
    */
   public static readonly SECRETSMANAGER_SCHEDULED_ROTATION_SUCCESS_CHECK = 'SECRETSMANAGER_SCHEDULED_ROTATION_SUCCESS_CHECK';
+  /**
+   * Checks if AWS Secrets Manager secrets have been rotated in the past specified number of days.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-secret-periodic-rotation.html
+   */
+  public static readonly SECRETSMANAGER_SECRET_PERIODIC_ROTATION = 'SECRETSMANAGER_SECRET_PERIODIC_ROTATION';
+  /**
+   * Checks if AWS Secrets Manager secrets have been accessed within a specified number of days.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-secret-unused.html
+   */
+  public static readonly SECRETSMANAGER_SECRET_UNUSED = 'SECRETSMANAGER_SECRET_UNUSED';
+  /**
+   * Checks if all secrets in AWS Secrets Manager are encrypted using the AWS managed key (aws/secretsmanager) 
+   * or a customer managed key that was created in AWS Key Management Service (AWS KMS).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-using-cmk.html
+   */
+  public static readonly SECRETSMANAGER_USING_CMK = 'SECRETSMANAGER_USING_CMK';
   /**
    * Checks whether Service Endpoint for the service provided in rule parameter is created for each Amazon VPC.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/service-vpc-endpoint-enabled.html
