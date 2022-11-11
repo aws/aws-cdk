@@ -883,9 +883,10 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Create a CloudFormation Export for a value
    *
-   * Returns a string representing the corresponding `Fn.importValue()`
-   * expression for this Export. You can control the name for the export by
-   * passing the `name` option.
+   * Returns a string or a string list representing the corresponding `Fn.importValue()`
+   * expression for this Export. String lists will wrap the export value with an
+   * `Fn::Join` and the import value with an `Fn::Split`, since CloudFormation can only
+   * export strings. You can control the name for the export by passing the `name` option.
    *
    * If you don't supply a value for `name`, the value you're exporting must be
    * a Resource attribute (for example: `bucket.bucketName`) and it will be
@@ -926,7 +927,7 @@ export class Stack extends Construct implements ITaggable {
    * - Don't forget to remove the `exportValue()` call as well.
    * - Deploy again (this time only the `producerStack` will be changed -- the bucket will be deleted).
    */
-  public exportValue(exportedValue: any, options: ExportValueOptions = {}) {
+  public exportValue(exportedValue: any, options: ExportValueOptions = {}): any {
     if (options.name) {
       new CfnOutput(this, `Export${options.name}`, {
         value: exportedValue,
