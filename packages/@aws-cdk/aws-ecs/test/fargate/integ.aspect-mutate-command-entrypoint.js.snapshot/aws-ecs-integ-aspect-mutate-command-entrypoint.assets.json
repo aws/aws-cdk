@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "06c86f220041b0213543c7e1cc0c884dafaff5e050f14af3218e8349df4732fc": {
+      "source": {
+        "path": "aws-ecs-integ-aspect-mutate-command-entrypoint.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "06c86f220041b0213543c7e1cc0c884dafaff5e050f14af3218e8349df4732fc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

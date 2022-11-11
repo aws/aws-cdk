@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-ecs-fargate-integ-aspect-mutate-command-entrypoint/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-aspect-mutate-command-entrypoint"
+      ],
+      "assertionStack": "aws-ecs-fargate-integ-aspect-mutate-command-entrypoint/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsfargateintegaspectmutatecommandentrypointDefaultTestDeployAssertD52472F2"
+    }
+  }
+}
