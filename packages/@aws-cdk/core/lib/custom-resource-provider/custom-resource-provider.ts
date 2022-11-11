@@ -8,6 +8,7 @@ import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
 import { FileSystem } from '../fs';
+import { PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
 import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
@@ -197,6 +198,7 @@ export class CustomResourceProvider extends Construct {
   public readonly roleArn: string;
 
   private policyStatements?: any[];
+  private _role?: CfnResource;
 
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
     super(scope, id);
@@ -230,20 +232,51 @@ export class CustomResourceProvider extends Construct {
       }
     }
 
-    const role = new CfnResource(this, 'Role', {
-      type: 'AWS::IAM::Role',
-      properties: {
-        AssumeRolePolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
+    const config = getPrecreatedRoleConfig(this, `${this.node.path}/Role`);
+    const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
+    const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
+
+    // need to initialize this attribute, but there should never be an instance
+    // where config.enabled=true && config.preventSynthesis=true
+    this.roleArn = '';
+    if (config.enabled) {
+      // gives policyStatements a chance to resolve
+      this.node.addValidation({
+        validate: () => {
+          PolicySynthesizer.getOrCreate(this).addRole(`${this.node.path}/Role`, {
+            missing: !config.precreatedRoleName,
+            roleName: config.precreatedRoleName ?? id+'Role',
+            managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
+            policyStatements: this.policyStatements ?? [],
+            assumeRolePolicy: assumeRolePolicyDoc as any,
+          });
+          return [];
         },
-        ManagedPolicyArns: [
-          { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
-        ],
-        Policies: Lazy.any({ produce: () => this.renderPolicies() }),
-      },
-    });
-    this.roleArn = Token.asString(role.getAtt('Arn'));
+      });
+      this.roleArn = Stack.of(this).formatArn({
+        region: '',
+        service: 'iam',
+        resource: 'role',
+        resourceName: config.precreatedRoleName,
+      });
+    }
+    if (!config.preventSynthesis) {
+      this._role = new CfnResource(this, 'Role', {
+        type: 'AWS::IAM::Role',
+        properties: {
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: assumeRolePolicyDoc,
+          },
+          ManagedPolicyArns: [
+            { 'Fn::Sub': managedPolicyArn },
+          ],
+          Policies: Lazy.any({ produce: () => this.renderPolicies() }),
+        },
+      });
+      this.roleArn = Token.asString(this._role.getAtt('Arn'));
+    }
+
 
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
@@ -258,14 +291,16 @@ export class CustomResourceProvider extends Construct {
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
-        Role: role.getAtt('Arn'),
+        Role: this.roleArn,
         Runtime: customResourceProviderRuntimeToString(props.runtime),
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
       },
     });
 
-    handler.addDependsOn(role);
+    if (this._role) {
+      handler.addDependsOn(this._role);
+    }
 
     if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, assetFileName);
