@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { traceMethods } from '../../util/tracing';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
@@ -81,6 +82,7 @@ export interface SdkOptions {
 /**
  * Base functionality of SDK without credential fetching
  */
+@traceMethods
 export class SDK implements ISDK {
   private static readonly accountCache = new AccountAccessKeyCache();
 

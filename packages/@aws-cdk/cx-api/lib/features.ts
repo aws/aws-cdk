@@ -59,6 +59,8 @@ export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscri
 export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
+export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
+export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -510,6 +512,35 @@ export const FLAGS: Record<string, FlagInfo> = {
       This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
+      `,
+    introducedIn: { v2: '2.51.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_STANDARDIZED_SERVICE_PRINCIPALS]: {
+    type: FlagType.BugFix,
+    summary: 'Use standardized (global) service principals everywhere',
+    detailsMd: `
+      We used to maintain a database of exceptions to Service Principal names in various regions. This database
+      is no longer necessary: all service principals names have been standardized to their global form (\`SERVICE.amazonaws.com\`).
+
+      This flag disables use of that exceptions database and always uses the global service principal.
+      `,
+    introducedIn: { v2: '2.51.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: {
+    type: FlagType.BugFix,
+    summary: 'Avoid setting the "ECS" deployment controller when adding a circuit breaker',
+    detailsMd: `
+      Enable this feature flag to avoid setting the "ECS" deployment controller when adding a circuit breaker to an
+      ECS Service, as this will trigger a full replacement which fails to deploy when using set service names.
+      This does not change any behaviour as the default deployment controller when it is not defined is ECS.
+
+      This is a feature flag as the new behavior provides a better default experience for the users.
       `,
     introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
