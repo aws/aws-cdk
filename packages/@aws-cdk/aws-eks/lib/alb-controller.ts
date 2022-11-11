@@ -88,6 +88,21 @@ export class AlbControllerVersion {
   public static readonly V2_4_1 = new AlbControllerVersion('v2.4.1', false);
 
   /**
+   * v2.4.2
+   */
+  public static readonly V2_4_2 = new AlbControllerVersion('v2.4.2', false);
+
+  /**
+   * v2.4.3
+   */
+  public static readonly V2_4_3 = new AlbControllerVersion('v2.4.3', false);
+
+  /**
+   * v2.4.4
+   */
+  public static readonly V2_4_4 = new AlbControllerVersion('v2.4.4', false);
+
+  /**
    * Specify a custom version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
@@ -112,7 +127,7 @@ export class AlbControllerVersion {
 /**
  * ALB Scheme.
  *
- * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/#scheme
+ * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/ingress/annotations/#scheme
  */
 export enum AlbScheme {
 
@@ -212,14 +227,14 @@ export class AlbController extends Construct {
       throw new Error("'albControllerOptions.policy' is required when using a custom controller version");
     }
 
-    // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions
+    // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/#configure-iam
     const policy: any = props.policy ?? JSON.parse(fs.readFileSync(path.join(__dirname, 'addons', `alb-iam_policy-${props.version.version}.json`), 'utf8'));
 
     for (const statement of policy.Statement) {
       serviceAccount.addToPrincipalPolicy(iam.PolicyStatement.fromJson(statement));
     }
 
-    // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#add-controller-to-cluster
+    // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/#add-controller-to-cluster
     const chart = new HelmChart(this, 'Resource', {
       cluster: props.cluster,
       chart: 'aws-load-balancer-controller',
@@ -230,8 +245,8 @@ export class AlbController extends Construct {
       // latest at the time of writing. We intentionally don't
       // want to expose this since helm here is just an implementation detail
       // for installing a specific version of the controller itself.
-      // https://github.com/aws/eks-charts/blob/v0.0.65/stable/aws-load-balancer-controller/Chart.yaml
-      version: '1.4.1',
+      // https://github.com/aws/eks-charts/blob/v0.0.111/stable/aws-load-balancer-controller/Chart.yaml
+      version: '1.4.5',
 
       wait: true,
       timeout: Duration.minutes(15),

@@ -191,7 +191,7 @@ export class KubernetesManifest extends Construct {
   /**
    * Inject the necessary ingress annontations if possible (and requested).
    *
-   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/
+   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/ingress/annotations/
    */
   private injectIngressAlbAnnotations(manifest: Record<string, any>[], scheme: AlbScheme) {
 
