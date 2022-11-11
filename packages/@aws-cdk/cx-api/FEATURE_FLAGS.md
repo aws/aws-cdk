@@ -36,10 +36,9 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:arnFormatIncludesClusterName](#aws-cdkaws-ecsarnformatincludesclustername) | ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID. | 2.35.0 | (fix) |
 | [@aws-cdk/aws-apigateway:disableCloudWatchRole](#aws-cdkaws-apigatewaydisablecloudwatchrole) | Make default CloudWatch Role behavior safe for multiple API Gateways in one environment | 2.38.0 | (fix) |
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) |
+| [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | V2NEXT | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | V2NEXT | (fix) |
-| [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
-| [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
-| [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
+| [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -662,7 +661,7 @@ This is a feature flag as the new behavior provides a better default experience 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.51.0 | `false` | `true` |
+| V2NEXT | `false` | `true` |
 
 
 ### @aws-cdk/aws-events:eventsTargetQueueSameAccount
@@ -693,7 +692,7 @@ This flag disables use of that exceptions database and always uses the global se
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.51.0 | `false` | `true` |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
