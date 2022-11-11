@@ -230,6 +230,8 @@ iam.Role.customizeRoles(stack, {
 });
 ```
 
+#### Generating a permissions report
+
 It is also possible to generate the report _without_ preventing the role/policy creation.
 
 ```ts
