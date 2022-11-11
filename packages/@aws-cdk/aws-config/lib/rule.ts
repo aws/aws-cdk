@@ -1161,10 +1161,40 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly CLOUDTRAIL_MULTI_REGION_ENABLED = 'MULTI_REGION_CLOUD_TRAIL_ENABLED';
   /**
+   * Checks if Amazon Relational Database Service (RDS) database instances are configured for automatic minor version upgrades.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-automatic-minor-version-upgrade-enabled.html
+   */
+   public static readonly RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED = 'RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED';
+  /**
+   * Checks if an Amazon Relational Database Service (Amazon RDS) database cluster has changed the admin username from its default value.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-default-admin-check.html
+   */
+   public static readonly RDS_CLUSTER_DEFAULT_ADMIN_CHECK = 'RDS_CLUSTER_DEFAULT_ADMIN_CHECK';
+  /**
    * Checks if an Amazon Relational Database Service (Amazon RDS) cluster has deletion protection enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-deletion-protection-enabled.html
    */
   public static readonly RDS_CLUSTER_DELETION_PROTECTION_ENABLED = 'RDS_CLUSTER_DELETION_PROTECTION_ENABLED';
+  /**
+   * Checks if an Amazon RDS Cluster has AWS Identity and Access Management (IAM) authentication enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-iam-authentication-enabled.html
+   */
+  public static readonly RDS_CLUSTER_IAM_AUTHENTICATION_ENABLED = 'RDS_CLUSTER_IAM_AUTHENTICATION_ENABLED';
+  /**
+   * Checks if Multi-AZ replication is enabled on Amazon Aurora and Hermes clusters managed by Amazon Relational Database Service (Amazon RDS).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-multi-az-enabled.html
+   */
+  public static readonly RDS_CLUSTER_MULTI_AZ_ENABLED = 'RDS_CLUSTER_MULTI_AZ_ENABLED';
+  /**
+   * Checks if an Amazon Relational Database Service (Amazon RDS) database has changed the admin username from its default value.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-default-admin-check.html
+   */
+  public static readonly RDS_INSTANCE_DEFAULT_ADMIN_CHECK = 'RDS_INSTANCE_DEFAULT_ADMIN_CHECK';
+  /**
+   *Checks if there are any Amazon Relational Database Service (RDS) DB security groups that are not the default DB security group.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-db-security-group-not-allowed.html
+   */
+   public static readonly RDS_DB_SECURITY_GROUP_NOT_ALLOWED = 'RDS_DB_SECURITY_GROUP_NOT_ALLOWED';
   /**
    * Checks if an Amazon Relational Database Service (Amazon RDS) instance has deletion protection enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-deletion-protection-enabled.html
@@ -1206,6 +1236,11 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly RDS_IN_BACKUP_PLAN = 'RDS_IN_BACKUP_PLAN';
   /**
+   * Checks if a recovery point was created for Amazon Relational Database Service (Amazon RDS).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-last-backup-recovery-point-created.html
+   */
+   public static readonly RDS_LAST_BACKUP_RECOVERY_POINT_CREATED = 'RDS_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
    * Check whether the Amazon Relational Database Service instances are not publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-public-access-check.html
    */
@@ -1215,6 +1250,11 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-multi-az-support.html
    */
   public static readonly RDS_MULTI_AZ_SUPPORT = 'RDS_MULTI_AZ_SUPPORT';
+  /**
+   * Checks if Amazon Relational Database Service (Amazon RDS) instances are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-resources-protected-by-backup-plan.html
+   */
+  public static readonly RDS_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'RDS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks if Amazon Relational Database Service (Amazon RDS) snapshots are public.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-snapshots-public-prohibited.html
@@ -1226,10 +1266,20 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly RDS_STORAGE_ENCRYPTED = 'RDS_STORAGE_ENCRYPTED';
   /**
+   * Checks if Amazon Redshift clusters are logging audits to a specific bucket.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-audit-logging-enabled.html
+   */
+  public static readonly REDSHIFT_AUDIT_LOGGING_ENABLED = 'REDSHIFT_AUDIT_LOGGING_ENABLED';
+  /**
    * Checks whether Amazon Redshift clusters have the specified settings.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-configuration-check.html
    */
   public static readonly REDSHIFT_CLUSTER_CONFIGURATION_CHECK = 'REDSHIFT_CLUSTER_CONFIGURATION_CHECK';
+  /**
+   * Checks if Amazon Redshift clusters are using a specified AWS Key Management Service (AWS KMS) key for encryption.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-kms-enabled.html
+   */
+  public static readonly REDSHIFT_CLUSTER_KMS_ENABLED = 'REDSHIFT_CLUSTER_KMS_ENABLED';
   /**
    * Checks whether Amazon Redshift clusters have the specified maintenance settings.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-maintenancesettings-check.html
@@ -1240,6 +1290,21 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-public-access-check.html
    */
   public static readonly REDSHIFT_CLUSTER_PUBLIC_ACCESS_CHECK = 'REDSHIFT_CLUSTER_PUBLIC_ACCESS_CHECK';
+  /**
+   * Checks if an Amazon Redshift cluster has changed the admin username from its default value.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-default-admin-check.html
+   */
+  public static readonly REDSHIFT_DEFAULT_ADMIN_CHECK = 'REDSHIFT_DEFAULT_ADMIN_CHECK';
+  /**
+   * Checks if a Redshift cluster has changed its database name from the default value.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-default-db-name-check.html
+   */
+  public static readonly REDSHIFT_DEFAULT_DB_NAME_CHECK = 'REDSHIFT_DEFAULT_DB_NAME_CHECK';
+  /**
+   * Checks if Amazon Redshift cluster has 'enhancedVpcRouting' enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-enhanced-vpc-routing-enabled.html
+   */
+  public static readonly REDSHIFT_ENHANCED_VPC_ROUTING_ENABLED = 'REDSHIFT_ENHANCED_VPC_ROUTING_ENABLED';
   /**
    * Checks whether your resources have the tags that you specify.
    * For example, you can check whether your Amazon EC2 instances have the CostCenter tag.
