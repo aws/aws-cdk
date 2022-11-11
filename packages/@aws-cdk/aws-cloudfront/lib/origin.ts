@@ -133,7 +133,7 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
   private readonly originShieldRegion?: string;
-  private readonly originShieldEnabled?: (true | boolean);
+  private readonly originShieldEnabled: boolean;
   private readonly originId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
@@ -172,7 +172,7 @@ export abstract class OriginBase implements IOrigin {
         originCustomHeaders: this.renderCustomHeaders(),
         s3OriginConfig,
         customOriginConfig,
-        originShield: this.renderOriginShield(this.originShieldEnabled ?? true, this.originShieldRegion),
+        originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
       },
     };
   }
