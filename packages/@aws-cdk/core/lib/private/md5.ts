@@ -10,6 +10,8 @@ import * as crypto from 'crypto';
 
 let _impl: undefined | ((x: string) => string);
 
+/* eslint-disable no-restricted-syntax */
+
 /**
  * Return a hash of the given input string, in hex format
  */
@@ -26,7 +28,6 @@ export function md5hash(x: string) {
 }
 
 /* eslint-disable no-bitwise */
-/* eslint-disable no-restricted-syntax */
 
 export function cryptoMd5(x: string) {
   const hash = crypto.createHash('md5');
