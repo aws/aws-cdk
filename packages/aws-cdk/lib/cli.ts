@@ -24,6 +24,7 @@ import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
+import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -281,6 +282,10 @@ async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);
+
+    if (argv.verbose > 2) {
+      enableTracing(true);
+    }
   }
 
   if (argv.ci) {
@@ -515,7 +520,7 @@ async function initCommandLine() {
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
-          assetParallelism: args.assetParallelism,
+          assetParallelism: configuration.settings.get(['assetParallelism']),
         });
 
       case 'import':

@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06ee.zip"
+     "S3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -841,15 +841,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": {
-         "Fn::FindInMap": [
-          "ServiceprincipalMap",
-          {
-           "Ref": "AWS::Region"
-          },
-          "states"
-         ]
-        }
+        "Service": "states.amazonaws.com"
        }
       }
      ],
@@ -955,100 +947,6 @@
     "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A",
     "ProviderwaiterstatemachineRole0C7159F9"
    ]
-  }
- },
- "Mappings": {
-  "ServiceprincipalMap": {
-   "af-south-1": {
-    "states": "states.af-south-1.amazonaws.com"
-   },
-   "ap-east-1": {
-    "states": "states.ap-east-1.amazonaws.com"
-   },
-   "ap-northeast-1": {
-    "states": "states.ap-northeast-1.amazonaws.com"
-   },
-   "ap-northeast-2": {
-    "states": "states.ap-northeast-2.amazonaws.com"
-   },
-   "ap-northeast-3": {
-    "states": "states.ap-northeast-3.amazonaws.com"
-   },
-   "ap-south-1": {
-    "states": "states.ap-south-1.amazonaws.com"
-   },
-   "ap-southeast-1": {
-    "states": "states.ap-southeast-1.amazonaws.com"
-   },
-   "ap-southeast-2": {
-    "states": "states.ap-southeast-2.amazonaws.com"
-   },
-   "ap-southeast-3": {
-    "states": "states.ap-southeast-3.amazonaws.com"
-   },
-   "ca-central-1": {
-    "states": "states.ca-central-1.amazonaws.com"
-   },
-   "cn-north-1": {
-    "states": "states.cn-north-1.amazonaws.com"
-   },
-   "cn-northwest-1": {
-    "states": "states.cn-northwest-1.amazonaws.com"
-   },
-   "eu-central-1": {
-    "states": "states.eu-central-1.amazonaws.com"
-   },
-   "eu-north-1": {
-    "states": "states.eu-north-1.amazonaws.com"
-   },
-   "eu-south-1": {
-    "states": "states.eu-south-1.amazonaws.com"
-   },
-   "eu-south-2": {
-    "states": "states.eu-south-2.amazonaws.com"
-   },
-   "eu-west-1": {
-    "states": "states.eu-west-1.amazonaws.com"
-   },
-   "eu-west-2": {
-    "states": "states.eu-west-2.amazonaws.com"
-   },
-   "eu-west-3": {
-    "states": "states.eu-west-3.amazonaws.com"
-   },
-   "me-south-1": {
-    "states": "states.me-south-1.amazonaws.com"
-   },
-   "sa-east-1": {
-    "states": "states.sa-east-1.amazonaws.com"
-   },
-   "us-east-1": {
-    "states": "states.us-east-1.amazonaws.com"
-   },
-   "us-east-2": {
-    "states": "states.us-east-2.amazonaws.com"
-   },
-   "us-gov-east-1": {
-    "states": "states.us-gov-east-1.amazonaws.com"
-   },
-   "us-gov-west-1": {
-    "states": "states.us-gov-west-1.amazonaws.com"
-   },
-   "us-iso-east-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-iso-west-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-isob-east-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-west-1": {
-    "states": "states.us-west-1.amazonaws.com"
-   },
-   "us-west-2": {
-    "states": "states.us-west-2.amazonaws.com"
-   }
   }
  },
  "Outputs": {
