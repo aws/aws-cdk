@@ -1,7 +1,10 @@
+/**
+ * Generate FEATURE_FLAGS.md, a report of all current feature flags
+ */
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as feats from '../lib/features';
-import { FlagInfo, FlagType } from '../lib/private/flag-modeling';
+import { FlagInfo, FlagType, compareVersions } from '../lib/private/flag-modeling';
 
 async function main() {
   await updateMarkdownFile(path.join(__dirname, '..', 'FEATURE_FLAGS.md'), {
@@ -129,8 +132,8 @@ function flags(pred: (x: FlagInfo) => boolean) {
 
   entries.sort((a, b) => firstCmp(
     // Sort by versions first
-    cmpVersions(a[1].introducedIn.v2, b[1].introducedIn.v2),
-    cmpVersions(a[1].introducedIn.v1, b[1].introducedIn.v1),
+    compareVersions(a[1].introducedIn.v2, b[1].introducedIn.v2),
+    compareVersions(a[1].introducedIn.v1, b[1].introducedIn.v1),
     // Then sort by name
     a[0].localeCompare(b[0])));
 
@@ -201,21 +204,6 @@ async function updateMarkdownFile(filename: string, sections: Record<string, str
   }
 
   await fs.writeFile(filename, contents, { encoding: 'utf-8' });
-}
-
-function cmpVersions(a: string | undefined, b: string | undefined): number {
-  if (a === undefined && b === undefined) { return 0; }
-  if (a === undefined) { return -1; }
-  if (b === undefined) { return 1; }
-
-  const as = a.split('.').map(x => parseInt(x, 10));
-  const bs = b.split('.').map(x => parseInt(x, 10));
-
-  for (let i = 0; i < Math.min(as.length, bs.length); i++) {
-    if (as[i] < bs[i]) { return -1; }
-    if (as[i] > bs[i]) { return 1; }
-  }
-  return as.length - bs.length;
 }
 
 function firstCmp(...xs: number[]) {

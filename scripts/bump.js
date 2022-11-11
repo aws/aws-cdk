@@ -24,6 +24,7 @@ async function main() {
     bumpFiles: [ { filename: ver.versionFile, type: 'json' } ],
     infile: ver.changelogFile,
     prerelease: ver.prerelease,
+    repoRoot,
     scripts: {
       postchangelog: `node ${path.join(__dirname, 'changelog-experimental-fix.js')} ${changelogPath}`
     }

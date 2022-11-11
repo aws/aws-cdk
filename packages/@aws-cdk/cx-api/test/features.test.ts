@@ -1,4 +1,7 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as feats from '../lib/features';
+import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
 test('all future flags have defaults configured', () => {
   Object.keys(feats.FLAGS).forEach(flag => {
@@ -19,6 +22,7 @@ test('feature flag defaults may not be changed anymore', () => {
   // In that case, it is permitted to name the flag `oldBehavior`, add a new default set to `true`,
   // and have the recommended value be `false`.
   expect(feats.CURRENT_VERSION_FLAG_DEFAULTS).toEqual({
+    // V1->V2 defaults below here
     [feats.APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
     [feats.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
     [feats.ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
@@ -33,6 +37,9 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
     [feats.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
     [feats.CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+    // Add new disabling feature flags below this line
+    // ...
+
   });
 });
 
@@ -47,4 +54,38 @@ test('expired feature flags may not be changed anymore', () => {
     feats.S3_GRANT_WRITE_WITHOUT_ACL,
     feats.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME,
   ].sort());
+});
+
+test.each([
+  ['1.2.3', '1.2.3', 0],
+  ['1.2.3', '1.2.4', -1],
+  ['1.2.3', '2.0.0', -1],
+  ['100.2.3', '2.0.0', 1],
+  ['V2NEXT', 'V2NEXT', 0],
+  ['1.0.0', 'V2NEXT', -1],
+  ['2.100.0', 'V2NEXT', -1],
+  ['3.100.0', 'V2NEXT', 1],
+])('compareVersions(%p, %p) -> %p (and the reverse)', (a, b, expected) => {
+  expect(compareVersions(a, b)).toEqual(expected);
+  expect(compareVersions(b, a)).toBeCloseTo(-expected, 10); // Gets around expect(-0).toEqual(0) failing... :x
+});
+
+const currentv2: string = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../../version.v2.json'), { encoding: 'utf-8' })).version;
+
+describe(`introducedIn.v2 is either <= ${currentv2} or magic value "${MAGIC_V2NEXT}"`, () => {
+  test.each(Object.keys(feats.FLAGS))('for flag %p', flag => {
+    const v2In = feats.FLAGS[flag].introducedIn.v2;
+    if (v2In === undefined || v2In === MAGIC_V2NEXT) {
+      return;
+    }
+
+    // If defined and not magic, it must be in the past w.r.t. the current v2 version
+    expect(compareVersions(v2In, currentv2)).not.toEqual(1);
+  });
+});
+
+test('features.ts should not contain a reference to the constant with the magic value', () => {
+  // If it did, the above test would succeed but we would not be able to substitute the string at bump time
+  const featuresSourceFile = path.join(__dirname, '..', 'lib', 'features.ts');
+  expect(fs.readFileSync(featuresSourceFile, { encoding: 'utf-8' })).not.toContain('MAGIC_V2NEXT');
 });

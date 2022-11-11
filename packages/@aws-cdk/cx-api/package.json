@@ -41,6 +41,7 @@
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint && madge --circular --extensions js lib",
+    "on-bump": "yarn build && node ./build-tools/update-vnext && yarn build && node ./build-tools/flag-report",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",

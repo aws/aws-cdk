@@ -15,6 +15,7 @@ const args: ReleaseOptions = {
   includeDateInChangelog: false,
   releaseAs: 'minor',
   versionFile: 'version.json',
+  repoRoot: '',
 };
 
 describe('getConventionalCommitsFromGitHistory', () => {
