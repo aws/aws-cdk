@@ -1,4 +1,4 @@
-import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, SecretValue, Stack } from '@aws-cdk/core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderGoogle } from '../lib';
 
 /*
@@ -17,6 +17,7 @@ new UserPoolIdentityProviderGoogle(stack, 'google', {
   userPool: userpool,
   clientId: 'google-client-id',
   clientSecret: 'google-client-secret',
+  clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
   attributeMapping: {
     givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
     familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
