@@ -1,4 +1,4 @@
-import * as crypto from 'crypto';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { IVpcEndpointService } from '@aws-cdk/aws-ec2';
 import { Fn, Names, Stack } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
@@ -225,7 +225,5 @@ interface PrivateDnsConfiguration {
  * Hash a string
  */
 function hashcode(s: string): string {
-  const hash = crypto.createHash('md5');
-  hash.update(s);
-  return hash.digest('hex');
+  const hash = md5hash(s);
 };
