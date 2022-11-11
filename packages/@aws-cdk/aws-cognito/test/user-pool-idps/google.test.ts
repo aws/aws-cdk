@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { Stack } from '@aws-cdk/core';
+import { SecretValue, Stack } from '@aws-cdk/core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderGoogle } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
@@ -14,6 +14,29 @@ describe('UserPoolIdentityProvider', () => {
         userPool: pool,
         clientId: 'google-client-id',
         clientSecret: 'google-client-secret',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'Google',
+        ProviderType: 'Google',
+        ProviderDetails: {
+          client_id: 'google-client-id',
+          client_secret: 'google-client-secret',
+          authorize_scopes: 'profile',
+        },
+      });
+    });
+
+    test('clientSecretValue', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
+        userPool: pool,
+        clientId: 'google-client-id',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
