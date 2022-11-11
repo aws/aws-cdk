@@ -120,6 +120,127 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 });
 ```
 
+### Customizing role creation
+
+It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
+creating roles by using the `customizeRoles` method for special cases. One such case is using CDK in
+an environment where role creation is not allowed or needs to be managed through a process outside
+of the CDK application.
+
+An example of how to opt in to this behavior is below:
+
+```ts
+declare const stack: Stack;
+iam.Role.customizeRoles(stack);
+```
+
+CDK will not create any IAM roles or policies with the `stack` scope. `cdk synth` will fail and
+it will generate a policy report to the cloud assembly (i.e. cdk.out). The `iam-policy-report.txt`
+report will contain a list of IAM roles and associated permissions that would have been created.
+This report can be used to create the roles with the appropriate permissions outside of
+the CDK application. 
+
+Once the missing roles have been created, their names can be added to the `usePrecreatedRoles`
+property, like shown below:
+
+```ts
+declare const app: App;
+const stack = new Stack(app, 'MyStack');
+iam.Role.customizeRoles(stack, {
+  usePrecreatedRoles: {
+    'MyStack/MyRole': 'my-precreated-role-name',
+  },
+});
+
+new iam.Role(stack, 'MyRole', {
+  assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+});
+```
+
+If any IAM policies reference deploy time values (i.e. ARN of a resource that hasn't been created
+yet) you will have to modify the generated report to be more generic. For example, given the
+following CDK code:
+
+```ts
+declare const app: App;
+const stack = new Stack(app, 'MyStack');
+iam.Role.customizeRoles(stack);
+
+const fn = new lambda.Function(stack, 'MyLambda', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+});
+
+const bucket = new s3.Bucket(stack, 'Bucket');
+bucket.grantRead(fn);
+```
+
+The following report will be generated.
+
+```txt
+<missing role> (MyStack/MyLambda/ServiceRole)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "lambda.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+[
+  "arn:(PARTITION):iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+]
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+[
+  {
+    "Action": [
+      "s3:GetObject*",
+      "s3:GetBucket*",
+      "s3:List*"
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      "(MyStack/Bucket/Resource.Arn)",
+      "(MyStack/Bucket/Resource.Arn)/*"
+    ]
+  }
+]
+```
+
+You would then need to create the role with the inline & managed policies in the report and then
+come back and update the `customizeRoles` with the role name.
+
+```ts
+declare const app: App;
+const stack = new Stack(app, 'MyStack');
+iam.Role.customizeRoles(stack, {
+  usePrecreatedRoles: {
+    'MyStack/MyLambda/ServiceRole': 'my-role-name',
+  }
+});
+```
+
+#### Generating a permissions report
+
+It is also possible to generate the report _without_ preventing the role/policy creation.
+
+```ts
+declare const stack: Stack;
+iam.Role.customizeRoles(stack, {
+  preventSynthesis: false,
+});
+```
+
 ## Configuring an ExternalId
 
 If you need to create Roles that will be assumed by third parties, it is generally a good idea to [require an `ExternalId`
