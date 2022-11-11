@@ -725,8 +725,8 @@ The Amazon States Language defines a set of built-in strings that name well-know
   * When the output of a state is larger than payload size quota.
   * When, after Parameters processing, the input of a state is larger than the payload size quota.
   * See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/limits-overview.html) to learn more about AWS Step Functions Quotas.
-* `States.HeartbeatTimeout` - A Task state failed to send a heartbeat for a period longer than the HeartbeatSeconds value.
-* `States.Timeout` - A Task state either ran longer than the TimeoutSeconds value, or failed to send a heartbeat for a period longer than the HeartbeatSeconds value.
+* `States.HeartbeatTimeout` - A Task state failed to send a heartbeat for a period longer than the HeartbeatSeconds or HeartbeatSecondsPath value.
+* `States.Timeout` - A Task state either ran longer than the TimeoutSeconds or TimeoutSecondsPath value, or failed to send a heartbeat for a period longer than the HeartbeatSeconds value.
 * `States.TaskFailed`- A Task state failed during the execution. When used in a retry or catch, `States.TaskFailed` acts as a wildcard that matches any known error name except for `States.Timeout`.
 
 ## Logging

@@ -79,6 +79,25 @@ export interface TaskStateBaseProps {
    */
   readonly heartbeat?: cdk.Duration;
 
+
+  /**
+   * JSONPath expression to select the timeout for the state machine
+   *
+   * Example value: `$.timeoutInSeconds`
+   *
+   * @default - None
+   */
+  readonly timeoutPath?: string;
+
+  /**
+   * JSONPath expression to select the timeout for the heartbeat
+   *
+   * Example value: `$.heartbeatInSeconds`
+   *
+   * @default - None
+   */
+  readonly heartbeatPath?: string;
+
   /**
    * AWS Step Functions integrates with services directly in the Amazon States Language.
    * You can control these AWS services using service integration patterns
@@ -112,12 +131,16 @@ export abstract class TaskStateBase extends State implements INextable {
 
   private readonly timeout?: cdk.Duration;
   private readonly heartbeat?: cdk.Duration;
+  private readonly timeoutPath?: string;
+  private readonly heartbeatPath?: string;
 
   constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
     this.endStates = [this];
     this.timeout = props.timeout;
     this.heartbeat = props.heartbeat;
+    this.timeoutPath = props.timeoutPath;
+    this.heartbeatPath = props.heartbeatPath;
   }
 
   /**
@@ -283,6 +306,8 @@ export abstract class TaskStateBase extends State implements INextable {
       Comment: this.comment,
       TimeoutSeconds: this.timeout?.toSeconds(),
       HeartbeatSeconds: this.heartbeat?.toSeconds(),
+      TimeoutSecondsPath: this.timeoutPath,
+      HeartbeatSecondsPath: this.heartbeatPath,
       InputPath: renderJsonPath(this.inputPath),
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),

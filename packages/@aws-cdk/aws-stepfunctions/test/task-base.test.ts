@@ -43,6 +43,31 @@ describe('Task base', () => {
     });
   });
 
+  test('instantiate a concrete implementation with timeoutPath and heartbeatPath', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      comment: 'my exciting task',
+      heartbeatPath: '$.myHeartbeatInSeconds',
+      timeoutPath: '$.myTimeoutInSeconds',
+    });
+
+    // THEN
+    expect(render(task)).toEqual({
+      StartAt: 'my-exciting-task',
+      States: {
+        'my-exciting-task': {
+          End: true,
+          Type: 'Task',
+          Comment: 'my exciting task',
+          TimeoutSecondsPath: '$.myTimeoutInSeconds',
+          HeartbeatSecondsPath: '$.myHeartbeatInSeconds',
+          Resource: 'my-resource',
+          Parameters: { MyParameter: 'myParameter' },
+        },
+      },
+    });
+  });
+
   test('instantiate a concrete implementation with resultSelector', () => {
     // WHEN
     task = new FakeTask(stack, 'my-exciting-task', {
