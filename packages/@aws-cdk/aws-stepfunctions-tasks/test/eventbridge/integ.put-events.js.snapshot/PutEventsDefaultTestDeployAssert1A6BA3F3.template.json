@@ -17,7 +17,7 @@
      }
     },
     "flattenResponse": "true",
-    "salt": "1661947566002"
+    "salt": "1668000041457"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -80,7 +80,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "84802aa01d2d2c9e7d8d69705ee832c97f1ebad2d73c72be5c32d53f16cf90a7.zip"
+     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -103,6 +103,7 @@
     },
     "service": "StepFunctions",
     "api": "describeExecution",
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
     "parameters": {
      "executionArn": {
       "Fn::GetAtt": [
@@ -112,39 +113,18 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1661947566002"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69": {
-   "Type": "Custom::DeployAssert@AssertEquals",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "actual": {
-     "Fn::GetAtt": [
-      "AwsApiCallStepFunctionsdescribeExecution",
-      "apiCallResponse"
-     ]
-    },
-    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
-    "salt": "1661947566003"
+    "salt": "1668000041457"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAssertEqualsStepFunctionsdescribeExecution": {
+  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallStepFunctionsdescribeExecutionAssertEqualsStepFunctionsdescribeExecution58E75A69",
-     "data"
+     "AwsApiCallStepFunctionsdescribeExecution",
+     "assertion"
     ]
    }
   }
