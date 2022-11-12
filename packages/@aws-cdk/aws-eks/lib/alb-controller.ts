@@ -103,6 +103,11 @@ export class AlbControllerVersion {
   public static readonly V2_4_4 = new AlbControllerVersion('v2.4.4', false);
 
   /**
+   * v2.4.5
+   */
+  public static readonly V2_4_5 = new AlbControllerVersion('v2.4.5', false);
+
+  /**
    * Specify a custom version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
@@ -245,8 +250,8 @@ export class AlbController extends Construct {
       // latest at the time of writing. We intentionally don't
       // want to expose this since helm here is just an implementation detail
       // for installing a specific version of the controller itself.
-      // https://github.com/aws/eks-charts/blob/v0.0.111/stable/aws-load-balancer-controller/Chart.yaml
-      version: '1.4.5',
+      // https://github.com/aws/eks-charts/blob/v0.0.112/stable/aws-load-balancer-controller/Chart.yaml
+      version: '1.4.6',
 
       wait: true,
       timeout: Duration.minutes(15),

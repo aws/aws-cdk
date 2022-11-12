@@ -1752,7 +1752,7 @@
     },
     "Release": "aws-load-balancer-controller",
     "Chart": "aws-load-balancer-controller",
-    "Version": "1.4.5",
+    "Version": "1.4.6",
     "Wait": true,
     "Timeout": "900s",
     "Values": {
@@ -1771,7 +1771,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.4.4\"}}"
+       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.4.5\"}}"
       ]
      ]
     },

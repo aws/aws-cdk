@@ -33,7 +33,7 @@ test('can configure a custom repository', () => {
 
   AlbController.create(stack, {
     cluster,
-    version: AlbControllerVersion.V2_4_4,
+    version: AlbControllerVersion.V2_4_5,
     repository: 'custom',
   });
 
@@ -50,7 +50,7 @@ test('can configure a custom repository', () => {
           {
             Ref: 'ClusterDefaultVpcFA9F2722',
           },
-          '","image":{"repository":"custom","tag":"v2.4.4"}}',
+          '","image":{"repository":"custom","tag":"v2.4.5"}}',
         ],
       ],
     },
