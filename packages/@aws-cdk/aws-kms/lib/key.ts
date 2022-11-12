@@ -60,6 +60,11 @@ export interface IKey extends IResource {
    * Grant encryption and decryption permissions using this key to the given principal
    */
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant decryption and generate data key permissions using this key to the given principal
+   */
+   grantDecryptGenerateDataKey(grantee: iam.IGrantable): iam.Grant;
 }
 
 abstract class KeyBase extends Resource implements IKey {
@@ -192,6 +197,13 @@ abstract class KeyBase extends Resource implements IKey {
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
   }
+
+    /**
+   * Grant decryption and generate data key permissions using this key to the given principal
+   */
+     public grantDecryptGenerateDataKey(grantee: iam.IGrantable): iam.Grant {
+      return this.grant(grantee, ...perms.DECRYPT_GENERATEDATA_ACTIONS);
+    }
 
   /**
    * Checks whether the grantee belongs to a stack that will be deployed

@@ -26,3 +26,8 @@ export const ENCRYPT_ACTIONS = [
 export const DECRYPT_ACTIONS = [
   'kms:Decrypt',
 ];
+
+export const DECRYPT_GENERATEDATA_ACTIONS = [
+  'kms:Decrypt',
+  'kms:GenerateDataKey',
+];
