@@ -239,4 +239,15 @@ describe('lambda-insights', () => {
     // On synthesis it should not throw an error
     expect(() => app.synth()).not.toThrow();
   });
+  test('can use layer v1.0.143.0', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_143_0, lambda.Architecture.X86_64);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:21'],
+    });
+  });
 });

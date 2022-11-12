@@ -1,0 +1,379 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.129"
+        }
+      },
+      "iotevents-put-message-action-test-stack": {
+        "id": "iotevents-put-message-action-test-stack",
+        "path": "iotevents-put-message-action-test-stack",
+        "children": {
+          "logs": {
+            "id": "logs",
+            "path": "iotevents-put-message-action-test-stack/logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "iotevents-put-message-action-test-stack/logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "TopicRule": {
+            "id": "TopicRule",
+            "path": "iotevents-put-message-action-test-stack/TopicRule",
+            "children": {
+              "TopicRuleActionRole": {
+                "id": "TopicRuleActionRole",
+                "path": "iotevents-put-message-action-test-stack/TopicRule/TopicRuleActionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "iotevents-put-message-action-test-stack/TopicRule/TopicRuleActionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iot.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "iotevents-put-message-action-test-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "iotevents-put-message-action-test-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:DescribeLogStreams",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "logs0B6081B1",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "iotevents:BatchPutMessage",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iotevents:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":input/",
+                                        {
+                                          "Ref": "MyInput08947B23"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+                            "roles": [
+                              {
+                                "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "iotevents-put-message-action-test-stack/TopicRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
+                  "aws:cdk:cloudformation:props": {
+                    "topicRulePayload": {
+                      "actions": [
+                        {
+                          "iotEvents": {
+                            "batchMode": true,
+                            "inputName": {
+                              "Ref": "MyInput08947B23"
+                            },
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "TopicRuleTopicRuleActionRole246C4F77",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "awsIotSqlVersion": "2016-03-23",
+                      "errorAction": {
+                        "cloudwatchLogs": {
+                          "logGroupName": {
+                            "Ref": "logs0B6081B1"
+                          },
+                          "roleArn": {
+                            "Fn::GetAtt": [
+                              "TopicRuleTopicRuleActionRole246C4F77",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      },
+                      "sql": "SELECT * FROM 'device/+/data'"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iot.CfnTopicRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iot.TopicRule",
+              "version": "0.0.0"
+            }
+          },
+          "MyInput": {
+            "id": "MyInput",
+            "path": "iotevents-put-message-action-test-stack/MyInput",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "iotevents-put-message-action-test-stack/MyInput/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoTEvents::Input",
+                  "aws:cdk:cloudformation:props": {
+                    "inputDefinition": {
+                      "attributes": [
+                        {
+                          "jsonPath": "payload.deviceId"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iotevents.CfnInput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iotevents.Input",
+              "version": "0.0.0"
+            }
+          },
+          "MyDetectorModel": {
+            "id": "MyDetectorModel",
+            "path": "iotevents-put-message-action-test-stack/MyDetectorModel",
+            "children": {
+              "DetectorModelRole": {
+                "id": "DetectorModelRole",
+                "path": "iotevents-put-message-action-test-stack/MyDetectorModel/DetectorModelRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "iotevents-put-message-action-test-stack/MyDetectorModel/DetectorModelRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "iotevents.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "iotevents-put-message-action-test-stack/MyDetectorModel/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IoTEvents::DetectorModel",
+                  "aws:cdk:cloudformation:props": {
+                    "detectorModelDefinition": {
+                      "initialStateName": "initialState",
+                      "states": [
+                        {
+                          "stateName": "initialState",
+                          "onEnter": {
+                            "events": [
+                              {
+                                "eventName": "enter",
+                                "condition": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "currentInput(\"",
+                                      {
+                                        "Ref": "MyInput08947B23"
+                                      },
+                                      "\")"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "MyDetectorModelDetectorModelRoleF2FB4D88",
+                        "Arn"
+                      ]
+                    },
+                    "key": "payload.deviceId"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iotevents.CfnDetectorModel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iotevents.DetectorModel",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "iotevents": {
+        "id": "iotevents",
+        "path": "iotevents",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "iotevents/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "iotevents/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.129"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "iotevents/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -275,7 +275,7 @@ export class PullRequestLinter {
     const pr = (await this.client.pulls.get(this.prParams)).data;
 
     console.log(`⌛  Fetching files for PR number ${number}`);
-    const files = (await this.client.pulls.listFiles(this.prParams)).data;
+    const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
 
     console.log("⌛  Validating...");
 
@@ -349,7 +349,7 @@ function integTestChanged(files: GitHubFile[]): boolean {
 }
 
 function integTestSnapshotChanged(files: GitHubFile[]): boolean {
-  return files.filter(f => f.filename.toLowerCase().includes("integ.snapshot")).length != 0;
+  return files.filter(f => f.filename.toLowerCase().includes(".snapshot")).length != 0;
 }
 
 function readmeChanged(files: GitHubFile[]): boolean {

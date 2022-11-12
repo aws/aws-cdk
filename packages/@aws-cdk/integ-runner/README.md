@@ -38,7 +38,7 @@ integ-runner [ARGS] [TEST...]
 This will look for all files that match the naming convention of `/integ.*.js$/`. Each of these files will be expected
 to be a self contained CDK app. The runner will execute the following for each file (app):
 
-1. Check if a snapshot file exists (i.e. `/*.integ.snapshot$/`)
+1. Check if a snapshot file exists (i.e. `/*.snapshot$/`)
 2. If the snapshot does not exist
 	2a. Synth the integ app which will produce the `integ.json` file
 3. Read the `integ.json` file which contains instructions on what the runner should do.
@@ -68,7 +68,11 @@ to be a self contained CDK app. The runner will execute the following for each f
   Read the list of tests from this file
 - `--disable-update-workflow` (default=`false`)
   If this is set to `true` then the [update workflow](#update-workflow) will be disabled
-
+- `--app`
+  The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".
+- `--test-regex`
+  Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.
+  
 Example:
 
 ```bash
