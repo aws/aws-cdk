@@ -220,3 +220,53 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
+
+### Artifacts
+
+You can pass an S3 bucket to store artifacts from canary runs. If you do not, one will be auto-generated when the canary is created. You may add [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) to the auto-generated bucket.
+
+Artifact bucket examples:
+
+```typescript
+// Auto-generated bucket with lifecycle rules.
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  environmentVariables: {
+    stage: 'prod',
+  },
+  artifactsBucketLifecycleRules: [
+    {
+      expiration: Duration.days(30),
+    },    
+  ]
+});
+
+// Custom bucket as artifact bucket.
+import * as s3 from '@aws-cdk/aws-s3';
+
+const bucket = new s3.Bucket(this, 'MyArtifactsBucket', {
+  encryption: s3.BucketEncryption.KMS_MANAGED,
+  enforceSSL: true,
+});
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  environmentVariables: {
+    stage: 'prod',
+  },
+  artifactsBucketLocation: {
+    bucket: bucket,
+  }
+});
+```
+
