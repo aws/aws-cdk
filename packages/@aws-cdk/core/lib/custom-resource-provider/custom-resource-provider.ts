@@ -108,6 +108,11 @@ export enum CustomResourceProviderRuntime {
    * Node.js 14.x
    */
   NODEJS_14_X = 'nodejs14.x',
+
+  /**
+   * Node.js 16.x
+   */
+  NODEJS_16_X = 'nodejs16.x',
 }
 
 /**
@@ -191,6 +196,12 @@ export class CustomResourceProvider extends CoreConstruct {
    */
   public readonly roleArn: string;
 
+  /**
+   * The hash of the lambda code backing this provider. Can be used to trigger updates
+   * on code changes, even when the properties of a custom resource remain unchanged.
+   */
+  public readonly codeHash: string;
+
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
     super(scope, id);
 
@@ -269,6 +280,7 @@ export class CustomResourceProvider extends CoreConstruct {
     }
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
+    this.codeHash = staging.assetHash;
   }
 
   private renderEnvironmentVariables(env?: { [key: string]: string }) {
@@ -297,5 +309,7 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs12.x';
     case CustomResourceProviderRuntime.NODEJS_14_X:
       return 'nodejs14.x';
+    case CustomResourceProviderRuntime.NODEJS_16_X:
+      return 'nodejs16.x';
   }
 }

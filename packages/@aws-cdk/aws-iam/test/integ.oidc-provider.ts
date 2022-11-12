@@ -1,25 +1,36 @@
-/// !cdk-integ pragma:ignore-assets
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, CfnOutput } from '@aws-cdk/core';
 import * as iam from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'oidc-provider-integ-test');
 
-new iam.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
+const noClients = new iam.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test2',
 });
 
-new iam.OpenIdConnectProvider(stack, 'Clients', {
+const clients = new iam.OpenIdConnectProvider(stack, 'Clients', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test3',
   clientIds: ['foo', 'bar'],
 });
 
-new iam.OpenIdConnectProvider(stack, 'Thumbprints', {
+const thumbprints = new iam.OpenIdConnectProvider(stack, 'Thumbprints', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test4',
   thumbprints: [
     'aa00aa1122aa00aa1122aa00aa1122aa00aa1122',
     'aa00aa1122aa00aa1122aa00aa1122aa00aa1111',
   ],
+});
+
+new CfnOutput(stack, 'NoClientsThumbprints', {
+  value: `${noClients.openIdConnectProviderthumbprints}`,
+});
+
+new CfnOutput(stack, 'ClientsThumbprints', {
+  value: `${clients.openIdConnectProviderthumbprints}`,
+});
+
+new CfnOutput(stack, 'ThumbprintsThumbprints', {
+  value: `${thumbprints.openIdConnectProviderthumbprints}`,
 });
 
 app.synth();

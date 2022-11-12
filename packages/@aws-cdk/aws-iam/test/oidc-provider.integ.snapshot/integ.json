@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD:packages/@aws-cdk/aws-iam/test/oidc-provider.integ.snapshot/integ.json
   "version": "18.0.0",
+=======
+  "version": "21.0.0",
+>>>>>>> 280b876d42 (fix(iam): oidc provider fetches leaf certificate thumbprint instead of root (#22802)):packages/@aws-cdk/aws-iam/test/integ.oidc-provider.js.snapshot/integ.json
   "testCases": {
     "aws-iam/test/integ.oidc-provider": {
       "stacks": [

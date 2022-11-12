@@ -82,6 +82,8 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests": "0.0.0",
+    "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.108",
@@ -97,7 +99,6 @@
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",

@@ -1254,7 +1254,21 @@
                                     {
                                       "Action": "s3:CreateBucket",
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:s3:::*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:aws:s3:::eks-bucket-",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            "-",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -3422,18 +3436,6 @@
                                     ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
                                   ]
                                 ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
                               }
                             ]
                           }
@@ -3461,7 +3463,21 @@
                                         "s3:ListBucket"
                                       ],
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:s3:::*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:aws:s3:::eks-bucket-",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            "-",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -3517,40 +3533,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatic security group for Lambda Function awseksserviceaccountsdkcallstestS3BucketPingerFunction630FD1F5",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "Vpc8378EB38"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/Resource",
@@ -3561,7 +3543,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d75a212991386411deef17a64b16165f25a2fd42daf48824455a47f1c25c3f22.zip"
+                          "s3Key": "52afb3e2686860c4a72b179852db125e37824bbfccee63ff90cd7b45b9560da1.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3569,27 +3551,28 @@
                             "Arn"
                           ]
                         },
-                        "handler": "index.handler",
-                        "runtime": "python3.9",
-                        "timeout": 60,
-                        "vpcConfig": {
-                          "subnetIds": [
-                            {
-                              "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                            },
-                            {
-                              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                            }
-                          ],
-                          "securityGroupIds": [
-                            {
-                              "Fn::GetAtt": [
-                                "S3BucketPingerFunctionSecurityGroup470A4668",
-                                "GroupId"
+                        "environment": {
+                          "variables": {
+                            "BUCKET_NAME": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "eks-bucket-",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  "-",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  }
+                                ]
                               ]
                             }
-                          ]
-                        }
+                          }
+                        },
+                        "handler": "index.handler",
+                        "runtime": "python3.9",
+                        "timeout": 60
                       }
                     },
                     "constructInfo": {

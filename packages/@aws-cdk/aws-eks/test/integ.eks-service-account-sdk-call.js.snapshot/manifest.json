@@ -537,12 +537,6 @@
             "data": "S3BucketPingerFunctionServiceRoleDefaultPolicy0A5C5673"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3BucketPingerFunctionSecurityGroup470A4668"
-          }
-        ],
         "/aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
