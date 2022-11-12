@@ -197,6 +197,12 @@ export class CustomResourceProvider extends Construct {
    */
   public readonly roleArn: string;
 
+  /**
+   * The hash of the lambda code backing this provider. Can be used to trigger updates
+   * on code changes, even when the properties of a custom resource remain unchanged.
+   */
+  public readonly codeHash: string;
+
   private policyStatements?: any[];
   private _role?: CfnResource;
 
@@ -308,6 +314,7 @@ export class CustomResourceProvider extends Construct {
     }
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
+    this.codeHash = staging.assetHash;
   }
 
   /**

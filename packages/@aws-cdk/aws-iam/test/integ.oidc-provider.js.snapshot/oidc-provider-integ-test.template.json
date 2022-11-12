@@ -9,7 +9,8 @@
       "Arn"
      ]
     },
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2",
+    "CodeHash": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -64,7 +65,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "78989d876411e582ce92577de10ee129b12c1f09d8b77f9f45ce2b97cb53bad7.zip"
+     "S3Key": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -75,7 +76,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -94,7 +95,8 @@
      "foo",
      "bar"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3",
+    "CodeHash": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,10 +114,37 @@
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4",
+    "CodeHash": "56b85a7bb756e34ab12549549eb40d34151db41531599e8f2be6c04e8ae66057"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "NoClientsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NoClientsNoThumbprint8BF1533F",
+     "Thumbprints"
+    ]
+   }
+  },
+  "ClientsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Clients67031123",
+     "Thumbprints"
+    ]
+   }
+  },
+  "ThumbprintsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Thumbprints9CD6AB02",
+     "Thumbprints"
+    ]
+   }
   }
  },
  "Parameters": {
