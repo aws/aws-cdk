@@ -357,9 +357,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
    */
   protected configureAutoscalingForService(service: BaseService) {
     const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
-    scalingTarget.scaleOnCpuUtilization('CpuScaling', {
-      targetUtilizationPercent: 50,
-    });
+
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
       scalingSteps: this.scalingSteps,

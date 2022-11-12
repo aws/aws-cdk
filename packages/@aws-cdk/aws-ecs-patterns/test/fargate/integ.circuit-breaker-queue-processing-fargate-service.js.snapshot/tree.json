@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-ecs-patterns-queue": {
         "id": "aws-ecs-patterns-queue",
         "path": "aws-ecs-patterns-queue",
@@ -91,8 +83,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-patterns-queue/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -258,8 +250,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-patterns-queue/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -425,8 +417,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-patterns-queue/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -544,8 +536,8 @@
                     "id": "Acl",
                     "path": "aws-ecs-patterns-queue/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
@@ -723,32 +715,32 @@
                 "id": "SQSDeadLetterQueue",
                 "path": "aws-ecs-patterns-queue/QueueProcessingService/SQSDeadLetterQueue",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "SQSDeadLetterQueueArn": {
                 "id": "SQSDeadLetterQueueArn",
                 "path": "aws-ecs-patterns-queue/QueueProcessingService/SQSDeadLetterQueueArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "SQSQueue": {
                 "id": "SQSQueue",
                 "path": "aws-ecs-patterns-queue/QueueProcessingService/SQSQueue",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "SQSQueueArn": {
                 "id": "SQSQueueArn",
                 "path": "aws-ecs-patterns-queue/QueueProcessingService/SQSQueueArn",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "QueueProcessingTaskDef": {
@@ -759,6 +751,14 @@
                     "id": "TaskRole",
                     "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/TaskRole",
                     "children": {
+                      "ImportTaskRole": {
+                        "id": "ImportTaskRole",
+                        "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/TaskRole/ImportTaskRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/TaskRole/Resource",
@@ -916,8 +916,8 @@
                             "id": "Staging",
                             "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage/Staging",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.85"
+                              "fqn": "@aws-cdk/core.AssetStaging",
+                              "version": "0.0.0"
                             }
                           },
                           "Repository": {
@@ -966,6 +966,14 @@
                     "id": "ExecutionRole",
                     "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/ExecutionRole",
                     "children": {
+                      "ImportExecutionRole": {
+                        "id": "ImportExecutionRole",
+                        "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/ExecutionRole/ImportExecutionRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/ExecutionRole/Resource",
@@ -1181,8 +1189,8 @@
                     "id": "ScalingRole",
                     "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingFargateService/ScalingRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "TaskCount": {
@@ -1241,40 +1249,6 @@
                             },
                             "constructInfo": {
                               "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "CpuScaling": {
-                            "id": "CpuScaling",
-                            "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingFargateService/TaskCount/Target/CpuScaling",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyName": "awsecspatternsqueueQueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling374CE648",
-                                    "policyType": "TargetTrackingScaling",
-                                    "scalingTargetId": {
-                                      "Ref": "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetA9D54444"
-                                    },
-                                    "targetTrackingScalingPolicyConfiguration": {
-                                      "predefinedMetricSpecification": {
-                                        "predefinedMetricType": "ECSServiceAverageCPUUtilization"
-                                      },
-                                      "targetValue": 50
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
                               "version": "0.0.0"
                             }
                           },
@@ -1508,11 +1482,27 @@
               "fqn": "@aws-cdk/aws-ecs.Cluster",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-ecs-patterns-queue/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-ecs-patterns-queue/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "circuitBreakerQueueProcessingFargateTest": {
@@ -1528,15 +1518,33 @@
                 "path": "circuitBreakerQueueProcessingFargateTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.154"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "circuitBreakerQueueProcessingFargateTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "circuitBreakerQueueProcessingFargateTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "circuitBreakerQueueProcessingFargateTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -1550,11 +1558,19 @@
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.154"
+        }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

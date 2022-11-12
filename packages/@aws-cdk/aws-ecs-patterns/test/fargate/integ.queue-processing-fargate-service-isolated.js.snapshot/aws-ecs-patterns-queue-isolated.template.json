@@ -1009,32 +1009,6 @@
     "VPCSqsEndpointSecurityGroupAE06A78D"
    ]
   },
-  "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling2B518D9D": {
-   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
-   "Properties": {
-    "PolicyName": "awsecspatternsqueueisolatedIsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling8B2FB6C4",
-    "PolicyType": "TargetTrackingScaling",
-    "ScalingTargetId": {
-     "Ref": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetB06FD17D"
-    },
-    "TargetTrackingScalingPolicyConfiguration": {
-     "PredefinedMetricSpecification": {
-      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
-     },
-     "TargetValue": 50
-    }
-   },
-   "DependsOn": [
-    "VPCCloudWatchLogsEndpointE175AF65",
-    "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
-    "VPCEcrEndpointB4F98F37",
-    "VPCEcrEndpointSecurityGroup50ED8BA4",
-    "VPCEcrImageEndpointD55381DC",
-    "VPCEcrImageEndpointSecurityGroup83621638",
-    "VPCSqsEndpoint9A40D77F",
-    "VPCSqsEndpointSecurityGroupAE06A78D"
-   ]
-  },
   "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy960D4BA1": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
    "Properties": {

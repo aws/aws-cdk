@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-patterns-queue.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b549252d5f364ca441c5e44e575336383ed85e32ad7521915e9fd8753cbf2fe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ff6392a1ee11c80b01d4fd5d42b924a0f7101d9d95ffc35a237b84c8fb0e473.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -228,10 +222,7 @@
         "/aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "QueueProcessingServiceQueueProcessingTaskDef4982F68B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "QueueProcessingServiceQueueProcessingTaskDef4982F68B"
           }
         ],
         "/aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
@@ -268,12 +259,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetA9D54444"
-          }
-        ],
-        "/aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling330150E9"
           }
         ],
         "/aws-ecs-patterns-queue/QueueProcessingService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy/Resource": [
@@ -316,6 +301,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling330150E9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling330150E9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -367,6 +361,12 @@
         ]
       },
       "displayName": "circuitBreakerQueueProcessingFargateTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
