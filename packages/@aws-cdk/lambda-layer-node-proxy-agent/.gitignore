@@ -23,3 +23,5 @@ lib/*.zip
 !**/*.snapshot/**/asset.*/*.d.ts
 
 !**/*.snapshot/**/asset.*/**
+
+!test/lambda-handler/index.js
