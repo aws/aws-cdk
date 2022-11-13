@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
 
     const deadLetterQueue = new sqs.Queue(this, 'MyDeadLetterQueue');
 
-    const ssmAssumeRole = new iam.Role(this, 'SSMAssumeRole', {
+    const automationAssumeRole = new iam.Role(this, 'AutomationAssumeRole', {
       assumedBy: new iam.ServicePrincipal('ssm.amazonaws.com'),
     });
 
@@ -26,7 +26,7 @@ class TestStack extends cdk.Stack {
       input: {
         InstanceId: ['my-rds-instance'],
       },
-      ssmAssumeRole,
+      automationAssumeRole,
       deadLetterQueue,
     }));
   }

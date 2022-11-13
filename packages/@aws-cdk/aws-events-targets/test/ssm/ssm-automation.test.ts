@@ -12,7 +12,7 @@ test('ssm automation as an event rule target', () => {
     schedule: events.Schedule.rate(Duration.hours(1)),
   });
   const automationArn = 'arn:aws:ssm:us-east-1:123456789012:automation-definition/MyAutomation:1';
-  const ssmAssumeRole = new iam.Role(stack, 'SSMAssumeRole', {
+  const automationAssumeRole = new iam.Role(stack, 'AutomationAssumeRole', {
     assumedBy: new iam.ServicePrincipal('ssm.amazonaws.com'),
   });
 
@@ -21,7 +21,7 @@ test('ssm automation as an event rule target', () => {
     input: {
       MyParameter: ['MyParameterValue'],
     },
-    ssmAssumeRole,
+    automationAssumeRole,
   }));
 
   // THEN
