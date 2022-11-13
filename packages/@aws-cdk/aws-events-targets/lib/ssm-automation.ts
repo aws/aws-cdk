@@ -9,7 +9,10 @@ import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEven
  */
 export interface SsmAutomationProps extends TargetBaseProps {
   /**
-   * Role to be used to run the Document
+   * Role to be used for invoking the Automation from the Rule. This should be a
+   * role that allows the the events.amazonaws.com service principal to assume
+   * and execute the Automation. This role is not used by the Automation itself,
+   * to execute the actions in the document, see `automationAssumeRole` for that.
    *
    * @default - a new role is created.
    */
@@ -25,12 +28,11 @@ export interface SsmAutomationProps extends TargetBaseProps {
   /**
    * Role to be used to run the Automation on your behalf. This should be a role
    * that allows the Automation service principal (ssm.amazonaws.com) to assume
-   * and run the actions in your Automation document. Only required if the
-   * document type is `Automation`.
+   * and run the actions in your Automation document.
    *
    * @default - no role assumed
    */
-  readonly ssmAssumeRole?: iam.IRole;
+  readonly automationAssumeRole?: iam.IRole;
 }
 
 /**
@@ -55,7 +57,6 @@ export class SsmAutomation implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = this.props.role ?? singletonEventRole(rule);
     role.addToPrincipalPolicy(this.executeStatement());
@@ -67,7 +68,7 @@ export class SsmAutomation implements events.IRuleTarget {
     return {
       ...bindBaseTargetConfig(this.props),
       arn: this.documentArn,
-      input: events.RuleTargetInput.fromObject({ ...this.props.input, AutomationAssumeRole: [this.props.ssmAssumeRole?.roleArn] }),
+      input: events.RuleTargetInput.fromObject({ ...this.props.input, AutomationAssumeRole: [this.props.automationAssumeRole?.roleArn] }),
       role,
       targetResource: (typeof this.document === 'string') ? undefined : this.document,
     };
