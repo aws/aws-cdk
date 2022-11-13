@@ -1,0 +1,239 @@
+{
+ "Resources": {
+  "myapi4C7BF186": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "my-api"
+   }
+  },
+  "myapiDeployment92F2CB49f1f7843e50813b3eb17174a5cc6c70d6": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "Description": "Automatically created by the RestApi construct"
+   },
+   "DependsOn": [
+    "myapibarPOSTValidatorC2F3FBB2",
+    "myapifooPOSTValidatorEC946D1C",
+    "myapiBarModelC1647EDD",
+    "myapibarPOST745CE533",
+    "myapibar6B0C155F",
+    "myapifooPOST2942ABF9",
+    "myapifoo095E0183",
+    "myapiFooModelD7AB7602"
+   ]
+  },
+  "myapiDeploymentStageprod298F01AF": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "DeploymentId": {
+     "Ref": "myapiDeployment92F2CB49f1f7843e50813b3eb17174a5cc6c70d6"
+    },
+    "StageName": "prod"
+   }
+  },
+  "myapifoo095E0183": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "myapi4C7BF186",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "foo",
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    }
+   }
+  },
+  "myapifooPOST2942ABF9": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "POST",
+    "ResourceId": {
+     "Ref": "myapifoo095E0183"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "IntegrationHttpMethod": "GET",
+     "Type": "HTTP_PROXY",
+     "Uri": "http://example.com/foo"
+    },
+    "RequestModels": {
+     "application/json": {
+      "Ref": "myapiFooModelD7AB7602"
+     }
+    },
+    "RequestValidatorId": {
+     "Ref": "myapifooPOSTValidatorEC946D1C"
+    }
+   }
+  },
+  "myapibar6B0C155F": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "myapi4C7BF186",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "bar",
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    }
+   }
+  },
+  "myapibarPOST745CE533": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "POST",
+    "ResourceId": {
+     "Ref": "myapibar6B0C155F"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "IntegrationHttpMethod": "GET",
+     "Type": "HTTP_PROXY",
+     "Uri": "http://example.com/bar"
+    },
+    "RequestModels": {
+     "application/json": {
+      "Ref": "myapiBarModelC1647EDD"
+     }
+    },
+    "RequestValidatorId": {
+     "Ref": "myapibarPOSTValidatorC2F3FBB2"
+    }
+   }
+  },
+  "myapiFooModelD7AB7602": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "ContentType": "application/json",
+    "Schema": {
+     "type": "object",
+     "properties": {
+      "foo": {
+       "type": "string"
+      }
+     },
+     "$schema": "http://json-schema.org/draft-04/schema#"
+    }
+   }
+  },
+  "myapifooPOSTValidatorEC946D1C": {
+   "Type": "AWS::ApiGateway::RequestValidator",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "ValidateRequestBody": true
+   }
+  },
+  "myapiBarModelC1647EDD": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "ContentType": "application/json",
+    "Schema": {
+     "type": "object",
+     "properties": {
+      "bar": {
+       "type": "string"
+      }
+     },
+     "$schema": "http://json-schema.org/draft-04/schema#"
+    }
+   }
+  },
+  "myapibarPOSTValidatorC2F3FBB2": {
+   "Type": "AWS::ApiGateway::RequestValidator",
+   "Properties": {
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
+    "ValidateRequestBody": true
+   }
+  }
+ },
+ "Outputs": {
+  "myapiEndpoint3628AFE3": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "myapi4C7BF186"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "myapiDeploymentStageprod298F01AF"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
