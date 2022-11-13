@@ -52,4 +52,66 @@ describe('request validator', () => {
       ValidateRequestParameters: true,
     });
   });
+
+  test('multiple validators', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api');
+    new apigateway.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+    });
+    const foo = api.root.addResource('foo');
+    const bar = api.root.addResource('bar');
+
+    // WHEN
+    foo.addMethod(
+      'POST',
+      new apigateway.HttpIntegration('http://example.com/foo'),
+      {
+        requestModels: {
+          'application/json': api.addModel('FooModel', {
+            schema: {
+              type: apigateway.JsonSchemaType.OBJECT,
+              properties: {
+                foo: {
+                  type: apigateway.JsonSchemaType.STRING,
+                },
+              },
+            },
+          }),
+        },
+        requestValidatorOptions: {
+          validateRequestBody: true,
+        },
+      },
+    );
+    bar.addMethod(
+      'POST',
+      new apigateway.HttpIntegration('http://example.com/bar'),
+      {
+        requestModels: {
+          'application/json': api.addModel('BarModel', {
+            schema: {
+              type: apigateway.JsonSchemaType.OBJECT,
+              properties: {
+                bar: {
+                  type: apigateway.JsonSchemaType.STRING,
+                },
+              },
+            },
+          }),
+        },
+        requestValidatorOptions: {
+          validateRequestBody: true,
+        },
+      },
+    );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      ValidateRequestBody: true,
+    });
+  });
 });

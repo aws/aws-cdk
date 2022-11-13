@@ -317,7 +317,7 @@ export class Method extends Resource {
     }
 
     return methodResponses.map(mr => {
-      let responseModels: {[contentType: string]: string} | undefined;
+      let responseModels: { [contentType: string]: string } | undefined;
 
       if (mr.responseModels) {
         responseModels = {};
@@ -344,7 +344,7 @@ export class Method extends Resource {
       return undefined;
     }
 
-    const models: {[param: string]: string} = {};
+    const models: { [param: string]: string } = {};
     for (const contentType in requestModels) {
       if (requestModels.hasOwnProperty(contentType)) {
         models[contentType] = requestModels[contentType].modelId;
@@ -360,7 +360,12 @@ export class Method extends Resource {
     }
 
     if (options.requestValidatorOptions) {
-      const validator = (this.api as RestApi).addRequestValidator('validator', options.requestValidatorOptions);
+      let id = `${this.resource.path}${this.httpMethod}Validator`;
+      // For backward compatibility
+      if (options.requestValidatorOptions.requestValidatorName) {
+        id = 'validator';
+      }
+      const validator = (this.api as RestApi).addRequestValidator(id, options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 
