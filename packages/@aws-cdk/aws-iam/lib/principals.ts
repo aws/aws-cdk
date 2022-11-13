@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Default, FactName, RegionInfo } from '@aws-cdk/region-info';
 import { IDependable } from 'constructs';
 import { IOpenIdConnectProvider } from './oidc-provider';
@@ -479,10 +480,26 @@ export class AccountPrincipal extends ArnPrincipal {
  */
 export interface ServicePrincipalOpts {
   /**
-   * The region in which the service is operating.
+   * The region in which you want to reference the service
    *
-   * @default - the current Stack's region.
-   * @deprecated You should not need to set this. The stack's region is always correct.
+   * This is only necessary for *cross-region* references to *opt-in* regions. In those
+   * cases, the region name needs to be included to reference the correct service principal.
+   * In all other cases, the global service principal name is sufficient.
+   *
+   * This field behaves differently depending on whether the `@aws-cdk/aws-iam:standardizedServicePrincipals`
+   * flag is set or not:
+   *
+   * - If the flag is set, the input service principal is assumed to be of the form `SERVICE.amazonaws.com`.
+   *   That value will always be returned, unless the given region is an opt-in region and the service
+   *   principal is rendered in a stack in a different region, in which case `SERVICE.REGION.amazonaws.com`
+   *   will be rendered. Under this regime, there is no downside to always specifying the region property:
+   *   it will be rendered only if necessary.
+   * - If the flag is not set, the service principal will resolve to a single principal
+   *   whose name comes from the `@aws-cdk/region-info` package, using the region to override
+   *   the stack region. If there is no entry for this service principal in the database,, the input
+   *   service name is returned literally. This is legacy behavior and is not recommended.
+   *
+   * @default - the resolving Stack's region.
    */
   readonly region?: string;
 
@@ -514,6 +531,7 @@ export class ServicePrincipal extends PrincipalBase {
   }
 
   /**
+   * Reference an AWS service, optionally in a given region
    *
    * @param service AWS service (i.e. sqs.amazonaws.com)
    */
@@ -523,9 +541,7 @@ export class ServicePrincipal extends PrincipalBase {
 
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({
-      Service: [
-        new ServicePrincipalToken(this.service, this.opts).toString(),
-      ],
+      Service: [new ServicePrincipalToken(this.service, this.opts).toString()],
     }, this.opts.conditions);
   }
 
@@ -895,6 +911,33 @@ class ServicePrincipalToken implements cdk.IResolvable {
   }
 
   public resolve(ctx: cdk.IResolveContext) {
+    return cdk.FeatureFlags.of(ctx.scope).isEnabled(cxapi.IAM_STANDARDIZED_SERVICE_PRINCIPALS)
+      ? this.newStandardizedBehavior(ctx)
+      : this.legacyBehavior(ctx);
+
+    // The correct behavior is to always use the global service principal
+  }
+
+  /**
+   * Return the global (original) service principal, and a second one if region is given and points to an opt-in region
+   */
+  private newStandardizedBehavior(ctx: cdk.IResolveContext) {
+    const stack = cdk.Stack.of(ctx.scope);
+    if (
+      this.opts.region &&
+      !cdk.Token.isUnresolved(this.opts.region) &&
+      stack.region !== this.opts.region &&
+      RegionInfo.get(this.opts.region).isOptInRegion
+    ) {
+      return this.service.replace(/\.amazonaws\.com$/, `.${this.opts.region}.amazonaws.com`);
+    }
+    return this.service;
+  }
+
+  /**
+   * Do a single lookup
+   */
+  private legacyBehavior(ctx: cdk.IResolveContext) {
     if (this.opts.region) {
       // Special case, handle it separately to not break legacy behavior.
       return RegionInfo.get(this.opts.region).servicePrincipal(this.service) ??
