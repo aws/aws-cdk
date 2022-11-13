@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
@@ -131,6 +131,17 @@ function invokeAspects(root: IConstruct) {
       invoked.push(aspect);
     }
 
+    if (construct instanceof Construct) {
+      // Add hook for future added children to also have aspects applied
+      construct.registerChildHook({
+        handle: (child: IConstruct) => {
+          if (!Stage.isStage(child)) {
+            recurse(child, allAspectsHere);
+          }
+        },
+      });
+    }
+    // Apply aspects to existing children
     for (const child of construct.node.children) {
       if (!Stage.isStage(child)) {
         recurse(child, allAspectsHere);

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
+import { Construct, IConstruct } from 'constructs';
+import { App, Aspects, CfnOutput, CfnResource, IAspect, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /* eslint-disable quote-props */
@@ -250,6 +250,100 @@ describe('cross environment', () => {
     });
   });
 
+  test('crossRegionReferences created resources get stack aspects applied', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1337',
+      },
+      crossRegionReferences: true,
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '123456789012',
+        region: 'bermuda-triangle-42',
+      },
+      crossRegionReferences: true,
+    });
+
+    // WHEN
+    const myResource = new MyResource(stack1, 'MyResource');
+    new CfnOutput(stack2, 'Output', {
+      value: myResource.name,
+    });
+    const aspect = new MyAspect();
+    Aspects.of(stack1).add(aspect);
+    Aspects.of(stack2).add(aspect);
+
+    // THEN
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    expect(template1?.Resources).toMatchObject({
+      'ExportsWriterbermudatriangle42E59594276156AC73': {
+        'DeletionPolicy': 'Delete',
+        'Properties': {
+          'WriterProps': {
+            'exports': {
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887': {
+                'Ref': 'MyResource6073B41F',
+              },
+            },
+            'region': 'bermuda-triangle-42',
+          },
+          'ServiceToken': {
+            'Fn::GetAtt': [
+              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+              'Arn',
+            ],
+          },
+        },
+        'Type': 'Custom::CrossRegionExportWriter',
+        'UpdateReplacePolicy': 'Delete',
+      },
+    });
+    expect(template2?.Outputs).toEqual({
+      'Output': {
+        'Value': {
+          'Fn::GetAtt': [
+            'ExportsReader8B249524',
+            '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887',
+          ],
+        },
+      },
+    });
+    expect(aspect.visitedNodes).toEqual(
+      [
+        'Stack1',
+        'Stack1/MyResource',
+        'Stack1/MyResource/Resource',
+        'Stack2',
+        'Stack2/Output',
+        'Stack1/ExportsWriterbermudatriangle42E5959427',
+        'Stack1/Custom::CrossRegionExportWriterCustomResourceProvider',
+        'Stack1/Custom::CrossRegionExportWriterCustomResourceProvider/Staging',
+        'Stack1/Custom::CrossRegionExportWriterCustomResourceProvider/Role',
+        'Stack1/Custom::CrossRegionExportWriterCustomResourceProvider/Handler',
+        'Stack1/ExportsWriterbermudatriangle42E5959427/Resource',
+        'Stack1/ExportsWriterbermudatriangle42E5959427/Resource/Default',
+        'Stack2/ExportsReader',
+        'Stack2/Custom::CrossRegionExportReaderCustomResourceProvider',
+        'Stack2/Custom::CrossRegionExportReaderCustomResourceProvider/Staging',
+        'Stack2/Custom::CrossRegionExportReaderCustomResourceProvider/Role',
+        'Stack2/Custom::CrossRegionExportReaderCustomResourceProvider/Handler',
+        'Stack2/ExportsReader/Resource',
+        'Stack2/ExportsReader/Resource/Default',
+        'Stack1/BootstrapVersion',
+        'Stack1/CheckBootstrapVersion',
+        'Stack2/BootstrapVersion',
+        'Stack2/CheckBootstrapVersion',
+      ],
+    );
+  });
+
   test('cannot reference a deploy-time physical name across regions, when crossRegionReferences=false', () => {
     // GIVEN
     const app = new App();
@@ -407,5 +501,13 @@ class MyResourceWithConstructedArnAttribute extends Resource {
       resourceName: this.physicalName,
       service: 'myservice',
     });
+  }
+}
+
+class MyAspect implements IAspect {
+
+  public readonly visitedNodes: string[] = []
+  public visit(construct: IConstruct): void {
+    this.visitedNodes.push(construct.node.path);
   }
 }

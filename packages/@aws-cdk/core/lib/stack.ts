@@ -1574,6 +1574,7 @@ function count(xs: string[]): Record<string, number> {
 }
 
 // These imports have to be at the end to prevent circular imports
+/* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
 import { addDependency } from './deps';
 import { FileSystem } from './fs';
@@ -1589,4 +1590,3 @@ import { getExportable } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
-

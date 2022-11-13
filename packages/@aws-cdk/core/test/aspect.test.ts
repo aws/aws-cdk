@@ -69,4 +69,28 @@ describe('aspect', () => {
     expect(root.node.metadata.length).toEqual(1);
     expect(child.node.metadata.length).toEqual(1);
   });
+
+
+  test('Aspects are applied to constructs added by aspects.', () => {
+    const app = new App();
+    const root = new MyConstruct(app, 'MyConstruct');
+    const child = new MyConstruct(root, 'ChildConstruct');
+    let child2: MyConstruct | undefined = undefined;
+    Aspects.of(root).add(new MyAspect());
+    Aspects.of(child).add({
+      visit(construct: IConstruct) {
+        if (construct === child) {
+          child2 = new MyConstruct(root, 'ChildAddedByAspect');
+        }
+      },
+    });
+    app.synth();
+    expect(child2).not.toBeUndefined();
+    expect(root.node.metadata[0].type).toEqual('foo');
+    expect(root.node.metadata[0].data).toEqual('bar');
+    expect(child.node.metadata[0].type).toEqual('foo');
+    expect(child.node.metadata[0].data).toEqual('bar');
+    expect(((child2 as any) as IConstruct).node.metadata[0].type).toEqual('foo');
+    expect(((child2 as any) as IConstruct).node.metadata[0].data).toEqual('bar');
+  });
 });

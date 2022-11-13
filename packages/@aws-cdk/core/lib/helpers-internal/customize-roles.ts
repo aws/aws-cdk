@@ -139,6 +139,9 @@ export class PolicySynthesizer extends Construct {
     if (synthesizer) {
       return synthesizer as PolicySynthesizer;
     }
+    if (!(scope.node.root instanceof Construct)) {
+      throw new Error('Root of construct tree must be a Construct');
+    }
     return new PolicySynthesizer(scope.node.root);
   }
 

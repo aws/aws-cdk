@@ -131,6 +131,8 @@ describe('stage', () => {
     expect(aspect.visits.map(c => c.node.path)).toEqual([
       'MyStage/Stack',
       'MyStage/Stack/Resource',
+      'MyStage/Stack/BootstrapVersion',
+      'MyStage/Stack/CheckBootstrapVersion',
     ]);
   });
 
