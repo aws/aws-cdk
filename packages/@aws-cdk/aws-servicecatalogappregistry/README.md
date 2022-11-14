@@ -75,7 +75,7 @@ const app = new App();
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
     applicationName: 'MyAssociatedApplication',
-    // 'AppRegistry Application to which all stacks inside this cdkApp will get associated.' is the default
+    // 'Application containing stacks deployed via CDK.' is the default
     applicationDescription: 'Associated Application description',
     stackName: 'MyAssociatedApplicationStack',
     // AWS Account and Region that are implied by the current CLI configuration is the default

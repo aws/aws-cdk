@@ -91,13 +91,13 @@ class CreateTargetApplication extends TargetApplication {
   public bind(scope: Construct): BindTargetApplicationResult {
     const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
     (this.applicationOptions.description as string) =
-            this.applicationOptions.description || 'Stack containing AppRegistry Application';
+            this.applicationOptions.description || `Stack that holds the ${this.applicationOptions.applicationName} application`;
     (this.applicationOptions.env as cdk.Environment) =
             this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = new Application(applicationStack, 'DefaultCdkApplication', {
       applicationName: this.applicationOptions.applicationName,
-      description: this.applicationOptions.applicationDescription || 'AppRegistry Application to which all stacks inside this cdkApp will get associated.',
+      description: this.applicationOptions.applicationDescription || 'Application containing stacks deployed via CDK.',
     });
 
     return {
