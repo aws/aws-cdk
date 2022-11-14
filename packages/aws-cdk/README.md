@@ -588,8 +588,10 @@ Out of the box customisation options are also available as arguments. To use a p
 - `--create-default-permissions-boundary` indicates the default permissions boundary, supplied by CDK
 - `--permissions-boundary` specifies, by name, a predefined customer maintained boundary
 
-Note that a later edit of a permissions boundary will mean re-bootstrapping your environments in order
-for the changes to be applied.
+A few observations to add at this point. The CDK supplied permissions boundary policy should be regarded more as an 
+example than anything else. Take the content, create and customize the policy to your needs. That way, the reference 
+will be created via the CLI supplied policy name and, no matter how CDK might adjust the content, you will never have 
+to re-bootstrap your environments.
 
 ### `cdk doctor`
 
