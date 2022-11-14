@@ -1,5 +1,25 @@
 {
  "Resources": {
+  "TestPortfolio4AC794EB": {
+   "Type": "AWS::ServiceCatalog::Portfolio",
+   "Properties": {
+    "DisplayName": "TestPortfolio",
+    "ProviderName": "TestProvider",
+    "AcceptLanguage": "en",
+    "Description": "This is our Service Catalog Portfolio"
+   }
+  },
+  "TestPortfolioPortfolioProductAssociation9c99ebba36fc70F2C75A": {
+   "Type": "AWS::ServiceCatalog::PortfolioProductAssociation",
+   "Properties": {
+    "PortfolioId": {
+     "Ref": "TestPortfolio4AC794EB"
+    },
+    "ProductId": {
+     "Ref": "TestProduct7606930B"
+    }
+   }
+  },
   "TestAssetBucket9434EFAE": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -192,7 +212,8 @@
        "LoadTemplateFromURL": {
         "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a.json"
        }
-      }
+      },
+      "Name": "testAssetProduct"
      },
      {
       "DisableTemplateValidation": false,
@@ -206,63 +227,6 @@
     ]
    }
   },
-  "TestProductTagOptionAssociation0d813eebb333DA3E2F21": {
-   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
-   "Properties": {
-    "ResourceId": {
-     "Ref": "TestProduct7606930B"
-    },
-    "TagOptionId": {
-     "Ref": "TagOptions5f31c54ba705F110F743"
-    }
-   }
-  },
-  "TestProductTagOptionAssociation5d93a5c977b4B664DD87": {
-   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
-   "Properties": {
-    "ResourceId": {
-     "Ref": "TestProduct7606930B"
-    },
-    "TagOptionId": {
-     "Ref": "TagOptions8d263919cebb6764AC10"
-    }
-   }
-  },
-  "TestProductTagOptionAssociationcfaf40b186a3E5FDECDC": {
-   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
-   "Properties": {
-    "ResourceId": {
-     "Ref": "TestProduct7606930B"
-    },
-    "TagOptionId": {
-     "Ref": "TagOptionsa260cbbd99c416C40F73"
-    }
-   }
-  },
-  "TagOptions5f31c54ba705F110F743": {
-   "Type": "AWS::ServiceCatalog::TagOption",
-   "Properties": {
-    "Key": "key1",
-    "Value": "value1",
-    "Active": true
-   }
-  },
-  "TagOptions8d263919cebb6764AC10": {
-   "Type": "AWS::ServiceCatalog::TagOption",
-   "Properties": {
-    "Key": "key1",
-    "Value": "value2",
-    "Active": true
-   }
-  },
-  "TagOptionsa260cbbd99c416C40F73": {
-   "Type": "AWS::ServiceCatalog::TagOption",
-   "Properties": {
-    "Key": "key2",
-    "Value": "value1",
-    "Active": true
-   }
-  },
   "AssetsBucketDeploymentAwsCliLayer9BCEE17F": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
@@ -270,7 +234,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+     "S3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -290,7 +254,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df.zip"
+     "4083400addc1de83cd1be06b8d7b1a4f52b08ce4cbcaf1247516d9c1d7668d47.zip"
     ],
     "DestinationBucketName": {
      "Ref": "TestAssetBucket9434EFAE"
@@ -449,6 +413,13 @@
     ],
     "Runtime": "python3.9",
     "Timeout": 900
+   }
+  }
+ },
+ "Outputs": {
+  "PortfolioId": {
+   "Value": {
+    "Ref": "TestPortfolio4AC794EB"
    }
   }
  },

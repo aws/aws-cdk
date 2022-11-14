@@ -1,12 +1,6 @@
 {
   "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-servicecatalog-product.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a90142a26cd47112a4ae6b1bffc9a010dcd93aa3619646459686478b12576cf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64975905aca20e342092cbeafd7b7c6f276ab76ba29d79a88c8ace664f6f91b4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,6 +33,18 @@
         "integ-servicecatalog-product.assets"
       ],
       "metadata": {
+        "/integ-servicecatalog-product/TestPortfolio/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolio4AC794EB"
+          }
+        ],
+        "/integ-servicecatalog-product/TestPortfolio/PortfolioProductAssociation9c99ebba36fc": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioPortfolioProductAssociation9c99ebba36fc70F2C75A"
+          }
+        ],
         "/integ-servicecatalog-product/TestAssetBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -75,40 +81,10 @@
             "data": "TestProduct7606930B"
           }
         ],
-        "/integ-servicecatalog-product/TestProduct/TagOptionAssociation0d813eebb333": [
+        "/integ-servicecatalog-product/PortfolioId": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestProductTagOptionAssociation0d813eebb333DA3E2F21"
-          }
-        ],
-        "/integ-servicecatalog-product/TestProduct/TagOptionAssociation5d93a5c977b4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestProductTagOptionAssociation5d93a5c977b4B664DD87"
-          }
-        ],
-        "/integ-servicecatalog-product/TestProduct/TagOptionAssociationcfaf40b186a3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestProductTagOptionAssociationcfaf40b186a3E5FDECDC"
-          }
-        ],
-        "/integ-servicecatalog-product/TagOptions/5f31c54ba705": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TagOptions5f31c54ba705F110F743"
-          }
-        ],
-        "/integ-servicecatalog-product/TagOptions/8d263919cebb": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TagOptions8d263919cebb6764AC10"
-          }
-        ],
-        "/integ-servicecatalog-product/TagOptions/a260cbbd99c4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TagOptionsa260cbbd99c416C40F73"
+            "data": "PortfolioId"
           }
         ],
         "/integ-servicecatalog-product/AssetsBucketDeployment/AwsCliLayer/Resource": [
@@ -155,6 +131,12 @@
         ]
       },
       "displayName": "integ-servicecatalog-product"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
