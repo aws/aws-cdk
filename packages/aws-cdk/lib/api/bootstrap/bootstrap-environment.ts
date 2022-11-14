@@ -140,7 +140,7 @@ export class Bootstrapper {
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions' boundary.
     */
     const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
-    const permissionsBoundary = params.defaultPermissionsBoundary ? USE_DEFAULT_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
+    const permissionsBoundary = params.defaultPermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
     if (currentPermissionsBoundary !== permissionsBoundary) {
       warning(`Switching from ${currentPermissionsBoundary} to ${permissionsBoundary} as permissions boundary`);
     }
@@ -202,7 +202,7 @@ const CREATE_NEW_KEY = '';
 /**
  * Parameter value indicating the use of the default, CDK provided permissions boundary for bootstrap-template.yml
  */
-const USE_DEFAULT_PERMISSIONS_BOUNDARY = 'USE_DEFAULT_PERMISSIONS_BOUNDARY';
+const CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY = 'CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY';
 
 /**
  * Split an array-like CloudFormation parameter on ,

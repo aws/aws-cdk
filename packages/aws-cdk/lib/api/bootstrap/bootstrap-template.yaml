@@ -83,7 +83,7 @@ Conditions:
       - Ref: FileAssetsBucketKmsKeyId
   DefaultPermissionsBoundary:
     Fn::Equals:
-      - 'USE_DEFAULT_PERMISSIONS_BOUNDARY'
+      - 'CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY'
       - Ref: InputPermissionsBoundary
   CustomPermissionsBoundary:
     Fn::And:
@@ -523,13 +523,14 @@ Resources:
       PermissionsBoundary:
         Fn::If:
           - DefaultPermissionsBoundary
-          - Ref: PermissionsBoundaryPolicy
+          - Ref: CdkBoostrapPermissionsBoundaryPolicy
           - Fn::If:
               - CustomPermissionsBoundary
               - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
               - Ref: AWS::NoValue
-  PermissionsBoundaryPolicy:
-    Condition: DefaultPermissionsBoundary
+  CdkBoostrapPermissionsBoundaryPolicy:
+    # The policy is always created unless the template is not edited prior to boostrap
+    # It serves as both a default policy provided by CDK and an example of how one can be setup
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -539,13 +540,6 @@ Resources:
             Action:
               - "*"
             Effect: Allow
-            Resource: "*"
-          # Add your specific organizational security policy
-          # here, for example denying access to AWS Config
-          - Sid: OrganizationalSecurityPolicy
-            Action:
-              - "config:*"
-            Effect: Deny
             Resource: "*"
           # Default permissions to prevent privilege escalation
           - Sid: DenyAccessIfRequiredPermBoundaryIsNotBeingApplied
@@ -571,10 +565,17 @@ Resources:
               Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
           - Sid: DenyRemovalOfPermBoundaryFromAnyUserOrRole
             Action:
-              - iam:DeleteUserPermissionBoundary
-              - iam:DeleteRolePermissionBoundary
+              - iam:DeleteUserPermissionsBoundary
+              - iam:DeleteRolePermissionsBoundary
             Effect: Deny
             Resource: "*"
+          # Add your specific organizational security policy here
+          # Uncomment the example to deny access to AWS Config
+          #- Sid: OrganizationalSecurityPolicy
+          #  Action:
+          #    - "config:*"
+          #  Effect: Deny
+          #  Resource: "*"
         Version: "2012-10-17"
       Description: "Bootstrap Permission Boundary"
       ManagedPolicyName:

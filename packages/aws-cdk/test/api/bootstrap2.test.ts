@@ -91,7 +91,7 @@ describe('Bootstrapping v2', () => {
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       parameters: expect.objectContaining({
-        PermissionsBoundary: 'USE_DEFAULT_PERMISSIONS_BOUNDARY',
+        PermissionsBoundary: 'CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY',
       }),
     }));
   });
