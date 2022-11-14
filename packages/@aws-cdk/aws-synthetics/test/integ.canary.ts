@@ -70,6 +70,15 @@ new synthetics.Canary(stack, 'MyCanaryFour', {
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_7,
 });
 
+new synthetics.Canary(stack, 'MyCanaryRuntime38', {
+  canaryName: 'assetcanary-five',
+  test: synthetics.Test.custom({
+    handler: 'canary.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+});
+
 new synthetics.Canary(stack, 'MyPythonCanary', {
   canaryName: 'py-canary-integ',
   test: synthetics.Test.custom({
