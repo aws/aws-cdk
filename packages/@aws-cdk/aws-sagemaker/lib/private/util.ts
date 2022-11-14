@@ -1,4 +1,4 @@
-import * as crypto from 'crypto';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 
 /**
  * Generates a hash from the provided string for the purposes of avoiding construct ID collision
@@ -7,7 +7,5 @@ import * as crypto from 'crypto';
  * @returns A hex string representing the hash of the provided string
  */
 export function hashcode(s: string): string {
-  const hash = crypto.createHash('md5');
-  hash.update(s);
-  return hash.digest('hex');
+  return md5hash(s);
 }
