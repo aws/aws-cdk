@@ -197,14 +197,16 @@ declare const vpc: ec2.Vpc;
 const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
   vpc,
-  storateType: rds.StorageType.IO1,
+  storageType: rds.StorageType.IO1,
   iops: 5000,
 });
 
 const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
   vpc,
-  storateType: rds.StorageType.GP3,
+  allocatedStorage: 500,
+  storageType: rds.StorageType.GP3,
+  storageThroughput: 500, // only applicable for GP3
 });
 ```
 

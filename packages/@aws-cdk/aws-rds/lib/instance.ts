@@ -339,6 +339,17 @@ export interface DatabaseInstanceNewProps {
   readonly storageType?: StorageType;
 
   /**
+   * The storage throughput, specified in mibibytes per second (MiBps).
+   *
+   * Only applicable for GP3.
+   *
+   * @see https://docs.aws.amazon.com//AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage
+   *
+   * @default 125
+   */
+  readonly storageThroughput?: number;
+
+  /**
    * The number of I/O operations per second (IOPS) that the database provisions.
    * The value must be equal to or greater than 1000.
    *
@@ -736,6 +747,9 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     const storageType = props.storageType || StorageType.GP2;
     const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
+    if (props.storageThroughput && storageType !== StorageType.GP3) {
+      throw new Error(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`);
+    }
 
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
@@ -799,6 +813,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
       storageType,
+      storageThroughput: props.storageThroughput,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
       domain: this.domainId,

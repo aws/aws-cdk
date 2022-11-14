@@ -1714,12 +1714,25 @@ describe('instance', () => {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
       vpc,
+      allocatedStorage: 500,
       storageType: rds.StorageType.GP3,
+      storageThroughput: 500,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       StorageType: 'gp3',
+      StorageThroughput: 500,
     });
+  });
+
+  test('throw with storage throughput and not GP3', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      storageType: rds.StorageType.GP2,
+      storageThroughput: 500,
+    })).toThrow(/storage throughput can only be specified with GP3 storage type/);
   });
 });
 
