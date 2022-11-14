@@ -864,8 +864,7 @@ describe('node group', () => {
     });
 
     // WHEN
-    const ngName = 'mock-name';
-    const ng = new eks.Nodegroup(stack, 'Nodegroup', { cluster, nodegroupName: ngName });
+    const ng = new eks.Nodegroup(stack, 'Nodegroup', { cluster, nodegroupName: 'mock-name' });
     new cdk.CfnOutput(stack, 'NodegroupName', { value: ng.nodegroupName });
     // THEN
     Template.fromStack(stack).templateMatches({
