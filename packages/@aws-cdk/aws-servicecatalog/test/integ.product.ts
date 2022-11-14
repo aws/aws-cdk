@@ -6,6 +6,59 @@ import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 import { ProductStackHistory, ProductStackProps } from '../lib';
 
+/**
+ * Follow these instructions to manually test provisioning a Product with an Asset with the resources provisioned in this stack:
+ *
+ * 1. Deploy the stack:
+ ```
+ $ cdk deploy --app "node integ.product.js" integ-servicecatalog-product
+ ```
+ *
+ * 2. Obtain IAM Principal ARN that will provision product.
+ One way this can be done is by using
+ ```
+ $ aws sts get-caller-identity
+ ```
+ *
+ * 3. Associate your principal to your portfolio. PortfolioId is stored as an output values from the deployed stack.
+ ```
+ $ aws servicecatalog associate-principal-with-portfolio \
+ --portfolio-id=<PLACEHOLDER - PORTFOLIO ID> \
+ --principal-arn=<PLACEHOLDER - PRINCIPAL ARN> \
+ --principal-type=IAM
+ ```
+ *
+ * 4. Provision Product using the following prefilled values.
+ ```
+ $ aws servicecatalog provision-product \
+ --provisioned-product-name=testAssetProvisioningProduct \
+ --product-name=testProduct \
+ --provisioning-artifact-name=testAssetProduct
+ ```
+ *
+ * 5. Verify Provision Product was provisioned providing the ProvisionedProductId from the previous step.
+ ```
+ $ aws servicecatalog describe-provisioned-product --id=<PLACEHOLDER - PROVISIONED PRODUCT ID>
+ ```
+ *
+ * 6. Terminate Provisioned Product providing the ProvisionedProductId from the previous step.
+ ```
+ $ aws servicecatalog terminate-provisioned-product --provisioned-product-id=<PLACEHOLDER - PROVISIONED PRODUCT ID>
+ ```
+ *
+ * 7. Disassociate your principal from your portfolio.
+ ```
+ $ aws servicecatalog disassociate-principal-with-portfolio \
+ --portfolio-id=<PLACEHOLDER - PORTFOLIO ID> \
+ --principal-arn=<PLACEHOLDER - PRINCIPAL ARN> \
+ ```
+ *
+ * 8. Destroy the stack:
+ ```
+ $ cdk destroy --app "node integ.product.js" integ-servicecatalog-product
+ ```
+ */
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
 
@@ -16,6 +69,13 @@ class TestProductStack extends servicecatalog.ProductStack {
     new sns.Topic(this, 'TopicProduct');
   }
 }
+
+const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
+  displayName: 'TestPortfolio',
+  providerName: 'TestProvider',
+  description: 'This is our Service Catalog Portfolio',
+  messageLanguage: servicecatalog.MessageLanguage.EN,
+});
 
 class TestAssetProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string, props?: ProductStackProps) {
@@ -30,7 +90,7 @@ class TestAssetProductStack extends servicecatalog.ProductStack {
 const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory', {
   productStack: new TestProductStack(stack, 'SNSTopicProduct3'),
   currentVersionName: 'v1',
-  currentVersionLocked: true,
+  currentVersionLocked: false,
 });
 
 const testAssetBucket = new s3.Bucket(stack, 'TestAssetBucket', {
@@ -61,6 +121,7 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
     },
     {
+      productVersionName: 'testAssetProduct',
       validateTemplate: false,
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestAssetProductStack(stack, 'S3AssetProduct', {
         assetBucket: testAssetBucket,
@@ -70,13 +131,8 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   ],
 });
 
-const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-  allowedValuesForTags: {
-    key1: ['value1', 'value2'],
-    key2: ['value1'],
-  },
-});
+portfolio.addProduct(product);
 
-product.associateTagOptions(tagOptions);
+new cdk.CfnOutput(stack, 'PortfolioId', { value: portfolio.portfolioId });
 
 app.synth();
