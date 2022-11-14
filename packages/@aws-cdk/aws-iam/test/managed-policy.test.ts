@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -674,6 +674,44 @@ describe('managed policy', () => {
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
     }).toThrow('Cannot get policy fragment of ManagedPolicy MyStack/Policy');
+  });
+
+  test('prevent creation when customizeRoles is configured', () => {
+    // GIVEN
+    const otherStack = new cdk.Stack();
+    Role.customizeRoles(otherStack);
+
+    // WHEN
+    new ManagedPolicy(otherStack, 'CustomPolicy', {
+      statements: [new PolicyStatement({
+        effect: Effect.ALLOW,
+        resources: ['*'],
+        actions: ['*'],
+      })],
+    });
+
+    // THEN
+    Template.fromStack(otherStack).resourceCountIs('AWS::IAM::ManagedPolicy', 0);
+  });
+
+  test('do not prevent creation when customizeRoles.preventSynthesis=false', () => {
+    // GIVEN
+    const otherStack = new cdk.Stack();
+    Role.customizeRoles(otherStack, {
+      preventSynthesis: false,
+    });
+
+    // WHEN
+    new ManagedPolicy(otherStack, 'CustomPolicy', {
+      statements: [new PolicyStatement({
+        effect: Effect.ALLOW,
+        resources: ['*'],
+        actions: ['*'],
+      })],
+    });
+
+    // THEN
+    Template.fromStack(otherStack).resourceCountIs('AWS::IAM::ManagedPolicy', 1);
   });
 });
 

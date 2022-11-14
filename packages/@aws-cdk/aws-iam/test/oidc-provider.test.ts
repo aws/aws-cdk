@@ -161,6 +161,9 @@ describe('custom resource provider handler', () => {
 
     expect(response).toStrictEqual({
       PhysicalResourceId: 'FAKE-ARN',
+      Data: {
+        Thumbprints: '["MyThumbprint"]',
+      },
     });
   });
 
@@ -184,6 +187,9 @@ describe('custom resource provider handler', () => {
 
     expect(response).toStrictEqual({
       PhysicalResourceId: 'FAKE-ARN',
+      Data: {
+        Thumbprints: '["FAKE-THUMBPRINT"]',
+      },
     });
   });
 
@@ -219,6 +225,9 @@ describe('custom resource provider handler', () => {
     // THEN
     expect(response).toStrictEqual({
       PhysicalResourceId: 'FAKE-ARN',
+      Data: {
+        Thumbprints: '["THUMB1","THUMB2"]',
+      },
     });
     sinon.assert.notCalled(downloadThumbprint);
     sinon.assert.calledWithExactly(createOpenIDConnectProvider, {
@@ -244,6 +253,9 @@ describe('custom resource provider handler', () => {
     // THEN
     expect(response).toStrictEqual({
       PhysicalResourceId: 'FAKE-ARN',
+      Data: {
+        Thumbprints: '["FAKE-THUMBPRINT"]',
+      },
     });
     sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://new');
     sinon.assert.calledOnceWithExactly(createOpenIDConnectProvider, {
@@ -297,10 +309,8 @@ describe('custom resource provider handler', () => {
     });
 
     // THEN
-    sinon.assert.notCalled(downloadThumbprint);
     sinon.assert.notCalled(createOpenIDConnectProvider);
     sinon.assert.notCalled(deleteOpenIDConnectProvider);
-    sinon.assert.notCalled(updateOpenIDConnectProviderThumbprint);
     sinon.assert.calledTwice(addClientIDToOpenIDConnectProvider);
     sinon.assert.calledWithExactly(addClientIDToOpenIDConnectProvider, {
       OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId', ClientID: 'B',

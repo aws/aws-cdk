@@ -5,7 +5,19 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack, ArnFormat } from '@aws-cdk/core';
+import {
+  Annotations,
+  Duration,
+  IResolvable,
+  IResource,
+  Lazy,
+  Resource,
+  Stack,
+  ArnFormat,
+  FeatureFlags,
+} from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
@@ -53,7 +65,6 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
-
 }
 
 export interface EcsTarget {
@@ -434,6 +445,7 @@ export abstract class BaseService extends Resource
       undefined : props.launchType;
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
+    const deploymentController = this.getDeploymentController(props);
 
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -449,9 +461,7 @@ export abstract class BaseService extends Resource
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
-      deploymentController: props.circuitBreaker ? {
-        type: DeploymentControllerType.ECS,
-      } : props.deploymentController,
+      deploymentController: deploymentController,
       launchType: launchType,
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
@@ -466,6 +476,11 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
+    if (props.circuitBreaker
+        && deploymentController
+        && deploymentController.type !== DeploymentControllerType.ECS) {
+      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
+    }
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
       // Strip the revision ID from the service's task definition property to
       // prevent new task def revisions in the stack from triggering updates
@@ -507,6 +522,19 @@ export abstract class BaseService extends Resource
    */
   public get cloudMapService(): cloudmap.IService | undefined {
     return this.cloudmapService;
+  }
+
+  private getDeploymentController(props: BaseServiceProps): DeploymentController | undefined {
+    if (props.deploymentController) {
+      // The customer is always right
+      return props.deploymentController;
+    }
+    const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
+        FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
+
+    return disableCircuitBreakerEcsDeploymentControllerFeatureFlag ? undefined : {
+      type: DeploymentControllerType.ECS,
+    };
   }
 
   private executeCommandLogConfiguration() {

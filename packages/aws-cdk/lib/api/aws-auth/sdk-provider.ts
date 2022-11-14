@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
+import { traceMethods } from '../../util/tracing';
 import { debug, warning } from './_env';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
@@ -127,6 +128,7 @@ export interface SdkForEnvironment {
  *     - Seeded terminal with `ReadOnly` credentials in order to do `cdk diff`--the `ReadOnly`
  *       role doesn't have `sts:AssumeRole` and will fail for no real good reason.
  */
+@traceMethods
 export class SdkProvider {
   /**
    * Create a new SdkProvider which gets its defaults in a way that behaves like the AWS CLI does
@@ -279,11 +281,15 @@ export class SdkProvider {
 
         return await new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
       } catch (e) {
-        if (isUnrecoverableAwsError(e)) {
-          throw e;
+        // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
+        // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
+        // the current situation is probably undesirable, but we don't fail.
+        if ((e as any).code === 'ExpiredToken') {
+          warning('There are expired AWS credentials in your environment. The CDK app will synth without current account information.');
+          return undefined;
         }
 
-        debug('Unable to determine the default AWS account:', e);
+        debug(`Unable to determine the default AWS account (${e.code}): ${e.message}`);
         return undefined;
       }
     });

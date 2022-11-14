@@ -23,6 +23,14 @@ export interface IntegTestInfo {
    * Path is relative to the current working directory.
    */
   readonly discoveryRoot: string;
+
+  /**
+   * The CLI command used to run this test.
+   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
+   *
+   * @default - test run command will be `node {filePath}`
+   */
+  readonly appCommand?: string;
 }
 
 /**
@@ -79,7 +87,16 @@ export class IntegTest {
    */
   public readonly temporaryOutputDir: string;
 
+  /**
+   * The CLI command used to run this test.
+   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
+   *
+   * @default - test run command will be `node {filePath}`
+   */
+  readonly appCommand: string;
+
   constructor(public readonly info: IntegTestInfo) {
+    this.appCommand = info.appCommand ?? 'node {filePath}';
     this.absoluteFileName = path.resolve(info.fileName);
     this.fileName = path.relative(process.cwd(), info.fileName);
 
@@ -123,10 +140,9 @@ export class IntegTest {
 }
 
 /**
- * The list of tests to run can be provided in a file
- * instead of as command line arguments.
+ * Configuration options how integration test files are discovered
  */
-export interface IntegrationTestFileConfig {
+export interface IntegrationTestsDiscoveryOptions {
   /**
    * If this is set to true then the list of tests
    * provided will be excluded
@@ -135,6 +151,35 @@ export interface IntegrationTestFileConfig {
    */
   readonly exclude?: boolean;
 
+  /**
+    * List of tests to include (or exclude if `exclude=true`)
+    *
+    * @default - all matched files
+    */
+  readonly tests?: string[];
+
+  /**
+    * Detect integration test files matching any of these JavaScript regex patterns.
+    *
+    * @default
+    */
+  readonly testRegex?: string[];
+
+  /**
+   * The CLI command used to run this test.
+   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
+   *
+   * @default - test run command will be `node {filePath}`
+   */
+  readonly app?: string;
+}
+
+
+/**
+ * The list of tests to run can be provided in a file
+ * instead of as command line arguments.
+ */
+export interface IntegrationTestFileConfig extends IntegrationTestsDiscoveryOptions {
   /**
    * List of tests to include (or exclude if `exclude=true`)
    */
@@ -154,11 +199,8 @@ export class IntegrationTests {
    */
   public async fromFile(fileName: string): Promise<IntegTest[]> {
     const file: IntegrationTestFileConfig = JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
-    const foundTests = await this.discover();
 
-    const allTests = this.filterTests(foundTests, file.tests, file.exclude);
-
-    return allTests;
+    return this.discover(file);
   }
 
   /**
@@ -201,22 +243,31 @@ export class IntegrationTests {
    * @param tests Tests to include or exclude, undefined means include all tests.
    * @param exclude Whether the 'tests' list is inclusive or exclusive (inclusive by default).
    */
-  public async fromCliArgs(tests?: string[], exclude?: boolean): Promise<IntegTest[]> {
-    const discoveredTests = await this.discover();
-
-    const allTests = this.filterTests(discoveredTests, tests, exclude);
-
-    return allTests;
+  public async fromCliArgs(options: IntegrationTestsDiscoveryOptions = {}): Promise<IntegTest[]> {
+    return this.discover(options);
   }
 
-  private async discover(): Promise<IntegTest[]> {
+  private async discover(options: IntegrationTestsDiscoveryOptions): Promise<IntegTest[]> {
+    const patterns = options.testRegex ?? ['^integ\\..*\\.js$'];
+
     const files = await this.readTree();
-    const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
-    return this.request(integs);
+    const integs = files.filter(fileName => patterns.some((p) => {
+      const regex = new RegExp(p);
+      return regex.test(fileName) || regex.test(path.basename(fileName));
+    }));
+
+    return this.request(integs, options);
   }
 
-  private request(files: string[]): IntegTest[] {
-    return files.map(fileName => new IntegTest({ discoveryRoot: this.directory, fileName }));
+  private request(files: string[], options: IntegrationTestsDiscoveryOptions): IntegTest[] {
+    const discoveredTests = files.map(fileName => new IntegTest({
+      discoveryRoot: this.directory,
+      fileName,
+      appCommand: options.app,
+    }));
+
+
+    return this.filterTests(discoveredTests, options.tests, options.exclude);
   }
 
   private async readTree(): Promise<string[]> {
@@ -228,7 +279,7 @@ export class IntegrationTests {
         const fullPath = path.join(dir, file);
         const statf = await fs.stat(fullPath);
         if (statf.isFile()) { ret.push(fullPath); }
-        if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
+        if (statf.isDirectory()) { await recurse(fullPath); }
       }
     }
 

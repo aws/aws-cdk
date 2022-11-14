@@ -1,4 +1,5 @@
 import { ArnFormat, Resource, Stack, Arn, Aws } from '@aws-cdk/core';
+import { getCustomizeRolesConfig, PolicySynthesizer } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
@@ -207,6 +208,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<IUser>();
   private readonly groups = new Array<IGroup>();
+  private readonly _precreatedPolicy?: IManagedPolicy;
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
     super(scope, id, {
@@ -220,15 +222,33 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
       this.document = props.document;
     }
 
-    const resource = new CfnManagedPolicy(this, 'Resource', {
-      policyDocument: this.document,
-      managedPolicyName: this.physicalName,
-      description: this.description,
-      path: this.path,
-      roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-      users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-      groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
-    });
+    const config = getCustomizeRolesConfig(this);
+    const _precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
+    this.managedPolicyName = id;
+    this.managedPolicyArn = _precreatedPolicy.managedPolicyArn;
+    if (config.enabled) {
+      this._precreatedPolicy = _precreatedPolicy;
+    }
+    if (!config.preventSynthesis) {
+      const resource = new CfnManagedPolicy(this, 'Resource', {
+        policyDocument: this.document,
+        managedPolicyName: this.physicalName,
+        description: this.description,
+        path: this.path,
+        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
+        users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
+        groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+      });
+
+      // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
+      this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+      this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
+        region: '', // IAM is global in each partition
+        service: 'iam',
+        resource: 'policy',
+        resourceName: this.physicalName,
+      });
+    }
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
@@ -245,15 +265,6 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     if (props.statements) {
       props.statements.forEach(p => this.addStatements(p));
     }
-
-    // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
-    this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
-    this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
-      region: '', // IAM is global in each partition
-      service: 'iam',
-      resource: 'policy',
-      resourceName: this.physicalName,
-    });
 
     this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
 
@@ -301,6 +312,12 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
 
     result.push(...this.document.validateForIdentityPolicy());
 
+    if (result.length === 0 && this._precreatedPolicy) {
+      PolicySynthesizer.getOrCreate(this).addManagedPolicy(this.node.path, {
+        policyStatements: this.document.toJSON()?.Statement,
+        roles: this.roles.map(role => role.node.path),
+      });
+    }
     return result;
   }
 }
