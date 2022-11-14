@@ -32,11 +32,9 @@ class TestStack extends cdk.Stack {
         },
         mainSteps: [
           {
-            action: 'aws:runShellScript',
-            name: 'runShellScript',
-            inputs: {
-              runCommand: ['echo "Hello World"'],
-            },
+            name: 'pauseThis',
+            action: 'aws:pause',
+            inputs: {},
           },
         ],
       },

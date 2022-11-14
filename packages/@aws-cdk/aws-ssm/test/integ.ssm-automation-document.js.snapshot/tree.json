@@ -1,0 +1,201 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-ssm-automation-document": {
+        "id": "aws-cdk-ssm-automation-document",
+        "path": "aws-cdk-ssm-automation-document",
+        "children": {
+          "StartRdsDoc": {
+            "id": "StartRdsDoc",
+            "path": "aws-cdk-ssm-automation-document/StartRdsDoc",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.DocumentBase",
+              "version": "0.0.0"
+            }
+          },
+          "AutomationAssumeRole": {
+            "id": "AutomationAssumeRole",
+            "path": "aws-cdk-ssm-automation-document/AutomationAssumeRole",
+            "children": {
+              "ImportAutomationAssumeRole": {
+                "id": "ImportAutomationAssumeRole",
+                "path": "aws-cdk-ssm-automation-document/AutomationAssumeRole/ImportAutomationAssumeRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ssm-automation-document/AutomationAssumeRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ssm.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "MyAutomationDoc": {
+            "id": "MyAutomationDoc",
+            "path": "aws-cdk-ssm-automation-document/MyAutomationDoc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ssm-automation-document/MyAutomationDoc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Document",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "schemaVersion": "0.3",
+                      "assumeRole": {
+                        "Fn::GetAtt": [
+                          "AutomationAssumeRoleAC6E73A7",
+                          "Arn"
+                        ]
+                      },
+                      "description": "My Automation Document",
+                      "parameters": {
+                        "MyParameter": {
+                          "type": "String",
+                          "description": "My Parameter",
+                          "default": "MyParameterValue"
+                        }
+                      },
+                      "mainSteps": [
+                        {
+                          "name": "pauseThis",
+                          "action": "aws:pause",
+                          "inputs": {}
+                        }
+                      ]
+                    },
+                    "documentType": "Automation",
+                    "updateMethod": "NewVersion"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnDocument",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.AutomationDocument",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-ssm-automation-document/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-ssm-automation-document/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Testing": {
+        "id": "Testing",
+        "path": "Testing",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Testing/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Testing/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.154"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Testing/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Testing/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Testing/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.154"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-ssm-command-document": {
+        "id": "aws-cdk-ssm-command-document",
+        "path": "aws-cdk-ssm-command-document",
+        "children": {
+          "StartRdsDoc": {
+            "id": "StartRdsDoc",
+            "path": "aws-cdk-ssm-command-document/StartRdsDoc",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.DocumentBase",
+              "version": "0.0.0"
+            }
+          },
+          "MyCommandDoc": {
+            "id": "MyCommandDoc",
+            "path": "aws-cdk-ssm-command-document/MyCommandDoc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ssm-command-document/MyCommandDoc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Document",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "schemaVersion": "2.2",
+                      "description": "My Command Document",
+                      "parameters": {
+                        "MyParameter": {
+                          "type": "String",
+                          "description": "My Parameter",
+                          "default": "MyParameterValue"
+                        }
+                      },
+                      "mainSteps": [
+                        {
+                          "action": "aws:runShellScript",
+                          "name": "runShellScript",
+                          "inputs": {
+                            "runCommand": [
+                              "echo \"Hello World\""
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "documentType": "Command",
+                    "updateMethod": "NewVersion"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnDocument",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.CommandDocument",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-ssm-command-document/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-ssm-command-document/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Testing": {
+        "id": "Testing",
+        "path": "Testing",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Testing/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Testing/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.154"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Testing/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Testing/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Testing/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.154"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}
