@@ -424,7 +424,7 @@
   "InstanceC1063A87": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "AllocatedStorage": "100",
+    "AllocatedStorage": "1000",
     "CopyTagsToSnapshot": true,
     "DBInstanceClass": "db.t3.small",
     "DBSubnetGroupName": {

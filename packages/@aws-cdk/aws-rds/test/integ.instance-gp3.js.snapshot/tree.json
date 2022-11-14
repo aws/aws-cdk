@@ -749,7 +749,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
-                    "allocatedStorage": "100",
+                    "allocatedStorage": "1000",
                     "copyTagsToSnapshot": true,
                     "dbInstanceClass": "db.t3.small",
                     "dbSubnetGroupName": {

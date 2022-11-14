@@ -14,6 +14,7 @@ class TestStack extends Stack {
       engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.SMALL),
       vpc,
+      allocatedStorage: 1000,
       storageType: StorageType.GP3,
       removalPolicy: RemovalPolicy.DESTROY,
     });

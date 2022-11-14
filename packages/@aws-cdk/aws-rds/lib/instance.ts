@@ -345,7 +345,8 @@ export interface DatabaseInstanceNewProps {
    *
    * @see https://docs.aws.amazon.com//AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage
    *
-   * @default 125
+   * @default - 125 MiBps if allocated storage is less than 400 GiB for MariaDB, MySQL, and PostgreSQL
+   * less than 200 GiB for Oracle and less than 20 GiB for SQL Server. 500 MiBps otherwise.
    */
   readonly storageThroughput?: number;
 
