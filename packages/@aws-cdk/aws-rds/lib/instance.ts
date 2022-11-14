@@ -750,10 +750,15 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
-    const storageType = props.storageType || StorageType.GP2;
-    const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
+    const storageType = props.storageType ?? StorageType.GP2;
+    const iops = defaultIops(storageType, props.iops);
     if (props.storageThroughput && storageType !== StorageType.GP3) {
       throw new Error(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`);
+    }
+    if (storageType === StorageType.GP3 && props.storageThroughput && iops
+        && !Token.isUnresolved(props.storageThroughput) && !Token.isUnresolved(iops)
+        && props.storageThroughput/iops > 0.25) {
+      throw new Error(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`);
     }
 
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
@@ -1275,4 +1280,16 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
+}
+
+function defaultIops(storageType: StorageType, iops?: number): number | undefined {
+  switch (storageType) {
+    case StorageType.STANDARD:
+    case StorageType.GP2:
+      return undefined;
+    case StorageType.GP3:
+      return iops;
+    case StorageType.IO1:
+      return iops ?? 1000;
+  }
 }
