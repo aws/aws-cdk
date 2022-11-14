@@ -339,7 +339,7 @@ export interface DatabaseInstanceNewProps {
   readonly storageType?: StorageType;
 
   /**
-   * The storage throughput, specified in mibibytes per second (MiBps).
+   * The storage throughput, specified in mebibytes per second (MiBps).
    *
    * Only applicable for GP3.
    *
