@@ -132,11 +132,13 @@ are validated against the pattern and an exception is raised if a value
 provided does not comply.
 
 ## Creating new SSM Documents in your CDK app
+
 You can create either a `ssm.AutomationDocument` or `ssm.CommandDocument` in
 a CDK app. These are documents that can be used to automate actions in your
 AWS account.
 
 ### New Automation Document
+
 Create a new SSM Automation Document with a single step that uses the AWS API
 to reboot a set of EC2 instances.
 
@@ -167,6 +169,7 @@ new ssm.AutomationDocument(this, 'AutomationDocument', {
 ```
 
 ### New Command Document
+
 Create a new SSM Run Command Document with a single step that runs a shell
 command on a specified EC2 instance.
 
@@ -202,6 +205,7 @@ new ssm.CommandDocument(this, 'CommandDocument', {
 ```
 
 ## Import existing SSM Documents
+
 Use the `ssm.AutomationDoucment.fromAutomationDocumentName` method to import an existing or shared SSM
 Automation Document into your CDK app.
 
@@ -212,6 +216,7 @@ const document = ssm.AutomationDocument.fromAutomationDocumentName(this, 'StartR
 ```
 
 Other import methods include:
+
 * `ssm.AutomationDocument.fromAutomationDocumentArn`
 * `ssm.CommandDocument.fromCommandDocumentName`
 * `ssm.CommandDocument.fromCommandDocumentArn`
