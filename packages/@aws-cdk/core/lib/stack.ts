@@ -945,6 +945,27 @@ export class Stack extends Construct implements ITaggable {
     return importValue;
   }
 
+  /**
+   * Create a CloudFormation Export for a value
+   *
+   * Returns a string list representing the corresponding `Fn.importValue()`
+   * expression for this Export. The export expression is automatically wrapped with an
+   * `Fn::Join` and the import value with an `Fn::Split`, since CloudFormation can only
+   * export strings. You can control the name for the export by passing the `name` option.
+   *
+   * If you don't supply a value for `name`, the value you're exporting must be
+   * a Resource attribute (for example: `bucket.bucketName`) and it will be
+   * given the same name as the automatic cross-stack reference that would be created
+   * if you used the attribute in another Stack.
+   *
+   * One of the uses for this method is to *remove* the relationship between
+   * two Stacks established by automatic cross-stack references. It will
+   * temporarily ensure that the CloudFormation Export still exists while you
+   * remove the reference from the consuming stack. After that, you can remove
+   * the resource and the manual export.
+   *
+   * # See `exportValue` for an example of this process.
+   */
   public exportListValue(exportedValue: any, options: ExportValueOptions = {}): string[] {
     if (options.name) {
       new CfnOutput(this, `Export${options.name}`, {
@@ -963,53 +984,6 @@ export class Stack extends Construct implements ITaggable {
 
     return importValue;
 
-  }
-
-  private determineImportValue(exportedValue: any) {
-    const resolvable = Tokenization.reverse(exportedValue);
-    if (!resolvable || !Reference.isReference(resolvable)) {
-      throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
-    }
-
-    // "teleport" the value here, in case it comes from a nested stack. This will also
-    // ensure the value is from our own scope.
-    const exportable = getExportable(this, resolvable);
-
-    // Ensure a singleton "Exports" scoping Construct
-    // This mostly exists to trigger LogicalID munging, which would be
-    // disabled if we parented constructs directly under Stack.
-    // Also it nicely prevents likely construct name clashes
-    const exportsScope = getCreateExportsScope(this);
-
-    // Ensure a singleton CfnOutput for this value
-    const resolved = this.resolve(exportable);
-    const id = 'Output' + JSON.stringify(resolved);
-    const exportName = generateExportName(exportsScope, id);
-
-    if (Token.isUnresolved(exportName)) {
-      throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
-    }
-
-    const exportIsAList = isExportAList(exportedValue, resolved);
-    const delimiter = 'CDK-string-list-export-delimiter';
-
-    // if it's a list, export an Fn::Join expression
-    // and import an Fn::Split expression,
-    // since CloudFormation Outputs can only be strings
-    // (string lists are invalid)
-    const valueToExport = exportIsAList ?
-      Fn.join(delimiter, Token.asList(exportable))
-      : Token.asString(exportable);
-
-    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
-    if (!output) {
-      new CfnOutput(exportsScope, id, { value: valueToExport, exportName });
-    }
-
-    // we don't use `Fn.importListValue()` since this array is a CFN attribute, and we don't know how long this attribute is
-    return exportIsAList ?
-      Fn.split(delimiter, Fn.importValue(exportName))
-      : Fn.importValue(exportName);
   }
 
   /**
@@ -1235,6 +1209,53 @@ export class Stack extends Construct implements ITaggable {
     }
 
     return makeStackName(ids);
+  }
+
+  private determineImportValue(exportedValue: any) {
+    const resolvable = Tokenization.reverse(exportedValue);
+    if (!resolvable || !Reference.isReference(resolvable)) {
+      throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
+    }
+
+    // "teleport" the value here, in case it comes from a nested stack. This will also
+    // ensure the value is from our own scope.
+    const exportable = getExportable(this, resolvable);
+
+    // Ensure a singleton "Exports" scoping Construct
+    // This mostly exists to trigger LogicalID munging, which would be
+    // disabled if we parented constructs directly under Stack.
+    // Also it nicely prevents likely construct name clashes
+    const exportsScope = getCreateExportsScope(this);
+
+    // Ensure a singleton CfnOutput for this value
+    const resolved = this.resolve(exportable);
+    const id = 'Output' + JSON.stringify(resolved);
+    const exportName = generateExportName(exportsScope, id);
+
+    if (Token.isUnresolved(exportName)) {
+      throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
+    }
+
+    const exportIsAList = isExportAList(exportedValue, resolved);
+    const delimiter = 'CDK-string-list-export-delimiter';
+
+    // if it's a list, export an Fn::Join expression
+    // and import an Fn::Split expression,
+    // since CloudFormation Outputs can only be strings
+    // (string lists are invalid)
+    const valueToExport = exportIsAList ?
+      Fn.join(delimiter, Token.asList(exportable))
+      : Token.asString(exportable);
+
+    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
+    if (!output) {
+      new CfnOutput(exportsScope, id, { value: valueToExport, exportName });
+    }
+
+    // we don't use `Fn.importListValue()` since this array is a CFN attribute, and we don't know how long this attribute is
+    return exportIsAList ?
+      Fn.split(delimiter, Fn.importValue(exportName))
+      : Fn.importValue(exportName);
   }
 
   /**
