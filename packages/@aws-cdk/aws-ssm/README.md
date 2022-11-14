@@ -131,3 +131,87 @@ When specifying an `allowedPattern`, the values provided as string literals
 are validated against the pattern and an exception is raised if a value
 provided does not comply.
 
+## Creating new SSM Documents in your CDK app
+You can create either a `ssm.AutomationDocument` or `ssm.CommandDocument` in
+a CDK app. These are documents that can be used to automate actions in your
+AWS account.
+
+### New Automation Document
+Create a new SSM Automation Document with a single step that uses the AWS API
+to reboot a set of EC2 instances.
+
+```ts
+new ssm.AutomationDocument(this, 'AutomationDocument', {
+  content: {
+    schemaVersion: '0.3',
+    assumeRole: 'arn:aws:iam::123456789012:role/MyRole',
+    description: 'Reboot a set up EC2 instances',
+    parameters: {
+      InstanceIds: {
+        type: 'StringList',
+        description: 'The instance ids for the instances to be rebooted.',
+      },
+    },
+    mainSteps: [
+      {
+        name: 'RebootInstances',
+        action: 'aws:executeAwsApi',
+        inputs: {
+          Service: 'ec2',
+          Api: 'RebootInstances',
+          InstanceIds: '{{ InstanceIds }}',
+        },
+    ],
+  },
+});
+```
+
+### New Command Document
+Create a new SSM Run Command Document with a single step that runs a shell
+command on a specified EC2 instance.
+
+```ts
+new ssm.CommandDocument(this, 'CommandDocument', {
+  content: {
+    schemaVersion: '2.2',
+    description: 'Run a shell command on a specified EC2 instance',
+    parameters: {
+      InstanceId: {
+        type: 'String',
+        description: 'The instance id for the instance to run the command on.',
+      },
+      Script: {
+        type: 'String',
+        description: 'The shell command to run on the instance.',
+      },
+    },
+    mainSteps: [
+      {
+        action: 'aws:runShellScript',
+        name: 'runShellScript',
+        inputs: {
+          runCommand: [
+            'echo "Running command on {{InstanceId}}"',
+            '{{Script}}',
+          ],
+        },
+      },
+    ],
+  },
+});
+```
+
+## Import existing SSM Documents
+Use the `ssm.AutomationDoucment.fromAutomationDocumentName` method to import an existing or shared SSM
+Automation Document into your CDK app.
+
+```ts
+const document = ssm.AutomationDocument.fromAutomationDocumentName(this, 'StartRdsManagedDocument', 'AWS-StartRdsInstance');
+
+// Use the imported construct grant access to the document for other resources
+```
+
+Other import methods include:
+* `ssm.AutomationDocument.fromAutomationDocumentArn`
+* `ssm.CommandDocument.fromCommandDocumentName`
+* `ssm.CommandDocument.fromCommandDocumentArn`
