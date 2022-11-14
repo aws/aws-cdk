@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-cdk-eks-cluster-private-endpoint-test": {
         "id": "aws-cdk-eks-cluster-private-endpoint-test",
         "path": "aws-cdk-eks-cluster-private-endpoint-test",
@@ -1277,7 +1269,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06ee.zip"
+                          "s3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -2287,15 +2279,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2414,14 +2398,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn": {
                 "id": "awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn",
                 "path": "aws-cdk-eks-cluster-private-endpoint-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterprivateendpointtestawscdkawseksClusterResourceProviderframeworkonEvent080B290CArn",
@@ -2470,7 +2446,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/fef653bc5de36c60637d4cf988b87a6dd942ce95d8a0cad3d74ad9be87ea2427.json"
+                          "/c48cc5dc50de353455d7c81c66e9a3b94e3e31fe9fb5e198c917ed652e8d500e.json"
                         ]
                       ]
                     },
@@ -2749,7 +2725,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+                          "s3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3074,7 +3050,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/cf1d052158170cdf51f6e3cbf4b80806d0cab71e9d887decd88e368eef9f9321.json"
+                          "/becb250c0b730554cf1721996e6dacde9acf883666917d84e9297f19fff30989.json"
                         ]
                       ]
                     },
@@ -3119,6 +3095,22 @@
               "fqn": "constructs.Construct",
               "version": "10.1.140"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-eks-cluster-private-endpoint-test/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-eks-cluster-private-endpoint-test/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -3145,6 +3137,24 @@
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -3160,6 +3170,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       }
     },

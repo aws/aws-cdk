@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-eks-service-account-sdk-calls-test": {
         "id": "aws-eks-service-account-sdk-calls-test",
         "path": "aws-eks-service-account-sdk-calls-test",
@@ -1254,7 +1246,21 @@
                                     {
                                       "Action": "s3:CreateBucket",
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:s3:::*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:aws:s3:::eks-bucket-",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            "-",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -1424,7 +1430,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06ee.zip"
+                          "s3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -2434,15 +2440,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2561,14 +2559,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn": {
                 "id": "awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
                 "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/awseksserviceaccountsdkcallstestawscdkawseksClusterResourceProviderframeworkonEvent2557A061Arn",
@@ -2617,7 +2607,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/628389eb68738c7d2f97a8bf4bd1e25459c441d6d253c2342a58b233b3095ed1.json"
+                          "/ee3591b9f41899543a43bf01dc88511400507dbaeb7af4f5467197b44103e233.json"
                         ]
                       ]
                     },
@@ -2896,7 +2886,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+                          "s3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2952,7 +2942,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed.zip"
+                          "s3Key": "7e5f48d1e79c915595d938c932b6f0101715a162780d01a55845367e014fbcda.zip"
                         },
                         "description": "/opt/kubectl/kubectl and /opt/helm/helm"
                       }
@@ -3269,7 +3259,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/43282bb612fbe7b4fd592a9a5265e33f7e3a9f258887baf499c13a55aca0d383.json"
+                          "/9acf5c45b3a8964c6f4ec10ef1ae4a4701ad40a323e3188f4e940a210ae99d5d.json"
                         ]
                       ]
                     },
@@ -3422,18 +3412,6 @@
                                     ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
                                   ]
                                 ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
                               }
                             ]
                           }
@@ -3461,7 +3439,21 @@
                                         "s3:ListBucket"
                                       ],
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:s3:::*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:aws:s3:::eks-bucket-",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            "-",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -3517,40 +3509,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatic security group for Lambda Function awseksserviceaccountsdkcallstestS3BucketPingerFunction630FD1F5",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "Vpc8378EB38"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/Resource",
@@ -3561,7 +3519,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d75a212991386411deef17a64b16165f25a2fd42daf48824455a47f1c25c3f22.zip"
+                          "s3Key": "52afb3e2686860c4a72b179852db125e37824bbfccee63ff90cd7b45b9560da1.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3569,27 +3527,28 @@
                             "Arn"
                           ]
                         },
-                        "handler": "index.handler",
-                        "runtime": "python3.9",
-                        "timeout": 60,
-                        "vpcConfig": {
-                          "subnetIds": [
-                            {
-                              "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                            },
-                            {
-                              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                            }
-                          ],
-                          "securityGroupIds": [
-                            {
-                              "Fn::GetAtt": [
-                                "S3BucketPingerFunctionSecurityGroup470A4668",
-                                "GroupId"
+                        "environment": {
+                          "variables": {
+                            "BUCKET_NAME": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "eks-bucket-",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  "-",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  }
+                                ]
                               ]
                             }
-                          ]
-                        }
+                          }
+                        },
+                        "handler": "index.handler",
+                        "runtime": "python3.9",
+                        "timeout": 60
                       }
                     },
                     "constructInfo": {
@@ -3828,6 +3787,22 @@
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-eks-service-account-sdk-calls-test/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-eks-service-account-sdk-calls-test/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -3854,6 +3829,24 @@
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -3869,6 +3862,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       }
     },

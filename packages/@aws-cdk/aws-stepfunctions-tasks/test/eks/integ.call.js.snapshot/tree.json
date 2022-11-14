@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-stepfunctions-tasks-eks-call-integ-test": {
         "id": "aws-stepfunctions-tasks-eks-call-integ-test",
         "path": "aws-stepfunctions-tasks-eks-call-integ-test",
@@ -1308,7 +1300,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06ee.zip"
+                          "s3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -2318,15 +2310,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2445,14 +2429,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn": {
                 "id": "awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn",
                 "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProviderframeworkonEvent0215520BArn",
@@ -2501,7 +2477,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/22b5da26b3dd8f047d80753d8575dde8c42f26f5a7d6a99e21c98abc53e210bd.json"
+                          "/ab1f5372b52388fd8dceda376970ae31c23eff6f926bb1d1c90889974acd8aa6.json"
                         ]
                       ]
                     },
@@ -2780,7 +2756,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+                          "s3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2836,7 +2812,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed.zip"
+                          "s3Key": "7e5f48d1e79c915595d938c932b6f0101715a162780d01a55845367e014fbcda.zip"
                         },
                         "description": "/opt/kubectl/kubectl and /opt/helm/helm"
                       }
@@ -3153,7 +3129,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/d883f4a670bf58f289b85046d0250ec60832d3e8cc91b9c36ea0cea845215867.json"
+                          "/d9569b5b5ca48d9e729a43807b8481526445aa96dbdc41909c05a0685ca01a5a.json"
                         ]
                       ]
                     },
@@ -3212,15 +3188,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "Service": {
-                              "Fn::FindInMap": [
-                                "ServiceprincipalMap",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                "states"
-                              ]
-                            }
+                            "Service": "states.amazonaws.com"
                           }
                         }
                       ],
@@ -3315,11 +3283,19 @@
               "version": "0.0.0"
             }
           },
-          "Service-principalMap": {
-            "id": "Service-principalMap",
-            "path": "aws-stepfunctions-tasks-eks-call-integ-test/Service-principalMap",
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-tasks-eks-call-integ-test/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-tasks-eks-call-integ-test/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
@@ -3348,6 +3324,24 @@
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -3363,6 +3357,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       }
     },
