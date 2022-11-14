@@ -203,8 +203,8 @@ function createImportValue(reference: Reference): Intrinsic {
       importExpr = exportingStack.exportListValue(reference);
       // I happen to know this returns a Fn.split() which implements Intrinsic.
       return Tokenization.reverseList(importExpr) as Intrinsic;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
   }
 }
