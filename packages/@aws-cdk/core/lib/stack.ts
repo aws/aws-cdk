@@ -7,6 +7,7 @@ import * as minimatch from 'minimatch';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
+import { Aspects } from './aspect';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -15,6 +16,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
+import { PermissionsBoundaryManager, PermissionsBoundary } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -151,6 +153,14 @@ export interface StackProps {
    * @default false
    */
   readonly crossRegionReferences?: boolean;
+
+  /**
+   * Options for applying a permissions boundary to all IAM Roles
+   * and Users created within this Stage
+   *
+   * @default - no permissions boundary is applied
+   */
+  readonly permissionsBoundary?: PermissionsBoundary;
 }
 
 /**
@@ -420,6 +430,31 @@ export class Stack extends Construct implements ITaggable {
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
+
+    props.permissionsBoundary?.bind(this);
+    // add the permission boundary aspect
+    this.addPermissionsBoundaryAspect();
+  }
+
+  private addPermissionsBoundaryAspect(): void {
+    Aspects.of(this).add({
+      visit(node: IConstruct) {
+        if (
+          CfnResource.isCfnResource(node) &&
+            (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
+        ) {
+          const permissionsBoundaryArn = PermissionsBoundaryManager.arn(node);
+          if (permissionsBoundaryArn) {
+            const stack = Stack.of(node);
+            const qualifier = stack.synthesizer.bootstrapQualifier
+              ?? node.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT)
+              ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+            const spec = new StringSpecializer(stack, qualifier);
+            node.addPropertyOverride('PermissionsBoundary', spec.specialize(permissionsBoundaryArn));
+          }
+        }
+      },
+    });
   }
 
   /**
@@ -1410,7 +1445,8 @@ import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT } from './stack-synthesizers';
+import { StringSpecializer } from './stack-synthesizers/_shared';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';

@@ -7,6 +7,13 @@ import { Stack } from '../stack';
  */
 export interface IStackSynthesizer {
   /**
+   * The qualifier for used to bootstrap this stack
+   *
+   * @default - no qualifier
+   */
+  readonly bootstrapQualifier?: string;
+
+  /**
    * Bind to the stack this environment is going to be used on
    *
    * Must be called before any of the other methods are called.

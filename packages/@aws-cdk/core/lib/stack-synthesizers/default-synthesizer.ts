@@ -274,6 +274,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   public static readonly DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME = 'CdkBootstrap-${Qualifier}-FileAssetKeyArn';
 
   /**
+   * Default name of the permissions boundary managed policy
+   */
+  public static readonly DEFAULT_PERMISSIONS_BOUNDARY_NAME = 'cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}';
+
+  /**
    * Default file asset prefix
    */
   public static readonly DEFAULT_FILE_ASSET_PREFIX = '';
@@ -322,6 +327,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
         ].join(', '));
       }
     }
+  }
+
+  public get bootstrapQualifier(): string | undefined {
+    return this.qualifier;
   }
 
   public bind(stack: Stack): void {

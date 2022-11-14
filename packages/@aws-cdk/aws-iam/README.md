@@ -295,6 +295,54 @@ User). Permissions Boundaries are typically created by account
 Administrators, and their use on newly created `Role`s will be enforced by
 IAM policies.
 
+### Bootstrap Permissions Boundary
+
+If the default permissions boundary has been created as part of CDK boostrap, it
+is possible to apply this permissions boundary at the `Stage` or `Stack` scope.
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.default(),
+});
+```
+
+This will apply the default permissions boundary created as part of CDK
+bootstrap to all IAM Roles that are created within this `Stage`.
+
+If you have created a permissions boundary with a custom name, it is also
+possible to specify the custom name.
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('my-custom-pb-name'),
+});
+```
+
+Similar to the default permissions boundary, the `fromName` method will also
+replace the `${Qualifier}` string with the Stack synthesizer qualifier. For
+example if you are using a custom stack synthesizer with a custom qualifier
+which is part of the permissions boundary policy name.
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('my-${Qualifier}-pb-name'),
+});
+
+new Stack(prodStage, 'ProdStack', {
+  synthesizer: new DefaultStackSynthesizer({
+    qualifier: 'custom',
+  });
+});
+```
+
+### Custom Permissions Boundary
+
 It is possible to attach Permissions Boundaries to all Roles created in a construct
 tree all at once:
 
