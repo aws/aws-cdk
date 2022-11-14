@@ -345,8 +345,9 @@ export interface DatabaseInstanceNewProps {
    *
    * @see https://docs.aws.amazon.com//AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage
    *
-   * @default - 125 MiBps if allocated storage is less than 400 GiB for MariaDB, MySQL, and PostgreSQL
-   * less than 200 GiB for Oracle and less than 20 GiB for SQL Server. 500 MiBps otherwise.
+   * @default - 125 MiBps if allocated storage is less than 400 GiB for MariaDB, MySQL, and PostgreSQL,
+   * less than 200 GiB for Oracle and less than 20 GiB for SQL Server. 500 MiBps otherwise (except for
+   * SQL Server where the default is always 125 MiBps).
    */
   readonly storageThroughput?: number;
 
@@ -354,7 +355,10 @@ export interface DatabaseInstanceNewProps {
    * The number of I/O operations per second (IOPS) that the database provisions.
    * The value must be equal to or greater than 1000.
    *
-   * @default - no provisioned iops
+   * @default - no provisioned iops if storage type is not specified. For GP3: 3,000 IOPS if allocated
+   * storage is less than 400 GiB for MariaDB, MySQL, and PostgreSQL, less than 200 GiB for Oracle and
+   * less than 20 GiB for SQL Server. 12,000 IOPS otherwise (except for SQL Server where the default is
+   * always 3,000 IOPS).
    */
   readonly iops?: number;
 
