@@ -9,7 +9,7 @@
       ",",
       {
        "Fn::Split": [
-        "CDK-determined-super-magic-delimiter",
+        "CDK-string-list-export-delimiter",
         {
          "Fn::ImportValue": "producer:ExportsOutputFnGetAttendpointE7B9679BDnsEntries62080A34"
         }
@@ -28,7 +28,7 @@
       ",",
       {
        "Fn::Split": [
-        "CDK-determined-super-magic-delimiter",
+        "CDK-string-list-export-delimiter",
         {
          "Fn::ImportValue": "producer:ExportsOutputRefstringListParam77B646D6"
         }

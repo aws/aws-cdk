@@ -927,7 +927,7 @@ export class Stack extends Construct implements ITaggable {
    * - Don't forget to remove the `exportValue()` call as well.
    * - Deploy again (this time only the `producerStack` will be changed -- the bucket will be deleted).
    */
-  public exportValue(exportedValue: any, options: ExportValueOptions = {}): any {
+  public exportValue(exportedValue: any, options: ExportValueOptions = {}): string {
     if (options.name) {
       new CfnOutput(this, `Export${options.name}`, {
         value: exportedValue,
@@ -936,6 +936,36 @@ export class Stack extends Construct implements ITaggable {
       return Fn.importValue(options.name);
     }
 
+    const importValue = this.determineImportValue(exportedValue);
+
+    if (Array.isArray(importValue)) {
+      throw new Error('Attempted to export a list value from `exportValue()`: use `exportListValue()` instead');
+    }
+
+    return importValue;
+  }
+
+  public exportListValue(exportedValue: any, options: ExportValueOptions = {}): string[] {
+    if (options.name) {
+      new CfnOutput(this, `Export${options.name}`, {
+        value: exportedValue,
+        exportName: options.name,
+      });
+      const delimiter = 'CDK-string-list-export-delimiter';
+      return Fn.split(delimiter, Fn.importValue(options.name));
+    }
+
+    const importValue = this.determineImportValue(exportedValue);
+
+    if (!Array.isArray(importValue)) {
+      throw new Error('Attempted to export a string value from `exportListValue()`: use `exportValue()` instead');
+    }
+
+    return importValue;
+
+  }
+
+  private determineImportValue(exportedValue: any) {
     const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
@@ -961,7 +991,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const exportIsAList = isExportAList(exportedValue, resolved);
-    const delimiter = 'CDK-determined-super-magic-delimiter';
+    const delimiter = 'CDK-string-list-export-delimiter';
 
     // if it's a list, export an Fn::Join expression
     // and import an Fn::Split expression,
@@ -1390,7 +1420,7 @@ function generateExportName(stackExports: Construct, id: string) {
 
 function isExportAList(exportedValue: any, resolved: any) {
   const target = exportedValue.target;
-  const resolvedGetAtt = resolved['Fn::GetAtt']; // ignoring Refs for now, only get atts are supported
+  const resolvedGetAtt = resolved['Fn::GetAtt'];
   const resolvedRef = (resolved['Fn::Ref'] ?? resolved.Ref);
 
   if (resolvedGetAtt && resolvedRef) {
@@ -1409,7 +1439,7 @@ function isExportAList(exportedValue: any, resolved: any) {
   } else if (resolvedRef) {
     let valueAsList = undefined;
     try {
-      // availableCfnAttrs might be a `CfnParameter`,
+      // target might be a `CfnParameter`,
       // which is the only case where a Ref to a List is possible
       valueAsList = target.valueAsList;
     } catch (e) {

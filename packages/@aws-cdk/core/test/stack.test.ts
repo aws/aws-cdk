@@ -491,7 +491,7 @@ describe('stack', () => {
         ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
           Value: {
             'Fn::Join': [
-              'CDK-determined-super-magic-delimiter', {
+              'CDK-string-list-export-delimiter', {
                 'Fn::GetAtt': [
                   'exportedResource',
                   'List',
@@ -511,7 +511,7 @@ describe('stack', () => {
           Properties: {
             Prop: {
               'Fn::Split': [
-                'CDK-determined-super-magic-delimiter',
+                'CDK-string-list-export-delimiter',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
                 },
@@ -551,7 +551,7 @@ describe('stack', () => {
         ExportsOutputRefmagicParameter4CC6F7BE: {
           Value: {
             'Fn::Join': [
-              'CDK-determined-super-magic-delimiter', {
+              'CDK-string-list-export-delimiter', {
                 Ref: 'magicParameter',
               },
             ],
@@ -568,7 +568,64 @@ describe('stack', () => {
           Properties: {
             Prop: {
               'Fn::Split': [
-                'CDK-determined-super-magic-delimiter',
+                'CDK-string-list-export-delimiter',
+                {
+                  'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of lists returned from Fn::Ref work with `name`', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const param = new CfnParameter(stack1, 'magicParameter', {
+      default: 'BLAT,BLAH',
+      type: 'List<String>',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: param.value,
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputRefmagicParameter4CC6F7BE: {
+          Value: {
+            'Fn::Join': [
+              'CDK-string-list-export-delimiter', {
+                Ref: 'magicParameter',
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                'CDK-string-list-export-delimiter',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
                 },
@@ -1067,6 +1124,29 @@ describe('stack', () => {
     expect(templateA).toEqual(templateM);
   });
 
+  test('automatic cross-stack references and manual list exports look the same', () => {
+    // GIVEN: automatic
+    const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
+    const producerA = new Stack(appA, 'Producer');
+    const consumerA = new Stack(appA, 'Consumer');
+    const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
+    (resourceA as any).attrAtt = ['Foo', 'Bar'];
+    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att')}` });
+
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
+    (resourceM as any).attrAtt = ['Foo', 'Bar'];
+    producerM.exportListValue(resourceM.getAtt('Att'));
+
+    // THEN - producers are the same
+    const templateA = appA.synth().getStackByName(producerA.stackName).template;
+    const templateM = appM.synth().getStackByName(producerM.stackName).template;
+
+    expect(templateA).toEqual(templateM);
+  });
+
   test('throw error if overrideLogicalId is used and logicalId is locked', () => {
     // GIVEN: manual
     const appM = new App();
@@ -1146,6 +1226,15 @@ describe('stack', () => {
     }).toThrow(/or make sure to export a resource attribute/);
   });
 
+  test('manual list exports require a name if not supplying a resource attribute', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    expect(() => {
+      stack.exportListValue(['someValue']);
+    }).toThrow(/or make sure to export a resource attribute/);
+  });
+
   test('manual exports can also just be used to create an export of anything', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
@@ -1153,6 +1242,24 @@ describe('stack', () => {
     const importV = stack.exportValue('someValue', { name: 'MyExport' });
 
     expect(stack.resolve(importV)).toEqual({ 'Fn::ImportValue': 'MyExport' });
+  });
+
+  test('manual list exports can also just be used to create an export of anything', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const importV = stack.exportListValue(['someValue'], { name: 'MyExport' });
+
+    expect(stack.resolve(importV)).toEqual(
+      {
+        'Fn::Split': [
+          'CDK-string-list-export-delimiter',
+          {
+            'Fn::ImportValue': 'MyExport',
+          },
+        ],
+      },
+    );
   });
 
   test('CfnSynthesisError is ignored when preparing cross references', () => {
