@@ -143,7 +143,10 @@ export class CdkToolkit {
     const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
-
+    print('Deploy order:');
+    stackCollection.stackIds.forEach((stack, index) => {
+      print(`${index + 1} - ${stack}`);
+    });
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
     const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
