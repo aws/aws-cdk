@@ -827,11 +827,13 @@ export class KubernetesVersion {
 
   /**
    * Kubernetes version 1.18
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
   /**
    * Kubernetes version 1.19
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_19 = KubernetesVersion.of('1.19');
 
