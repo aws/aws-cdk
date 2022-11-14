@@ -847,7 +847,35 @@ describe('node group', () => {
       Outputs: {
         NodegroupName: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputRefNodegroup62B4B2C1EF8AB7C1',
+            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttNodegroup62B4B2C1NodegroupName2D50892D',
+          },
+        },
+      },
+    });
+  });
+
+  test('nodegroupName is set correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    const ngName = 'mock-name';
+    const ng = new eks.Nodegroup(stack, 'Nodegroup', { cluster, nodegroupName: ngName });
+    new cdk.CfnOutput(stack, 'NodegroupName', { value: ng.nodegroupName });
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Outputs: {
+        NodegroupName: {
+          Value: {
+            'Fn::GetAtt': [
+              'Nodegroup62B4B2C1',
+              'NodegroupName',
+            ],
           },
         },
       },

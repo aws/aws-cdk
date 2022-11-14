@@ -452,7 +452,7 @@ export class Nodegroup extends Resource implements INodegroup {
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-    this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+    this.nodegroupName = resource.getAtt('NodegroupName').toString();
   }
 }
 
