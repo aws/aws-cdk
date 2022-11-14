@@ -130,9 +130,8 @@ export class Bootstrapper {
     //     * '-' if this is the first time we're deploying this stack (or upgrading from old to new bootstrap)
     const currentKmsKeyId = current.parameters.FileAssetsBucketKmsKeyId;
     const kmsKeyId = params.kmsKeyId ??
-      (params.createCustomerMasterKey === true ? CREATE_NEW_KEY :
-        params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
-          undefined);
+        (params.createCustomerMasterKey === true ? CREATE_NEW_KEY :
+          params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY : undefined);
 
     /* A permissions boundary can be provided via:
     *    - the flag indicating the default one should be used
@@ -141,6 +140,13 @@ export class Bootstrapper {
     */
     const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
     const permissionsBoundary = params.defaultPermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
+    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
+    const regexp = new RegExp('[\w+=,.@-]+');
+    if (permissionsBoundary && permissionsBoundary !== CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
+      if (permissionsBoundary.length > 128 || !regexp.test(permissionsBoundary)) {
+        throw new Error('Please pass the custom permissions boundary by name when using \'--permissions-boundary\'');
+      }
+    }
     if (currentPermissionsBoundary !== permissionsBoundary) {
       warning(`Switching from ${currentPermissionsBoundary} to ${permissionsBoundary} as permissions boundary`);
     }
