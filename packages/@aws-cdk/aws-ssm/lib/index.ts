@@ -1,3 +1,4 @@
+export * from './document';
 export * from './parameter';
 
 // AWS::SSM CloudFormation Resources:
