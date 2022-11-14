@@ -45,7 +45,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
 This example defines an Amazon EKS cluster with the following configuration:
 
 * Dedicated VPC with default configuration (Implicitly created using [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
-* A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.V1_21
+* A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
 // provisiong a cluster
@@ -827,6 +827,18 @@ The Amazon Resource Name (ARN) for that CMK can be retrieved.
 declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
+
+### Set Cluster Version
+
+The latest version may not be specified. But don't panic. You can keep the other codes by simply setting them up this way.
+
+```ts
+const cluster = new eks.Cluster(this, 'manual-version-eks', {
+  // version: eks.KubernetesVersion.V1_23,
+  version: eks.KubernetesVersion.of('1.24'),
+});
+```
+
 
 ## Permissions and Security
 
