@@ -697,7 +697,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v23.KubectlV23Layer",
-              "version": "2.0.0"
+              "version": "2.0.1"
             }
           },
           "Cluster": {
@@ -945,7 +945,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.154"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2335,15 +2335,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2453,20 +2445,12 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.154"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/custom-resources.Provider",
-                  "version": "0.0.0"
-                }
-              },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -2518,7 +2502,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/2fed8ab1f03e158a5349a4c05f72e5af8058dfc121bb63ca21cb44060db0ba54.json"
+                          "/659bcba3836b23ab198b568cc4c5995f1e99d96874f1e6b48cde199b86daf1e2.json"
                         ]
                       ]
                     },
@@ -2540,7 +2524,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.154"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3165,7 +3149,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.154"
             }
           },
           "awscdkeksclusteralbcontrollertestCluster481F6464-AlbController": {
@@ -3984,7 +3968,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.154"
             }
           },
           "IngressPingerResponse": {
@@ -4030,7 +4014,7 @@
                 "path": "aws-cdk-cluster-alb-controller/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.154"
                 }
               },
               "DeployAssert": {
@@ -4076,7 +4060,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.154"
         }
       }
     },

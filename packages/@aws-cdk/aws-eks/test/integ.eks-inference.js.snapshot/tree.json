@@ -697,7 +697,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v23.KubectlV23Layer",
-              "version": "2.0.0"
+              "version": "2.0.1"
             }
           },
           "Cluster": {
@@ -974,7 +974,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.154"
                 }
               },
               "KubectlReadyBarrier": {
@@ -2784,15 +2784,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2902,20 +2894,12 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.154"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/custom-resources.Provider",
-                  "version": "0.0.0"
-                }
-              },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -2967,7 +2951,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/542d8d096542e255577742064d7a48bcc7b6938268bdb1815e4724e16d483f3a.json"
+                          "/160c5063e51e97adff360ac4e9bf20abf8cc478d5aaf57a42f93b48f6a2b4845.json"
                         ]
                       ]
                     },
@@ -2989,7 +2973,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.154"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -3614,7 +3598,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.154"
             }
           },
           "awscdkeksclusterinferencetestClusterEBBBA1AC-AlbController": {
@@ -4088,7 +4072,7 @@
                 "path": "aws-cdk-eks-cluster-interence/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.154"
                 }
               },
               "DeployAssert": {
@@ -4134,7 +4118,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.154"
         }
       }
     },
