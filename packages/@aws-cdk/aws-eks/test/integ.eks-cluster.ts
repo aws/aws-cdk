@@ -197,6 +197,8 @@ class EksClusterStack extends Stack {
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+      // custom nodegropuName
+      nodegroupName: 'extra-ng',
     });
   }
   private assertNodeGroupSpot() {
