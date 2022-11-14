@@ -284,7 +284,7 @@ const alarmRule = cloudwatch.AlarmRule.anyOf(
 );
 
 new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
-  alarmRule,
+  alarmRule: alarmRule,
 });
 ```
 
@@ -302,8 +302,8 @@ declare const actionsSuppressor: cloudwatch.Alarm;
 const alarmRule = cloudwatch.AlarmRule.anyOf(alarm1, alarm2);
 
 const myCompositeAlarm = new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
-  alarmRule,
-  actionsSuppressor,
+  alarmRule: alarmRule,
+  actionsSuppressor: actionsSuppressor,
 });
 myCompositeAlarm.addAlarmActions(onAlarmAction);
 myComposireAlarm.addOkAction(onOkAction);
