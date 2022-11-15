@@ -192,21 +192,17 @@ function findAllReferences(root: IConstruct) {
  */
 function createImportValue(reference: Reference): Intrinsic {
   const exportingStack = Stack.of(reference.target);
+  let importExpr;
 
-  let importExpr: any;
-  try {
-    importExpr = exportingStack.exportValue(reference);
-    // I happen to know this returns a Fn.importValue() which implements Intrinsic.
-    return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
-  } catch (e) {
-    try {
-      importExpr = exportingStack.exportListValue(reference);
-      // I happen to know this returns a Fn.split() which implements Intrinsic.
-      return Tokenization.reverseList(importExpr) as Intrinsic;
-    } catch (err) {
-      throw err;
-    }
+  if (Array.isArray((exportingStack as any).determineImportValue(reference))) {
+    importExpr = exportingStack.exportListValue(reference);
+    // I happen to know this returns a Fn.split() which implements Intrinsic.
+    return Tokenization.reverseList(importExpr) as Intrinsic;
   }
+
+  importExpr = exportingStack.exportValue(reference);
+  // I happen to know this returns a Fn.importValue() which implements Intrinsic.
+  return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
 }
 
 /**

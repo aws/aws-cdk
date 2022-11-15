@@ -7,7 +7,7 @@ import {
   CfnResource, Lazy, ScopedAws, Stack, validateString,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
-  Aws,
+  Aws, Fn,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -491,7 +491,7 @@ describe('stack', () => {
         ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
           Value: {
             'Fn::Join': [
-              'CDK-string-list-export-delimiter', {
+              '||', {
                 'Fn::GetAtt': [
                   'exportedResource',
                   'List',
@@ -511,9 +511,75 @@ describe('stack', () => {
           Properties: {
             Prop: {
               'Fn::Split': [
-                'CDK-string-list-export-delimiter',
+                '||',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of lists returned from Fn::GetAtt can be used with CFN intrinsics', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const exportResource = new CfnResource(stack1, 'exportedResource', {
+      type: 'BLA',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: Fn.select(3, exportResource.getAtt('List') as any),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
+          Value: {
+            'Fn::Join': [
+              '||', {
+                'Fn::GetAtt': [
+                  'exportedResource',
+                  'List',
+                ],
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                    },
+                  ],
                 },
               ],
             },
@@ -551,7 +617,7 @@ describe('stack', () => {
         ExportsOutputRefmagicParameter4CC6F7BE: {
           Value: {
             'Fn::Join': [
-              'CDK-string-list-export-delimiter', {
+              '||', {
                 Ref: 'magicParameter',
               },
             ],
@@ -568,7 +634,7 @@ describe('stack', () => {
           Properties: {
             Prop: {
               'Fn::Split': [
-                'CDK-string-list-export-delimiter',
+                '||',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
                 },
@@ -608,7 +674,7 @@ describe('stack', () => {
         ExportsOutputRefmagicParameter4CC6F7BE: {
           Value: {
             'Fn::Join': [
-              'CDK-string-list-export-delimiter', {
+              '||', {
                 Ref: 'magicParameter',
               },
             ],
@@ -625,7 +691,7 @@ describe('stack', () => {
           Properties: {
             Prop: {
               'Fn::Split': [
-                'CDK-string-list-export-delimiter',
+                '||',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
                 },
@@ -1253,7 +1319,7 @@ describe('stack', () => {
     expect(stack.resolve(importV)).toEqual(
       {
         'Fn::Split': [
-          'CDK-string-list-export-delimiter',
+          '||',
           {
             'Fn::ImportValue': 'MyExport',
           },

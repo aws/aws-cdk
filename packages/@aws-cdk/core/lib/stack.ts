@@ -971,8 +971,7 @@ export class Stack extends Construct implements ITaggable {
         value: exportedValue,
         exportName: options.name,
       });
-      const delimiter = 'CDK-string-list-export-delimiter';
-      return Fn.split(delimiter, Fn.importValue(options.name));
+      return Fn.split('||', Fn.importValue(options.name));
     }
 
     const importValue = this.determineImportValue(exportedValue);
@@ -1236,7 +1235,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const exportIsAList = isExportAList(exportedValue, resolved);
-    const delimiter = 'CDK-string-list-export-delimiter';
+    const delimiter = '||';
 
     // if it's a list, export an Fn::Join expression
     // and import an Fn::Split expression,
@@ -1444,7 +1443,7 @@ function isExportAList(exportedValue: any, resolved: any) {
   const resolvedRef = (resolved['Fn::Ref'] ?? resolved.Ref);
 
   if (resolvedGetAtt && resolvedRef) {
-    throw new Error(`found a reference with both 'Fn::GetAtt' and 'Fn::Ref' ${resolved}`);
+    throw new Error(`found a reference with both 'Fn::GetAtt' and 'Fn::Ref' ${JSON.stringify(resolved)}`);
   }
 
   if (resolvedGetAtt) {
