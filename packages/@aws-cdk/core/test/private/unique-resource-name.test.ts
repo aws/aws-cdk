@@ -1,8 +1,8 @@
-import { createHash } from 'crypto';
+import { md5hash } from '../../lib/helpers-internal';
 import { makeUniqueResourceName } from '../../lib/private/unique-resource-name';
 
 const pathHash = (path: string[]): string => {
-  return createHash('md5').update(path.join('/')).digest('hex').slice(0, 8).toUpperCase();
+  return md5hash(path.join('/')).slice(0, 8).toUpperCase();
 };
 
 describe('makeUniqueResourceName tests', () => {

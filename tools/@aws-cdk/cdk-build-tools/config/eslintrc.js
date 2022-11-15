@@ -153,6 +153,16 @@ module.exports = {
     // Are you sure | is not a typo for || ?
     'no-bitwise': ['error'],
 
+    // No more md5, will break in FIPS environments
+    "no-restricted-syntax": [
+      "error",
+      {
+        // Both qualified and unqualified calls
+        "selector": "CallExpression:matches([callee.name='createHash'], [callee.property.name='createHash']) Literal[value='md5']",
+        "message": "Use the md5hash() function from the core library if you want md5"
+      }
+    ],
+
     // Oh ho ho naming. Everyone's favorite topic!
     // FIXME: there's no way to do this properly. The proposed tslint replacement
     // works very differently, also checking names in object literals, which we use all over the

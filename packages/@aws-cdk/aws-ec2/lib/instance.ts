@@ -1,7 +1,7 @@
-import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
 import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
@@ -423,14 +423,14 @@ export class Instance extends Resource implements IInstance {
         if (recursing) { return originalLogicalId; }
         if (!(props.userDataCausesReplacement ?? props.initOptions)) { return originalLogicalId; }
 
-        const md5 = crypto.createHash('md5');
+        const fragments = new Array<string>();
         recursing = true;
         try {
-          md5.update(JSON.stringify(context.resolve(this.userData.render())));
+          fragments.push(JSON.stringify(context.resolve(this.userData.render())));
         } finally {
           recursing = false;
         }
-        const digest = md5.digest('hex').slice(0, 16);
+        const digest = md5hash(fragments.join('')).slice(0, 16);
         return `${originalLogicalId}${digest}`;
       },
     }));
