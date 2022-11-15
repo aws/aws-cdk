@@ -69,10 +69,24 @@ to be a self contained CDK app. The runner will execute the following for each f
 - `--disable-update-workflow` (default=`false`)
   If this is set to `true` then the [update workflow](#update-workflow) will be disabled
 - `--app`
-  The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".
+  The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}". 
+
+  Takes precedence over language presets.
 - `--test-regex`
   Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.
+
+  Takes precedence over language presets.
+- `--language`
+  The language presets to use. You can discover and run tests written in multiple languages by passing this flag multiple times (`--language javascript --language typescript`). Defaults to all supported languages. Currently supported language presets are:
+  - `javascript`:
+    - File RegExp: `^integ\..*\.js$`
+    - App run command: `node {filePath}`
+  - `typescript`:
+    - File RegExp: `^integ\..*(?<!\.d)\.ts$`
+    - App run command: `node -r ts-node/register {filePath}`
   
+  For TypeScript files compiled to JavaScript, the JS tests will take precedence and the TS ones won't be evaluated.
+
 Example:
 
 ```bash

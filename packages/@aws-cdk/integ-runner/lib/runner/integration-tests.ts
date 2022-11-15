@@ -37,6 +37,22 @@ export interface IntegTestInfo {
  * Derived information for IntegTests
  */
 export class IntegTest {
+  private static readonly defaultSuffixes = new Map<string, RegExp>([
+    ['javascript', new RegExp(/\.js$/)],
+    // Allow files ending in .ts but not in .d.ts
+    ['typescript', new RegExp(/(?<!\.d)\.ts$/)],
+  ]);
+
+  private static readonly defaultAppCommands = new Map<string, string>([
+    ['javascript', 'node {filePath}'],
+    ['typescript', 'node -r ts-node/register {filePath}'],
+  ]);
+
+  private static getLanguage(fileName: string): string | undefined {
+    const [language] = Array.from(IntegTest.defaultSuffixes.entries()).find(([, regex]) => regex.test(fileName)) ?? [undefined, undefined];
+    return language;
+  }
+
   /**
    * The name of the file to run
    *
@@ -95,14 +111,21 @@ export class IntegTest {
    */
   readonly appCommand: string;
 
+  /**
+   * Language the test is written in
+   */
+  public readonly language?: string;
+
   constructor(public readonly info: IntegTestInfo) {
-    this.appCommand = info.appCommand ?? 'node {filePath}';
     this.absoluteFileName = path.resolve(info.fileName);
     this.fileName = path.relative(process.cwd(), info.fileName);
 
     const parsed = path.parse(this.fileName);
     this.discoveryRelativeFileName = path.relative(info.discoveryRoot, info.fileName);
     this.directory = parsed.dir;
+
+    this.language = IntegTest.getLanguage(parsed.base);
+    this.appCommand = info.appCommand ?? this.getDefaultAppCommand();
 
     // if we are running in a package directory then just use the fileName
     // as the testname, but if we are running in a parent directory with
@@ -117,6 +140,19 @@ export class IntegTest {
     this.normalizedTestName = parsed.name;
     this.snapshotDir = path.join(this.directory, `${parsed.base}.snapshot`);
     this.temporaryOutputDir = path.join(this.directory, `${CDK_OUTDIR_PREFIX}.${parsed.base}.snapshot`);
+  }
+
+  private getDefaultAppCommand(): string {
+    if (!this.language) {
+      throw new Error(`Integration test '${this.fileName}' does not match any of the supported languages.`);
+    }
+
+    const defaultAppCommand = IntegTest.defaultAppCommands.get(this.language);
+    if (!defaultAppCommand) {
+      throw new Error(`No default app run command defined for language ${this.language}`);
+    }
+
+    return defaultAppCommand;
   }
 
   /**
@@ -172,6 +208,13 @@ export interface IntegrationTestsDiscoveryOptions {
    * @default - test run command will be `node {filePath}`
    */
   readonly app?: string;
+
+  /**
+   * List of language presets to discover tests for.
+   *
+   * @default - all supported languages
+   */
+  readonly language?: string[];
 }
 
 
@@ -190,6 +233,11 @@ export interface IntegrationTestFileConfig extends IntegrationTestsDiscoveryOpti
  * Discover integration tests
  */
 export class IntegrationTests {
+  private static readonly defaultDiscoveryRegexes = new Map<string, RegExp>([
+    ['javascript', new RegExp(/^integ\..*\.js$/)],
+    // Allow files ending in .ts but not in .d.ts
+    ['typescript', new RegExp(/^integ\..*(?<!\.d)\.ts$/)],
+  ]);
   constructor(private readonly directory: string) {
   }
 
@@ -248,15 +296,33 @@ export class IntegrationTests {
   }
 
   private async discover(options: IntegrationTestsDiscoveryOptions): Promise<IntegTest[]> {
-    const patterns = options.testRegex ?? ['^integ\\..*\\.js$'];
+    const languagePresets = options.language ?? Array.from(IntegrationTests.defaultDiscoveryRegexes.keys());
+    const patterns = options.testRegex?.map((pattern) => new RegExp(pattern))
+        ?? Array.from(IntegrationTests.defaultDiscoveryRegexes.entries()).filter(
+          ([language]) => languagePresets.includes(language),
+        ).map(([_, regex]) => regex);
 
     const files = await this.readTree();
-    const integs = files.filter(fileName => patterns.some((p) => {
-      const regex = new RegExp(p);
+    const integs = files.filter(fileName => patterns.some((regex) => {
       return regex.test(fileName) || regex.test(path.basename(fileName));
     }));
 
-    return this.request(integs, options);
+    const discoveredTestNames = new Set<string>();
+    const integsWithoutDuplicates = new Array<string>();
+
+    // Remove tests with duplicate names.
+    // To make sure the precendence of files is deterministic, iterate the files in lexicographic order.
+    // Additionally, to give precedence to compiled .js files over their .ts source,
+    // use ascending lexicographic ordering, so the .ts files are picked up first.
+    for (const integFileName of integs.sort()) {
+      const testName = path.parse(integFileName).name;
+      if (!discoveredTestNames.has(testName)) {
+        integsWithoutDuplicates.push(integFileName);
+      }
+      discoveredTestNames.add(testName);
+    }
+
+    return this.request(integsWithoutDuplicates, options);
   }
 
   private request(files: string[], options: IntegrationTestsDiscoveryOptions): IntegTest[] {

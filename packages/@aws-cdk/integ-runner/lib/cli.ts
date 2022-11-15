@@ -32,6 +32,7 @@ export async function main(args: string[]) {
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
     .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
     .option('test-regex', { type: 'array', desc: 'Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.', default: [] })
+    .option('language', { type: 'array', default: ['javascript', 'typescript'], desc: 'The language presets to run tests for. Only javascript and typescript are supported for now.' })
     .strict()
     .parse(args);
 
@@ -51,6 +52,7 @@ export async function main(args: string[]) {
   const fromFile: string | undefined = argv['from-file'];
   const exclude: boolean = argv.exclude;
   const app: string | undefined = argv.app;
+  const language = arrayFromYargs(argv.language);
 
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   if (argv['max-workers'] < testRegions.length * (profiles ?? [1]).length) {
@@ -60,7 +62,7 @@ export async function main(args: string[]) {
   let testsSucceeded = false;
   try {
     if (argv.list) {
-      const tests = await new IntegrationTests(argv.directory).fromCliArgs({ testRegex, app });
+      const tests = await new IntegrationTests(argv.directory).fromCliArgs({ testRegex, app, language });
       process.stdout.write(tests.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
       return;
     }
@@ -77,6 +79,7 @@ export async function main(args: string[]) {
       testRegex,
       tests: requestedTests,
       exclude,
+      language,
     })));
 
     // always run snapshot tests, but if '--force' is passed then

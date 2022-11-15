@@ -588,4 +588,32 @@ describe('IntegTest runIntegTests', () => {
       app: 'node --no-warnings xxxxx.test-with-snapshot.js',
     }));
   });
+
+  test('with default preset for TypeScript', () => {
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.ts',
+        discoveryRoot: 'test/test-data',
+      }),
+    });
+    integTest.runIntegTestCase({
+      testCaseName: 'xxxxx.test-with-snapshot',
+    });
+
+    // THEN
+    expect(deployMock).toHaveBeenCalledTimes(2);
+    expect(destroyMock).toHaveBeenCalledTimes(1);
+    expect(synthFastMock).toHaveBeenCalledTimes(1);
+    expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'node -r ts-node/register xxxxx.test-with-snapshot.ts',
+    }));
+    expect(synthFastMock).toHaveBeenCalledWith(expect.objectContaining({
+      execCmd: ['node', '-r', 'ts-node/register', 'xxxxx.test-with-snapshot.ts'],
+    }));
+    expect(destroyMock).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'node -r ts-node/register xxxxx.test-with-snapshot.ts',
+    }));
+  });
 });

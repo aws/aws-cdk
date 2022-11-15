@@ -11,8 +11,14 @@ describe('IntegrationTests', () => {
     mockfs({
       'test/test-data': {
         'integ.integ-test1.js': 'content',
+        'integ.integ-test1.ts': 'content',
+        'integ.integ-test1.d.ts': 'should not match',
         'integ.integ-test2.js': 'content',
+        'integ.integ-test2.ts': 'content',
+        'integ.integ-test2.d.ts': 'should not match',
         'integ.integ-test3.js': 'content',
+        'integ.integ-test3.ts': 'content',
+        'integ.integ-test3.d.ts': 'should not match',
         'integration.test.js': 'should not match',
       },
       'other/other-data': {
@@ -165,6 +171,32 @@ describe('IntegrationTests', () => {
 
       expect(integTests.length).toEqual(3);
       expect(integTests[0].appCommand).toEqual('node --no-warnings {filePath}');
+    });
+
+    test('TypeScript compiled to JavaScript, does not pick up the compiled tests for both .ts and .js versions', async () => {
+      const tsCompiledTests = new IntegrationTests('test');
+      const integTests = await tsCompiledTests.fromCliArgs();
+
+      expect(integTests.length).toEqual(3);
+    });
+
+    test('TypeScript compiled to JavaScript, gives precedence to JavaScript files', async () => {
+      const tsCompiledTests = new IntegrationTests('test');
+      const integTests = await tsCompiledTests.fromCliArgs();
+
+      for (const test of integTests) {
+        expect(test.fileName).toEqual(expect.stringMatching(/integ.integ-test[1-3].js/));
+      }
+    });
+
+    test('TypeScript .d.ts files should be ignored', async () => {
+      writeConfig({ language: ['typescript'] });
+
+      const tsCompiledTests = new IntegrationTests('test');
+      const integTests = await tsCompiledTests.fromFile(configFile);
+
+      expect(integTests.length).toEqual(3);
+      expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.integ-test1.ts/));
     });
   });
 });
