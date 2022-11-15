@@ -225,5 +225,5 @@ interface PrivateDnsConfiguration {
  * Hash a string
  */
 function hashcode(s: string): string {
-  const hash = md5hash(s);
+  return md5hash(s);
 };
