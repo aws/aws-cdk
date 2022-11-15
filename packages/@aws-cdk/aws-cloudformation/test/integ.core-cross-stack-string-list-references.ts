@@ -45,15 +45,6 @@ class ConsumerStack extends Stack {
     new ssm.StringListParameter(this, 'Ref', {
       stringListValue: props.stringListRef.valueAsList,
     });
-    /*
-    new ssm.StringParameter(this, 'GetAtt', {
-      stringValue: Fn.select(0, props.stringListGetAtt),
-    });
-
-    new ssm.StringParameter(this, 'Ref', {
-      stringValue: Fn.select(0, props.stringListRef.valueAsList),
-    });
-    */
   }
 }
 
