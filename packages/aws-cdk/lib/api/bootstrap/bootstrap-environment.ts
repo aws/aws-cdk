@@ -140,10 +140,11 @@ export class Bootstrapper {
     */
     const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
     const permissionsBoundary = params.defaultPermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
-    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
-    const regexp = new RegExp('[\w+=,.@-]+');
     if (permissionsBoundary && permissionsBoundary !== CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
-      if (permissionsBoundary.length > 128 || !regexp.test(permissionsBoundary)) {
+    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
+      const regexp: RegExp = /[\w+=,.@-]+/;
+      const matches = regexp.exec(permissionsBoundary);
+      if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
         throw new Error('Please pass the custom permissions boundary by name when using \'--permissions-boundary\'');
       }
     }

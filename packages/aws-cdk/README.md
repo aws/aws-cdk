@@ -585,7 +585,7 @@ $ cdk bootstrap --template bootstrap-template.yaml
 
 Out of the box customisation options are also available as arguments. To use a permissions boundary:
 
-- `--create-default-permissions-boundary` indicates the default permissions boundary, supplied by CDK
+- `--use-default-permissions-boundary` indicates the default permissions boundary, supplied by CDK
 - `--permissions-boundary` specifies, by name, a predefined customer maintained boundary
 
 A few observations to add at this point. The CDK supplied permissions boundary policy should be regarded more as an 

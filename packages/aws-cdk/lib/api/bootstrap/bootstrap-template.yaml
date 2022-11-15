@@ -529,8 +529,8 @@ Resources:
               - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
               - Ref: AWS::NoValue
   CdkBoostrapPermissionsBoundaryPolicy:
-    # The policy is always created unless the template is not edited prior to boostrap
-    # It serves as both a default policy provided by CDK and an example of how one can be setup
+    # The policy is always created, unless the template is not edited prior to boostrap.
+    # It serves as a default policy provided by CDK, but, more importantly, as an example of how one can be setup.
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -554,6 +554,7 @@ Resources:
                   Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
             Effect: Allow
             Resource: "*"
+          # Forbid the policy itself being edited
           - Sid: DenyPermBoundaryIAMPolicyAlteration
             Action:
               - iam:CreatePolicyVersion
@@ -563,6 +564,7 @@ Resources:
             Effect: Deny
             Resource:
               Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
+          # Forbid removing the permissions boundary from any user or role that has it associated
           - Sid: DenyRemovalOfPermBoundaryFromAnyUserOrRole
             Action:
               - iam:DeleteUserPermissionsBoundary
