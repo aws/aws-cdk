@@ -36,7 +36,7 @@ export function cryptoMd5(x: string) {
 }
 
 export function jsMd5(s: string) {
-  return hex(md51(Buffer.from(s, 'utf-8')));
+  return hex(md5Buffer(Buffer.from(s, 'utf-8')));
 }
 
 function md5Round(x: number[], k: ReadonlyArray<number>) {
@@ -137,7 +137,7 @@ function I(a: number, b: number, c: number, d: number, x: number, s: number, t: 
   return cmn(c ^ (b | ~d), a, b, x, s, t);
 }
 
-function md51(buf: Buffer) {
+function md5Buffer(buf: Buffer) {
   let n = buf.length,
     state = [1732584193, -271733879, -1732584194, 271733878],
     i = 0;
