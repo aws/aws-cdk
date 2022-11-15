@@ -464,12 +464,10 @@ export class Stack extends Construct implements ITaggable {
     if (context && context.arn) {
       return context.arn;
     } else if (context && context.name) {
-      return Arn.format({
+      return this.formatArn({
         service: 'iam',
         resource: 'policy',
         region: '',
-        account: '${AWS::AccountId}',
-        partition: '${AWS::Partition}',
         resourceName: context.name,
       });
     }
