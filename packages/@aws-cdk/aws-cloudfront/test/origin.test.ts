@@ -67,6 +67,29 @@ test.each(['us-east-1', 'ap-southeast-2', 'eu-west-3', 'me-south-1'])
   });
 });
 
+
+test('ensures originShield doesnt return false if undefined', () => {
+  const origin = new TestOrigin('www.example.com', {
+
+  });
+  const originBindConfig = origin.bind(stack, { originId: '0' });
+
+  expect(originBindConfig.originProperty?.originShield).toBeUndefined();
+});
+
+
+test('ensures originShield is disabled if originShieldEnabled equals false', () => {
+  const origin = new TestOrigin('www.example.com', {
+    originShieldEnabled: false,
+  });
+  const originBindConfig = origin.bind(stack, { originId: '0' });
+
+  expect(originBindConfig.originProperty?.originShield).toEqual({
+    enabled: false,
+  });
+});
+
+
 test('throw an error if Custom Headers keys are not permitted', () => {
   // case sensitive
   expect(() => {

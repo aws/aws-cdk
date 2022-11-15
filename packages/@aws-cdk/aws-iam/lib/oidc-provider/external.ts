@@ -1,6 +1,12 @@
 /* istanbul ignore file */
-import { DetailedPeerCertificate } from 'node:tls';
-import * as util from 'node:util';
+// the X509 certificate API is available only in node16.
+// since we compile the repo against node 14, typechecking it will fail.
+// its currently too complex to configure node16 only on this
+// file (jsii doesn't support custom tsconfig)
+// so we disable typechecking. don't worry, we have sufficient integ tests that
+// validate this code doesn't break.
+// @ts-nocheck
+import { X509Certificate } from 'node:crypto';
 import * as tls from 'tls';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -21,8 +27,7 @@ function defaultLogger(fmt: string, ...args: any[]) {
 /**
  * Downloads the CA thumbprint from the issuer URL
  */
-export async function downloadThumbprint(issuerUrl: string) {
-  external.log(`Downloading certificate authority thumbprint for ${issuerUrl}`);
+async function downloadThumbprint(issuerUrl: string) {
 
   return new Promise<string>((ok, ko) => {
     const purl = url.parse(issuerUrl);
@@ -32,33 +37,21 @@ export async function downloadThumbprint(issuerUrl: string) {
       return ko(new Error(`unable to determine host from issuer url ${issuerUrl}`));
     }
 
+    external.log(`Fetching x509 certificate chain from issuer ${issuerUrl}`);
+
     const socket = tls.connect(port, purl.host, { rejectUnauthorized: false, servername: purl.host });
     socket.once('error', ko);
 
     socket.once('secureConnect', () => {
-      // This set to `true` will return the entire chain of certificates as a nested object
-      let cert = socket.getPeerCertificate(true);
-
-      const unqiueCerts = new Set<DetailedPeerCertificate>();
-      do {
-        unqiueCerts.add(cert);
+      let cert = socket.getPeerX509Certificate();
+      if (!cert) {
+        throw new Error(`Unable to retrieve X509 certificate from host ${purl.host}`);
+      }
+      while (cert.issuerCertificate) {
+        printCertificate(cert);
         cert = cert.issuerCertificate;
-      } while ( cert && typeof cert === 'object' && !unqiueCerts.has(cert));
-
-      if (unqiueCerts.size == 0) {
-        return ko(new Error(`No certificates were returned for the mentioned url: ${issuerUrl}`));
       }
-
-      // The last `cert` obtained must be the root certificate in the certificate chain
-      const rootCert = [...unqiueCerts].pop()!;
-
-      // Add `ca: true` when node merges the feature. Awaiting resolution: https://github.com/nodejs/node/issues/44905
-      if (!(util.isDeepStrictEqual(rootCert.issuer, rootCert.subject))) {
-        return ko(new Error(`Subject and Issuer of certificate received are different. 
-        Received: \'Subject\' is ${JSON.stringify(rootCert.subject, null, 4)} and \'Issuer\':${JSON.stringify(rootCert.issuer, null, 4)}`));
-      }
-
-      const validTo = new Date(rootCert.valid_to);
+      const validTo = new Date(cert.validTo);
       const certificateValidity = getCertificateValidity(validTo);
 
       if (certificateValidity < 0) {
@@ -73,12 +66,28 @@ export async function downloadThumbprint(issuerUrl: string) {
 
       socket.end();
 
-      const thumbprint = rootCert.fingerprint.split(':').join('');
+      const thumbprint = extractThumbprint(cert);
       external.log(`Certificate Authority thumbprint for ${issuerUrl} is ${thumbprint}`);
 
       ok(thumbprint);
     });
   });
+}
+
+function extractThumbprint(cert: X509Certificate) {
+  return cert.fingerprint.split(':').join('');
+}
+
+function printCertificate(cert: X509Certificate) {
+  external.log('-------------BEGIN CERT----------------');
+  external.log(`Thumbprint: ${extractThumbprint(cert)}`);
+  external.log(`Valid To: ${cert.validTo}`);
+  if (cert.issuerCertificate) {
+    external.log(`Issuer Thumbprint: ${extractThumbprint(cert.issuerCertificate)}`);
+  }
+  external.log(`Issuer: ${cert.issuer}`);
+  external.log(`Subject: ${cert.subject}`);
+  external.log('-------------END CERT------------------');
 }
 
 /**
