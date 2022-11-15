@@ -433,7 +433,7 @@ export class Stack extends Construct implements ITaggable {
 
     props.permissionsBoundary?._bind(this);
 
-    // add the permission boundary aspect
+    // add the permissions boundary aspect
     this.addPermissionsBoundaryAspect();
   }
 

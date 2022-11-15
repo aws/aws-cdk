@@ -95,9 +95,9 @@ export class PermissionsBoundary {
   }
 
   /**
-   * Apply the permission boundary to the given scope
+   * Apply the permissions boundary to the given scope
    *
-   * Different permission boundaries can be applied to different scopes
+   * Different permissions boundaries can be applied to different scopes
    * and the most specific will be applied.
    *
    * @internal

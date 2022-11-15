@@ -7,7 +7,7 @@ import { Stack } from '../stack';
  */
 export interface IStackSynthesizer {
   /**
-   * The qualifier for used to bootstrap this stack
+   * The qualifier used to bootstrap this stack
    *
    * @default - no qualifier
    */
