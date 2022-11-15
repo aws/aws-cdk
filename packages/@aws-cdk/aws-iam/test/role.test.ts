@@ -927,22 +927,7 @@ describe('permissions boundary', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      PermissionsBoundary: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':policy/cdk-hnb659fds-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
-          ],
-        ],
-      },
+      PermissionsBoundary: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-hnb659fds-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
     });
   });
 
@@ -950,7 +935,7 @@ describe('permissions boundary', () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'Stage', {
-      permissionsBoundary: PermissionsBoundary.default(),
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
     });
     const stack = new Stack(stage);
 
@@ -961,22 +946,30 @@ describe('permissions boundary', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      PermissionsBoundary: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':policy/cdk-hnb659fds-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
-          ],
-        ],
+      PermissionsBoundary: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-hnb659fds-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
+    });
+  });
+
+  test('can be applied to a stage, and will replace placeholders', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      env: {
+        region: 'test-region',
+        account: '123456789012',
       },
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+    });
+    const stack = new Stack(stage);
+
+    // WHEN
+    new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      PermissionsBoundary: 'arn:${AWS::Partition}:iam::123456789012:policy/cdk-hnb659fds-PermissionsBoundary-123456789012-test-region',
     });
   });
 
@@ -984,7 +977,7 @@ describe('permissions boundary', () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'Stage', {
-      permissionsBoundary: PermissionsBoundary.default(),
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
     });
     const stack = new Stack(stage, 'MyStack', {
       synthesizer: new DefaultStackSynthesizer({
@@ -999,22 +992,7 @@ describe('permissions boundary', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      PermissionsBoundary: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':policy/cdk-custom-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
-          ],
-        ],
-      },
+      PermissionsBoundary: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-custom-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
     });
   });
 
@@ -1033,22 +1011,7 @@ describe('permissions boundary', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      PermissionsBoundary: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':policy/my-permissions-boundary',
-          ],
-        ],
-      },
+      PermissionsBoundary: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/my-permissions-boundary',
     });
   });
 
@@ -1071,22 +1034,7 @@ describe('permissions boundary', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      PermissionsBoundary: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':iam::',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':policy/my-custom-permissions-boundary',
-          ],
-        ],
-      },
+      PermissionsBoundary: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/my-custom-permissions-boundary',
     });
   });
 

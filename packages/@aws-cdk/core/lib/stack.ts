@@ -16,7 +16,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
-import { PermissionsBoundaryManager, PermissionsBoundary } from './permissions-boundary';
+import { PermissionsBoundary, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -431,20 +431,64 @@ export class Stack extends Construct implements ITaggable {
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
 
-    props.permissionsBoundary?.bind(this);
+    props.permissionsBoundary?._bind(this);
+
     // add the permission boundary aspect
     this.addPermissionsBoundaryAspect();
   }
 
+  /**
+   * If a permissions boundary has been applied on this scope or any parent scope
+   * then this will return the ARN of the permissions boundary.
+   *
+   * This will return the permissions boundary that has been applied to the most
+   * specific scope.
+   *
+   * For example:
+   *
+   * const stage = new Stage(app, 'stage', {
+   *   permissionsBoundary: PermissionsBoundary.fromName('stage-pb'),
+   * });
+   *
+   * const stack = new Stack(stage, 'Stack', {
+   *   permissionsBoundary: PermissionsBoundary.fromName('some-other-pb'),
+   * });
+   *
+   *  Stack.permissionsBoundaryArn === 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/some-other-pb';
+   *
+   * @param scope the construct scope to retrieve the permissions boundary name from
+   * @returns the name of the permissions boundary or undefined if not set
+   */
+  private get permissionsBoundaryArn(): string | undefined {
+    const context = this.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    if (context && context.arn) {
+      return context.arn;
+    } else if (context && context.name) {
+      return Arn.format({
+        service: 'iam',
+        resource: 'policy',
+        region: '',
+        account: '${AWS::AccountId}',
+        partition: '${AWS::Partition}',
+        resourceName: context.name,
+      });
+    }
+    return;
+  }
+
+  /**
+   * Adds an aspect to the stack that will apply the permissions boundary.
+   * This will only add the aspect if the permissions boundary has been set
+   */
   private addPermissionsBoundaryAspect(): void {
-    Aspects.of(this).add({
-      visit(node: IConstruct) {
-        if (
-          CfnResource.isCfnResource(node) &&
-            (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
-        ) {
-          const permissionsBoundaryArn = PermissionsBoundaryManager.arn(node);
-          if (permissionsBoundaryArn) {
+    const permissionsBoundaryArn = this.permissionsBoundaryArn;
+    if (permissionsBoundaryArn) {
+      Aspects.of(this).add({
+        visit(node: IConstruct) {
+          if (
+            CfnResource.isCfnResource(node) &&
+              (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
+          ) {
             const stack = Stack.of(node);
             const qualifier = stack.synthesizer.bootstrapQualifier
               ?? node.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT)
@@ -452,9 +496,10 @@ export class Stack extends Construct implements ITaggable {
             const spec = new StringSpecializer(stack, qualifier);
             node.addPropertyOverride('PermissionsBoundary', spec.specialize(permissionsBoundaryArn));
           }
-        }
-      },
-    });
+        },
+      });
+
+    }
   }
 
   /**

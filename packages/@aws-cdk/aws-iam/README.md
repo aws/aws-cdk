@@ -418,41 +418,82 @@ IAM policies.
 
 ### Bootstrap Permissions Boundary
 
-If the default permissions boundary has been created as part of CDK boostrap, it
-is possible to apply this permissions boundary at the `Stage` or `Stack` scope.
+If a permissions boundary has been enforced as part of CDK bootstrap, all IAM
+Roles and Users that are created as part of the CDK application must be created
+with the permissions boundary attached. The most common scenario will be to
+apply the enforced permissions boundary to the entire CDK app. This can be done
+either by adding the value to `cdk.json` or directly in the `App` constructor.
+
+For example if your organization has created and is enforcing a permissions
+boundary with the name
+`cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}`
+
+```json
+{
+  "context": {
+     "@aws-cdk/core:permissionsBoundary": {
+	   "name": "cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}"
+	 }
+  }
+}
+```
+
+OR
 
 ```ts
-declare const app: App;
-
-const prodStage = new Stage(app, 'ProdStage', {
-  permissionsBoundary: PermissionsBoundary.default(),
+new App({
+  context: {
+    [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
+      name: 'cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
+    },
+  },
 });
 ```
 
-This will apply the default permissions boundary created as part of CDK
-bootstrap to all IAM Roles that are created within this `Stage`.
+Another scenario might be if your organization enforces different permissions
+boundaries for different environments. For example your CDK application may have
 
-If you have created a permissions boundary with a custom name, it is also
-possible to specify the custom name.
+* `DevStage` that deploys to a personal dev environment where you have elevated
+privileges
+* `BetaStage` that deploys to a beta environment which and has a relaxed
+	permissions boundary
+* `GammaStage` that deploys to a gamma environment which has the prod
+	permissions boundary
+* `ProdStage` that deploys to the prod environment and has the prod permissions
+	boundary
 
 ```ts
 declare const app: App;
 
-const prodStage = new Stage(app, 'ProdStage', {
-  permissionsBoundary: PermissionsBoundary.fromName('my-custom-pb-name'),
+new Stage(app, 'DevStage');
+
+new Stage(app, 'BetaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('beta-permissions-boundary'),
+});
+
+new Stage(app, 'GammaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
+});
+
+new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
 });
 ```
 
-Similar to the default permissions boundary, the `fromName` method will also
-replace the `${Qualifier}` string with the Stack synthesizer qualifier. For
-example if you are using a custom stack synthesizer with a custom qualifier
-which is part of the permissions boundary policy name.
+The provided name can include placeholders for the partition, region, qualifier, and account
+These placeholders will be replaced with the actual values if available.
+
+* '${AWS::Partition}'
+* '${AWS::Region}'
+* '${AWS::AccountId}'
+* '${Qualifier}'
+
 
 ```ts
 declare const app: App;
 
 const prodStage = new Stage(app, 'ProdStage', {
-  permissionsBoundary: PermissionsBoundary.fromName('my-${Qualifier}-pb-name'),
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
 });
 
 new Stack(prodStage, 'ProdStack', {

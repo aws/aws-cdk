@@ -152,7 +152,7 @@ export class Stage extends Construct {
     this.account = props.env?.account ?? this.parentStage?.account;
 
 
-    props.permissionsBoundary?.bind(this);
+    props.permissionsBoundary?._bind(this);
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
