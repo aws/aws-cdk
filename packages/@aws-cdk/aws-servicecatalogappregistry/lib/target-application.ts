@@ -27,7 +27,7 @@ export interface CreateTargetApplicationOptions extends TargetApplicationCommonO
   /**
     * Application description.
     *
-    * @default - AppRegistry Application to which all stacks inside this cdkApp will get associated.
+    * @default - Application containing stacks deployed via CDK.
     */
   readonly applicationDescription?: string;
 }
