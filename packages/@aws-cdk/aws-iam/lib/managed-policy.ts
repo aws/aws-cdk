@@ -330,13 +330,13 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
   public readonly grantPrincipal: IPrincipal;
   public readonly principalAccount?: string;
 
-  constructor(private managedPolicy: ManagedPolicy) {
+  constructor(private _managedPolicy: ManagedPolicy) {
     this.grantPrincipal = this;
-    this.principalAccount = Stack.of(managedPolicy).account;
+    this.principalAccount = _managedPolicy.env.account;
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot get policy fragment of ManagedPolicy ${this.managedPolicy.node.path}`);
+    throw new Error(`Cannot use a ManagedPolicy ${this._managedPolicy.node.path} as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -344,7 +344,7 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
   }
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-    this.managedPolicy.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.managedPolicy };
+    this._managedPolicy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._managedPolicy };
   }
 }

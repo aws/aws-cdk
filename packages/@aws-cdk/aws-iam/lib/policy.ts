@@ -1,4 +1,4 @@
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
@@ -274,13 +274,13 @@ class PolicyGrantPrincipal implements IPrincipal {
   public readonly grantPrincipal: IPrincipal;
   public readonly principalAccount?: string;
 
-  constructor(private policy: Policy) {
+  constructor(private _policy: Policy) {
     this.grantPrincipal = this;
-    this.principalAccount = Stack.of(policy).account;
+    this.principalAccount = _policy.env.account;
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot get policy fragment of Policy ${this.policy.node.path}`);
+    throw new Error(`Cannot use a Policy ${this._policy.node.path} as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -288,7 +288,7 @@ class PolicyGrantPrincipal implements IPrincipal {
   }
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-    this.policy.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.policy };
+    this._policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._policy };
   }
 }

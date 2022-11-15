@@ -484,6 +484,23 @@ describe('IAM policy', () => {
     });
   });
 
+  test('fails when passed as a grantee to Grant.addToPrincipalOrResource when corss account', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+    });
+
+    class DummyResource extends Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
+
+    expect(() => {
+      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
+    }).toThrow(/Cannot use a Policy MyStack\/Policy/);
+  });
+
   test('fails when passed as a grantee to Grant.addToPrincipalAndResource', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
@@ -498,7 +515,7 @@ describe('IAM policy', () => {
 
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow('Cannot get policy fragment of Policy MyStack/Policy');
+    }).toThrow(/Cannot use a Policy MyStack\/Policy/);
   });
 });
 

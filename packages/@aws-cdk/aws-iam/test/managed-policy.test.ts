@@ -659,6 +659,23 @@ describe('managed policy', () => {
     });
   });
 
+  test('fails when passed as a grantee to Grant.addToPrincipalOrResource when corss account', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+
+    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
+      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('should not be called.');
+      }
+    };
+    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
+
+    expect(() => {
+      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
+    }).toThrow(/Cannot use a ManagedPolicy MyStack\/Policy/);
+  });
+
   test('fails when passed as a grantee to Grant.addToPrincipalAndResource', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
@@ -673,7 +690,7 @@ describe('managed policy', () => {
 
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow('Cannot get policy fragment of ManagedPolicy MyStack/Policy');
+    }).toThrow(/Cannot use a ManagedPolicy MyStack\/Policy/);
   });
 
   test('prevent creation when customizeRoles is configured', () => {
