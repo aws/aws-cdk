@@ -1,0 +1,140 @@
+{
+ "Resources": {
+  "CustomReflectCustomResourceProviderRoleB4B29AEC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomReflectCustomResourceProviderHandler2E189D0B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "94be4e33263da312b2e3d038a855c4b46686a35cc3188e9736010642b8a9078a.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomReflectCustomResourceProviderRoleB4B29AEC",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x",
+    "Description": "veni vidi vici"
+   },
+   "DependsOn": [
+    "CustomReflectCustomResourceProviderRoleB4B29AEC"
+   ]
+  },
+  "MyResource": {
+   "Type": "Custom::Reflect",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomReflectCustomResourceProviderHandler2E189D0B",
+      "Arn"
+     ]
+    },
+    "physicalResourceId": "MyPhysicalReflectBack",
+    "attributes": {
+     "Attribute1": "foo",
+     "Attribute2": 1234
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyLengthyTypeResource": {
+   "Type": "Custom::Given_Resource_Type_Is_Exactly_Sixty_Characters_Long",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomReflectCustomResourceProviderHandler2E189D0B",
+      "Arn"
+     ]
+    },
+    "physicalResourceId": "MyPhysicalLengthyType"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "Ref": {
+   "Value": {
+    "Ref": "MyResource"
+   }
+  },
+  "GetAttAttribute1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyResource",
+     "Attribute1"
+    ]
+   }
+  },
+  "GetAttAttribute2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyResource",
+     "Attribute2"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

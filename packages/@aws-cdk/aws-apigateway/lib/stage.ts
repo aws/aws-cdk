@@ -2,6 +2,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
+import { IApiKey, ApiKeyOptions, ApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
@@ -22,6 +23,11 @@ export interface IStage extends IResource {
    * RestApi to which this stage is associated.
    */
   readonly restApi: IRestApi;
+
+  /**
+   * Add an ApiKey to this Stage
+   */
+  addApiKey(id: string, options?: ApiKeyOptions): IApiKey;
 }
 
 export interface StageOptions extends MethodDeploymentOptions {
@@ -42,7 +48,9 @@ export interface StageOptions extends MethodDeploymentOptions {
 
   /**
    * A single line format of access logs of data, as specified by selected $content variables.
-   * The format must include at least `AccessLogFormat.contextRequestId()`.
+   * The format must include either `AccessLogFormat.contextRequestId()`
+   * or `AccessLogFormat.contextExtendedRequestId()`.
+   *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html#context-variable-reference
    *
    * @default - Common Log Format
@@ -195,73 +203,36 @@ export interface MethodDeploymentOptions {
   readonly cacheDataEncrypted?: boolean;
 }
 
-export class Stage extends Resource implements IStage {
-  public readonly stageName: string;
+/**
+ * The attributes of an imported Stage
+ */
+export interface StageAttributes {
+  /**
+   * The name of the stage
+   */
+  readonly stageName: string;
 
-  public readonly restApi: IRestApi;
-  private enableCacheCluster?: boolean;
+  /**
+   * The RestApi that the stage belongs to
+   */
+  readonly restApi: IRestApi;
+}
 
-  constructor(scope: Construct, id: string, props: StageProps) {
-    super(scope, id);
+/**
+ * Base class for an ApiGateway Stage
+ */
+export abstract class StageBase extends Resource implements IStage {
+  public abstract readonly stageName: string;
+  public abstract readonly restApi: IRestApi;
 
-    this.enableCacheCluster = props.cacheClusterEnabled;
-
-    const methodSettings = this.renderMethodSettings(props); // this can mutate `this.cacheClusterEnabled`
-
-    // custom access logging
-    let accessLogSetting: CfnStage.AccessLogSettingProperty | undefined;
-    const accessLogDestination = props.accessLogDestination;
-    const accessLogFormat = props.accessLogFormat;
-    if (!accessLogDestination && !accessLogFormat) {
-      accessLogSetting = undefined;
-    } else {
-      if (accessLogFormat !== undefined &&
-        !Token.isUnresolved(accessLogFormat.toString()) &&
-        !/.*\$context.requestId.*/.test(accessLogFormat.toString())) {
-
-        throw new Error('Access log must include at least `AccessLogFormat.contextRequestId()`');
-      }
-      if (accessLogFormat !== undefined && accessLogDestination === undefined) {
-        throw new Error('Access log format is specified without a destination');
-      }
-
-      accessLogSetting = {
-        destinationArn: accessLogDestination?.bind(this).destinationArn,
-        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
-      };
-    }
-
-    // enable cache cluster if cacheClusterSize is set
-    if (props.cacheClusterSize !== undefined) {
-      if (this.enableCacheCluster === undefined) {
-        this.enableCacheCluster = true;
-      } else if (this.enableCacheCluster === false) {
-        throw new Error(`Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`);
-      }
-    }
-
-    const cacheClusterSize = this.enableCacheCluster ? (props.cacheClusterSize || '0.5') : undefined;
-    const resource = new CfnStage(this, 'Resource', {
-      stageName: props.stageName || 'prod',
-      accessLogSetting,
-      cacheClusterEnabled: this.enableCacheCluster,
-      cacheClusterSize,
-      clientCertificateId: props.clientCertificateId,
-      deploymentId: props.deployment.deploymentId,
-      restApiId: props.deployment.api.restApiId,
-      description: props.description,
-      documentationVersion: props.documentationVersion,
-      variables: props.variables,
-      tracingEnabled: props.tracingEnabled,
-      methodSettings,
+  /**
+   * Add an ApiKey to this stage
+   */
+  public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
+    return new ApiKey(this, id, {
+      stages: [this],
+      ...options,
     });
-
-    this.stageName = resource.ref;
-    this.restApi = props.deployment.api;
-
-    if (RestApiBase._isRestApiBase(this.restApi)) {
-      this.restApi._attachStage(this);
-    }
   }
 
   /**
@@ -293,62 +264,6 @@ export class Stage extends Resource implements IStage {
       resource: 'restapis',
       resourceName: `${this.restApi.restApiId}/stages/${this.stageName}`,
     });
-  }
-
-  private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
-    const settings = new Array<CfnStage.MethodSettingProperty>();
-    const self = this;
-
-    // extract common method options from the stage props
-    const commonMethodOptions: MethodDeploymentOptions = {
-      metricsEnabled: props.metricsEnabled,
-      loggingLevel: props.loggingLevel,
-      dataTraceEnabled: props.dataTraceEnabled,
-      throttlingBurstLimit: props.throttlingBurstLimit,
-      throttlingRateLimit: props.throttlingRateLimit,
-      cachingEnabled: props.cachingEnabled,
-      cacheTtl: props.cacheTtl,
-      cacheDataEncrypted: props.cacheDataEncrypted,
-    };
-
-    // if any of them are defined, add an entry for '/*/*'.
-    const hasCommonOptions = Object.keys(commonMethodOptions).map(v => (commonMethodOptions as any)[v]).filter(x => x !== undefined).length > 0;
-    if (hasCommonOptions) {
-      settings.push(renderEntry('/*/*', commonMethodOptions));
-    }
-
-    if (props.methodOptions) {
-      for (const path of Object.keys(props.methodOptions)) {
-        settings.push(renderEntry(path, props.methodOptions[path]));
-      }
-    }
-
-    return settings.length === 0 ? undefined : settings;
-
-    function renderEntry(path: string, options: MethodDeploymentOptions): CfnStage.MethodSettingProperty {
-      if (options.cachingEnabled) {
-        if (self.enableCacheCluster === undefined) {
-          self.enableCacheCluster = true;
-        } else if (self.enableCacheCluster === false) {
-          throw new Error(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
-        }
-      }
-
-      const { httpMethod, resourcePath } = parseMethodOptionsPath(path);
-
-      return {
-        httpMethod,
-        resourcePath,
-        cacheDataEncrypted: options.cacheDataEncrypted,
-        cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
-        cachingEnabled: options.cachingEnabled,
-        dataTraceEnabled: options.dataTraceEnabled ?? false,
-        loggingLevel: options.loggingLevel,
-        metricsEnabled: options.metricsEnabled,
-        throttlingBurstLimit: options.throttlingBurstLimit,
-        throttlingRateLimit: options.throttlingRateLimit,
-      };
-    }
   }
 
   /**
@@ -438,5 +353,143 @@ export class Stage extends Resource implements IStage {
       ...fn({ ApiName: this.restApi.restApiName, Stage: this.stageName }),
       ...props,
     }).attachTo(this);
+  }
+}
+
+export class Stage extends StageBase {
+  /**
+   * Import a Stage by its attributes
+   */
+  public static fromStageAttributes(scope: Construct, id: string, attrs: StageAttributes): IStage {
+    class Import extends StageBase {
+      public readonly stageName = attrs.stageName;
+      public readonly restApi = attrs.restApi;
+    }
+    return new Import(scope, id);
+  }
+
+  public readonly stageName: string;
+  public readonly restApi: IRestApi;
+
+  private enableCacheCluster?: boolean;
+
+  constructor(scope: Construct, id: string, props: StageProps) {
+    super(scope, id);
+
+    this.enableCacheCluster = props.cacheClusterEnabled;
+
+    const methodSettings = this.renderMethodSettings(props); // this can mutate `this.cacheClusterEnabled`
+
+    // custom access logging
+    let accessLogSetting: CfnStage.AccessLogSettingProperty | undefined;
+    const accessLogDestination = props.accessLogDestination;
+    const accessLogFormat = props.accessLogFormat;
+    if (!accessLogDestination && !accessLogFormat) {
+      accessLogSetting = undefined;
+    } else {
+      if (accessLogFormat !== undefined &&
+        !Token.isUnresolved(accessLogFormat.toString()) &&
+        !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
+
+        throw new Error('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+      }
+      if (accessLogFormat !== undefined && accessLogDestination === undefined) {
+        throw new Error('Access log format is specified without a destination');
+      }
+
+      accessLogSetting = {
+        destinationArn: accessLogDestination?.bind(this).destinationArn,
+        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
+      };
+    }
+
+    // enable cache cluster if cacheClusterSize is set
+    if (props.cacheClusterSize !== undefined) {
+      if (this.enableCacheCluster === undefined) {
+        this.enableCacheCluster = true;
+      } else if (this.enableCacheCluster === false) {
+        throw new Error(`Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`);
+      }
+    }
+
+    const cacheClusterSize = this.enableCacheCluster ? (props.cacheClusterSize || '0.5') : undefined;
+    const resource = new CfnStage(this, 'Resource', {
+      stageName: props.stageName || 'prod',
+      accessLogSetting,
+      cacheClusterEnabled: this.enableCacheCluster,
+      cacheClusterSize,
+      clientCertificateId: props.clientCertificateId,
+      deploymentId: props.deployment.deploymentId,
+      restApiId: props.deployment.api.restApiId,
+      description: props.description,
+      documentationVersion: props.documentationVersion,
+      variables: props.variables,
+      tracingEnabled: props.tracingEnabled,
+      methodSettings,
+    });
+
+    this.stageName = resource.ref;
+    this.restApi = props.deployment.api;
+
+    if (RestApiBase._isRestApiBase(this.restApi)) {
+      this.restApi._attachStage(this);
+    }
+  }
+
+
+  private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
+    const settings = new Array<CfnStage.MethodSettingProperty>();
+    const self = this;
+
+    // extract common method options from the stage props
+    const commonMethodOptions: MethodDeploymentOptions = {
+      metricsEnabled: props.metricsEnabled,
+      loggingLevel: props.loggingLevel,
+      dataTraceEnabled: props.dataTraceEnabled,
+      throttlingBurstLimit: props.throttlingBurstLimit,
+      throttlingRateLimit: props.throttlingRateLimit,
+      cachingEnabled: props.cachingEnabled,
+      cacheTtl: props.cacheTtl,
+      cacheDataEncrypted: props.cacheDataEncrypted,
+    };
+
+    // if any of them are defined, add an entry for '/*/*'.
+    const hasCommonOptions = Object.keys(commonMethodOptions).map(v => (commonMethodOptions as any)[v]).filter(x => x !== undefined).length > 0;
+    if (hasCommonOptions) {
+      settings.push(renderEntry('/*/*', commonMethodOptions));
+    }
+
+    if (props.methodOptions) {
+      for (const path of Object.keys(props.methodOptions)) {
+        settings.push(renderEntry(path, props.methodOptions[path]));
+      }
+    }
+
+    return settings.length === 0 ? undefined : settings;
+
+    function renderEntry(path: string, options: MethodDeploymentOptions): CfnStage.MethodSettingProperty {
+      if (options.cachingEnabled) {
+        if (self.enableCacheCluster === undefined) {
+          self.enableCacheCluster = true;
+        } else if (self.enableCacheCluster === false) {
+          throw new Error(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
+        }
+      }
+
+      const { httpMethod, resourcePath } = parseMethodOptionsPath(path);
+
+      return {
+        httpMethod,
+        resourcePath,
+        cacheDataEncrypted: options.cacheDataEncrypted,
+        cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
+        cachingEnabled: options.cachingEnabled,
+        dataTraceEnabled: options.dataTraceEnabled ?? false,
+        loggingLevel: options.loggingLevel,
+        metricsEnabled: options.metricsEnabled,
+        throttlingBurstLimit: options.throttlingBurstLimit,
+        throttlingRateLimit: options.throttlingRateLimit,
+      };
+    }
   }
 }

@@ -2,10 +2,10 @@ import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 import { LogGroupTargetInput } from '../../lib';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 
 test('use log group as an event rule target', () => {
   // GIVEN

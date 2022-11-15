@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "cluster-dual-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-cluster-dual-integ"
+      ],
+      "assertionStack": "cluster-dual-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterdualtestDefaultTestDeployAssert0AE5E6E0"
+    }
+  }
+}

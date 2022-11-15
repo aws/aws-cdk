@@ -96,28 +96,6 @@ describe('rules', () => {
     });
   });
 
-  test('Noncurrent rule on nonversioned bucket fails', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN: Fail because of lack of versioning
-    expect(() => {
-      new Bucket(stack, 'Bucket1', {
-        lifecycleRules: [{
-          noncurrentVersionExpiration: Duration.days(10),
-        }],
-      });
-    }).toThrow();
-
-    // WHEN: Succeeds because versioning is enabled
-    new Bucket(stack, 'Bucket2', {
-      versioned: true,
-      lifecycleRules: [{
-        noncurrentVersionExpiration: Duration.days(10),
-      }],
-    });
-  });
-
   test('Bucket with expiredObjectDeleteMarker', () => {
     // GIVEN
     const stack = new Stack();
@@ -146,7 +124,6 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain available
     new Bucket(stack, 'Bucket1', {
-      versioned: true,
       lifecycleRules: [{
         noncurrentVersionExpiration: Duration.days(10),
         noncurrentVersionTransitions: [
@@ -185,7 +162,6 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain not set
     new Bucket(stack, 'Bucket1', {
-      versioned: true,
       lifecycleRules: [{
         noncurrentVersionExpiration: Duration.days(10),
         noncurrentVersionTransitions: [
@@ -222,7 +198,6 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain available
     new Bucket(stack, 'Bucket1', {
-      versioned: true,
       lifecycleRules: [{
         noncurrentVersionExpiration: Duration.days(10),
         noncurrentVersionsToRetain: 1,
@@ -261,7 +236,6 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain not set
     new Bucket(stack, 'Bucket1', {
-      versioned: true,
       lifecycleRules: [{
         noncurrentVersionExpiration: Duration.days(10),
         noncurrentVersionTransitions: [

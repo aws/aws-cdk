@@ -1,9 +1,9 @@
-import { ArnFormat, CfnResource, CustomResource, Lazy, Reference, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { ApiCallBase } from './api-call-base';
-import { EqualsAssertion } from './assertions';
-import { ActualResult, ExpectedResult } from './common';
+import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
+import { ApiCallBase, IApiCall } from './api-call-base';
+import { ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
+import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-machine';
 
 /**
  * Options to perform an AWS JavaScript V2 API call
@@ -28,7 +28,8 @@ export interface AwsApiCallOptions {
 }
 
 /**
- * Options for creating an SDKQuery provider
+ * Construct that creates a custom resource that will perform
+ * a query using the AWS SDK
  */
 export interface AwsApiCallProps extends AwsApiCallOptions { }
 
@@ -37,10 +38,29 @@ export interface AwsApiCallProps extends AwsApiCallOptions { }
  * a query using the AWS SDK
  */
 export class AwsApiCall extends ApiCallBase {
+  public readonly provider: AssertionsProvider;
+
+  /**
+   * access the AssertionsProvider for the waiter state machine.
+   * This can be used to add additional IAM policies
+   * the the provider role policy
+   *
+   * @example
+   * declare const apiCall: AwsApiCall;
+   * apiCall.waiterProvider?.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: ['s3:GetObject'],
+   *   Resource: ['*'],
+   * });
+   */
+  public waiterProvider?: AssertionsProvider;
+
   protected readonly apiCallResource: CustomResource;
   private readonly name: string;
 
-  public readonly provider: AssertionsProvider;
+  private _assertAtPath?: string;
+  private readonly api: string;
+  private readonly service: string;
 
   constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
@@ -48,45 +68,59 @@ export class AwsApiCall extends ApiCallBase {
     this.provider = new AssertionsProvider(this, 'SdkProvider');
     this.provider.addPolicyStatementFromSdkCall(props.service, props.api);
     this.name = `${props.service}${props.api}`;
+    this.api = props.api;
+    this.service = props.service;
 
     this.apiCallResource = new CustomResource(this, 'Default', {
       serviceToken: this.provider.serviceToken,
       properties: {
         service: props.service,
         api: props.api,
+        expected: Lazy.any({ produce: () => this.expectedResult }),
+        actualPath: Lazy.string({ produce: () => this._assertAtPath }),
+        stateMachineArn: Lazy.string({ produce: () => this.stateMachineArn }),
         parameters: this.provider.encode(props.parameters),
         flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
         salt: Date.now().toString(),
       },
       resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
     });
-
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.
     this.apiCallResource.node.addDependency(this.provider);
-  }
 
-  public getAtt(attributeName: string): Reference {
-    this.flattenResponse = 'true';
-    return this.apiCallResource.getAtt(`apiCallResponse.${attributeName}`);
-  }
+    // if expectedResult has been configured then that means
+    // we are making assertions and we should output the results
+    Aspects.of(this).add({
+      visit(node: IConstruct) {
+        if (node instanceof AwsApiCall) {
+          if (node.expectedResult) {
+            const result = node.apiCallResource.getAttString('assertion');
 
-  public getAttString(attributeName: string): string {
-    this.flattenResponse = 'true';
-    return this.apiCallResource.getAttString(`apiCallResponse.${attributeName}`);
-  }
-
-  public expect(expected: ExpectedResult): void {
-    new EqualsAssertion(this, `AssertEquals${this.name}`, {
-      expected,
-      actual: ActualResult.fromCustomResource(this.apiCallResource, 'apiCallResponse'),
+            new CfnOutput(node, 'AssertionResults', {
+              value: result,
+            }).overrideLogicalId(`AssertionResults${id}`);
+          }
+        }
+      },
     });
   }
 
-  public assertAtPath(path: string, expected: ExpectedResult): void {
-    new EqualsAssertion(this, `AssertEquals${this.name}`, {
-      expected,
-      actual: ActualResult.fromAwsApiCall(this, path),
+  public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
+    this._assertAtPath = path;
+    this.expectedResult = expected.result;
+    this.flattenResponse = 'true';
+    return this;
+  }
+
+  public waitForAssertions(options?: WaiterStateMachineOptions): IApiCall {
+    const waiter = new WaiterStateMachine(this, 'WaitFor', {
+      ...options,
     });
+    this.stateMachineArn = waiter.stateMachineArn;
+    this.provider.addPolicyStatementFromSdkCall('states', 'StartExecution');
+    waiter.isCompleteProvider.addPolicyStatementFromSdkCall(this.service, this.api);
+    this.waiterProvider = waiter.isCompleteProvider;
+    return this;
   }
 }
 

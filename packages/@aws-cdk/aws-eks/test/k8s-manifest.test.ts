@@ -74,7 +74,6 @@ describe('k8s manifest', () => {
     Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify(manifest),
     });
-
   });
 
   test('can be added to an imported cluster with minimal config', () => {
@@ -104,8 +103,6 @@ describe('k8s manifest', () => {
       Namespace: 'default',
       CreateNamespace: true,
     });
-
-
   });
 
   test('default child is a CfnResource', () => {
@@ -120,7 +117,6 @@ describe('k8s manifest', () => {
   });
 
   describe('prune labels', () => {
-
     test('base case', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
@@ -151,8 +147,6 @@ describe('k8s manifest', () => {
         }]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
-
-
     });
 
     test('multiple resources in the same manifest', () => {
@@ -214,8 +208,6 @@ describe('k8s manifest', () => {
         ]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
-
-
     });
 
     test('different KubernetesManifest resource use different prune labels', () => {
@@ -282,8 +274,6 @@ describe('k8s manifest', () => {
         ]),
         PruneLabel: 'aws.cdk.eks/prune-c8aff6ac817006dd4d644e9d99b2cdbb8c8cd036d9',
       });
-
-
     });
 
     test('ignores resources without "kind"', () => {
@@ -300,8 +290,6 @@ describe('k8s manifest', () => {
         Manifest: JSON.stringify([{ malformed: { resource: 'yes' } }]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
-
-
     });
 
     test('ignores entries that are not objects (invalid type)', () => {
@@ -317,8 +305,6 @@ describe('k8s manifest', () => {
         Manifest: JSON.stringify([['foo']]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
-
-
     });
 
     test('no prune labels when "prune" is disabled', () => {
@@ -368,7 +354,6 @@ describe('k8s manifest', () => {
       expect(m1.PruneLabel).toBeFalsy();
       expect(m2.PruneLabel).toBeFalsy();
       expect(m3.PruneLabel).toEqual('aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c');
-
     });
   });
 });
