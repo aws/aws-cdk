@@ -6,7 +6,6 @@ import { App, Stack, CfnOutput } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
-import { Node } from 'constructs';
 import * as eks from '../lib';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 
@@ -62,7 +61,7 @@ const pinger = new BucketPinger(stack, 'S3BucketPinger', {
 // the pinger must wait for the cluster to be updated.
 // interestingly, without this dependency, CFN will always run the pinger
 // before the pod.
-Node.of(pinger).addDependency(cluster);
+pinger.node.addDependency(cluster);
 
 // this should confirm that the bucket actually exists
 new CfnOutput(stack, 'PingerResponse', {

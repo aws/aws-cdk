@@ -3,11 +3,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface BucketPingerProps {
   readonly bucketName: string;
 }
-export class BucketPinger extends Construct {
+export class BucketPinger extends CoreConstruct {
 
   private _resource: CustomResource;
 
