@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "aws-cdk-eks-service-account-sdk-call/DefaultTest": {
+      "stacks": [
+        "aws-eks-service-account-sdk-calls-test"
+      ],
+      "assertionStack": "awscdkeksserviceaccountsdkcallDefaultTestDeployAssertC5196707"
+    }
+  }
+}

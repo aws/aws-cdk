@@ -1,0 +1,106 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "oidc-provider-integ-test.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "oidc-provider-integ-test.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "oidc-provider-integ-test": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "oidc-provider-integ-test.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6949b773345c73f1a4e059545c46b98bf3e3d1dd63abceab631a3171d87bdec4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "oidc-provider-integ-test.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "oidc-provider-integ-test.assets"
+      ],
+      "metadata": {
+        "/oidc-provider-integ-test/NoClientsNoThumbprint/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NoClientsNoThumbprint8BF1533F"
+          }
+        ],
+        "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+          }
+        ],
+        "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/oidc-provider-integ-test/Clients/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clients67031123"
+          }
+        ],
+        "/oidc-provider-integ-test/Thumbprints/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Thumbprints9CD6AB02"
+          }
+        ],
+        "/oidc-provider-integ-test/NoClientsThumbprints": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NoClientsThumbprints"
+          }
+        ],
+        "/oidc-provider-integ-test/ClientsThumbprints": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientsThumbprints"
+          }
+        ],
+        "/oidc-provider-integ-test/ThumbprintsThumbprints": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThumbprintsThumbprints"
+          }
+        ],
+        "/oidc-provider-integ-test/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/oidc-provider-integ-test/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "oidc-provider-integ-test"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
