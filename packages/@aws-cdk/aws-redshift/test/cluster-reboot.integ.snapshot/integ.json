@@ -6,7 +6,6 @@
         "aws-cdk-redshift-cluster-create",
         "aws-cdk-redshift-cluster-update"
       ],
-      "diffAssets": true,
       "stackUpdateWorkflow": true,
       "assertionStack": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkredshiftreboottestDefaultTestDeployAssert1AE11B34"

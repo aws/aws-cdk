@@ -69,7 +69,7 @@ stacks.forEach(s => {
 new integ.IntegTest(app, 'aws-cdk-redshift-reboot-test', {
   testCases: stacks,
   stackUpdateWorkflow: true,
-  diffAssets: true,
+  // diffAssets: true,
 });
 
 // https://github.com/aws/aws-cdk/issues/22059
