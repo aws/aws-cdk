@@ -58,6 +58,12 @@ describe('CLI', () => {
       ].join('\n'),
     ]]);
   });
+
+  test('can run with no tests detected', async () => {
+    await main(['whatever.js', '--directory=test/test-data']);
+
+    expect(stdoutMock.mock.calls).toEqual([]);
+  });
 });
 
 describe('CLI config file', () => {
