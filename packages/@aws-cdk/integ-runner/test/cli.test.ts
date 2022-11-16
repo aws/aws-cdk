@@ -4,14 +4,11 @@ import * as path from 'path';
 import { main, parseCliArgs } from '../lib/cli';
 
 let stdoutMock: jest.SpyInstance;
-let stderrMock: jest.SpyInstance;
 beforeEach(() => {
   stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
 });
 afterEach(() => {
   stdoutMock.mockRestore();
-  stderrMock.mockRestore();
 });
 
 describe('CLI', () => {
@@ -99,5 +96,14 @@ describe('CLI config file', () => {
       'eu-west-1',
       'ap-southeast-2',
     ]);
+  });
+
+  test('cli options take precedent', async () => {
+    // WHEN
+    withConfig({ maxWorkers: 3 });
+    const options = parseCliArgs(['--max-workers', '20']);
+
+    // THEN
+    expect(options.maxWorkers).toBe(20);
   });
 });
