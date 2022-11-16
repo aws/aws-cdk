@@ -1685,7 +1685,7 @@ cannot be remedied by CDK at this point. They are reproduced here for completene
   console will assume all links are relative to the current account. You will
   not be able to use the pipeline console to click through to a CloudFormation
   stack in a different account.
-- **If a change set failed to apply the pipeline must restarted**: if a change
+- **If a change set failed to apply the pipeline must be restarted**: if a change
   set failed to apply, it cannot be retried. The pipeline must be restarted from
   the top by clicking **Release Change**.
 - **A stack that failed to create must be deleted manually**: if a stack
