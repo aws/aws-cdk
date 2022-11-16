@@ -116,7 +116,7 @@ export class AssetManifest {
   }
 
   /**
-   * List of assets, splat out to destinations
+   * List of file assets, splat out to destinations
    */
   public get files(): FileManifestEntry[] {
     return makeEntries(this.manifest.files || {}, FileManifestEntry);
