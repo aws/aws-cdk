@@ -1,6 +1,7 @@
 /**
  * This is NOT a real integ test!
- * It is used to test functionality of the integ-runner.
+ * It is used to create snapshots for testing the integ-runner.
+ * Kep around so that adjustments are easier in future.
  */
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';

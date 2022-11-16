@@ -26,18 +26,12 @@ describe('CLI', () => {
   });
 
   test('find by custom pattern', async () => {
-    await main(['--list', '--directory=test/test-data', '--test-regex="^xxxxx\..*\.js$"']);
+    await main(['--list', '--directory=test/test-data', '--test-regex="^xxxxx\.integ-test[12]\.js$"']);
 
     expect(stdoutMock.mock.calls).toEqual([[
       [
         'xxxxx.integ-test1.js',
         'xxxxx.integ-test2.js',
-        'xxxxx.test-with-nested-stack.js',
-        'xxxxx.test-with-new-assets-diff.js',
-        'xxxxx.test-with-new-assets.js',
-        'xxxxx.test-with-snapshot-assets-diff.js',
-        'xxxxx.test-with-snapshot-assets.js',
-        'xxxxx.test-with-snapshot.js',
         '',
       ].join('\n'),
     ]]);
