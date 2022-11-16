@@ -29,6 +29,7 @@ const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 const MAX_RESOURCES = 500;
 
+const STRING_LIST_REFERENCE_DELIMITER = '||';
 export interface StackProps {
   /**
    * A description of the stack.
@@ -968,11 +969,10 @@ export class Stack extends Construct implements ITaggable {
   public exportListValue(exportedValue: any, options: ExportValueOptions = {}): string[] {
     if (options.name) {
       new CfnOutput(this, `Export${options.name}`, {
-        //value: Fn.join('||', exportedValue),
-        value: exportedValue.join('||'),
+        value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, exportedValue),
         exportName: options.name,
       });
-      return Fn.split('||', Fn.importValue(options.name));
+      return Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(options.name));
     }
 
     const importValue = this.determineImportValue(exportedValue);
@@ -1235,14 +1235,13 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const exportIsAList = isExportAList(exportedValue, resolved);
-    const delimiter = '||';
 
     // if it's a list, export an Fn::Join expression
     // and import an Fn::Split expression,
     // since CloudFormation Outputs can only be strings
     // (string lists are invalid)
     const valueToExport = exportIsAList ?
-      Fn.join(delimiter, Token.asList(exportable))
+      Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(exportable))
       : Token.asString(exportable);
 
     const output = exportsScope.node.tryFindChild(id) as CfnOutput;
@@ -1252,7 +1251,7 @@ export class Stack extends Construct implements ITaggable {
 
     // we don't use `Fn.importListValue()` since this array is a CFN attribute, and we don't know how long this attribute is
     return exportIsAList ?
-      Fn.split(delimiter, Fn.importValue(exportName))
+      Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(exportName))
       : Fn.importValue(exportName);
   }
 
