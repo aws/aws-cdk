@@ -95,6 +95,9 @@
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
+     },
+     "IngressConfiguration": {
+      "IsPubliclyAccessible": true
      }
     }
    }
@@ -214,6 +217,9 @@
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
+     },
+     "IngressConfiguration": {
+      "IsPubliclyAccessible": true
      }
     }
    }

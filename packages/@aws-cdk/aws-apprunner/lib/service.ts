@@ -573,6 +573,13 @@ export interface ServiceProps {
    * @default - no VPC connector, uses the DEFAULT egress type instead
    */
   readonly vpcConnector?: IVpcConnector;
+
+  /**
+   * Specifies whether your App Runner service is publicly accessible.
+   *
+   * @default - true
+   */
+  readonly publiclyAccessible?: boolean;
 }
 
 /**
@@ -845,6 +852,9 @@ export class Service extends cdk.Resource {
         egressConfiguration: {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
+        },
+        ingressConfiguration: {
+          isPubliclyAccessible: this.props.publiclyAccessible ?? true,
         },
       },
     });

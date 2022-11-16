@@ -391,10 +391,10 @@
     }
    }
   },
-  "SecurityGroupDD263621": {
+  "VpcEndpointSecurityGroup348CA197": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-apprunner/SecurityGroup",
+    "GroupDescription": "integ-apprunner/VpcEndpoint/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -402,34 +402,67 @@
       "IpProtocol": "-1"
      }
     ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "Vpc8378EB38",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "Vpc8378EB38",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
    }
   },
-  "VpcConnectorE3A78531": {
-   "Type": "AWS::AppRunner::VpcConnector",
+  "VpcEndpoint80208C18": {
+   "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
-    "Subnets": [
-     {
-      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-     },
-     {
-      "Ref": "VpcPublicSubnet2Subnet691E08A3"
-     }
-    ],
-    "SecurityGroups": [
+    "ServiceName": "com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    },
+    "PrivateDnsEnabled": false,
+    "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "SecurityGroupDD263621",
+       "VpcEndpointSecurityGroup348CA197",
        "GroupId"
       ]
      }
     ],
-    "VpcConnectorName": "MyVpcConnector"
+    "SubnetIds": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     },
+     {
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     }
+    ],
+    "VpcEndpointType": "Interface"
    }
   },
-  "Service6DF16DDFB": {
+  "Service86269A78B": {
    "Type": "AWS::AppRunner::Service",
    "Properties": {
     "SourceConfiguration": {
@@ -445,13 +478,7 @@
     "InstanceConfiguration": {},
     "NetworkConfiguration": {
      "EgressConfiguration": {
-      "EgressType": "VPC",
-      "VpcConnectorArn": {
-       "Fn::GetAtt": [
-        "VpcConnectorE3A78531",
-        "VpcConnectorArn"
-       ]
-      }
+      "EgressType": "DEFAULT"
      },
      "IngressConfiguration": {
       "IsPubliclyAccessible": true
@@ -459,39 +486,29 @@
     }
    }
   },
-  "Service7E1F980B2": {
-   "Type": "AWS::AppRunner::Service",
+  "VpcIngressConnection4FCCD71F": {
+   "Type": "AWS::AppRunner::VpcIngressConnection",
    "Properties": {
-    "SourceConfiguration": {
-     "AuthenticationConfiguration": {},
-     "ImageRepository": {
-      "ImageConfiguration": {
-       "Port": "8000"
-      },
-      "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
-      "ImageRepositoryType": "ECR_PUBLIC"
+    "IngressVpcConfiguration": {
+     "VpcEndpointId": {
+      "Ref": "VpcEndpoint80208C18"
+     },
+     "VpcId": {
+      "Ref": "Vpc8378EB38"
      }
     },
-    "InstanceConfiguration": {},
-    "NetworkConfiguration": {
-     "EgressConfiguration": {
-      "EgressType": "VPC",
-      "VpcConnectorArn": {
-       "Fn::GetAtt": [
-        "VpcConnectorE3A78531",
-        "VpcConnectorArn"
-       ]
-      }
-     },
-     "IngressConfiguration": {
-      "IsPubliclyAccessible": true
-     }
-    }
+    "ServiceArn": {
+     "Fn::GetAtt": [
+      "Service86269A78B",
+      "ServiceArn"
+     ]
+    },
+    "VpcIngressConnectionName": "MyVpcIngressConnection"
    }
   }
  },
  "Outputs": {
-  "URL6": {
+  "URL8": {
    "Value": {
     "Fn::Join": [
      "",
@@ -499,7 +516,7 @@
       "https://",
       {
        "Fn::GetAtt": [
-        "Service6DF16DDFB",
+        "Service86269A78B",
         "ServiceUrl"
        ]
       }
@@ -507,7 +524,7 @@
     ]
    }
   },
-  "URL7": {
+  "VpcIngressConnectionDomainname": {
    "Value": {
     "Fn::Join": [
      "",
@@ -515,8 +532,24 @@
       "https://",
       {
        "Fn::GetAtt": [
-        "Service7E1F980B2",
-        "ServiceUrl"
+        "VpcIngressConnection4FCCD71F",
+        "DomainName"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "VpcIngressConnectionStatus": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "VpcIngressConnection4FCCD71F",
+        "Status"
        ]
       }
      ]

@@ -5,7 +5,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType, VpcConnector } from '../lib';
+import { ConfigurationSourceType, Cpu, GitHubConnection, Memory, Runtime, Service, Source, VpcConnector } from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
   // GIVEN
@@ -33,6 +33,9 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
     NetworkConfiguration: {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
+      },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
       },
     },
   });
@@ -83,6 +86,9 @@ test('custom environment variables and start commands are allowed for imageConfi
       EgressConfiguration: {
         EgressType: 'DEFAULT',
       },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
+      },
     },
   });
 });
@@ -129,6 +135,9 @@ test('custom environment variables and start commands are allowed for imageConfi
     NetworkConfiguration: {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
+      },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
       },
     },
   });
@@ -203,6 +212,9 @@ test('create a service from existing ECR repository(image repository type: ECR)'
       EgressConfiguration: {
         EgressType: 'DEFAULT',
       },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
+      },
     },
   });
 });
@@ -263,6 +275,9 @@ test('create a service with local assets(image repository type: ECR)', () => {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
       },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
+      },
     },
   });
 });
@@ -303,6 +318,9 @@ test('create a service with github repository', () => {
     NetworkConfiguration: {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
+      },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
       },
     },
   });
@@ -350,6 +368,9 @@ test('create a service with github repository - undefined branch name is allowed
     NetworkConfiguration: {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
+      },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
       },
     },
   });
@@ -416,6 +437,9 @@ test('create a service with github repository - buildCommand, environment and st
       EgressConfiguration: {
         EgressType: 'DEFAULT',
       },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
+      },
     },
   });
 });
@@ -475,6 +499,9 @@ test('undefined imageConfiguration port is allowed', () => {
     NetworkConfiguration: {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
+      },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
       },
     },
   });
@@ -537,6 +564,9 @@ test('custom IAM access role and instance role are allowed', () => {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
       },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
+      },
     },
   });
 });
@@ -563,6 +593,9 @@ test('cpu and memory properties are allowed', () => {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
       },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
+      },
     },
   });
 });
@@ -588,6 +621,9 @@ test('custom cpu and memory units are allowed', () => {
     NetworkConfiguration: {
       EgressConfiguration: {
         EgressType: 'DEFAULT',
+      },
+      IngressConfiguration: {
+        IsPubliclyAccessible: true,
       },
     },
   });
@@ -670,5 +706,40 @@ test('specifying a vpcConnector should assign the service to it and set the egre
       },
     ],
     VpcConnectorName: 'MyVpcConnector',
+  });
+});
+
+test('create a service which is not publicly accessible', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    publiclyAccessible: false,
+  });
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          Port: '8000',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+      IngressConfiguration: {
+        IsPubliclyAccessible: false,
+      },
+    },
   });
 });

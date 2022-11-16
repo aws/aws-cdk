@@ -160,3 +160,34 @@ new apprunner.Service(this, 'Service', {
   vpcConnector,
 });
 ```
+
+## VPC Ingress Connection
+
+To connect an App Runner service with a VPC Interface Endpoint define a VPC Ingress Connection.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc', {
+  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16')
+});
+
+const vpcInterfaceEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'MyVpcEndpoint', {
+  vpc,
+  service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+});
+
+const service = new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+});
+
+new VpcIngressConnection(stack, 'VpcIngressConnection', {
+  vpc,
+  vpcInterfaceEndpoint,
+  service,
+  vpcIngressConnectionName: 'MyVpcIngressConnection',
+});
+```

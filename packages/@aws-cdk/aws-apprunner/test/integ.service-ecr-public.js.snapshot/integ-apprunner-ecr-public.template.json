@@ -17,6 +17,9 @@
     "NetworkConfiguration": {
      "EgressConfiguration": {
       "EgressType": "DEFAULT"
+     },
+     "IngressConfiguration": {
+      "IsPubliclyAccessible": true
      }
     }
    }

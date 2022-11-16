@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "97d4bcd51fc427e91a4ce9a4d5cc6b3d6111b726739290a9f223fcff13cdb960": {
+      "source": {
+        "path": "integ-apprunner.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "97d4bcd51fc427e91a4ce9a4d5cc6b3d6111b726739290a9f223fcff13cdb960.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
