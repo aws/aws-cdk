@@ -37,6 +37,25 @@
      ]
     }
    }
+  },
+  "ManualEB2ECD12": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "StringList",
+    "Value": {
+     "Fn::Join": [
+      ",",
+      {
+       "Fn::Split": [
+        "||",
+        {
+         "Fn::ImportValue": "ManualExport"
+        }
+       ]
+      }
+     ]
+    }
+   }
   }
  },
  "Parameters": {

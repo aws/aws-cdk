@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b200b7fc23e973e218e482b85438f31ee1b85722d92868a263010668774b83b6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d13409de2ca165913ea98c816c66c594e70fabb474b3eb57d271cc8e8f0fa6f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -189,6 +189,12 @@
             "data": "stringListParam"
           }
         ],
+        "/producer/ExportManualExport": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportManualExport"
+          }
+        ],
         "/producer/Exports/Output{\"Fn::GetAtt\":[\"endpointE7B9679B\",\"DnsEntries\"]}": [
           {
             "type": "aws:cdk:logicalId",
@@ -232,7 +238,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05e6dddf0cd7bb937808e0c1a9441000dc0de72a5a81dd5f7911077c57fb47ab.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0fe7f73285a0ff152665f28743981914632b5c05b361126f8af577515c058bdc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -259,6 +265,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Ref47C32AF2"
+          }
+        ],
+        "/consumer/Manual/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManualEB2ECD12"
           }
         ],
         "/consumer/BootstrapVersion": [

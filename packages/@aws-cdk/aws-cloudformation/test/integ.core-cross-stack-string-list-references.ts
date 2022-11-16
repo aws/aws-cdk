@@ -12,6 +12,7 @@ const app = new App({
 class ProducerStack extends Stack {
   public stringListGetAtt: string[];
   public stringListRef: CfnParameter;
+  public manualExport: string[];
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -26,12 +27,17 @@ class ProducerStack extends Stack {
       default: 'BLAT,BLAH',
       type: 'List<String>',
     });
+
+    this.manualExport = this.exportListValue(['string1', 'string2'], {
+      name: 'ManualExport',
+    });
   }
 }
 
 export interface consumerDeployProps extends StackProps {
   stringListGetAtt: string[],
   stringListRef: CfnParameter,
+  manualStringList: string[]
 }
 
 class ConsumerStack extends Stack {
@@ -45,6 +51,10 @@ class ConsumerStack extends Stack {
     new ssm.StringListParameter(this, 'Ref', {
       stringListValue: props.stringListRef.valueAsList,
     });
+
+    new ssm.StringListParameter(this, 'Manual', {
+      stringListValue: props.manualStringList,
+    });
   }
 }
 
@@ -52,6 +62,7 @@ const producer = new ProducerStack(app, 'producer');
 const consumer = new ConsumerStack(app, 'consumer', {
   stringListGetAtt: producer.stringListGetAtt,
   stringListRef: producer.stringListRef,
+  manualStringList: producer.manualExport,
 });
 
 // THEN

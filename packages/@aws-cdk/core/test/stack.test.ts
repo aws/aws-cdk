@@ -646,63 +646,6 @@ describe('stack', () => {
     });
   });
 
-  test('cross-stack references of lists returned from Fn::Ref work with `name`', () => {
-    // GIVEN
-    const app = new App();
-    const stack1 = new Stack(app, 'Stack1');
-    const param = new CfnParameter(stack1, 'magicParameter', {
-      default: 'BLAT,BLAH',
-      type: 'List<String>',
-    });
-    const stack2 = new Stack(app, 'Stack2');
-
-    // WHEN - used in another stack
-    new CfnResource(stack2, 'SomeResource', {
-      type: 'BLA',
-      properties: {
-        Prop: param.value,
-      },
-    });
-
-    const assembly = app.synth();
-    const template1 = assembly.getStackByName(stack1.stackName).template;
-    const template2 = assembly.getStackByName(stack2.stackName).template;
-
-    // THEN
-    expect(template1).toMatchObject({
-      Outputs: {
-        ExportsOutputRefmagicParameter4CC6F7BE: {
-          Value: {
-            'Fn::Join': [
-              '||', {
-                Ref: 'magicParameter',
-              },
-            ],
-          },
-          Export: { Name: 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE' },
-        },
-      },
-    });
-
-    expect(template2).toMatchObject({
-      Resources: {
-        SomeResource: {
-          Type: 'BLA',
-          Properties: {
-            Prop: {
-              'Fn::Split': [
-                '||',
-                {
-                  'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
-                },
-              ],
-            },
-          },
-        },
-      },
-    });
-  });
-
   test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
     const app = new App();
@@ -1314,7 +1257,7 @@ describe('stack', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
 
-    const importV = stack.exportListValue(['someValue'], { name: 'MyExport' });
+    const importV = stack.exportListValue(['someValue', 'anotherValue'], { name: 'MyExport' });
 
     expect(stack.resolve(importV)).toEqual(
       {
@@ -1326,6 +1269,19 @@ describe('stack', () => {
         ],
       },
     );
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportMyExport: {
+          Value: 'someValue||anotherValue',
+          Export: {
+            Name: 'MyExport',
+          },
+        },
+      },
+    });
   });
 
   test('CfnSynthesisError is ignored when preparing cross references', () => {

@@ -486,6 +486,12 @@
   }
  },
  "Outputs": {
+  "ExportManualExport": {
+   "Value": "string1||string2",
+   "Export": {
+    "Name": "ManualExport"
+   }
+  },
   "ExportsOutputFnGetAttendpointE7B9679BDnsEntries62080A34": {
    "Value": {
     "Fn::Join": [

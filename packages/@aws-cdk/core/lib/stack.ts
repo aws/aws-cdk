@@ -968,7 +968,8 @@ export class Stack extends Construct implements ITaggable {
   public exportListValue(exportedValue: any, options: ExportValueOptions = {}): string[] {
     if (options.name) {
       new CfnOutput(this, `Export${options.name}`, {
-        value: exportedValue,
+        //value: Fn.join('||', exportedValue),
+        value: exportedValue.join('||'),
         exportName: options.name,
       });
       return Fn.split('||', Fn.importValue(options.name));
@@ -981,7 +982,6 @@ export class Stack extends Construct implements ITaggable {
     }
 
     return importValue;
-
   }
 
   /**
