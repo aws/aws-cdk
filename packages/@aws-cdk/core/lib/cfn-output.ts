@@ -51,6 +51,10 @@ export class CfnOutput extends CfnElement {
 
     if (props.value === undefined) {
       throw new Error(`Missing value for CloudFormation output at path "${this.node.path}"`);
+    } else if (Array.isArray(props.value)) {
+      // `props.value` is typed `string`, so this shouldn't be possible;
+      // but cross-stack exports allow passing any, so this type-checking sometimes fails us.
+      throw new Error(`CloudFormation output was given a string list instead of a string or number at path "${this.node.path}"`);
     }
 
     this._description = props.description;
