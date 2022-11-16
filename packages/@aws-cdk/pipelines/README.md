@@ -217,7 +217,7 @@ const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
 This section of the documentation describes the AWS CodePipeline engine,
 which comes with this library. If you want to use a different deployment
 engine, read the section
-[Using a different deployment engine](#using-a-different-deployment-engine)below.
+[Using a different deployment engine](#using-a-different-deployment-engine) below.
 
 ### Synth and sources
 
