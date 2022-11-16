@@ -31,7 +31,6 @@ You can [create a PR](https://github.com/aws/aws-cdk/compare) in the `aws/aws-cd
 1. It is a small addition to a service that has had stable L2 constructs for some time
 2. The service usage is well known and the API is unlikely to change.
 3. The defaults provided by the L2 are well known best practice
-4. You don't want to own or administer a separate package
 
 If any of the above are true and your constructs adhere to [the relevant guidelines](#do-my-constructs-belong-in-aws-cdk-lib), we encourage you to follow the [contributing guide](../CONTRIBUTING.md) and create a new pull request. Since the bandwidth of the aws-cdk team is limited, reviews and iteration may take some time. Additionally pull requests for new constructs are more likely to be accepted if they have any of the following:
 
