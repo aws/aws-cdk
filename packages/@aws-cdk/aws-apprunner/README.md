@@ -172,7 +172,7 @@ const vpc = new ec2.Vpc(this, 'Vpc', {
   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16')
 });
 
-const vpcInterfaceEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'MyVpcEndpoint', {
+const vpcInterfaceEndpoint = new ec2.InterfaceVpcEndpoint(this, 'MyVpcEndpoint', {
   vpc,
   service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
 });
@@ -184,7 +184,7 @@ const service = new apprunner.Service(this, 'Service', {
   }),
 });
 
-new VpcIngressConnection(stack, 'VpcIngressConnection', {
+new apprunner.VpcIngressConnection(this, 'VpcIngressConnection', {
   vpc,
   vpcInterfaceEndpoint,
   service,
