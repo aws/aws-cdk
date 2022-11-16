@@ -1,5 +1,5 @@
-import * as crypto from 'crypto';
 import { Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
@@ -173,9 +173,7 @@ class LatestDeploymentResource extends CfnDeployment {
     // if hash components were added to the deployment, we use them to calculate
     // a logical ID for the deployment resource.
     if (hash.length > 0) {
-      const md5 = crypto.createHash('md5');
-      hash.map(x => this.stack.resolve(x)).forEach(c => md5.update(JSON.stringify(c)));
-      lid += md5.digest('hex');
+      lid += md5hash(hash.map(x => this.stack.resolve(x)).map(c => JSON.stringify(c)).join(''));
     }
 
     return lid;
