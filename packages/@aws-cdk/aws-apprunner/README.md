@@ -182,6 +182,7 @@ const service = new apprunner.Service(this, 'Service', {
     imageConfiguration: { port: 8000 },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
+  publiclyAccessible: false,
 });
 
 new apprunner.VpcIngressConnection(this, 'VpcIngressConnection', {

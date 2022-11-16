@@ -2,25 +2,25 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVpcIngressConnection } from './apprunner.generated';
-import { Service } from './service';
+import { IService } from './service';
 
 /**
- * Properties of the AppRunner VPC Interface Endpoint connection
+ * Properties of the AppRunner VPC Ingress Connection
  */
-export interface VpcInterfaceEndpointProps {
+export interface VpcIngressConnectionProps {
 
   /**
    * The service to connect.
    */
-  readonly service: Service,
+  readonly service: IService,
 
   /**
-   * The VPC for the VPC Connector.
+   * The VPC for the VPC Ingress Connection.
    */
   readonly vpc: ec2.IVpc;
 
   /**
-   * The VPC for the VPC Connector.
+   * The VPC Interface Endpoint for the VPC Ingress Connection.
    */
   readonly vpcInterfaceEndpoint: ec2.IInterfaceVpcEndpoint;
 
@@ -33,7 +33,36 @@ export interface VpcInterfaceEndpointProps {
 }
 
 /**
- * Represents the App Runner VPC Connector.
+ * Attributes for the App Runner VPC Ingress Connection
+ */
+export interface VpcIngressConnectionAttributes {
+  /**
+   * The Amazon Resource Name (ARN) of the VPC Ingress Connection.
+   * @attribute
+   */
+  readonly vpcIngressConnectionArn: string;
+
+  /**
+   * The domain name associated with the VPC Ingress Connection resource.
+   * @attribute
+   */
+  readonly domainName: string;
+
+  /**
+   * The current status of the VPC Ingress Connection.
+   * @attribute
+   */
+  readonly status: string;
+
+  /**
+   * The name of the VPC Ingress Connection.
+   * @attribute
+   */
+  readonly vpcIngressConnectionName: string;
+}
+
+/**
+ * Represents the App Runner VPC Ingress Connection.
  */
 export interface IVpcIngressConnection extends cdk.IResource {
   /**
@@ -68,6 +97,25 @@ export interface IVpcIngressConnection extends cdk.IResource {
  */
 export class VpcIngressConnection extends cdk.Resource implements IVpcIngressConnection {
   /**
+   * Import from VPC Ingress Connection attributes.
+   */
+  public static fromVpcIngressConnectionAttributes(scope: Construct, id: string, attrs: VpcIngressConnectionAttributes): IVpcIngressConnection {
+    const vpcIngressConnectionArn = attrs.vpcIngressConnectionArn;
+    const domainName = attrs.domainName;
+    const status = attrs.status;
+    const vpcIngressConnectionName = attrs.vpcIngressConnectionName;
+
+    class Import extends cdk.Resource {
+      public readonly vpcIngressConnectionArn = vpcIngressConnectionArn;
+      public readonly domainName = domainName;
+      public readonly status = status;
+      public readonly vpcIngressConnectionName = vpcIngressConnectionName;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
    * The Amazon Resource Name (ARN) of the VPC Ingress Connection.
    * @attribute
    */
@@ -91,7 +139,7 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
    */
   readonly vpcIngressConnectionName: string;
 
-  public constructor(scope: Construct, id: string, props: VpcInterfaceEndpointProps) {
+  public constructor(scope: Construct, id: string, props: VpcIngressConnectionProps) {
     super(scope, id, {
       physicalName: props.vpcIngressConnectionName,
     });
