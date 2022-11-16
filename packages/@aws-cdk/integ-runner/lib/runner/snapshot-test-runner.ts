@@ -10,12 +10,12 @@ interface SnapshotAssembly {
   /**
    * Map of stacks that are part of this assembly
    */
-  [key: string]: {
+  [stackName: string]: {
     /**
      * All templates for this stack, including nested stacks
      */
     templates: {
-      [key: string]: any
+      [templateId: string]: any
     },
 
     /**
