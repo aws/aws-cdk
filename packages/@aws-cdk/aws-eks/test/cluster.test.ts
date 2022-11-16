@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -21,7 +21,6 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 describe('cluster', () => {
-
   test('can configure and access ALB controller', () => {
     const { stack } = testFixture();
 
@@ -39,7 +38,6 @@ describe('cluster', () => {
   });
 
   test('can specify custom environment to cluster resource handler', () => {
-
     const { stack } = testFixture();
 
     new eks.Cluster(stack, 'Cluster', {
@@ -164,7 +162,6 @@ describe('cluster', () => {
   });
 
   test('throws when accessing cluster security group for imported cluster without cluster security group id', () => {
-
     const { stack } = testFixture();
 
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
@@ -175,7 +172,6 @@ describe('cluster', () => {
   });
 
   test('can place cluster handlers in the cluster vpc', () => {
-
     const { stack } = testFixture();
 
     new eks.Cluster(stack, 'Cluster', {
@@ -202,7 +198,6 @@ describe('cluster', () => {
   });
 
   test('can access cluster security group for imported cluster with cluster security group id', () => {
-
     const { stack } = testFixture();
 
     const clusterSgId = 'cluster-sg-id';
@@ -218,7 +213,6 @@ describe('cluster', () => {
   });
 
   test('cluster security group is attached when adding self-managed nodes', () => {
-
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -242,7 +236,6 @@ describe('cluster', () => {
   });
 
   test('security group of self-managed asg is not tagged with owned', () => {
-
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -262,7 +255,6 @@ describe('cluster', () => {
   });
 
   test('connect autoscaling group with imported cluster', () => {
-
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -295,7 +287,6 @@ describe('cluster', () => {
   });
 
   test('cluster security group is attached when connecting self-managed nodes', () => {
-
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -323,7 +314,6 @@ describe('cluster', () => {
   });
 
   test('spot interrupt handler is not added if spotInterruptHandler is false when connecting self-managed nodes', () => {
-
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -347,7 +337,6 @@ describe('cluster', () => {
   });
 
   test('throws when a non cdk8s chart construct is added as cdk8s chart', () => {
-
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -362,7 +351,6 @@ describe('cluster', () => {
   });
 
   test('throws when a core construct is added as cdk8s chart', () => {
-
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -377,7 +365,6 @@ describe('cluster', () => {
   });
 
   test('cdk8s chart can be added to cluster', () => {
-
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -419,7 +406,6 @@ describe('cluster', () => {
   });
 
   test('cluster connections include both control plane and cluster security group', () => {
-
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -434,7 +420,6 @@ describe('cluster', () => {
   });
 
   test('can declare a security group from a different stack', () => {
-
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
@@ -450,7 +435,6 @@ describe('cluster', () => {
     }
 
     class NetworkStack extends cdk.Stack {
-
       public readonly securityGroup: ec2.ISecurityGroup;
       public readonly vpc: ec2.IVpc;
 
@@ -459,7 +443,6 @@ describe('cluster', () => {
         this.vpc = new ec2.Vpc(this, 'Vpc');
         this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
       }
-
     }
 
     const { app } = testFixture();
@@ -471,7 +454,6 @@ describe('cluster', () => {
   });
 
   test('can declare a manifest with a token from a different stack than the cluster that depends on the cluster stack', () => {
-
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
@@ -521,7 +503,6 @@ describe('cluster', () => {
   });
 
   test('can declare a chart with a token from a different stack than the cluster that depends on the cluster stack', () => {
-
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
@@ -562,7 +543,6 @@ describe('cluster', () => {
   });
 
   test('can declare a HelmChart in a different stack than the cluster', () => {
-
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
@@ -594,7 +574,6 @@ describe('cluster', () => {
   });
 
   test('throws when declaring an ASG role in a different stack than the cluster', () => {
-
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
@@ -638,7 +617,6 @@ describe('cluster', () => {
   });
 
   test('can declare a ServiceAccount in a different stack than the cluster', () => {
-
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
@@ -724,7 +702,6 @@ describe('cluster', () => {
   });
 
   describe('default capacity', () => {
-
     test('x2 m5.large by default', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
@@ -956,7 +933,6 @@ describe('cluster', () => {
   });
 
   test('import cluster with existing kubectl provider function', () => {
-
     const { stack } = testFixture();
 
     const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
@@ -1083,7 +1059,6 @@ describe('cluster', () => {
   });
 
   test('import cluster with new kubectl private subnets', () => {
-
     const { stack, vpc } = testFixture();
 
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
@@ -1446,7 +1421,6 @@ describe('cluster', () => {
     });
 
     describe('boostrap user-data', () => {
-
       test('rendered by default for ASGs', () => {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
@@ -1728,7 +1702,6 @@ describe('cluster', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
         AmiType: 'AL2_ARM_64',
       });
-
     });
 
     test('addAutoScalingGroupCapacity with C7g instance type comes with nodegroup with correct AmiType', () => {
@@ -1751,7 +1724,6 @@ describe('cluster', () => {
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
           (v as any).Default.includes('amazon-linux-2-arm64/'),
       )).toEqual(true);
-
     });
 
     test('EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity', () => {
@@ -2069,7 +2041,6 @@ describe('cluster', () => {
       });
 
       // THEN
-
       const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
       Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
@@ -2184,9 +2155,6 @@ describe('cluster', () => {
         },
         ClientIDList: [
           'sts.amazonaws.com',
-        ],
-        ThumbprintList: [
-          '9e99a48a9960b14926bb7f3b02e22da2b0ab7280',
         ],
         Url: {
           'Fn::GetAtt': [
@@ -2335,7 +2303,6 @@ describe('cluster', () => {
   });
 
   test('kubectl provider passes security group to provider', () => {
-
     const { stack } = testFixture();
 
     new eks.Cluster(stack, 'Cluster1', {
@@ -2357,7 +2324,6 @@ describe('cluster', () => {
   });
 
   test('kubectl provider passes environment to lambda', () => {
-
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster1', {
@@ -2393,7 +2359,6 @@ describe('cluster', () => {
 
   describe('kubectl provider passes iam role environment to kube ctl lambda', ()=>{
     test('new cluster', () => {
-
       const { stack } = testFixture();
 
       const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
@@ -2429,7 +2394,6 @@ describe('cluster', () => {
     });
 
     test('imported cluster', ()=> {
-
       const clusterName = 'my-cluster';
       const stack = new cdk.Stack();
       const kubectlLambdaRole = new iam.Role(stack, 'KubectlLambdaRole', {
@@ -2462,8 +2426,8 @@ describe('cluster', () => {
       });
     });
   });
-  describe('endpoint access', () => {
 
+  describe('endpoint access', () => {
     test('public restricted', () => {
       expect(() => {
         eks.EndpointAccess.PUBLIC.onlyFrom('1.2.3.4/32');
@@ -2490,7 +2454,6 @@ describe('cluster', () => {
     });
 
     test('public non restricted with private subnets', () => {
-
       const { stack } = testFixture();
 
       new eks.Cluster(stack, 'Cluster', {
@@ -2522,7 +2485,6 @@ describe('cluster', () => {
     });
 
     test('private with private subnets', () => {
-
       const { stack } = testFixture();
 
       new eks.Cluster(stack, 'Cluster', {
@@ -2605,7 +2567,6 @@ describe('cluster', () => {
     });
 
     test('private endpoint access selects only private subnets from looked up vpc', () => {
-
       const vpcId = 'vpc-12345';
       // can't use the regular fixture because it also adds a VPC to the stack, which prevents
       // us from setting context.
@@ -2663,7 +2624,6 @@ describe('cluster', () => {
     });
 
     test('private endpoint access selects only private subnets from looked up vpc with concrete subnet selection', () => {
-
       const vpcId = 'vpc-12345';
       // can't use the regular fixture because it also adds a VPC to the stack, which prevents
       // us from setting context.
@@ -2673,6 +2633,7 @@ describe('cluster', () => {
           region: 'us-east-1',
         },
       });
+
       stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
         vpcId: vpcId,
         vpcCidrBlock: '10.0.0.0/16',
@@ -2703,6 +2664,7 @@ describe('cluster', () => {
           },
         ],
       });
+
       const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
         vpcId: vpcId,
       });
@@ -2727,7 +2689,6 @@ describe('cluster', () => {
     });
 
     test('private endpoint access selects only private subnets from managed vpc with concrete subnet selection', () => {
-
       const { stack } = testFixture();
 
       const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -2790,7 +2751,6 @@ describe('cluster', () => {
     });
 
     test('kubectl provider chooses only private subnets', () => {
-
       const { stack } = testFixture();
 
       const vpc = new ec2.Vpc(stack, 'Vpc', {
@@ -2848,7 +2808,6 @@ describe('cluster', () => {
     });
 
     test('kubectl provider limits number of subnets to 16', () => {
-
       const { stack } = testFixture();
 
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
@@ -2897,7 +2856,6 @@ describe('cluster', () => {
     });
 
     test('kubectl provider considers vpc subnet selection', () => {
-
       const { stack } = testFixture();
 
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
@@ -2968,7 +2926,6 @@ describe('cluster', () => {
     });
 
     test('throw when private access is configured without dns support enabled for the VPC', () => {
-
       const { stack } = testFixture();
 
       expect(() => {
@@ -2983,7 +2940,6 @@ describe('cluster', () => {
     });
 
     test('throw when private access is configured without dns hostnames enabled for the VPC', () => {
-
       const { stack } = testFixture();
 
       expect(() => {
@@ -2998,7 +2954,6 @@ describe('cluster', () => {
     });
 
     test('throw when cidrs are configured without public access endpoint', () => {
-
       expect(() => {
         eks.EndpointAccess.PRIVATE.onlyFrom('1.2.3.4/5');
       }).toThrow(/CIDR blocks can only be configured when public access is enabled/);
@@ -3006,7 +2961,6 @@ describe('cluster', () => {
   });
 
   test('getServiceLoadBalancerAddress', () => {
-
     const { stack } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, prune: false });
 
@@ -3066,7 +3020,70 @@ describe('cluster', () => {
     // THEN
     const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     Template.fromStack(providerStack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:of:layer'],
+      Layers: [
+        { Ref: 'AwsCliLayerF44AAF94' },
+        'arn:of:layer',
+      ],
+    });
+  });
+
+  describe('kubectlLayer annotation', () => {
+    function message(version: string) {
+      return [
+        'You created a cluster with Kubernetes Version 1.23 without specifying the kubectlLayer property.',
+        'This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21.',
+        `Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${version}.`,
+      ].join(' ');
+    }
+
+    test('not added when version < 1.22 and no kubectl layer provided', () => {
+    // GIVEN
+      const { stack } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster1', {
+        version: eks.KubernetesVersion.V1_21,
+        prune: false,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Stack/Cluster1', message('21'));
+    });
+
+    test('added when version >= 1.22 and no kubectl layer provided', () => {
+    // GIVEN
+      const { stack } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster1', {
+        version: eks.KubernetesVersion.V1_23,
+        prune: false,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster1', message('23'));
+    });
+  });
+
+  test('custom awscli layer can be provided', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    const layer = lambda.LayerVersion.fromLayerVersionArn(stack, 'MyLayer', 'arn:of:layer');
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      awscliLayer: layer,
+    });
+
+    // THEN
+    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    Template.fromStack(providerStack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: [
+        'arn:of:layer',
+        { Ref: 'KubectlLayer600207B5' },
+      ],
     });
   });
 

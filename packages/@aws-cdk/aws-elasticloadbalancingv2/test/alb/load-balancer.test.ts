@@ -81,6 +81,7 @@ describe('tests', () => {
       deletionProtection: true,
       http2Enabled: false,
       idleTimeout: cdk.Duration.seconds(1000),
+      dropInvalidHeaderFields: true,
     });
 
     // THEN
@@ -97,6 +98,10 @@ describe('tests', () => {
         {
           Key: 'idle_timeout.timeout_seconds',
           Value: '1000',
+        },
+        {
+          Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'true',
         },
       ],
     });

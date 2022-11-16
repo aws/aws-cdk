@@ -169,6 +169,10 @@ export class WaiterStateMachine extends Construct {
  * Calculate the max number of retries
  */
 function calculateMaxRetries(maxSeconds: number, intervalSeconds: number, backoff: number): number {
+  // if backoff === 1 then we aren't really using backoff
+  if (backoff === 1) {
+    return Math.floor(maxSeconds / intervalSeconds);
+  }
   let retries = 1;
   let nextInterval = intervalSeconds;
   let i = 0;

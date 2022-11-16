@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "fcfc5567f848b2dac2a1c88ed8824066fbcb3eac6ef78ace50ab7cc45e662a17": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-lambda-invoke-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fcfc5567f848b2dac2a1c88ed8824066fbcb3eac6ef78ace50ab7cc45e662a17.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
