@@ -460,16 +460,20 @@ export class Stack extends Construct implements ITaggable {
    * @returns the name of the permissions boundary or undefined if not set
    */
   private get permissionsBoundaryArn(): string | undefined {
+    const qualifier = this.synthesizer.bootstrapQualifier
+      ?? this.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT)
+      ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const spec = new StringSpecializer(this, qualifier);
     const context = this.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
     if (context && context.arn) {
-      return context.arn;
+      return spec.specialize(context.arn);
     } else if (context && context.name) {
-      return this.formatArn({
+      return spec.specialize(this.formatArn({
         service: 'iam',
         resource: 'policy',
         region: '',
         resourceName: context.name,
-      });
+      }));
     }
     return;
   }
@@ -487,12 +491,7 @@ export class Stack extends Construct implements ITaggable {
             CfnResource.isCfnResource(node) &&
               (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
           ) {
-            const stack = Stack.of(node);
-            const qualifier = stack.synthesizer.bootstrapQualifier
-              ?? node.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT)
-              ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
-            const spec = new StringSpecializer(stack, qualifier);
-            node.addPropertyOverride('PermissionsBoundary', spec.specialize(permissionsBoundaryArn));
+            node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
         },
       });
