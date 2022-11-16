@@ -4,6 +4,16 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
+/**
+ * This test does the following
+ *
+ * 1. Creates a stack with a Redshift cluster.
+ * 2. Creates a second stack with the same name to update the parameter group and cause the custom resource to run.
+ *
+ * The diff assets flag and assertions have been commented out due to some current issues with integ-tests.
+ * This test was manually verified by manually checking the sync status and reboot history of the redshift cluster.
+ */
+
 const app = new cdk.App();
 
 
