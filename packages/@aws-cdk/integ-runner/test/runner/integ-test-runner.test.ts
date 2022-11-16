@@ -594,26 +594,26 @@ describe('IntegTest runIntegTests', () => {
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,
       test: new IntegTest({
-        fileName: 'test/test-data/xxxxx.test-with-snapshot.ts',
-        discoveryRoot: 'test/test-data',
+        fileName: 'test/test-data-typescript/xxxxx.typescript-test.ts',
+        discoveryRoot: 'test/test-data-typescript',
       }),
     });
     integTest.runIntegTestCase({
-      testCaseName: 'xxxxx.test-with-snapshot',
+      testCaseName: 'xxxxx.typescript-test',
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(2);
+    expect(deployMock).toHaveBeenCalledTimes(1);
     expect(destroyMock).toHaveBeenCalledTimes(1);
     expect(synthFastMock).toHaveBeenCalledTimes(1);
     expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
-      app: 'node -r ts-node/register xxxxx.test-with-snapshot.ts',
+      app: 'node -r ts-node/register xxxxx.typescript-test.ts',
     }));
     expect(synthFastMock).toHaveBeenCalledWith(expect.objectContaining({
-      execCmd: ['node', '-r', 'ts-node/register', 'xxxxx.test-with-snapshot.ts'],
+      execCmd: ['node', '-r', 'ts-node/register', 'xxxxx.typescript-test.ts'],
     }));
     expect(destroyMock).toHaveBeenCalledWith(expect.objectContaining({
-      app: 'node -r ts-node/register xxxxx.test-with-snapshot.ts',
+      app: 'node -r ts-node/register xxxxx.typescript-test.ts',
     }));
   });
 });

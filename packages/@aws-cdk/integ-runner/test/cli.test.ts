@@ -41,4 +41,15 @@ describe('CLI', () => {
       ].join('\n'),
     ]]);
   });
+
+  test('find only TypeScript files', async () => {
+    await main(['--list', '--language', 'typescript', '--directory=test/test-data-typescript', '--test-regex="^xxxxx\\..*(?<!\\.d)\\.ts$"']);
+
+    expect(stdoutMock.mock.calls).toEqual([[
+      [
+        'xxxxx.typescript-test.ts',
+        '',
+      ].join('\n'),
+    ]]);
+  });
 });
