@@ -76,11 +76,22 @@ describe('CLI config file', () => {
 
   test('options are read from config file', async () => {
     // WHEN
-    withConfig({ list: true, app: 'echo' });
+    withConfig({
+      list: true,
+      maxWorkers: 3,
+      parallelRegions: [
+        'eu-west-1',
+        'ap-southeast-2',
+      ],
+    });
     const options = parseCliArgs();
 
     // THEN
     expect(options.list).toBe(true);
-    expect(options.app).toBe('echo');
+    expect(options.maxWorkers).toBe(3);
+    expect(options.testRegions).toEqual([
+      'eu-west-1',
+      'ap-southeast-2',
+    ]);
   });
 });

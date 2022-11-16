@@ -85,7 +85,7 @@ If you are providing a list of tests to execute, either as CLI arguments or from
 For example, if there is a test `aws-iam/test/integ.policy.js` and the current working directory is `aws-iam` you would provide `integ.policy.js`
 
 ```bash
-yarn integ integ.policy.js
+integ-runner integ.policy.js
 ```
 
 ### Common Workflow
@@ -121,7 +121,7 @@ Snapshot Results:
 
 Tests:    1 failed, 9 total
 Error: Some snapshot tests failed!
-To re-run failed tests run: yarn integ-runner --update-on-failed
+To re-run failed tests run: integ-runner --update-on-failed
     at main (packages/@aws-cdk/integ-runner/lib/cli.js:90:15)
 error Command failed with exit code 1. 
 ```
@@ -195,7 +195,7 @@ If you are adding a new test which creates a new snapshot then you should run th
 For example, if you are working on a new test `integ.new-test.js` then you would run:
 
 ```bash
-yarn integ --update-on-failed --disable-update-workflow integ.new-test.js
+integ-runner --update-on-failed --disable-update-workflow integ.new-test.js
 ```
 
 This is because for a new test we do not need to test the update workflow (there is nothing to update).
@@ -208,3 +208,25 @@ See [@aws-cdk/cloud-assembly-schema/lib/integ-tests/schema.ts](../cloud-assembly
 
 See the `@aws-cdk/integ-tests` module for information on how to define
 integration tests for the runner to exercise.
+
+### Config file
+
+All options can be configured via the `integ.config.json` configuration file in the current working directory.
+
+```json
+{
+  "maxWorkers": 10,
+  "parallelRegions": [
+    "eu-west-1",
+    "ap-southeast-2"
+  ]
+}
+```
+
+Available options can be listed by running the following command:
+
+```sh
+integ-runner --help
+```
+
+To use a different config file, provide the `--config` command-line option.

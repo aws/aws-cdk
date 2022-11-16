@@ -40,20 +40,12 @@ export function parseCliArgs(args: string[] = []) {
     .strict()
     .parse(args);
 
-  // list of integration tests that will be executed
   const tests: string[] = argv._;
-  const app: string | undefined = argv.app;
-  const testRegex = arrayFromYargs(argv['test-regex']);
   const parallelRegions = arrayFromYargs(argv['parallel-regions']);
   const testRegions: string[] = parallelRegions ?? ['us-east-1', 'us-east-2', 'us-west-2'];
   const profiles = arrayFromYargs(argv.profiles);
-  const runUpdateOnFailed = argv['update-on-failed'] ?? false;
   const fromFile: string | undefined = argv['from-file'];
-  const exclude: boolean = argv.exclude;
   const maxWorkers: number = argv['max-workers'];
-  const list: boolean = argv.list;
-  const directory: string = argv.directory;
-  const inspectFailures: boolean = argv['inspect-failures'];
   const verbosity: number = argv.verbose;
   const verbose: boolean = verbosity >= 1;
 
@@ -71,17 +63,17 @@ export function parseCliArgs(args: string[] = []) {
 
   return {
     tests: requestedTests,
-    app,
-    testRegex,
+    app: argv.app as (string | undefined),
+    testRegex: arrayFromYargs(argv['test-regex']),
     testRegions,
     profiles,
-    runUpdateOnFailed,
+    runUpdateOnFailed: (argv['update-on-failed'] ?? false) as boolean,
     fromFile,
-    exclude,
+    exclude: argv.exclude as boolean,
     maxWorkers,
-    list,
-    directory,
-    inspectFailures,
+    list: argv.list as boolean,
+    directory: argv.directory as string,
+    inspectFailures: argv['inspect-failures'] as boolean,
     verbosity,
     verbose,
     clean: argv.clean as boolean,
@@ -108,11 +100,9 @@ export async function main(args: string[]) {
     return;
   }
 
-
   const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
     maxWorkers: options.maxWorkers,
   });
-
 
   const testsToRun: IntegTestWorkerConfig[] = [];
   const destructiveChanges: DestructiveChange[] = [];
@@ -176,7 +166,7 @@ export async function main(args: string[]) {
   if (failedSnapshots.length > 0) {
     let message = '';
     if (!options.runUpdateOnFailed) {
-      message = 'To re-run failed tests run: yarn integ-runner --update-on-failed';
+      message = 'To re-run failed tests run: integ-runner --update-on-failed';
     }
     if (!testsSucceeded) {
       throw new Error(`Some tests failed!\n${message}`);
