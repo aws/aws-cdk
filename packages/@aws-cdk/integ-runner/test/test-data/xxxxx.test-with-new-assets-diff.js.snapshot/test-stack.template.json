@@ -49,6 +49,12 @@
       "DependsOn": [
         "MyFunction1ServiceRole9852B06B"
       ]
+    },
+    "SomeNestedStackResourceA7AEBA6B": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.unknown-region.amazonaws.com/cdk-hnb659fds-assets-unknown-account-unknown-region/DIFFERENT_NESTED_STACK_HASH.json"
+      }
     }
   }
 }

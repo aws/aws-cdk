@@ -79,6 +79,25 @@ export class AssemblyManifestReader {
   }
 
   /**
+   * Get the nested stacks for a given stack
+   * returns a map of artifactId to CloudFormation template
+   */
+  public getNestedStacksForStack(stackId: string): Record<string, any> {
+    const nestedTemplates: string[] = this.getAssetManifestsForStack(stackId).flatMap(
+      manifest => manifest.files
+        .filter(asset => asset.source.path?.endsWith('.nested.template.json'))
+        .map(asset => asset.source.path!),
+    );
+
+    const nestedStacks: Record<string, any> = Object.fromEntries(nestedTemplates.map(templateFile => ([
+      templateFile.split('.', 1)[0],
+      fs.readJSONSync(path.resolve(this.directory, templateFile)),
+    ])));
+
+    return nestedStacks;
+  }
+
+  /**
    * Write trace data to the assembly manifest metadata
    */
   public recordTrace(trace: ManifestTrace): void {
@@ -126,6 +145,19 @@ export class AssemblyManifestReader {
   }
 
   /**
+   * Return a list of asset artifacts for a given stack
+   */
+  public getAssetManifestsForStack(stackId: string): AssetManifest[] {
+    return Object.values(this.manifest.artifacts ?? {})
+      .filter(artifact =>
+        artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`)
+      .map(artifact => {
+        const fileName = (artifact.properties as AssetManifestProperties).file;
+        return AssetManifest.fromFile(path.join(this.directory, fileName));
+      });
+  }
+
+  /**
    * Get a list of assets from the assembly manifest
    */
   private assetsFromAssemblyManifest(artifact: ArtifactManifest): (ContainerImageAssetMetadataEntry | FileAssetMetadataEntry)[] {
@@ -153,7 +185,7 @@ export class AssemblyManifestReader {
     assetManifest.entries.forEach(entry => {
       if (entry.type === 'file') {
         const source = (entry as FileManifestEntry).source;
-        if (source.path && source.path.startsWith('asset.')) {
+        if (source.path && (source.path.startsWith('asset.') || source.path.endsWith('nested.template.json'))) {
           assets.push(entry as FileManifestEntry);
         }
       } else if (entry.type === 'docker-image') {

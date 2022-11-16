@@ -169,6 +169,8 @@ Test Results:
 Tests:    1 passed, 1 total
 ```
 
+Nested stack templates are also compared as part of the snapshot. However asset hashes are ignored by default. To enable diff for asset hashes, set `diffAssets: true` of `IntegTestProps`.
+
 #### Update Workflow
 
 By default, integration tests are run with the "update workflow" enabled. This can be disabled by using the `--disable-update-workflow` command line option.

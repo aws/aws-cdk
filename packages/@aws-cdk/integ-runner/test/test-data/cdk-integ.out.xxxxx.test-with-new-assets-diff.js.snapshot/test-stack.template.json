@@ -38,17 +38,18 @@
           "S3Key": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92825.zip"
         },
         "Role": {
-          "Fn::GetAtt": [
-            "MyFunction1ServiceRole9852B06B",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["MyFunction1ServiceRole9852B06B", "Arn"]
         },
         "Handler": "index.handler",
         "Runtime": "nodejs14.x"
       },
-      "DependsOn": [
-        "MyFunction1ServiceRole9852B06B"
-      ]
+      "DependsOn": ["MyFunction1ServiceRole9852B06B"]
+    },
+    "SomeNestedStackResourceA7AEBA6B": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.unknown-region.amazonaws.com/cdk-hnb659fds-assets-unknown-account-unknown-region/DIFFERENT_NESTED_STACK_HASH.json"
+      }
     }
   }
 }
