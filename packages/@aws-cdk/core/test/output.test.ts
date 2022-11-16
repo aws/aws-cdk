@@ -104,7 +104,7 @@ describe('output', () => {
     }).toThrow(/Add an exportName to the CfnOutput/);
   });
 
-  test('throw if Output it passed a string list', () => {
+  test('throw if Output is passed a string list', () => {
     // WHEN
     expect(() => {
       new CfnOutput(stack, 'SomeOutput', { value: ['listValue'] as any });
