@@ -1440,7 +1440,7 @@ function generateExportName(stackExports: Construct, id: string) {
 function isExportAList(exportedValue: any, resolved: any) {
   const target = exportedValue.target;
   const resolvedGetAtt = resolved['Fn::GetAtt'];
-  const resolvedRef = (resolved['Fn::Ref'] ?? resolved.Ref);
+  const resolvedRef = resolved.Ref;
 
   if (resolvedGetAtt && resolvedRef) {
     throw new Error(`found a reference with both 'Fn::GetAtt' and 'Fn::Ref' ${JSON.stringify(resolved)}`);
