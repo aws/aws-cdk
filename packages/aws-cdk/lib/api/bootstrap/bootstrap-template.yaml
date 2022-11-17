@@ -81,22 +81,15 @@ Conditions:
     Fn::Equals:
       - 'AWS_MANAGED_KEY'
       - Ref: FileAssetsBucketKmsKeyId
-  DefaultPermissionsBoundary:
+  Untrue:
     Fn::Equals:
       - 'CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY'
-      - Ref: InputPermissionsBoundary
-  CustomPermissionsBoundary:
-    Fn::And:
-      - Fn::Not:
-          - Fn::Equals:
-              - AWS::NoValue
-              - Ref: InputPermissionsBoundary
-      - Fn::Not:
-          - Fn::Equals:
-              - ''
-              - Ref: InputPermissionsBoundary
-      - Fn::Not:
-          - Condition: DefaultPermissionsBoundary
+      - 'edit this value or remove the condition in order to create the example boundary policy'
+  PermissionsBoundarySet:
+    Fn::Not:
+      - Fn::Equals:
+        - ''
+        - Ref: InputPermissionsBoundary
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
       - Fn::Equals:
@@ -522,15 +515,12 @@ Resources:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
       PermissionsBoundary:
         Fn::If:
-          - DefaultPermissionsBoundary
-          - Ref: CdkBoostrapPermissionsBoundaryPolicy
-          - Fn::If:
-              - CustomPermissionsBoundary
-              - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
-              - Ref: AWS::NoValue
+          - PermissionsBoundarySet
+          - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
+          - Ref: AWS::NoValue
   CdkBoostrapPermissionsBoundaryPolicy:
-    # The policy is always created, unless the template is not edited prior to boostrap.
-    # It serves as a default policy provided by CDK, but, more importantly, as an example of how one can be setup.
+    # Edit the template prior to boostrap in order to have this example policy created
+    Condition: Untrue
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:

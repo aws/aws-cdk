@@ -1,6 +1,7 @@
 import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as iam from 'aws-sdk/clients/iam';
 import { warning } from '../../logging';
 import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { rootDir } from '../../util/directories';
@@ -140,15 +141,17 @@ export class Bootstrapper {
     */
     const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
     const permissionsBoundary = params.defaultPermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
-    if (permissionsBoundary && permissionsBoundary !== CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
-    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
-      const regexp: RegExp = /[\w+=,.@-]+/;
-      const matches = regexp.exec(permissionsBoundary);
-      if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
-        throw new Error('Please pass the custom permissions boundary by name when using \'--permissions-boundary\'');
+    let policyName;
+    if (permissionsBoundary) {
+      if (permissionsBoundary === CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
+        const arn = this.createExamplePermissionsBoundary(environment.account, environment.region, params.qualifier);
+        policyName = arn.split('/').pop();
+      } else {
+        this.validatePolicyName(permissionsBoundary);
+        policyName = permissionsBoundary;
       }
     }
-    if (currentPermissionsBoundary !== permissionsBoundary) {
+    if (currentPermissionsBoundary !== policyName) {
       warning(`Switching from ${currentPermissionsBoundary} to ${permissionsBoundary} as permissions boundary`);
     }
 
@@ -168,6 +171,83 @@ export class Bootstrapper {
         ...options,
         terminationProtection: options.terminationProtection ?? current.terminationProtection,
       });
+  }
+
+  private validatePolicyName(permissionsBoundary: string) {
+    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
+    const regexp: RegExp = /[\w+=,.@-]+/;
+    const matches = regexp.exec(permissionsBoundary);
+    if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
+      throw new Error('Please pass the custom permissions boundary by name when using \'--permissions-boundary\'');
+    }
+  }
+
+  private createExamplePermissionsBoundary(account: string, region: string, qualifier: string|undefined): string {
+    qualifier = qualifier ? qualifier : 'hnb659fds'; // if none is supplied, resort to the default qualifier
+    const policyDoc = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: ['*'],
+          Resource: '*',
+          Effect: 'Allow',
+          Sid: 'ExplicitAllowAll',
+        },
+        {
+          Condition: {
+            StringEquals: {
+              'iam:PermissionsBoundary': 'arn:aws:iam::' + account + ':policy/cdk-' + qualifier + '-BootstrapPermissionBoundary-' + account + '-' + region,
+            },
+          },
+          Action: [
+            'iam:CreateUser',
+            'iam:CreateRole',
+            'iam:PutRolePermissionsBoundary',
+            'iam:PutUserPermissionsBoundary',
+          ],
+          Resource: '*',
+          Effect: 'Allow',
+          Sid: 'DenyAccessIfRequiredPermBoundaryIsNotBeingApplied',
+        },
+        {
+          Action: [
+            'iam:CreatePolicyVersion',
+            'iam:DeletePolicy',
+            'iam:DeletePolicyVersion',
+            'iam:SetDefaultPolicyVersion',
+          ],
+          Resource: 'arn:aws:iam::885876182003:policy/cdk-'+qualifier+'-BootstrapPermissionBoundary-' + account + '-' + region,
+          Effect: 'Deny',
+          Sid: 'DenyPermBoundaryIAMPolicyAlteration',
+        },
+        {
+          Action: [
+            'iam:DeleteUserPermissionsBoundary',
+            'iam:DeleteRolePermissionsBoundary',
+          ],
+          Resource: '*',
+          Effect: 'Deny',
+          Sid: 'DenyRemovalOfPermBoundaryFromAnyUserOrRole',
+        },
+      ],
+    };
+    const request = {
+      PolicyName: CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY,
+      PolicyDocument: JSON.stringify(policyDoc),
+    };
+    iam.prototype.createPolicy(request, function (err, data) {
+      if (err) {
+        throw new Error(`Could not successfully create the example permissions boundary ${err.stack}`);
+      } else {
+        if (data && data.Policy && data.Policy.Arn) {
+          info(`A new example permissions boundary policy ${data.Policy.Arn} was created.`);
+          return data.Policy.Arn;
+        } else {
+          throw new Error(`Could not successfully create the example permissions boundary ${CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY}`);
+        }
+      }
+    });
+    return '';
   }
 
   private async customBootstrap(
