@@ -161,7 +161,7 @@
                     },
                     "providerDetails": {
                       "client_id": "google-client-id",
-                      "client_secret": "google-client-secret",
+                      "client_secret": "google-client-secret-value",
                       "authorize_scopes": "profile"
                     }
                   }

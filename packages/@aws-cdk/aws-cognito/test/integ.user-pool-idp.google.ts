@@ -16,8 +16,7 @@ const userpool = new UserPool(stack, 'pool', {
 new UserPoolIdentityProviderGoogle(stack, 'google', {
   userPool: userpool,
   clientId: 'google-client-id',
-  clientSecret: 'google-client-secret',
-  clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
+  clientSecretValue: SecretValue.unsafePlainText('google-client-secret-value'),
   attributeMapping: {
     givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
     familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
