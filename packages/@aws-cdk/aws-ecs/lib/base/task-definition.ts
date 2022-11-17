@@ -741,6 +741,24 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
+   * Determine the existing port mapping for the provided name.
+   * @param name: port mapping name
+   * @returns PortMapping for the provided name
+   */
+  public findPortMapping(name: string): PortMapping | undefined {
+    let portMapping;
+
+    this.containers.forEach(container => {
+      const pm = container.findPortMappingByName(name);
+      if (pm) {
+        portMapping = pm;
+      };
+    });
+
+    return portMapping;
+  }
+
+  /**
    * Returns the container that match the provided containerName.
    */
   public findContainer(containerName: string): ContainerDefinition | undefined {

@@ -7,7 +7,7 @@ import * as ecs from '../../lib';
 class ServiceConnect extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    new ecs.Cluster(this, 'EcsCluster', {
+    const cluster = new ecs.Cluster(this, 'EcsCluster', {
       defaultCloudMapNamespace: {
         name: 'scorekeep.com',
         useAsServiceConnectDefault: true,
@@ -29,6 +29,25 @@ class ServiceConnect extends cdk.Stack {
           appProtocol: ecs.AppProtocol.HTTP2,
         },
       ],
+    });
+
+    new ecs.FargateService(this, 'svc', {
+      taskDefinition: td,
+      cluster: cluster,
+      serviceConnectConfiguration: {
+        services: [
+          {
+            port: 'api',
+            aliases: [
+              {
+                dnsName: 'api',
+                port: 80,
+              },
+            ],
+          },
+        ],
+        enabled: true,
+      },
     });
   }
 }

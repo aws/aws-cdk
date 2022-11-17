@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3fa3cfbc50b78e97c8972bcb7c44471c23d6e27ad2f031e6f116852e0b26376a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec47c1f50f922cc30174684cd96b07bcef83b0752d686125e48aa9da6d8982ff.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,6 +199,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDef54694570"
+          }
+        ],
+        "/aws-ecs-service-connect/svc/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "svcService376F2D22"
+          }
+        ],
+        "/aws-ecs-service-connect/svc/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "svcSecurityGroup205CC2DA"
           }
         ],
         "/aws-ecs-service-connect/BootstrapVersion": [

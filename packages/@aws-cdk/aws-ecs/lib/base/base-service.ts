@@ -114,9 +114,13 @@ export interface ServiceConnectConfiguration {
   readonly namespace?: cloudmap.INamespace | string;
 
   /**
-   * The list of Services, including a port mapping, terse client alias, and optional intermediate dns name.
+   * The list of Services, including a port mapping, terse client alias, and optional intermediate DNS name.
+   *
+   * This property may be left blank if the current ECS service does not need to advertise any ports via Service Connect.
+   *
+   * @default none
    */
-  readonly services: ServiceConnectService[];
+  readonly services?: ServiceConnectService[];
 
   /**
    * Optional. The log driver configuration to use for the envoy proxy logs.
@@ -174,8 +178,9 @@ export interface ClientAlias {
    * The dns name of the alias.
    *
    * @example backend.prod, dataservice
+   * @default the name of the port mapping + the Cloudmap Namespace
    */
-  readonly dnsName: string;
+  readonly dnsName?: string;
   /**
    * The port for clients to use to communicate with this service.
    *
@@ -454,6 +459,9 @@ export abstract class BaseService extends Resource
     });
   }
 
+  private static MIN_PORT = 1;
+  private static MAX_PORT = 65535;
+
   /**
    * The security groups which manage the allowed network traffic for the service.
    */
@@ -503,6 +511,12 @@ export abstract class BaseService extends Resource
    * For more information, see Service Discovery.
    */
   protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
+
+  /**
+   * The service connect configuration for this service.
+   * @internal
+   */
+  protected _serviceConnectConfig?: CfnService.ServiceConnectConfigurationProperty;
 
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
@@ -555,6 +569,7 @@ export abstract class BaseService extends Resource
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
+      serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -577,6 +592,10 @@ export abstract class BaseService extends Resource
       this.enableCloudMap(props.cloudMapOptions);
     }
 
+    if (props.serviceConnectConfiguration) {
+      this.enableServiceConnect(props.serviceConnectConfiguration);
+    }
+
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
 
@@ -590,6 +609,154 @@ export abstract class BaseService extends Resource
       }
     }
     this.node.defaultChild = this.resource;
+  }
+  private portMappingNameFromPortMapping(port: string | PortMapping): string {
+    if (typeof port === 'string') {
+      return port;
+    }
+    if (!port.name) {
+      throw new Error('Port mapping must have a name to be used with service connect.');
+    }
+    return port.name;
+  }
+
+  /**
+   * Enable Service Connect
+   */
+  public enableServiceConnect(config: ServiceConnectConfiguration) {
+    if (this._serviceConnectConfig) {
+      throw new Error('Service connect is already enabled for this service.');
+    }
+
+    this.validateServiceConnectConfiguration(config);
+
+    // Return early for false configuration.
+    if (config.enabled === false) {
+      this._serviceConnectConfig = {
+        enabled: false,
+      };
+      return;
+    }
+
+    /**
+     * Namespace already exists as validated in validateServiceConnectConfiguration.
+     * Resolve which namespace to use by picking:
+     * 1. The namespace defined in service connect config.
+     * 2. The namespace defined in the cluster's defaultCloudMapNamespace property.
+    */
+    let namespace;
+    if (this.cluster.defaultCloudMapNamespace) {
+      namespace = this.cluster.defaultCloudMapNamespace.namespaceName;
+    }
+
+    if (config.namespace) {
+      switch (typeof config.namespace) {
+        case 'string':
+          namespace = config.namespace;
+          break;
+        case 'object':
+          namespace = config.namespace.namespaceName;
+          break;
+        default:
+          break;
+      }
+    }
+
+    /**
+     * Map services to CFN property types. This block manages:
+     * 1. Duck typing of ServiceConnectService.Port
+     * 2. Client alias enumeration
+     */
+    const services = config.services?.map(svc => {
+      let port: string;
+      if (typeof svc.port === 'string') {
+        port = svc.port;
+      } else {
+        port = this.portMappingNameFromPortMapping(svc.port);
+      }
+
+      const clientAliases: CfnService.ServiceConnectClientAliasProperty[] = svc.aliases!.map(alias => {
+        return {
+          dnsName: alias.dnsName,
+          port: alias.port ? alias.port : this.taskDefinition.findPortMapping(port)!.containerPort,
+        };
+      });
+
+      return {
+        portName: port!,
+        discoveryName: svc.discoveryName,
+        ingressPortOverride: svc.ingressPortOverride,
+        clientAliases: clientAliases,
+      };
+    });
+
+    this._serviceConnectConfig = {
+      enabled: true,
+      logConfiguration: config.logConfig,
+      namespace: namespace,
+      services: services,
+    };
+  };
+
+  /**
+   * Validate Service Connect Configuration
+   */
+  private validateServiceConnectConfiguration(config: ServiceConnectConfiguration) {
+    // Enabled should not be false if any of the other properties are specified
+    if (config.logConfig || config.namespace || config.services) {
+      if (config.enabled === false) {
+        throw new Error('Enabled should not be false if other properties are specified.');
+      }
+    }
+
+    if (config.enabled && !config.namespace && !this.cluster.defaultCloudMapNamespace) {
+      throw new Error('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace');
+    }
+
+    if (!config.services) {
+      return;
+    }
+
+    config.services.forEach(serviceConnectService => {
+      if (typeof serviceConnectService.port === 'string') {
+        // if serviceconnectservice.port is a string, port must exists on the task definition
+        if (!this.taskDefinition.findPortMapping(serviceConnectService.port)) {
+          throw new Error(`Port ${serviceConnectService.port} does not exist on the task definition.`);
+        };
+      } else if ((serviceConnectService.port as PortMapping).containerPort) {
+        // If serviceconnectservice.port a port mapping, it must be valid for the network mode in the task definition
+        if (!this.taskDefinition.findPortMapping(serviceConnectService.port.name as string)) {
+          throw new Error(`Port ${serviceConnectService.port.name} does not exist on the task definition.`);
+        };
+      }
+
+      // There should be no more than one client alias per service connect service
+      if (serviceConnectService.aliases?.length as number > 1) {
+        throw new Error('There should be no more than one client alias per service connect service.');
+      }
+
+      // IngressPortOverride should be within the valid port range if it exists.
+      if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
+        throw new Error(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`);
+      }
+
+      // clientAlias.port should be within the valid port range
+      serviceConnectService.aliases?.forEach(alias => {
+        if (!this.isValidPort(alias.port)) {
+          throw new Error(`Client Alias port ${alias.port} is not valid.`);
+        }
+      });
+    });
+  }
+
+  /**
+   * Determines if a port is valid
+   *
+   * @param port: The port number
+   * @returns boolean whether the port is valid
+   */
+  private isValidPort(port?: number): boolean {
+    return !!(port && Number.isInteger(port) && port >= BaseService.MIN_PORT && port <= BaseService.MAX_PORT);
   }
 
   /**

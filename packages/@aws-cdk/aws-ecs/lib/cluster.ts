@@ -296,12 +296,6 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('Can only add default namespace once.');
     }
 
-    if (options.useAsServiceConnectDefault) {
-      this.cfnCluster.serviceConnectDefaults = {
-        namespace: options?.name,
-      } as CfnCluster.ServiceConnectDefaultsProperty;
-    }
-
     const namespaceType = options.type !== undefined
       ? options.type
       : cloudmap.NamespaceType.DNS_PRIVATE;
@@ -316,6 +310,11 @@ export class Cluster extends Resource implements ICluster {
       });
 
     this._defaultCloudMapNamespace = sdNamespace;
+    if (options.useAsServiceConnectDefault) {
+      this.cfnCluster.serviceConnectDefaults = {
+        namespace: options.name,
+      } as CfnCluster.ServiceConnectDefaultsProperty;
+    }
 
     return sdNamespace;
   }

@@ -117,7 +117,7 @@
                             "DnsName": {
                                 "Documentation": "placeholder",
                                 "PrimitiveType": "String",
-                                "Required": true,
+                                "Required": false,
                                 "UpdateType": "Mutable"
                             }
                         }
