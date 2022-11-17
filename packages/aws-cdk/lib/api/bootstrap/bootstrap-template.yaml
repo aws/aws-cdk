@@ -84,7 +84,7 @@ Conditions:
   Untrue:
     Fn::Equals:
       - 'CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY'
-      - 'edit this value or remove the condition in order to create the example boundary policy'
+      - Ref: CreateDefaultPermissionsBoundary
   PermissionsBoundarySet:
     Fn::Not:
       - Fn::Equals:
