@@ -187,7 +187,7 @@
     "@types/aws-lambda": "^8.10.108",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
-    "@types/lodash": "^4.14.188",
+    "@types/lodash": "^4.14.189",
     "@types/minimatch": "^3.0.5",
     "aws-sdk": "^2.928.0",
     "@types/node": "^14.18.33",
