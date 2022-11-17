@@ -165,26 +165,6 @@ export class ClusterResourceHandler extends ResourceHandler {
       return { EksUpdateId: updateResponse.update?.id };
     }
 
-    // if (updates.updateLogging || updates.updateAccess) {
-    //   const config: aws.EKS.UpdateClusterConfigRequest = {
-    //     name: this.clusterName,
-    //     logging: this.newProps.logging,
-    //   };
-    //   if (updates.updateAccess) {
-    //     // Updating the cluster with securityGroupIds and subnetIds (as specified in the warning here:
-    //     // https://awscli.amazonaws.com/v2/documentation/api/latest/reference/eks/update-cluster-config.html)
-    //     // will fail, therefore we take only the access fields explicitly
-    //     config.resourcesVpcConfig = {
-    //       endpointPrivateAccess: this.newProps.resourcesVpcConfig.endpointPrivateAccess,
-    //       endpointPublicAccess: this.newProps.resourcesVpcConfig.endpointPublicAccess,
-    //       publicAccessCidrs: this.newProps.resourcesVpcConfig.publicAccessCidrs,
-    //     };
-    //   }
-    //   const updateResponse = await this.eks.updateClusterConfig(config);
-
-    //   return { EksUpdateId: updateResponse.update?.id };
-    // }
-
     // no updates
     return;
   }
