@@ -1247,7 +1247,7 @@ be to apply a permissions boundary at the `Stage` level.
 declare const app: App;
 
 const prodStage = new Stage(app, 'ProdStage', {
-  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
 });
 ```
 

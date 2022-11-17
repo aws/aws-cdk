@@ -914,7 +914,7 @@ describe('permissions boundary', () => {
     const app = new App({
       context: {
         [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
-          name: 'cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
+          name: 'cdk-${Qualifier}-PermissionsBoundary',
         },
       },
     });
@@ -939,7 +939,7 @@ describe('permissions boundary', () => {
             {
               Ref: 'AWS::AccountId',
             },
-            ':policy/cdk-hnb659fds-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
+            ':policy/cdk-hnb659fds-PermissionsBoundary',
           ],
         ],
       },
@@ -950,7 +950,7 @@ describe('permissions boundary', () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'Stage', {
-      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
     });
     const stack = new Stack(stage);
 
@@ -973,7 +973,7 @@ describe('permissions boundary', () => {
             {
               Ref: 'AWS::AccountId',
             },
-            ':policy/cdk-hnb659fds-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
+            ':policy/cdk-hnb659fds-PermissionsBoundary',
           ],
         ],
       },
@@ -1018,7 +1018,7 @@ describe('permissions boundary', () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'Stage', {
-      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
     });
     const stack = new Stack(stage, 'MyStack', {
       synthesizer: new DefaultStackSynthesizer({
@@ -1045,7 +1045,7 @@ describe('permissions boundary', () => {
             {
               Ref: 'AWS::AccountId',
             },
-            ':policy/cdk-custom-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
+            ':policy/cdk-custom-PermissionsBoundary',
           ],
         ],
       },

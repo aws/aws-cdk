@@ -1,6 +1,4 @@
 import { Construct } from 'constructs';
-import { Arn } from './arn';
-import { Token } from './token';
 
 export const PERMISSIONS_BOUNDARY_CONTEXT_KEY = '@aws-cdk/core:permissionsBoundary';
 /**
@@ -44,7 +42,9 @@ export class PermissionsBoundary {
    * and Users created within a scope.
    *
    * The name can include placeholders for the partition, region, qualifier, and account
-   * These placeholders will be replaced with the actual values if available.
+   * These placeholders will be replaced with the actual values if available. This requires
+   * that the Stack has the environment specified, it does not work with environment
+   * agnostic stacks.
    *
    * - '${AWS::Partition}'
    * - '${AWS::Region}'
@@ -68,7 +68,9 @@ export class PermissionsBoundary {
    * and Users created within a scope.
    *
    * The arn can include placeholders for the partition, region, qualifier, and account
-   * These placeholders will be replaced with the actual values if available.
+   * These placeholders will be replaced with the actual values if available. This requires
+   * that the Stack has the environment specified, it does not work with environment
+   * agnostic stacks.
    *
    * - '${AWS::Partition}'
    * - '${AWS::Region}'
@@ -84,11 +86,7 @@ export class PermissionsBoundary {
    * });
    */
   public static fromArn(arn: string): PermissionsBoundary {
-    let name;
-    if (!Token.isUnresolved(arn)) {
-      name = Arn.parse(arn);
-    }
-    return new PermissionsBoundary(name?.resourceName, arn);
+    return new PermissionsBoundary(undefined, arn);
   }
 
   private constructor(private readonly policyName?: string, private readonly policyArn?: string) {

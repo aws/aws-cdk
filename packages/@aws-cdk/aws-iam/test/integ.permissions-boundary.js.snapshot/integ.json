@@ -1,4 +1,5 @@
 {
+  "enableLookups": true,
   "version": "21.0.0",
   "testCases": {
     "integ-test/DefaultTest": {

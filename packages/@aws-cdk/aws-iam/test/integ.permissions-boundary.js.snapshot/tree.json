@@ -4,6 +4,90 @@
     "id": "App",
     "path": "",
     "children": {
+      "integ-permissions-boundary-support": {
+        "id": "integ-permissions-boundary-support",
+        "path": "integ-permissions-boundary-support",
+        "children": {
+          "PB": {
+            "id": "PB",
+            "path": "integ-permissions-boundary-support/PB",
+            "children": {
+              "ImportedPB": {
+                "id": "ImportedPB",
+                "path": "integ-permissions-boundary-support/PB/ImportedPB",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-permissions-boundary-support/PB/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "*",
+                          "Effect": "Allow",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "",
+                    "managedPolicyName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "cdk-hnb659fds-PermissionsBoundary-",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          "-",
+                          {
+                            "Ref": "AWS::Region"
+                          }
+                        ]
+                      ]
+                    },
+                    "path": "/"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnManagedPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.ManagedPolicy",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-permissions-boundary-support/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-permissions-boundary-support/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
       "integ-permissions-boundary": {
         "id": "integ-permissions-boundary",
         "path": "integ-permissions-boundary",

@@ -465,17 +465,26 @@ export class Stack extends Construct implements ITaggable {
       ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
     const spec = new StringSpecializer(this, qualifier);
     const context = this.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    let arn: string | undefined;
     if (context && context.arn) {
-      return spec.specialize(context.arn);
+      arn = spec.specialize(context.arn);
     } else if (context && context.name) {
-      return spec.specialize(this.formatArn({
+      arn = spec.specialize(this.formatArn({
         service: 'iam',
         resource: 'policy',
         region: '',
         resourceName: context.name,
       }));
     }
-    return;
+    if (arn &&
+      (arn.includes('${Qualifier}')
+      || arn.includes('${AWS::AccountId}')
+      || arn.includes('${AWS::Region}')
+      || arn.includes('${AWS::Partition}'))) {
+      throw new Error(`The permissions boundary ${arn} includes a pseudo parameter, ` +
+      'which is not supported for environment agnostic stacks');
+    }
+    return arn;
   }
 
   /**

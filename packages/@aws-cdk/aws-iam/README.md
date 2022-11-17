@@ -426,13 +426,13 @@ either by adding the value to `cdk.json` or directly in the `App` constructor.
 
 For example if your organization has created and is enforcing a permissions
 boundary with the name
-`cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}`
+`cdk-${Qualifier}-PermissionsBoundary`
 
 ```json
 {
   "context": {
      "@aws-cdk/core:permissionsBoundary": {
-	   "name": "cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}"
+	   "name": "cdk-${Qualifier}-PermissionsBoundary"
 	 }
   }
 }
@@ -444,7 +444,7 @@ OR
 new App({
   context: {
     [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
-      name: 'cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}',
+      name: 'cdk-${Qualifier}-PermissionsBoundary',
     },
   },
 });
@@ -481,7 +481,8 @@ new Stage(app, 'ProdStage', {
 ```
 
 The provided name can include placeholders for the partition, region, qualifier, and account
-These placeholders will be replaced with the actual values if available.
+These placeholders will be replaced with the actual values if available. This requires
+that the Stack has the environment specified, it does not work with environment.
 
 * '${AWS::Partition}'
 * '${AWS::Region}'

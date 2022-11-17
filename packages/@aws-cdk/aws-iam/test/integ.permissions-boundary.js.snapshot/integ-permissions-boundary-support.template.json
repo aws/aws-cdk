@@ -1,32 +1,35 @@
 {
  "Resources": {
-  "TestRole6C9272DF": {
-   "Type": "AWS::IAM::Role",
+  "PB13A4860B": {
+   "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
-    "AssumeRolePolicyDocument": {
+    "PolicyDocument": {
      "Statement": [
       {
-       "Action": "sts:AssumeRole",
+       "Action": "*",
        "Effect": "Allow",
-       "Principal": {
-        "Service": "sqs.amazonaws.com"
-       }
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
     },
-    "PermissionsBoundary": {
+    "Description": "",
+    "ManagedPolicyName": {
      "Fn::Join": [
       "",
       [
-       "arn:",
+       "cdk-hnb659fds-PermissionsBoundary-",
        {
-        "Ref": "AWS::Partition"
+        "Ref": "AWS::AccountId"
        },
-       ":iam::12345678:policy/cdk-hnb659fds-PermissionsBoundary-12345678-test-region"
+       "-",
+       {
+        "Ref": "AWS::Region"
+       }
       ]
      ]
-    }
+    },
+    "Path": "/"
    }
   }
  },
