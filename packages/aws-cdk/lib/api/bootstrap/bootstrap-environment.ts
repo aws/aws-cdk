@@ -232,7 +232,7 @@ export class Bootstrapper {
       ],
     };
     const request = {
-      PolicyName: CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY,
+      PolicyName: `cdk-${qualifier}-permissions-boundary`,
       PolicyDocument: JSON.stringify(policyDoc),
     };
     iam.prototype.createPolicy(request, function (err, data) {
