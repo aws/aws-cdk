@@ -176,31 +176,25 @@ export interface IntegrationTestsDiscoveryOptions {
 
 
 /**
- * The list of tests to run can be provided in a file
- * instead of as command line arguments.
- */
-export interface IntegrationTestFileConfig extends IntegrationTestsDiscoveryOptions {
-  /**
-   * List of tests to include (or exclude if `exclude=true`)
-   */
-  readonly tests: string[];
-}
-
-/**
  * Discover integration tests
  */
 export class IntegrationTests {
-  constructor(private readonly directory: string) {
+  /**
+   * Return configuration options from a file
+   */
+  public static configFromFile(fileName?: string): Record<string, any> {
+    if (!fileName) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
+    } catch {
+      return {};
+    }
   }
 
-  /**
-   * Takes a file name of a file that contains a list of test
-   * to either run or exclude and returns a list of Integration Tests to run
-   */
-  public async fromFile(fileName: string): Promise<IntegTest[]> {
-    const file: IntegrationTestFileConfig = JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
-
-    return this.discover(file);
+  constructor(private readonly directory: string) {
   }
 
   /**

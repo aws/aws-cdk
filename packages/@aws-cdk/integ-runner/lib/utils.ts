@@ -75,6 +75,7 @@ export class WorkList<A> {
 
   public done() {
     this.remaining.clear();
+    this.stopTimer();
   }
 
   private stopTimer() {
