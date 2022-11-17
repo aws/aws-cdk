@@ -177,7 +177,7 @@ export interface ClientAlias {
   /**
    * The dns name of the alias.
    *
-   * @example backend.prod, dataservice
+   * example: backend.prod, dataservice
    * @default the name of the port mapping + the Cloudmap Namespace
    */
   readonly dnsName?: string;
