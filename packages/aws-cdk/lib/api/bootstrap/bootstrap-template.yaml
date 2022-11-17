@@ -539,10 +539,10 @@ Resources:
               - iam:PutRolePermissionsBoundary
               - iam:PutUserPermissionsBoundary
             Condition:
-              StringEquals:
+              StringNotEquals:
                 iam:PermissionsBoundary:
                   Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
-            Effect: Allow
+            Effect: Deny
             Resource: "*"
           # Forbid the policy itself being edited
           - Sid: DenyPermBoundaryIAMPolicyAlteration
