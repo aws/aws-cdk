@@ -87,7 +87,7 @@ export class Runtime {
   public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
-   * The NodeJS 18.x runtime (nodejs18.x)
+   * The NodeJS 18.x runtime (nodejs18.x) supported in all commercial regions except DXB, ZRH and ZAZ.
    */
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
