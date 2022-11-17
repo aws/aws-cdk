@@ -75,7 +75,7 @@ const allProblems = new cloudwatch.MathExpression({
   expression: "errors + throttles",
   usingMetrics: {
     errors: fn.metricErrors(),
-    faults: fn.metricThrottles(),
+    throttles: fn.metricThrottles(),
   }
 });
 ```
