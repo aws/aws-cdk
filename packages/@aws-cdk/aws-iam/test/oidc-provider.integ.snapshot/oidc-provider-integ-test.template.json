@@ -9,7 +9,8 @@
       "Arn"
      ]
     },
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2",
+    "CodeHash": "6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -62,7 +63,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2S3Bucket211A9156"
+      "Ref": "AssetParameters6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372S3Bucket16922C76"
      },
      "S3Key": {
       "Fn::Join": [
@@ -75,7 +76,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2S3VersionKey822D04EC"
+             "Ref": "AssetParameters6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372S3VersionKey82208710"
             }
            ]
           }
@@ -88,7 +89,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2S3VersionKey822D04EC"
+             "Ref": "AssetParameters6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372S3VersionKey82208710"
             }
            ]
           }
@@ -107,7 +108,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -126,7 +127,8 @@
      "foo",
      "bar"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3",
+    "CodeHash": "6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -144,24 +146,51 @@
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4"
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4",
+    "CodeHash": "6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
-  "AssetParameters5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2S3Bucket211A9156": {
+  "AssetParameters6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372S3Bucket16922C76": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2\""
+   "Description": "S3 bucket for asset \"6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372\""
   },
-  "AssetParameters5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2S3VersionKey822D04EC": {
+  "AssetParameters6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372S3VersionKey82208710": {
    "Type": "String",
-   "Description": "S3 key for asset version \"5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2\""
+   "Description": "S3 key for asset version \"6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372\""
   },
-  "AssetParameters5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2ArtifactHashCA4A1831": {
+  "AssetParameters6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372ArtifactHashF9C15876": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"5507835727e005832a615aef2a6b437860f432c6cd052d07c0244464aedbe2b2\""
+   "Description": "Artifact hash for asset \"6ab933fef8287aa68b07e03ff5482c57ef5598eed084f73702c38169f9562372\""
+  }
+ },
+ "Outputs": {
+  "NoClientsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NoClientsNoThumbprint8BF1533F",
+     "Thumbprints"
+    ]
+   }
+  },
+  "ClientsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Clients67031123",
+     "Thumbprints"
+    ]
+   }
+  },
+  "ThumbprintsThumbprints": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Thumbprints9CD6AB02",
+     "Thumbprints"
+    ]
+   }
   }
  }
 }

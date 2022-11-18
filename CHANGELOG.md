@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.181.0](https://github.com/aws/aws-cdk/compare/v1.180.0...v1.181.0) (2022-11-18)
+
+
+### Bug Fixes
+
+* **iam:** oidc provider fetches leaf certificate thumbprint instead of root ([#22924](https://github.com/aws/aws-cdk/issues/22924)) ([b01adb5](https://github.com/aws/aws-cdk/commit/b01adb55cd82bfc138d80dff2f5782e961ff8fed))
+
 ## [1.180.0](https://github.com/aws/aws-cdk/compare/v1.179.0...v1.180.0) (2022-11-01)
 
 ## [1.179.0](https://github.com/aws/aws-cdk/compare/v1.178.0...v1.179.0) (2022-10-27)
