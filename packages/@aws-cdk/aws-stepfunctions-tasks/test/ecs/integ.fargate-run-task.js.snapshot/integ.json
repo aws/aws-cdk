@@ -1,0 +1,14 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integ.fargate-run-task": {
+      "stacks": [
+        "aws-sfn-tasks-ecs-fargate-integ"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

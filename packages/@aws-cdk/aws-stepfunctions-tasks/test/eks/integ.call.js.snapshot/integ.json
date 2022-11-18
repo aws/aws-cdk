@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-stepfunctions-tasks-eks-call-integ/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-eks-call-integ-test"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-stepfunctions-tasks-eks-call-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awsstepfunctionstasksekscallintegDefaultTestDeployAssert2DF4AD1E"
+    }
+  }
+}

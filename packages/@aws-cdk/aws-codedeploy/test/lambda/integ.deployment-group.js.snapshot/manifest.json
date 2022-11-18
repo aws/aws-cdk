@@ -1,0 +1,148 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-cdk-codedeploy-lambda.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codedeploy-lambda.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-codedeploy-lambda": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codedeploy-lambda.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2bf64943c8612dfbd52471095c4b141d6c458592f9416621609658bc7935827.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codedeploy-lambda.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codedeploy-lambda.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-codedeploy-lambda/Handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerServiceRoleFCDC14AE"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/Handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Handler886CB40B"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/Handler/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alias325C5727"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PreHook/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PreHookServiceRoleC724B9BA"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PreHook/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PreHookServiceRoleDefaultPolicy65358F76"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PreHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PreHook8B53F672"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PostHook/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostHookServiceRoleE8A6AAC2"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PostHook/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostHookServiceRoleDefaultPolicy82AEE758"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/PostHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostHookF2E49B30"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenErrors/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlueGreenErrors60C27452"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/Application/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlueGreenDeploymentApplication36C892C0"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlueGreenDeploymentServiceRole225851FB"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlueGreenDeploymentServiceRoleDefaultPolicy7008FB0A"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BlueGreenDeployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BlueGreenDeployment5C188134"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codedeploy-lambda/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codedeploy-lambda"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

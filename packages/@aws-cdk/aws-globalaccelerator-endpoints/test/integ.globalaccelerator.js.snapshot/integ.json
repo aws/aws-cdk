@@ -1,0 +1,14 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integ.globalaccelerator": {
+      "stacks": [
+        "integ-globalaccelerator"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

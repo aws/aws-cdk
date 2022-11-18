@@ -1,0 +1,232 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-init.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-init.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-init": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-init.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a2347ef5db54a3b52f3c186329ae12fa60cac0d2f3df743e42cb9b04d545496.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-init.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-init.assets"
+      ],
+      "metadata": {
+        "/integ-init/IntegInitVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpc0D4FCCB3"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1Subnet41A6F6D4"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1RouteTable837CD5FB"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1RouteTableAssociation00D33741"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1DefaultRoute5BB90E8C"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1EIP46FCC3D6"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet1NATGateway46F32F7F"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2Subnet9A384F16"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2RouteTableF7E8F920"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2RouteTableAssociationB816F9F3"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2DefaultRoute2393995F"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2EIP553B40DC"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPublicSubnet2NATGateway9CCB4A9C"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1Subnet259B51C1"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1RouteTableCB37994B"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1RouteTableAssociation067DEF9D"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet1DefaultRoute654ACECF"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2Subnet1643B059"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2RouteTable030EC93B"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2RouteTableAssociation6B52BD72"
+          }
+        ],
+        "/integ-init/IntegInitVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcPrivateSubnet2DefaultRoute6A10B6EA"
+          }
+        ],
+        "/integ-init/IntegInitVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcIGWF019AC85"
+          }
+        ],
+        "/integ-init/IntegInitVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegInitVpcVPCGW85EDC292"
+          }
+        ],
+        "/integ-init/Instance2/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceSecurityGroupC6129B1D"
+          }
+        ],
+        "/integ-init/Instance2/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceRole03DD7CB2"
+          }
+        ],
+        "/integ-init/Instance2/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceRoleDefaultPolicy610B37CD"
+          }
+        ],
+        "/integ-init/Instance2/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance2InstanceProfile582F915C"
+          }
+        ],
+        "/integ-init/Instance2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Instance255F35265a0c5f577d761edb0"
+          }
+        ],
+        "/integ-init/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-init/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-init/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-init"
+    }
+  }
+}

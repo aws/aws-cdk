@@ -155,7 +155,18 @@
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER",
       "resource-attribute:@aws-cdk/aws-rds.DatabaseProxy.dbProxyVpcId",
-      "resource-attribute:@aws-cdk/aws-rds.ParameterGroup.dbParameterGroupName"
+      "resource-attribute:@aws-cdk/aws-rds.ParameterGroup.dbParameterGroupName",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseCluster.dbClusterArn",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseClusterFromSnapshot.dbInstanceArn",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseClusterFromSnapshot.dbInstanceDbiResourceId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstance.dbInstanceArn",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstance.dbInstanceDbiResourceId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.dbInstanceArn",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshot.dbInstanceDbiResourceId",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.dbInstanceArn",
+      "resource-attribute:@aws-cdk/aws-rds.DatabaseInstanceReadReplica.dbInstanceDbiResourceId",
+      "resource-attribute:@aws-cdk/aws-rds.ServerlessCluster.dbClusterArn",
+      "resource-attribute:@aws-cdk/aws-rds.ServerlessClusterFromSnapshot.dbClusterArn"
     ]
   },
   "stability": "stable",

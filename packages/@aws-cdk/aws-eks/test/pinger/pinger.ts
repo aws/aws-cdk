@@ -42,5 +42,4 @@ export class Pinger extends Construct {
   public get response() {
     return Token.asString(this._resource.getAtt('Value'));
   }
-
 }

@@ -1,0 +1,198 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "listAt-after-parallel": {
+        "id": "listAt-after-parallel",
+        "path": "listAt-after-parallel",
+        "children": {
+          "PSL": {
+            "id": "PSL",
+            "path": "listAt-after-parallel/PSL",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "PSS": {
+            "id": "PSS",
+            "path": "listAt-after-parallel/PSS",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "PRL": {
+            "id": "PRL",
+            "path": "listAt-after-parallel/PRL",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Parallel",
+              "version": "0.0.0"
+            }
+          },
+          "JP": {
+            "id": "JP",
+            "path": "listAt-after-parallel/JP",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "listAt-after-parallel/StateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "listAt-after-parallel/StateMachine/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "listAt-after-parallel/StateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "listAt-after-parallel/StateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": "{\"StartAt\":\"PRL\",\"States\":{\"PRL\":{\"Type\":\"Parallel\",\"ResultPath\":\"$\",\"Next\":\"JP\",\"Branches\":[{\"StartAt\":\"PSL\",\"States\":{\"PSL\":{\"Type\":\"Pass\",\"Parameters\":{\"newStringList.$\":\"$.stringList\"},\"End\":true}}},{\"StartAt\":\"PSS\",\"States\":{\"PSS\":{\"Type\":\"Pass\",\"Parameters\":{\"newSingleString.$\":\"$.singleString\"},\"End\":true}}}]},\"JP\":{\"Type\":\"Pass\",\"Parameters\":{\"resultStringList.$.$\":\"$[0].newStringList\",\"newSingleString.$\":\"$[1].newSingleString\"},\"End\":true}},\"TimeoutSeconds\":30}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "listAt-after-parallel/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "listAt-after-parallel/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ListAtAfterParallel": {
+        "id": "ListAtAfterParallel",
+        "path": "ListAtAfterParallel",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ListAtAfterParallel/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ListAtAfterParallel/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ListAtAfterParallel/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ListAtAfterParallel/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ListAtAfterParallel/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

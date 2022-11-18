@@ -1,0 +1,178 @@
+{
+ "Resources": {
+  "BuildServiceRole1F57E904": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "gamelift.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BuildServiceRoleDefaultPolicyCB7101C6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "/b9a6ac85861c7bf3d745d9866a46a450a1b14afa77e28d2c2767e74ce4e37c03.zip"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BuildServiceRoleDefaultPolicyCB7101C6",
+    "Roles": [
+     {
+      "Ref": "BuildServiceRole1F57E904"
+     }
+    ]
+   }
+  },
+  "Build45A36621": {
+   "Type": "AWS::GameLift::Build",
+   "Properties": {
+    "OperatingSystem": "AMAZON_LINUX_2",
+    "StorageLocation": {
+     "Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "Key": "b9a6ac85861c7bf3d745d9866a46a450a1b14afa77e28d2c2767e74ce4e37c03.zip",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "BuildServiceRole1F57E904",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "BuildServiceRoleDefaultPolicyCB7101C6",
+    "BuildServiceRole1F57E904"
+   ]
+  },
+  "BuildFleetServiceRole32D49FB4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "ec2.amazonaws.com",
+         "gamelift.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BuildFleet027ED403": {
+   "Type": "AWS::GameLift::Fleet",
+   "Properties": {
+    "BuildId": {
+     "Ref": "Build45A36621"
+    },
+    "CertificateConfiguration": {
+     "CertificateType": "DISABLED"
+    },
+    "EC2InboundPermissions": [
+     {
+      "FromPort": 1935,
+      "IpRange": "0.0.0.0/0",
+      "Protocol": "TCP",
+      "ToPort": 1935
+     }
+    ],
+    "EC2InstanceType": "c5.large",
+    "FleetType": "ON_DEMAND",
+    "InstanceRoleARN": {
+     "Fn::GetAtt": [
+      "BuildFleetServiceRole32D49FB4",
+      "Arn"
+     ]
+    },
+    "MaxSize": 1,
+    "MinSize": 0,
+    "Name": "test-fleet",
+    "NewGameSessionProtectionPolicy": "NoProtection",
+    "RuntimeConfiguration": {
+     "GameSessionActivationTimeoutSeconds": 300,
+     "MaxConcurrentGameSessionActivations": 1,
+     "ServerProcesses": [
+      {
+       "ConcurrentExecutions": 1,
+       "LaunchPath": "/local/game/TestApplicationServer",
+       "Parameters": "port:1935 gameSessionLengthSeconds:20"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

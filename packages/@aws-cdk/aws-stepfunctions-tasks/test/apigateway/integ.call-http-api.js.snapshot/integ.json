@@ -1,0 +1,14 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integ.call-http-api": {
+      "stacks": [
+        "CallHttpApiInteg"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

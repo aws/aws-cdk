@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "BatchWithEFSTest/DefaultTest": {
+      "stacks": [
+        "batch-stack"
+      ],
+      "assertionStack": "BatchWithEFSTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BatchWithEFSTestDefaultTestDeployAssert0F887B55"
+    }
+  }
+}

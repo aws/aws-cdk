@@ -1,0 +1,118 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-stepfunctions-integ-sagemaker.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-stepfunctions-integ-sagemaker.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-stepfunctions-integ-sagemaker": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-integ-sagemaker.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b0b034bf6021bfed172682a7cb186a225e91628a73726ce90803f701183ff29d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-stepfunctions-integ-sagemaker.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-stepfunctions-integ-sagemaker.assets"
+      ],
+      "metadata": {
+        "/aws-stepfunctions-integ-sagemaker/EncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptionKey1B843E66"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/TrainingData/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainingData3FDB6D34"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/Train Task/SagemakerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainTaskSagemakerRoleD5A6F967"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/Train Task/SagemakerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainTaskSagemakerRoleDefaultPolicy163CCC72"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/Create Model/SagemakerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CreateModelSagemakerRoleC2E07FC0"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/Create Model/SagemakerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CreateModelSagemakerRoleDefaultPolicyD7EAA79E"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/StateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineArn"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-stepfunctions-integ-sagemaker/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-integ-sagemaker"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -1,12 +1,161 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
+import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource } from '../../lib';
+import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 
 describe('custom resource provider', () => {
+  describe('customize roles', () => {
+    test('role is not created if preventSynthesis!=false', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+      stack.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
+        usePrecreatedRoles: {
+          'MyStack/Custom:MyResourceTypeCustomResourceProvider/Role': 'my-custom-role-name',
+        },
+      });
+      const someResource = new CfnResource(stack, 'SomeResource', {
+        type: 'AWS::SomeResource',
+        properties: {},
+      });
+
+      // WHEN
+      const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+        codeDirectory: TEST_HANDLER,
+        runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      });
+      cr.addToRolePolicy({
+        Action: 's3:GetBucket',
+        Effect: 'Allow',
+        Resource: someResource.ref,
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStackByName('MyStack').template;
+      const resourceTypes = Object.values(template.Resources).flatMap((value: any) => {
+        return value.Type;
+      });
+      // role is not created
+      expect(resourceTypes).not.toContain('AWS::IAM::Role');
+      // lambda function references precreated role
+      expect(template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A.Properties.Role).toEqual({
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':role/my-custom-role-name',
+          ],
+        ],
+      });
+
+      // report is generated correctly
+      const filePath = path.join(assembly.directory, 'iam-policy-report.json');
+      const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
+      expect(JSON.parse(file)).toEqual({
+        roles: [{
+          roleConstructPath: 'MyStack/Custom:MyResourceTypeCustomResourceProvider/Role',
+          roleName: 'my-custom-role-name',
+          missing: false,
+          assumeRolePolicy: [{
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          }],
+          managedPolicyArns: [
+            'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+          ],
+          managedPolicyStatements: [],
+          identityPolicyStatements: [{
+            Action: 's3:GetBucket',
+            Effect: 'Allow',
+            Resource: '(MyStack/SomeResource.Ref)',
+          }],
+        }],
+      });
+    });
+
+    test('role is created if preventSynthesis=false', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+      stack.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
+        preventSynthesis: false,
+      });
+      const someResource = new CfnResource(stack, 'SomeResource', {
+        type: 'AWS::SomeResource',
+        properties: {},
+      });
+
+      // WHEN
+      const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+        codeDirectory: TEST_HANDLER,
+        runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      });
+      cr.addToRolePolicy({
+        Action: 's3:GetBucket',
+        Effect: 'Allow',
+        Resource: someResource.ref,
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const template = assembly.getStackByName('MyStack').template;
+      const resourceTypes = Object.values(template.Resources).flatMap((value: any) => {
+        return value.Type;
+      });
+      // IAM role _is_ created
+      expect(resourceTypes).toContain('AWS::IAM::Role');
+      // lambda function references the created role
+      expect(template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A.Properties.Role).toEqual({
+        'Fn::GetAtt': [
+          'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
+          'Arn',
+        ],
+      });
+
+      // report is still generated
+      const filePath = path.join(assembly.directory, 'iam-policy-report.json');
+      const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
+      expect(JSON.parse(file)).toEqual({
+        roles: [{
+          roleConstructPath: 'MyStack/Custom:MyResourceTypeCustomResourceProvider/Role',
+          roleName: 'missing role',
+          missing: true,
+          assumeRolePolicy: [{
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          }],
+          managedPolicyArns: [
+            'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+          ],
+          managedPolicyStatements: [],
+          identityPolicyStatements: [{
+            Action: 's3:GetBucket',
+            Effect: 'Allow',
+            Resource: '(MyStack/SomeResource.Ref)',
+          }],
+        }],
+      });
+    });
+  });
+
   test('minimal configuration', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });

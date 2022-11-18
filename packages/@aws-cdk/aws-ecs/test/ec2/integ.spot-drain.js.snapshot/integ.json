@@ -1,0 +1,14 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integ.spot-drain": {
+      "stacks": [
+        "aws-ecs-integ-spot"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

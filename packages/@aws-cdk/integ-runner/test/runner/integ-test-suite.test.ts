@@ -1,8 +1,7 @@
 import * as path from 'path';
-import { ListOptions } from 'cdk-cli-wrapper';
 import * as mockfs from 'mock-fs';
 import { IntegTestSuite, LegacyIntegTestSuite } from '../../lib/runner/integ-test-suite';
-import { MockCdkProvider } from '../helpers';
+import { MockCdkMocks, MockCdkProvider } from '../helpers';
 
 describe('Integration test cases', () => {
   const testsFile = '/tmp/foo/bar/does/not/exist/integ.json';
@@ -125,7 +124,7 @@ describe('Integration test cases', () => {
 
 describe('Legacy Integration test cases', () => {
   let cdkMock: MockCdkProvider;
-  let listMock: (options: ListOptions) => string;
+  let listMock: MockCdkMocks['list'];
   const testsFile = '/tmp/foo/bar/does/not/exist/integ.test.js';
   beforeEach(() => {
     cdkMock = new MockCdkProvider({ directory: 'test/test-data' });

@@ -26,8 +26,10 @@ export class TestOriginGroup implements IOrigin {
   }
 }
 
-export function defaultOrigin(domainName?: string): IOrigin {
-  return new TestOrigin(domainName ?? 'www.example.com');
+export function defaultOrigin(domainName?: string, originId?: string): IOrigin {
+  return new TestOrigin(domainName ?? 'www.example.com', {
+    originId,
+  });
 }
 
 export function defaultOriginGroup(): IOrigin {

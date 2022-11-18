@@ -366,11 +366,11 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 
 ## Development
 
-The custom resource is implemented in Python 3.7 in order to be able to leverage
+The custom resource is implemented in Python 3.9 in order to be able to leverage
 the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
 unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
-This package requires Python 3.7 during build time in order to create the custom
+This package requires Python 3.9 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so
 might be tricky to build on Windows.
 

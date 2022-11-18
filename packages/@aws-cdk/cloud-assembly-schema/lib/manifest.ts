@@ -181,7 +181,13 @@ export class Manifest {
   }
 
   private static loadManifest(filePath: string, schema: jsonschema.Schema, preprocess?: (obj: any) => any, options?: LoadManifestOptions) {
-    let obj = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf-8' }));
+    const contents = fs.readFileSync(filePath, { encoding: 'utf-8' });
+    let obj;
+    try {
+      obj = JSON.parse(contents);
+    } catch (e) {
+      throw new Error(`${e.message}, while parsing ${JSON.stringify(contents)}`);
+    }
     if (preprocess) {
       obj = preprocess(obj);
     }

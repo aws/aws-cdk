@@ -1,0 +1,298 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-ecs-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76402fc32c39901ad53710af321266c5d52f016e9ee435dba8ef729d1f6ed9f5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-integ.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-integ/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-integ/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsCluster97242B84"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterInstanceSecurityGroup0187E9BB"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterInstanceRole0D0E0F94"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterInstanceRoleDefaultPolicyB89DB33F"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterInstanceProfileD1BBFAAE"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterLaunchConfig64183B57"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterASG869F3168"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionServiceRole26D97764"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionServiceRoleDefaultPolicy1563DC6B"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionB606E681"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/AllowInvoke:awsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionAllowInvokeawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA50D91BA3"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterLifecycleHookDrainHookTopic0A778AAC"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterLifecycleHookDrainHookRoleA16C85AD"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterLifecycleHookDrainHookRoleDefaultPolicy516A6DA7"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterLifecycleHookDrainHookA1F91B1B"
+          }
+        ],
+        "/aws-ecs-integ/SsmParameterValue:--aws--service--bottlerocket--aws-ecs-1--arm64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ"
+    }
+  }
+}

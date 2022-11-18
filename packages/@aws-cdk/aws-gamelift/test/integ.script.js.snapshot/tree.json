@@ -1,0 +1,228 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      },
+      "aws-gamelift-script": {
+        "id": "aws-gamelift-script",
+        "path": "aws-gamelift-script",
+        "children": {
+          "Script": {
+            "id": "Script",
+            "path": "aws-gamelift-script/Script",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-gamelift-script/Script/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-gamelift-script/Script/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "gamelift.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-gamelift-script/Script/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-gamelift-script/Script/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetObject",
+                                    "s3:GetObjectVersion"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":s3:::",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                        },
+                                        "/6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ScriptServiceRoleDefaultPolicyEE85DAE7",
+                            "roles": [
+                              {
+                                "Ref": "ScriptServiceRole23DD8079"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Content": {
+                "id": "Content",
+                "path": "aws-gamelift-script/Script/Content",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-gamelift-script/Script/Content/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-gamelift-script/Script/Content/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "aws-gamelift-script/Script/AssetBucket",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-script/Script/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::Script",
+                  "aws:cdk:cloudformation:props": {
+                    "storageLocation": {
+                      "bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "key": "6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip",
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "ScriptServiceRole23DD8079",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnScript",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.Script",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Script": {
+        "id": "Script",
+        "path": "Script",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Script/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Script/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Script/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -655,18 +655,7 @@ test('Create Cluster without Roles', () => {
       Statement: [
         {
           Principal: {
-            Service:
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'ec2.',
-                  {
-                    Ref: 'AWS::URLSuffix',
-                  },
-                ],
-              ],
-            },
+            Service: 'ec2.amazonaws.com',
           },
           Action: 'sts:AssumeRole',
           Effect: 'Allow',

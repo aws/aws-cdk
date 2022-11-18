@@ -1,0 +1,189 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "oidc-provider-integ-test": {
+        "id": "oidc-provider-integ-test",
+        "path": "oidc-provider-integ-test",
+        "children": {
+          "NoClientsNoThumbprint": {
+            "id": "NoClientsNoThumbprint",
+            "path": "oidc-provider-integ-test/NoClientsNoThumbprint",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "oidc-provider-integ-test/NoClientsNoThumbprint/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "oidc-provider-integ-test/NoClientsNoThumbprint/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
+            "id": "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
+            "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "Clients": {
+            "id": "Clients",
+            "path": "oidc-provider-integ-test/Clients",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "oidc-provider-integ-test/Clients/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "oidc-provider-integ-test/Clients/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
+              "version": "0.0.0"
+            }
+          },
+          "Thumbprints": {
+            "id": "Thumbprints",
+            "path": "oidc-provider-integ-test/Thumbprints",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "oidc-provider-integ-test/Thumbprints/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "oidc-provider-integ-test/Thumbprints/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
+              "version": "0.0.0"
+            }
+          },
+          "NoClientsThumbprints": {
+            "id": "NoClientsThumbprints",
+            "path": "oidc-provider-integ-test/NoClientsThumbprints",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ClientsThumbprints": {
+            "id": "ClientsThumbprints",
+            "path": "oidc-provider-integ-test/ClientsThumbprints",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ThumbprintsThumbprints": {
+            "id": "ThumbprintsThumbprints",
+            "path": "oidc-provider-integ-test/ThumbprintsThumbprints",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "oidc-provider-integ-test/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "oidc-provider-integ-test/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

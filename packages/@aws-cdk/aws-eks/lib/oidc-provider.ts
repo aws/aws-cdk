@@ -41,18 +41,11 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
    * @param props Initialization properties
    */
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
-    /**
-     * For some reason EKS isn't validating the root certificate but a intermediate certificate
-     * which is one level up in the tree. Because of the a constant thumbprint value has to be
-     * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
-     */
-    const thumbprints = ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'];
 
     const clientIds = ['sts.amazonaws.com'];
 
     super(scope, id, {
       url: props.url,
-      thumbprints,
       clientIds,
     });
   }

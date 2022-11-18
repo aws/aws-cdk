@@ -290,6 +290,7 @@ export class Settings {
       rollback: argv.rollback,
       notices: argv.notices,
       assetParallelism: argv['asset-parallelism'],
+      assetPrebuild: argv['asset-prebuild'],
     });
   }
 

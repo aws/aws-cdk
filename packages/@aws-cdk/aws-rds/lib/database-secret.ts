@@ -1,7 +1,7 @@
-import * as crypto from 'crypto';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws, Names } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
 
@@ -88,14 +88,13 @@ export class DatabaseSecret extends secretsmanager.Secret {
     });
 
     if (props.replaceOnPasswordCriteriaChanges) {
-      const hash = crypto.createHash('md5');
-      hash.update(JSON.stringify({
+      const hash = md5hash(JSON.stringify({
         // Use here the options that influence the password generation.
         // If at some point we add other password customization options
         // they sould be added here below (e.g. `passwordLength`).
         excludeCharacters,
       }));
-      const logicalId = `${Names.uniqueId(this)}${hash.digest('hex')}`;
+      const logicalId = `${Names.uniqueId(this)}${hash}`;
 
       const secret = this.node.defaultChild as secretsmanager.CfnSecret;
       secret.overrideLogicalId(logicalId.slice(-255)); // Take last 255 chars

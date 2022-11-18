@@ -22,7 +22,7 @@ import * as ts from 'typescript';
  * @returns the updated source code.
  */
 export function rewriteImports(sourceText: string, fileName: string = 'index.ts'): string {
-  const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018);
+  const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2020);
 
   const replacements = new Array<{ original: ts.Node, updatedLocation: string }>();
 

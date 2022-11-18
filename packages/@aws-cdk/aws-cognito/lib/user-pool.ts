@@ -674,6 +674,13 @@ export interface UserPoolProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * Indicates whether the user pool should have deletion protection enabled.
+   *
+   * @default false
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
    * Device tracking settings
    * @default - see defaults on each property of DeviceTracking.
    */
@@ -938,6 +945,7 @@ export class UserPool extends UserPoolBase {
       accountRecoverySetting: this.accountRecovery(props),
       deviceConfiguration: props.deviceTracking,
       userAttributeUpdateSettings: this.configureUserAttributeChanges(props),
+      deletionProtection: defaultDeletionProtection(props.deletionProtection),
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 
@@ -1278,4 +1286,16 @@ function undefinedIfNoKeys(struct: object): object | undefined {
 }
 function encodePuny(input: string | undefined): string | undefined {
   return input !== undefined ? punycodeEncode(input) : input;
+}
+
+function defaultDeletionProtection(deletionProtection?: boolean): 'ACTIVE' | 'INACTIVE' | undefined {
+  if (deletionProtection === true) {
+    return 'ACTIVE';
+  }
+
+  if (deletionProtection === false) {
+    return 'INACTIVE';
+  }
+
+  return undefined;
 }

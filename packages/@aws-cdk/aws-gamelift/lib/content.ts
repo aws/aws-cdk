@@ -32,7 +32,7 @@ export abstract class Content {
   /**
      * Called when the Build is initialized to allow this object to bind
      */
-  public abstract bind(scope: Construct, grantable: iam.IGrantable): ContentConfig;
+  public abstract bind(scope: Construct, role: iam.IRole): ContentConfig;
 
 }
 
@@ -58,8 +58,14 @@ export class S3Content extends Content {
     }
   }
 
-  public bind(_scope: Construct, grantable: iam.IGrantable): ContentConfig {
-    this.bucket.grantRead(grantable, this.key);
+  public bind(_scope: Construct, role: iam.IRole): ContentConfig {
+    // Adding permission to access specific content
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: [this.bucket.arnForObjects(this.key)],
+      actions: ['s3:GetObject', 's3:GetObjectVersion'],
+    }));
+
     return {
       s3Location: {
         bucketName: this.bucket.bucketName,
@@ -83,7 +89,7 @@ export class AssetContent extends Content {
     super();
   }
 
-  public bind(scope: Construct, grantable: iam.IGrantable): ContentConfig {
+  public bind(scope: Construct, role: iam.IRole): ContentConfig {
     // If the same AssetContent is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Content', {
@@ -94,7 +100,14 @@ export class AssetContent extends Content {
       throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
         'Create a new Content instance for every stack.');
     }
-    this.asset.grantRead(grantable);
+    const bucket = s3.Bucket.fromBucketName(scope, 'AssetBucket', this.asset.s3BucketName);
+
+    // Adding permission to access specific content
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: [bucket.arnForObjects(this.asset.s3ObjectKey)],
+      actions: ['s3:GetObject', 's3:GetObjectVersion'],
+    }));
 
     if (!this.asset.isZipArchive) {
       throw new Error(`Asset must be a .zip file or a directory (${this.path})`);

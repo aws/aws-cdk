@@ -1,0 +1,20 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "37e0c4dfe9c2afeff7fb5beab5ab205de8e42b55f7c46884d976fe647d43c06b": {
+      "source": {
+        "path": "aws-cdk-vpc-nat-instances.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "37e0c4dfe9c2afeff7fb5beab5ab205de8e42b55f7c46884d976fe647d43c06b.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -410,6 +410,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_10_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.1');
   /** Version "5.7.mysql_aurora.2.10.2". */
   public static readonly VER_2_10_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.2');
+  /** Version "5.7.mysql_aurora.2.10.3". */
+  public static readonly VER_2_10_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.3');
   /** Version "8.0.mysql_aurora.3.01.0". */
   public static readonly VER_3_01_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.01.0');
   /** Version "8.0.mysql_aurora.3.01.1". */
@@ -669,8 +671,13 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_13_7 = AuroraPostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true });
   /** Version "14.3". */
   public static readonly VER_14_3 = AuroraPostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
-  /** Version "14.4". */
+  /**
+   *  Version "14.4".
+   * @deprecated Version 14.4 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_14_4 = AuroraPostgresEngineVersion.of('14.4', '14', { s3Import: true, s3Export: true });
+  /** Version "14.5". */
+  public static readonly VER_14_5 = AuroraPostgresEngineVersion.of('14.5', '14', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.

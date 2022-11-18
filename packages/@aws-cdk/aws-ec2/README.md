@@ -1402,6 +1402,38 @@ vpc.addFlowLog('FlowLogCloudWatch', {
 });
 ```
 
+### Custom Formatting
+
+You can also custom format flow logs.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.DST_PORT,
+    ec2.LogFormat.SRC_PORT,
+  ],
+});
+
+// If you just want to add a field to the default field
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.VERSION,
+    ec2.LogFormat.ALL_DEFAULT_FIELDS,
+  ],
+});
+
+// If AWS CDK does not support the new fields
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.SRC_PORT,
+    ec2.LogFormat.custom('${new-field}'),
+  ],
+});
+```
+
+
 By default, the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
 it will create a CloudWatch Logs Log Group as well as the IAM role with the necessary permissions to publish to
 the log group. In the case of an S3 destination, it will create the S3 bucket.

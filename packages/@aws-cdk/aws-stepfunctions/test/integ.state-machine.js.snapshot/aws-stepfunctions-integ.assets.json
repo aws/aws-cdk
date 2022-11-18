@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "fe692bbb723bcadf344380c30c84f9462fc374ce2e75414b100a50e26ccf7c4b": {
+      "source": {
+        "path": "aws-stepfunctions-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fe692bbb723bcadf344380c30c84f9462fc374ce2e75414b100a50e26ccf7c4b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

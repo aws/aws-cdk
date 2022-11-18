@@ -1,0 +1,14 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integ.nat-instances.lit": {
+      "stacks": [
+        "aws-cdk-vpc-nat-instances"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": true
+}

@@ -1909,6 +1909,21 @@ test('grant', () => {
 
 });
 
+test('deletion protection', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    deletionProtection: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    DeletionProtection: 'ACTIVE',
+  });
+});
+
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,

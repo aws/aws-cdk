@@ -188,6 +188,7 @@ export class Build extends BuildBase {
         throw new Error(`Build name can not be longer than 1024 characters but has ${props.buildName.length} characters.`);
       }
     }
+
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
     });
@@ -205,6 +206,8 @@ export class Build extends BuildBase {
         roleArn: this.role.roleArn,
       },
     });
+
+    resource.node.addDependency(this.role);
 
     this.buildId = resource.ref;
   }

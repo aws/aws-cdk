@@ -1494,8 +1494,16 @@ export class ResourceType {
   public static readonly EC2_LAUNCH_TEMPLATE = new ResourceType('AWS::EC2::LaunchTemplate');
   /** EC2 Network Insights Access Scope Analysis */
   public static readonly EC2_NETWORK_INSIGHTS_ACCESS_SCOPE_ANALYSIS = new ResourceType('AWS::EC2::NetworkInsightsAccessScopeAnalysis');
+  /** EC2 Image Builder ContainerRecipe */
+  public static readonly IMAGEBUILDER_CONTAINER_RECIPE = new ResourceType('AWS::ImageBuilder::ContainerRecipe');
+  /** EC2 Image Builder DistributionConfiguration */
+  public static readonly IMAGEBUILDER_DISTRIBUTION_CONFIGURATION = new ResourceType('AWS::ImageBuilder::DistributionConfiguration');
+  /** EC2 Image Builder InfrastructureConfiguration */
+  public static readonly IMAGEBUILDER_INFRASTRUCTURE_CONFIGURATION = new ResourceType('AWS::ImageBuilder::InfrastructureConfiguration');
   /** Amazon ECR repository */
   public static readonly ECR_REPOSITORY = new ResourceType('AWS::ECR::Repository');
+  /** Amazon ECR registry policy */
+  public static readonly ECR_REGISTRY_POLICY = new ResourceType('AWS::ECR::RegistryPolicy');
   /** Amazon ECR public repository */
   public static readonly ECR_PUBLIC_REPOSITORY = new ResourceType('AWS::ECR::PublicRepository');
   /** Amazon ECS cluster */
@@ -1556,12 +1564,20 @@ export class ResourceType {
   public static readonly RDS_DB_CLUSTER = new ResourceType('AWS::RDS::DBCluster');
   /** Amazon RDS database cluster snapshot */
   public static readonly RDS_DB_CLUSTER_SNAPSHOT = new ResourceType('AWS::RDS::DBClusterSnapshot');
+  /** Amazon Route53 Hosted Zone */
+  public static readonly ROUTE53_HOSTED_ZONE= new ResourceType('AWS::Route53::HostedZone');
+  /** Amazon Route53 Health Check */
+  public static readonly ROUTE53_HEALTH_CHECK = new ResourceType('AWS::Route53::HealthCheck');
   /** Amazon Route53 resolver resolver endpoint */
   public static readonly ROUTE53_RESOLVER_RESOLVER_ENDPOINT = new ResourceType('AWS::Route53Resolver::ResolverEndpoint');
   /** Amazon Route53 resolver resolver rule */
   public static readonly ROUTE53_RESOLVER_RESOLVER_RULE = new ResourceType('AWS::Route53Resolver::ResolverRule');
   /** Amazon Route53 resolver resolver rule association */
   public static readonly ROUTE53_RESOLVER_RESOLVER_RULE_ASSOCIATION = new ResourceType('AWS::Route53Resolver::ResolverRuleAssociation');
+  /** Amazon Route 53 Application Recovery Controller Cell */
+  public static readonly ROUTE53_RECOVERY_READINESS_CELL = new ResourceType('AWS::Route53RecoveryReadiness::Cell');
+  /** Amazon Route 53 Application Recovery Controller Readiness Check */
+  public static readonly ROUTE53_RECOVERY_READINESS_READINESS_CHECK = new ResourceType('AWS::Route53RecoveryReadiness::ReadinessCheck');
   /** Amazon SQS queue */
   public static readonly SQS_QUEUE = new ResourceType('AWS::SQS::Queue');
   /** Amazon SNS topic */
@@ -1636,6 +1652,8 @@ export class ResourceType {
   public static readonly SERVICEDISCOVERY_SERVICE = new ResourceType('AWS::ServiceDiscovery::Service');
   /** AWS Cloud Map(ServiceDiscovery) Public Dns Namespace */
   public static readonly SERVICEDISCOVERY_PUBLIC_DNS_NAMESPACE = new ResourceType('AWS::ServiceDiscovery::PublicDnsNamespace');
+  /** AWS Cloud Map(ServiceDiscovery) Http Namespace */
+  public static readonly SERVICEDISCOVERY_HTTP_NAMESPACE = new ResourceType('AWS::ServiceDiscovery::HttpNamespace');
   /** AWS CodeBuild project */
   public static readonly CODEBUILD_PROJECT = new ResourceType('AWS::CodeBuild::Project');
   /** AWS CodeDeploy application */
@@ -1666,18 +1684,28 @@ export class ResourceType {
   public static readonly DATASYNC_TASK = new ResourceType('AWS::DataSync::Task');
   /** AWS DataSync location NFS */
   public static readonly DATASYNC_LOCATION_NFS = new ResourceType('AWS::DataSync::LocationNFS');
+  /** AWS DataSync location object storage */
+  public static readonly DATASYNC_LOCATION_OBJECT_STORAGE = new ResourceType('AWS::DataSync::LocationObjectStorage');
+  /** AWS DataSync location HDFS */
+  public static readonly DATASYNC_LOCATION_HDFS = new ResourceType('AWS::DataSync::LocationHDFS');
   /** AWS Elastic Beanstalk (EB) application */
   public static readonly ELASTIC_BEANSTALK_APPLICATION = new ResourceType('AWS::ElasticBeanstalk::Application');
   /** AWS Elastic Beanstalk (EB) application version */
   public static readonly ELASTIC_BEANSTALK_APPLICATION_VERSION = new ResourceType('AWS::ElasticBeanstalk::ApplicationVersion');
   /** AWS Elastic Beanstalk (EB) environment */
   public static readonly ELASTIC_BEANSTALK_ENVIRONMENT = new ResourceType('AWS::ElasticBeanstalk::Environment');
+  /** Amazon EventBridge EventBus */
+  public static readonly EVENTBRIDGE_EVENTBUS = new ResourceType('AWS::Events::EventBus');
   /** AWS GlobalAccelerator listener */
   public static readonly GLOBALACCELERATOR_LISTENER = new ResourceType('AWS::GlobalAccelerator::Listener');
   /** AWS GlobalAccelerator endpoint group */
   public static readonly GLOBALACCELERATOR_ENDPOINT_GROUP = new ResourceType('AWS::GlobalAccelerator::EndpointGroup');
   /** AWS GlobalAccelerator accelerator */
   public static readonly GLOBALACCELERATOR_ACCELERATOR = new ResourceType('AWS::GlobalAccelerator::Accelerator');
+  /** AWS Glue Job */
+  public static readonly GLUE_JOB = new ResourceType('AWS::Glue::Job');
+  /** AWS Glue Classifier */
+  public static readonly GLUE_CLASSIFIER = new ResourceType('AWS::Glue::Classifier');
   /** AWS IAM user */
   public static readonly IAM_USER = new ResourceType('AWS::IAM::User');
   /** AWS IAM group */
@@ -1688,6 +1716,12 @@ export class ResourceType {
   public static readonly IAM_POLICY = new ResourceType('AWS::IAM::Policy');
   /** AWS IAM AccessAnalyzer analyzer */
   public static readonly IAM_ACCESSANALYZER_ANALYZER = new ResourceType('AWS::AccessAnalyzer::Analyzer');
+  /** AWS IoT Events Input */
+  public static readonly IOT_EVENTS_INPUT = new ResourceType('AWS::IoTEvents::Input');
+  /** AWS IoT Events Detector Model */
+  public static readonly IOT_EVENTS_DETECTOR_MODEL = new ResourceType('AWS::IoTEvents::DetectorModel');
+  /** AWS IoT Events Alarm Model */
+  public static readonly IOT_EVENTS_ALARM_MODEL = new ResourceType('AWS::IoTEvents::AlarmModel');
   /** AWS KMS Key */
   public static readonly KMS_KEY = new ResourceType('AWS::KMS::Key');
   /** AWS Lambda function */

@@ -1,0 +1,106 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-stepfunctions-tasks-lambda-invoke-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-stepfunctions-tasks-lambda-invoke-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-stepfunctions-tasks-lambda-invoke-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-tasks-lambda-invoke-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3f30ccdb3fb9180062fc74ef7a5c7e67eee1545cb13a5caafd5cda0a67ad8731.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-stepfunctions-tasks-lambda-invoke-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-stepfunctions-tasks-lambda-invoke-integ.assets"
+      ],
+      "metadata": {
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "submitJobLambdaServiceRole4D897ABD"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "submitJobLambdaEFB00F3C"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "checkJobStateLambdaServiceRoleB8B57B65"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "checkJobStateLambda4618B7B7"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-stepfunctions-tasks-lambda-invoke-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-tasks-lambda-invoke-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

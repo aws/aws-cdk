@@ -115,7 +115,7 @@ export class CheckedStageStackAssociator extends StackAssociatorBase {
 
   constructor(app: ApplicationAssociator) {
     super();
-    this.application = app.appRegistryApplication;
+    this.application = app.appRegistryApplication();
     this.applicationAssociator = app;
   }
 }

@@ -1,0 +1,32 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "bb426cfb5fed5237e5928f871893b243ddf86a591a592b558bd29f60e28bad9d": {
+      "source": {
+        "path": "asset.bb426cfb5fed5237e5928f871893b243ddf86a591a592b558bd29f60e28bad9d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bb426cfb5fed5237e5928f871893b243ddf86a591a592b558bd29f60e28bad9d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2090a74d484bc155b48d7511b99e4921b8f55e488c3fe1500cffede0cdfd33b7": {
+      "source": {
+        "path": "FlowLogsTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2090a74d484bc155b48d7511b99e4921b8f55e488c3fe1500cffede0cdfd33b7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,346 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-ecs-integ2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-integ2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ2.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/173fb25b6162ac811663f7d01eed0ef86a0522b3b23358797ba93147f05cdf01.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-integ2.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-integ2/FargateCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateCluster7CCD5F93"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpc377E8024"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1RouteTableAssociation80F1442F"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1DefaultRoute80086690"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1EIPF91909D0"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet1NATGateway5202D86A"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2RouteTableAssociation3EFA74DC"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2DefaultRoute8E847CD2"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2EIPBBB24774"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1RouteTableAssociation78F6E213"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet1DefaultRoute0438DCBA"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2RouteTableAssociation3A46964C"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcPrivateSubnet2DefaultRoute35FDD29D"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcIGW827638CB"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterVpcVPCGW38717255"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupInstanceSecurityGroup42AF8A40"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupASG36A4948F"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyB91C5343"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468C75B1F21"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D"
+          }
+        ],
+        "/aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHook2AE13680"
+          }
+        ],
+        "/aws-ecs-integ2/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ2/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-ecs-integ2/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570"
+          }
+        ],
+        "/aws-ecs-integ2/TaskDef/TheContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTheContainerLogGroupD94C8EF5"
+          }
+        ],
+        "/aws-ecs-integ2/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleB4775C97"
+          }
+        ],
+        "/aws-ecs-integ2/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
+          }
+        ],
+        "/aws-ecs-integ2/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-ecs-integ2/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-ecs-integ2/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-ecs-integ2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ2"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

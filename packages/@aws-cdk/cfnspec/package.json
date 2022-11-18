@@ -3,7 +3,7 @@
   "description": "The CloudFormation resource specification used by @aws-cdk packages",
   "version": "0.0.0",
   "scripts": {
-    "update": "cdk-build && /bin/bash build-tools/update.sh && /bin/bash build-tools/update-cfnlint.sh",
+    "update": "cdk-build && /bin/bash build-tools/update.sh",
     "update-metrics": "/bin/bash build-tools/update-metrics.sh",
     "rejected": "node build-tools/report-issues.js spec-source/specification/000_cfn/000_official/ rejected",
     "build": "cdk-build && node build-tools/build",
@@ -37,7 +37,7 @@
     "@types/md5": "^2.3.2",
     "fast-json-patch": "^2.2.1",
     "jest": "^27.5.1",
-    "json-diff": "^0.9.1",
+    "json-diff": "^0.10.0",
     "sort-json": "^2.0.1"
   },
   "dependencies": {

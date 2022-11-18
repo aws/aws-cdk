@@ -11,6 +11,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
@@ -655,6 +656,33 @@ describe('fargate service', () => {
           },
         },
       });
+    });
+
+
+    test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+        circuitBreaker: { rollback: true },
+      });
+
+      // THEN
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+
     });
 
     test('errors when no container specified on task definition', () => {
@@ -2454,6 +2482,39 @@ describe('fargate service', () => {
         },
         DeploymentController: {
           Type: ecs.DeploymentControllerType.ECS,
+        },
+      });
+    });
+
+    test('with circuit breaker and deployment controller feature flag enabled', () => {
+      // GIVEN
+      const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
+          { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
+      const app = new App({ context: disableCircuitBreakerEcsDeploymentControllerFeatureFlag });
+      const stack = new cdk.Stack(app);
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'EcsService', {
+        cluster,
+        taskDefinition,
+        circuitBreaker: { rollback: true },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+          DeploymentCircuitBreaker: {
+            Enable: true,
+            Rollback: true,
+          },
         },
       });
     });

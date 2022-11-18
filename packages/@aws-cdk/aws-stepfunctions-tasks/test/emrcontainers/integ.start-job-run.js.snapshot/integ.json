@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-emr-containers-start-job-run-test"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-stepfunctions-tasks-emr-containers-start-job-run/DefaultTest/DeployAssert",
+      "assertionStackName": "awsstepfunctionstasksemrcontainersstartjobrunDefaultTestDeployAssert0C0D5C7F"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "Resources": {
+    "MyFunction1ServiceRole9852B06B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "MyFunction12A744C2E": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Key": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92825.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": ["MyFunction1ServiceRole9852B06B", "Arn"]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
+      },
+      "DependsOn": ["MyFunction1ServiceRole9852B06B"]
+    },
+    "SomeNestedStackResourceA7AEBA6B": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.unknown-region.amazonaws.com/cdk-hnb659fds-assets-unknown-account-unknown-region/DIFFERENT_NESTED_STACK_HASH.json"
+      }
+    }
+  }
+}

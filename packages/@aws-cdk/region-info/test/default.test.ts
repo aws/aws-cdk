@@ -18,7 +18,7 @@ describe('servicePrincipal', () => {
 
     for (const service of ['ec2']) {
       test(`${service}${suffix}`, () => {
-        expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${urlSuffix}`);
+        expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.amazonaws.com`);
       });
     }
 

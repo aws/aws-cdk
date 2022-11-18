@@ -28,11 +28,16 @@ function update-spec() {
         exit 1
     fi
 
-    echo >&2 "Downloading from ${url}..."
-    if ${gunzip}; then
-        curl -sL "${url}" | gunzip - > ${newspec}
+    if [[ "${url}" == "http"* ]]; then
+        echo >&2 "Downloading from ${url}..."
+        if ${gunzip}; then
+            curl -sL "${url}" | gunzip - > ${newspec}
+        else
+            curl -sL "${url}" > ${newspec}
+        fi
     else
-        curl -sL "${url}" > ${newspec}
+        echo >&2 "Copying file ${url}..."
+        cp "${url}" "${newspec}"
     fi
 
     # Calculate the old and new combined specs, so we can do a diff on the changes
@@ -57,7 +62,7 @@ function update-spec() {
 
 update-spec \
     "CloudFormation Resource Specification" \
-    "https://d1uauaxba7bl26.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json" \
+    "${1:-https://d1uauaxba7bl26.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json}" \
     spec-source/specification/000_cfn/000_official \
     true true
 
@@ -98,3 +103,5 @@ if [ -n "${_changelog_contents}" ]; then
     cat CHANGELOG.md >> CHANGELOG.md.new
     cp CHANGELOG.md.new CHANGELOG.md
 fi
+
+exec /bin/bash ${scriptdir}/update-cfnlint.sh

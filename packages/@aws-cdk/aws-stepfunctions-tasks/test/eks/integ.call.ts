@@ -52,6 +52,13 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 
 new integ.IntegTest(app, 'aws-stepfunctions-tasks-eks-call-integ', {
   testCases: [stack],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
 });
 
 app.synth();
