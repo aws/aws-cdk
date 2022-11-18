@@ -54,6 +54,12 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
   readonly routeKey: string;
 
   /**
+   * Should the route send a response to the client
+   * @default false
+   */
+  readonly shouldReturnResponse?: boolean;
+
+  /**
    * Whether the route requires an API Key to be provided
    * @default false
    */
@@ -102,6 +108,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       target: `integrations/${config.integrationId}`,
       authorizerId: authBindResult.authorizerId,
       authorizationType: authBindResult.authorizationType,
+      routeResponseSelectionExpression: props.shouldReturnResponse ? '$default' : undefined,
     });
     this.routeId = route.ref;
   }
