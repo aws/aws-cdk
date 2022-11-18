@@ -37,6 +37,13 @@ export interface WebSocketRouteOptions {
    * @default - No Authorizer
    */
   readonly authorizer?: IWebSocketRouteAuthorizer;
+
+  /**
+   * Should the route send a response to the client
+   * @default false
+   */
+  readonly shouldReturnResponse?: boolean;
+
 }
 
 /**
@@ -52,12 +59,6 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
    * The key to this route.
    */
   readonly routeKey: string;
-
-  /**
-   * Should the route send a response to the client
-   * @default false
-   */
-  readonly shouldReturnResponse?: boolean;
 
   /**
    * Whether the route requires an API Key to be provided

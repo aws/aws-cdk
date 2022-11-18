@@ -65,6 +65,22 @@ describe('WebSocketApi', () => {
     });
   });
 
+  test('addRoute: adds a route with passed key and allows it to return a response', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    // WHEN
+    api.addRoute('myroute', { integration: new DummyIntegration(), shouldReturnResponse: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(api.apiId),
+      RouteKey: 'myroute',
+      RouteResponseSelectionExpression: '$default',
+    });
+  });
+
   test('connectRouteOptions: adds a $connect route', () => {
     // GIVEN
     const stack = new Stack();
