@@ -1,10 +1,11 @@
 {
+ "Description": "Stack that holds the AppRegistryAssociatedApplication application",
  "Resources": {
   "DefaultCdkApplication4573D5A3": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
     "Name": "AppRegistryAssociatedApplication",
-    "Description": "Testing AppRegistry ApplicationAssociator"
+    "Description": "Application containing stacks deployed via CDK."
    }
   },
   "AppRegistryAssociation": {
