@@ -1,6 +1,6 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnRoute } from '../apigatewayv2.generated';
+import { CfnRoute, CfnRouteResponse } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
@@ -112,5 +112,12 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       routeResponseSelectionExpression: props.shouldReturnResponse ? '$default' : undefined,
     });
     this.routeId = route.ref;
+    if (props.shouldReturnResponse) {
+      new CfnRouteResponse(this, 'Response', {
+        apiId: props.webSocketApi.apiId,
+        routeId: route.ref,
+        routeResponseKey: '$default',
+      });
+    }
   }
 }

@@ -127,7 +127,7 @@ describe('WebSocketRoute', () => {
     const webSocketApi = new WebSocketApi(stack, 'Api');
 
     // WHEN
-    new WebSocketRoute(stack, 'Route', {
+    const route = new WebSocketRoute(stack, 'Route', {
       webSocketApi,
       integration: new DummyIntegration(),
       routeKey: 'message',
@@ -150,6 +150,12 @@ describe('WebSocketRoute', () => {
           ],
         ],
       },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::RouteResponse', {
+      ApiId: stack.resolve(webSocketApi.apiId),
+      RouteId: stack.resolve(route.routeId),
+      RouteResponseKey: '$default',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
