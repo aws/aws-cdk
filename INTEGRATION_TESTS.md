@@ -17,7 +17,7 @@ on what type of changes require integrations tests and how you should write inte
 All Construct libraries in the CDK code base have integration tests that serve to -
 
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
-   the Cloud Assembly stored in the snapshot (`*.integ.snapshot/`) directory. This highlights how a change affects the synthesized stacks.
+   the Cloud Assembly stored in the snapshot (`*.snapshot/`) directory. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
    This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package.
    If you are developing a new integration test or for some other reason want to work on a single integration test
@@ -115,7 +115,7 @@ This will:
 1. Synthesize the CDK app
 2. `cdk deploy` to your AWS account
 3. `cdk destroy` to delete the stack
-4. Save a snapshot of the Cloud Assembly to `lambda.integ.snapshot/`
+4. Save a snapshot of the Cloud Assembly to `integ.lambda.js.snapshot/`
 
 Now when you run `npm test` it will synth the integ app and compare the result with the snapshot.
 If the snapshot has changed the same process must be followed to update the snapshot.

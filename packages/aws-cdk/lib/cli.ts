@@ -13,7 +13,7 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
-import { CdkToolkit } from '../lib/cdk-toolkit';
+import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
@@ -24,6 +24,7 @@ import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
+import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -156,7 +157,8 @@ async function parseCommandLineArguments() {
           "Only in effect if specified alongside the '--watch' option",
       })
       .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true })
-      .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' }),
+      .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
+      .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -281,6 +283,10 @@ async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);
+
+    if (argv.verbose > 2) {
+      enableTracing(true);
+    }
   }
 
   if (argv.ci) {
@@ -515,7 +521,8 @@ async function initCommandLine() {
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
-          assetParallelism: args.assetParallelism,
+          assetParallelism: configuration.settings.get(['assetParallelism']),
+          assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
         });
 
       case 'import':

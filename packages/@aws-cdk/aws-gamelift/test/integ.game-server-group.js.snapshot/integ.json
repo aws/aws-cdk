@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "GameServerGroup/DefaultTest": {
+      "stacks": [
+        "aws-gamelift-game-server-group"
+      ],
+      "assertionStack": "GameServerGroup/DefaultTest/DeployAssert",
+      "assertionStackName": "GameServerGroupDefaultTestDeployAssertA631B19B"
+    }
+  }
+}

@@ -1,0 +1,501 @@
+{
+ "Resources": {
+  "HandlerServiceRoleFCDC14AE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Handler886CB40B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "edb7466707eb899fbaee22c1e67f9443e9edcc2eeda0b58d8448f7c4157746b3.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "HandlerServiceRoleFCDC14AE",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "HandlerServiceRoleFCDC14AE"
+   ]
+  },
+  "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "Handler886CB40B"
+    }
+   }
+  },
+  "Alias325C5727": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "Handler886CB40B"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243",
+      "Version"
+     ]
+    },
+    "Name": "alias"
+   },
+   "UpdatePolicy": {
+    "CodeDeployLambdaAliasUpdate": {
+     "ApplicationName": {
+      "Ref": "BlueGreenDeploymentApplication36C892C0"
+     },
+     "DeploymentGroupName": {
+      "Ref": "BlueGreenDeployment5C188134"
+     },
+     "BeforeAllowTrafficHook": {
+      "Ref": "PreHook8B53F672"
+     },
+     "AfterAllowTrafficHook": {
+      "Ref": "PostHookF2E49B30"
+     }
+    }
+   }
+  },
+  "PreHookServiceRoleC724B9BA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PreHookServiceRoleDefaultPolicy65358F76": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "codedeploy:PutLifecycleEventHookExecutionStatus",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codedeploy:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":deploymentgroup:",
+          {
+           "Ref": "BlueGreenDeploymentApplication36C892C0"
+          },
+          "/",
+          {
+           "Ref": "BlueGreenDeployment5C188134"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PreHookServiceRoleDefaultPolicy65358F76",
+    "Roles": [
+     {
+      "Ref": "PreHookServiceRoleC724B9BA"
+     }
+    ]
+   }
+  },
+  "PreHook8B53F672": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "87da351d4c9de5eead78cb80dde66bcbb6c42c418c3368747f32a4e9c013a2e1.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "PreHookServiceRoleC724B9BA",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "PreHookServiceRoleDefaultPolicy65358F76",
+    "PreHookServiceRoleC724B9BA"
+   ]
+  },
+  "PostHookServiceRoleE8A6AAC2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PostHookServiceRoleDefaultPolicy82AEE758": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "codedeploy:PutLifecycleEventHookExecutionStatus",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codedeploy:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":deploymentgroup:",
+          {
+           "Ref": "BlueGreenDeploymentApplication36C892C0"
+          },
+          "/",
+          {
+           "Ref": "BlueGreenDeployment5C188134"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PostHookServiceRoleDefaultPolicy82AEE758",
+    "Roles": [
+     {
+      "Ref": "PostHookServiceRoleE8A6AAC2"
+     }
+    ]
+   }
+  },
+  "PostHookF2E49B30": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "93dbd8c02dbfca9077c9d83cb6d3a94659988c7d143988da4a554033a58f963c.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "PostHookServiceRoleE8A6AAC2",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "PostHookServiceRoleDefaultPolicy82AEE758",
+    "PostHookServiceRoleE8A6AAC2"
+   ]
+  },
+  "BlueGreenErrors60C27452": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanThreshold",
+    "EvaluationPeriods": 1,
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "Handler886CB40B"
+      }
+     },
+     {
+      "Name": "Resource",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Ref": "Handler886CB40B"
+         },
+         ":alias"
+        ]
+       ]
+      }
+     }
+    ],
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1
+   }
+  },
+  "BlueGreenDeploymentApplication36C892C0": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ComputePlatform": "Lambda"
+   }
+  },
+  "BlueGreenDeploymentServiceRole225851FB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codedeploy.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "BlueGreenDeploymentServiceRoleDefaultPolicy7008FB0A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PostHookF2E49B30",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PreHook8B53F672",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PostHookF2E49B30",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PreHook8B53F672",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BlueGreenDeploymentServiceRoleDefaultPolicy7008FB0A",
+    "Roles": [
+     {
+      "Ref": "BlueGreenDeploymentServiceRole225851FB"
+     }
+    ]
+   }
+  },
+  "BlueGreenDeployment5C188134": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": {
+     "Ref": "BlueGreenDeploymentApplication36C892C0"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "BlueGreenDeploymentServiceRole225851FB",
+      "Arn"
+     ]
+    },
+    "AlarmConfiguration": {
+     "Alarms": [
+      {
+       "Name": {
+        "Ref": "BlueGreenErrors60C27452"
+       }
+      }
+     ],
+     "Enabled": true
+    },
+    "AutoRollbackConfiguration": {
+     "Enabled": true,
+     "Events": [
+      "DEPLOYMENT_FAILURE",
+      "DEPLOYMENT_STOP_ON_ALARM"
+     ]
+    },
+    "DeploymentConfigName": "CodeDeployDefault.LambdaLinear10PercentEvery1Minute",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
