@@ -532,9 +532,16 @@ export abstract class BaseService extends Resource
     const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
         FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
 
-    return disableCircuitBreakerEcsDeploymentControllerFeatureFlag ? undefined : {
-      type: DeploymentControllerType.ECS,
-    };
+    if (!disableCircuitBreakerEcsDeploymentControllerFeatureFlag && props.circuitBreaker) {
+      // This is undesirable behavior (the controller is implicitly ECS anyway when left
+      // undefined, so specifying it is not necessary but DOES trigger a CFN replacement)
+      // but we leave it in for backwards compat.
+      return {
+        type: DeploymentControllerType.ECS,
+      };
+    }
+
+    return undefined;
   }
 
   private executeCommandLogConfiguration() {
