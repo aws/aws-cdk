@@ -1,5 +1,5 @@
 {
-  "$version": "97.0.0",
+  "$version": "98.0.0",
   "PropertyTypes": {
     "AWS::Panorama::ApplicationInstance.ManifestOverridesPayload": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-applicationinstance-manifestoverridespayload.html",
@@ -20,6 +20,41 @@
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"
+        }
+      }
+    },
+    "AWS::Panorama::Package.StorageLocation": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html",
+      "Properties": {
+        "BinaryPrefixLocation": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-binaryprefixlocation",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Bucket": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-bucket",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "GeneratedPrefixLocation": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-generatedprefixlocation",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "ManifestPrefixLocation": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-manifestprefixlocation",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "RepoPrefixLocation": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-repoprefixlocation",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
         }
       }
     }
@@ -127,6 +162,21 @@
           "PrimitiveType": "Integer"
         },
         "PackageId": {
+          "PrimitiveType": "String"
+        },
+        "StorageLocation.BinaryPrefixLocation": {
+          "PrimitiveType": "String"
+        },
+        "StorageLocation.Bucket": {
+          "PrimitiveType": "String"
+        },
+        "StorageLocation.GeneratedPrefixLocation": {
+          "PrimitiveType": "String"
+        },
+        "StorageLocation.ManifestPrefixLocation": {
+          "PrimitiveType": "String"
+        },
+        "StorageLocation.RepoPrefixLocation": {
           "PrimitiveType": "String"
         }
       },
