@@ -1,11 +1,10 @@
 import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as iam from 'aws-sdk/clients/iam';
 import { warning } from '../../logging';
 import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { rootDir } from '../../util/directories';
-import { SdkProvider } from '../aws-auth';
+import { ISDK, Mode, SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
 import { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
 import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
@@ -103,7 +102,7 @@ export class Bootstrapper {
     if (trustedAccounts.length === 0 && cloudFormationExecutionPolicies.length === 0) {
       // For self-trust it's okay to default to AdministratorAccess, and it improves the usability of bootstrapping a lot.
       //
-      // We don't actually make the implicity policy a physical parameter. The template will infer it instead,
+      // We don't actually make the implicitly policy a physical parameter. The template will infer it instead,
       // we simply do the UI advertising that behavior here.
       //
       // If we DID make it an explicit parameter, we wouldn't be able to tell the difference between whether
@@ -144,7 +143,8 @@ export class Bootstrapper {
     let policyName;
     if (permissionsBoundary) {
       if (permissionsBoundary === CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
-        const arn = this.createExamplePermissionsBoundary(environment.account, environment.region, params.qualifier);
+        const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForWriting)).sdk;
+        const arn = await this.createExamplePermissionsBoundary(bootstrapTemplate, params.qualifier, sdk);
         policyName = arn.split('/').pop();
       } else {
         this.validatePolicyName(permissionsBoundary);
@@ -182,72 +182,17 @@ export class Bootstrapper {
     }
   }
 
-  private createExamplePermissionsBoundary(account: string, region: string, qualifier: string|undefined): string {
+  private async createExamplePermissionsBoundary(bootstrapTemplate: any, qualifier: string | undefined, sdk: ISDK): Promise<string> {
     qualifier = qualifier ? qualifier : 'hnb659fds'; // if none is supplied, resort to the default qualifier
-    const policyDoc = {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: ['*'],
-          Resource: '*',
-          Effect: 'Allow',
-          Sid: 'ExplicitAllowAll',
-        },
-        {
-          Condition: {
-            StringEquals: {
-              'iam:PermissionsBoundary': 'arn:aws:iam::' + account + ':policy/cdk-' + qualifier + '-BootstrapPermissionBoundary-' + account + '-' + region,
-            },
-          },
-          Action: [
-            'iam:CreateUser',
-            'iam:CreateRole',
-            'iam:PutRolePermissionsBoundary',
-            'iam:PutUserPermissionsBoundary',
-          ],
-          Resource: '*',
-          Effect: 'Allow',
-          Sid: 'DenyAccessIfRequiredPermBoundaryIsNotBeingApplied',
-        },
-        {
-          Action: [
-            'iam:CreatePolicyVersion',
-            'iam:DeletePolicy',
-            'iam:DeletePolicyVersion',
-            'iam:SetDefaultPolicyVersion',
-          ],
-          Resource: 'arn:aws:iam::885876182003:policy/cdk-'+qualifier+'-BootstrapPermissionBoundary-' + account + '-' + region,
-          Effect: 'Deny',
-          Sid: 'DenyPermBoundaryIAMPolicyAlteration',
-        },
-        {
-          Action: [
-            'iam:DeleteUserPermissionsBoundary',
-            'iam:DeleteRolePermissionsBoundary',
-          ],
-          Resource: '*',
-          Effect: 'Deny',
-          Sid: 'DenyRemovalOfPermBoundaryFromAnyUserOrRole',
-        },
-      ],
-    };
+    const policyDoc = JSON.parse(serializeStructure(bootstrapTemplate, true)).CdkBoostrapPermissionsBoundaryPolicy;
     const request = {
       PolicyName: `cdk-${qualifier}-permissions-boundary`,
       PolicyDocument: JSON.stringify(policyDoc),
     };
-    iam.prototype.createPolicy(request, function (err, data) {
-      if (err) {
-        throw new Error(`Could not successfully create the example permissions boundary ${err.stack}`);
-      } else {
-        if (data && data.Policy && data.Policy.Arn) {
-          info(`A new example permissions boundary policy ${data.Policy.Arn} was created.`);
-          return data.Policy.Arn;
-        } else {
-          throw new Error(`Could not successfully create the example permissions boundary ${CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY}`);
-        }
-      }
-    });
-    return '';
+    const iam = sdk.iam();
+    const createPolicyResponse = await iam.createPolicy(request).promise();
+    const policyArn = createPolicyResponse.Policy?.Arn ;
+    return policyArn ? policyArn : '';
   }
 
   private async customBootstrap(

@@ -46,6 +46,10 @@ Parameters:
     Description: Whether or not to use either the CDK supplied or custom permissions boundary
     Default: ''
     Type: 'String'
+  CreateDefaultPermissionsBoundary:
+    Default: 'false'
+    AllowedValues: [ 'true', 'false' ]
+    Type: String
 Conditions:
   HasTrustedAccounts:
     Fn::Not:

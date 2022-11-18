@@ -1,15 +1,65 @@
+import * as AWS from 'aws-sdk';
+
 const mockDeployStack = jest.fn();
 
 jest.mock('../../lib/api/deploy-stack', () => ({
   deployStack: mockDeployStack,
 }));
 
+import { IAM } from 'aws-sdk';
 import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
-import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
+import { mockBootstrapStack, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+
+class IamMockSdkProvider {
+  public readonly mockSdkProvider: MockSdkProvider;
+  constructor() {
+    this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
+  }
+
+  public stubIam(
+    stubs: SyncHandlerSubsetOf<AWS.IAM>,
+    serviceStubs?: SyncHandlerSubsetOf<AWS.Service>,
+    additionalProperties: { [key: string]: any } = {},
+  ): void {
+    this.mockSdkProvider.stubIam(stubs, {
+      api: {
+        waiters: {},
+      },
+      makeRequest() {
+        return {
+          promise: () => Promise.resolve({}),
+          response: {},
+          addListeners: () => {},
+        };
+      },
+      ...serviceStubs,
+      ...additionalProperties,
+    });
+  }
+
+  public getIamApiWaiters(): { [key: string]: any } {
+    return (this.mockSdkProvider.sdk.lambda() as any).api.waiters;
+  }
+}
 
 let bootstrapper: Bootstrapper;
+let iamMockSdkProvider: IamMockSdkProvider;
+let mockSdkProvider: MockSdkProvider;
+let mockCreatePolicyIamCode: (params: IAM.Types.CreatePolicyRequest) => IAM.Types.CreatePolicyResponse;
+
 beforeEach(() => {
   bootstrapper = new Bootstrapper({ source: 'default' });
+  iamMockSdkProvider = new IamMockSdkProvider();
+  mockSdkProvider = new MockSdkProvider();
+  mockCreatePolicyIamCode = jest.fn().mockReturnValue({
+    Policy: {
+      PolicyName: 'my-policy',
+      Arn: 'arn:aws:iam::0123456789012:policy/my-policy',
+    },
+  });
+  iamMockSdkProvider.stubIam({
+    createPolicy: mockCreatePolicyIamCode,
+  });
 });
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
@@ -24,11 +74,9 @@ describe('Bootstrapping v2', () => {
     name: 'mock',
   };
 
-  let sdk: MockSdkProvider;
   beforeEach(() => {
-    sdk = new MockSdkProvider({ realSdk: false });
     // By default, we'll return a non-found toolkit info
-    (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstraplessDeploymentsOnly(sdk.sdk));
+    (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstraplessDeploymentsOnly(mockSdkProvider.sdk));
   });
 
   afterEach(() => {
@@ -36,7 +84,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes the bucket name as a CFN parameter', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         bucketName: 'my-bucket-name',
         cloudFormationExecutionPolicies: ['arn:policy'],
@@ -52,7 +100,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes the KMS key ID as a CFN parameter', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
         kmsKeyId: 'my-kms-key-id',
@@ -68,7 +116,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes false to PublicAccessBlockConfiguration', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
         publicAccessBlockConfiguration: false,
@@ -83,7 +131,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes true to PermissionsBoundary', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         defaultPermissionsBoundary: true,
       },
@@ -97,7 +145,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passes value to PermissionsBoundary', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         customPermissionsBoundary: 'permissions-boundary-name',
       },
@@ -111,7 +159,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+    await expect(bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         trustedAccounts: ['123456789012'],
       },
@@ -130,7 +178,7 @@ describe('Bootstrapping v2', () => {
       ],
     });
 
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+    await expect(bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         trustedAccounts: ['123456789012'],
       },
@@ -140,7 +188,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passing no CFN managed policies without trusted accounts is okay', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {},
     });
 
@@ -152,7 +200,7 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passing trusted accounts for lookup generates the correct stack parameter', async () => {
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         trustedAccountsForLookup: ['123456789012'],
         cloudFormationExecutionPolicies: ['aws://foo'],
@@ -177,7 +225,7 @@ describe('Bootstrapping v2', () => {
       ],
     });
 
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         trustedAccounts: ['123456789012'],
       },
@@ -196,7 +244,7 @@ describe('Bootstrapping v2', () => {
       ],
     });
 
-    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+    await expect(bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
       },
@@ -209,7 +257,7 @@ describe('Bootstrapping v2', () => {
       template = args.stack.template;
     });
 
-    await bootstrapper.bootstrapEnvironment(env, sdk, {
+    await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
       },
@@ -227,7 +275,7 @@ describe('Bootstrapping v2', () => {
 
   describe('termination protection', () => {
     test('stack is not termination protected by default', async () => {
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
+      await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
         parameters: {
           cloudFormationExecutionPolicies: ['arn:policy'],
         },
@@ -241,7 +289,7 @@ describe('Bootstrapping v2', () => {
     });
 
     test('stack is termination protected when option is set', async () => {
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
+      await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
         terminationProtection: true,
         parameters: {
           cloudFormationExecutionPolicies: ['arn:policy'],
@@ -260,7 +308,7 @@ describe('Bootstrapping v2', () => {
         EnableTerminationProtection: true,
       });
 
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
+      await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
         parameters: {
           cloudFormationExecutionPolicies: ['arn:policy'],
         },
@@ -278,7 +326,7 @@ describe('Bootstrapping v2', () => {
         EnableTerminationProtection: true,
       });
 
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
+      await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
         terminationProtection: false,
         parameters: {
           cloudFormationExecutionPolicies: ['arn:policy'],
@@ -305,7 +353,7 @@ describe('Bootstrapping v2', () => {
       // GIVEN: no existing stack
 
       // WHEN
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
+      await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
         parameters: {
           createCustomerMasterKey,
           cloudFormationExecutionPolicies: ['arn:booh'],
@@ -341,7 +389,7 @@ describe('Bootstrapping v2', () => {
       });
 
       // WHEN
-      await bootstrapper.bootstrapEnvironment(env, sdk, {
+      await bootstrapper.bootstrapEnvironment(env, mockSdkProvider, {
         parameters: {
           createCustomerMasterKey,
           cloudFormationExecutionPolicies: ['arn:booh'],
@@ -357,3 +405,4 @@ describe('Bootstrapping v2', () => {
     });
   });
 });
+
