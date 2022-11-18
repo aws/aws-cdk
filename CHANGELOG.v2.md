@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.51.0](https://github.com/aws/aws-cdk/compare/v2.50.0...v2.51.0) (2022-11-18)
+
+
+### Features
+
+* **assertions:** allResources and allResourcesProperties methods ([#22007](https://github.com/aws/aws-cdk/issues/22007)) ([2430537](https://github.com/aws/aws-cdk/commit/24305376260407ea4101ffc6637470c1ecd97ec5)), closes [#21269](https://github.com/aws/aws-cdk/issues/21269)
+* **cfnspec:** cloudformation spec v96.0.0 ([#22775](https://github.com/aws/aws-cdk/issues/22775)) ([aa19ec0](https://github.com/aws/aws-cdk/commit/aa19ec05835a7c71e1aa01dcd649a4d933ef1fd8))
+* **cfnspec:** cloudformation spec v97.0.0 ([#22876](https://github.com/aws/aws-cdk/issues/22876)) ([e29df69](https://github.com/aws/aws-cdk/commit/e29df698fbd1f5365edf4f71a91417d47806fc1c))
+* **codebuild:** interactive breakpoints using SSM ([#22728](https://github.com/aws/aws-cdk/issues/22728)) ([bf165a1](https://github.com/aws/aws-cdk/commit/bf165a1f76f44114f0c37b0c1dace6f2ac0e828f))
+* **cognito:** deletion protection for user pools ([#22765](https://github.com/aws/aws-cdk/issues/22765)) ([9bde9f3](https://github.com/aws/aws-cdk/commit/9bde9f3149cbfa6e7b97204f54e7cef5c9127971))
+* **ec2:** change log format in Vpc flow logs ([#22430](https://github.com/aws/aws-cdk/issues/22430)) ([26779f8](https://github.com/aws/aws-cdk/commit/26779f8b233a1ff6ba35fe2b364df4971bfcce9f)), closes [#16279](https://github.com/aws/aws-cdk/issues/16279) [/github.com/aws/aws-cdk/pull/16279#discussion_r808075037](https://github.com/aws//github.com/aws/aws-cdk/pull/16279/issues/discussion_r808075037) [#19316](https://github.com/aws/aws-cdk/issues/19316)
+* **iam:** customize IAM role creation behavior ([#22856](https://github.com/aws/aws-cdk/issues/22856)) ([b25e526](https://github.com/aws/aws-cdk/commit/b25e52616717b55a309c5d6d0998f2fd4cc6fe39)), closes [#22749](https://github.com/aws/aws-cdk/issues/22749) [#22862](https://github.com/aws/aws-cdk/issues/22862)
+* **lambda:** add nodejs18.x runtime ([#22964](https://github.com/aws/aws-cdk/issues/22964)) ([176feef](https://github.com/aws/aws-cdk/commit/176feefd7ceb4e8dc622283e2b40cab306705580))
+* lambda-layer-awscli): depend on @awscdk/asset-awscli-v1 and reduce aws-cdk-lib size ([#22823](https://github.com/aws/aws-cdk/issues/22823)) ([4bdb18e](https://github.com/aws/aws-cdk/commit/4bdb18e6a43c41ad403c16ab836fe7b991f9531c))
+* **lambda-layer-kubectl:** depend on @awscdk/asset-kubectl-v20 and reduce aws-cdk-lib size ([#22677](https://github.com/aws/aws-cdk/issues/22677)) ([6c606d0](https://github.com/aws/aws-cdk/commit/6c606d0f103681db2632d614843233632327693e))
+* **lambda-layer-node-proxy-agent:** depend on @awscdk/asset-node-proxy-agent-v5 and reduce aws-cdk-lib size ([#22769](https://github.com/aws/aws-cdk/issues/22769)) ([4d4e8cc](https://github.com/aws/aws-cdk/commit/4d4e8cc455a2828d76374a3174a1ce8bb600aac5))
+
+
+### Bug Fixes
+
+* **cli:** asset prebuild breaks some custom bootstrap scenarios ([#22930](https://github.com/aws/aws-cdk/issues/22930)) ([fc4668d](https://github.com/aws/aws-cdk/commit/fc4668d6ef23702547890549568a9205c79149f8)), closes [#21965](https://github.com/aws/aws-cdk/issues/21965)
+* **cli:** assetParallelism option in cdk.json is not recognized ([#22781](https://github.com/aws/aws-cdk/issues/22781)) ([e2a9c77](https://github.com/aws/aws-cdk/commit/e2a9c778f48c098990d2492bf7e269651056d667))
+* **cli:** synthesis stops on expired AWS credentials ([#22861](https://github.com/aws/aws-cdk/issues/22861)) ([0a55e91](https://github.com/aws/aws-cdk/commit/0a55e91950c00daa4fc1a29ca8bad268620a64f3))
+* **cloudfront:** custom originId not used for multiple behaviors with same origin ([#22830](https://github.com/aws/aws-cdk/issues/22830)) ([2f1e2e9](https://github.com/aws/aws-cdk/commit/2f1e2e9a3c87ecf7b76b253c6445c5099e15218a)), closes [#22758](https://github.com/aws/aws-cdk/issues/22758)
+* **cloudfront:** OriginShield not easily disabled once enabled on an origin ([#22791](https://github.com/aws/aws-cdk/issues/22791)) ([6be4cf6](https://github.com/aws/aws-cdk/commit/6be4cf63470239db7ea402a20fdd6099e53a185a))
+* **ecs:** adding a circuit breaker causes Service replacement (under feature flag) ([#22467](https://github.com/aws/aws-cdk/issues/22467)) ([9437d4f](https://github.com/aws/aws-cdk/commit/9437d4fd5957419145b70209e9ab06a8d415efa1)), closes [#16126](https://github.com/aws/aws-cdk/issues/16126) [#16919](https://github.com/aws/aws-cdk/issues/16919) [#22328](https://github.com/aws/aws-cdk/issues/22328)
+* **events-targets:** encrypted queues get too wide permissions (under feature flag) ([#22740](https://github.com/aws/aws-cdk/issues/22740)) ([a36f2f0](https://github.com/aws/aws-cdk/commit/a36f2f0d3e71e0b2467812a9d93d4b0b26629a60))
+* **iam:** oidc provider fetches leaf certificate thumbprint instead of root ([#22802](https://github.com/aws/aws-cdk/issues/22802)) ([280b876](https://github.com/aws/aws-cdk/commit/280b876d426522fd043f13ff0b188e29acaa0fbf)), closes [40aws-cdk/aws-iam/lib/oidc-provider/external.ts#L40](https://github.com/40aws-cdk/aws-iam/lib/oidc-provider/external.ts/issues/L40) [40aws-cdk/aws-iam/lib/oidc-provider/external.ts#L46](https://github.com/40aws-cdk/aws-iam/lib/oidc-provider/external.ts/issues/L46) [40aws-cdk/aws-eks/lib/oidc-provider.ts#L49](https://github.com/40aws-cdk/aws-eks/lib/oidc-provider.ts/issues/L49)
+* **s3-deployment:** `responseURL` is in CloudWatch Logs ([#22952](https://github.com/aws/aws-cdk/issues/22952)) ([863548d](https://github.com/aws/aws-cdk/commit/863548d9e5d643c18e939556661cc8a05b6f7742))
+* CDK does not work in FIPS-restricted environments ([#22878](https://github.com/aws/aws-cdk/issues/22878)) ([76a56ad](https://github.com/aws/aws-cdk/commit/76a56adf72bde721bd2da22fc25d1730ab751e3a))
+* **events-targets:** policy restricts access to the same account as the Queue, not the Rule ([#22766](https://github.com/aws/aws-cdk/issues/22766)) ([0083256](https://github.com/aws/aws-cdk/commit/0083256d2329e6195c96a45589079f678b67a184))
+* **iam:** service principals use unnecessary exceptions (under feature flag) ([#22819](https://github.com/aws/aws-cdk/issues/22819)) ([65d8e3d](https://github.com/aws/aws-cdk/commit/65d8e3d7814ac69d6cfa2bfd0d4219817028a14b))
+* **region-info:** EC2 service principal is incorrect in GovCloud regions ([#22589](https://github.com/aws/aws-cdk/issues/22589)) ([1c707eb](https://github.com/aws/aws-cdk/commit/1c707eb9456bbe9226471c0930713d3bfde42130))
+* **s3:** remove restriction of creating lifecycle rule for noncurrent objects when bucket versionining is not set up ([#22803](https://github.com/aws/aws-cdk/issues/22803)) ([b20a6b4](https://github.com/aws/aws-cdk/commit/b20a6b4964bdb6939c35db20362aaf681192cc95)), closes [#22392](https://github.com/aws/aws-cdk/issues/22392)
+* **stepfunctions-tasks:** custom resource uses subprocess with Shell=true ([#22752](https://github.com/aws/aws-cdk/issues/22752)) ([bd056d1](https://github.com/aws/aws-cdk/commit/bd056d1d38a2d3f43efe4f857c4d38b30fb9b681))
+
+
+### Reverts
+
+* "chore: add AWSLINT_SAVE to the PR buildspec ([#22743](https://github.com/aws/aws-cdk/issues/22743))" ([#22782](https://github.com/aws/aws-cdk/issues/22782)) ([df5830c](https://github.com/aws/aws-cdk/commit/df5830cc20ea3e7010ffba3aee9f29c31a4533e1))
+
 ## [2.50.0](https://github.com/aws/aws-cdk/compare/v2.49.1...v2.50.0) (2022-11-01)
 
 
