@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.51.1](https://github.com/aws/aws-cdk/compare/v2.51.0...v2.51.1) (2022-11-18)
+
+
+### Bug Fixes
+
+* ECS service replacement regression ([#22978](https://github.com/aws/aws-cdk/issues/22978)) ([680e048](https://github.com/aws/aws-cdk/commit/680e048abc0c1e778b64c4e29fefcff0704f4d30)), closes [#22467](https://github.com/aws/aws-cdk/issues/22467)
+
 ## [2.51.0](https://github.com/aws/aws-cdk/compare/v2.50.0...v2.51.0) (2022-11-18)
 
 
