@@ -33,7 +33,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **s3-deployment:** `responseURL` is in CloudWatch Logs ([#22952](https://github.com/aws/aws-cdk/issues/22952)) ([863548d](https://github.com/aws/aws-cdk/commit/863548d9e5d643c18e939556661cc8a05b6f7742))
 * CDK does not work in FIPS-restricted environments ([#22878](https://github.com/aws/aws-cdk/issues/22878)) ([76a56ad](https://github.com/aws/aws-cdk/commit/76a56adf72bde721bd2da22fc25d1730ab751e3a))
 * **events-targets:** policy restricts access to the same account as the Queue, not the Rule ([#22766](https://github.com/aws/aws-cdk/issues/22766)) ([0083256](https://github.com/aws/aws-cdk/commit/0083256d2329e6195c96a45589079f678b67a184))
-* **iam:** oidc provider retrieves leaf certificate instead of root certificate ([#22509](https://github.com/aws/aws-cdk/issues/22509)) ([ec32b5b](https://github.com/aws/aws-cdk/commit/ec32b5bae7224348f1d2622264d1e54663a941cd))
 * **iam:** service principals use unnecessary exceptions (under feature flag) ([#22819](https://github.com/aws/aws-cdk/issues/22819)) ([65d8e3d](https://github.com/aws/aws-cdk/commit/65d8e3d7814ac69d6cfa2bfd0d4219817028a14b))
 * **region-info:** EC2 service principal is incorrect in GovCloud regions ([#22589](https://github.com/aws/aws-cdk/issues/22589)) ([1c707eb](https://github.com/aws/aws-cdk/commit/1c707eb9456bbe9226471c0930713d3bfde42130))
 * **s3:** remove restriction of creating lifecycle rule for noncurrent objects when bucket versionining is not set up ([#22803](https://github.com/aws/aws-cdk/issues/22803)) ([b20a6b4](https://github.com/aws/aws-cdk/commit/b20a6b4964bdb6939c35db20362aaf681192cc95)), closes [#22392](https://github.com/aws/aws-cdk/issues/22392)
@@ -43,7 +42,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Reverts
 
 * "chore: add AWSLINT_SAVE to the PR buildspec ([#22743](https://github.com/aws/aws-cdk/issues/22743))" ([#22782](https://github.com/aws/aws-cdk/issues/22782)) ([df5830c](https://github.com/aws/aws-cdk/commit/df5830cc20ea3e7010ffba3aee9f29c31a4533e1))
-* **iam:** oidc provider retrieves leaf certificate instead of root certificate ([#22805](https://github.com/aws/aws-cdk/issues/22805)) ([64232ce](https://github.com/aws/aws-cdk/commit/64232ceeded5adfc346c0c6deddfdc03f1b16e6b)), closes [aws/aws-cdk#22509](https://github.com/aws/aws-cdk/issues/22509)
 
 ## [2.50.0](https://github.com/aws/aws-cdk/compare/v2.49.1...v2.50.0) (2022-11-01)
 
