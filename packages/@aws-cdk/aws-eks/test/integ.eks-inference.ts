@@ -17,7 +17,7 @@ class EksClusterInferenceStack extends Stack {
       vpc,
       ...getClusterVersionConfig(this),
       albController: {
-        version: eks.AlbControllerVersion.V2_4_5,
+        version: eks.AlbControllerVersion.V2_4_1,
       },
     });
 
