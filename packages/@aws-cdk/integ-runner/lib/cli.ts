@@ -1,10 +1,10 @@
 // Exercise all integ stacks and if they deploy, update the expected synth files
-import { promises as fs } from 'fs';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as workerpool from 'workerpool';
 import * as logger from './logger';
-import { IntegrationTests, IntegTestInfo, IntegTest } from './runner/integration-tests';
+import { IntegrationTests, IntegTestInfo } from './runner/integration-tests';
 import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics, IntegTestWorkerConfig, DestructiveChange } from './workers';
 
 // https://github.com/yargs/yargs/issues/1929
@@ -12,10 +12,15 @@ import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics, IntegTestWor
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const yargs = require('yargs');
 
-
-async function main() {
+export function parseCliArgs(args: string[] = []) {
   const argv = yargs
     .usage('Usage: integ-runner [TEST...]')
+    .option('config', {
+      config: true,
+      configParser: IntegrationTests.configFromFile,
+      default: 'integ.config.json',
+      desc: 'Load options from a JSON config file. Options provided as CLI arguments take precedent.',
+    })
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
     .option('verbose', { type: 'boolean', default: false, alias: 'v', count: true, desc: 'Verbose logs and metrics on integration tests durations (specify multiple times to increase verbosity)' })
@@ -30,57 +35,92 @@ async function main() {
     .options('from-file', { type: 'string', desc: 'Read TEST names from a file (one TEST per line)' })
     .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
+    .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
+    .option('test-regex', { type: 'array', desc: 'Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.', default: [] })
     .strict()
-    .argv;
+    .parse(args);
 
-  const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
-    maxWorkers: argv['max-workers'],
-  });
-
-  // list of integration tests that will be executed
-  const testsToRun: IntegTestWorkerConfig[] = [];
-  const destructiveChanges: DestructiveChange[] = [];
-  const testsFromArgs: IntegTest[] = [];
+  const tests: string[] = argv._;
   const parallelRegions = arrayFromYargs(argv['parallel-regions']);
   const testRegions: string[] = parallelRegions ?? ['us-east-1', 'us-east-2', 'us-west-2'];
   const profiles = arrayFromYargs(argv.profiles);
-  const runUpdateOnFailed = argv['update-on-failed'] ?? false;
   const fromFile: string | undefined = argv['from-file'];
-  const exclude: boolean = argv.exclude;
+  const maxWorkers: number = argv['max-workers'];
+  const verbosity: number = argv.verbose;
+  const verbose: boolean = verbosity >= 1;
 
-  let failedSnapshots: IntegTestWorkerConfig[] = [];
-  if (argv['max-workers'] < testRegions.length * (profiles ?? [1]).length) {
-    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', argv.profiles * argv['parallel-regions'], argv['max-workers']);
+  const numTests = testRegions.length * (profiles ?? [1]).length;
+  if (maxWorkers < numTests) {
+    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', numTests, maxWorkers);
   }
 
+  if (tests.length > 0 && fromFile) {
+    throw new Error('A list of tests cannot be provided if "--from-file" is provided');
+  }
+  const requestedTests = fromFile
+    ? (fs.readFileSync(fromFile, { encoding: 'utf8' })).split('\n').filter(x => x)
+    : (tests.length > 0 ? tests : undefined); // 'undefined' means no request
+
+  return {
+    tests: requestedTests,
+    app: argv.app as (string | undefined),
+    testRegex: arrayFromYargs(argv['test-regex']),
+    testRegions,
+    profiles,
+    runUpdateOnFailed: (argv['update-on-failed'] ?? false) as boolean,
+    fromFile,
+    exclude: argv.exclude as boolean,
+    maxWorkers,
+    list: argv.list as boolean,
+    directory: argv.directory as string,
+    inspectFailures: argv['inspect-failures'] as boolean,
+    verbosity,
+    verbose,
+    clean: argv.clean as boolean,
+    force: argv.force as boolean,
+    dryRun: argv['dry-run'] as boolean,
+    disableUpdateWorkflow: argv['disable-update-workflow'] as boolean,
+  };
+}
+
+
+export async function main(args: string[]) {
+  const options = parseCliArgs(args);
+
+  const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliArgs({
+    app: options.app,
+    testRegex: options.testRegex,
+    tests: options.tests,
+    exclude: options.exclude,
+  });
+
+  // List only prints the discoverd tests
+  if (options.list) {
+    process.stdout.write(testsFromArgs.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
+    return;
+  }
+
+  const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
+    maxWorkers: options.maxWorkers,
+  });
+
+  const testsToRun: IntegTestWorkerConfig[] = [];
+  const destructiveChanges: DestructiveChange[] = [];
+  let failedSnapshots: IntegTestWorkerConfig[] = [];
   let testsSucceeded = false;
+
   try {
-    if (argv.list) {
-      const tests = await new IntegrationTests(argv.directory).fromCliArgs();
-      process.stdout.write(tests.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
-      return;
-    }
-
-    if (argv._.length > 0 && fromFile) {
-      throw new Error('A list of tests cannot be provided if "--from-file" is provided');
-    }
-    const requestedTests = fromFile
-      ? (await fs.readFile(fromFile, { encoding: 'utf8' })).split('\n').filter(x => x)
-      : (argv._.length > 0 ? argv._ : undefined); // 'undefined' means no request
-
-    testsFromArgs.push(...(await new IntegrationTests(path.resolve(argv.directory)).fromCliArgs(requestedTests, exclude)));
-
     // always run snapshot tests, but if '--force' is passed then
     // run integration tests on all failed tests, not just those that
     // failed snapshot tests
     failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
-      retain: argv['inspect-failures'],
-      verbose: Boolean(argv.verbose),
+      retain: options.inspectFailures,
+      verbose: options.verbose,
     });
     for (const failure of failedSnapshots) {
       destructiveChanges.push(...failure.destructiveChanges ?? []);
     }
-    if (!argv.force) {
+    if (!options.force) {
       testsToRun.push(...failedSnapshots);
     } else {
       // if any of the test failed snapshot tests, keep those results
@@ -89,25 +129,25 @@ async function main() {
     }
 
     // run integration tests if `--update-on-failed` OR `--force` is used
-    if (runUpdateOnFailed || argv.force) {
+    if (options.runUpdateOnFailed || options.force) {
       const { success, metrics } = await runIntegrationTests({
         pool,
         tests: testsToRun,
-        regions: testRegions,
-        profiles,
-        clean: argv.clean,
-        dryRun: argv['dry-run'],
-        verbosity: argv.verbose,
-        updateWorkflow: !argv['disable-update-workflow'],
+        regions: options.testRegions,
+        profiles: options.profiles,
+        clean: options.clean,
+        dryRun: options.dryRun,
+        verbosity: options.verbosity,
+        updateWorkflow: !options.disableUpdateWorkflow,
       });
       testsSucceeded = success;
 
 
-      if (argv.clean === false) {
+      if (options.clean === false) {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');
       }
 
-      if (Boolean(argv.verbose)) {
+      if (Boolean(options.verbose)) {
         printMetrics(metrics);
       }
 
@@ -125,8 +165,8 @@ async function main() {
   }
   if (failedSnapshots.length > 0) {
     let message = '';
-    if (!runUpdateOnFailed) {
-      message = 'To re-run failed tests run: yarn integ-runner --update-on-failed';
+    if (!options.runUpdateOnFailed) {
+      message = 'To re-run failed tests run: integ-runner --update-on-failed';
     }
     if (!testsSucceeded) {
       throw new Error(`Some tests failed!\n${message}`);
@@ -181,8 +221,8 @@ function mergeTests(testFromArgs: IntegTestInfo[], failedSnapshotTests: IntegTes
   return final;
 }
 
-export function cli() {
-  main().then().catch(err => {
+export function cli(args: string[] = process.argv.slice(2)) {
+  main(args).then().catch(err => {
     logger.error(err);
     process.exitCode = 1;
   });
