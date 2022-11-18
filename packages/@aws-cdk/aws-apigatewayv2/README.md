@@ -404,6 +404,19 @@ webSocketApi.addRoute('sendmessage', {
 });
 ```
 
+To add a route that can return a result:
+
+```ts
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const messageHandler: lambda.Function;
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+webSocketApi.addRoute('sendmessage', {
+  integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
+  shouldReturnResponse: true,
+});
+```
+
 To import an existing WebSocketApi:
 
 ```ts
