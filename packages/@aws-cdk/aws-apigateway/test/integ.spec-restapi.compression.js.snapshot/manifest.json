@@ -1,0 +1,267 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "test-apigateway-spec-restapi-compression.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-apigateway-spec-restapi-compression.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "test-apigateway-spec-restapi-compression": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-spec-restapi-compression.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c0d51b0df7b791b44148175def15aa7b60989b73c5bb6b78c7105bd87da7e62.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "test-apigateway-spec-restapi-compression.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-apigateway-spec-restapi-compression.assets"
+      ],
+      "metadata": {
+        "/test-apigateway-spec-restapi-compression/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv113487378"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/toys/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysA55FCBC4"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/toys/GET/ApiPermission.testapigatewayspecrestapicompressionmyapi59E5A51F.GET..v1.toys": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysGETApiPermissiontestapigatewayspecrestapicompressionmyapi59E5A51FGETv1toys83AEAADF"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/toys/GET/ApiPermission.Test.testapigatewayspecrestapicompressionmyapi59E5A51F.GET..v1.toys": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysGETApiPermissionTesttestapigatewayspecrestapicompressionmyapi59E5A51FGETv1toysCEF4F074"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/toys/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysGET7348114D"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/toys/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysPOST55128058"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/toys/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1toysPUT59AFBBC2"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/appliances/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliances507FEFF4"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/appliances/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliancesGET8FE872EC"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1books1D4BE6C1"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/books/GET/ApiPermission.testapigatewayspecrestapicompressionmyapi59E5A51F.GET..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksGETApiPermissiontestapigatewayspecrestapicompressionmyapi59E5A51FGETv1books8A4D5699"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/books/GET/ApiPermission.Test.testapigatewayspecrestapicompressionmyapi59E5A51F.GET..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksGETApiPermissionTesttestapigatewayspecrestapicompressionmyapi59E5A51FGETv1books3C4242D5"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksGETC6B996D0"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/books/POST/ApiPermission.testapigatewayspecrestapicompressionmyapi59E5A51F.POST..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksPOSTApiPermissiontestapigatewayspecrestapicompressionmyapi59E5A51FPOSTv1books288D7359"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/books/POST/ApiPermission.Test.testapigatewayspecrestapicompressionmyapi59E5A51F.POST..v1.books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksPOSTApiPermissionTesttestapigatewayspecrestapicompressionmyapi59E5A51FPOSTv1booksA2411433"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Default/v1/books/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1booksPOST53E2832E"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB49ca9df5fc7cc5dab9e75e0234e72bc2b5"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/DeploymentStage.beta/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStagebeta96434BEB"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/ApiKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiApiKey43446CCF"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/UsagePlan/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiUsagePlan56F9C4F2"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/my-api/UsagePlan/UsagePlanKeyResource:testapigatewayspecrestapicompressionmyapiApiKeyC478B277": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiUsagePlanUsagePlanKeyResourcetestapigatewayspecrestapicompressionmyapiApiKeyC478B2773D5F100B"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/MyHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHandlerServiceRoleFFA06653"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/MyHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHandler6B74D312"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-apigateway-spec-restapi-compression/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-apigateway-spec-restapi-compression"
+    },
+    "apigatewayspecrestapicompressionDefaultTestDeployAssert473E8E6B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigatewayspecrestapicompressionDefaultTestDeployAssert473E8E6B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigatewayspecrestapicompressionDefaultTestDeployAssert473E8E6B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayspecrestapicompressionDefaultTestDeployAssert473E8E6B.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigatewayspecrestapicompressionDefaultTestDeployAssert473E8E6B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apigatewayspecrestapicompressionDefaultTestDeployAssert473E8E6B.assets"
+      ],
+      "metadata": {
+        "/apigateway-spec-restapi-compression/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigateway-spec-restapi-compression/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigateway-spec-restapi-compression/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

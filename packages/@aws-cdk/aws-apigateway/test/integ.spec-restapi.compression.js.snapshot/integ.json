@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "apigateway-spec-restapi-compression/DefaultTest": {
+      "stacks": [
+        "test-apigateway-spec-restapi-compression"
+      ],
+      "assertionStack": "apigateway-spec-restapi-compression/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayspecrestapicompressionDefaultTestDeployAssert473E8E6B"
+    }
+  }
+}
