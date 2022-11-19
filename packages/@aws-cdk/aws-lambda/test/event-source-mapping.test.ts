@@ -178,6 +178,14 @@ describe('event source mapping', () => {
     })).not.toThrow();
   });
 
+  test('not throws if kafkaConsumerGroupId is token', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: cdk.Lazy.string({ produce: () => 'test' }),
+      target: fn,
+    })).not.toThrow();
+  });
+
   test('not throws if kafkaConsumerGroupId is valid for amazon managed kafka', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
