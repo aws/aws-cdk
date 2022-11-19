@@ -1203,6 +1203,16 @@ export class OracleEngineVersion {
   public static readonly VER_12_1_0_2_V23 = OracleEngineVersion.of('12.1.0.2.v23', '12.1');
   /** Version "12.1.0.2.v24". */
   public static readonly VER_12_1_0_2_V24 = OracleEngineVersion.of('12.1.0.2.v24', '12.1');
+  /** Version "12.1.0.2.v25". */
+  public static readonly VER_12_1_0_2_V25 = OracleEngineVersion.of('12.1.0.2.v25', '12.1');
+  /** Version "12.1.0.2.v26". */
+  public static readonly VER_12_1_0_2_V26 = OracleEngineVersion.of('12.1.0.2.v26', '12.1');
+  /** Version "12.1.0.2.v27". */
+  public static readonly VER_12_1_0_2_V27 = OracleEngineVersion.of('12.1.0.2.v27', '12.1');
+  /** Version "12.1.0.2.v28". */
+  public static readonly VER_12_1_0_2_V28 = OracleEngineVersion.of('12.1.0.2.v28', '12.1');
+  /** Version "12.1.0.2.v29". */
+  public static readonly VER_12_1_0_2_V29 = OracleEngineVersion.of('12.1.0.2.v29', '12.1');
 
   /** Version "12.2" (only a major version, without a specific minor version). */
   public static readonly VER_12_2 = OracleEngineVersion.of('12.2', '12.2');
@@ -1228,7 +1238,12 @@ export class OracleEngineVersion {
   public static readonly VER_12_2_0_1_2021_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-01.rur-2021-01.r1', '12.2');
   /** Version "12.2.0.1.ru-2021-04.rur-2021-04.r1". */
   public static readonly VER_12_2_0_1_2021_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-04.rur-2021-04.r1', '12.2');
-
+  /** Version "12.2.0.1.ru-2021-07.rur-2021-07.r1". */
+  public static readonly VER_12_2_0_1_2021_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-07.rur-2021-07.r1', '12.2');
+  /** Version "12.2.0.1.ru-2021-10.rur-2021-10.r1". */
+  public static readonly VER_12_2_0_1_2021_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-10.rur-2021-10.r1', '12.2');
+  /** Version "12.2.0.1.ru-2022-01.rur-2022-01.r1". */
+  public static readonly VER_12_2_0_1_2022_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2022-01.rur-2022-01.r1', '12.2');
 
   /** Version "18" (only a major version, without a specific minor version). */
   public static readonly VER_18 = OracleEngineVersion.of('18', '18');
@@ -1242,6 +1257,12 @@ export class OracleEngineVersion {
   public static readonly VER_18_0_0_0_2020_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-04.rur-2020-04.r1', '18');
   /** Version "18.0.0.0.ru-2020-07.rur-2020-07.r1". */
   public static readonly VER_18_0_0_0_2020_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-07.rur-2020-07.r1', '18');
+  /** Version "18.0.0.0.ru-2020-10.rur-2020-10.r1". */
+  public static readonly VER_18_0_0_0_2020_10_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-10.rur-2020-10.r1', '18');
+  /** Version "18.0.0.0.ru-2021-01.rur-2021-01.r1". */
+  public static readonly VER_18_0_0_0_2021_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2021-01.rur-2021-01.r1', '18');
+  /** Version "18.0.0.0.ru-2021-04.rur-2021-04.r1". */
+  public static readonly VER_18_0_0_0_2021_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2021-04.rur-2021-04.r1', '18');
 
   /** Version "19" (only a major version, without a specific minor version). */
   public static readonly VER_19 = OracleEngineVersion.of('19', '19');
@@ -1269,11 +1290,23 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2021_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-10.rur-2021-10.r1', '19');
   /** Version "19.0.0.0.ru-2022-01.rur-2022-01.r1". */
   public static readonly VER_19_0_0_0_2022_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-01.rur-2022-01.r1', '19');
+  /** Version "19.0.0.0.ru-2022-04.rur-2022-04.r1". */
+  public static readonly VER_19_0_0_0_2022_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-04.rur-2022-04.r1', '19');
+  /** Version "19.0.0.0.ru-2022-07.rur-2022-07.r1". */
+  public static readonly VER_19_0_0_0_2022_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-07.rur-2022-07.r1', '19');
+  /** Version "19.0.0.0.ru-2022-10.rur-2022-10.r1". */
+  public static readonly VER_19_0_0_0_2022_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-10.rur-2022-10.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
   /** Version "21.0.0.0.ru-2022-01.rur-2022-01.r1". */
   public static readonly VER_21_0_0_0_2022_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-01.rur-2022-01.r1', '21');
+  /** Version "21.0.0.0.ru-2022-04.rur-2022-04.r1". */
+  public static readonly VER_21_0_0_0_2022_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-04.rur-2022-04.r1', '21');
+  /** Version "21.0.0.0.ru-2022-07.rur-2022-07.r1". */
+  public static readonly VER_21_0_0_0_2022_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-07.rur-2022-07.r1', '21');
+  /** Version "21.0.0.0.ru-2022-10.rur-2022-10.r1". */
+  public static readonly VER_21_0_0_0_2022_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-01.rur-2022-10.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
