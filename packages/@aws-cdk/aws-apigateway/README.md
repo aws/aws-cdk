@@ -1423,6 +1423,10 @@ for more details.
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
 
+**Note:** Compression of payload can be enabled by setting a value for `minimumCompressionSize` property. 
+When compression is enabled, compression or decompression is not applied on the payload if the payload size is smaller than this value. 
+Setting it to zero allows compression for any payload size.
+
 ### Endpoint configuration
 
 By default, `SpecRestApi` will create an edge optimized endpoint.
