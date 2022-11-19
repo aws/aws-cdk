@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-lambda-nodejs-dependencies.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2211ee96578399d927407352779c284056e2d7ef714dad838a81e531f403edde.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f3a3090038ceb0487af9399970eee813bda065da7bd2d1e29b7140662c10aa5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,6 +45,18 @@
             "data": "external068F12D1"
           }
         ],
+        "/cdk-integ-lambda-nodejs-dependencies/external-sdk-v3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "externalsdkv3ServiceRole9C835365"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies/external-sdk-v3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "externalsdkv3B69F9D99"
+          }
+        ],
         "/cdk-integ-lambda-nodejs-dependencies/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,6 +71,12 @@
         ]
       },
       "displayName": "cdk-integ-lambda-nodejs-dependencies"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
