@@ -393,7 +393,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
     const patternMatch = regex.exec(kafkaConsumerGroupId);
     if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
-      throw new Error('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+      throw new Error('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
     }
   }
 }

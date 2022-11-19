@@ -159,7 +159,7 @@ describe('event source mapping', () => {
       eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
       kafkaConsumerGroupId: 'some invalid',
       target: fn,
-    })).toThrow('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+    })).toThrow('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
   });
 
   test('throws if kafkaConsumerGroupId is too long', () => {
