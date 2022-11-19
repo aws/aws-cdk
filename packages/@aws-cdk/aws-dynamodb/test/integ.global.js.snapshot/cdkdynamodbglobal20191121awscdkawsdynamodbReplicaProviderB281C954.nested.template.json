@@ -567,7 +567,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "states.eu-west-1.amazonaws.com"
+        "Service": "states.amazonaws.com"
        }
       }
      ],
