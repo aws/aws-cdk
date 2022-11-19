@@ -1724,9 +1724,9 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    const charsetMatch = bucketName.match(/[^a-z0-9._-]/);
     if (charsetMatch) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.), underscore (_) and dash (-) '
         + `(offset: ${charsetMatch.index})`);
     }
     if (!/[a-z0-9]/.test(bucketName.charAt(0))) {

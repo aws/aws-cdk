@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "bucket-name-with-underscore/DefaultTest": {
+      "stacks": [
+        "test-bucket-name-with-underscore"
+      ],
+      "assertionStack": "bucket-name-with-underscore/DefaultTest/DeployAssert",
+      "assertionStackName": "bucketnamewithunderscoreDefaultTestDeployAssert48891D3D"
+    }
+  }
+}
