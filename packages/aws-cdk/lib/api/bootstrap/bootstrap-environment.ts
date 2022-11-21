@@ -79,6 +79,7 @@ export class Bootstrapper {
     const bootstrapTemplate = await this.loadTemplate();
 
     const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
+    const partition = await current.partition();
 
     if (params.createCustomerMasterKey !== undefined && params.kmsKeyId) {
       throw new Error('You cannot pass \'--bootstrap-kms-key-id\' and \'--bootstrap-customer-key\' together. Specify one or the other');
@@ -113,7 +114,7 @@ export class Bootstrapper {
       //
       // Would leave AdministratorAccess policies with a trust relationship, without the user explicitly
       // approving the trust policy.
-      const implicitPolicy = `arn:${await current.partition()}:iam::aws:policy/AdministratorAccess`;
+      const implicitPolicy = `arn:${partition}:iam::aws:policy/AdministratorAccess`;
       warning(`Using default execution policy of '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`);
     } else if (cloudFormationExecutionPolicies.length === 0) {
       throw new Error('Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.');
@@ -144,7 +145,7 @@ export class Bootstrapper {
     if (inputPolicyName) {
       // If the example policy is not already in place, it must be created.
       const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForWriting)).sdk;
-      policyName = await this.getPolicyName(environment, sdk, inputPolicyName, bootstrapTemplate, params);
+      policyName = await this.getPolicyName(environment, sdk, inputPolicyName, bootstrapTemplate, partition, params);
     }
     if (currentPermissionsBoundary !== policyName) {
       warning(`Switching from ${currentPermissionsBoundary} to ${inputPolicyName} as permissions boundary`);
@@ -172,13 +173,18 @@ export class Bootstrapper {
     environment: cxapi.Environment,
     sdk: ISDK,
     permissionsBoundary: string,
-    bootstrapTemplate: string,
+    template: string,
+    partition: string,
     params: BootstrappingParameters): Promise<string> {
 
     if (permissionsBoundary === CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
-      const arn = await this.getExamplePermissionsBoundary(bootstrapTemplate, params.qualifier, environment.account, sdk);
+      const arn = await this.getExamplePermissionsBoundary(template, params.qualifier, partition, environment.account, sdk);
       const policyName = arn.split('/').pop();
-      permissionsBoundary = policyName ?? '';
+      if (policyName) {
+        permissionsBoundary = policyName;
+      } else {
+        throw new Error('Could not retrieve the example permission boundary!');
+      }
     }
     this.validatePolicyName(permissionsBoundary);
     return Promise.resolve(permissionsBoundary);
@@ -193,18 +199,23 @@ export class Bootstrapper {
     }
   }
 
-  private async getExamplePermissionsBoundary(bootstrapTemplate: any, qualifier: string | undefined, account: string, sdk: ISDK): Promise<string> {
+  private async getExamplePermissionsBoundary(
+    template: string,
+    qualifier: string | undefined,
+    partition: string,
+    account: string,
+    sdk: ISDK): Promise<string> {
     const iam = sdk.iam();
     // if no Qualifier is supplied, resort to the default one
     const policyName = qualifier ? `cdk-${qualifier}-permissions-boundary` : 'cdk-hnb659fds-permissions-boundary';
-    const arn = `arn::iam::${account}:policy/${policyName}`;
+    const arn = `arn:${partition}:iam::${account}:policy/${policyName}`;
 
     let getPolicyResp = await iam.getPolicy({ PolicyArn: arn }).promise();
     if (getPolicyResp.Policy) {
       return arn;
     }
 
-    const policyDoc = JSON.parse(serializeStructure(bootstrapTemplate, true)).CdkBoostrapPermissionsBoundaryPolicy;
+    const policyDoc = JSON.parse(serializeStructure(template, true)).CdkBoostrapPermissionsBoundaryPolicy;
     const request = {
       PolicyName: policyName,
       PolicyDocument: JSON.stringify(policyDoc),
@@ -241,7 +252,7 @@ export class Bootstrapper {
 }
 
 /**
- * Magic parameter value that will cause the bootstrap-template.yml to NOT create a CMK but use the default keyo
+ * Magic parameter value that will cause the bootstrap-template.yml to NOT create a CMK but use the default key
  */
 const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
 
