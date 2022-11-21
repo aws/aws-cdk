@@ -89,6 +89,11 @@ Conditions:
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: F19 # EnableKeyRotation should not be false or absent on KMS::Key resource
+          - id: F76 # KMS key should not allow * principal (https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html)
     Properties:
       KeyPolicy:
         Statement:
@@ -151,6 +156,10 @@ Resources:
         Ref: FileAssetsBucketEncryptionKey
   StagingBucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W35 # S3 Bucket should have access logging configured
     Properties:
       BucketName:
         Fn::If:
@@ -201,6 +210,11 @@ Resources:
             Principal: '*'
   ContainerAssetsRepository:
     Type: AWS::ECR::Repository
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28 # Resource found with an explicit name, this disallows updates that require replacement of this resource
+          - id: W79 # ECR Repository should have ScanOnPush enabled
     Properties:
       ImageTagMutability: IMMUTABLE
       RepositoryName:
@@ -224,6 +238,10 @@ Resources:
                 "aws:sourceArn": { "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*" }
   FilePublishingRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28 # Resource found with an explicit name, this disallows updates that require replacement of this resource
     Properties:
       AssumeRolePolicyDocument:
         Statement:
@@ -247,6 +265,10 @@ Resources:
           Value: file-publishing
   ImagePublishingRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28 # Resource found with an explicit name, this disallows updates that require replacement of this resource
     Properties:
       AssumeRolePolicyDocument:
         Statement:
@@ -270,6 +292,10 @@ Resources:
           Value: image-publishing
   LookupRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28 # Resource found with an explicit name, this disallows updates that require replacement of this resource
     Properties:
       AssumeRolePolicyDocument:
         Statement:
@@ -347,6 +373,10 @@ Resources:
         Fn::Sub: cdk-${Qualifier}-file-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}
   ImagePublishingRoleDefaultPolicy:
     Type: AWS::IAM::Policy
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W12 # IAM policy should not allow * resource
     Properties:
       PolicyDocument:
         Statement:
@@ -374,6 +404,11 @@ Resources:
         Fn::Sub: cdk-${Qualifier}-image-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}
   DeploymentActionRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W11 # IAM role should not allow * resource on its permissions policy
+          - id: W28 # Resource found with an explicit name, this disallows updates that require replacement of this resource
     Properties:
       AssumeRolePolicyDocument:
         Statement:
@@ -480,6 +515,10 @@ Resources:
           Value: deploy
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W28 # Resource found with an explicit name, this disallows updates that require replacement of this resource
     Properties:
       AssumeRolePolicyDocument:
         Statement:
