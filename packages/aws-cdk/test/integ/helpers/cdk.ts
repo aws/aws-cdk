@@ -426,9 +426,9 @@ export class TestFixture {
       args.push('--tags', options.tags);
     }
     if (options.customPermissionsBoundary !== undefined) {
-      args.push('--permissions-boundary', options.customPermissionsBoundary);
+      args.push('--custom-permissions-boundary', options.customPermissionsBoundary);
     } else if (options.defaultPermissionsBoundary !== undefined) {
-      args.push('--use-default-permissions-boundary');
+      args.push('--example-permissions-boundary');
     }
 
     return this.cdk(args, {

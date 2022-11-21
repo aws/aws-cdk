@@ -26,7 +26,7 @@ export interface MockSdkProviderOptions {
 /**
  * An SDK that allows replacing (some of) the clients
  *
- * Its the responsibility of the consumer to replace all calls that
+ * It's the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
 export class MockSdkProvider extends SdkProvider {

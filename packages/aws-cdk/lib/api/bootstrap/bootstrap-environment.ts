@@ -139,20 +139,15 @@ export class Bootstrapper {
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions' boundary.
     */
     const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
-    const permissionsBoundary = params.defaultPermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
+    const inputPolicyName = params.defaultPermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
     let policyName;
-    if (permissionsBoundary) {
-      if (permissionsBoundary === CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
-        const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForWriting)).sdk;
-        const arn = await this.createExamplePermissionsBoundary(bootstrapTemplate, params.qualifier, sdk);
-        policyName = arn.split('/').pop();
-      } else {
-        this.validatePolicyName(permissionsBoundary);
-        policyName = permissionsBoundary;
-      }
+    if (inputPolicyName) {
+      // If the example policy is not already in place, it must be created.
+      const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForWriting)).sdk;
+      policyName = await this.getPolicyName(environment, sdk, inputPolicyName, bootstrapTemplate, params);
     }
     if (currentPermissionsBoundary !== policyName) {
-      warning(`Switching from ${currentPermissionsBoundary} to ${permissionsBoundary} as permissions boundary`);
+      warning(`Switching from ${currentPermissionsBoundary} to ${inputPolicyName} as permissions boundary`);
     }
 
     return current.update(
@@ -166,11 +161,27 @@ export class Bootstrapper {
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
-        PermissionsBoundary: permissionsBoundary,
+        PermissionsBoundary: policyName,
       }, {
         ...options,
         terminationProtection: options.terminationProtection ?? current.terminationProtection,
       });
+  }
+
+  private async getPolicyName(
+    environment: cxapi.Environment,
+    sdk: ISDK,
+    permissionsBoundary: string,
+    bootstrapTemplate: string,
+    params: BootstrappingParameters): Promise<string> {
+
+    if (permissionsBoundary === CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
+      const arn = await this.getExamplePermissionsBoundary(bootstrapTemplate, params.qualifier, environment.account, sdk);
+      const policyName = arn.split('/').pop();
+      permissionsBoundary = policyName ?? '';
+    }
+    this.validatePolicyName(permissionsBoundary);
+    return Promise.resolve(permissionsBoundary);
   }
 
   private validatePolicyName(permissionsBoundary: string) {
@@ -178,21 +189,28 @@ export class Bootstrapper {
     const regexp: RegExp = /[\w+=,.@-]+/;
     const matches = regexp.exec(permissionsBoundary);
     if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
-      throw new Error('Please pass the custom permissions boundary by name when using \'--permissions-boundary\'');
+      throw new Error(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);
     }
   }
 
-  private async createExamplePermissionsBoundary(bootstrapTemplate: any, qualifier: string | undefined, sdk: ISDK): Promise<string> {
-    qualifier = qualifier ? qualifier : 'hnb659fds'; // if none is supplied, resort to the default qualifier
+  private async getExamplePermissionsBoundary(bootstrapTemplate: any, qualifier: string | undefined, account: string, sdk: ISDK): Promise<string> {
+    const iam = sdk.iam();
+    // if no Qualifier is supplied, resort to the default one
+    const policyName = qualifier ? `cdk-${qualifier}-permissions-boundary` : 'cdk-hnb659fds-permissions-boundary';
+    const arn = `arn::iam::${account}:policy/${policyName}`;
+
+    let getPolicyResp = await iam.getPolicy({ PolicyArn: arn }).promise();
+    if (getPolicyResp.Policy) {
+      return arn;
+    }
+
     const policyDoc = JSON.parse(serializeStructure(bootstrapTemplate, true)).CdkBoostrapPermissionsBoundaryPolicy;
     const request = {
-      PolicyName: `cdk-${qualifier}-permissions-boundary`,
+      PolicyName: policyName,
       PolicyDocument: JSON.stringify(policyDoc),
     };
-    const iam = sdk.iam();
     const createPolicyResponse = await iam.createPolicy(request).promise();
-    const policyArn = createPolicyResponse.Policy?.Arn ;
-    return policyArn ? policyArn : '';
+    return createPolicyResponse.Policy?.Arn ?? '';
   }
 
   private async customBootstrap(

@@ -46,7 +46,7 @@ Parameters:
     Description: Whether or not to use either the CDK supplied or custom permissions boundary
     Default: ''
     Type: 'String'
-  CreateDefaultPermissionsBoundary:
+  UseExamplePermissionsBoundary:
     Default: 'false'
     AllowedValues: [ 'true', 'false' ]
     Type: String
@@ -88,7 +88,7 @@ Conditions:
   ShouldCreatePermissionsBoundary:
     Fn::Equals:
       - 'true'
-      - Ref: CreateDefaultPermissionsBoundary
+      - Ref: UseExamplePermissionsBoundary
   PermissionsBoundarySet:
     Fn::Not:
       - Fn::Equals:
@@ -618,4 +618,3 @@ Outputs:
       in this stack
     Value:
       Fn::GetAtt: [CdkBootstrapVersion, Value]
-
