@@ -545,7 +545,7 @@ Resources:
             Condition:
               StringNotEquals:
                 iam:PermissionsBoundary:
-                  Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
+                  Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-permissions-boundary-${AWS::AccountId}-${AWS::Region}
             Effect: Deny
             Resource: "*"
           # Forbid the policy itself being edited
@@ -557,7 +557,7 @@ Resources:
               - iam:SetDefaultPolicyVersion
             Effect: Deny
             Resource:
-              Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
+              Fn::Sub: arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/cdk-${Qualifier}-permissions-boundary-${AWS::AccountId}-${AWS::Region}
           # Forbid removing the permissions boundary from any user or role that has it associated
           - Sid: DenyRemovalOfPermBoundaryFromAnyUserOrRole
             Action:
