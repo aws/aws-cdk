@@ -85,9 +85,9 @@ Conditions:
     Fn::Equals:
       - 'AWS_MANAGED_KEY'
       - Ref: FileAssetsBucketKmsKeyId
-  Untrue:
+  ShouldCreatePermissionsBoundary:
     Fn::Equals:
-      - 'CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY'
+      - 'true'
       - Ref: CreateDefaultPermissionsBoundary
   PermissionsBoundarySet:
     Fn::Not:
