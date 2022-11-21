@@ -3,6 +3,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
+import { FakeTask } from './private/fake-task';
 
 describe('State Machine', () => {
   test('Instantiate Default State Machine', () => {
@@ -265,6 +266,74 @@ describe('State Machine', () => {
                 ],
               },
             ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
+  test('Instantiate a State Machine with a task assuming a literal roleArn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+      definition: new FakeTask(stack, 'fakeTask', { credentials: { roleArn: 'arn:aws:iam::123456789012:role/example-role' } }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"fakeTask","States":{"fakeTask":{"End":true,"Type":"Task","Credentials":{"RoleArn":"arn:aws:iam::123456789012:role/example-role"},"Resource":"my-resource","Parameters":{"MyParameter":"myParameter"}}}}',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'sts:AssumeRole',
+            Resource: 'arn:aws:iam::123456789012:role/example-role',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
+  test('Instantiate a State Machine with a task assuming a JSONPath roleArn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+      definition: new FakeTask(stack, 'fakeTask', { credentials: { roleArn: stepfunctions.JsonPath.stringAt('$.RoleArn') } }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"fakeTask","States":{"fakeTask":{"End":true,"Type":"Task","Credentials":{"RoleArn.$":"$.RoleArn"},"Resource":"my-resource","Parameters":{"MyParameter":"myParameter"}}}}',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'sts:AssumeRole',
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',
