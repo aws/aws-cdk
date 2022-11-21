@@ -583,7 +583,7 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
 
-Out of the box customisation options are also available as arguments. To use a permissions boundary:
+Out of the box customization options are also available as arguments. To use a permissions boundary:
 
 - `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
 - `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
