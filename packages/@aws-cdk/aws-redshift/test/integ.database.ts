@@ -45,7 +45,6 @@ const table = new redshift.Table(stack, 'Table', {
   tableColumns: [
     { name: 'col1', dataType: 'varchar(4)', distKey: true },
     { name: 'col2', dataType: 'float', sortKey: true },
-    { name: 'col3', dataType: 'varchar' },
   ],
   distStyle: redshift.TableDistStyle.KEY,
   sortStyle: redshift.TableSortStyle.INTERLEAVED,
@@ -54,7 +53,6 @@ table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
 
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
   testCases: [stack],
-  diffAssets: true,
 });
 
 app.synth();

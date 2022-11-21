@@ -5,7 +5,6 @@
       "stacks": [
         "aws-cdk-redshift-cluster-database"
       ],
-      "diffAssets": true,
       "assertionStack": "redshift-cluster-database-integ/DefaultTest/DeployAssert",
       "assertionStackName": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48"
     }
