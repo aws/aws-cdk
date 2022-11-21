@@ -29,12 +29,15 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
   readonly requestContext?: RequestContext;
 
   /**
-   * Check if querystring is to be included inside the execution input. The execution input will include a new key `queryString`:
+   * Check if querystring is to be included inside the execution input. The execution input will include two new keys `querystring` and `multivaluequerystring`:
    *
    * {
    *   "body": {},
    *   "querystring": {
    *     "key": "value"
+   *   }
+   *   "multivaluequerystring" : {
+   *     "key": [ "value1", "value2" ]
    *   }
    * }
    *

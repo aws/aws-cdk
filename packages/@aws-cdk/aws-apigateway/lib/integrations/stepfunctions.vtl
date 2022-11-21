@@ -25,13 +25,31 @@
             #end
         #end
         #set($inputString = "$inputString }")
-        
+
     #end
 
     #if ($includeQueryString)
         #set($inputString = "$inputString, @@querystring@@:{")
         #foreach($paramName in $allParams.querystring.keySet())
             #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@")
+            #if($foreach.hasNext)
+                #set($inputString = "$inputString,")
+            #end
+        #end
+        #set($inputString = "$inputString }")
+
+        #set($inputString = "$inputString, @@multivaluequerystring@@:{")
+        #foreach($paramName in $method.request.multivaluequerystring.keySet())
+            #set($inputString = "$inputString @@$paramName@@: [")
+
+            #foreach($value in $method.request.multivaluequerystring.get($paramName))
+                #set($inputString = "$inputString @@$util.escapeJavaScript($value)@@")
+                #if($foreach.hasNext)
+                    #set($inputString = "$inputString,")
+                #end
+            #end
+
+            #set($inputString = "$inputString ]")
             #if($foreach.hasNext)
                 #set($inputString = "$inputString,")
             #end
@@ -49,7 +67,7 @@
         #end
         #set($inputString = "$inputString }")
     #end
-    
+
     #if ($includeAuthorizer)
         #set($inputString = "$inputString, @@authorizer@@:{")
         #foreach($paramName in $context.authorizer.keySet())
