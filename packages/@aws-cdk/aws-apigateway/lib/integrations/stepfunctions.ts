@@ -36,9 +36,6 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    *   "querystring": {
    *     "key": "value"
    *   }
-   *   "multivaluequerystring" : {
-   *     "key": [ "value1", "value2" ]
-   *   }
    * }
    *
    * @default true
