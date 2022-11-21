@@ -79,6 +79,35 @@ describe('scalable target', () => {
     });
   });
 
+  test('add scheduled scaling with timezone support', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnSchedule('ScaleUp', {
+      schedule: appscaling.Schedule.rate(cdk.Duration.minutes(1)),
+      maxCapacity: 50,
+      minCapacity: 1,
+      timezone: 'America/New_York',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
+      ScheduledActions: [
+        {
+          ScalableTargetAction: {
+            MaxCapacity: 50,
+            MinCapacity: 1,
+          },
+          Schedule: 'rate(1 minute)',
+          ScheduledActionName: 'ScaleUp',
+          Timezone: 'America/New_York',
+        },
+      ],
+    });
+  });
+
   test('scheduled scaling shows warning when minute is not defined in cron', () => {
     // GIVEN
     const stack = new cdk.Stack();
