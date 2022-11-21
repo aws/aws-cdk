@@ -577,6 +577,31 @@ const definition = sfn.Chain
   // ...
 ```
 
+## Task Credentials
+
+Tasks are executed using the State Machine's execution role. In some cases, e.g. cross-account access, an IAM role can be assumed by the State Machine's execution role to provide access to the resource.
+This can be achieved by providing the optional `credentials` property which allows using a literal `roleArn` or a json expression to resolve the `roleArn` at runtime.
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const submitLambda: lambda.Function;
+
+const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
+  lambdaFunction: submitLambda,
+  outputPath: '$.Payload',
+  credentials: {
+    // literal role
+    roleArn: 'arn:aws:iam::123456789012:role/role-to-invoke-lambda',
+    // or use a json expression role
+    // roleArn: sfn.JsonPath.stringAt('$.RoleArn'),
+  },
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-access-cross-acct-resources.html)
+to learn more about AWS Step Functions's accessing resources in other AWS accounts support.
+
 ## State Machine Fragments
 
 It is possible to define reusable (or abstracted) mini-state machines by
