@@ -145,7 +145,7 @@ export class Bootstrapper {
     if (inputPolicyName) {
       // If the example policy is not already in place, it must be created.
       const sdk = (await sdkProvider.forEnvironment(environment, Mode.ForWriting)).sdk;
-      policyName = await this.getPolicyName(environment, sdk, inputPolicyName, bootstrapTemplate, partition, params);
+      policyName = await this.getPolicyName(environment, sdk, inputPolicyName, partition, params);
     }
     if (currentPermissionsBoundary !== policyName) {
       warning(`Switching from ${currentPermissionsBoundary} to ${inputPolicyName} as permissions boundary`);
@@ -173,7 +173,6 @@ export class Bootstrapper {
     environment: cxapi.Environment,
     sdk: ISDK,
     permissionsBoundary: string,
-    template: string,
     partition: string,
     params: BootstrappingParameters): Promise<string> {
 
@@ -182,7 +181,7 @@ export class Bootstrapper {
       return Promise.resolve(permissionsBoundary);
     }
     // if no Qualifier is supplied, resort to the default one
-    const arn = await this.getExamplePermissionsBoundary(template, params.qualifier ?? 'hnb659fds', partition, environment.account, sdk);
+    const arn = await this.getExamplePermissionsBoundary(params.qualifier ?? 'hnb659fds', partition, environment.account, environment.region, sdk);
     const policyName = arn.split('/').pop();
     if (!policyName) {
       throw new Error('Could not retrieve the example permission boundary!');
@@ -190,18 +189,71 @@ export class Bootstrapper {
     return policyName;
   }
 
-  private async getExamplePermissionsBoundary(template: string, qualifier: string, partition: string, account: string, sdk: ISDK): Promise<string> {
+  private async getExamplePermissionsBoundary(qualifier: string, partition: string, account: string, region: string, sdk: ISDK): Promise<string> {
     const iam = sdk.iam();
 
     let policyName = `cdk-${qualifier}-permissions-boundary`;
     const arn = `arn:${partition}:iam::${account}:policy/${policyName}`;
 
-    let getPolicyResp = await iam.getPolicy({ PolicyArn: arn }).promise();
-    if (getPolicyResp.Policy) {
-      return arn;
+    try {
+      let getPolicyResp = await iam.getPolicy({ PolicyArn: arn }).promise();
+      if (getPolicyResp.Policy) {
+        return arn;
+      }
+    } catch (e) {
+      // https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html#API_GetPolicy_Errors
+      if (e.name === 'NoSuchEntity') {
+        //noop, proceed with creating the policy
+      }
     }
 
-    const policyDoc = JSON.parse(serializeStructure(template, true)).CdkBoostrapPermissionsBoundaryPolicy;
+    const policyDoc = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: ['*'],
+          Resource: '*',
+          Effect: 'Allow',
+          Sid: 'ExplicitAllowAll',
+        },
+        {
+          Condition: {
+            StringEquals: {
+              'iam:PermissionsBoundary': `arn:aws:iam::${account}:policy/cdk-${qualifier}-permissions-boundary-${account}-${region}`,
+            },
+          },
+          Action: [
+            'iam:CreateUser',
+            'iam:CreateRole',
+            'iam:PutRolePermissionsBoundary',
+            'iam:PutUserPermissionsBoundary',
+          ],
+          Resource: '*',
+          Effect: 'Allow',
+          Sid: 'DenyAccessIfRequiredPermBoundaryIsNotBeingApplied',
+        },
+        {
+          Action: [
+            'iam:CreatePolicyVersion',
+            'iam:DeletePolicy',
+            'iam:DeletePolicyVersion',
+            'iam:SetDefaultPolicyVersion',
+          ],
+          Resource: `arn:aws:iam::${account}:policy/cdk-${qualifier}-permissions-boundary-${account}-${region}`,
+          Effect: 'Deny',
+          Sid: 'DenyPermBoundaryIAMPolicyAlteration',
+        },
+        {
+          Action: [
+            'iam:DeleteUserPermissionsBoundary',
+            'iam:DeleteRolePermissionsBoundary',
+          ],
+          Resource: '*',
+          Effect: 'Deny',
+          Sid: 'DenyRemovalOfPermBoundaryFromAnyUserOrRole',
+        },
+      ],
+    };
     const request = {
       PolicyName: policyName,
       PolicyDocument: JSON.stringify(policyDoc),
