@@ -1,3 +1,27 @@
+# CloudFormation Resource Specification v99.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ElastiCache::CacheCluster IpDiscovery (__added__)
+* AWS::ElastiCache::CacheCluster NetworkType (__added__)
+* AWS::ElastiCache::ReplicationGroup IpDiscovery (__added__)
+* AWS::ElastiCache::ReplicationGroup NetworkType (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__deleted__)
+
+## Property Type Changes
+
+
+## Unapplied changes
+
+* AWS::AmplifyUIBuilder is at 97.0.0
+* AWS::AppFlow is at 94.0.0
+
 # CloudFormation Resource Specification v98.0.0
 
 ## New Resource Types
