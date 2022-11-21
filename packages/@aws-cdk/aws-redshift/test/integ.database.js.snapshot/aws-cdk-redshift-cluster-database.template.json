@@ -1168,6 +1168,10 @@
       "name": "col2",
       "dataType": "float",
       "sortKey": true
+     },
+     {
+      "name": "col3",
+      "dataType": "varchar"
      }
     ],
     "distStyle": "KEY",
