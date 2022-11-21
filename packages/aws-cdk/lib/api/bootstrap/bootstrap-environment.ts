@@ -177,37 +177,23 @@ export class Bootstrapper {
     partition: string,
     params: BootstrappingParameters): Promise<string> {
 
-    if (permissionsBoundary === CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
-      const arn = await this.getExamplePermissionsBoundary(template, params.qualifier, partition, environment.account, sdk);
-      const policyName = arn.split('/').pop();
-      if (policyName) {
-        permissionsBoundary = policyName;
-      } else {
-        throw new Error('Could not retrieve the example permission boundary!');
-      }
+    if (permissionsBoundary !== CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY) {
+      this.validatePolicyName(permissionsBoundary);
+      return Promise.resolve(permissionsBoundary);
     }
-    this.validatePolicyName(permissionsBoundary);
-    return Promise.resolve(permissionsBoundary);
-  }
-
-  private validatePolicyName(permissionsBoundary: string) {
-    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
-    const regexp: RegExp = /[\w+=,.@-]+/;
-    const matches = regexp.exec(permissionsBoundary);
-    if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
-      throw new Error(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);
-    }
-  }
-
-  private async getExamplePermissionsBoundary(
-    template: string,
-    qualifier: string | undefined,
-    partition: string,
-    account: string,
-    sdk: ISDK): Promise<string> {
-    const iam = sdk.iam();
     // if no Qualifier is supplied, resort to the default one
-    const policyName = qualifier ? `cdk-${qualifier}-permissions-boundary` : 'cdk-hnb659fds-permissions-boundary';
+    const arn = await this.getExamplePermissionsBoundary(template, params.qualifier ?? 'hnb659fds', partition, environment.account, sdk);
+    const policyName = arn.split('/').pop();
+    if (!policyName) {
+      throw new Error('Could not retrieve the example permission boundary!');
+    }
+    return policyName;
+  }
+
+  private async getExamplePermissionsBoundary(template: string, qualifier: string, partition: string, account: string, sdk: ISDK): Promise<string> {
+    const iam = sdk.iam();
+
+    let policyName = `cdk-${qualifier}-permissions-boundary`;
     const arn = `arn:${partition}:iam::${account}:policy/${policyName}`;
 
     let getPolicyResp = await iam.getPolicy({ PolicyArn: arn }).promise();
@@ -221,7 +207,20 @@ export class Bootstrapper {
       PolicyDocument: JSON.stringify(policyDoc),
     };
     const createPolicyResponse = await iam.createPolicy(request).promise();
-    return createPolicyResponse.Policy?.Arn ?? '';
+    if (createPolicyResponse.Policy?.Arn) {
+      return createPolicyResponse.Policy.Arn;
+    } else {
+      throw new Error(`Could not retrieve the example permission boundary ${arn}!`);
+    }
+  }
+
+  private validatePolicyName(permissionsBoundary: string) {
+    // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
+    const regexp: RegExp = /[\w+=,.@-]+/;
+    const matches = regexp.exec(permissionsBoundary);
+    if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
+      throw new Error(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);
+    }
   }
 
   private async customBootstrap(
