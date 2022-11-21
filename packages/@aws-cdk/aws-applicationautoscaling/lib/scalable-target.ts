@@ -161,6 +161,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
         maxCapacity: action.maxCapacity,
         minCapacity: action.minCapacity,
       },
+      timezone: action.timezone,
     });
   }
 
@@ -225,6 +226,14 @@ export interface ScalingSchedule {
    * @default No new maximum capacity
    */
   readonly maxCapacity?: number;
+
+  /**
+   * The time zone used when referring to the date and time of a scheduled action,
+   * when the scheduled action uses an at or cron expression.
+   *
+   * @default - No specific time zone.
+   */
+  readonly timezone?: string;
 }
 
 /**
