@@ -524,7 +524,7 @@ Resources:
           - Ref: AWS::NoValue
   CdkBoostrapPermissionsBoundaryPolicy:
     # Edit the template prior to boostrap in order to have this example policy created
-    Condition: Untrue
+    Condition: ShouldCreatePermissionsBoundary
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -575,7 +575,7 @@ Resources:
         Version: "2012-10-17"
       Description: "Bootstrap Permission Boundary"
       ManagedPolicyName:
-        Fn::Sub: cdk-${Qualifier}-BootstrapPermissionBoundary-${AWS::AccountId}-${AWS::Region}
+        Fn::Sub: cdk-${Qualifier}-permissions-boundary-${AWS::AccountId}-${AWS::Region}
       Path: /
   # The SSM parameter is used in pipeline-deployed templates to verify the version
   # of the bootstrap resources.

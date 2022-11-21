@@ -102,7 +102,7 @@ describe('Bootstrapping v2', () => {
   test('passes true to PermissionsBoundary', async () => {
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
-        defaultPermissionsBoundary: true,
+        examplePermissionsBoundary: true,
       },
     });
 

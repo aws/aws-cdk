@@ -463,7 +463,7 @@ async function initCommandLine() {
             createCustomerMasterKey: args.bootstrapCustomerKey,
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
-            defaultPermissionsBoundary: argv.defaultPermissionsBoundary,
+            examplePermissionsBoundary: argv.examplePermissionsBoundary,
             customPermissionsBoundary: argv.customPermissionsBoundary,
             trustedAccounts: arrayFromYargs(args.trust),
             trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),

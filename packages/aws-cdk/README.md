@@ -585,13 +585,10 @@ $ cdk bootstrap --template bootstrap-template.yaml
 
 Out of the box customisation options are also available as arguments. To use a permissions boundary:
 
-- `--use-default-permissions-boundary` indicates the default permissions boundary, supplied by CDK
-- `--permissions-boundary` specifies, by name, a predefined customer maintained boundary
+- `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
+- `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
 
-A few observations to add at this point. The CDK supplied permissions boundary policy should be regarded more as an 
-example than anything else. Take the content, create and customize the policy to your needs. That way, the reference 
-will be created via the CLI supplied policy name and, no matter how CDK might adjust the content, you will never have 
-to re-bootstrap your environments.
+A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as an example. Edit the content and reference the example policy if you're testing out the feature, turn it into a new policy for actual deployments (if one does not already exist). The concern here is drift as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
 
 ### `cdk doctor`
 

@@ -106,7 +106,7 @@ export interface BootstrappingParameters {
    *
    * @default - No value, optional argument
    */
-  readonly defaultPermissionsBoundary?: boolean;
+  readonly examplePermissionsBoundary?: boolean;
 
   /**
    * Name for the customer's custom permissions boundary for bootstrapping

@@ -134,12 +134,12 @@ export class Bootstrapper {
           params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY : undefined);
 
     /* A permissions boundary can be provided via:
-    *    - the flag indicating the default one should be used
+    *    - the flag indicating the example one should be used
     *    - the name indicating the custom permissions boundary to be used
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions' boundary.
     */
     const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
-    const inputPolicyName = params.defaultPermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
+    const inputPolicyName = params.examplePermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
     let policyName;
     if (inputPolicyName) {
       // If the example policy is not already in place, it must be created.

@@ -307,7 +307,7 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
   /**
    * @default undefined
    */
-  readonly defaultPermissionsBoundary?: boolean;
+  readonly examplePermissionsBoundary?: boolean;
 
   /**
    * @default undefined
@@ -427,7 +427,7 @@ export class TestFixture {
     }
     if (options.customPermissionsBoundary !== undefined) {
       args.push('--custom-permissions-boundary', options.customPermissionsBoundary);
-    } else if (options.defaultPermissionsBoundary !== undefined) {
+    } else if (options.examplePermissionsBoundary !== undefined) {
       args.push('--example-permissions-boundary');
     }
 

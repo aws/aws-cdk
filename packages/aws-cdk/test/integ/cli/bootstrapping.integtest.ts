@@ -198,7 +198,7 @@ integTest('can use the default permissions boundary to bootstrap', withDefaultFi
     // toolkitStackName doesn't matter for this particular invocation
     toolkitStackName: fixture.bootstrapStackName,
     showTemplate: true,
-    defaultPermissionsBoundary: true,
+    examplePermissionsBoundary: true,
   });
 
   expect(template).toContain('PermissionsBoundaryPolicy:');
