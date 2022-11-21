@@ -29,7 +29,7 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
   readonly requestContext?: RequestContext;
 
   /**
-   * Check if querystring is to be included inside the execution input. The execution input will include two new keys `querystring` and `multivaluequerystring`:
+   * Check if querystring is to be included inside the execution input. The execution input will include a new key `querystring`:
    *
    * {
    *   "body": {},
@@ -44,6 +44,20 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    * @default true
    */
   readonly querystring?: boolean;
+
+  /**
+   * Check if multivaluequerystring is to be included inside the execution input. The execution input will include a new key `multivaluequerystring`:
+   *
+   * {
+   *   "body": {},
+   *   "multivaluequerystring" : {
+   *     "key": [ "value1", "value2" ]
+   *   }
+   * }
+   *
+   * @default true
+   */
+  readonly multiValueQuerystring?: boolean;
 
   /**
    * Check if path is to be included inside the execution input. The execution input will include a new key `path`:
@@ -270,6 +284,7 @@ function templateString(
 
   const includeHeader = options.headers?? false;
   const includeQueryString = options.querystring?? true;
+  const includeMultiValueQueryString = options.multiValueQuerystring?? true;
   const includePath = options.path?? true;
   const includeAuthorizer = options.authorizer ?? false;
 
@@ -281,6 +296,7 @@ function templateString(
   templateStr = templateStr.replace('%STATEMACHINE%', stateMachine.stateMachineArn);
   templateStr = templateStr.replace('%INCLUDE_HEADERS%', String(includeHeader));
   templateStr = templateStr.replace('%INCLUDE_QUERYSTRING%', String(includeQueryString));
+  templateStr = templateStr.replace('%INCLUDE_MULTIVALUEQUERYSTRING%', String(includeMultiValueQueryString));
   templateStr = templateStr.replace('%INCLUDE_PATH%', String(includePath));
   templateStr = templateStr.replace('%INCLUDE_AUTHORIZER%', String(includeAuthorizer));
   templateStr = templateStr.replace('%REQUESTCONTEXT%', requestContextStr);

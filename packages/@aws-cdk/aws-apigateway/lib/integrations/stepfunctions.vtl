@@ -8,6 +8,7 @@
 #set($inputString = '')
 #set($includeHeaders = %INCLUDE_HEADERS%)
 #set($includeQueryString = %INCLUDE_QUERYSTRING%)
+#set($includeMultiValueQueryString = %INCLUDE_MULTIVALUEQUERYSTRING%)
 #set($includePath = %INCLUDE_PATH%)
 #set($includeAuthorizer = %INCLUDE_AUTHORIZER%)
 #set($allParams = $input.params())
@@ -37,7 +38,9 @@
             #end
         #end
         #set($inputString = "$inputString }")
+    #end
 
+    #if ($includeMultiValueQueryString)
         #set($inputString = "$inputString, @@multivaluequerystring@@:{")
         #foreach($paramName in $method.request.multivaluequerystring.keySet())
             #set($inputString = "$inputString @@$paramName@@: [")
