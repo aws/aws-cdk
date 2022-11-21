@@ -55,7 +55,9 @@ export enum TableAction {
  */
 export interface Column {
   /**
-   * The name of the column.
+   * The unique name/identifier of the column.
+   *
+   * **NB**. After deploying this column, you cannot change its name. Doing so will cause the column to be dropped and recreated.
    */
   readonly name: string;
 
