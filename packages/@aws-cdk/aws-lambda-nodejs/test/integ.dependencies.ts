@@ -26,14 +26,6 @@ class TestStack extends Stack {
     new lambda.NodejsFunction(this, 'external-sdk-v3', {
       entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
-      bundling: {
-        minify: true,
-        // Will be installed, not bundled
-        // (delay is a zero dependency package and its version is fixed
-        // in the package.json to ensure a stable hash for this integ test)
-        nodeModules: ['delay'],
-        forceDockerBundling: true,
-      },
     });
   }
 }

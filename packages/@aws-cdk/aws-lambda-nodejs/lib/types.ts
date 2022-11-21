@@ -183,8 +183,7 @@ export interface BundlingOptions {
    * A list of modules that should be considered as externals (already available
    * in the runtime).
    *
-   * @default - If the runtime is less than nodejs 18, the default is ['aws-sdk'].
-   * If not, the default is ['@aws-sdk/*'].
+   * @default - ['aws-sdk'] if the runtime is < Node.js 18.x, ['@aws-sdk/*'] otherwise.
    */
   readonly externalModules?: string[];
 
