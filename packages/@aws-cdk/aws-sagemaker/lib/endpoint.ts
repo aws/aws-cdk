@@ -267,9 +267,10 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
   }
 
   /**
-   * Return the service linked role that will be used for AutoScaling
+   * Return the service linked role which will automatically be created by Application Auto Scaling
+   * for scaling purposes.
    *
-   * Documentation is available here: https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+   * @see https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
    */
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
