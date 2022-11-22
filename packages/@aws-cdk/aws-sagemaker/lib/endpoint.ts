@@ -72,60 +72,70 @@ export interface IEndpointInstanceProductionVariant extends IEndpointProductionV
    * @default - sum over 5 minutes
    */
   metricInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for the number of invocations per instance
    *
    * @default - sum over 5 minutes
    */
   metricInvocationsPerInstance(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for model latency
    *
    * @default - average over 5 minutes
    */
   metricModelLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for overhead latency
    *
    * @default - average over 5 minutes
    */
   metricOverheadLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for the number of invocations by HTTP response code
    *
    * @default - sum over 5 minutes
    */
   metricInvocationResponseCode(responseCode: InvocationHttpResponseCode, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for disk utilization
    *
    * @default - average over 5 minutes
    */
   metricDiskUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for CPU utilization
    *
    * @default - average over 5 minutes
    */
   metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for memory utilization
    *
    * @default - average over 5 minutes
    */
   metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for GPU utilization
    *
    * @default - average over 5 minutes
    */
   metricGpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Metric for GPU memory utilization
    *
    * @default - average over 5 minutes
    */
   metricGpuMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
   /**
    * Enable autoscaling for SageMaker Endpoint production variant
    *
