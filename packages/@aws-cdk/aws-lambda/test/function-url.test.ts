@@ -118,6 +118,33 @@ describe('FunctionUrl', () => {
     });
   });
 
+  test('function url domain name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+    const aliasName = 'prod';
+    const alias = new lambda.Alias(stack, 'Alias', {
+      aliasName,
+      version: fn.currentVersion,
+    });
+
+    // WHEN
+    const url = new lambda.FunctionUrl(stack, 'FunctionUrl', {
+      function: alias,
+    });
+
+    // THEN
+    const resolved = stack.resolve(stack.toJsonString({ token: url.domainName }));
+    expect(resolved).toEqual({
+      'Fn::Join': ['', ['{"token":"', { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [1, { 'Fn::Split': ['https://', { 'Fn::GetAtt': ['FunctionUrl84B92DCA', 'FunctionUrl'] }] }] }] }] }, '"}']],
+    });
+  });
+
+
   test('throws when configured with Version', () => {
     // GIVEN
     const stack = new cdk.Stack();

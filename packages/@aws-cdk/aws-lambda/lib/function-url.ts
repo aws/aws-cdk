@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, Fn, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAlias } from './alias';
 import { IFunction } from './function-base';
@@ -114,8 +114,16 @@ export interface IFunctionUrl extends IResource {
    * The url of the Lambda function.
    *
    * @attribute FunctionUrl
+   * @example `https://*******.lambda-url.ap-southeast-2.on.aws/`
    */
   readonly url: string;
+
+  /**
+   * The domain name of the Lambda Function URL
+   *
+   * @example `*******.lambda-url.ap-southeast-2.on.aws`
+   */
+  readonly domainName: string;
 
   /**
    * The ARN of the function this URL refers to
@@ -214,6 +222,12 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
         functionUrlAuthType: props.authType,
       });
     }
+  }
+
+  get domainName(): string {
+    return Fn.select(
+      0, Fn.split('/', Fn.select(1, Fn.split('https://', this.url))),
+    );
   }
 
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
