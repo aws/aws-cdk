@@ -3,8 +3,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Chain } from '../chain';
-import { FieldUtils, JsonPath } from '../fields';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
+import { Credentials } from '../task-credentials';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State } from './state';
 
@@ -277,11 +278,10 @@ export abstract class TaskStateBase extends State implements INextable {
       graph.registerPolicyStatement(policyStatement);
     }
     if (this.credentials) {
-      const resource = JsonPath.isEncodedJsonPath(this.credentials.roleArn) ? '*' : this.credentials.roleArn;
       graph.registerPolicyStatement(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['sts:AssumeRole'],
-        resources: [resource],
+        resources: [this.credentials.role.resource],
       }));
     }
   }
@@ -299,7 +299,7 @@ export abstract class TaskStateBase extends State implements INextable {
   }
 
   private renderCredentials() {
-    return this.credentials ? FieldUtils.renderObject({ Credentials: { RoleArn: this.credentials.roleArn } }) : undefined;
+    return this.credentials ? FieldUtils.renderObject({ Credentials: { RoleArn: this.credentials.role.roleArn } }) : undefined;
   }
 
   private renderTaskBase() {
@@ -373,16 +373,4 @@ export enum IntegrationPattern {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token
    */
   WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN'
-}
-
-/**
- * Specifies a target role assumed by the State Machine's execution role for invoking the task's resource.
- */
-export interface Credentials {
-
-  /**
-   * The ARN of the IAM role to be assumed.
-   * Either a fixed value or a JSONPath expression can be used.
-   */
-  readonly roleArn: string;
 }

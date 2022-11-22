@@ -1,8 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as stepfunctions from '../lib';
+import * as sfn from '../lib';
 import { FakeTask } from './private/fake-task';
 
 describe('State Machine', () => {
@@ -11,9 +12,9 @@ describe('State Machine', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
     });
 
     // THEN
@@ -28,10 +29,10 @@ describe('State Machine', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-      stateMachineType: stepfunctions.StateMachineType.STANDARD,
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      stateMachineType: sfn.StateMachineType.STANDARD,
     });
 
     // THEN
@@ -48,10 +49,10 @@ describe('State Machine', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-      stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 
     // THEN
@@ -69,10 +70,10 @@ describe('State Machine', () => {
 
     // WHEN
     const createStateMachine = (name: string) => {
-      new stepfunctions.StateMachine(stack, name + 'StateMachine', {
+      new sfn.StateMachine(stack, name + 'StateMachine', {
         stateMachineName: name,
-        definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, name + 'Pass')),
-        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+        definition: sfn.Chain.start(new sfn.Pass(stack, name + 'Pass')),
+        stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     };
     const tooShortName = '';
@@ -96,8 +97,8 @@ describe('State Machine', () => {
   test('State Machine with valid name', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const newStateMachine = new stepfunctions.StateMachine(stack, 'dummyStateMachineToken', {
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'dummyStateMachineTokenPass')),
+    const newStateMachine = new sfn.StateMachine(stack, 'dummyStateMachineToken', {
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'dummyStateMachineTokenPass')),
     });
 
     // WHEN
@@ -106,18 +107,18 @@ describe('State Machine', () => {
 
     // THEN
     expect(() => {
-      new stepfunctions.StateMachine(stack, 'TokenTest-StateMachine', {
+      new sfn.StateMachine(stack, 'TokenTest-StateMachine', {
         stateMachineName: nameContainingToken,
-        definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'TokenTest-StateMachinePass')),
-        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+        definition: sfn.Chain.start(new sfn.Pass(stack, 'TokenTest-StateMachinePass')),
+        stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
 
     expect(() => {
-      new stepfunctions.StateMachine(stack, 'ValidNameTest-StateMachine', {
+      new sfn.StateMachine(stack, 'ValidNameTest-StateMachine', {
         stateMachineName: validName,
-        definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'ValidNameTest-StateMachinePass')),
-        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+        definition: sfn.Chain.start(new sfn.Pass(stack, 'ValidNameTest-StateMachinePass')),
+        stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
   });
@@ -129,11 +130,11 @@ describe('State Machine', () => {
     // WHEN
     const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
-    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
       logs: {
         destination: logGroup,
-        level: stepfunctions.LogLevel.FATAL,
+        level: sfn.LogLevel.FATAL,
         includeExecutionData: false,
       },
     });
@@ -186,8 +187,8 @@ describe('State Machine', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
       tracingEnabled: true,
     });
 
@@ -227,8 +228,8 @@ describe('State Machine', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const sm = new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    const sm = new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
     });
     const bucket = new s3.Bucket(stack, 'MyBucket');
     bucket.grantRead(sm);
@@ -284,8 +285,9 @@ describe('State Machine', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { roleArn: 'arn:aws:iam::123456789012:role/example-role' } }),
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.role(role) } }),
     });
 
     // THEN
@@ -318,8 +320,8 @@ describe('State Machine', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { roleArn: stepfunctions.JsonPath.stringAt('$.RoleArn') } }),
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.jsonPathStringAt('$.RoleArn') } }),
     });
 
     // THEN
@@ -358,10 +360,10 @@ describe('State Machine', () => {
     });
 
     describe('for a state machine in a different account and region', () => {
-      let mach: stepfunctions.IStateMachine;
+      let mach: sfn.IStateMachine;
 
       beforeEach(() => {
-        mach = stepfunctions.StateMachine.fromStateMachineArn(
+        mach = sfn.StateMachine.fromStateMachineArn(
           stack,
           'iMach',
           'arn:aws:states:machine-region:222222222222:stateMachine:machine-name',
@@ -389,10 +391,10 @@ describe('State Machine', () => {
     });
 
     describe('for a state machine in the same account and region', () => {
-      let mach: stepfunctions.IStateMachine;
+      let mach: sfn.IStateMachine;
 
       beforeEach(() => {
-        mach = stepfunctions.StateMachine.fromStateMachineName(
+        mach = sfn.StateMachine.fromStateMachineName(
           stack,
           'iMach',
           'machine-name',

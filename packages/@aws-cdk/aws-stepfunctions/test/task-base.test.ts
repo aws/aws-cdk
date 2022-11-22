@@ -1,4 +1,5 @@
 import { Metric } from '@aws-cdk/aws-cloudwatch';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as sfn from '../lib';
 import { FakeTask } from './private/fake-task';
@@ -43,14 +44,15 @@ describe('Task base', () => {
     });
   });
 
-  test('instantiate a concrete implementation with credentials of literal roleArn', () => {
+  test('instantiate a concrete implementation with credentials of a specified role', () => {
     // WHEN
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
     task = new FakeTask(stack, 'my-exciting-task', {
       comment: 'my exciting task',
       heartbeat: cdk.Duration.seconds(10),
       timeout: cdk.Duration.minutes(10),
       credentials: {
-        roleArn: 'arn:aws:iam::123456789012:role/example-role',
+        role: sfn.TaskRole.role(role),
       },
     });
 
@@ -79,7 +81,7 @@ describe('Task base', () => {
       heartbeat: cdk.Duration.seconds(10),
       timeout: cdk.Duration.minutes(10),
       credentials: {
-        roleArn: sfn.JsonPath.stringAt('$.Input.RoleArn'),
+        role: sfn.TaskRole.jsonPathStringAt('$.Input.RoleArn'),
       },
     });
 

@@ -51,12 +51,12 @@ const role = new iam.Role(stack, 'Role', {
 });
 
 new sfn.StateMachine(stack, 'StateMachineWithLiteralCredentials', {
-  definition: new FakeTask(stack, 'FakeTaskWithLiteralCredentials', { credentials: { roleArn: role.roleArn } }),
+  definition: new FakeTask(stack, 'FakeTaskWithLiteralCredentials', { credentials: { role: sfn.TaskRole.role(role) } }),
   timeout: cdk.Duration.seconds(30),
 });
 
 new sfn.StateMachine(stack, 'StateMachineWithJsonPathCredentials', {
-  definition: new FakeTask(stack, 'FakeTaskWithJsonPathCredentials', { credentials: { roleArn: sfn.JsonPath.stringAt('$.RoleArn') } }),
+  definition: new FakeTask(stack, 'FakeTaskWithJsonPathCredentials', { credentials: { role: sfn.TaskRole.jsonPathStringAt('$.RoleArn') } }),
   timeout: cdk.Duration.seconds(30),
 });
 

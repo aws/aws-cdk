@@ -583,18 +583,19 @@ Tasks are executed using the State Machine's execution role. In some cases, e.g.
 This can be achieved by providing the optional `credentials` property which allows using a literal `roleArn` or a json expression to resolve the `roleArn` at runtime.
 
 ```ts
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 
 declare const submitLambda: lambda.Function;
+declare const role: iam.Role;
 
 const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
   lambdaFunction: submitLambda,
   outputPath: '$.Payload',
   credentials: {
-    // literal role
-    roleArn: 'arn:aws:iam::123456789012:role/role-to-invoke-lambda',
+    role: sfn.TaskRole.role(role),
     // or use a json expression role
-    // roleArn: sfn.JsonPath.stringAt('$.RoleArn'),
+    // role: sfn.TaskRole.jsonPathStringAt('$.RoleArn'),
   },
 });
 ```
