@@ -374,4 +374,58 @@ describe('When auto-scaling a production variant\'s instance count', () => {
     // THEN
     expect(when).toThrow(/AutoScaling of task count already enabled for this service/);
   });
+
+  test('with a safety factor of zero, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        variantName: 'variant',
+        model,
+        initialInstanceCount: 2,
+        instanceType: sagemaker.InstanceType.M5_LARGE,
+      }],
+    });
+    const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
+    const variant = endpoint.findInstanceProductionVariant('variant');
+    const instanceCount = variant.autoScaleInstanceCount({ maxCapacity: 3 });
+
+    // WHEN
+    const when = () =>
+      instanceCount.scaleOnInvocations('LimitRPS', {
+        maxRequestsPerSecond: 30,
+        safetyFactor: 0,
+      });
+
+    // THEN
+    expect(when).toThrow(/Safety factor \(0\) must be greater than 0.0 and less than or equal 1\.0/);
+  });
+
+  test('with a safety factor greater than one, an exception is thrown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        variantName: 'variant',
+        model,
+        initialInstanceCount: 2,
+        instanceType: sagemaker.InstanceType.M5_LARGE,
+      }],
+    });
+    const endpoint = new sagemaker.Endpoint(stack, 'Endpoint', { endpointConfig });
+    const variant = endpoint.findInstanceProductionVariant('variant');
+    const instanceCount = variant.autoScaleInstanceCount({ maxCapacity: 3 });
+
+    // WHEN
+    const when = () =>
+      instanceCount.scaleOnInvocations('LimitRPS', {
+        maxRequestsPerSecond: 30,
+        safetyFactor: 1.1,
+      });
+
+    // THEN
+    expect(when).toThrow(/Safety factor \(1\.1\) must be greater than 0.0 and less than or equal 1\.0/);
+  });
 });
