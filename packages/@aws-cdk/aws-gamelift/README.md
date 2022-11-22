@@ -286,7 +286,7 @@ fleet.addLocation('ap-southeast-1', 5, 2, 10);
 Some GameLift features require you to extend limited access to your AWS
 resources. This is done by creating an AWS IAM role. The GameLift Fleet class
 automatically created an IAM role with all the minimum necessary permissions
-for GameLift to access your ressources. If you wish, you may
+for GameLift to access your resources. If you wish, you may
 specify your own IAM role.
 
 ```ts
@@ -325,7 +325,7 @@ processes.
 
 You can then use CloudWatch alarms to alert you, for example, when matches has
 been rejected (potential matches that were rejected by at least one player
-since the last report) exceed a certain thresold which could means that you may
+since the last report) exceed a certain threshold which could means that you may
 have an issue in your matchmaking rules.
 
 CDK provides methods for accessing GameLift Fleet metrics with default configuration,
@@ -433,7 +433,7 @@ in the *Amazon GameLift FleetIQ Developer Guide*.
 
 The GameLift FleetIQ class automatically creates an IAM role with all the minimum necessary
 permissions for GameLift to access your Amazon EC2 Auto Scaling groups. If you wish, you may
-specify your own IAM role. It must have the correct permissions, or FleetIQ creation or ressource usage may fail.
+specify your own IAM role. It must have the correct permissions, or FleetIQ creation or resource usage may fail.
 
 ```ts
 declare const launchTemplate: ec2.ILaunchTemplate;
@@ -499,7 +499,7 @@ limited Spot availability.
 
 You can then use CloudWatch alarms to alert you, for example, when the portion
 of game servers that are currently supporting game executions exceed a certain
-thresold which could means that your autoscaling policy need to be adjust to
+threshold which could means that your autoscaling policy need to be adjust to
 add more instances to match with player demand.
 
 CDK provides a generic `metric` method that can be used

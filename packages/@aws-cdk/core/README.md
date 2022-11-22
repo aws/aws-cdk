@@ -266,7 +266,7 @@ Durations can be added or subtracted together:
 
 ```ts
 Duration.minutes(1).plus(Duration.seconds(60)); // 2 minutes
-Duration.minutes(5).minus(Duration.seconds(10)); // 290 secondes
+Duration.minutes(5).minus(Duration.seconds(10)); // 290 seconds
 ```
 
 ## Size (Digital Information Quantity)

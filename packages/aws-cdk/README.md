@@ -552,7 +552,7 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 ### `cdk bootstrap`
 
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket
-and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before
+and ECR repository that `cdk deploy` will use to store synthesized templates and the related assets, before
 triggering a CloudFormation stack update. The name of the deployed stack can be configured using the
 `--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using
 the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
@@ -651,7 +651,7 @@ You can suppress warnings in a variety of ways:
   }
   ```
 
-- acknowleding individual notices via `cdk acknowledge` (see below).
+- acknowledging individual notices via `cdk acknowledge` (see below).
 
 ### `cdk acknowledge`
 
