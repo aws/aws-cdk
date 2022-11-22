@@ -803,15 +803,15 @@ describe('User Pool Client', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
-        authSessionValidity: 3,
+        AuthSessionValidity: 3,
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client2',
-        authSessionValidity: 9,
+        AuthSessionValidity: 9,
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client3',
-        authSessionValidity: 15,
+        AuthSessionValidity: 15,
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client4',
@@ -852,9 +852,9 @@ describe('User Pool Client', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client1',
-        authSessionValidity: validity.toMinutes(),
+        AuthSessionValidity: validity.toMinutes(),
       });
-    }); 
+    });
   });
 
   describe('token validity', () => {

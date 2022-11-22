@@ -239,7 +239,7 @@ export interface UserPoolClientOptions {
    */
   readonly oAuth?: OAuthSettings;
 
-    /**
+  /**
    * Cognito creates a session token for each API request in an authentication flow.
    * AuthSessionValidity is the duration, in minutes, of that session token.
    * see defaults in `AuthSessionValidity`. Valid duration is from 3 to 15 minutes.
