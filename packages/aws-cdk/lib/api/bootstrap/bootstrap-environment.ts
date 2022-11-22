@@ -148,7 +148,7 @@ export class Bootstrapper {
       policyName = await this.getPolicyName(environment, sdk, inputPolicyName, partition, params);
     }
     if (currentPermissionsBoundary !== policyName) {
-      warning(`Switching from ${currentPermissionsBoundary} to ${inputPolicyName} as permissions boundary`);
+      warning(`Switching from ${currentPermissionsBoundary} to ${policyName} as permissions boundary`);
     }
 
     return current.update(
