@@ -108,7 +108,7 @@ describe('Bootstrapping v2', () => {
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       parameters: expect.objectContaining({
-        PermissionsBoundary: 'cdk-hnb659fds-permissions-boundary',
+        InputPermissionsBoundary: 'cdk-hnb659fds-permissions-boundary',
       }),
     }));
   });
@@ -122,7 +122,7 @@ describe('Bootstrapping v2', () => {
 
     expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
       parameters: expect.objectContaining({
-        PermissionsBoundary: 'permissions-boundary-name',
+        InputPermissionsBoundary: 'permissions-boundary-name',
       }),
     }));
   });
