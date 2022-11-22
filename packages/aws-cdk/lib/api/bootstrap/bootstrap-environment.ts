@@ -219,7 +219,7 @@ export class Bootstrapper {
         {
           Condition: {
             StringEquals: {
-              'iam:PermissionsBoundary': `arn:aws:iam::${account}:policy/cdk-${qualifier}-permissions-boundary-${account}-${region}`,
+              'iam:PermissionsBoundary': `arn:${partition}:iam::${account}:policy/cdk-${qualifier}-permissions-boundary`,
             },
           },
           Action: [
@@ -239,7 +239,7 @@ export class Bootstrapper {
             'iam:DeletePolicyVersion',
             'iam:SetDefaultPolicyVersion',
           ],
-          Resource: `arn:aws:iam::${account}:policy/cdk-${qualifier}-permissions-boundary-${account}-${region}`,
+          Resource: `arn:${partition}:iam::${account}:policy/cdk-${qualifier}-permissions-boundary`,
           Effect: 'Deny',
           Sid: 'DenyPermBoundaryIAMPolicyAlteration',
         },
