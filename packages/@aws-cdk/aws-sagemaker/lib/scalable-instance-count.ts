@@ -38,7 +38,7 @@ export class ScalableInstanceCount extends appscaling.BaseScalableAttribute {
    * Calculate target value based on a ScalableProductionVariant
    *
    * Documentation for the equation is here: https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-scaling-loadtest.html
-   * @param scalableProductionVariant ScalableProductionVariant instance
+   * @param props the scaling properties.
    */
   private calculateScalingTarget(props: InvocationsScalingProps): number {
     const safetyFactor = props.safetyFactor || 0.5;
