@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec47c1f50f922cc30174684cd96b07bcef83b0752d686125e48aa9da6d8982ff.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9571a8d510167c0dab7107a964034a2a26011d7b8b714adbd3cc0a445a68cfa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -198,13 +198,40 @@
         "/aws-ecs-service-connect/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-ecs-service-connect/TaskDef/container/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefcontainerLogGroupAB21CBAF"
+          }
+        ],
+        "/aws-ecs-service-connect/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleB4775C97"
+          }
+        ],
+        "/aws-ecs-service-connect/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
           }
         ],
         "/aws-ecs-service-connect/svc/Service": [
           {
             "type": "aws:cdk:logicalId",
             "data": "svcService376F2D22"
+          }
+        ],
+        "/aws-ecs-service-connect/svc/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "svcLogGroup25CAF347"
           }
         ],
         "/aws-ecs-service-connect/svc/SecurityGroup/Resource": [

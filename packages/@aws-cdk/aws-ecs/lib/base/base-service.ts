@@ -11,7 +11,7 @@ import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, PortMapping, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
-import { LogDriverConfig } from '../log-drivers/log-driver';
+import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 import { ScalableTaskCount } from './scalable-task-count';
 
 /**
@@ -127,7 +127,7 @@ export interface ServiceConnectConfiguration {
    *
    * @default - none
    */
-  readonly logConfig?: LogDriverConfig;
+  readonly logDriver?: LogDriver;
 }
 
 /**
@@ -157,7 +157,8 @@ export interface ServiceConnectService {
    *
    * This list may be at most one element long.
    *
-   * @default - alias consisting of port mapping name and container port.
+   * @default - alias consisting of the container port and no DNS name. This default configuration results
+   * in the service being reachable at `portmappingname.namespace:port`.
    */
   readonly aliases?: ClientAlias[];
 
@@ -610,7 +611,7 @@ export abstract class BaseService extends Resource
     }
     this.node.defaultChild = this.resource;
   }
-  private portMappingNameFromPortMapping(port: string | PortMapping): string {
+  protected portMappingNameFromPortMapping(port: string | PortMapping): string {
     if (typeof port === 'string') {
       return port;
     }
@@ -625,7 +626,7 @@ export abstract class BaseService extends Resource
    */
   public enableServiceConnect(config: ServiceConnectConfiguration) {
     if (this._serviceConnectConfig) {
-      throw new Error('Service connect is already enabled for this service.');
+      throw new Error('Service connect configuration cannot be specified more than once.');
     }
 
     this.validateServiceConnectConfiguration(config);
@@ -668,31 +669,45 @@ export abstract class BaseService extends Resource
      * 2. Client alias enumeration
      */
     const services = config.services?.map(svc => {
-      let port: string;
+      let portName: string;
       if (typeof svc.port === 'string') {
-        port = svc.port;
+        portName = svc.port;
       } else {
-        port = this.portMappingNameFromPortMapping(svc.port);
+        portName = this.portMappingNameFromPortMapping(svc.port);
+      }
+      const port = this.taskDefinition.findPortMapping(portName)?.containerPort;
+      if (!port) {
+        throw new Error(`Port mapping with name ${portName} does not exist.`);
       }
 
-      const clientAliases: CfnService.ServiceConnectClientAliasProperty[] = svc.aliases!.map(alias => {
-        return {
-          dnsName: alias.dnsName,
-          port: alias.port ? alias.port : this.taskDefinition.findPortMapping(port)!.containerPort,
-        };
-      });
+      let clientAliases: CfnService.ServiceConnectClientAliasProperty[] = [{ port }];
+      if (svc.aliases) {
+        clientAliases = svc.aliases.map(alias => {
+          return {
+            dnsName: alias.dnsName,
+            port: alias.port ? alias.port : port,
+          };
+        });
+      }
 
       return {
-        portName: port!,
+        portName: portName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: clientAliases,
       };
     });
 
+    let logConfig: LogDriverConfig | undefined;
+    if (config.logDriver && this.taskDefinition.defaultContainer) {
+      // Default container existence is validated in validateServiceConnectConfiguration.
+      // We only need the default container so that bind() can get the task definition from the container definition.
+      logConfig = config.logDriver.bind(this, this.taskDefinition.defaultContainer);
+    }
+
     this._serviceConnectConfig = {
       enabled: true,
-      logConfiguration: config.logConfig,
+      logConfiguration: logConfig,
       namespace: namespace,
       services: services,
     };
@@ -703,10 +718,14 @@ export abstract class BaseService extends Resource
    */
   private validateServiceConnectConfiguration(config: ServiceConnectConfiguration) {
     // Enabled should not be false if any of the other properties are specified
-    if (config.logConfig || config.namespace || config.services) {
+    if (config.logDriver || config.namespace || config.services) {
       if (config.enabled === false) {
         throw new Error('Enabled should not be false if other properties are specified.');
       }
+    }
+
+    if (config.enabled && !this.taskDefinition.defaultContainer) {
+      throw new Error('Task definition must have at least one container to enable service connect.');
     }
 
     if (config.enabled && !config.namespace && !this.cluster.defaultCloudMapNamespace) {

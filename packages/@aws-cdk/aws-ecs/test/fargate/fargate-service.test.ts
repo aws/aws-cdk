@@ -12,7 +12,9 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as ecs from '../../lib';
+import { FargateService, FargateServiceProps, PortMapping } from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectConfiguration } from '../../lib/base/base-service';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -921,8 +923,10 @@ describe('fargate service', () => {
       });
     });
   });
+
   describe('when enabling service connect', () => {
     describe('when validating service connect configurations', () => {
+
       let service: ecs.FargateService;
 
       beforeEach(() => {
@@ -948,14 +952,15 @@ describe('fargate service', () => {
           enabled: false,
           services: [],
           namespace: 'test namespace',
-          logConfig: {
-            logDriver: 'logDriver',
-          },
+          logDriver: ecs.LogDrivers.awsLogs({
+            streamPrefix: 'sc',
+          }),
         };
         expect(() => {
           service.enableServiceConnect(config);
         }).toThrowError(/Enabled should not be false if other properties are specified/);
       });
+
       test('throws an exception if serviceconnectservice.port is a string and it does not exists on the task definition', () => {
         // GIVEN
         const config: ServiceConnectConfiguration = {
@@ -974,14 +979,12 @@ describe('fargate service', () => {
             },
           ],
           namespace: 'test namespace',
-          logConfig: {
-            logDriver: 'logDriver',
-          },
         };
         expect(() => {
           service.enableServiceConnect(config);
         }).toThrowError(/Port 100 does not exist on the task definition./);
       });
+
       test('throws an exception if serviceconnectservice.port is a PortMapping and it does not exists on the task definition', () => {
         // GIVEN
         const config: ServiceConnectConfiguration = {
@@ -1003,14 +1006,12 @@ describe('fargate service', () => {
             },
           ],
           namespace: 'test namespace',
-          logConfig: {
-            logDriver: 'logDriver',
-          },
         };
         expect(() => {
           service.enableServiceConnect(config);
         }).toThrowError(/Port 100 does not exist on the task definition./);
       });
+
       test('throws an exception if there are more than one client alias per service connect service', () => {
         // GIVEN
         service.taskDefinition.addContainer('mobile', {
@@ -1038,14 +1039,12 @@ describe('fargate service', () => {
             },
           ],
           namespace: 'test namespace',
-          logConfig: {
-            logDriver: 'logDriver',
-          },
         };
         expect(() => {
           service.enableServiceConnect(config);
         }).toThrowError(/There should be no more than one client alias per service connect service./);
       });
+
       test('throws an exception if ingressPortOverride is not valid.', () => {
         // GIVEN
         service.taskDefinition.addContainer('mobile', {
@@ -1071,14 +1070,12 @@ describe('fargate service', () => {
             },
           ],
           namespace: 'test namespace',
-          logConfig: {
-            logDriver: 'logDriver',
-          },
         };
         expect(() => {
           service.enableServiceConnect(config);
         }).toThrowError(/ingressPortOverride 100000 is not valid./);
       });
+
       test('throws an exception if Client Alias port is not valid', () => {
         // GIVEN
         service.taskDefinition.addContainer('mobile', {
@@ -1105,9 +1102,6 @@ describe('fargate service', () => {
             },
           ],
           namespace: 'test namespace',
-          logConfig: {
-            logDriver: 'logDriver',
-          },
         };
         expect(() => {
           service.enableServiceConnect(config);
@@ -1116,9 +1110,11 @@ describe('fargate service', () => {
     });
 
     describe('when creating a FargateService with service connect', () => {
+
       let service: ecs.FargateService;
       let stack: cdk.Stack;
       let cluster: ecs.Cluster;
+
       beforeEach(() => {
         // GIVEN
         stack = new cdk.Stack();
@@ -1156,7 +1152,7 @@ describe('fargate service', () => {
         });
       });
 
-      test('with explicit enable', () => {
+      test('service connect cannot be enabled twice', () => {
         // WHEN
         cluster.addDefaultCloudMapNamespace({
           name: 'cool',
@@ -1165,6 +1161,52 @@ describe('fargate service', () => {
           enabled: true,
         });
 
+        // THEN
+        expect(() => {
+          service.enableServiceConnect({
+            enabled: false,
+          });
+        }).toThrow('Service connect configuration cannot be specified more than once.');
+      });
+
+      test('client alias port is defaulted to containerport', () => {
+        service.enableServiceConnect({
+          enabled: true,
+          namespace: 'cool',
+          services: [
+            {
+              port: 'api',
+            },
+          ],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                ClientAliases: [
+                  {
+                    Port: 80,
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      test('with explicit enable', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          enabled: true,
+        });
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -1236,7 +1278,58 @@ describe('fargate service', () => {
             enabled: true,
           });
         }).toThrow();
+      });
 
+      test('port mapping specified by reference', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        const pm: PortMapping = {
+          containerPort: 8080,
+          name: 'api2',
+        };
+        service.taskDefinition.defaultContainer?.addPortMappings(pm);
+        service.enableServiceConnect({
+          enabled: true,
+          services: [
+            {
+              port: pm,
+              discoveryName: 'abc',
+            },
+          ],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api2',
+                DiscoveryName: 'abc',
+              },
+            ],
+          },
+        });
+      });
+
+      test('error when enabling service connect with no container', () => {
+        // GIVEN
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'td2');
+        const svc = new ecs.FargateService(stack, 'svc2', {
+          cluster,
+          taskDefinition,
+        });
+        expect(() => {
+          svc.enableServiceConnect({
+            enabled: true,
+            logDriver: ecs.LogDrivers.awsLogs({
+              streamPrefix: 'sc',
+            }),
+          });
+        }).toThrow('Task definition must have at least one container to enable service connect.');
       });
 
       test('with all options exercised', () => {
@@ -1259,15 +1352,9 @@ describe('fargate service', () => {
             },
           ],
           namespace: 'cool',
-          logConfig: {
-            logDriver: 'awslogs',
-            options: {
-              'awslogs-group': 'mycoolloggroup',
-              'awslogs-region': 'us-west-2',
-              'awslogs-create-group': 'true',
-              'awslogs-stream-prefix': 'sc',
-            },
-          },
+          logDriver: ecs.LogDrivers.awsLogs({
+            streamPrefix: 'sc',
+          }),
         });
 
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -1290,9 +1377,6 @@ describe('fargate service', () => {
             LogConfiguration: {
               LogDriver: 'awslogs',
               Options: {
-                'awslogs-group': 'mycoolloggroup',
-                'awslogs-region': 'us-west-2',
-                'awslogs-create-group': 'true',
                 'awslogs-stream-prefix': 'sc',
               },
             },
@@ -1337,6 +1421,45 @@ describe('fargate service', () => {
           },
         });
       });
+    });
+  });
+
+  describe('portMappingNameFromPortMapping', () => {
+    class TestFargateService extends FargateService {
+      public constructor(scope: Construct, id: string, props: FargateServiceProps) {
+        super(scope, id, props);
+      }
+      public testPortMappingName(pm: string | PortMapping): string {
+        return this.portMappingNameFromPortMapping(pm);
+      }
+    }
+
+    let svc: TestFargateService;
+
+    beforeEach(() => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+      svc = new TestFargateService(stack, 'Svc', {
+        cluster,
+        taskDefinition,
+      });
+    });
+    test('port mapping is a string', () => {
+      // THEN
+      expect(svc.testPortMappingName('app')).toEqual('app');
+    });
+    test('port mapping is a port mapping', () => {
+      expect(svc.testPortMappingName({ name: 'api', containerPort: 80 })).toEqual('api');
+    });
+    test('port mapping has no name', () => {
+      expect(() => {
+        svc.testPortMappingName({ containerPort: 80 });
+      }).toThrow('Port mapping must have a name to be used with service connect.');
     });
   });
 

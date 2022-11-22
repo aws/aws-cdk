@@ -29,6 +29,9 @@ class ServiceConnect extends cdk.Stack {
           appProtocol: ecs.AppProtocol.HTTP2,
         },
       ],
+      logging: ecs.LogDrivers.awsLogs({
+        streamPrefix: 'web',
+      }),
     });
 
     new ecs.FargateService(this, 'svc', {
@@ -47,6 +50,9 @@ class ServiceConnect extends cdk.Stack {
           },
         ],
         enabled: true,
+        logDriver: ecs.LogDrivers.awsLogs({
+          streamPrefix: 'sc',
+        }),
       },
     });
   }

@@ -769,10 +769,28 @@
                             "appProtocol": "http2",
                             "name": "api"
                           }
-                        ]
+                        ],
+                        "logConfiguration": {
+                          "logDriver": "awslogs",
+                          "options": {
+                            "awslogs-group": {
+                              "Ref": "TaskDefcontainerLogGroupAB21CBAF"
+                            },
+                            "awslogs-stream-prefix": "web",
+                            "awslogs-region": {
+                              "Ref": "AWS::Region"
+                            }
+                          }
+                        }
                       }
                     ],
                     "cpu": "1024",
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "TaskDefExecutionRoleB4775C97",
+                        "Arn"
+                      ]
+                    },
                     "family": "awsecsserviceconnectTaskDefEE77A948",
                     "memory": "2048",
                     "networkMode": "awsvpc",
@@ -795,8 +813,122 @@
               "container": {
                 "id": "container",
                 "path": "aws-ecs-service-connect/TaskDef/container",
+                "children": {
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "aws-ecs-service-connect/TaskDef/container/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-service-connect/TaskDef/container/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {}
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                          "version": "2.45.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.LogGroup",
+                      "version": "2.45.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "2.45.0"
+                }
+              },
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "aws-ecs-service-connect/TaskDef/ExecutionRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-service-connect/TaskDef/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "2.45.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-ecs-service-connect/TaskDef/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-service-connect/TaskDef/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "TaskDefcontainerLogGroupAB21CBAF",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "svcLogGroup25CAF347",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "TaskDefExecutionRoleDefaultPolicy0DBB737A",
+                            "roles": [
+                              {
+                                "Ref": "TaskDefExecutionRoleB4775C97"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "2.45.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "2.45.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "2.45.0"
                 }
               }
@@ -848,6 +980,18 @@
                     },
                     "serviceConnectConfiguration": {
                       "enabled": true,
+                      "logConfiguration": {
+                        "logDriver": "awslogs",
+                        "options": {
+                          "awslogs-group": {
+                            "Ref": "svcLogGroup25CAF347"
+                          },
+                          "awslogs-stream-prefix": "sc",
+                          "awslogs-region": {
+                            "Ref": "AWS::Region"
+                          }
+                        }
+                      },
                       "namespace": "scorekeep.com",
                       "services": [
                         {
@@ -868,6 +1012,28 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecs.CfnService",
+                  "version": "2.45.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-ecs-service-connect/svc/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-service-connect/svc/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                      "version": "2.45.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.LogGroup",
                   "version": "2.45.0"
                 }
               },

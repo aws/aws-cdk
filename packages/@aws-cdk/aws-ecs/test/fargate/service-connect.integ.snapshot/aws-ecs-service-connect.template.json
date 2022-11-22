@@ -432,6 +432,18 @@
      {
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "TaskDefcontainerLogGroupAB21CBAF"
+        },
+        "awslogs-stream-prefix": "web",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
       "Name": "web",
       "PortMappings": [
        {
@@ -444,6 +456,12 @@
      }
     ],
     "Cpu": "1024",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "TaskDefExecutionRoleB4775C97",
+      "Arn"
+     ]
+    },
     "Family": "awsecsserviceconnectTaskDefEE77A948",
     "Memory": "2048",
     "NetworkMode": "awsvpc",
@@ -456,6 +474,65 @@
       "Arn"
      ]
     }
+   }
+  },
+  "TaskDefcontainerLogGroupAB21CBAF": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TaskDefExecutionRoleB4775C97": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TaskDefExecutionRoleDefaultPolicy0DBB737A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TaskDefcontainerLogGroupAB21CBAF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "svcLogGroup25CAF347",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TaskDefExecutionRoleDefaultPolicy0DBB737A",
+    "Roles": [
+     {
+      "Ref": "TaskDefExecutionRoleB4775C97"
+     }
+    ]
    }
   },
   "svcService376F2D22": {
@@ -493,6 +570,18 @@
     },
     "ServiceConnectConfiguration": {
      "Enabled": true,
+     "LogConfiguration": {
+      "LogDriver": "awslogs",
+      "Options": {
+       "awslogs-group": {
+        "Ref": "svcLogGroup25CAF347"
+       },
+       "awslogs-stream-prefix": "sc",
+       "awslogs-region": {
+        "Ref": "AWS::Region"
+       }
+      }
+     },
      "Namespace": "scorekeep.com",
      "Services": [
       {
@@ -510,6 +599,11 @@
      "Ref": "TaskDef54694570"
     }
    }
+  },
+  "svcLogGroup25CAF347": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "svcSecurityGroup205CC2DA": {
    "Type": "AWS::EC2::SecurityGroup",
