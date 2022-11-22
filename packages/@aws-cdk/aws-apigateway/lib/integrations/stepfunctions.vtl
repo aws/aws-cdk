@@ -42,10 +42,10 @@
 
     #if ($includeMultiValueQueryString)
         #set($inputString = "$inputString, @@multivaluequerystring@@:{")
-        #foreach($paramName in $method.request.multivaluequerystring.keySet())
+        #foreach($paramName in $allParams.multivaluequerystring.keySet())
             #set($inputString = "$inputString @@$paramName@@: [")
 
-            #foreach($value in $method.request.multivaluequerystring.get($paramName))
+            #foreach($value in $allParams.multivaluequerystring.get($paramName))
                 #set($inputString = "$inputString @@$util.escapeJavaScript($value)@@")
                 #if($foreach.hasNext)
                     #set($inputString = "$inputString,")
