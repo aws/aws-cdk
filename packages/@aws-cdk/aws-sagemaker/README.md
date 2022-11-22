@@ -220,10 +220,20 @@ To enable autoscaling on the production variant, use the `autoScaleInstanceCount
 ```typescript
 import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
-declare const endpointConfig: sagemaker.EndpointConfig;
+declare const model: sagemaker.Model;
+
+const variantName = 'my-variant';
+const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+  instanceProductionVariants: [
+    {
+      model: model,
+      variantName: variantName,
+    },
+  ]
+});
 
 const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
-const productionVariant = endpoint.findInstanceProductionVariant('variantName');
+const productionVariant = endpoint.findInstanceProductionVariant(variantName);
 const instanceCount = productionVariant.autoScaleInstanceCount({
   maxCapacity: 3
 });
@@ -246,7 +256,7 @@ import * as sagemaker from '@aws-cdk/aws-sagemaker';
 declare const endpointConfig: sagemaker.EndpointConfig;
 
 const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
-const productionVariant = endpoint.findInstanceProductionVariant('variantName');
+const productionVariant = endpoint.findInstanceProductionVariant('my-variant');
 productionVariant.metricModelLatency().createAlarm(this, 'ModelLatencyAlarm', {
   threshold: 100000,
   evaluationPeriods: 3,
