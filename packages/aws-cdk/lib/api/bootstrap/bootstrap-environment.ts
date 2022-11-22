@@ -181,7 +181,7 @@ export class Bootstrapper {
       return Promise.resolve(permissionsBoundary);
     }
     // if no Qualifier is supplied, resort to the default one
-    const arn = await this.getExamplePermissionsBoundary(params.qualifier ?? 'hnb659fds', partition, environment.account, environment.region, sdk);
+    const arn = await this.getExamplePermissionsBoundary(params.qualifier ?? 'hnb659fds', partition, environment.account, sdk);
     const policyName = arn.split('/').pop();
     if (!policyName) {
       throw new Error('Could not retrieve the example permission boundary!');
@@ -189,7 +189,7 @@ export class Bootstrapper {
     return Promise.resolve(policyName);
   }
 
-  private async getExamplePermissionsBoundary(qualifier: string, partition: string, account: string, region: string, sdk: ISDK): Promise<string> {
+  private async getExamplePermissionsBoundary(qualifier: string, partition: string, account: string, sdk: ISDK): Promise<string> {
     const iam = sdk.iam();
 
     let policyName = `cdk-${qualifier}-permissions-boundary`;
@@ -204,6 +204,8 @@ export class Bootstrapper {
       // https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html#API_GetPolicy_Errors
       if (e.name === 'NoSuchEntity') {
         //noop, proceed with creating the policy
+      } else {
+        throw e;
       }
     }
 
