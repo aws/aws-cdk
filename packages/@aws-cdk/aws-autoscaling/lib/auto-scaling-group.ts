@@ -985,6 +985,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
+  protected hasSetScaleOnRequest: boolean = false;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -1088,6 +1089,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
     });
 
     policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
+    this.hasSetScaleOnRequest = true;
     return policy;
   }
 
@@ -1388,6 +1390,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.requireImdsv2) {
       Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
     }
+
+    this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
   /**
@@ -1415,10 +1419,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Attach to ELBv2 Application Target Group
    */
   public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    if (this.albTargetGroup !== undefined) {
-      throw new Error('Cannot add AutoScalingGroup to 2nd Target Group');
-    }
-
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
       // Copy onto self if it's a concrete type. We need this for autoscaling
@@ -1764,6 +1764,16 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         version: launchTemplate.versionNumber,
       };
     }
+  }
+
+
+  private validateTargetGroup(): string[] {
+    const errors = new Array<string>();
+    if (this.hasSetScaleOnRequest && this.targetGroupArns.length > 1) {
+      errors.push('Cannon use multiple target groups if `setScaleOnRequest()` is being used.');
+    }
+
+    return errors;
   }
 }
 

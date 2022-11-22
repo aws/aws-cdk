@@ -2,6 +2,7 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '@aws-cdk/aws-ec2';
+import { ApplicationLoadBalancer, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -1862,6 +1863,43 @@ describe('auto scaling group', () => {
       vpc: mockVpc(stack),
       signals: autoscaling.Signals.waitForAll(),
     })).not.toThrow();
+
+  });
+
+  test('Should validate multiple target groups i conjunction with `setScaleOnRequest()`', () => {
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+
+
+    const vpc = mockVpc(stack);
+
+    const alb = new ApplicationLoadBalancer(stack, 'alb', {
+      vpc,
+      internetFacing: true,
+    });
+
+    const listener = alb.addListener('Listener', {
+      port: 80,
+      open: true,
+    });
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+
+    const atg1 = new ApplicationTargetGroup(stack, 'ATG1', { port: 443 });
+    const atg2 = new ApplicationTargetGroup(stack, 'ATG2', { port: 443 });
+
+    listener.addTargetGroups('tgs', { targetGroups: [atg1, atg2] });
+
+    asg.attachToApplicationTargetGroup(atg1);
+    asg.attachToApplicationTargetGroup(atg2);
+
+    expect(asg.node.validate()).toEqual([]);
+
+    asg.scaleOnRequestCount('requests-per-minute', { targetRequestsPerMinute: 60 });
+
+    expect(asg.node.validate()).toContainEqual('Cannon use multiple target groups if `setScaleOnRequest()` is being used.');
 
   });
 });
