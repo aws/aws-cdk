@@ -416,6 +416,96 @@ User). Permissions Boundaries are typically created by account
 Administrators, and their use on newly created `Role`s will be enforced by
 IAM policies.
 
+### Bootstrap Permissions Boundary
+
+If a permissions boundary has been enforced as part of CDK bootstrap, all IAM
+Roles and Users that are created as part of the CDK application must be created
+with the permissions boundary attached. The most common scenario will be to
+apply the enforced permissions boundary to the entire CDK app. This can be done
+either by adding the value to `cdk.json` or directly in the `App` constructor.
+
+For example if your organization has created and is enforcing a permissions
+boundary with the name
+`cdk-${Qualifier}-PermissionsBoundary`
+
+```json
+{
+  "context": {
+     "@aws-cdk/core:permissionsBoundary": {
+	   "name": "cdk-${Qualifier}-PermissionsBoundary"
+	 }
+  }
+}
+```
+
+OR
+
+```ts
+new App({
+  context: {
+    [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
+      name: 'cdk-${Qualifier}-PermissionsBoundary',
+    },
+  },
+});
+```
+
+Another scenario might be if your organization enforces different permissions
+boundaries for different environments. For example your CDK application may have
+
+* `DevStage` that deploys to a personal dev environment where you have elevated
+privileges
+* `BetaStage` that deploys to a beta environment which and has a relaxed
+	permissions boundary
+* `GammaStage` that deploys to a gamma environment which has the prod
+	permissions boundary
+* `ProdStage` that deploys to the prod environment and has the prod permissions
+	boundary
+
+```ts
+declare const app: App;
+
+new Stage(app, 'DevStage');
+
+new Stage(app, 'BetaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('beta-permissions-boundary'),
+});
+
+new Stage(app, 'GammaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
+});
+
+new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
+});
+```
+
+The provided name can include placeholders for the partition, region, qualifier, and account
+These placeholders will be replaced with the actual values if available. This requires
+that the Stack has the environment specified, it does not work with environment.
+
+* '${AWS::Partition}'
+* '${AWS::Region}'
+* '${AWS::AccountId}'
+* '${Qualifier}'
+
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+});
+
+new Stack(prodStage, 'ProdStack', {
+  synthesizer: new DefaultStackSynthesizer({
+    qualifier: 'custom',
+  });
+});
+```
+
+### Custom Permissions Boundary
+
 It is possible to attach Permissions Boundaries to all Roles created in a construct
 tree all at once:
 
