@@ -269,6 +269,11 @@ export enum StorageType {
   GP2 = 'gp2',
 
   /**
+   * General purpose (SSD).
+   */
+  GP3 = 'gp3',
+
+  /**
    * Provisioned IOPS (SSD).
    */
   IO1 = 'io1'
