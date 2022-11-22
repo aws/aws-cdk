@@ -40,7 +40,7 @@ export class ScalableInstanceCount extends appscaling.BaseScalableAttribute {
    * Documentation for the equation is here: https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-scaling-loadtest.html
    * @param scalableProductionVariant ScalableProductionVariant instance
    */
-  private calculateScalingTarget( props: InvocationsScalingProps): number {
+  private calculateScalingTarget(props: InvocationsScalingProps): number {
     const safetyFactor = props.safetyFactor || 0.5;
     return safetyFactor * props.maxRequestsPerSecond * 60;
   }

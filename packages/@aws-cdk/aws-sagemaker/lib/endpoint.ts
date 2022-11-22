@@ -30,6 +30,7 @@ export interface IEndpoint extends cdk.IResource {
    * @attribute
    */
   readonly endpointArn: string;
+
   /**
    * The name of the endpoint.
    *
@@ -303,7 +304,6 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
  * Construction properties for a SageMaker Endpoint.
  */
 export interface EndpointProps {
-
   /**
    * Name of the endpoint.
    *
