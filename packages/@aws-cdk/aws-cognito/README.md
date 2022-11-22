@@ -37,23 +37,26 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Table of Contents
 
-- [User Pools](#user-pools)
-  - [Sign Up](#sign-up)
-  - [Sign In](#sign-in)
-  - [Attributes](#attributes)
-  - [Security](#security)
-    - [Multi-factor Authentication](#multi-factor-authentication-mfa)
-    - [Account Recovery Settings](#account-recovery-settings)
-  - [Emails](#emails)
-  - [Device Tracking](#device-tracking)
-  - [Lambda Triggers](#lambda-triggers)
-    - [Trigger Permissions](#trigger-permissions)
-  - [Import](#importing-user-pools)
-  - [Identity Providers](#identity-providers)
-  - [App Clients](#app-clients)
-  - [Resource Servers](#resource-servers)
-  - [Domains](#domains)
-  - [Deletion protection](#deletion-protection)
+- [Amazon Cognito Construct Library](#amazon-cognito-construct-library)
+  - [Table of Contents](#table-of-contents)
+  - [User Pools](#user-pools)
+    - [Sign Up](#sign-up)
+    - [Sign In](#sign-in)
+    - [Attributes](#attributes)
+    - [Attribute verification](#attribute-verification)
+    - [Security](#security)
+      - [Multi-factor Authentication (MFA)](#multi-factor-authentication-mfa)
+      - [Account Recovery Settings](#account-recovery-settings)
+    - [Emails](#emails)
+    - [Device Tracking](#device-tracking)
+    - [Lambda Triggers](#lambda-triggers)
+      - [Trigger Permissions](#trigger-permissions)
+    - [Importing User Pools](#importing-user-pools)
+    - [Identity Providers](#identity-providers)
+    - [App Clients](#app-clients)
+    - [Resource Servers](#resource-servers)
+    - [Domains](#domains)
+    - [Deletion protection](#deletion-protection)
 
 ## User Pools
 
@@ -696,6 +699,17 @@ const client = pool.addClient('app-client', {
 });
 
 client.node.addDependency(provider);
+```
+
+The property `authSessionValidity` is the session token for each API request in the authentication flow.
+Valid duration is from 3 to 15 minutes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  authSessionValidity: Duration.minutes(15),
+});
 ```
 
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
