@@ -1,0 +1,43 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "Properties for Lambda Function SnapStart",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/AWS::Lambda::Function.SnapStart",
+          "value": {
+            "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-snapstart.html",
+            "Properties": {
+              "ApplyOn": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-snapstart.html#cfn-lambda-function-snapstart-applyon",
+              "UpdateType" : "Mutable",
+              "Required" : true,
+              "PrimitiveType" : "String"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "ResourceTypes": {
+    "AWS::Lambda::Function": {
+      "patch": {
+        "description": "Updates to Lambda Function to support SnapStart",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/SnapStart",
+            "value": {
+              "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-snapstart",
+              "Required": false,
+              "Type": "SnapStart",
+              "UpdateType": "Mutable"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
