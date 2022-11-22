@@ -1,15 +1,18 @@
 import * as path from 'path';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { Runtime, IFunction } from '@aws-cdk/aws-lambda';
 import { App, Stack, StackProps } from '@aws-cdk/core';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
-class TestStack extends Stack {
+class SdkV2TestStack extends Stack {
+  public lambdaFunction: IFunction
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     // This function uses aws-sdk but it will not be included
-    new lambda.NodejsFunction(this, 'external', {
+    this.lambdaFunction = new lambda.NodejsFunction(this, 'external', {
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
       runtime: Runtime.NODEJS_14_X,
       bundling: {
@@ -21,9 +24,17 @@ class TestStack extends Stack {
         forceDockerBundling: true,
       },
     });
+  }
+}
+
+class SdkV3TestStack extends Stack {
+  public lambdaFunction: IFunction
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
     // This function uses @aws-sdk/* but it will not be included
-    new lambda.NodejsFunction(this, 'external-sdk-v3', {
+    this.lambdaFunction = new lambda.NodejsFunction(this, 'external-sdk-v3', {
       entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
     });
@@ -31,5 +42,25 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-nodejs-dependencies');
+const sdkV2testCase = new SdkV2TestStack(app, 'cdk-integ-lambda-nodejs-dependencies');
+const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3');
+
+for (const testCase of [sdkV2testCase, sdkV3testCase]) {
+  const integ = new IntegTest(app, `LambdaDependencies-${testCase.stackId}`, {
+    testCases: [testCase],
+  });
+
+  const response = integ.assertions.awsApiCall('Lambda', 'invoke', {
+    FunctionName: testCase.lambdaFunction.functionName,
+  });
+  response.provider.addToRolePolicy({
+    Effect: 'Allow',
+    Action: ['lambda:InvokeFunction'],
+    Resource: [testCase.lambdaFunction.functionArn],
+  });
+  response.expect(ExpectedResult.objectLike({
+    StatusCode: 200,
+  }));
+}
+
 app.synth();
