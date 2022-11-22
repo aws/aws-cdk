@@ -139,7 +139,7 @@ export class Bootstrapper {
     *    - the name indicating the custom permissions boundary to be used
     * Re-bootstrapping will NOT be blocked by either tightening or relaxing the permissions' boundary.
     */
-    const currentPermissionsBoundary = current.parameters.PermissionsBoundary;
+    const currentPermissionsBoundary = current.parameters.InputPermissionsBoundary;
     const inputPolicyName = params.examplePermissionsBoundary ? CDK_BOOTSTRAP_PERMISSIONS_BOUNDARY : params.customPermissionsBoundary;
     let policyName;
     if (inputPolicyName) {
