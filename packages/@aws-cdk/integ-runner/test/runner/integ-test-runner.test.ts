@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as builtinFs from 'fs';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
@@ -24,7 +25,9 @@ beforeEach(() => {
   });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   removeSyncMock = jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+
+  // fs-extra delegates to the built-in one, this also catches calls done directly
+  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {
