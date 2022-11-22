@@ -817,6 +817,11 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EBS_OPTIMIZED_INSTANCE = 'EBS_OPTIMIZED_INSTANCE';
   /**
+   * Checks if Amazon Elastic Block Store (Amazon EBS) volumes are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ebs-resources-protected-by-backup-plan.html
+   */
+  public static readonly EBS_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'EBS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  /**
    * Checks whether Amazon Elastic Block Store snapshots are not publicly restorable.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ebs-snapshot-public-restorable-check.html
    */
@@ -839,10 +844,21 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_INSTANCE_PROFILE_ATTACHED = 'EC2_INSTANCE_PROFILE_ATTACHED';
   /**
+   * Checks if Amazon Elastic Compute Cloud (Amazon EC2) uses multiple ENIs (Elastic Network Interfaces) 
+   * or Elastic Fabric Adapters (EFAs).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-multiple-eni-check.html
+   */
+  public static readonly EC2_INSTANCE_MULTIPLE_ENI_CHECK = 'EC2_INSTANCE_MULTIPLE_ENI_CHECK';
+  /**
    * Checks whether Amazon Elastic Compute Cloud (Amazon EC2) instances have a public IP association.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-no-public-ip.html
    */
   public static readonly EC2_INSTANCE_NO_PUBLIC_IP = 'EC2_INSTANCE_NO_PUBLIC_IP';
+  /**
+   * Checks if a recovery point was created for Amazon Elastic Compute Cloud (Amazon EC2) instances. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-last-backup-recovery-point-created.html
+   */
+  public static readonly EC2_LAST_BACKUP_RECOVERY_POINT_CREATED = 'EC2_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks whether your EC2 instances belong to a virtual private cloud (VPC).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instances-in-vpc.html
@@ -881,27 +897,152 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_MANAGED_INSTANCE_PLATFORM_CHECK = 'EC2_MANAGEDINSTANCE_PLATFORM_CHECK';
   /**
+   * Checks if running Amazon Elastic Compute Cloud (EC2) instances are launched using amazon key pairs.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-no-amazon-key-pair.html
+   */
+  public static readonly EC2_NO_AMAZON_KEY_PAIR = 'EC2_NO_AMAZON_KEY_PAIR';
+  /**
+   * Checks if the virtualization type of an EC2 instance is paravirtual.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-paravirtual-instance-check.html
+   */
+  public static readonly EC2_PARAVIRTUAL_INSTANCE_CHECK = 'EC2_PARAVIRTUAL_INSTANCE_CHECK';
+  /**
+   * Checks if Amazon Elastic Compute Cloud (Amazon EC2) instances are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-resources-protected-by-backup-plan.html
+   */
+  public static readonly EC2_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'EC2_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  /**
    * Checks that security groups are attached to Amazon Elastic Compute Cloud (Amazon EC2) instances
    * or to an elastic network interface.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-security-group-attached-to-eni.html
    */
   public static readonly EC2_SECURITY_GROUP_ATTACHED_TO_ENI = 'EC2_SECURITY_GROUP_ATTACHED_TO_ENI';
   /**
+   * Checks if non-default security groups are attached to Elastic network interfaces (ENIs).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-security-group-attached-to-eni-periodic.html
+   */
+  public static readonly EC2_SECURITY_GROUP_ATTACHED_TO_ENI_PERIODIC = 'EC2_SECURITY_GROUP_ATTACHED_TO_ENI_PERIODIC';
+  /**
    * Checks whether there are instances stopped for more than the allowed number of days.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-stopped-instance.html
    */
   public static readonly EC2_STOPPED_INSTANCE = 'EC2_STOPPED_INSTANCE';
+  /**
+   * Checks if an Amazon Elastic Compute Cloud (EC2) instance metadata 
+   * has a specified token hop limit that is below the desired limit.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-token-hop-limit-check.html
+   */
+  public static readonly EC2_TOKEN_HOP_LIMIT_CHECK = 'EC2_TOKEN_HOP_LIMIT_CHECK';
+  /**
+   * Checks if Amazon Elastic Compute Cloud (Amazon EC2) Transit Gateways have 'AutoAcceptSharedAttachments' enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-transit-gateway-auto-vpc-attach-disabled.html
+   */
+  public static readonly EC2_TRANSIT_GATEWAY_AUTO_VPC_ATTACH_DISABLED = 'EC2_TRANSIT_GATEWAY_AUTO_VPC_ATTACH_DISABLED';
   /**
    * Checks whether EBS volumes are attached to EC2 instances.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-volume-inuse-check.html
    */
   public static readonly EC2_VOLUME_INUSE_CHECK = 'EC2_VOLUME_INUSE_CHECK';
   /**
+   * Checks if a private Amazon Elastic Container Registry (ECR) repository has image scanning enabled. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecr-private-image-scanning-enabled.html
+   */
+  public static readonly ECR_PRIVATE_IMAGE_SCANNING_ENABLED = 'ECR_PRIVATE_IMAGE_SCANNING_ENABLED';
+  /**
+   * Checks if a private Amazon Elastic Container Registry (ECR) repository has at least one lifecycle policy configured.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecr-private-lifecycle-policy-configured.html
+   */
+  public static readonly ECR_PRIVATE_LIFECYCLE_POLICY_CONFIGURED = 'ECR_PRIVATE_LIFECYCLE_POLICY_CONFIGURED';
+  /**
+   * Checks if a private Amazon Elastic Container Registry (ECR) repository has tag immutability enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecr-private-tag-immutability-enabled.html
+   */
+  public static readonly ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED = 'ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED';
+  /**
+   * Checks if the networking mode for active ECSTaskDefinitions is set to ‘awsvpc’. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-awsvpc-networking-enabled.html
+   */
+  public static readonly ECS_AWSVPC_NETWORKING_ENABLED = 'ECS_AWSVPC_NETWORKING_ENABLED';
+  /**
+   * Checks if the privileged parameter in the container definition of ECSTaskDefinitions is set to ‘true’.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instances-in-vpc.html
+   */
+  public static readonly ECS_CONTAINERS_NONPRIVILEGED = 'ECS_CONTAINERS_NONPRIVILEGED';
+  /**
+   * Checks if Amazon Elastic Container Service (Amazon ECS) Containers only have read-only access to its root filesystems.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-containers-readonly-access.html
+   */
+  public static readonly ECS_CONTAINERS_READONLY_ACCESS = 'ECS_CONTAINERS_READONLY_ACCESS';
+  /**
+   * Checks if Amazon Elastic Container Service clusters have container insights enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-container-insights-enabled.html
+   */
+  public static readonly ECS_CONTAINER_INSIGHTS_ENABLED = 'ECS_CONTAINER_INSIGHTS_ENABLED';
+  /**
+   * Checks if Amazon Elastic Container Service (ECS) Fargate Services
+   * is running on the latest Fargate platform version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-fargate-latest-platform-version.html
+   */
+  public static readonly ECS_FARGATE_LATEST_PLATFORM_VERSION = 'ECS_FARGATE_LATEST_PLATFORM_VERSION';
+  /**
+   * Checks if secrets are passed as container environment variables.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-no-environment-secrets.html
+   */
+  public static readonly ECS_NO_ENVIRONMENT_SECRETS = 'ECS_NO_ENVIRONMENT_SECRETS';
+  /**
+   * Checks if logConfiguration is set on active ECS Task Definitions.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-task-definition-log-configuration.html
+   */
+  public static readonly ECS_TASK_DEFINITION_LOG_CONFIGURATION = 'ECS_TASK_DEFINITION_LOG_CONFIGURATION';
+  /**
+   * Checks if Amazon Elastic Container Service (ECS) task definitions have a set memory limit for its container definitions. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-task-definition-memory-hard-limit.html
+   */
+  public static readonly ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT = 'ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT';
+  /**
+   * Checks if ECSTaskDefinitions specify a user 
+   * for Amazon Elastic Container Service (Amazon ECS) EC2 launch type containers to run on.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-task-definition-nonroot-user.html
+   */
+  public static readonly ECS_TASK_DEFINITION_NONROOT_USER = 'ECS_TASK_DEFINITION_NONROOT_USER';
+  /**
+   * Checks if ECSTaskDefinitions are configured to share a host’s process namespace 
+   * with its Amazon Elastic Container Service (Amazon ECS) containers.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-stopped-instance.html
+   */
+  public static readonly ECS_TASK_DEFINITION_PID_MODE_CHECK = 'ECS_TASK_DEFINITION_PID_MODE_CHECK';
+  /**
+   * Checks if an Amazon Elastic Container Service (Amazon ECS) task definition 
+   * with host networking mode has 'privileged' or 'user' container definitions.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-volume-inuse-check.html
+   */
+  public static readonly EC2_VOLUME_IECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECKNUSE_CHECK = 'ECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECK';
+  /**
+   * Checks if Amazon Elastic File System (Amazon EFS) access points are configured to enforce a root directory. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-access-point-enforce-root-directory.html
+   */
+  public static readonly EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY = 'EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY';
+  /**
+   * Checks if Amazon Elastic File System (Amazon EFS) access points are configured to enforce a user identity.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-volume-inuse-check.html
+   */
+  public static readonly EFS_ACCESS_POINT_ENFORCE_USER_IDENTITY = 'EFS_ACCESS_POINT_ENFORCE_USER_IDENTITY';
+  /**
    * hecks whether Amazon Elastic File System (Amazon EFS) is configured to encrypt the file data
    * using AWS Key Management Service (AWS KMS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-encrypted-check.html
    */
   public static readonly EFS_ENCRYPTED_CHECK = 'EFS_ENCRYPTED_CHECK';
+  /**
+   * Checks if a recovery point was created for Amazon Elastic File System (Amazon EFS) File Systems. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-last-backup-recovery-point-created.html
+   */
+  public static readonly EFS_LAST_BACKUP_RECOVERY_POINT_CREATED = 'EFS_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
+   * Checks if Amazon Elastic File System (Amazon EFS) File Systems are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-resources-protected-by-backup-plan.html
+   */
+  public static readonly EFS_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'EFS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks whether all Elastic IP addresses that are allocated to a VPC are attached to
    * EC2 instances or in-use elastic network interfaces (ENIs).
@@ -958,6 +1099,23 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly ELASTICSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK = 'ELASTICSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK';
   /**
+   * Checks if managed platform updates in an AWS Elastic Beanstalk environment is enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/elastic-beanstalk-managed-updates-enabled.html
+   */
+  public static readonly ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED = 'ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED';
+  /**
+   * Checks if Application Load Balancers and Network Load Balancers 
+   * have listeners that are configured to use certificates from AWS Certificate Manager (ACM).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/elbv2-acm-certificate-required.html
+   */
+  public static readonly ELBV2_ACM_CERTIFICATE_REQUIRED = 'ELBV2_ACM_CERTIFICATE_REQUIRED';
+  /**
+   * Checks if an Elastic Load Balancer V2 (Application, Network, or Gateway Load Balancer)
+   * has registered instances from multiple Availability Zones (AZ's). 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/elbv2-multiple-az.html
+   */
+  public static readonly ELBV2_MULTIPLE_AZ = 'ELBV2_MULTIPLE_AZ';
+  /**
    * Checks if cross-zone load balancing is enabled for the Classic Load Balancers (CLBs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elb-cross-zone-load-balancing-enabled.html
    */
@@ -1011,16 +1169,25 @@ export class ManagedRuleIdentifiers {
    * Checks whether the security groups associated inScope resources are compliant with the
    * master security groups at each rule level based on allowSecurityGroup and denySecurityGroup flag.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-security-group-audit-policy-check.html
+   *
+   * @deprecated Inactive managed rule 
+   * 
    */
   public static readonly FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK = 'FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK';
   /**
    * Checks whether AWS Firewall Manager created security groups content is the same as the master security groups.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-security-group-content-check.html
+   * 
+   * @deprecated Inactive managed rule 
+   * 
    */
   public static readonly FMS_SECURITY_GROUP_CONTENT_CHECK = 'FMS_SECURITY_GROUP_CONTENT_CHECK';
   /**
    * Checks whether Amazon EC2 or an elastic network interface is associated with AWS Firewall Manager security groups.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-security-group-resource-association-check.html
+   * 
+   * @deprecated Inactive managed rule 
+   * 
    */
   public static readonly FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK = 'FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK';
   /**
@@ -1041,6 +1208,16 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-webacl-rulegroup-association-check.html
    */
   public static readonly FMS_WEBACL_RULEGROUP_ASSOCIATION_CHECK = 'FMS_WEBACL_RULEGROUP_ASSOCIATION_CHECK';
+  /**
+   * Checks if a recovery point was created for Amazon FSx File Systems.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/fsx-last-backup-recovery-point-created.html
+   */
+  public static readonly FSX_LAST_BACKUP_RECOVERY_POINT_CREATED = 'FSX_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
+   * Checks if Amazon FSx File Systems are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/fsx-resources-protected-by-backup-plan.html
+   */
+  public static readonly FSX_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'FSX_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks whether Amazon GuardDuty is enabled in your AWS account and region. If you provide an AWS account for centralization,
    * the rule evaluates the Amazon GuardDuty results in the centralized account.
@@ -1490,7 +1667,7 @@ export class ManagedRuleIdentifiers {
    * Checks whether logging is enabled for your S3 buckets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-logging-enabled.html
    */
-  public static readonly  S3_BUCKET_LOGGING_ENABLED = ' S3_BUCKET_LOGGING_ENABLED';
+  public static readonly S3_BUCKET_LOGGING_ENABLED = 'S3_BUCKET_LOGGING_ENABLED';
   /**
    * Checks that the access granted by the Amazon S3 bucket is restricted by any of the AWS principals, federated users,
    * service principals, IP addresses, or VPCs that you provide.
