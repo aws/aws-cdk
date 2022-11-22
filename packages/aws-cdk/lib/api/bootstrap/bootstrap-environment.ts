@@ -162,7 +162,7 @@ export class Bootstrapper {
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
-        PermissionsBoundary: policyName,
+        InputPermissionsBoundary: policyName,
       }, {
         ...options,
         terminationProtection: options.terminationProtection ?? current.terminationProtection,
