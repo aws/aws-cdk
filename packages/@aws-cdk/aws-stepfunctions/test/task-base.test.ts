@@ -52,7 +52,7 @@ describe('Task base', () => {
       heartbeat: cdk.Duration.seconds(10),
       timeout: cdk.Duration.minutes(10),
       credentials: {
-        role: sfn.TaskRole.role(role),
+        role: sfn.TaskRole.fromRole(role),
       },
     });
 
@@ -81,7 +81,7 @@ describe('Task base', () => {
       heartbeat: cdk.Duration.seconds(10),
       timeout: cdk.Duration.minutes(10),
       credentials: {
-        role: sfn.TaskRole.jsonPathStringAt('$.Input.RoleArn'),
+        role: sfn.TaskRole.fromRoleArnJsonPath('$.Input.RoleArn'),
       },
     });
 

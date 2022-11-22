@@ -287,7 +287,7 @@ describe('State Machine', () => {
     // WHEN
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.role(role) } }),
+      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
     });
 
     // THEN
@@ -321,7 +321,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.jsonPathStringAt('$.RoleArn') } }),
+      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn') } }),
     });
 
     // THEN

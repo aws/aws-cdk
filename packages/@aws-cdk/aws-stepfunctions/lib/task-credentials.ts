@@ -25,8 +25,12 @@ export abstract class TaskRole {
    * Construct a task role retrieved from task inputs using a json expression
    *
    * @param expression json expression to roleArn
+   *
+   * @example
+   *
+   * TaskRole.fromRoleArnJsonPath('$.RoleArn');
    */
-  public static jsonPathStringAt(expression: string): TaskRole {
+  public static fromRoleArnJsonPath(expression: string): TaskRole {
     return new JsonExpressionTaskRole(expression);
   }
 
@@ -35,7 +39,7 @@ export abstract class TaskRole {
    *
    * @param role IAM Role
    */
-  public static role(role: iam.IRole): TaskRole {
+  public static fromRole(role: iam.IRole): TaskRole {
     return new IamRoleTaskRole(role);
   }
 
@@ -56,7 +60,7 @@ class JsonExpressionTaskRole extends TaskRole {
 
   constructor(expression: string) {
     super();
-    this.roleArn = JsonPath.stringAt(expression);;
+    this.roleArn = JsonPath.stringAt(expression);
     this.resource = '*';
   }
 }

@@ -590,9 +590,9 @@ declare const submitLambda: lambda.Function;
 declare const iamRole: iam.Role;
 
 // use a fixed role for all task invocations
-const role = sfn.TaskRole.role(iamRole);
+const role = sfn.TaskRole.fromRole(iamRole);
 // or use a json expression to resolve the role at runtime based on task inputs
-//const role = sfn.TaskRole.jsonPathStringAt('$.RoleArn');
+//const role = sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn');
 
 const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
   lambdaFunction: submitLambda,
