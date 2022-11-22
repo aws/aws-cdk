@@ -282,6 +282,16 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
   }
 }
 
+/**
+ * Represents an Endpoint resource defined outside this stack.
+ */
+export interface EndpointAttributes {
+  /**
+   * The ARN of this endpoint.
+   */
+  readonly endpointArn: string;
+}
+
 abstract class EndpointBase extends cdk.Resource implements IEndpoint {
   /**
    * The ARN of the endpoint.
@@ -354,16 +364,7 @@ export class Endpoint extends EndpointBase {
    * @param endpointArn the ARN of the endpoint.
    */
   public static fromEndpointArn(scope: Construct, id: string, endpointArn: string): IEndpoint {
-    const endpointName = cdk.Stack.of(scope).splitArn(endpointArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-
-    class Import extends EndpointBase {
-      public endpointArn = endpointArn;
-      public endpointName = endpointName;
-    }
-
-    return new Import(scope, id, {
-      environmentFromArn: endpointArn,
-    });
+    return Endpoint.fromEndpointAttributes(scope, id, { endpointArn });
   }
 
   /**
@@ -378,15 +379,31 @@ export class Endpoint extends EndpointBase {
       resource: 'endpoint',
       resourceName: endpointName,
     });
+    return Endpoint.fromEndpointAttributes(scope, id, { endpointArn });
+  }
+
+  /**
+   * Imports an Endpoint defined either outside the CDK or in a different CDK stack.
+   * @param scope the Construct scope.
+   * @param id the resource id.
+   * @param attrs the attributes of the endpoint to import.
+   */
+  public static fromEndpointAttributes(scope: Construct, id: string, attrs: EndpointAttributes): IEndpoint {
+    const endpointArn = attrs.endpointArn;
+    const endpointName = cdk.Stack.of(scope).splitArn(endpointArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends EndpointBase {
-      public endpointArn = endpointArn;
-      public endpointName = endpointName;
+      public readonly endpointArn = endpointArn;
+      public readonly endpointName = endpointName;
+
+      constructor(s: Construct, i: string) {
+        super(s, i, {
+          environmentFromArn: endpointArn,
+        });
+      }
     }
 
-    return new Import(scope, id, {
-      environmentFromArn: endpointArn,
-    });
+    return new Import(scope, id);
   }
 
   /**
