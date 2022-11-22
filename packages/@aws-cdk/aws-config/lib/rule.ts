@@ -776,10 +776,20 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly DYNAMODB_IN_BACKUP_PLAN = 'DYNAMODB_IN_BACKUP_PLAN';
   /**
+   * Checks if a recovery point was created for Amazon DynamoDB Tables within the specified period. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-last-backup-recovery-point-created.html
+   */
+  public static readonly DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED = 'DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
    * Checks that point in time recovery (PITR) is enabled for Amazon DynamoDB tables.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-pitr-enabled.html
    */
   public static readonly DYNAMODB_PITR_ENABLED = 'DYNAMODB_PITR_ENABLED';
+  /**
+   * Checks if Amazon DynamoDB tables are protected by a backup plan. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-resources-protected-by-backup-plan.html
+   */
+  public static readonly DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks whether Amazon DynamoDB table is encrypted with AWS Key Management Service (KMS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-table-encrypted-kms.html
