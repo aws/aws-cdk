@@ -186,7 +186,7 @@ export class Bootstrapper {
     if (!policyName) {
       throw new Error('Could not retrieve the example permission boundary!');
     }
-    return policyName;
+    return Promise.resolve(policyName);
   }
 
   private async getExamplePermissionsBoundary(qualifier: string, partition: string, account: string, region: string, sdk: ISDK): Promise<string> {
