@@ -81,47 +81,6 @@ instanceCount.scaleOnInvocations('LimitRPS', {
   maxRequestsPerSecond: 30,
 });
 
-productionVariant.metricInvocations().createAlarm(stack, 'InvocationsAlarm', {
-  threshold: 1,
-  evaluationPeriods: 2,
-});
-productionVariant.metricInvocationsPerInstance().createAlarm(stack, 'InvocationsPerInstanceAlarm', {
-  threshold: 4,
-  evaluationPeriods: 5,
-});
-productionVariant.metricModelLatency().createAlarm(stack, 'ModelLatencyAlarm', {
-  threshold: 7,
-  evaluationPeriods: 8,
-});
-productionVariant.metricOverheadLatency().createAlarm(stack, 'OverheadLatencyAlarm', {
-  threshold: 10,
-  evaluationPeriods: 11,
-});
-productionVariant.metricInvocationResponseCode(sagemaker.InvocationHttpResponseCode.INVOCATION_5XX_ERRORS).createAlarm(stack, 'Invocation5XXErrorsAlarm', {
-  threshold: 13,
-  evaluationPeriods: 14,
-});
-productionVariant.metricDiskUtilization().createAlarm(stack, 'DiskUtilizationAlarm', {
-  threshold: 16,
-  evaluationPeriods: 17,
-});
-productionVariant.metricCpuUtilization().createAlarm(stack, 'CPUUtilizationAlarm', {
-  threshold: 19,
-  evaluationPeriods: 20,
-});
-productionVariant.metricMemoryUtilization().createAlarm(stack, 'MemoryUtilizationAlarm', {
-  threshold: 22,
-  evaluationPeriods: 23,
-});
-productionVariant.metricGpuUtilization().createAlarm(stack, 'GPUUtilizationAlarm', {
-  threshold: 25,
-  evaluationPeriods: 26,
-});
-productionVariant.metricGpuMemoryUtilization().createAlarm(stack, 'GPUMemoryUtilizationAlarm', {
-  threshold: 28,
-  evaluationPeriods: 29,
-});
-
 const integ = new IntegTest(app, 'integtest-endpoint', {
   testCases: [stack],
 });

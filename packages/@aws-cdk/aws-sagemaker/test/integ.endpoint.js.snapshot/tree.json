@@ -16,6 +16,14 @@
                 "id": "Role",
                 "path": "aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role/Resource",
@@ -265,6 +273,14 @@
                 "id": "Role",
                 "path": "aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role/Resource",
@@ -614,6 +630,14 @@
             "id": "Invoker",
             "path": "aws-cdk-sagemaker-endpoint/Invoker",
             "children": {
+              "ImportInvoker": {
+                "id": "ImportInvoker",
+                "path": "aws-cdk-sagemaker-endpoint/Invoker/ImportInvoker",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-sagemaker-endpoint/Invoker/Resource",
@@ -701,456 +725,6 @@
               "version": "0.0.0"
             }
           },
-          "InvocationsAlarm": {
-            "id": "InvocationsAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/InvocationsAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/InvocationsAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 2,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "Invocations",
-                    "namespace": "AWS/SageMaker",
-                    "period": 300,
-                    "statistic": "Sum",
-                    "threshold": 1
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "InvocationsPerInstanceAlarm": {
-            "id": "InvocationsPerInstanceAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/InvocationsPerInstanceAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/InvocationsPerInstanceAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 5,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "InvocationsPerInstance",
-                    "namespace": "AWS/SageMaker",
-                    "period": 300,
-                    "statistic": "Sum",
-                    "threshold": 4
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "ModelLatencyAlarm": {
-            "id": "ModelLatencyAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/ModelLatencyAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/ModelLatencyAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 8,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "ModelLatency",
-                    "namespace": "AWS/SageMaker",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 7
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "OverheadLatencyAlarm": {
-            "id": "OverheadLatencyAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/OverheadLatencyAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/OverheadLatencyAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 11,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "OverheadLatency",
-                    "namespace": "AWS/SageMaker",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 10
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "Invocation5XXErrorsAlarm": {
-            "id": "Invocation5XXErrorsAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/Invocation5XXErrorsAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/Invocation5XXErrorsAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 14,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "Invocation5XXErrors",
-                    "namespace": "AWS/SageMaker",
-                    "period": 300,
-                    "statistic": "Sum",
-                    "threshold": 13
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "DiskUtilizationAlarm": {
-            "id": "DiskUtilizationAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/DiskUtilizationAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/DiskUtilizationAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 17,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "DiskUtilization",
-                    "namespace": "/aws/sagemaker/Endpoints",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 16
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "CPUUtilizationAlarm": {
-            "id": "CPUUtilizationAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/CPUUtilizationAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/CPUUtilizationAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 20,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "CPUUtilization",
-                    "namespace": "/aws/sagemaker/Endpoints",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 19
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "MemoryUtilizationAlarm": {
-            "id": "MemoryUtilizationAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/MemoryUtilizationAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/MemoryUtilizationAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 23,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "MemoryUtilization",
-                    "namespace": "/aws/sagemaker/Endpoints",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 22
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "GPUUtilizationAlarm": {
-            "id": "GPUUtilizationAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/GPUUtilizationAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/GPUUtilizationAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 26,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "GPUUtilization",
-                    "namespace": "/aws/sagemaker/Endpoints",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 25
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
-          "GPUMemoryUtilizationAlarm": {
-            "id": "GPUMemoryUtilizationAlarm",
-            "path": "aws-cdk-sagemaker-endpoint/GPUMemoryUtilizationAlarm",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-sagemaker-endpoint/GPUMemoryUtilizationAlarm/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                  "aws:cdk:cloudformation:props": {
-                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 29,
-                    "dimensions": [
-                      {
-                        "name": "EndpointName",
-                        "value": {
-                          "Fn::GetAtt": [
-                            "Endpoint8024A810",
-                            "EndpointName"
-                          ]
-                        }
-                      },
-                      {
-                        "name": "VariantName",
-                        "value": "firstVariant"
-                      }
-                    ],
-                    "metricName": "GPUMemoryUtilization",
-                    "namespace": "/aws/sagemaker/Endpoints",
-                    "period": 300,
-                    "statistic": "Average",
-                    "threshold": 28
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
-              "version": "0.0.0"
-            }
-          },
           "Exports": {
             "id": "Exports",
             "path": "aws-cdk-sagemaker-endpoint/Exports",
@@ -1166,7 +740,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.161"
             }
           },
           "BootstrapVersion": {
@@ -1204,7 +778,7 @@
                 "path": "integtest-endpoint/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.161"
                 }
               },
               "DeployAssert": {
@@ -1224,7 +798,7 @@
                             "path": "integtest-endpoint/DefaultTest/DeployAssert/AwsApiCallSageMakerRuntimeinvokeEndpoint/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.140"
+                              "version": "10.1.161"
                             }
                           }
                         },
@@ -1296,7 +870,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.161"
                     }
                   },
                   "BootstrapVersion": {
@@ -1338,7 +912,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.161"
         }
       }
     },
