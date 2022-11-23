@@ -130,6 +130,7 @@ export class StepFunctionsRestApi extends RestApi {
       requestContext: props.requestContext,
       path: props.path?? true,
       querystring: props.querystring?? true,
+      multiValueQuerystring: props.multiValueQuerystring?? true,
       headers: props.headers,
       authorizer: props.authorizer,
     });
