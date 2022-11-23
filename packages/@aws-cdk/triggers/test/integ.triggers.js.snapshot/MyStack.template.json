@@ -70,6 +70,15 @@
     },
     "HandlerArn": {
      "Ref": "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957"
+    },
+    "InvocationType": "RequestResponse",
+    "Timeout": {
+     "amount": 2,
+     "unit": {
+      "label": "minutes",
+      "isoLabel": "M",
+      "inMillis": 60000
+     }
     }
    },
    "DependsOn": [
