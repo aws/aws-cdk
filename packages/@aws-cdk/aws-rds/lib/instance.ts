@@ -232,7 +232,7 @@ export enum LicenseModel {
   /**
    * General public license.
    */
-  GENERAL_PUBLIC_LICENSE = 'general-public-license'
+  GENERAL_PUBLIC_LICENSE = 'general-public-license',
 }
 
 /**
@@ -276,7 +276,7 @@ export enum StorageType {
   /**
    * Provisioned IOPS (SSD).
    */
-  IO1 = 'io1'
+  IO1 = 'io1',
 }
 
 /**
@@ -291,7 +291,7 @@ export enum NetworkType {
   /**
    * Dual-stack network type.
    */
-  DUAL = 'DUAL'
+  DUAL = 'DUAL',
 }
 
 /**
