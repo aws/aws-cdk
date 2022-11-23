@@ -45,21 +45,17 @@ const app = new App();
 const sdkV2testCase = new SdkV2TestStack(app, 'cdk-integ-lambda-nodejs-dependencies');
 const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3');
 
-for (const testCase of [sdkV2testCase, sdkV3testCase]) {
-  const integ = new IntegTest(app, `LambdaDependencies-${testCase.stackId}`, {
-    testCases: [testCase],
-  });
+const integ = new IntegTest(app, 'LambdaDependencies', {
+  testCases: [sdkV2testCase, sdkV3testCase],
+});
 
-  const response = integ.assertions.awsApiCall('Lambda', 'invoke', {
-    FunctionName: testCase.lambdaFunction.functionName,
-  });
-  response.provider.addToRolePolicy({
-    Effect: 'Allow',
-    Action: ['lambda:InvokeFunction'],
-    Resource: [testCase.lambdaFunction.functionArn],
+for (const testCase of [sdkV2testCase, sdkV3testCase]) {
+  const response = integ.assertions.invokeFunction({
+    functionName: testCase.lambdaFunction.functionName,
   });
   response.expect(ExpectedResult.objectLike({
-    StatusCode: 200,
+    // expect invoking without error
+    Payload: 'null',
   }));
 }
 

@@ -67,17 +67,6 @@
    "Export": {
     "Name": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputRefexternal068F12D12C72A375"
    }
-  },
-  "ExportsOutputFnGetAttexternal068F12D1Arn962B5AFC": {
-   "Value": {
-    "Fn::GetAtt": [
-     "external068F12D1",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputFnGetAttexternal068F12D1Arn962B5AFC"
-   }
   }
  },
  "Parameters": {

@@ -1,12 +1,13 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "LambdaDependencies-${Token[AWS::StackId.389]}/DefaultTest": {
+    "LambdaDependencies/DefaultTest": {
       "stacks": [
+        "cdk-integ-lambda-nodejs-dependencies",
         "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3"
       ],
-      "assertionStack": "LambdaDependencies-${Token[AWS::StackId.389]}/DefaultTest/DeployAssert",
-      "assertionStackName": "LambdaDependenciesTokenAWSStackId389DefaultTestDeployAssert4921E93E"
+      "assertionStack": "LambdaDependencies/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaDependenciesDefaultTestDeployAssert259C940B"
     }
   }
 }

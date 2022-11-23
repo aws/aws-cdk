@@ -67,17 +67,6 @@
    "Export": {
     "Name": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
    }
-  },
-  "ExportsOutputFnGetAttexternalsdkv3B69F9D99Arn53954649": {
-   "Value": {
-    "Fn::GetAtt": [
-     "externalsdkv3B69F9D99",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputFnGetAttexternalsdkv3B69F9D99Arn53954649"
-   }
   }
  },
  "Parameters": {
