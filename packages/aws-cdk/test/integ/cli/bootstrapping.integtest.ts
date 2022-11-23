@@ -193,6 +193,28 @@ integTest('can dump the template, modify and use it to deploy a custom bootstrap
   });
 }));
 
+integTest('can use the default permissions boundary to bootstrap', withDefaultFixture(async (fixture) => {
+  let template = await fixture.cdkBootstrapModern({
+    // toolkitStackName doesn't matter for this particular invocation
+    toolkitStackName: fixture.bootstrapStackName,
+    showTemplate: true,
+    examplePermissionsBoundary: true,
+  });
+
+  expect(template).toContain(`arn:aws:iam::${await fixture.aws.account()}:policy/cdk-${fixture.qualifier}-permissions-boundary`);
+}));
+
+integTest('can use the custom permissions boundary to bootstrap', withDefaultFixture(async (fixture) => {
+  let template = await fixture.cdkBootstrapModern({
+    // toolkitStackName doesn't matter for this particular invocation
+    toolkitStackName: fixture.bootstrapStackName,
+    showTemplate: true,
+    customPermissionsBoundary: 'permission-boundary-name',
+  });
+
+  expect(template).toContain('permission-boundary-name');
+}));
+
 integTest('switch on termination protection, switch is left alone on re-bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
@@ -276,3 +298,4 @@ integTest('create ECR with tag IMMUTABILITY to set on', withDefaultFixture(async
 
   expect(ecrResponse.repositories?.[0].imageTagMutability).toEqual('IMMUTABLE');
 }));
+
