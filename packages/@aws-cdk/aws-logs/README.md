@@ -157,6 +157,8 @@ This has a default of `statistic = 'avg'` if the statistic is not set in the `pr
 
 ```ts
 declare const logGroup: logs.LogGroup;
+declare const MetricUnit: logs.MetricUnit;
+
 const mf = new logs.MetricFilter(this, 'MetricFilter', {
   logGroup,
   metricNamespace: 'MyApp',
@@ -165,7 +167,8 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   metricValue: '$.latency',
   dimensions: {
     ErrorCode: '$.errorCode',
-  }
+  },
+  unit: MetricUnit.MILLISECONDS,
 });
 
 //expose a metric from the metric filter

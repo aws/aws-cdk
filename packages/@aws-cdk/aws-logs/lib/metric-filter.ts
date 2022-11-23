@@ -15,6 +15,146 @@ export interface MetricFilterProps extends MetricFilterOptions {
 }
 
 /**
+ * Enum values for a MetricUnit
+ */
+export enum MetricUnit {
+  /**
+   * Bits
+   */
+  BITS = 'Bits',
+
+  /**
+   * Bits per second
+   */
+  BITS_PER_SECOND = 'Bits/Second',
+
+  /**
+   * Bytes
+   */
+  BYTES = 'Bytes',
+
+  /**
+   * Bytes per second
+   */
+  BYTES_PER_SECOND = 'Bytes/Second',
+
+  /**
+   * Count
+   */
+  COUNT = 'Count',
+
+  /**
+   * Count per second
+   */
+  COUNT_PER_SECOND = 'Count/Second',
+
+  /**
+   * Gigabits
+   */
+  GIGABITS = 'Gigabits',
+
+  /**
+   * Gigabits per second
+   */
+  GIGABITS_PER_SECOND = 'Gigabits/Second',
+
+  /**
+   * Gigabytes
+   */
+  GIGABYTES = 'Gigabytes',
+
+  /**
+   * Gigabytes per second
+   */
+  GIGABYTES_PER_SECOND = 'Gigabytes/Second',
+
+  /**
+   * Kilobits
+   */
+  KILOBITS = 'Kilobits',
+
+  /**
+   * Kilobits per second
+   */
+  KILOBITS_PER_SECOND = 'Kilobits/Second',
+
+  /**
+   * Kilobytes
+   */
+  KILOBYTES = 'Kilobytes',
+
+  /**
+   * Kilobytes per second
+   */
+  KILOBYTES_PER_SECOND = 'Kilobytes/Second',
+
+  /**
+   * Megabits
+   */
+  MEGABITS = 'Megabits',
+
+  /**
+   * Megabits per second
+   */
+  MEGABITS_PER_SECOND = 'Megabits/Second',
+
+  /**
+   * Megabytes
+   */
+  MEGABYTES = 'Megabytes',
+
+  /**
+   * Megabytes per second
+   */
+  MEGYTES_PER_SECOND = 'Megabytes/Second',
+
+  /**
+   * Microseconds
+   */
+  MICROSECONDS = 'Microseconds',
+
+  /**
+   * Milliseconds
+   */
+  MILLISECONDS = 'Milliseconds',
+
+  /**
+   * None
+   */
+  NONE = 'None',
+
+  /**
+   * Percent
+   */
+  PERCENT = 'Percent',
+
+  /**
+   * Seconds
+   */
+  SECONDS = 'Seconds',
+
+  /**
+   * Terabits
+   */
+  TERABITS = 'Terabits',
+
+  /**
+   * Terabits per second
+   */
+  TERABITS_PER_SECOND = 'Terabits/Second',
+
+  /**
+   * Terabytes
+   */
+  TERRABYTES = 'Terabytes',
+
+  /**
+   * Terabytes per second
+   */
+  TERABYTES_PER_SECOND = 'Terabytes/Second',
+}
+
+/**
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
 export class MetricFilter extends Resource {
@@ -49,6 +189,7 @@ export class MetricFilter extends Resource {
         metricValue: props.metricValue ?? '1',
         defaultValue: props.defaultValue,
         dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
+        unit: props.unit ?? undefined,
       }],
     });
   }

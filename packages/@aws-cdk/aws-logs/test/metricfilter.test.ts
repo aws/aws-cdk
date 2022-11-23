@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
-import { FilterPattern, LogGroup, MetricFilter } from '../lib';
+import { FilterPattern, LogGroup, MetricFilter, MetricUnit } from '../lib';
 
 describe('metric filter', () => {
   test('trivial instantiation', () => {
@@ -16,6 +16,7 @@ describe('metric filter', () => {
       metricName: 'Latency',
       metricValue: '$.latency',
       filterPattern: FilterPattern.exists('$.latency'),
+      unit: MetricUnit.MILLISECONDS,
     });
 
     // THEN
@@ -24,6 +25,7 @@ describe('metric filter', () => {
         MetricNamespace: 'AWS/Test',
         MetricName: 'Latency',
         MetricValue: '$.latency',
+        Unit: 'Milliseconds',
       }],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },

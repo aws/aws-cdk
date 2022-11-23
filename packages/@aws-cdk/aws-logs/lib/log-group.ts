@@ -5,7 +5,7 @@ import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
-import { MetricFilter } from './metric-filter';
+import { MetricFilter, MetricUnit } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
@@ -545,4 +545,11 @@ export interface MetricFilterOptions {
    * @default - No dimensions attached to metrics.
    */
   readonly dimensions?: Record<string, string>;
+
+  /**
+   * The unit to assign to the metric. If you omit this, the unit is set as None.
+   *
+   * @default None
+   */
+  readonly unit?: MetricUnit;
 }
