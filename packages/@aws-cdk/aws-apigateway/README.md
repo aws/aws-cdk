@@ -1386,8 +1386,9 @@ api.addGatewayResponse('test-response', {
   type: apigateway.ResponseType.ACCESS_DENIED,
   statusCode: '500',
   responseHeaders: {
-    'Access-Control-Allow-Origin': 'test.com',
-    'test-key': 'test-value',
+    // Note that values must be enclosed within a pair of single quotes
+    'Access-Control-Allow-Origin': "'test.com'",
+    'test-key': "'test-value'",
   },
   templates: {
     'application/json': '{ "message": $context.error.messageString, "statusCode": "488", "type": "$context.error.responseType" }'

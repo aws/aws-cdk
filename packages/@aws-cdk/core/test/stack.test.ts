@@ -1719,6 +1719,31 @@ describe('regionalFact', () => {
     expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
   });
 
+  test('regional facts use the global lookup map if partition is the literal string of "undefined"', () => {
+    const stack = new Stack();
+    Node.of(stack).setContext(cxapi.TARGET_PARTITIONS, 'undefined');
+    new CfnOutput(stack, 'TheFact', {
+      value: stack.regionalFact('WeirdFact'),
+    });
+
+    expect(toCloudFormation(stack)).toEqual({
+      Mappings: {
+        WeirdFactMap: {
+          'eu-west-1': { value: 'otherformat' },
+          'us-east-1': { value: 'oneformat' },
+        },
+      },
+      Outputs: {
+        TheFact: {
+          Value: {
+            'Fn::FindInMap': ['WeirdFactMap', { Ref: 'AWS::Region' }, 'value'],
+          },
+        },
+      },
+    });
+
+  });
+
   test('regional facts generate a mapping if necessary', () => {
     const stack = new Stack();
     new CfnOutput(stack, 'TheFact', {
