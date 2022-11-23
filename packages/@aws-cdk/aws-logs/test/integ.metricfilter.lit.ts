@@ -15,6 +15,7 @@ class MetricFilterIntegStack extends Stack {
       metricNamespace: 'MyApp',
       metricName: 'Latency',
       filterPattern: FilterPattern.exists('$.latency'),
+      filterName: 'MyMagicFilter',
       metricValue: '$.latency',
     });
     /// !hide

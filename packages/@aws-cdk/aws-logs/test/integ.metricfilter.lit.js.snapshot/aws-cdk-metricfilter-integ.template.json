@@ -21,7 +21,8 @@
       "MetricNamespace": "MyApp",
       "MetricValue": "$.latency"
      }
-    ]
+    ],
+    "FilterName": "MyMagicFilter"
    }
   }
  },
