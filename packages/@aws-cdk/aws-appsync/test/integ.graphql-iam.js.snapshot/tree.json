@@ -125,6 +125,14 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/ds/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/ds/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/ds/ServiceRole/Resource",
@@ -137,7 +145,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
@@ -418,6 +426,14 @@
             "id": "LambdaIAM",
             "path": "aws-appsync-integ/LambdaIAM",
             "children": {
+              "ImportLambdaIAM": {
+                "id": "ImportLambdaIAM",
+                "path": "aws-appsync-integ/LambdaIAM/ImportLambdaIAM",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-appsync-integ/LambdaIAM/Resource",
@@ -655,6 +671,14 @@
                 "id": "ServiceRole",
                 "path": "aws-appsync-integ/testFail/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-appsync-integ/testFail/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-appsync-integ/testFail/ServiceRole/Resource",
@@ -796,7 +820,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.161"
         }
       }
     },
