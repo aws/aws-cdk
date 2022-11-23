@@ -15,6 +15,7 @@ describe('metric filter', () => {
       metricNamespace: 'AWS/Test',
       metricName: 'Latency',
       metricValue: '$.latency',
+      filterName: 'FooBazBar',
       filterPattern: FilterPattern.exists('$.latency'),
     });
 
@@ -26,6 +27,7 @@ describe('metric filter', () => {
         MetricValue: '$.latency',
       }],
       FilterPattern: '{ $.latency = "*" }',
+      FilterName: 'FooBazBar',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
     });
   });

@@ -29,7 +29,7 @@ export class MetricFilter extends Resource {
     this.metricNamespace = props.metricNamespace;
 
     if (Object.keys(props.dimensions ?? {}).length > 3) {
-      throw new Error('MetricFilter only supports a maximum of 3 Dimensions');
+      throw new Error('MetricFilter only supports a maximum of 3 Dimensions.');
     }
 
     // It looks odd to map this object to a singleton list, but that's how
@@ -43,6 +43,7 @@ export class MetricFilter extends Resource {
     new CfnMetricFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
       filterPattern: props.filterPattern.logPatternString,
+      filterName: props.filterName ?? undefined,
       metricTransformations: [{
         metricNamespace: props.metricNamespace,
         metricName: props.metricName,

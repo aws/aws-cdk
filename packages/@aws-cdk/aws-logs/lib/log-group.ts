@@ -505,6 +505,13 @@ export interface MetricFilterOptions {
   readonly filterPattern: IFilterPattern;
 
   /**
+   * The name of the metric filter.
+   *
+   * @default -
+   */
+  readonly filterName?: string;
+
+  /**
    * The namespace of the metric to emit.
    */
   readonly metricNamespace: string;
