@@ -113,7 +113,9 @@ export abstract class BaseDataSource extends Construct {
     super(scope, id);
 
     if (extended.type !== 'NONE') {
-      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
+      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', {
+        assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
+      });
     }
     // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
     const name = (props.name ?? id);
