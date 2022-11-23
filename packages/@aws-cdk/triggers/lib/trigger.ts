@@ -2,6 +2,7 @@ import { join } from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from '@aws-cdk/core';
 import { Construct, IConstruct, Node } from 'constructs';
+import { Duration } from '../../core';
 
 /**
  * Interface for triggers.
@@ -69,6 +70,20 @@ export interface TriggerProps extends TriggerOptions {
    * The AWS Lambda function of the handler to execute.
    */
   readonly handler: lambda.Function;
+
+  /**
+   * The invocation type to invoke the Lambda function with.
+   *
+   * @default RequestResponse
+   */
+  readonly invocationType?: 'RequestResponse' | 'Event' | 'DryRun';
+
+  /**
+   * The timeout of the invocation call of the Lambda function to be triggered.
+   *
+   * @default Duration.minutes(2)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -95,6 +110,8 @@ export class Trigger extends Construct implements ITrigger {
       serviceToken: provider.serviceToken,
       properties: {
         HandlerArn: handlerArn,
+        InvocationType: props.invocationType ?? 'RequestResponse',
+        Timeout: props.timeout?.toMilliseconds() ?? Duration.minutes(2),
       },
     });
 

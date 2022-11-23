@@ -29,6 +29,8 @@ const mockRequest = {
   ResourceProperties: {
     ServiceToken: 'arn:aws:lambda:us-east-1:123456789012:function:MyFunction',
     HandlerArn: handlerArn,
+    Timeout: 600,
+    InvocationType: 'Event',
   },
   RequestId: 'MyRequestId',
   ResourceType: 'Custom::Trigger',
