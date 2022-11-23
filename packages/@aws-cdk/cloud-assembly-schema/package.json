@@ -67,7 +67,7 @@
     "@types/semver": "^7.3.13",
     "jest": "^27.5.1",
     "mock-fs": "^4.14.0",
-    "typescript-json-schema": "^0.54.0"
+    "typescript-json-schema": "^0.55.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
