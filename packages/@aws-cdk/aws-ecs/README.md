@@ -1233,3 +1233,70 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
   },
 });
 ```
+
+## Amazon ECS Service Connect
+
+Service Connect is a managed AWS mesh network offering. It simplifies DNS queries and inter-service communication for 
+ECS Services by allowing customers to set up simple DNS aliases for their services, which are accessible to all
+services that have enabled Service Connect.
+
+To enable Service Connect, you must have created a CloudMap namespace. The CDK can infer your cluster's default CloudMap namespace, 
+or you can specify a custom namespace. You must also have created a named port mapping on at least one container in your Task Definition.
+
+Service connect configuration consists of some 
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const container: ecs.ContainerDefinition;
+
+container.addPortMappings({
+  name: 'api',
+  containerPort: 8080,
+});
+
+taskDefinition.addContainer(container);
+
+cluster.addDefaultCloudMapNamespace({
+  name: 'local',
+});
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+        dnsName: 'http-api',
+        port: 80,
+      },
+    ],
+  },
+});
+```
+
+Service Connect-enabled services may now reach this service at `http-api:80`. Traffic to this endpoint will 
+be routed to the container's port 8080.
+
+Service Connect also allows custom logging, Service Discovery name, and configuration of the port where service connect traffic is received.
+
+```ts
+const customService = new ecs.FargateService(this, 'CustomizedService', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    logDriver: ecs.LogDrivers.awslogs({
+      streamPrefix: 'sc-traffic',
+    }),
+    services: [
+      {
+        portMappingName: 'api',
+        dnsName: 'customized-api',
+        port: 80,
+        ingressPortOverride: 20040,
+        discoveryName: 'custom',
+      },
+    ],
+  },
+});
