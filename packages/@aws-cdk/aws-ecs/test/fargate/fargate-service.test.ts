@@ -997,6 +997,36 @@ describe('fargate service', () => {
         }).toThrowError(/Port Mapping '100' does not exist on the task definition./);
       });
 
+      test('throws an exception when adding multiple services without different discovery names', () => {
+        // GIVEN
+        service.taskDefinition.addContainer('mobile', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          portMappings: [
+            {
+              containerPort: 100,
+              name: 'abc',
+            },
+          ],
+        });
+        const config: ServiceConnectProps = {
+          services: [
+            {
+              portMappingName: 'abc',
+              dnsName: 'backend.prod',
+              port: 5005,
+            },
+            {
+              portMappingName: 'abc',
+              dnsName: 'backend.prod.local',
+            },
+          ],
+          namespace: 'test namespace',
+        };
+        expect(() => {
+          service.enableServiceConnect(config);
+        }).toThrowError(/Cannot create multiple services with the discoveryName 'abc'./);
+      });
+
       test('throws an exception if ingressPortOverride is not valid.', () => {
         // GIVEN
         service.taskDefinition.addContainer('mobile', {

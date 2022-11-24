@@ -144,7 +144,8 @@ export interface ServiceConnectService {
   readonly portMappingName: string;
 
   /**
-   * optionally specifies an intermediate dns name to register in the CloudMap namespace.
+   * Optionally specifies an intermediate dns name to register in the CloudMap namespace.
+   * This is required if you wish to use the same port mapping name in more than one service.
    *
    * @default - port mapping name
    */
@@ -694,12 +695,26 @@ export abstract class BaseService extends Resource
     if (!config.services) {
       return;
     }
-
+    let portNames = new Map<string, string[]>();
     config.services.forEach(serviceConnectService => {
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
         throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
       };
+
+      // Check that no two service connect services use the same discovery name.
+      const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
+      if (portNames.get(serviceConnectService.portMappingName)?.includes(discoveryName)) {
+        throw new Error(`Cannot create multiple services with the discoveryName '${discoveryName}'.`);
+      }
+
+      let currentDiscoveries = portNames.get(serviceConnectService.portMappingName);
+      if (!currentDiscoveries) {
+        portNames.set(serviceConnectService.portMappingName, [discoveryName]);
+      } else {
+        currentDiscoveries.push(discoveryName);
+        portNames.set(serviceConnectService.portMappingName, currentDiscoveries);
+      }
 
       // IngressPortOverride should be within the valid port range if it exists.
       if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
