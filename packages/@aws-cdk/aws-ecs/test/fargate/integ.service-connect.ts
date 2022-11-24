@@ -40,7 +40,7 @@ class ServiceConnect extends cdk.Stack {
       serviceConnectConfiguration: {
         services: [
           {
-            port: 'api',
+            portMappingName: 'api',
             alias: {
               dnsName: 'api',
               port: 80,

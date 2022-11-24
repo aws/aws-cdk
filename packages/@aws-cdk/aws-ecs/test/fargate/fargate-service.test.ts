@@ -1004,7 +1004,7 @@ describe('fargate service', () => {
           enabled: true,
           services: [
             {
-              port: '100',
+              portMappingName: '100',
               alias: {
                 dnsName: 'backend.prod',
               },
@@ -1014,29 +1014,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/Port 100 does not exist on the task definition./);
-      });
-
-      test('throws an exception if serviceconnectservice.port is a PortMapping and it does not exists on the task definition', () => {
-        // GIVEN
-        const config: ServiceConnectConfiguration = {
-          enabled: true,
-          services: [
-            {
-              port: {
-                containerPort: 100,
-                name: '100',
-              },
-              alias: {
-                dnsName: 'backend.prod',
-              },
-            },
-          ],
-          namespace: 'test namespace',
-        };
-        expect(() => {
-          service.enableServiceConnect(config);
-        }).toThrowError(/Port 100 does not exist on the task definition./);
+        }).toThrowError(/Port Mapping '100' does not exist on the task definition./);
       });
 
       test('throws an exception if ingressPortOverride is not valid.', () => {
@@ -1054,7 +1032,7 @@ describe('fargate service', () => {
           enabled: true,
           services: [
             {
-              port: '100',
+              portMappingName: '100',
               alias: {
                 dnsName: 'backend.prod',
                 port: 5005,
@@ -1084,7 +1062,7 @@ describe('fargate service', () => {
           enabled: true,
           services: [
             {
-              port: '100',
+              portMappingName: '100',
               alias: {
                 dnsName: 'backend.prod',
                 port: 100000,
@@ -1166,7 +1144,7 @@ describe('fargate service', () => {
           namespace: 'cool',
           services: [
             {
-              port: 'api',
+              portMappingName: 'api',
             },
           ],
         });
@@ -1271,41 +1249,6 @@ describe('fargate service', () => {
         }).toThrow();
       });
 
-      test('port mapping specified by reference', () => {
-        // WHEN
-        cluster.addDefaultCloudMapNamespace({
-          name: 'cool',
-        });
-        const pm: PortMapping = {
-          containerPort: 8080,
-          name: 'api2',
-        };
-        service.taskDefinition.defaultContainer?.addPortMappings(pm);
-        service.enableServiceConnect({
-          enabled: true,
-          services: [
-            {
-              port: pm,
-              discoveryName: 'abc',
-            },
-          ],
-        });
-
-        // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-          ServiceConnectConfiguration: {
-            Enabled: true,
-            Namespace: 'cool',
-            Services: [
-              {
-                PortName: 'api2',
-                DiscoveryName: 'abc',
-              },
-            ],
-          },
-        });
-      });
-
       test('error when enabling service connect with no container', () => {
         // GIVEN
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'td2');
@@ -1331,7 +1274,7 @@ describe('fargate service', () => {
         service.enableServiceConnect({
           services: [
             {
-              port: 'api',
+              portMappingName: 'api',
               discoveryName: 'svc',
               ingressPortOverride: 1000,
               alias: {
@@ -1382,7 +1325,7 @@ describe('fargate service', () => {
           enabled: true,
           services: [
             {
-              port: 'api',
+              portMappingName: 'api',
               alias: {
                 port: 80,
               },
@@ -1418,7 +1361,7 @@ describe('fargate service', () => {
           enabled: true,
           services: [
             {
-              port: 'api',
+              portMappingName: 'api',
             },
           ],
         });

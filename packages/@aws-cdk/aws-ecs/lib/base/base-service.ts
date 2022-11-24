@@ -146,13 +146,10 @@ export interface ServiceConnectConfiguration {
  */
 export interface ServiceConnectService {
   /**
-   * port specifies which port and protocol combination should be used for this
+   * portMappingName specifies which port and protocol combination should be used for this
    * service connect service.
-   *
-   * If a PortMapping is specified and a) it does not exist already and b) there is only one container
-   * in the task definition, it will be created.
    */
-  readonly port: PortMapping | string;
+  readonly portMappingName: string;
 
   /**
    * optionally specifies an intermediate dns name to register in the CloudMap namespace.
@@ -691,10 +688,10 @@ export abstract class BaseService extends Resource
      */
     const services = config.services?.map(svc => {
       let portName: string;
-      if (typeof svc.port === 'string') {
-        portName = svc.port;
+      if (typeof svc.portMappingName === 'string') {
+        portName = svc.portMappingName;
       } else {
-        portName = this.portMappingNameFromPortMapping(svc.port);
+        portName = this.portMappingNameFromPortMapping(svc.portMappingName);
       }
       const port = this.taskDefinition.findPortMapping(portName)?.containerPort;
       if (!port) {
@@ -753,17 +750,10 @@ export abstract class BaseService extends Resource
     }
 
     config.services.forEach(serviceConnectService => {
-      if (typeof serviceConnectService.port === 'string') {
-        // if serviceconnectservice.port is a string, port must exists on the task definition
-        if (!this.taskDefinition.findPortMapping(serviceConnectService.port)) {
-          throw new Error(`Port ${serviceConnectService.port} does not exist on the task definition.`);
-        };
-      } else if ((serviceConnectService.port as PortMapping).containerPort) {
-        // If serviceconnectservice.port a port mapping, it must be valid for the network mode in the task definition
-        if (!this.taskDefinition.findPortMapping(serviceConnectService.port.name as string)) {
-          throw new Error(`Port ${serviceConnectService.port.name} does not exist on the task definition.`);
-        };
-      }
+      // if serviceconnectservice.port is a string, port must exists on the task definition
+      if (!this.taskDefinition.findPortMapping(serviceConnectService.portMappingName)) {
+        throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
+      };
 
       // IngressPortOverride should be within the valid port range if it exists.
       if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
