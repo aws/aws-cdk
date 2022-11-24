@@ -2,8 +2,8 @@ import * as path from 'path';
 import { User } from '@aws-cdk/aws-iam';
 import * as opensearch from '@aws-cdk/aws-opensearchservice';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests';
+import { Construct } from 'constructs';
 import * as appsync from '../lib';
 
 class OpensSearch23Stack extends cdk.Stack {
