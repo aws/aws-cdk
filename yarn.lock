@@ -50,10 +50,10 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v5/-/asset-node-proxy-agent-v5-2.0.21.tgz#dec9cfe82da64dffaa6c3f2413a195f587a36828"
   integrity sha512-wf1GnVxrtICy96I6YrnksUoJf0N4QlHsgxT1JCjy5jgCd0A2I4LJxCUZRBHeoyoTSYvEvLPDjOWzsYIwo6cJtQ==
 
-"@aws-cdk/lambda-layer-kubectl-v23@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v23/-/lambda-layer-kubectl-v23-2.0.1.tgz#9ec92fbe58fef2baa00aaece5e37038fd0a3f803"
-  integrity sha512-E4SCibY9NmZnahk38CSR2jIBAJXtTDfv+y7VqqfHF5/0LLsGUAxEqhi0IG1UPpvd6/38JzqdwNDa5iYQHln0Qw==
+"@aws-cdk/lambda-layer-kubectl-v24@^2.0.27":
+  version "2.0.27"
+  resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v24/-/lambda-layer-kubectl-v24-2.0.27.tgz#453d0c87b14808088506ee5eb8209670ce6b42ba"
+  integrity sha512-U2mJ9TUvsXmmhj1dVUG7EXBK7EEOhU4pYUYxWqseeugVkFz5RAxa955AfrnIjAhD9tv7Q9I8zhhSn6pxk9Yq4w==
 
 "@babel/code-frame@7.12.11":
   version "7.12.11"
@@ -3027,18 +3027,11 @@ cdk-generate-synthetic-examples@^0.1.71:
     jsii-rosetta "^1.71.0"
     yargs "^17.6.2"
 
-cdk8s-plus-21@^2.0.0-beta.12:
-  version "2.0.0-beta.12"
-  resolved "https://registry.npmjs.org/cdk8s-plus-21/-/cdk8s-plus-21-2.0.0-beta.12.tgz#b209c2536e7907d37695498c644d862fa3f45ebf"
-  integrity sha512-PozWnkrD1A7p52XdpM3IOGHC9QqfHZVJ/jYtvek4Ffmx9evDe3F+BEwRppRE9CVy4K3EUrCB5C6dkdEl5h1E4Q==
-  dependencies:
-    minimatch "^3.1.2"
-    safe-stable-stringify "*"
+cdk8s-plus-24@2.0.28:
+  version "2.0.28"
+  resolved "https://registry.npmjs.org/cdk8s-plus-24/-/cdk8s-plus-24-2.0.28.tgz#cd5fbf531a7e4477491e44492001767e11a7f175"
+  integrity sha512-fnR3k4djVriOZNi4sTIqbvkmrVbhYa/+/jfgfsU7h3wA6+JzMiUWE860GEoE5FRKKJZPFqnL/PZL1MFfh7JoIg==
 
-cdk8s-plus-23@2.0.35:
-  version "2.0.35"
-  resolved "https://registry.npmjs.org/cdk8s-plus-23/-/cdk8s-plus-23-2.0.35.tgz#e46a5b215f75bd04db138ab51b23ac76e275dba7"
-  integrity sha512-u2SGAYT09mKuyDV6PJr3QwpJt8I4j2+pLQc6K6976vTZbqxqZ8Ac68mAh45v0t8KASaDUzgzmllF+0Zh6kR6CA==
   dependencies:
     minimatch "^3.1.2"
 
@@ -9568,7 +9561,7 @@ safe-regex-test@^1.0.0:
     get-intrinsic "^1.1.3"
     is-regex "^1.1.4"
 
-safe-stable-stringify@*, safe-stable-stringify@^2.2.0:
+safe-stable-stringify@^2.2.0:
   version "2.4.1"
   resolved "https://registry.npmjs.org/safe-stable-stringify/-/safe-stable-stringify-2.4.1.tgz#34694bd8a30575b7f94792aa51527551bd733d61"
   integrity sha512-dVHE6bMtS/bnL2mwualjc6IxEv1F+OCUpA46pKUj6F8uDbUM0jCCulPqRNPSnWwGNKx5etqMjZYdXtrm5KJZGA==
