@@ -10,7 +10,7 @@ class ServiceConnect extends cdk.Stack {
     const cluster = new ecs.Cluster(this, 'EcsCluster', {
       defaultCloudMapNamespace: {
         name: 'scorekeep.com',
-        useAsServiceConnectDefault: true,
+        useForServiceConnect: true,
       },
     });
 

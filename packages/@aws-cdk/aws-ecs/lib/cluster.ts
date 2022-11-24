@@ -184,7 +184,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * CfnCluster instance
    */
-  private cfnCluster: CfnCluster;
+  private _cfnCluster: CfnCluster;
 
   /**
    * Constructs a new instance of the Cluster class.
@@ -217,18 +217,18 @@ export class Cluster extends Resource implements ICluster {
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
 
-    this.cfnCluster = new CfnCluster(this, 'Resource', {
+    this._cfnCluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
       configuration: this._executeCommandConfiguration && this.renderExecuteCommandConfiguration(),
     });
 
-    this.clusterArn = this.getResourceArnAttribute(this.cfnCluster.attrArn, {
+    this.clusterArn = this.getResourceArnAttribute(this._cfnCluster.attrArn, {
       service: 'ecs',
       resource: 'cluster',
       resourceName: this.physicalName,
     });
-    this.clusterName = this.getResourceNameAttribute(this.cfnCluster.ref);
+    this.clusterName = this.getResourceNameAttribute(this._cfnCluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
@@ -310,8 +310,8 @@ export class Cluster extends Resource implements ICluster {
       });
 
     this._defaultCloudMapNamespace = sdNamespace;
-    if (options.useAsServiceConnectDefault) {
-      this.cfnCluster.serviceConnectDefaults = {
+    if (options.useForServiceConnect) {
+      this._cfnCluster.serviceConnectDefaults = {
         namespace: options.name,
       } as CfnCluster.ServiceConnectDefaultsProperty;
     }
@@ -905,7 +905,7 @@ export interface CloudMapNamespaceOptions {
    *
    * @default false
    */
-  readonly useAsServiceConnectDefault?: boolean;
+  readonly useForServiceConnect?: boolean;
 
 }
 

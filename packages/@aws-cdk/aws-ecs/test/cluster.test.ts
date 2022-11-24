@@ -1017,7 +1017,7 @@ describe('cluster', () => {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: 'foo.com',
-      useAsServiceConnectDefault: true,
+      useForServiceConnect: true,
     });
 
     // THEN
