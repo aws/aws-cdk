@@ -67,7 +67,6 @@ class OpensSearch23Stack extends cdk.Stack {
         },
       })),
     });
-
   }
 }
 
