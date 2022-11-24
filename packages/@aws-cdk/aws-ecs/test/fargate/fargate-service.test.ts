@@ -13,9 +13,7 @@ import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
 import * as ecs from '../../lib';
-import { FargateService, FargateServiceProps, PortMapping } from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectConfiguration } from '../../lib/base/base-service';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -1384,45 +1382,6 @@ describe('fargate service', () => {
           },
         });
       });
-    });
-  });
-
-  describe('portMappingNameFromPortMapping', () => {
-    class TestFargateService extends FargateService {
-      public constructor(scope: Construct, id: string, props: FargateServiceProps) {
-        super(scope, id, props);
-      }
-      public testPortMappingName(pm: string | PortMapping): string {
-        return this.portMappingNameFromPortMapping(pm);
-      }
-    }
-
-    let svc: TestFargateService;
-
-    beforeEach(() => {
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-      taskDefinition.addContainer('MainContainer', {
-        image: ecs.ContainerImage.fromRegistry('hello'),
-      });
-      svc = new TestFargateService(stack, 'Svc', {
-        cluster,
-        taskDefinition,
-      });
-    });
-    test('port mapping is a string', () => {
-      // THEN
-      expect(svc.testPortMappingName('app')).toEqual('app');
-    });
-    test('port mapping is a port mapping', () => {
-      expect(svc.testPortMappingName({ name: 'api', containerPort: 80 })).toEqual('api');
-    });
-    test('port mapping has no name', () => {
-      expect(() => {
-        svc.testPortMappingName({ containerPort: 80 });
-      }).toThrow('Port mapping must have a name to be used with service connect.');
     });
   });
 

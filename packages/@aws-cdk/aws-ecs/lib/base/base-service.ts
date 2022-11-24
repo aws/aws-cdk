@@ -21,7 +21,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
-import { ContainerDefinition, PortMapping, Protocol } from '../container-definition';
+import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -629,15 +629,6 @@ export abstract class BaseService extends Resource
     }
     this.node.defaultChild = this.resource;
   }
-  protected portMappingNameFromPortMapping(port: string | PortMapping): string {
-    if (typeof port === 'string') {
-      return port;
-    }
-    if (!port.name) {
-      throw new Error('Port mapping must have a name to be used with service connect.');
-    }
-    return port.name;
-  }
 
   /**
    * Enable Service Connect
@@ -687,15 +678,9 @@ export abstract class BaseService extends Resource
      * 2. Client alias enumeration
      */
     const services = config.services?.map(svc => {
-      let portName: string;
-      if (typeof svc.portMappingName === 'string') {
-        portName = svc.portMappingName;
-      } else {
-        portName = this.portMappingNameFromPortMapping(svc.portMappingName);
-      }
-      const port = this.taskDefinition.findPortMappingByName(portName)?.containerPort;
+      const port = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
       if (!port) {
-        throw new Error(`Port mapping with name ${portName} does not exist.`);
+        throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
       }
 
       const alias = svc.alias ? {
@@ -704,7 +689,7 @@ export abstract class BaseService extends Resource
       } : { port };
 
       return {
-        portName: portName,
+        portName: svc.portMappingName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
