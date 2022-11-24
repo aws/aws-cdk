@@ -313,7 +313,7 @@ export class Cluster extends Resource implements ICluster {
     if (options.useForServiceConnect) {
       this._cfnCluster.serviceConnectDefaults = {
         namespace: options.name,
-      } as CfnCluster.ServiceConnectDefaultsProperty;
+      };
     }
 
     return sdNamespace;

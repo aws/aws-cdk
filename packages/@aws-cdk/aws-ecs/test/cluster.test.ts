@@ -1021,7 +1021,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect((cluster as any).cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+    expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
   });
 
   /*
