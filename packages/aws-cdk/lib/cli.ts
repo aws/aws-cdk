@@ -25,6 +25,7 @@ import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
 import { enableTracing } from './util/tracing';
+import { checkForPlatformWarnings } from './platform-warnings';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -294,6 +295,9 @@ async function initCommandLine() {
   if (argv.ci) {
     setCI(true);
   }
+
+  await checkForPlatformWarnings();
+
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
