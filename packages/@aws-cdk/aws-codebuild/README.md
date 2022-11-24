@@ -104,7 +104,7 @@ const bbSource = codebuild.Source.bitBucket({
 
 ### For all Git sources
 
-For all Git sources, you can fetch submodules while cloing git repo.
+For all Git sources, you can fetch submodules while cloning git repo.
 
 ```ts
 const gitHubSource = codebuild.Source.gitHub({

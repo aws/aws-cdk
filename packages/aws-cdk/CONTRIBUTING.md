@@ -140,7 +140,7 @@ Before diving into it, we establish a few key concepts:
 - `CANDIDATE_VERSION` - This is the version of the code that is being built in the pipeline, and its value is stored in the `build.json` file of the packaged artifact of the repo.
 - `PREVIOUS_VERSION` - This is the version previous to the `CANDIDATE_VERSION`.
 - `CLI_VERSION` - This is the version of the CLI we are testing. It is **always** the same as the `CANDIDATE_VERSION` since we want to test the latest CLI code.
-- `FRAMEWORK_VERSION` - This is the version of the framework we are testing. It varries between the two variation of the regression suites.
+- `FRAMEWORK_VERSION` - This is the version of the framework we are testing. It varies between the two variation of the regression suites.
 Its value can either be that of `CANDIDATE_VERSION` (for testing against the latest framework code), or `PREVIOUS_VERSION` (for testing against the previously published version of the framework code).
 
 Following are the steps involved in running these tests:
@@ -160,7 +160,7 @@ Following are the steps involved in running these tests:
     - [Install the CLI](./test/integ/run-against-dist#L30) using the `CANDIDATE_VERSION` version `CANDIDATE_VERSION` env variable.
     - Execute the given script.
 
-6. Both cli regression test scripts run the same [`run_regression_against_framework_version`](./test/integ/test-cli-regression.bash#L22) function. This function accepts which framework version should the regression run against, it can be either `CANDIDATE_VERSION` or `PREVIOUS_VERSION`. Note that the argument is not the actual value of the version, but instead is just an [indirection indentifier](./test/integ/test-cli-regression.bash#L81). The function will:
+6. Both cli regression test scripts run the same [`run_regression_against_framework_version`](./test/integ/test-cli-regression.bash#L22) function. This function accepts which framework version should the regression run against, it can be either `CANDIDATE_VERSION` or `PREVIOUS_VERSION`. Note that the argument is not the actual value of the version, but instead is just an [indirection identifier](./test/integ/test-cli-regression.bash#L81). The function will:
 
     - Calculate the actual value of the previous version based on the candidate version. (fetches from github)
     - Download the previous version tarball from npm and extract the integration tests.

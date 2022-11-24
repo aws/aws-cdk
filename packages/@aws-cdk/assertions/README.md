@@ -594,7 +594,7 @@ Here are the available APIs for `Annotations`:
 The corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead
 of asserting its presence, it returns the set of matching messages.
 
-In addition, this suite of APIs is compatable with `Matchers` for more fine-grained control.
+In addition, this suite of APIs is compatible with `Matchers` for more fine-grained control.
 For example, the following assertion works as well:
 
 ```ts
