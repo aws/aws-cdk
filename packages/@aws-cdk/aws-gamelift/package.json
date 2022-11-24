@@ -127,7 +127,9 @@
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.AMAZON_LINUX",
       "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.AMAZON_LINUX_2",
-      "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.WINDOWS_2012"
+      "docs-public-apis:@aws-cdk/aws-gamelift.OperatingSystem.WINDOWS_2012",
+      "docs-public-apis:@aws-cdk/aws-gamelift.Protocol.TCP",
+      "docs-public-apis:@aws-cdk/aws-gamelift.Protocol.UDP"
     ]
   },
   "stability": "experimental",

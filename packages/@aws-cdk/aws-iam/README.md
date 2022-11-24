@@ -120,6 +120,127 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 });
 ```
 
+### Customizing role creation
+
+It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
+creating roles by using the `customizeRoles` method for special cases. One such case is using CDK in
+an environment where role creation is not allowed or needs to be managed through a process outside
+of the CDK application.
+
+An example of how to opt in to this behavior is below:
+
+```ts
+declare const stack: Stack;
+iam.Role.customizeRoles(stack);
+```
+
+CDK will not create any IAM roles or policies with the `stack` scope. `cdk synth` will fail and
+it will generate a policy report to the cloud assembly (i.e. cdk.out). The `iam-policy-report.txt`
+report will contain a list of IAM roles and associated permissions that would have been created.
+This report can be used to create the roles with the appropriate permissions outside of
+the CDK application. 
+
+Once the missing roles have been created, their names can be added to the `usePrecreatedRoles`
+property, like shown below:
+
+```ts
+declare const app: App;
+const stack = new Stack(app, 'MyStack');
+iam.Role.customizeRoles(stack, {
+  usePrecreatedRoles: {
+    'MyStack/MyRole': 'my-precreated-role-name',
+  },
+});
+
+new iam.Role(stack, 'MyRole', {
+  assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+});
+```
+
+If any IAM policies reference deploy time values (i.e. ARN of a resource that hasn't been created
+yet) you will have to modify the generated report to be more generic. For example, given the
+following CDK code:
+
+```ts
+declare const app: App;
+const stack = new Stack(app, 'MyStack');
+iam.Role.customizeRoles(stack);
+
+const fn = new lambda.Function(stack, 'MyLambda', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_14_X,
+});
+
+const bucket = new s3.Bucket(stack, 'Bucket');
+bucket.grantRead(fn);
+```
+
+The following report will be generated.
+
+```txt
+<missing role> (MyStack/MyLambda/ServiceRole)
+
+AssumeRole Policy:
+[
+  {
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "lambda.amazonaws.com"
+    }
+  }
+]
+
+Managed Policy ARNs:
+[
+  "arn:(PARTITION):iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+]
+
+Managed Policies Statements:
+NONE
+
+Identity Policy Statements:
+[
+  {
+    "Action": [
+      "s3:GetObject*",
+      "s3:GetBucket*",
+      "s3:List*"
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      "(MyStack/Bucket/Resource.Arn)",
+      "(MyStack/Bucket/Resource.Arn)/*"
+    ]
+  }
+]
+```
+
+You would then need to create the role with the inline & managed policies in the report and then
+come back and update the `customizeRoles` with the role name.
+
+```ts
+declare const app: App;
+const stack = new Stack(app, 'MyStack');
+iam.Role.customizeRoles(stack, {
+  usePrecreatedRoles: {
+    'MyStack/MyLambda/ServiceRole': 'my-role-name',
+  }
+});
+```
+
+#### Generating a permissions report
+
+It is also possible to generate the report _without_ preventing the role/policy creation.
+
+```ts
+declare const stack: Stack;
+iam.Role.customizeRoles(stack, {
+  preventSynthesis: false,
+});
+```
+
 ## Configuring an ExternalId
 
 If you need to create Roles that will be assumed by third parties, it is generally a good idea to [require an `ExternalId`
@@ -294,6 +415,96 @@ the Identity Policy and the Permissions Boundary attached to the Role (or
 User). Permissions Boundaries are typically created by account
 Administrators, and their use on newly created `Role`s will be enforced by
 IAM policies.
+
+### Bootstrap Permissions Boundary
+
+If a permissions boundary has been enforced as part of CDK bootstrap, all IAM
+Roles and Users that are created as part of the CDK application must be created
+with the permissions boundary attached. The most common scenario will be to
+apply the enforced permissions boundary to the entire CDK app. This can be done
+either by adding the value to `cdk.json` or directly in the `App` constructor.
+
+For example if your organization has created and is enforcing a permissions
+boundary with the name
+`cdk-${Qualifier}-PermissionsBoundary`
+
+```json
+{
+  "context": {
+     "@aws-cdk/core:permissionsBoundary": {
+	   "name": "cdk-${Qualifier}-PermissionsBoundary"
+	 }
+  }
+}
+```
+
+OR
+
+```ts
+new App({
+  context: {
+    [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
+      name: 'cdk-${Qualifier}-PermissionsBoundary',
+    },
+  },
+});
+```
+
+Another scenario might be if your organization enforces different permissions
+boundaries for different environments. For example your CDK application may have
+
+* `DevStage` that deploys to a personal dev environment where you have elevated
+privileges
+* `BetaStage` that deploys to a beta environment which and has a relaxed
+	permissions boundary
+* `GammaStage` that deploys to a gamma environment which has the prod
+	permissions boundary
+* `ProdStage` that deploys to the prod environment and has the prod permissions
+	boundary
+
+```ts
+declare const app: App;
+
+new Stage(app, 'DevStage');
+
+new Stage(app, 'BetaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('beta-permissions-boundary'),
+});
+
+new Stage(app, 'GammaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
+});
+
+new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
+});
+```
+
+The provided name can include placeholders for the partition, region, qualifier, and account
+These placeholders will be replaced with the actual values if available. This requires
+that the Stack has the environment specified, it does not work with environment.
+
+* '${AWS::Partition}'
+* '${AWS::Region}'
+* '${AWS::AccountId}'
+* '${Qualifier}'
+
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+});
+
+new Stack(prodStage, 'ProdStack', {
+  synthesizer: new DefaultStackSynthesizer({
+    qualifier: 'custom',
+  });
+});
+```
+
+### Custom Permissions Boundary
 
 It is possible to attach Permissions Boundaries to all Roles created in a construct
 tree all at once:

@@ -50,14 +50,6 @@ export interface IntegRunnerOptions {
   readonly cdk?: ICdk;
 
   /**
-   * You can specify a custom run command, and it will be applied to all test files.
-   * If it contains {filePath}, the test file names will be substituted at that place in the command for each run.
-   *
-   * @default - test run command will be `node {filePath}`
-   */
-  readonly appCommand?: string;
-
-  /**
    * Show output from running integration tests
    *
    * @default false
@@ -159,7 +151,7 @@ export abstract class IntegRunner {
     });
     this.cdkOutDir = options.integOutDir ?? this.test.temporaryOutputDir;
 
-    const testRunCommand = options.appCommand ?? 'node {filePath}';
+    const testRunCommand = this.test.appCommand;
     this.cdkApp = testRunCommand.replace('{filePath}', path.relative(this.directory, this.test.fileName));
 
     this.profile = options.profile;
