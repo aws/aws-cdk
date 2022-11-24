@@ -454,7 +454,7 @@ export enum Statistic {
    *
    * TS(10%:90%) returns the sum of the data points not including any data points that fall in the lowest 10% of the values and the highest 90% of the values.
    */
-  TS_10P_90P = 'TS(10%:90%)'
+  TS_10P_90P = 'TS(10%:90%)',
 }
 
 /**
@@ -594,7 +594,7 @@ export enum Unit {
   /**
    * None
    */
-  NONE = 'None'
+  NONE = 'None',
 }
 
 /**
