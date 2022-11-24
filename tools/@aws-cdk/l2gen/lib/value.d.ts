@@ -10,6 +10,7 @@ export declare class ObjectLiteral implements IValue {
     constructor(type?: IType);
     set1(key: string, value: IValue): void;
     set(fields: Record<string, IValue>): void;
+    has(field: string): boolean;
     toString(): string;
     render(code: CM2): void;
 }

@@ -12,6 +12,7 @@ export declare class Enum implements IGeneratable, IType {
     addMember(props: MemberProps): IValue;
     generateFiles(): CM2[];
     render(code: CM2): void;
+    diagnostics(): never[];
 }
 export interface MemberProps {
     readonly name: string;

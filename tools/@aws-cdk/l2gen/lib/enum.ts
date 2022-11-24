@@ -46,6 +46,10 @@ export class Enum implements IGeneratable, IType {
   public render(code: CM2): void {
     return standardTypeRender(this, code);
   }
+
+  public diagnostics() {
+    return [];
+  }
 }
 
 export interface MemberProps {

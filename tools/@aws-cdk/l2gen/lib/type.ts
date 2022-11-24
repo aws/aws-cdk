@@ -34,7 +34,10 @@ class Type implements IType {
  */
 export function standardTypeRender(type: IType, code: CM2) {
   if (type.definingModule && !type.definingModule.equals(code.currentModule)) {
-    code.addHelper(new SymbolImport(type.typeRefName, type.definingModule));
+    // If the referenced type is a compound type, only import the top level
+    const parts = type.typeRefName.split('.');
+
+    code.addHelper(new SymbolImport(parts[0], type.definingModule));
   }
 
   code.write(type.typeRefName);

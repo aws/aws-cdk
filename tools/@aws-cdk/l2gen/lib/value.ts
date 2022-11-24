@@ -27,6 +27,10 @@ export class ObjectLiteral implements IValue {
     }
   }
 
+  public has(field: string) {
+    return this.fields.has(field);
+  }
+
   public toString(): string {
     return '{...object...}';
   }

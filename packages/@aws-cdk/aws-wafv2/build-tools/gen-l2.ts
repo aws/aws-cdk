@@ -1,11 +1,68 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { generate, L2, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, enumMapping } from '@aws-cdk/l2gen';
+import { generate, L2Gen, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, enumMapping, BOOLEAN, TRUE, FALSE, javascriptValue, EnumClass, ANY, literalValue, NUMBER, ifDefinedAny, definedOrElse } from '@aws-cdk/l2gen';
 
 const scope = new Enum('Scope');
 const cloudFrontScope = scope.addMember({ name: 'CLOUDFRONT', summary: '' });
 const regionalScope = scope.addMember({ name: 'REGIONAL', summary: '' });
 
-const webAcl = L2.define('WebACL', res => {
+const defaulActionType = new EnumClass('DefaultAction', {
+  typeCheckedReturnType: L2Gen.genTypeForProperty('AWS::WAFv2::WebACL', 'DefaultAction'),
+});
+defaulActionType.alternative('allow', allow => {
+  const customHeaders = allow.option({
+    name: 'customHeaders',
+    type: ANY, // FIXME:
+    required: false,
+    summary: 'HTTP headers to insert into the request.',
+    defaultDescription: 'No additional headers inserted',
+  });
+  allow.wire({
+    allow: objLit({
+      customRequestHandling: ifDefined(customHeaders, objLit({
+        insertHeaders: literalValue('[]'), // FIXME
+      })),
+    }),
+  });
+});
+defaulActionType.alternative('block', block => {
+  const responseCode = block.option({
+    name: 'responseCode',
+    type: NUMBER,
+    required: false,
+    summary: 'The HTTP status code to return to the client.',
+    defaultDescription: '403 Forbidden',
+  });
+
+  const responseBodyKey = block.option({
+    name: 'responseBodyKey',
+    type: STRING,
+    required: false,
+    summary: 'References the response body that you want AWS WAF to return to the web request client.',
+    details: 'You can define a custom response for a rule action or a default web ACL action that is set to block. To do this, you first define the response body key and value in the CustomResponseBodies setting for the AWS::WAFv2::WebACL or AWS::WAFv2::RuleGroup where you want to use it.',
+    defaultDescription: 'No response body',
+  });
+
+  const responseHeaders = block.option({
+    name: 'responseHeaders',
+    type: ANY, // FIXME
+    required: false,
+    summary: 'The HTTP headers to use in the response.',
+    defaultDescription: 'No additional headers',
+  });
+
+
+  block.wire({
+    block: objLit({
+      customResponse: ifDefinedAny([responseBodyKey, responseCode, responseHeaders], objLit({
+        customResponseBodyKey: responseBodyKey,
+        responseCode: definedOrElse(responseCode, javascriptValue(403)),
+        responseHeaders,
+      })),
+    }),
+  });
+});
+
+const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
   const scopeProp = res.addProperty({
     name: 'scope',
     type: scope,
@@ -59,9 +116,56 @@ const webAcl = L2.define('WebACL', res => {
       }),
     })),
   });
+
+  const cloudWatchMetricsEnabled = res.addProperty({
+    name: 'cloudWatchMetricsEnabled',
+    type: BOOLEAN,
+    required: false,
+    summary: 'Whether the associated resource sends metrics to Amazon CloudWatch',
+    details: 'For the list of available metrics, see [AWS WAF Metrics](https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics).',
+    defaultValue: TRUE,
+  });
+
+  const sampledRequestsEnabled = res.addProperty({
+    name: 'sampledRequestsEnabled',
+    type: BOOLEAN,
+    required: false,
+    summary: 'Whether AWS WAF should store a sampling of the web requests that match the rules.',
+    details: 'You can view the sampled requests through the AWS WAF console.',
+    defaultValue: FALSE,
+  });
+
+  const defaultDimension = res.addProperty({
+    name: 'cloudWatchDefaultDimension',
+    type: STRING,
+    required: false,
+    summary: 'The value used for the "Rule" dimension when the default action is taken.',
+    defaultValue: javascriptValue('DefaultAction'),
+  });
+
+  res.wire({
+    visibilityConfig: objLit({
+      cloudWatchMetricsEnabled,
+      sampledRequestsEnabled,
+      // Rename on purpose, the upstream value is misnamed
+      metricName: defaultDimension,
+    }),
+  });
+
+  const defaultAction = res.addProperty({
+    name: 'defaultAction',
+    type: defaulActionType,
+    required: true,
+    summary: 'The action to perform if none of the Rules contained in the WebACL match.',
+  });
+
+  res.wire({
+    defaultAction: defaulActionType.unfold(defaultAction),
+  });
 });
 
 generate(
   scope,
   webAcl,
+  defaulActionType,
 );

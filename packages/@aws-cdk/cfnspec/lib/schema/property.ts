@@ -186,6 +186,10 @@ export function isMapProperty(prop: Property): prop is MapProperty {
   return (prop as MapProperty).Type === 'Map';
 }
 
+export function isComplexMapProperty(prop: Property): prop is ComplexListProperty {
+  return isMapProperty(prop) && !!(prop as ComplexMapProperty).ItemType;
+}
+
 export function isPrimitiveMapProperty(prop: Property): prop is PrimitiveMapProperty {
   return isMapProperty(prop) && !!(prop as PrimitiveMapProperty).PrimitiveItemType;
 }

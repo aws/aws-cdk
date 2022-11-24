@@ -11,12 +11,16 @@ import { SourceFile, ISourceModule } from './source-module';
 
 export type CodePart = string | IRenderable;
 
+export type HelperPosition = 'top' | 'bottom';
+
 export class CM2 {
   public readonly currentModule: SourceFile;
 
   private readonly buffer: WriteBuffer;
   private readonly indents = new Array<string>();
   private readonly helpers = new Map<string, IHelper>();
+  private pendingIndent = false;
+  private delegateHelpers?: CM2;
 
   constructor(public readonly fileName: string) {
     this.currentModule = new SourceFile(fileName);
@@ -24,6 +28,8 @@ export class CM2 {
   }
 
   public render() {
+    this.dummyRenderHelpers();
+
     return [
       ...this.renderHelpers('top'),
       this.buffer.render(),
@@ -50,13 +56,23 @@ export class CM2 {
   }
 
   public write(x: string) {
-    // FIXME: Write the indent only if followed by non-whitespace, otherwise we will not be able to unindent
-    // correctly.
+    if (!x) { return; }
 
-    this.buffer?.write(x.replace(/\n/g, `\n${this.currentIndent}`));
+    // Write the indent only if followed by non-whitespace, otherwise we will not be able to unindent
+    // correctly.
+    this.flushPendingIndent();
+
+    // Replace every newline that's not the last newline
+    this.buffer?.write(x.replace(/\n(.)/g, `\n${this.currentIndent}$1`));
+    this.pendingIndent = x.endsWith('\n');
   }
 
   public addHelper(helper: IHelper) {
+    if (this.delegateHelpers) {
+      this.delegateHelpers.addHelper(helper);
+      return;
+    }
+
     this.helpers.set(helper.identifier, helper);
   }
 
@@ -70,6 +86,17 @@ export class CM2 {
     this.unindent();
     this.line('}');
   }
+
+  public block(xs: CodePart | CodePart[], cb: () => void) {
+    if (Array.isArray(xs)) {
+      this.openBlock(...xs);
+    } else {
+      this.openBlock(xs);
+    }
+    cb();
+    this.closeBlock();
+  }
+
 
   public docBlock(lines: string[]) {
     const flat = lines.flatMap(l => l.split('\n'));
@@ -86,7 +113,7 @@ export class CM2 {
 
     this.line('/**');
     for (const l of flat) {
-      this.line(` * ${l}`);
+      this.line(` * ${l.trimEnd()}`);
     }
     this.line(' */');
   }
@@ -107,11 +134,28 @@ export class CM2 {
     return this.indents.join('');
   }
 
+  private flushPendingIndent() {
+    if (this.pendingIndent) {
+      this.buffer?.write(this.currentIndent);
+      this.pendingIndent = false;
+    }
+  }
+
+  /**
+   * Render all helpers at least once so we transitively collect all helpers of helpers
+   */
+  private dummyRenderHelpers() {
+    this.renderHelpers('top');
+    this.renderHelpers('bottom');
+  }
+
   private renderHelpers(where: IHelper['position']): string[] {
     const hs = Array.from(this.helpers.values()).filter(h => h.position === where);
     if (hs.length === 0) { return []; }
 
     const f = new CM2(this.fileName);
+    f.delegateHelpers = this; // Any further helpers, relegate to here
+
     for (const helper of hs) {
       helper.render(f);
     }
@@ -144,7 +188,7 @@ class WriteBuffer {
 }
 
 export interface IHelper extends IRenderable {
-  readonly position: 'top' | 'bottom';
+  readonly position: HelperPosition;
   readonly identifier: string;
 }
 
@@ -157,7 +201,7 @@ export class SymbolImport implements IHelper {
   }
 
   public render(code: CM2) {
-    code.add(`import { ${this.symbolName} } from '${this.module.importName(code)}';`);
+    code.line(`import { ${this.symbolName} } from '${this.module.importName(code)}';`);
   }
 }
 
@@ -171,5 +215,14 @@ export class HelperFunction implements IHelper {
 
   public render(code: CM2) {
     this.block(code);
+  }
+}
+
+export class RenderableHelper implements IHelper {
+  constructor(public readonly identifier: string, public readonly position: HelperPosition, private readonly renderable: IRenderable) {
+  }
+
+  public render(code: CM2) {
+    this.renderable.render(code);
   }
 }
