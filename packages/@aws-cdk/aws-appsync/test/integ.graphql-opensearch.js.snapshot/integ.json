@@ -1,14 +1,12 @@
 {
   "version": "22.0.0",
   "testCases": {
-    "integ.graphql-opensearch": {
+    "lambda-api-latebound-deploymentstage/DefaultTest": {
       "stacks": [
-        "appsync-opensearch"
+        "OpensSearch23Stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
