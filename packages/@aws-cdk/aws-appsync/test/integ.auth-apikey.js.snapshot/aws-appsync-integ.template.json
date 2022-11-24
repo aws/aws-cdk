@@ -42,7 +42,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "appsync.amazonaws.com"
+        "Service": "appsync"
        }
       }
      ],

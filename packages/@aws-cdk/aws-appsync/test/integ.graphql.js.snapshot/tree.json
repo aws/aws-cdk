@@ -210,14 +210,6 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/customerDs/ServiceRole",
                     "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-appsync-integ/Api/customerDs/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/customerDs/ServiceRole/Resource",
@@ -230,7 +222,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync.amazonaws.com"
+                                    "Service": "appsync"
                                   }
                                 }
                               ],
@@ -959,41 +951,114 @@
                 "id": "MutationSaveCustomerWithFirstOrder",
                 "path": "aws-appsync-integ/Api/MutationSaveCustomerWithFirstOrder",
                 "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-appsync-integ/Api/MutationSaveCustomerWithFirstOrder/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
-                          "Fn::GetAtt": [
-                            "ApiF70053CD",
-                            "ApiId"
-                          ]
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-appsync-integ/Api/orderDs/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/orderDs/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
                         },
-                        "fieldName": "saveCustomerWithFirstOrder",
-                        "typeName": "Mutation",
-                        "dataSourceName": "Customer",
-                        "kind": "UNIT",
-                        "requestMappingTemplate": "\n      #set($input = $ctx.args.order)\n      $util.qr($input.put(\"referral\", referral))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)"
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-appsync-integ/Api/orderDs/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-appsync-integ/Api/orderDs/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "OrderTable416EB896",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "OrderTable416EB896",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/index/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiorderDsServiceRoleDefaultPolicy3315FCF4",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiorderDsServiceRoleCC2040C0"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-iam.Role",
                       "version": "0.0.0"
                     }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.Resolver",
-                  "version": "0.0.0"
-                }
-              },
-              "MutationRemoveCustomer": {
-                "id": "MutationRemoveCustomer",
-                "path": "aws-appsync-integ/Api/MutationRemoveCustomer",
-                "children": {
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-appsync-integ/Api/MutationRemoveCustomer/Resource",
@@ -2219,11 +2284,122 @@
                 "id": "QueryGetPayment",
                 "path": "aws-appsync-integ/Api/QueryGetPayment",
                 "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-appsync-integ/Api/paymentDs/ServiceRole",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":dynamodb:",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              },
+                                              ":",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":table/PaymentTable"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Ref": "AWS::NoValue"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApipaymentDsServiceRoleDefaultPolicy528E42B0",
+                                "roles": [
+                                  {
+                                    "Ref": "ApipaymentDsServiceRole0DAC58D6"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appsync-integ/Api/QueryGetPayment/Resource",
+                    "path": "aws-appsync-integ/Api/paymentDs/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
                       "aws:cdk:cloudformation:props": {
                         "apiId": {
                           "Fn::GetAtt": [
@@ -2231,92 +2407,135 @@
                             "ApiId"
                           ]
                         },
-                        "fieldName": "getPayment",
-                        "typeName": "Query",
-                        "dataSourceName": "Payment",
-                        "kind": "UNIT",
-                        "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.Resolver",
-                  "version": "0.0.0"
-                }
-              },
-              "QueryGetPaymentConsistent": {
-                "id": "QueryGetPaymentConsistent",
-                "path": "aws-appsync-integ/Api/QueryGetPaymentConsistent",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-appsync-integ/Api/QueryGetPaymentConsistent/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
-                          "Fn::GetAtt": [
-                            "ApiF70053CD",
-                            "ApiId"
-                          ]
+                        "name": "Payment",
+                        "type": "AMAZON_DYNAMODB",
+                        "dynamoDbConfig": {
+                          "tableName": "PaymentTable",
+                          "awsRegion": {
+                            "Ref": "AWS::Region"
+                          }
                         },
-                        "fieldName": "getPaymentConsistent",
-                        "typeName": "Query",
-                        "dataSourceName": "Payment",
-                        "kind": "UNIT",
-                        "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.Resolver",
-                  "version": "0.0.0"
-                }
-              },
-              "MutationSavePayment": {
-                "id": "MutationSavePayment",
-                "path": "aws-appsync-integ/Api/MutationSavePayment",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-appsync-integ/Api/MutationSavePayment/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
+                        "serviceRoleArn": {
                           "Fn::GetAtt": [
-                            "ApiF70053CD",
-                            "ApiId"
+                            "ApipaymentDsServiceRole0DAC58D6",
+                            "Arn"
                           ]
-                        },
-                        "fieldName": "savePayment",
-                        "typeName": "Mutation",
-                        "dataSourceName": "Payment",
-                        "kind": "UNIT",
-                        "requestMappingTemplate": "\n      #set($input = $ctx.args.payment)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetPaymentResolver": {
+                    "id": "QuerygetPaymentResolver",
+                    "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getPayment",
+                            "typeName": "Query",
+                            "dataSourceName": "Payment",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "QuerygetPaymentConsistentResolver": {
+                    "id": "QuerygetPaymentConsistentResolver",
+                    "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentConsistentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/QuerygetPaymentConsistentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getPaymentConsistent",
+                            "typeName": "Query",
+                            "dataSourceName": "Payment",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "MutationsavePaymentResolver": {
+                    "id": "MutationsavePaymentResolver",
+                    "path": "aws-appsync-integ/Api/paymentDs/MutationsavePaymentResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/paymentDs/MutationsavePaymentResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "ApiF70053CD",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "savePayment",
+                            "typeName": "Mutation",
+                            "dataSourceName": "Payment",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "\n      #set($input = $ctx.args.payment)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                            "responseMappingTemplate": "$util.toJson($ctx.result)"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.Resolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
                   "version": "0.0.0"
                 }
               },
@@ -2328,14 +2547,6 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/ds/ServiceRole",
                     "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "aws-appsync-integ/Api/ds/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/ds/ServiceRole/Resource",
@@ -2348,7 +2559,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync.amazonaws.com"
+                                    "Service": "appsync"
                                   }
                                 }
                               ],
