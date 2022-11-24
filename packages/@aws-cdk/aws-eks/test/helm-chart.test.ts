@@ -226,5 +226,40 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Timeout: '600s' });
     });
+
+    test('should pass username and password when provided', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', {
+        cluster,
+        chart: 'chart',
+        repository: 'repository',
+        username: 'helmuser', // these should not be plain text but rather references to other values
+        password: 'password',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Timeout: '600s', Username: 'helmuser', Password: 'password' });
+    });
+
+    test('should throw an error when authenticate helm is missing chart or repository', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      const t = () => {
+        new eks.HelmChart(stack, 'MyChart', {
+          cluster,
+          repository: 'repository',
+          username: 'helmuser', // these should not be plain text but rather references to other values
+          password: 'password',
+        });
+      };
+
+      // THEN
+      expect(t).toThrowError();
+    });
   });
 });

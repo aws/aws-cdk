@@ -47,6 +47,8 @@ def helm_handler(event, context):
     create_namespace = props.get('CreateNamespace', None)
     repository       = props.get('Repository', None)
     values_text      = props.get('Values', None)
+    username         = props.get('Username', None)
+    password         = props.get('Username', None)
 
     # "log in" to the cluster
     subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
@@ -84,8 +86,8 @@ def helm_handler(event, context):
             tmpdir = tempfile.TemporaryDirectory()
             chart_dir = get_chart_from_oci(tmpdir.name, release, repository, version)
             chart = chart_dir
-
-        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
+    
+        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, username, password)
     elif request_type == "Delete":
         try:
             helm('uninstall', release, namespace=namespace, timeout=timeout)
@@ -146,7 +148,7 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
 
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, username = None, password = None):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -168,6 +170,10 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         cmnd.append('--wait')
     if not timeout is None:
         cmnd.extend(['--timeout', timeout])
+    if not username is None:
+        cmnd.extend(['--username', username])
+    if not password is None:
+        cmnd.extend(['--password', password])
     cmnd.extend(['--kubeconfig', kubeconfig])
 
     maxAttempts = 3
