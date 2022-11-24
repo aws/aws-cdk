@@ -1817,6 +1817,34 @@ describe('Maximum concurrency', () => {
   });
 });
 
+test('can automatically add ssm permissions', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new codebuild.Project(stack, 'Project', {
+    source: codebuild.Source.s3({
+      bucket: new s3.Bucket(stack, 'Bucket'),
+      path: 'path',
+    }),
+    ssmSessionPermissions: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: Match.arrayWith([
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+          ]),
+        }),
+      ]),
+    },
+  });
+});
+
 describe('can be imported', () => {
   test('by ARN', () => {
     const stack = new cdk.Stack();

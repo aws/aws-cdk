@@ -20,8 +20,8 @@ nyc.config.js
 junit.xml
 test/lambda-handler-*/requirements.txt
 
-!**/*.integ.snapshot/**/asset.*/*.js
-!**/*.integ.snapshot/**/asset.*/*.d.ts
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
 
-!**/*.integ.snapshot/**/asset.*/**
-!**/*.integ.snapshot/**/asset.*/requirements.txt
+!**/*.snapshot/**/asset.*/**
+!**/*.snapshot/**/asset.*/requirements.txt

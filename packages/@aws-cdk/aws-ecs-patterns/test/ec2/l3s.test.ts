@@ -36,6 +36,8 @@ test('test ECS loadbalanced construct', () => {
         TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
       },
       dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+      entryPoint: ['echo', 'ecs-is-awesome'],
+      command: ['/bin/bash'],
     },
     desiredCount: 2,
   });
@@ -66,6 +68,8 @@ test('test ECS loadbalanced construct', () => {
           label1: 'labelValue1',
           label2: 'labelValue2',
         },
+        EntryPoint: ['echo', 'ecs-is-awesome'],
+        Command: ['/bin/bash'],
       }),
     ],
   });
@@ -405,6 +409,8 @@ test('test Fargate loadbalanced construct', () => {
         TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
       },
       dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+      entryPoint: ['echo', 'running-on-fargate'],
+      command: ['/bin/bash'],
     },
     desiredCount: 2,
   });
@@ -436,6 +442,8 @@ test('test Fargate loadbalanced construct', () => {
           label1: 'labelValue1',
           label2: 'labelValue2',
         },
+        EntryPoint: ['echo', 'running-on-fargate'],
+        Command: ['/bin/bash'],
       }),
     ],
   });
@@ -1573,6 +1581,9 @@ test('ALB with circuit breaker', () => {
         Rollback: true,
       },
     },
+    DeploymentController: {
+      Type: 'ECS',
+    },
   });
 });
 
@@ -1606,6 +1617,9 @@ test('NLB with circuit breaker', () => {
         Enable: true,
         Rollback: true,
       },
+    },
+    DeploymentController: {
+      Type: 'ECS',
     },
   });
 });

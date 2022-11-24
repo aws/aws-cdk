@@ -236,7 +236,6 @@ def aws_command(*args):
 def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId=None, noEcho=False, reason=None):
 
     responseUrl = event['ResponseURL']
-    logger.info(responseUrl)
 
     responseBody = {}
     responseBody['Status'] = responseStatus

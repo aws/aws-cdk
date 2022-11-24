@@ -47,37 +47,22 @@ describe('build', () => {
     const contentBucketName = 'bucketname';
     const contentBucketAccessStatement = {
       Action: [
-        's3:GetObject*',
-        's3:GetBucket*',
-        's3:List*',
+        's3:GetObject',
+        's3:GetObjectVersion',
       ],
       Effect: 'Allow',
-      Resource: [
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              `:s3:::${contentBucketName}`,
-            ],
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            `:s3:::${contentBucketName}/content`,
           ],
-        },
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              `:s3:::${contentBucketName}/content`,
-            ],
-          ],
-        },
-      ],
+        ],
+      },
     };
     let contentBucket: s3.IBucket;
     let content: gamelift.Content;
@@ -100,7 +85,7 @@ describe('build', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
           StorageLocation: {
             Bucket: {
-              Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
+              Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3Bucket3626B74C',
             },
           },
         });

@@ -4,6 +4,17 @@ import { Construct } from 'constructs';
 
 let SDK_METADATA: any = undefined;
 
+/**
+ * Properties for a lambda function provider
+ */
+export interface LambdaFunctionProviderProps {
+  /**
+   * The handler to use for the lambda function
+   *
+   * @default index.handler
+   */
+  readonly handler?: string;
+}
 
 /**
  * integ-tests can only depend on '@aws-cdk/core' so
@@ -24,7 +35,7 @@ class LambdaFunctionProvider extends Construct {
 
   private readonly policies: any[] = [];
 
-  constructor(scope: Construct, id: string/*, props?: LambdaFunctionProviderProps*/) {
+  constructor(scope: Construct, id: string, props?: LambdaFunctionProviderProps) {
     super(scope, id);
 
     const staging = new AssetStaging(this, 'Staging', {
@@ -48,15 +59,20 @@ class LambdaFunctionProvider extends Construct {
         ManagedPolicyArns: [
           { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
         ],
-        Policies: [
-          {
-            PolicyName: 'Inline',
-            PolicyDocument: {
-              Version: '2012-10-17',
-              Statement: Lazy.list({ produce: () => this.policies }),
-            },
+        Policies: Lazy.any({
+          produce: () => {
+            const policies = this.policies.length > 0 ? [
+              {
+                PolicyName: 'Inline',
+                PolicyDocument: {
+                  Version: '2012-10-17',
+                  Statement: this.policies,
+                },
+              },
+            ] : undefined;
+            return policies;
           },
-        ],
+        }),
       },
     });
 
@@ -69,7 +85,7 @@ class LambdaFunctionProvider extends Construct {
           S3Key: asset.objectKey,
         },
         Timeout: Duration.minutes(2).toSeconds(),
-        Handler: 'index.handler',
+        Handler: props?.handler ?? 'index.handler',
         Role: role.getAtt('Arn'),
       },
     });
@@ -84,7 +100,7 @@ class LambdaFunctionProvider extends Construct {
 
 }
 
-interface SingletonFunctionProps {
+interface SingletonFunctionProps extends LambdaFunctionProviderProps {
   /**
    * A unique identifier to identify this lambda
    *
@@ -92,12 +108,6 @@ interface SingletonFunctionProps {
    * We recommend generating a UUID per provider.
    */
   readonly uuid: string;
-
-  /**
-   * A list of IAM policies to add to the lambdaFunction
-   * execution role
-   */
-  readonly policies: any[];
 }
 
 /**
@@ -107,21 +117,10 @@ class SingletonFunction extends Construct {
   public readonly serviceToken: string;
 
   public readonly lambdaFunction: LambdaFunctionProvider;
-  private readonly policies: any[] = [];
   constructor(scope: Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
     this.lambdaFunction = this.ensureFunction(props);
     this.serviceToken = this.lambdaFunction.serviceToken;
-
-    /**
-     * The policies can be added by different constructs
-     */
-    this.node.addValidation({
-      validate: () => {
-        this.lambdaFunction.addPolicies(this.policies);
-        return [];
-      },
-    });
   }
 
   private ensureFunction(props: SingletonFunctionProps): LambdaFunctionProvider {
@@ -131,7 +130,9 @@ class SingletonFunction extends Construct {
       return existing as LambdaFunctionProvider;
     }
 
-    return new LambdaFunctionProvider(Stack.of(this), constructName);
+    return new LambdaFunctionProvider(Stack.of(this), constructName, {
+      handler: props.handler,
+    });
   }
 
   /**
@@ -149,7 +150,7 @@ class SingletonFunction extends Construct {
    * });
    */
   public addToRolePolicy(statement: any): void {
-    this.policies.push(statement);
+    this.lambdaFunction.addPolicies([statement]);
   }
 
   /**
@@ -163,13 +164,26 @@ class SingletonFunction extends Construct {
     const srv = service.toLowerCase();
     const iamService = (SDK_METADATA[srv] && SDK_METADATA[srv].prefix) || srv;
     const iamAction = api.charAt(0).toUpperCase() + api.slice(1);
-    this.policies.push({
+    this.lambdaFunction.addPolicies([{
       Action: [`${iamService}:${iamAction}`],
       Effect: 'Allow',
       Resource: resources || ['*'],
-    });
+    }]);
   }
+}
 
+/**
+ * Properties for defining an AssertionsProvider
+ */
+export interface AssertionsProviderProps extends LambdaFunctionProviderProps {
+  /**
+   * This determines the uniqueness of each AssertionsProvider.
+   * You should only need to provide something different here if you
+   * _know_ that you need a separate provider
+   *
+   * @default - the default uuid is used
+   */
+  readonly uuid?: string;
 }
 
 /**
@@ -190,15 +204,14 @@ export class AssertionsProvider extends Construct {
    */
   public readonly handlerRoleArn: Reference;
 
-  private readonly policies: any[] = [];
   private readonly handler: SingletonFunction;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props?: AssertionsProviderProps) {
     super(scope, id);
 
     this.handler = new SingletonFunction(this, 'AssertionsProvider', {
-      uuid: '1488541a-7b23-4664-81b6-9b4408076b81',
-      policies: Lazy.list({ produce: () => this.policies }),
+      handler: props?.handler,
+      uuid: props?.uuid ?? '1488541a-7b23-4664-81b6-9b4408076b81',
     });
 
     this.handlerRoleArn = this.handler.lambdaFunction.roleArn;
@@ -253,6 +266,24 @@ export class AssertionsProvider extends Construct {
    */
   public addToRolePolicy(statement: any): void {
     this.handler.addToRolePolicy(statement);
+  }
+
+  /**
+   * Grant a principal access to invoke the assertion provider
+   * lambda function
+   *
+   * @param principalArn the ARN of the principal that should be given
+   *  permission to invoke the assertion provider
+   */
+  public grantInvoke(principalArn: string): void {
+    new CfnResource(this, 'Invoke', {
+      type: 'AWS::Lambda::Permission',
+      properties: {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: this.serviceToken,
+        Principal: principalArn,
+      },
+    });
   }
 }
 
