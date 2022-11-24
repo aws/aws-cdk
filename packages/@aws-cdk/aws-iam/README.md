@@ -45,7 +45,7 @@ declare const table: dynamodb.Table;
 table.grant(fn, 'dynamodb:PutItem');
 ```
 
-The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principlal resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
+The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principal resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
 
 You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
@@ -407,7 +407,7 @@ const newPolicy = new iam.Policy(this, 'MyNewPolicy', {
 
 [Permissions
 Boundaries](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
-can be used as a mechanism to prevent privilege esclation by creating new
+can be used as a mechanism to prevent privilege escalation by creating new
 `Role`s. Permissions Boundaries are a Managed Policy, attached to Roles or
 Users, that represent the *maximum* set of permissions they can have. The
 effective set of permissions of a Role (or User) will be the intersection of
