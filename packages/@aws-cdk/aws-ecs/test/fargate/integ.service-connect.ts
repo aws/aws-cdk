@@ -41,10 +41,8 @@ class ServiceConnect extends cdk.Stack {
         services: [
           {
             portMappingName: 'api',
-            alias: {
-              dnsName: 'api',
-              port: 80,
-            },
+            dnsName: 'api',
+            port: 80,
           },
         ],
         logDriver: ecs.LogDrivers.awsLogs({

@@ -126,7 +126,7 @@ export interface ServiceConnectProps {
   readonly services?: ServiceConnectService[];
 
   /**
-   * Optional. The log driver configuration to use for the envoy proxy logs.
+   * The log driver configuration to use for the Service Connect agent logs.
    *
    * @default - none
    */
@@ -155,37 +155,23 @@ export interface ServiceConnectService {
    * Service Connect-enabled clients will be able to reach this service at
    * http://dnsName:port.
    *
-   * @default - alias consisting of the container port and no DNS name. This default configuration results
-   * in the service being reachable at `portmappingname.namespace:port`.
+   * @default - No alias is created. The service is reachable at `portMappingName.namespace:port`.
    */
-  readonly alias?: ClientAlias;
+  readonly dnsName?: string;
 
   /**
-   * Optional. The port on the Envoy container to use for traffic ingress to this service.
+   The port for clients to use to communicate with this service via Service Connect.
+   *
+   * @default the container port specified by the port mapping in portMappingName.
+   */
+  readonly port?: number;
+
+  /**
+   * Optional. The port on the Service Connect agent container to use for traffic ingress to this service.
    *
    * @default - none
    */
   readonly ingressPortOverride?: number;
-}
-
-/**
- * Interface for a service connect ClientAlias. A ClientAlias describes a terse
- * DNS name and port combination at which clients of this service may reach it.
- */
-export interface ClientAlias {
-  /**
-   * The dns name of the alias.
-   *
-   * example: backend.prod, dataservice
-   * @default the name of the port mapping + the Cloudmap Namespace
-   */
-  readonly dnsName?: string;
-  /**
-   * The port for clients to use to communicate with this service.
-   *
-   * @default the container port specified by the port mapping.
-   */
-  readonly port?: number;
 }
 
 /**
@@ -623,8 +609,7 @@ export abstract class BaseService extends Resource
     this.node.defaultChild = this.resource;
   }
 
-  /**
-   * Enable Service Connect
+  /**   * Enable Service Connect
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
     if (this._serviceConnectConfig) {
@@ -656,15 +641,14 @@ export abstract class BaseService extends Resource
      * 2. Client alias enumeration
      */
     const services = cfg.services?.map(svc => {
-      const port = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
-      if (!port) {
+      const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
+      if (!containerPort) {
         throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
       }
-
-      const alias = svc.alias ? {
-        dnsName: svc.alias.dnsName,
-        port: svc.alias.port || port,
-      } : { port };
+      const alias = {
+        port: svc.port || containerPort,
+        dnsName: svc.dnsName,
+      };
 
       return {
         portName: svc.portMappingName,
@@ -723,10 +707,9 @@ export abstract class BaseService extends Resource
       }
 
       // clientAlias.port should be within the valid port range
-      if (serviceConnectService.alias &&
-        serviceConnectService.alias.port &&
-        !this.isValidPort(serviceConnectService.alias.port)) {
-        throw new Error(`Client Alias port ${serviceConnectService.alias.port} is not valid.`);
+      if (serviceConnectService.port &&
+        !this.isValidPort(serviceConnectService.port)) {
+        throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
       }
     });
   }

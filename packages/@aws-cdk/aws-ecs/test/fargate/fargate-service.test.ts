@@ -987,9 +987,7 @@ describe('fargate service', () => {
           services: [
             {
               portMappingName: '100',
-              alias: {
-                dnsName: 'backend.prod',
-              },
+              dnsName: 'backend.prod',
             },
           ],
           namespace: 'test namespace',
@@ -1014,10 +1012,8 @@ describe('fargate service', () => {
           services: [
             {
               portMappingName: '100',
-              alias: {
-                dnsName: 'backend.prod',
-                port: 5005,
-              },
+              dnsName: 'backend.prod',
+              port: 5005,
               ingressPortOverride: 100000,
             },
           ],
@@ -1043,10 +1039,8 @@ describe('fargate service', () => {
           services: [
             {
               portMappingName: '100',
-              alias: {
-                dnsName: 'backend.prod',
-                port: 100000,
-              },
+              dnsName: 'backend.prod',
+              port: 100000,
               ingressPortOverride: 3000,
             },
           ],
@@ -1228,10 +1222,8 @@ describe('fargate service', () => {
               portMappingName: 'api',
               discoveryName: 'svc',
               ingressPortOverride: 1000,
-              alias: {
-                port: 80,
-                dnsName: 'api',
-              },
+              port: 80,
+              dnsName: 'api',
             },
           ],
           namespace: 'cool',
@@ -1276,9 +1268,7 @@ describe('fargate service', () => {
           services: [
             {
               portMappingName: 'api',
-              alias: {
-                port: 80,
-              },
+              port: 80,
             },
           ],
         });
