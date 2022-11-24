@@ -222,7 +222,7 @@ export enum Statistic {
    *
    * wm10 calculates the average while treating the 90% of the highest values to be equal to the value at the 10th percentile.
    */
-  wm10 = 'wm10',
+  WM10 = 'wm10',
   /**
    * Winsorized mean (WM) is similar to trimmed mean. However, with winsorized mean, the values that are outside the boundary are not ignored,
    * but instead are considered to be equal to the value at the edge of the appropriate boundary.
@@ -230,7 +230,7 @@ export enum Statistic {
    *
    * wm50 calculates the average while treating the 50% of the highest values to be equal to the value at the 50th percentile.
    */
-  wm50 = 'wm50',
+  WM50 = 'wm50',
   /**
    * Winsorized mean (WM) is similar to trimmed mean. However, with winsorized mean, the values that are outside the boundary are not ignored,
    * but instead are considered to be equal to the value at the edge of the appropriate boundary.
@@ -238,7 +238,7 @@ export enum Statistic {
    *
    * wm90 calculates the average while treating the 10% of the highest values to be equal to the value at the 90th percentile.
    */
-  wm90 = 'wm90',
+  WM90 = 'wm90',
   /**
    * Winsorized mean (WM) is similar to trimmed mean. However, with winsorized mean, the values that are outside the boundary are not ignored,
    * but instead are considered to be equal to the value at the edge of the appropriate boundary.
@@ -246,7 +246,7 @@ export enum Statistic {
    *
    * wm95 calculates the average while treating the 5% of the highest values to be equal to the value at the 95th percentile.
    */
-  wm95 = 'wm95',
+  WM95 = 'wm95',
   /**
    * Winsorized mean (WM) is similar to trimmed mean. However, with winsorized mean, the values that are outside the boundary are not ignored,
    * but instead are considered to be equal to the value at the edge of the appropriate boundary.
@@ -254,7 +254,7 @@ export enum Statistic {
    *
    * wm99 calculates the average while treating the 1% of the highest values to be equal to the value at the 99th percentile.
    */
-  wm99 = 'wm99',
+  WM99 = 'wm99',
   /**
    * Winsorized mean (WM) is similar to trimmed mean. However, with winsorized mean, the values that are outside the boundary are not ignored,
    * but instead are considered to be equal to the value at the edge of the appropriate boundary.
@@ -262,7 +262,7 @@ export enum Statistic {
    *
    * wm99.9 calculates the average while treating the 0.1% of the highest values to be equal to the value at the 99.9th percentile.
    */
-  wm99_9 = 'wm99.9',
+  WM99_9 = 'wm99.9',
   /**
    * Winsorized mean (WM) is similar to trimmed mean. However, with winsorized mean, the values that are outside the boundary are not ignored,
    * but instead are considered to be equal to the value at the edge of the appropriate boundary.
@@ -270,7 +270,7 @@ export enum Statistic {
    *
    * wm99.99 calculates the average while treating the 0.01% of the highest values to be equal to the value at the 99.99th percentile.
    */
-  wm99_99 = 'wm99.99',
+  WM99_99 = 'wm99.99',
 
   /**
    * Winsorized mean (WM) is similar to trimmed mean. However, with winsorized mean, the values that are outside the boundary are not ignored,
