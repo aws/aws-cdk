@@ -86,7 +86,7 @@ def helm_handler(event, context):
             tmpdir = tempfile.TemporaryDirectory()
             chart_dir = get_chart_from_oci(tmpdir.name, release, repository, version)
             chart = chart_dir
-    
+
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, username, password)
     elif request_type == "Delete":
         try:
