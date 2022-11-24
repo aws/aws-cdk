@@ -1243,8 +1243,6 @@ services that have enabled Service Connect.
 To enable Service Connect, you must have created a CloudMap namespace. The CDK can infer your cluster's default CloudMap namespace, 
 or you can specify a custom namespace. You must also have created a named port mapping on at least one container in your Task Definition.
 
-Service connect configuration consists of some 
-
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
@@ -1279,6 +1277,16 @@ const service = new ecs.FargateService(this, 'Service', {
 Service Connect-enabled services may now reach this service at `http-api:80`. Traffic to this endpoint will 
 be routed to the container's port 8080.
 
+To opt a service into using service connect without advertising a port, simply call the 'enableServiceConnect' method on an initialized service.
+
+```ts
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition
+)
+service.enableServiceConnect();
+```
+
 Service Connect also allows custom logging, Service Discovery name, and configuration of the port where service connect traffic is received.
 
 ```ts
@@ -1300,3 +1308,4 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
     ],
   },
 });
+```

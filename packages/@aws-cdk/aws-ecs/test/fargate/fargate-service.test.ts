@@ -1089,6 +1089,7 @@ describe('fargate service', () => {
         service.enableServiceConnect();
 
         // THEN
+
         expect(() => {
           service.enableServiceConnect({});
         }).toThrow('Service connect configuration cannot be specified more than once.');
@@ -1129,6 +1130,22 @@ describe('fargate service', () => {
           name: 'cool',
         });
         service.enableServiceConnect({});
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+          },
+        });
+      });
+
+      test('with explicit enable and no props', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect();
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
