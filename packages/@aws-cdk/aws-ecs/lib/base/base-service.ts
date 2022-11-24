@@ -166,12 +166,10 @@ export interface ServiceConnectService {
    * Service Connect-enabled clients will be able to reach this service at
    * http://dnsName:port.
    *
-   * This list may be at most one element long.
-   *
    * @default - alias consisting of the container port and no DNS name. This default configuration results
    * in the service being reachable at `portmappingname.namespace:port`.
    */
-  readonly aliases?: ClientAlias[];
+  readonly alias?: ClientAlias;
 
   /**
    * Optional. The port on the Envoy container to use for traffic ingress to this service.
@@ -703,22 +701,17 @@ export abstract class BaseService extends Resource
         throw new Error(`Port mapping with name ${portName} does not exist.`);
       }
 
-      let clientAliases: CfnService.ServiceConnectClientAliasProperty[] = [{ port }];
-      if (svc.aliases) {
-        clientAliases = svc.aliases.map(alias => {
-          return {
-            dnsName: alias.dnsName,
-            port: alias.port ? alias.port : port,
-          };
-        });
-      }
+      const alias = svc.alias ? {
+        dnsName: svc.alias.dnsName,
+        port: svc.alias.port || port,
+      } : { port };
 
       return {
         portName: portName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
-        clientAliases: clientAliases,
-      };
+        clientAliases: [alias],
+      } as CfnService.ServiceConnectServiceProperty;
     });
 
     let logConfig: LogDriverConfig | undefined;
@@ -772,22 +765,17 @@ export abstract class BaseService extends Resource
         };
       }
 
-      // There should be no more than one client alias per service connect service
-      if (serviceConnectService.aliases?.length as number > 1) {
-        throw new Error('There should be no more than one client alias per service connect service.');
-      }
-
       // IngressPortOverride should be within the valid port range if it exists.
       if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
         throw new Error(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`);
       }
 
       // clientAlias.port should be within the valid port range
-      serviceConnectService.aliases?.forEach(alias => {
-        if (!this.isValidPort(alias.port)) {
-          throw new Error(`Client Alias port ${alias.port} is not valid.`);
-        }
-      });
+      if (serviceConnectService.alias &&
+        serviceConnectService.alias.port &&
+        !this.isValidPort(serviceConnectService.alias.port)) {
+        throw new Error(`Client Alias port ${serviceConnectService.alias.port} is not valid.`);
+      }
     });
   }
 

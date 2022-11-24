@@ -1005,14 +1005,9 @@ describe('fargate service', () => {
           services: [
             {
               port: '100',
-              aliases: [
-                {
-                  dnsName: 'backend.prod',
-                },
-                {
-                  dnsName: 'dataservice',
-                },
-              ],
+              alias: {
+                dnsName: 'backend.prod',
+              },
             },
           ],
           namespace: 'test namespace',
@@ -1032,14 +1027,9 @@ describe('fargate service', () => {
                 containerPort: 100,
                 name: '100',
               },
-              aliases: [
-                {
-                  dnsName: 'backend.prod',
-                },
-                {
-                  dnsName: 'dataservice',
-                },
-              ],
+              alias: {
+                dnsName: 'backend.prod',
+              },
             },
           ],
           namespace: 'test namespace',
@@ -1047,39 +1037,6 @@ describe('fargate service', () => {
         expect(() => {
           service.enableServiceConnect(config);
         }).toThrowError(/Port 100 does not exist on the task definition./);
-      });
-
-      test('throws an exception if there are more than one client alias per service connect service', () => {
-        // GIVEN
-        service.taskDefinition.addContainer('mobile', {
-          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-          portMappings: [
-            {
-              containerPort: 100,
-              name: '100',
-            },
-          ],
-        });
-        const config: ServiceConnectConfiguration = {
-          enabled: true,
-          services: [
-            {
-              port: '100',
-              aliases: [
-                {
-                  dnsName: 'backend.prod',
-                },
-                {
-                  dnsName: 'dataservice',
-                },
-              ],
-            },
-          ],
-          namespace: 'test namespace',
-        };
-        expect(() => {
-          service.enableServiceConnect(config);
-        }).toThrowError(/There should be no more than one client alias per service connect service./);
       });
 
       test('throws an exception if ingressPortOverride is not valid.', () => {
@@ -1098,11 +1055,10 @@ describe('fargate service', () => {
           services: [
             {
               port: '100',
-              aliases: [
-                {
-                  dnsName: 'backend.prod',
-                },
-              ],
+              alias: {
+                dnsName: 'backend.prod',
+                port: 5005,
+              },
               ingressPortOverride: 100000,
             },
           ],
@@ -1129,12 +1085,10 @@ describe('fargate service', () => {
           services: [
             {
               port: '100',
-              aliases: [
-                {
-                  dnsName: 'backend.prod',
-                  port: 100000,
-                },
-              ],
+              alias: {
+                dnsName: 'backend.prod',
+                port: 100000,
+              },
               ingressPortOverride: 3000,
             },
           ],
@@ -1380,12 +1334,10 @@ describe('fargate service', () => {
               port: 'api',
               discoveryName: 'svc',
               ingressPortOverride: 1000,
-              aliases: [
-                {
-                  port: 80,
-                  dnsName: 'api',
-                },
-              ],
+              alias: {
+                port: 80,
+                dnsName: 'api',
+              },
             },
           ],
           namespace: 'cool',
@@ -1431,11 +1383,42 @@ describe('fargate service', () => {
           services: [
             {
               port: 'api',
-              aliases: [
-                {
-                  port: 80,
-                },
-              ],
+              alias: {
+                port: 80,
+              },
+            },
+          ],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                ClientAliases: [
+                  {
+                    Port: 80,
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      test('with no alias specified', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          enabled: true,
+          services: [
+            {
+              port: 'api',
             },
           ],
         });

@@ -41,12 +41,10 @@ class ServiceConnect extends cdk.Stack {
         services: [
           {
             port: 'api',
-            aliases: [
-              {
-                dnsName: 'api',
-                port: 80,
-              },
-            ],
+            alias: {
+              dnsName: 'api',
+              port: 80,
+            },
           },
         ],
         enabled: true,
