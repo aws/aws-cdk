@@ -80,9 +80,12 @@ services.
 
 ```ts
 declare const bucket: s3.Bucket;
-new gamelift.Build(this, 'Build', {
+const build = new gamelift.Build(this, 'Build', {
   content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
 });
+
+new CfnOutput(this, 'BuildArn', { value: build.buildArn });
+new CfnOutput(this, 'BuildId', { value: build.buildId });
 ```
 
 #### Upload a realtime server Script
