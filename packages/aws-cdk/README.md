@@ -568,8 +568,9 @@ $ cdk bootstrap --app='node bin/main.js' foo bar
 By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
 
-If you have specific needs, policies, or requirements not met by the default template, you can customize it
-to fit your own situation, by exporting the default one to a file and either deploying it yourself
+If you have specific prerequisites not met by the example template, you can
+[customize it](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html#bootstrapping-customizing)
+to fit your requirements, by exporting the provided one to a file and either deploying it yourself
 using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
 
 ```console
@@ -581,6 +582,13 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 # Tell CDK to use the customized template
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
+
+Out of the box customization options are also available as arguments. To use a permissions boundary:
+
+- `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
+- `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
+
+A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as an example. Edit the content and reference the example policy if you're testing out the feature, turn it into a new policy for actual deployments (if one does not already exist). The concern here is drift as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
 
 ### `cdk doctor`
 
