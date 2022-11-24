@@ -693,7 +693,7 @@ export abstract class BaseService extends Resource
       } else {
         portName = this.portMappingNameFromPortMapping(svc.portMappingName);
       }
-      const port = this.taskDefinition.findPortMapping(portName)?.containerPort;
+      const port = this.taskDefinition.findPortMappingByName(portName)?.containerPort;
       if (!port) {
         throw new Error(`Port mapping with name ${portName} does not exist.`);
       }
@@ -751,7 +751,7 @@ export abstract class BaseService extends Resource
 
     config.services.forEach(serviceConnectService => {
       // if serviceconnectservice.port is a string, port must exists on the task definition
-      if (!this.taskDefinition.findPortMapping(serviceConnectService.portMappingName)) {
+      if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
         throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
       };
 

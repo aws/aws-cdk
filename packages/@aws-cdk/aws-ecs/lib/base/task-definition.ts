@@ -725,7 +725,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // Validate that there are no named port mapping conflicts for Service Connect.
     const portMappingNames = new Map<string, string>(); // Map from port mapping name to most recent container it appears in.
-    this.containers.map(container => {
+    this.containers.forEach(container => {
       for (const pm of container.portMappings) {
         if (pm.name) {
           if (portMappingNames.has(pm.name)) {
@@ -743,9 +743,9 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Determine the existing port mapping for the provided name.
    * @param name: port mapping name
-   * @returns PortMapping for the provided name
+   * @returns PortMapping for the provided name, if it exists.
    */
-  public findPortMapping(name: string): PortMapping | undefined {
+  public findPortMappingByName(name: string): PortMapping | undefined {
     let portMapping;
 
     this.containers.forEach(container => {
