@@ -571,7 +571,10 @@ export class ContainerDefinition extends Construct {
           throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.taskDefinition.networkMode}`);
         }
       }
-
+      // No empty strings as port mapping names.
+      if (pm.name === '') {
+        throw new Error('Port mapping name cannot be an empty string.');
+      }
       // Service connect logic.
       if (pm.name || pm.appProtocol) {
 
@@ -585,13 +588,10 @@ export class ContainerDefinition extends Construct {
           throw new Error('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
         }
 
-        // Ensure that pmName is not an empty string or undefined; avoids using ! operator when checking existence against _namedPorts.
-        const pmName = pm.name;
-
-        if (this._namedPorts.has(pmName)) {
+        if (this._namedPorts.has(pm.name)) {
           throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
         }
-        this._namedPorts.set(pmName, pm);
+        this._namedPorts.set(pm.name, pm);
       }
 
       if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {

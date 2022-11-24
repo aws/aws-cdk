@@ -116,20 +116,7 @@ describe('container definition', () => {
             name: '',
           },
         );
-      }).not.toThrow();
-
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [
-          {
-            PortMappings: [
-              {
-                ContainerPort: 80,
-                Protocol: 'tcp',
-              },
-            ],
-          },
-        ],
-      });
+      }).toThrow();
     });
 
     test('add a container using all props', () => {
