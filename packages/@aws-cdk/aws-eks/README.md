@@ -222,7 +222,6 @@ Spot Instances, we recommend that you configure a Spot managed node group to use
 
 > For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
 
-
 ```ts
 declare const cluster: eks.Cluster;
 cluster.addNodegroupCapacity('extra-ng-spot', {
@@ -584,11 +583,11 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-> Note: Isolated VPCs (i.e with no internet access) are not currently supported. See https://github.com/aws/aws-cdk/issues/12171
+> Note: Isolated VPCs (i.e with no internet access) are not currently supported. See <https://github.com/aws/aws-cdk/issues/12171>
 
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 
-Please note that the `vpcSubnets` property defines the subnets where EKS will place the _control plane_ ENIs. To choose
+Please note that the `vpcSubnets` property defines the subnets where EKS will place the *control plane* ENIs. To choose
 the subnets where EKS will place the worker nodes, please refer to the **Provisioning clusters** section above.
 
 If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
@@ -1097,7 +1096,7 @@ Kubernetes resources in that manifest will be deleted.
 #### Resource Pruning
 
 When a resource is deleted from a Kubernetes manifest, the EKS module will
-automatically delete these resources by injecting a _prune label_ to all
+automatically delete these resources by injecting a *prune label* to all
 manifest resources. This label is then passed to [`kubectl apply --prune`].
 
 [`kubectl apply --prune`]: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/#alternative-kubectl-apply-f-directory-prune-l-your-label
@@ -1156,7 +1155,7 @@ cluster.addHelmChart('NginxIngress', {
 ```
 
 Helm charts will be installed and updated using `helm upgrade --install`, where a few parameters
-are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
+are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, `username`, `password`, etc).
 This means that if the chart is added to CDK with the same release name, it will try to update
 the chart in the cluster.
 
