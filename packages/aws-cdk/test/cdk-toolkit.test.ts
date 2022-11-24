@@ -62,7 +62,7 @@ import { Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments, DeployStackOptions, DestroyStackOptions } from '../lib/api/cloudformation-deployments';
 import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, Tag, AssetBuildTime } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact, withMocked } from './util';
@@ -587,6 +587,32 @@ describe('deploy', () => {
             parallel: false,
           }),
         }));
+      });
+    });
+
+    test('can disable asset prebuild', async () => {
+      // GIVEN
+      cloudExecutable = new MockCloudExecutable({
+        stacks: [MockStack.MOCK_STACK_WITH_ASSET],
+      });
+      const fakeCloudFormation = new FakeCloudFormation({});
+
+      const toolkit = new CdkToolkit({
+        cloudExecutable,
+        configuration: cloudExecutable.configuration,
+        sdkProvider: cloudExecutable.sdkProvider,
+        cloudFormation: fakeCloudFormation,
+      });
+
+      // WHEN
+      // Not the best test but following this through to the asset publishing library fails
+      await withMocked(fakeCloudFormation, 'buildStackAssets', async (mockBuildStackAssets) => {
+        await toolkit.deploy({
+          selector: { patterns: ['Test-Stack-Asset'] },
+          assetBuildTime: AssetBuildTime.JUST_IN_TIME,
+        });
+
+        expect(mockBuildStackAssets).not.toHaveBeenCalled();
       });
     });
   });
