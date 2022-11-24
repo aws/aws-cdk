@@ -65,7 +65,7 @@ describe('container definition', () => {
         container.addPortMappings(
           {
             containerPort: 443,
-            appProtocol: AppProtocol.GRPC,
+            appProtocol: AppProtocol.grpc,
           },
         );
       }).toThrow(/Service connect-related port mapping field 'appProtocol' cannot be set without 'name'/);

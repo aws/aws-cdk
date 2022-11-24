@@ -26,7 +26,7 @@ class ServiceConnect extends cdk.Stack {
         {
           name: 'api',
           containerPort: 80,
-          appProtocol: ecs.AppProtocol.HTTP2,
+          appProtocol: ecs.AppProtocol.http2,
         },
       ],
       logging: ecs.LogDrivers.awsLogs({

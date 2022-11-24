@@ -1058,9 +1058,10 @@ export interface PortMapping {
   readonly name?: string;
 
   /**
-   * The protocol used by Service Connect. Valid values are AppProtocol.HTTP, AppProtocol.HTTP2, and
-   * AppProtocol.GRPC. The protocol determines what kind of telemetry will be exposed in the
-   * ECS Console for Service Connect services using this port mapping.
+   * The protocol used by Service Connect. Valid values are AppProtocol.http, AppProtocol.http2, and
+   * AppProtocol.grpc. The protocol determines what telemetry will be shown in the ECS Console for
+   * Service Connect services using this port mapping.
+   *
    * This field may only be set when the task definition uses Bridge or Awsvpc network modes.
    *
    * @default - no app protocol
@@ -1086,23 +1087,29 @@ export enum Protocol {
 
 /**
  * Service connect app protocol.
- * Defaults to HTTP.
  */
-export enum AppProtocol {
+export class AppProtocol {
   /**
-   * HTTP
+   * HTTP app protocol.
    */
-  HTTP = 'http',
+  public static http = new AppProtocol('http');
+  /**
+   * HTTP2 app protocol.
+   */
+  public static http2 = new AppProtocol('http2');
+  /**
+   * GRPC app protocol.
+   */
+  public static grpc = new AppProtocol('grpc');
 
   /**
-   * HTTP2
+   * Custom value.
    */
-  HTTP2 = 'http2',
+  public readonly value: string;
 
-  /**
-   * GRPC
-   */
-  GRPC = 'grpc'
+  protected constructor(value: string) {
+    this.value = value;
+  }
 }
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
@@ -1110,7 +1117,7 @@ function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProper
     containerPort: pm.containerPort,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
-    appProtocol: pm.appProtocol,
+    appProtocol: pm.appProtocol?.value,
     name: pm.name ? pm.name : undefined,
   };
 }
