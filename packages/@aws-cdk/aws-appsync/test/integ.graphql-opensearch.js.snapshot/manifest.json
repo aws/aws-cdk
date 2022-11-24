@@ -1,27 +1,27 @@
 {
   "version": "22.0.0",
   "artifacts": {
-    "appsync-opensearch.assets": {
+    "OpensSearch23Stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "appsync-opensearch.assets.json",
+        "file": "OpensSearch23Stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "appsync-opensearch": {
+    "OpensSearch23Stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "appsync-opensearch.template.json",
+        "templateFile": "OpensSearch23Stack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cbf69265acb5253067d9fc78cec3e7b151737dc0ba84d10aedd04a2c12f84bc4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7725c14cf18390409c0bad4e2d2037a44b300aac680ce62082d410f076e7f331.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "appsync-opensearch.assets"
+          "OpensSearch23Stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,70 +30,123 @@
         }
       },
       "dependencies": [
-        "appsync-opensearch.assets"
+        "OpensSearch23Stack.assets"
       ],
       "metadata": {
-        "/appsync-opensearch/User/Resource": [
+        "/OpensSearch23Stack/User/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "User00B015A1"
           }
         ],
-        "/appsync-opensearch/Domain/Resource": [
+        "/OpensSearch23Stack/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain66AC69E0"
           }
         ],
-        "/appsync-opensearch/api/Resource": [
+        "/OpensSearch23Stack/api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiC8550315"
           }
         ],
-        "/appsync-opensearch/api/Schema": [
+        "/OpensSearch23Stack/api/Schema": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiSchema0EA92056"
           }
         ],
-        "/appsync-opensearch/api/DefaultApiKey": [
+        "/OpensSearch23Stack/api/DefaultApiKey": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiDefaultApiKey6AB8D7C4"
           }
         ],
-        "/appsync-opensearch/api/ds/ServiceRole/Resource": [
+        "/OpensSearch23Stack/api/ds/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apidsServiceRoleBDB08107"
           }
         ],
-        "/appsync-opensearch/api/ds/ServiceRole/DefaultPolicy/Resource": [
+        "/OpensSearch23Stack/api/ds/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apidsServiceRoleDefaultPolicy5634EFD0"
           }
         ],
-        "/appsync-opensearch/api/ds/Resource": [
+        "/OpensSearch23Stack/api/ds/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apids4328272F"
           }
         ],
-        "/appsync-opensearch/api/QueryGetTests/Resource": [
+        "/OpensSearch23Stack/api/ds/QuerygetTestsResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "apiQueryGetTests5F79F353"
           }
         ],
-        "/appsync-opensearch/BootstrapVersion": [
+        "/OpensSearch23Stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/appsync-opensearch/CheckBootstrapVersion": [
+        "/OpensSearch23Stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/OpensSearch23Stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "OpensSearch23Stack"
+    },
+    "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdaapilatebounddeploymentstageDefaultTestDeployAssert678919C4.assets"
+      ],
+      "metadata": {
+        "/lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
@@ -109,7 +162,7 @@
           }
         ]
       },
-      "displayName": "appsync-opensearch"
+      "displayName": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

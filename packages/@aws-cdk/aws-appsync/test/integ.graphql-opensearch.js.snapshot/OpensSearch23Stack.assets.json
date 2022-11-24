@@ -1,15 +1,15 @@
 {
   "version": "22.0.0",
   "files": {
-    "cbf69265acb5253067d9fc78cec3e7b151737dc0ba84d10aedd04a2c12f84bc4": {
+    "7725c14cf18390409c0bad4e2d2037a44b300aac680ce62082d410f076e7f331": {
       "source": {
-        "path": "appsync-opensearch.template.json",
+        "path": "OpensSearch23Stack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cbf69265acb5253067d9fc78cec3e7b151737dc0ba84d10aedd04a2c12f84bc4.json",
+          "objectKey": "7725c14cf18390409c0bad4e2d2037a44b300aac680ce62082d410f076e7f331.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

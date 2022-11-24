@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "appsync-opensearch": {
-        "id": "appsync-opensearch",
-        "path": "appsync-opensearch",
+      "OpensSearch23Stack": {
+        "id": "OpensSearch23Stack",
+        "path": "OpensSearch23Stack",
         "children": {
           "User": {
             "id": "User",
-            "path": "appsync-opensearch/User",
+            "path": "OpensSearch23Stack/User",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "appsync-opensearch/User/Resource",
+                "path": "OpensSearch23Stack/User/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::User",
                   "aws:cdk:cloudformation:props": {}
@@ -32,11 +32,11 @@
           },
           "Domain": {
             "id": "Domain",
-            "path": "appsync-opensearch/Domain",
+            "path": "OpensSearch23Stack/Domain",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "appsync-opensearch/Domain/Resource",
+                "path": "OpensSearch23Stack/Domain/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
                   "aws:cdk:cloudformation:props": {
@@ -70,7 +70,7 @@
                     "encryptionAtRestOptions": {
                       "enabled": true
                     },
-                    "engineVersion": "OpenSearch_1.3",
+                    "engineVersion": "OpenSearch_2.3",
                     "logPublishingOptions": {},
                     "nodeToNodeEncryptionOptions": {
                       "enabled": true
@@ -90,11 +90,11 @@
           },
           "api": {
             "id": "api",
-            "path": "appsync-opensearch/api",
+            "path": "OpensSearch23Stack/api",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "appsync-opensearch/api/Resource",
+                "path": "OpensSearch23Stack/api/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
                   "aws:cdk:cloudformation:props": {
@@ -109,7 +109,7 @@
               },
               "Schema": {
                 "id": "Schema",
-                "path": "appsync-opensearch/api/Schema",
+                "path": "OpensSearch23Stack/api/Schema",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
                   "aws:cdk:cloudformation:props": {
@@ -129,7 +129,7 @@
               },
               "DefaultApiKey": {
                 "id": "DefaultApiKey",
-                "path": "appsync-opensearch/api/DefaultApiKey",
+                "path": "OpensSearch23Stack/api/DefaultApiKey",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
                   "aws:cdk:cloudformation:props": {
@@ -148,7 +148,7 @@
               },
               "LogGroup": {
                 "id": "LogGroup",
-                "path": "appsync-opensearch/api/LogGroup",
+                "path": "OpensSearch23Stack/api/LogGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -156,15 +156,15 @@
               },
               "ds": {
                 "id": "ds",
-                "path": "appsync-opensearch/api/ds",
+                "path": "OpensSearch23Stack/api/ds",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "appsync-opensearch/api/ds/ServiceRole",
+                    "path": "OpensSearch23Stack/api/ds/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "appsync-opensearch/api/ds/ServiceRole/ImportServiceRole",
+                        "path": "OpensSearch23Stack/api/ds/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.Resource",
                           "version": "0.0.0"
@@ -172,7 +172,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "appsync-opensearch/api/ds/ServiceRole/Resource",
+                        "path": "OpensSearch23Stack/api/ds/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -182,7 +182,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync.amazonaws.com"
+                                    "Service": "appsync"
                                   }
                                 }
                               ],
@@ -197,11 +197,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "appsync-opensearch/api/ds/ServiceRole/DefaultPolicy",
+                        "path": "OpensSearch23Stack/api/ds/ServiceRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "appsync-opensearch/api/ds/ServiceRole/DefaultPolicy/Resource",
+                            "path": "OpensSearch23Stack/api/ds/ServiceRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -270,7 +270,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "appsync-opensearch/api/ds/Resource",
+                    "path": "OpensSearch23Stack/api/ds/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
                       "aws:cdk:cloudformation:props": {
@@ -313,35 +313,35 @@
                       "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.OpenSearchDataSource",
-                  "version": "0.0.0"
-                }
-              },
-              "QueryGetTests": {
-                "id": "QueryGetTests",
-                "path": "appsync-opensearch/api/QueryGetTests",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "appsync-opensearch/api/QueryGetTests/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
-                          "Fn::GetAtt": [
-                            "apiC8550315",
-                            "ApiId"
-                          ]
+                  },
+                  "QuerygetTestsResolver": {
+                    "id": "QuerygetTestsResolver",
+                    "path": "OpensSearch23Stack/api/ds/QuerygetTestsResolver",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "OpensSearch23Stack/api/ds/QuerygetTestsResolver/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Fn::GetAtt": [
+                                "apiC8550315",
+                                "ApiId"
+                              ]
+                            },
+                            "fieldName": "getTests",
+                            "typeName": "Query",
+                            "dataSourceName": "ds",
+                            "kind": "UNIT",
+                            "requestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
+                            "responseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}"
+                          }
                         },
-                        "fieldName": "getTests",
-                        "typeName": "Query",
-                        "dataSourceName": "ds",
-                        "kind": "UNIT",
-                        "requestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
-                        "responseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}"
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                          "version": "0.0.0"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -363,7 +363,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "appsync-opensearch/BootstrapVersion",
+            "path": "OpensSearch23Stack/BootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -371,7 +371,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "appsync-opensearch/CheckBootstrapVersion",
+            "path": "OpensSearch23Stack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
@@ -380,6 +380,60 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "lambda-api-latebound-deploymentstage": {
+        "id": "lambda-api-latebound-deploymentstage",
+        "path": "lambda-api-latebound-deploymentstage",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "lambda-api-latebound-deploymentstage/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "lambda-api-latebound-deploymentstage/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.161"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "lambda-api-latebound-deploymentstage/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       },
