@@ -36,11 +36,11 @@ export interface HelmChartOptions {
   readonly repository?: string;
 
   /**
-   * The chart in the form of an asset.
-   * Either this or `chart` must be specified.
-   *
-   * @default - No chart asset. Implies `chart` is used.
-   */
+  * The chart in the form of an asset.
+  * Either this or `chart` must be specified.
+  *
+  * @default - No chart asset. Implies `chart` is used.
+  */
   readonly chartAsset?: Asset;
 
   /**
@@ -58,7 +58,7 @@ export interface HelmChartOptions {
    * }
    * @default - No values are provided to the chart.
    */
-  readonly values?: { [key: string]: any };
+  readonly values?: {[key: string]: any};
 
   /**
    * Whether or not Helm should wait until all Pods, PVCs, Services, and minimum number of Pods of a
