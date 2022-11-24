@@ -108,21 +108,13 @@ export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTa
 /**
  * Interface for Service Connect configuration.
  */
-export interface ServiceConnectConfiguration {
-  /**
-   * Setting enabled to 'true' allows services to send and receive traffic via the
-   * managed service mesh provisioned by service connect.
-   *
-   * @default: true if the cluster has
-   */
-  readonly enabled?: boolean;
-
+export interface ServiceConnectProps {
   /**
    * The cloudmap namespace to register this service into.
    *
-   * @default the cloudmap namespace specified on the cluster. If the cluster has a service connect default, this may be blank.
+   * @default the cloudmap namespace specified on the cluster.
    */
-  readonly namespace?: cloudmap.INamespace | string;
+  readonly namespace?: string;
 
   /**
    * The list of Services, including a port mapping, terse client alias, and optional intermediate DNS name.
@@ -312,9 +304,10 @@ export interface BaseServiceOptions {
   /**
    * Configuration for Service Connect.
    *
-   * @default - undefined
+   * @default No ports are advertised via Service Connect on this service, and the service
+   * cannot make requests to other services via Service Connect.
    */
-  readonly serviceConnectConfiguration?: ServiceConnectConfiguration;
+  readonly serviceConnectConfiguration?: ServiceConnectProps;
 }
 
 /**
@@ -633,20 +626,14 @@ export abstract class BaseService extends Resource
   /**
    * Enable Service Connect
    */
-  public enableServiceConnect(config: ServiceConnectConfiguration) {
+  public enableServiceConnect(config?: ServiceConnectProps) {
     if (this._serviceConnectConfig) {
       throw new Error('Service connect configuration cannot be specified more than once.');
     }
 
     this.validateServiceConnectConfiguration(config);
 
-    // Return early for false configuration.
-    if (config.enabled === false) {
-      this._serviceConnectConfig = {
-        enabled: false,
-      };
-      return;
-    }
+    let cfg = config || {};
 
     /**
      * Namespace already exists as validated in validateServiceConnectConfiguration.
@@ -659,25 +646,16 @@ export abstract class BaseService extends Resource
       namespace = this.cluster.defaultCloudMapNamespace.namespaceName;
     }
 
-    if (config.namespace) {
-      switch (typeof config.namespace) {
-        case 'string':
-          namespace = config.namespace;
-          break;
-        case 'object':
-          namespace = config.namespace.namespaceName;
-          break;
-        default:
-          break;
-      }
+    if (cfg.namespace) {
+      namespace = cfg.namespace;
     }
 
     /**
      * Map services to CFN property types. This block manages:
-     * 1. Duck typing of ServiceConnectService.Port
+     * 1. Finding the correct port.
      * 2. Client alias enumeration
      */
-    const services = config.services?.map(svc => {
+    const services = cfg.services?.map(svc => {
       const port = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
       if (!port) {
         throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
@@ -697,10 +675,10 @@ export abstract class BaseService extends Resource
     });
 
     let logConfig: LogDriverConfig | undefined;
-    if (config.logDriver && this.taskDefinition.defaultContainer) {
+    if (cfg.logDriver && this.taskDefinition.defaultContainer) {
       // Default container existence is validated in validateServiceConnectConfiguration.
       // We only need the default container so that bind() can get the task definition from the container definition.
-      logConfig = config.logDriver.bind(this, this.taskDefinition.defaultContainer);
+      logConfig = cfg.logDriver.bind(this, this.taskDefinition.defaultContainer);
     }
 
     this._serviceConnectConfig = {
@@ -714,20 +692,19 @@ export abstract class BaseService extends Resource
   /**
    * Validate Service Connect Configuration
    */
-  private validateServiceConnectConfiguration(config: ServiceConnectConfiguration) {
-    // Enabled should not be false if any of the other properties are specified
-    if (config.logDriver || config.namespace || config.services) {
-      if (config.enabled === false) {
-        throw new Error('Enabled should not be false if other properties are specified.');
-      }
-    }
-
-    if (config.enabled && !this.taskDefinition.defaultContainer) {
+  private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
+    if (!this.taskDefinition.defaultContainer) {
       throw new Error('Task definition must have at least one container to enable service connect.');
     }
 
-    if (config.enabled && !config.namespace && !this.cluster.defaultCloudMapNamespace) {
+    // Check the implicit enable case; when config isn't specified or namespace isn't specified, we need to check that there is a namespace on the cluster.
+    if ((!config || !config.namespace) && !this.cluster.defaultCloudMapNamespace) {
       throw new Error('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace');
+    }
+
+    // When config isn't specified, return.
+    if (!config) {
+      return;
     }
 
     if (!config.services) {
@@ -735,7 +712,7 @@ export abstract class BaseService extends Resource
     }
 
     config.services.forEach(serviceConnectService => {
-      // if serviceconnectservice.port is a string, port must exists on the task definition
+      // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
         throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
       };

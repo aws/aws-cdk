@@ -47,7 +47,6 @@ class ServiceConnect extends cdk.Stack {
             },
           },
         ],
-        enabled: true,
         logDriver: ecs.LogDrivers.awsLogs({
           streamPrefix: 'sc',
         }),

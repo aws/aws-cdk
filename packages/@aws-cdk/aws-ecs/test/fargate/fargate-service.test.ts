@@ -14,7 +14,7 @@ import { App } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectConfiguration } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectProps } from '../../lib/base/base-service';
 import { addDefaultCapacityProvider } from '../util';
 
 describe('fargate service', () => {
@@ -981,25 +981,9 @@ describe('fargate service', () => {
         });
       });
 
-      test('throws an exception if Enabled is false and other properties are specified', () => {
-        // GIVEN
-        const config: ServiceConnectConfiguration = {
-          enabled: false,
-          services: [],
-          namespace: 'test namespace',
-          logDriver: ecs.LogDrivers.awsLogs({
-            streamPrefix: 'sc',
-          }),
-        };
-        expect(() => {
-          service.enableServiceConnect(config);
-        }).toThrowError(/Enabled should not be false if other properties are specified/);
-      });
-
       test('throws an exception if serviceconnectservice.port is a string and it does not exists on the task definition', () => {
         // GIVEN
-        const config: ServiceConnectConfiguration = {
-          enabled: true,
+        const config: ServiceConnectProps = {
           services: [
             {
               portMappingName: '100',
@@ -1026,8 +1010,7 @@ describe('fargate service', () => {
             },
           ],
         });
-        const config: ServiceConnectConfiguration = {
-          enabled: true,
+        const config: ServiceConnectProps = {
           services: [
             {
               portMappingName: '100',
@@ -1056,8 +1039,7 @@ describe('fargate service', () => {
             },
           ],
         });
-        const config: ServiceConnectConfiguration = {
-          enabled: true,
+        const config: ServiceConnectProps = {
           services: [
             {
               portMappingName: '100',
@@ -1105,40 +1087,21 @@ describe('fargate service', () => {
         });
       });
 
-      test('with explicit disable', () => {
-        // WHEN
-        service.enableServiceConnect({
-          enabled: false,
-        }),
-
-        // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-          ServiceConnectConfiguration: {
-            Enabled: false,
-          },
-        });
-      });
-
       test('service connect cannot be enabled twice', () => {
         // WHEN
         cluster.addDefaultCloudMapNamespace({
           name: 'cool',
         });
-        service.enableServiceConnect({
-          enabled: true,
-        });
+        service.enableServiceConnect();
 
         // THEN
         expect(() => {
-          service.enableServiceConnect({
-            enabled: false,
-          });
+          service.enableServiceConnect({});
         }).toThrow('Service connect configuration cannot be specified more than once.');
       });
 
       test('client alias port is defaulted to containerport', () => {
         service.enableServiceConnect({
-          enabled: true,
           namespace: 'cool',
           services: [
             {
@@ -1171,9 +1134,7 @@ describe('fargate service', () => {
         cluster.addDefaultCloudMapNamespace({
           name: 'cool',
         });
-        service.enableServiceConnect({
-          enabled: true,
-        });
+        service.enableServiceConnect({});
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -1184,31 +1145,13 @@ describe('fargate service', () => {
         });
       });
 
-      test('with explicit disable and default namespace', () => {
-        // WHEN
-        cluster.addDefaultCloudMapNamespace({
-          name: 'cool',
-        });
-        service.enableServiceConnect({
-          enabled: false,
-        });
-
-        // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-          ServiceConnectConfiguration: {
-            Enabled: false,
-          },
-        });
-      });
-
       test('explicit enable and non default namespace', () => {
         // WHEN
         const ns = new cloudmap.HttpNamespace(stack, 'ns', {
           name: 'cool',
         });
         service.enableServiceConnect({
-          enabled: true,
-          namespace: ns,
+          namespace: ns.namespaceName,
         });
 
         // THEN
@@ -1225,9 +1168,22 @@ describe('fargate service', () => {
         cluster.addDefaultCloudMapNamespace({
           name: 'cool',
         });
-        service.enableServiceConnect({
-          enabled: true,
+        service.enableServiceConnect({});
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+          },
         });
+      });
+
+      test('namespace inferred from cluster; empty props', () => {
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect();
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -1241,9 +1197,7 @@ describe('fargate service', () => {
       test('no namespace errors out', () => {
         // THEN
         expect(() => {
-          service.enableServiceConnect({
-            enabled: true,
-          });
+          service.enableServiceConnect({});
         }).toThrow();
       });
 
@@ -1256,7 +1210,6 @@ describe('fargate service', () => {
         });
         expect(() => {
           svc.enableServiceConnect({
-            enabled: true,
             logDriver: ecs.LogDrivers.awsLogs({
               streamPrefix: 'sc',
             }),
@@ -1320,7 +1273,6 @@ describe('fargate service', () => {
           name: 'cool',
         });
         service.enableServiceConnect({
-          enabled: true,
           services: [
             {
               portMappingName: 'api',
@@ -1356,7 +1308,6 @@ describe('fargate service', () => {
           name: 'cool',
         });
         service.enableServiceConnect({
-          enabled: true,
           services: [
             {
               portMappingName: 'api',
