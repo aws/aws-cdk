@@ -8,7 +8,6 @@
 #set($inputString = '')
 #set($includeHeaders = %INCLUDE_HEADERS%)
 #set($includeQueryString = %INCLUDE_QUERYSTRING%)
-#set($includeMultiValueQueryString = %INCLUDE_MULTIVALUEQUERYSTRING%)
 #set($includePath = %INCLUDE_PATH%)
 #set($includeAuthorizer = %INCLUDE_AUTHORIZER%)
 #set($allParams = $input.params())
@@ -31,27 +30,22 @@
     #if ($includeQueryString)
         #set($inputString = "$inputString, @@querystring@@:{")
         #foreach($paramName in $allParams.querystring.keySet())
-            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@")
-            #if($foreach.hasNext)
-                #set($inputString = "$inputString,")
-            #end
-        #end
-        #set($inputString = "$inputString }")
-    #end
+            #set($paramValue = '')
 
-    #if ($includeMultiValueQueryString)
-        #set($inputString = "$inputString, @@multivaluequerystring@@:{")
-        #foreach($paramName in $allParams.multivaluequerystring.keySet())
-            #set($inputString = "$inputString @@$paramName@@: [")
-
-            #foreach($value in $allParams.multivaluequerystring.get($paramName))
-                #set($inputString = "$inputString @@$util.escapeJavaScript($value)@@")
-                #if($foreach.hasNext)
-                    #set($inputString = "$inputString,")
+            #if(${allParams.multivaluequerystring.get($paramName).size()} > 1)
+                ## Multi-value QueryString
+                #foreach($value in $allParams.multivaluequerystring.get($paramName))
+                    #set($paramValue = "$paramValue$value")
+                    #if($foreach.hasNext)
+                        #set($inputString = "$inputString,")
+                    #end
                 #end
+            #else
+                ## Single-value QueryString
+                #set($paramValue = $allParams.querystring.get($paramName))
             #end
 
-            #set($inputString = "$inputString ]")
+            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($paramValue)@@")
             #if($foreach.hasNext)
                 #set($inputString = "$inputString,")
             #end

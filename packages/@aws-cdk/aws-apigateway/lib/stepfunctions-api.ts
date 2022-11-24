@@ -48,20 +48,6 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
   readonly querystring?: boolean;
 
   /**
-   * Check if multivaluequerystring is to be included inside the execution input. The execution input will include a new key `multivaluequerystring`:
-   *
-   * {
-   *   "body": {},
-   *   "multivaluequerystring": {
-   *     "key": [ "value1", "value2" ]
-   *   }
-   * }
-   *
-   * @default true
-   */
-  readonly multiValueQuerystring?: boolean;
-
-  /**
    * Check if path is to be included inside the execution input. The execution input will include a new key `path`:
    *
    * {
@@ -130,7 +116,6 @@ export class StepFunctionsRestApi extends RestApi {
       requestContext: props.requestContext,
       path: props.path?? true,
       querystring: props.querystring?? true,
-      multiValueQuerystring: props.multiValueQuerystring?? true,
       headers: props.headers,
       authorizer: props.authorizer,
     });

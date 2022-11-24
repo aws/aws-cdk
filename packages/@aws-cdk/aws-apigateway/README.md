@@ -141,7 +141,7 @@ Other metadata such as billing details, AWS account ID and resource ARNs are not
 
 By default, a `prod` stage is provisioned.
 
-In order to reduce the payload size sent to AWS Step Functions, `headers` are not forwarded to the Step Functions execution input. It is possible to choose whether `headers`,  `requestContext`, `path`, `querystring`, `multivaluequerystring`, and `authorizer` are included or not. By default, `headers` are excluded in all requests.
+In order to reduce the payload size sent to AWS Step Functions, `headers` are not forwarded to the Step Functions execution input. It is possible to choose whether `headers`,  `requestContext`, `path`, `querystring`, and `authorizer` are included or not. By default, `headers` are excluded in all requests.
 
 More details about AWS Step Functions payload limit can be found at https://docs.aws.amazon.com/step-functions/latest/dg/limits-overview.html#service-limits-task-executions.
 
@@ -176,7 +176,6 @@ AWS Step Functions will receive the request body in its input as follows:
   },
   "path": "/",
   "querystring": {},
-  "multivaluequerystring": {}
 }
 ```
 
@@ -195,14 +194,9 @@ AWS Step Functions will receive the following execution input:
      "users": "5"
   },
   "querystring": {
-    "foo": "bar"
+    "foo": "bar",
+    "type: "baz,qux",
   },
-  "multivaluequerystring": {
-    "type": [ 
-      "baz", 
-      "qux" 
-    ],
-  }
 }
 ```
 
@@ -215,7 +209,6 @@ new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
   headers: true,
   path: false,
   querystring: false,
-  multivaluequerystring: false,
   authorizer: false,
   requestContext: {
     caller: true,
