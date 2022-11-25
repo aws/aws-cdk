@@ -648,7 +648,7 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 fn.addEventSource(new eventsources.DynamoEventSource(table, {
   startingPosition: lambda.StartingPosition.LATEST,
-  filters: [aws_lambda.FilterCriteria.filter({ eventName: aws_lambda.FilterRule.isEqual('INSERT') })],
+  filters: [aws_lambda.FilterCriteria.filter({ eventName: lambda.FilterRule.isEqual('INSERT') })],
 }));
 ```
 
