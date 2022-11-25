@@ -285,7 +285,7 @@ describe('staging', () => {
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const processStdErrWriteSpy = sinon.spy(process.stderr, 'write');
+    const processStdOutWriteSpy = sinon.spy(process.stdout, 'write');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -311,7 +311,7 @@ describe('staging', () => {
     ]);
 
     // shows a message before bundling
-    expect(processStdErrWriteSpy.calledWith('Bundling asset stack/Asset...\n')).toEqual(true);
+    expect(processStdOutWriteSpy.calledWith('Bundling asset stack/Asset...\n')).toEqual(true);
   });
 
   test('bundled resources have absolute path when staging is disabled', () => {

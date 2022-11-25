@@ -447,7 +447,7 @@ export class AssetStaging extends Construct {
 
     let localBundling: boolean | undefined;
     try {
-      process.stderr.write(`Bundling asset ${this.node.path}...\n`);
+      process.stdout.write(`Bundling asset ${this.node.path}...\n`);
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
