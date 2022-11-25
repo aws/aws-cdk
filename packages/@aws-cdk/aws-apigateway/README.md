@@ -195,8 +195,8 @@ AWS Step Functions will receive the following execution input:
   },
   "querystring": {
     "foo": "bar",
-    "type: "baz,qux",
-  },
+    "type: "baz,qux"
+  }
 }
 ```
 
