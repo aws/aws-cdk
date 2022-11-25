@@ -29,6 +29,8 @@ new Rule(stack, 'MyRule', {
       state: Match.anythingBut('initializing'),
       limit: Match.anythingBut(100, 200, 300),
       notPrefixedBy: Match.anythingButPrefix('sensitive-'),
+      suffix: Match.suffix('.com'),
+      equalsIgnoreCase: Match.equalsIgnoreCase('ignore case'),
     },
     detailType: ['detailType1'],
     id: ['id1', 'id2'],
