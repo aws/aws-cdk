@@ -1,0 +1,142 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-gamelift-build": {
+        "id": "aws-gamelift-build",
+        "path": "aws-gamelift-build",
+        "children": {
+          "MatchmakingRuleSet": {
+            "id": "MatchmakingRuleSet",
+            "path": "aws-gamelift-build/MatchmakingRuleSet",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-gamelift-build/MatchmakingRuleSet/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::GameLift::MatchmakingRuleSet",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "my-test-ruleset",
+                    "ruleSetBody": "{\n    \"name\": \"three_team_game\",\n    \"ruleLanguageVersion\": \"1.0\",\n    \"playerAttributes\": [{\n        \"name\": \"skill\",\n        \"type\": \"number\",\n        \"default\": 10\n    },{\n        \"name\": \"character\",\n        \"type\": \"string_list\",\n        \"default\": [ \"peasant\" ]\n    }],\n    \"teams\": [{\n        \"name\": \"trio\",\n        \"minPlayers\": 3,\n        \"maxPlayers\": 5,\n        \"quantity\": 3\n    }],\n    \"rules\": [{\n        \"name\": \"FairTeamSkill\",\n        \"description\": \"The average skill of players in each team is within 10 points from the average skill of players in the match\",\n        \"type\": \"distance\",\n        \"measurements\": [ \"avg(teams[*].players.attributes[skill])\" ],\n        \"referenceValue\": \"avg(flatten(teams[*].players.attributes[skill]))\",\n        \"maxDistance\": 10\n    }, {\n        \"name\": \"CloseTeamSizes\",\n        \"description\": \"Only launch a game when the team sizes are within 1 of each other.  e.g. 3 v 3 v 4 is okay, but not 3 v 5 v 5\",\n        \"type\": \"distance\",\n        \"measurements\": [ \"max(count(teams[*].players))\"],\n        \"referenceValue\": \"min(count(teams[*].players))\",\n        \"maxDistance\": 1\n    }, {\n        \"name\": \"OverallMedicLimit\",\n        \"description\": \"Don't allow more than 5 medics in the game\",\n        \"type\": \"collection\",\n        \"measurements\": [ \"flatten(teams[*].players.attributes[character])\"],\n        \"operation\": \"contains\",\n        \"referenceValue\": \"medic\",\n        \"maxCount\": 5\n    }, {\n        \"name\": \"FastConnection\",\n        \"description\": \"Prefer matches with fast player connections first\",\n        \"type\": \"latency\",\n        \"maxLatency\": 50\n    }],\n    \"expansions\": [{\n        \"target\": \"rules[FastConnection].maxLatency\",\n        \"steps\": [{\n            \"waitTimeSeconds\": 10,\n            \"value\": 100\n        }, {\n            \"waitTimeSeconds\": 20,\n            \"value\": 150\n        }]\n    }]\n}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-gamelift.CfnMatchmakingRuleSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-gamelift.MatchmakingRuleSet",
+              "version": "0.0.0"
+            }
+          },
+          "MatchmakingRuleSetArn": {
+            "id": "MatchmakingRuleSetArn",
+            "path": "aws-gamelift-build/MatchmakingRuleSetArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "MatchmakingRuleSetName": {
+            "id": "MatchmakingRuleSetName",
+            "path": "aws-gamelift-build/MatchmakingRuleSetName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-gamelift-build/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-gamelift-build/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Build": {
+        "id": "Build",
+        "path": "Build",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Build/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Build/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.161"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Build/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Build/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Build/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.161"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

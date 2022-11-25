@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "ab2dd0fb59ab0924d671fe62cecdf095d46a08706a1f60fbe2a9343b27898130": {
+      "source": {
+        "path": "aws-gamelift-build.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ab2dd0fb59ab0924d671fe62cecdf095d46a08706a1f60fbe2a9343b27898130.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
