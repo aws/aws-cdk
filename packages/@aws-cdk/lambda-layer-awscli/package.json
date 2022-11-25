@@ -84,12 +84,14 @@
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/asset-awscli-v1": "^2.2.9",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/asset-awscli-v1": "^2.2.9",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -101,9 +103,6 @@
     "announce": false
   },
   "cdk-build": {
-    "pre": [
-      "layer/build.sh"
-    ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

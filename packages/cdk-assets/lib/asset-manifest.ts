@@ -113,20 +113,27 @@ export class AssetManifest {
       ...makeEntries(this.manifest.files || {}, FileManifestEntry),
       ...makeEntries(this.manifest.dockerImages || {}, DockerImageManifestEntry),
     ];
+  }
 
-    function makeEntries<A, B, C>(
-      assets: Record<string, { source: A, destinations: Record<string, B> }>,
-      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
+  /**
+   * List of file assets, splat out to destinations
+   */
+  public get files(): FileManifestEntry[] {
+    return makeEntries(this.manifest.files || {}, FileManifestEntry);
+  }
+}
 
-      const ret = new Array<C>();
-      for (const [assetId, asset] of Object.entries(assets)) {
-        for (const [destId, destination] of Object.entries(asset.destinations)) {
-          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
-        }
-      }
-      return ret;
+function makeEntries<A, B, C>(
+  assets: Record<string, { source: A, destinations: Record<string, B> }>,
+  ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
+
+  const ret = new Array<C>();
+  for (const [assetId, asset] of Object.entries(assets)) {
+    for (const [destId, destination] of Object.entries(asset.destinations)) {
+      ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
     }
   }
+  return ret;
 }
 
 type AssetType = 'files' | 'dockerImages';

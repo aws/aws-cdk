@@ -53,6 +53,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [App Clients](#app-clients)
   - [Resource Servers](#resource-servers)
   - [Domains](#domains)
+  - [Deletion protection](#deletion-protection)
 
 ## User Pools
 
@@ -71,7 +72,7 @@ new cognito.UserPool(this, 'myuserpool', {
 ```
 
 By default, usernames and email addresses in user pools are case sensitive, which means `user@example.com` and `User@example.com`
-are considered different. In most situations it is prefered to have usernames and email addresses be case insensitive so that
+are considered different. In most situations it is preferred to have usernames and email addresses be case insensitive so that
 capitalization differences are ignored. As shown above, you can make a user pool case insensitive by setting `signInCaseSensitive`
 to `false`. The case sensitivity cannot be changed once a user pool is created.
 
@@ -869,3 +870,16 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
+
+### Deletion protection
+
+Deletion protection can be enabled on a user pool to prevent accidental deletion:
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool', {
+  // ...
+  deletionProtection: true,
+});
+```
+
+By default deletion protection is disabled.
