@@ -3,6 +3,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
+import { VALID_STACK_NAME_REGEX } from './stack';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -140,8 +141,8 @@ export class Stage extends Construct {
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
-    if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
-      throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
+    if (id !== '' && !VALID_STACK_NAME_REGEX.test(id)) {
+      throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters and hypens ('-')`);
     }
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });
