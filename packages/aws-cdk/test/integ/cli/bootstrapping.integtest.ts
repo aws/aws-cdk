@@ -201,7 +201,7 @@ integTest('can use the default permissions boundary to bootstrap', withDefaultFi
     examplePermissionsBoundary: true,
   });
 
-  expect(template).toContain(`PermissionsBoundary`);
+  expect(template).toContain('PermissionsBoundary');
 }));
 
 integTest('can use the custom permissions boundary to bootstrap', withDefaultFixture(async (fixture) => {
