@@ -213,6 +213,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * with appropriate permissions for every opt-in region instead.
    *
    * @default - No delegation configuration
+   * @deprecated Create the Role yourself and call `hostedZone.grantDelegation()`.
    */
   readonly crossAccountZoneDelegationPrincipal?: iam.IPrincipal;
 
@@ -220,6 +221,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * The name of the role created for cross account delegation
    *
    * @default - A role name is generated automatically
+   * @deprecated Create the Role yourself and call `hostedZone.grantDelegation()`.
    */
   readonly crossAccountZoneDelegationRoleName?: string;
 }
@@ -341,6 +343,26 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       comment: opts.comment,
       ttl: opts.ttl,
     });
+  }
+
+  /**
+   * Grant permissions to add delegation records to this zone
+   */
+  public grantDelegation(grantee: iam.IGrantable) {
+    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['route53:ChangeResourceRecordSets'],
+      resources: [this.hostedZoneArn],
+      conditions: {
+        'ForAllValues:StringEquals': {
+          'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+          'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+        },
+      },
+    }));
+    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['route53:ListHostedZonesByName'],
+      resources: ['*'],
+    }));
   }
 }
 
