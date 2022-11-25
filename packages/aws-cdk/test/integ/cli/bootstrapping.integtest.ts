@@ -201,7 +201,7 @@ integTest('can use the default permissions boundary to bootstrap', withDefaultFi
     examplePermissionsBoundary: true,
   });
 
-  expect(template).toContain(`arn:aws:iam::${await fixture.aws.account()}:policy/cdk-${fixture.qualifier}-permissions-boundary`);
+  expect(template).toContain(`PermissionsBoundary`);
 }));
 
 integTest('can use the custom permissions boundary to bootstrap', withDefaultFixture(async (fixture) => {
