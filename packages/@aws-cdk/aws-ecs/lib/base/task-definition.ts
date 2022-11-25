@@ -736,7 +736,6 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     });
 
-
     return ret;
   }
 

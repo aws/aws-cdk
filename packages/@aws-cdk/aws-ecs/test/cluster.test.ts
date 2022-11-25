@@ -1007,7 +1007,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
+  test('allows setting cluster ServiceConnectDefaults.Namespace property when useForServiceConnect is true', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1294,7 +1294,6 @@ describe('cluster', () => {
 
 
   });
-
 
   test('export/import of a cluster with a namespace', () => {
     // GIVEN

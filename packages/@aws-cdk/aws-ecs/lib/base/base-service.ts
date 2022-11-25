@@ -121,7 +121,7 @@ export interface ServiceConnectProps {
    *
    * This property may be left blank if the current ECS service does not need to advertise any ports via Service Connect.
    *
-   * @default none
+   * @default - none
    */
   readonly services?: ServiceConnectService[];
 
@@ -144,7 +144,7 @@ export interface ServiceConnectService {
   readonly portMappingName: string;
 
   /**
-   * Optionally specifies an intermediate dns name to register in the CloudMap namespace.
+   * Optionally specifies an intermediate DNS name to register in the CloudMap namespace.
    * This is required if you wish to use the same port mapping name in more than one service.
    *
    * @default - port mapping name
@@ -163,7 +163,7 @@ export interface ServiceConnectService {
   /**
    The port for clients to use to communicate with this service via Service Connect.
    *
-   * @default the container port specified by the port mapping in portMappingName.
+   * @default - the container port specified by the port mapping in portMappingName.
    */
   readonly port?: number;
 
@@ -291,7 +291,7 @@ export interface BaseServiceOptions {
   /**
    * Configuration for Service Connect.
    *
-   * @default No ports are advertised via Service Connect on this service, and the service
+   * @default - No ports are advertised via Service Connect on this service, and the service
    * cannot make requests to other services via Service Connect.
    */
   readonly serviceConnectConfiguration?: ServiceConnectProps;
