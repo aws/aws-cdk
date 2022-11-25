@@ -1,0 +1,2020 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-codedeploy-ecs-dg": {
+        "id": "aws-cdk-codedeploy-ecs-dg",
+        "path": "aws-cdk-codedeploy-ecs-dg",
+        "children": {
+          "VPC": {
+            "id": "VPC",
+            "path": "aws-cdk-codedeploy-ecs-dg/VPC",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/VPC/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-codedeploy-ecs-dg/VPC"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VPCIGWB7E252D3"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VPCPublicSubnet1EIP6AD938E8",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.64.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VPCIGWB7E252D3"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
+                        },
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VPCPublicSubnet2EIP4947BC00",
+                            "AllocationId"
+                          ]
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.192.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-codedeploy-ecs-dg/VPC/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VPCPublicSubnet2NATGateway3C070193"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "IGW": {
+                "id": "IGW",
+                "path": "aws-cdk-codedeploy-ecs-dg/VPC/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-codedeploy-ecs-dg/VPC"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "version": "0.0.0"
+                }
+              },
+              "VPCGW": {
+                "id": "VPCGW",
+                "path": "aws-cdk-codedeploy-ecs-dg/VPC/VPCGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
+                    },
+                    "internetGatewayId": {
+                      "Ref": "VPCIGWB7E252D3"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "EcsCluster": {
+            "id": "EcsCluster",
+            "path": "aws-cdk-codedeploy-ecs-dg/EcsCluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/EcsCluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecs.Cluster",
+              "version": "0.0.0"
+            }
+          },
+          "TaskDef": {
+            "id": "TaskDef",
+            "path": "aws-cdk-codedeploy-ecs-dg/TaskDef",
+            "children": {
+              "TaskRole": {
+                "id": "TaskRole",
+                "path": "aws-cdk-codedeploy-ecs-dg/TaskDef/TaskRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/TaskDef/TaskRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/TaskDef/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "essential": true,
+                        "image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+                        "name": "Container",
+                        "portMappings": [
+                          {
+                            "containerPort": 80,
+                            "protocol": "tcp"
+                          }
+                        ]
+                      }
+                    ],
+                    "cpu": "256",
+                    "family": "awscdkcodedeployecsdgTaskDef25A5A14D",
+                    "memory": "512",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "TaskDefTaskRole1EDB4A67",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "Container": {
+                "id": "Container",
+                "path": "aws-cdk-codedeploy-ecs-dg/TaskDef/Container",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecs.FargateTaskDefinition",
+              "version": "0.0.0"
+            }
+          },
+          "FargateService": {
+            "id": "FargateService",
+            "path": "aws-cdk-codedeploy-ecs-dg/FargateService",
+            "children": {
+              "Service": {
+                "id": "Service",
+                "path": "aws-cdk-codedeploy-ecs-dg/FargateService/Service",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "cluster": {
+                      "Ref": "EcsCluster97242B84"
+                    },
+                    "deploymentConfiguration": {
+                      "maximumPercent": 200,
+                      "minimumHealthyPercent": 50
+                    },
+                    "deploymentController": {
+                      "type": "CODE_DEPLOY"
+                    },
+                    "enableEcsManagedTags": false,
+                    "healthCheckGracePeriodSeconds": 60,
+                    "launchType": "FARGATE",
+                    "loadBalancers": [
+                      {
+                        "targetGroupArn": {
+                          "Ref": "ServiceLBProdListenerBlueTGGroupB47699CD"
+                        },
+                        "containerName": "Container",
+                        "containerPort": 80
+                      }
+                    ],
+                    "networkConfiguration": {
+                      "awsvpcConfiguration": {
+                        "assignPublicIp": "DISABLED",
+                        "subnets": [
+                          {
+                            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                          },
+                          {
+                            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                          }
+                        ],
+                        "securityGroups": [
+                          {
+                            "Fn::GetAtt": [
+                              "FargateServiceSecurityGroup0A0E79CB",
+                              "GroupId"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "taskDefinition": "awscdkcodedeployecsdgTaskDef25A5A14D"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.CfnService",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-codedeploy-ecs-dg/FargateService/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/FargateService/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "aws-cdk-codedeploy-ecs-dg/FargateService/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkcodedeployecsdgServiceLBSecurityGroupEC967688:80": {
+                    "id": "from awscdkcodedeployecsdgServiceLBSecurityGroupEC967688:80",
+                    "path": "aws-cdk-codedeploy-ecs-dg/FargateService/SecurityGroup/from awscdkcodedeployecsdgServiceLBSecurityGroupEC967688:80",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "Load balancer to target",
+                        "fromPort": 80,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "FargateServiceSecurityGroup0A0E79CB",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "ServiceLBSecurityGroup2EA7EDA1",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 80
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecs.FargateService",
+              "version": "0.0.0"
+            }
+          },
+          "TaskDef2": {
+            "id": "TaskDef2",
+            "path": "aws-cdk-codedeploy-ecs-dg/TaskDef2",
+            "children": {
+              "TaskRole": {
+                "id": "TaskRole",
+                "path": "aws-cdk-codedeploy-ecs-dg/TaskDef2/TaskRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/TaskDef2/TaskRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/TaskDef2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "essential": true,
+                        "image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+                        "name": "Container",
+                        "portMappings": [
+                          {
+                            "containerPort": 80,
+                            "protocol": "tcp"
+                          }
+                        ]
+                      }
+                    ],
+                    "cpu": "256",
+                    "family": "awscdkcodedeployecsdgTaskDef22B5CE8FC",
+                    "memory": "512",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "TaskDef2TaskRole5A51C717",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "Container": {
+                "id": "Container",
+                "path": "aws-cdk-codedeploy-ecs-dg/TaskDef2/Container",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecs.FargateTaskDefinition",
+              "version": "0.0.0"
+            }
+          },
+          "ServiceLB": {
+            "id": "ServiceLB",
+            "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+                  "aws:cdk:cloudformation:props": {
+                    "loadBalancerAttributes": [
+                      {
+                        "key": "deletion_protection.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "scheme": "internal",
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "ServiceLBSecurityGroup2EA7EDA1",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnets": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ],
+                    "type": "application"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnLoadBalancer",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Automatically created Security Group for ELB awscdkcodedeployecsdgServiceLB2A9D4A45",
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "ipProtocol": "tcp",
+                            "fromPort": 80,
+                            "toPort": 80,
+                            "description": "Allow from anyone on port 80"
+                          },
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "ipProtocol": "tcp",
+                            "fromPort": 9002,
+                            "toPort": 9002,
+                            "description": "Allow from anyone on port 9002"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "to awscdkcodedeployecsdgFargateServiceSecurityGroup64C2B62E:80": {
+                    "id": "to awscdkcodedeployecsdgFargateServiceSecurityGroup64C2B62E:80",
+                    "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/SecurityGroup/to awscdkcodedeployecsdgFargateServiceSecurityGroup64C2B62E:80",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
+                      "aws:cdk:cloudformation:props": {
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "ServiceLBSecurityGroup2EA7EDA1",
+                            "GroupId"
+                          ]
+                        },
+                        "ipProtocol": "tcp",
+                        "description": "Load balancer to target",
+                        "destinationSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "FargateServiceSecurityGroup0A0E79CB",
+                            "GroupId"
+                          ]
+                        },
+                        "fromPort": 80,
+                        "toPort": 80
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupEgress",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "ProdListener": {
+                "id": "ProdListener",
+                "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/ProdListener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/ProdListener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "ServiceLBProdListenerBlueTGGroupB47699CD"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "ServiceLBBDAD0B9B"
+                        },
+                        "port": 80,
+                        "protocol": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "BlueTGGroup": {
+                    "id": "BlueTGGroup",
+                    "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/ProdListener/BlueTGGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/ProdListener/BlueTGGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "healthCheckIntervalSeconds": 5,
+                            "healthCheckTimeoutSeconds": 4,
+                            "healthyThresholdCount": 2,
+                            "matcher": {
+                              "httpCode": "200"
+                            },
+                            "port": 80,
+                            "protocol": "HTTP",
+                            "targetGroupAttributes": [
+                              {
+                                "key": "deregistration_delay.timeout_seconds",
+                                "value": "30"
+                              },
+                              {
+                                "key": "stickiness.enabled",
+                                "value": "false"
+                              }
+                            ],
+                            "targetType": "ip",
+                            "unhealthyThresholdCount": 3,
+                            "vpcId": {
+                              "Ref": "VPCB9E5F0B4"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnTargetGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ApplicationTargetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ApplicationListener",
+                  "version": "0.0.0"
+                }
+              },
+              "TestListener": {
+                "id": "TestListener",
+                "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/TestListener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/ServiceLB/TestListener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "GreenTG71A27F2F"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "ServiceLBBDAD0B9B"
+                        },
+                        "port": 9002,
+                        "protocol": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ApplicationListener",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer",
+              "version": "0.0.0"
+            }
+          },
+          "GreenTG": {
+            "id": "GreenTG",
+            "path": "aws-cdk-codedeploy-ecs-dg/GreenTG",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/GreenTG/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckIntervalSeconds": 5,
+                    "healthCheckTimeoutSeconds": 4,
+                    "healthyThresholdCount": 2,
+                    "matcher": {
+                      "httpCode": "200"
+                    },
+                    "port": 80,
+                    "protocol": "HTTP",
+                    "targetGroupAttributes": [
+                      {
+                        "key": "deregistration_delay.timeout_seconds",
+                        "value": "30"
+                      },
+                      {
+                        "key": "stickiness.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "targetType": "ip",
+                    "unhealthyThresholdCount": 3,
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancingv2.CfnTargetGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ApplicationTargetGroup",
+              "version": "0.0.0"
+            }
+          },
+          "BlueUnhealthyHosts": {
+            "id": "BlueUnhealthyHosts",
+            "path": "aws-cdk-codedeploy-ecs-dg/BlueUnhealthyHosts",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/BlueUnhealthyHosts/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 2,
+                    "alarmName": "aws-cdk-codedeploy-ecs-dg-Unhealthy-Hosts-Blue",
+                    "dimensions": [
+                      {
+                        "name": "LoadBalancer",
+                        "value": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBProdListener0E7627EE"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBProdListener0E7627EE"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  3,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBProdListener0E7627EE"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "name": "TargetGroup",
+                        "value": {
+                          "Fn::GetAtt": [
+                            "ServiceLBProdListenerBlueTGGroupB47699CD",
+                            "TargetGroupFullName"
+                          ]
+                        }
+                      }
+                    ],
+                    "metricName": "UnHealthyHostCount",
+                    "namespace": "AWS/ApplicationELB",
+                    "period": 300,
+                    "statistic": "Average",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "Blue5xx": {
+            "id": "Blue5xx",
+            "path": "aws-cdk-codedeploy-ecs-dg/Blue5xx",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/Blue5xx/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "alarmName": "aws-cdk-codedeploy-ecs-dg-Http-500-Blue",
+                    "dimensions": [
+                      {
+                        "name": "LoadBalancer",
+                        "value": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBProdListener0E7627EE"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBProdListener0E7627EE"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  3,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBProdListener0E7627EE"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "name": "TargetGroup",
+                        "value": {
+                          "Fn::GetAtt": [
+                            "ServiceLBProdListenerBlueTGGroupB47699CD",
+                            "TargetGroupFullName"
+                          ]
+                        }
+                      }
+                    ],
+                    "metricName": "HTTPCode_Target_5XX_Count",
+                    "namespace": "AWS/ApplicationELB",
+                    "period": 60,
+                    "statistic": "Sum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "GreenUnhealthyHosts": {
+            "id": "GreenUnhealthyHosts",
+            "path": "aws-cdk-codedeploy-ecs-dg/GreenUnhealthyHosts",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/GreenUnhealthyHosts/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 2,
+                    "alarmName": "aws-cdk-codedeploy-ecs-dg-Unhealthy-Hosts-Green",
+                    "dimensions": [
+                      {
+                        "name": "LoadBalancer",
+                        "value": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBTestListener3EA49939"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBTestListener3EA49939"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  3,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBTestListener3EA49939"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "name": "TargetGroup",
+                        "value": {
+                          "Fn::GetAtt": [
+                            "GreenTG71A27F2F",
+                            "TargetGroupFullName"
+                          ]
+                        }
+                      }
+                    ],
+                    "metricName": "UnHealthyHostCount",
+                    "namespace": "AWS/ApplicationELB",
+                    "period": 300,
+                    "statistic": "Average",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "Green5xx": {
+            "id": "Green5xx",
+            "path": "aws-cdk-codedeploy-ecs-dg/Green5xx",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/Green5xx/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "alarmName": "aws-cdk-codedeploy-ecs-dg-Http-500-Green",
+                    "dimensions": [
+                      {
+                        "name": "LoadBalancer",
+                        "value": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBTestListener3EA49939"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBTestListener3EA49939"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  3,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "ServiceLBTestListener3EA49939"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "name": "TargetGroup",
+                        "value": {
+                          "Fn::GetAtt": [
+                            "GreenTG71A27F2F",
+                            "TargetGroupFullName"
+                          ]
+                        }
+                      }
+                    ],
+                    "metricName": "HTTPCode_Target_5XX_Count",
+                    "namespace": "AWS/ApplicationELB",
+                    "period": 60,
+                    "statistic": "Sum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "CanaryConfig": {
+            "id": "CanaryConfig",
+            "path": "aws-cdk-codedeploy-ecs-dg/CanaryConfig",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/CanaryConfig/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeDeploy::DeploymentConfig",
+                  "aws:cdk:cloudformation:props": {
+                    "computePlatform": "ECS",
+                    "trafficRoutingConfig": {
+                      "type": "TimeBasedCanary",
+                      "timeBasedCanary": {
+                        "canaryInterval": 1,
+                        "canaryPercentage": 20
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codedeploy.CfnDeploymentConfig",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codedeploy.EcsDeploymentConfig",
+              "version": "0.0.0"
+            }
+          },
+          "BlueGreenDG": {
+            "id": "BlueGreenDG",
+            "path": "aws-cdk-codedeploy-ecs-dg/BlueGreenDG",
+            "children": {
+              "Application": {
+                "id": "Application",
+                "path": "aws-cdk-codedeploy-ecs-dg/BlueGreenDG/Application",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/BlueGreenDG/Application/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CodeDeploy::Application",
+                      "aws:cdk:cloudformation:props": {
+                        "computePlatform": "ECS"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-codedeploy.CfnApplication",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codedeploy.EcsApplication",
+                  "version": "0.0.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-codedeploy-ecs-dg/BlueGreenDG/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-codedeploy-ecs-dg/BlueGreenDG/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "codedeploy.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AWSCodeDeployRoleForECS"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-codedeploy-ecs-dg/BlueGreenDG/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeDeploy::DeploymentGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationName": {
+                      "Ref": "BlueGreenDGApplication3649479D"
+                    },
+                    "serviceRoleArn": {
+                      "Fn::GetAtt": [
+                        "BlueGreenDGServiceRole33E3BCAC",
+                        "Arn"
+                      ]
+                    },
+                    "alarmConfiguration": {
+                      "alarms": [
+                        {
+                          "name": {
+                            "Ref": "BlueUnhealthyHosts48919A97"
+                          }
+                        },
+                        {
+                          "name": {
+                            "Ref": "Blue5xx7E9798A6"
+                          }
+                        },
+                        {
+                          "name": {
+                            "Ref": "GreenUnhealthyHosts8D9D09C1"
+                          }
+                        },
+                        {
+                          "name": {
+                            "Ref": "Green5xx1A511A06"
+                          }
+                        }
+                      ],
+                      "enabled": true
+                    },
+                    "autoRollbackConfiguration": {
+                      "enabled": true,
+                      "events": [
+                        "DEPLOYMENT_FAILURE",
+                        "DEPLOYMENT_STOP_ON_REQUEST",
+                        "DEPLOYMENT_STOP_ON_ALARM"
+                      ]
+                    },
+                    "blueGreenDeploymentConfiguration": {
+                      "deploymentReadyOption": {
+                        "actionOnTimeout": "CONTINUE_DEPLOYMENT",
+                        "waitTimeInMinutes": 0
+                      },
+                      "terminateBlueInstancesOnDeploymentSuccess": {
+                        "action": "TERMINATE",
+                        "terminationWaitTimeInMinutes": 1
+                      }
+                    },
+                    "deploymentConfigName": {
+                      "Ref": "CanaryConfig039778DD"
+                    },
+                    "deploymentStyle": {
+                      "deploymentType": "BLUE_GREEN",
+                      "deploymentOption": "WITH_TRAFFIC_CONTROL"
+                    },
+                    "ecsServices": [
+                      {
+                        "clusterName": {
+                          "Ref": "EcsCluster97242B84"
+                        },
+                        "serviceName": {
+                          "Fn::GetAtt": [
+                            "FargateServiceAC2B3B85",
+                            "Name"
+                          ]
+                        }
+                      }
+                    ],
+                    "loadBalancerInfo": {
+                      "targetGroupPairInfoList": [
+                        {
+                          "targetGroups": [
+                            {
+                              "name": {
+                                "Fn::GetAtt": [
+                                  "ServiceLBProdListenerBlueTGGroupB47699CD",
+                                  "TargetGroupName"
+                                ]
+                              }
+                            },
+                            {
+                              "name": {
+                                "Fn::GetAtt": [
+                                  "GreenTG71A27F2F",
+                                  "TargetGroupName"
+                                ]
+                              }
+                            }
+                          ],
+                          "prodTrafficRoute": {
+                            "listenerArns": [
+                              {
+                                "Ref": "ServiceLBProdListener0E7627EE"
+                              }
+                            ]
+                          },
+                          "testTrafficRoute": {
+                            "listenerArns": [
+                              {
+                                "Ref": "ServiceLBTestListener3EA49939"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-codedeploy.CfnDeploymentGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-codedeploy.EcsDeploymentGroup",
+              "version": "0.0.0"
+            }
+          },
+          "NewTaskDefinition": {
+            "id": "NewTaskDefinition",
+            "path": "aws-cdk-codedeploy-ecs-dg/NewTaskDefinition",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Subnet1Id": {
+            "id": "Subnet1Id",
+            "path": "aws-cdk-codedeploy-ecs-dg/Subnet1Id",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Subnet2Id": {
+            "id": "Subnet2Id",
+            "path": "aws-cdk-codedeploy-ecs-dg/Subnet2Id",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "SecurityGroupId": {
+            "id": "SecurityGroupId",
+            "path": "aws-cdk-codedeploy-ecs-dg/SecurityGroupId",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "CodeDeployApplicationName": {
+            "id": "CodeDeployApplicationName",
+            "path": "aws-cdk-codedeploy-ecs-dg/CodeDeployApplicationName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "CodeDeployDeploymentGroupName": {
+            "id": "CodeDeployDeploymentGroupName",
+            "path": "aws-cdk-codedeploy-ecs-dg/CodeDeployDeploymentGroupName",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-codedeploy-ecs-dg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-codedeploy-ecs-dg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EcsDeploymentGroupTest": {
+        "id": "EcsDeploymentGroupTest",
+        "path": "EcsDeploymentGroupTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EcsDeploymentGroupTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EcsDeploymentGroupTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.140"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EcsDeploymentGroupTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "EcsDeploymentGroupTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "EcsDeploymentGroupTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

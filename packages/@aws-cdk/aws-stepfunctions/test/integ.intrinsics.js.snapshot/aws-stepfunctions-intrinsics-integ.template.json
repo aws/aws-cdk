@@ -1,0 +1,80 @@
+{
+ "Resources": {
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    },
+    "DefinitionString": "{\"StartAt\":\"pass\",\"States\":{\"pass\":{\"Type\":\"Pass\",\"Parameters\":{\"array1.$\":\"States.Array('asdf', $.Id)\",\"arrayPartition1.$\":\"States.ArrayPartition($.inputArray, 4)\",\"arrayPartition2.$\":\"States.ArrayPartition($.inputArray, $.chunkSize)\",\"arrayContains1.$\":\"States.ArrayContains($.inputArray, 5)\",\"arrayContains2.$\":\"States.ArrayContains($.inputArray, 'a')\",\"arrayContains3.$\":\"States.ArrayContains($.inputArray, $.lookingFor)\",\"arrayRange1.$\":\"States.ArrayRange(1, 9, 2)\",\"arrayRange2.$\":\"States.ArrayRange($.start, $.end, $.step)\",\"arrayGetItem1.$\":\"States.ArrayGetItem($.inputArray, 5)\",\"arrayGetItem2.$\":\"States.ArrayGetItem($.inputArray, $.index)\",\"arrayLength1.$\":\"States.ArrayLength($.inputArray)\",\"arrayUnique1.$\":\"States.ArrayUnique($.inputArray)\",\"base64Encode1.$\":\"States.Base64Encode('Data to encode')\",\"base64Encode2.$\":\"States.Base64Encode($.input)\",\"base64Decode1.$\":\"States.Base64Decode('RGF0YSB0byBlbmNvZGU=')\",\"base64Decode2.$\":\"States.Base64Decode($.base64)\",\"hash1.$\":\"States.Hash('Input data', 'SHA-1')\",\"hash2.$\":\"States.Hash($.Data, $.Algorithm)\",\"jsonMerge1.$\":\"States.JsonMerge($.Obj1, $.Obj2, false)\",\"mathRandom1.$\":\"States.MathRandom(1, 999)\",\"mathRandom2.$\":\"States.MathRandom($.start, $.end)\",\"mathAdd1.$\":\"States.MathAdd(1, 999)\",\"mathAdd2.$\":\"States.MathAdd($.value1, $.step)\",\"stringSplit1.$\":\"States.StringSplit('1,2,3,4,5', ',')\",\"stringSplit2.$\":\"States.StringSplit($.inputString, $.splitter)\",\"uuid.$\":\"States.UUID()\",\"format1.$\":\"States.Format('Hi my name is {}.', $.Name)\",\"format2.$\":\"States.Format($.Format, $.Name)\",\"stringToJson1.$\":\"States.StringToJson($.Str)\",\"jsonToString1.$\":\"States.JsonToString($.Obj)\"},\"End\":true}}}"
+   },
+   "DependsOn": [
+    "StateMachineRoleB840431D"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-intrinsics-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
