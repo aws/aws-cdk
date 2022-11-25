@@ -340,6 +340,7 @@ declare const instance: rds.DatabaseInstance;
 instance.addRotationSingleUser({
   automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
   excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+  securityGroup: mySecurityGroup, // optional, defaults to an auto-created security group
 });
 ```
 
