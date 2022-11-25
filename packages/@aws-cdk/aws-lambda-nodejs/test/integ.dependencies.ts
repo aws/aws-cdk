@@ -53,8 +53,10 @@ for (const testCase of [sdkV2testCase, sdkV3testCase]) {
   const response = integ.assertions.invokeFunction({
     functionName: testCase.lambdaFunction.functionName,
   });
-  response.expect(ExpectedResult.objectLike({
+  response.expect(ExpectedResult.exact({
     // expect invoking without error
+    StatusCode: 200,
+    ExecutedVersion: '$LATEST',
     Payload: 'null',
   }));
 }
