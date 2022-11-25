@@ -1,12 +1,6 @@
 {
   "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-gamelift-build.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/56a977de7626326c13fb108674329fc1a0952d0c525384c951169c7c75812e47.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bd5bde6b8c6af8bf7ca2e03bf58bcf2fbd6a755101d9747a72238d65e0d8230.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,6 +49,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Build45A36621"
+          }
+        ],
+        "/aws-gamelift-build/BuildArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildArn"
+          }
+        ],
+        "/aws-gamelift-build/BuildId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildId"
           }
         ],
         "/aws-gamelift-build/BootstrapVersion": [
@@ -118,6 +124,12 @@
         ]
       },
       "displayName": "Build/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
