@@ -156,6 +156,19 @@ describeDeprecated('scheduled action', () => {
   });
 });
 
+test('ScheduledActions have a name', () => {
+  const stack = new cdk.Stack();
+  const asg = makeAutoScalingGroup(stack);
+
+  const action = asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
+    schedule: autoscaling.Schedule.cron({ hour: '12', minute: '0' }),
+    minCapacity: 12,
+    timeZone: 'Asia/Seoul',
+  });
+
+  expect(action.scheduledActionName).toBeDefined();
+});
+
 function makeAutoScalingGroup(scope: constructs.Construct) {
   const vpc = new ec2.Vpc(scope, 'VPC');
   return new autoscaling.AutoScalingGroup(scope, 'ASG', {
