@@ -675,7 +675,7 @@ const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroupImport', 's
 });
 ```
 
-Alternatively, use lookup methods to import security groups if you do not know the ID or the configuration details. Method `SecurityGroup.fromLookupByName` looks up a security group if the secruity group ID is unknown.
+Alternatively, use lookup methods to import security groups if you do not know the ID or the configuration details. Method `SecurityGroup.fromLookupByName` looks up a security group if the security group ID is unknown.
 
 ```ts fixture=with-vpc
 const sg = ec2.SecurityGroup.fromLookupByName(this, 'SecurityGroupLookup', 'security-group-name', vpc);
@@ -1402,6 +1402,38 @@ vpc.addFlowLog('FlowLogCloudWatch', {
 });
 ```
 
+### Custom Formatting
+
+You can also custom format flow logs.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.DST_PORT,
+    ec2.LogFormat.SRC_PORT,
+  ],
+});
+
+// If you just want to add a field to the default field
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.VERSION,
+    ec2.LogFormat.ALL_DEFAULT_FIELDS,
+  ],
+});
+
+// If AWS CDK does not support the new fields
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.SRC_PORT,
+    ec2.LogFormat.custom('${new-field}'),
+  ],
+});
+```
+
+
 By default, the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
 it will create a CloudWatch Logs Log Group as well as the IAM role with the necessary permissions to publish to
 the log group. In the case of an S3 destination, it will create the S3 bucket.
@@ -1547,7 +1579,7 @@ For more information see
 #### Using add*Command on MultipartUserData
 
 To use the `add*Command` methods, that are inherited from the `UserData` interface, on `MultipartUserData` you must add a part
-to the `MultipartUserData` and designate it as the reciever for these methods. This is accomplished by using the `addUserDataPart()`
+to the `MultipartUserData` and designate it as the receiver for these methods. This is accomplished by using the `addUserDataPart()`
 method on `MultipartUserData` with the `makeDefault` argument set to `true`:
 
 ```ts

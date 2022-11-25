@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.51.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.51.0-alpha.0...v2.51.1-alpha.0) (2022-11-18)
+
+## [2.51.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.50.0-alpha.0...v2.51.0-alpha.0) (2022-11-18)
+
+
+### Features
+
+* **gamelift:** add BuildFleet L2 Construct for GameLift ([#22835](https://github.com/aws/aws-cdk/issues/22835)) ([834fab4](https://github.com/aws/aws-cdk/commit/834fab4983526eced3ddbdd58c5bfefbe757715d))
+* **gamelift:** add GameServerGroup L2 Construct for GameLift ([#22762](https://github.com/aws/aws-cdk/issues/22762)) ([ef74116](https://github.com/aws/aws-cdk/commit/ef74116aad56abbcea788ef3662a6ae6e74c4145))
+* **integ-runner:** support config file ([#22937](https://github.com/aws/aws-cdk/issues/22937)) ([4f49efe](https://github.com/aws/aws-cdk/commit/4f49efe35eaffd662c22e0d80e9b7fadeb25ab37))
+* **integ-runner:** support custom `--app` commands ([#22761](https://github.com/aws/aws-cdk/issues/22761)) ([a7bb6e1](https://github.com/aws/aws-cdk/commit/a7bb6e1a8a9a9f3fe534069ec77b4f6b10307c9f)), closes [#22521](https://github.com/aws/aws-cdk/issues/22521)
+* **integ-runner:** support custom `--test-regex` to match integ test files ([#22786](https://github.com/aws/aws-cdk/issues/22786)) ([fa1a439](https://github.com/aws/aws-cdk/commit/fa1a4395230790c89d5c468306759f4a6c5f7e0c)), closes [#22761](https://github.com/aws/aws-cdk/issues/22761) [#22521](https://github.com/aws/aws-cdk/issues/22521)
+* **integ-runner:** support snapshot diff on nested stacks ([#22881](https://github.com/aws/aws-cdk/issues/22881)) ([5b3d06d](https://github.com/aws/aws-cdk/commit/5b3d06d808d1eb110943b2c68de75ae6d5b5e624))
+* **sagemaker:** add EndpointConfig L2 construct ([#22865](https://github.com/aws/aws-cdk/issues/22865)) ([0e97c15](https://github.com/aws/aws-cdk/commit/0e97c15b49d02b44ea4916a3f29a156ca69a5a23)), closes [#2809](https://github.com/aws/aws-cdk/issues/2809)
+* **sagemaker:** add Model L2 construct ([#22549](https://github.com/aws/aws-cdk/issues/22549)) ([93915f1](https://github.com/aws/aws-cdk/commit/93915f113e656de8374c99e42135f698f0877685)), closes [#2809](https://github.com/aws/aws-cdk/issues/2809)
+
+
+### Bug Fixes
+
+* **gamelift:** restrict policy to access Script / Build content in S3 ([#22767](https://github.com/aws/aws-cdk/issues/22767)) ([c936002](https://github.com/aws/aws-cdk/commit/c93600260c86dfbc6a8f8f2399a6ac9d0f4b4d35))
+
 ## [2.50.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.1-alpha.0...v2.50.0-alpha.0) (2022-11-01)
 
 
@@ -9,7 +30,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **synthetics:** aws synthetics runtime version syn-nodejs-puppeteer-3.8 ([#22707](https://github.com/aws/aws-cdk/issues/22707)) ([228c865](https://github.com/aws/aws-cdk/commit/228c86532118b143e365b2268d06ee3a36fcf3a7))
 
-## [2.49.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.0-alpha.0...v2.49.1-alpha.0) (2022-10-31) 
+## [2.49.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.0-alpha.0...v2.49.1-alpha.0) (2022-10-31)
 
 ## [2.49.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.48.0-alpha.0...v2.49.0-alpha.0) (2022-10-27)
 

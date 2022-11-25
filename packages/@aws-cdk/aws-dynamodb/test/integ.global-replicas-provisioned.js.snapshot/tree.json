@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.108"
-        }
-      },
       "aws-cdk-dynamodb-global-replicas-provisioned": {
         "id": "aws-cdk-dynamodb-global-replicas-provisioned",
         "path": "aws-cdk-dynamodb-global-replicas-provisioned",
@@ -168,7 +160,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.140"
                 }
               },
               "SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A": {
@@ -241,7 +233,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.108"
+                  "version": "10.1.140"
                 }
               },
               "Replicaus-east-2": {
@@ -1327,15 +1319,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -1445,20 +1429,12 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.108"
+                      "version": "10.1.140"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/custom-resources.Provider",
-                  "version": "0.0.0"
-                }
-              },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -1518,7 +1494,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/caa4dd66cb4169e82811c7d27ecaca0fb0ea0a8cbe50733ab966a222631be2e0.json"
+                          "/48f5067abd509ff93057e62d487a2626ead42b38c415f6b6144c24eefbd10fdc.json"
                         ]
                       ]
                     }
@@ -1532,13 +1508,37 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.108"
+              "version": "10.1.140"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-dynamodb-global-replicas-provisioned/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-dynamodb-global-replicas-provisioned/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       }
     },

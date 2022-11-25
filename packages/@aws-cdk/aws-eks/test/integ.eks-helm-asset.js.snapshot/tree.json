@@ -12,6 +12,14 @@
             "id": "AdminRole",
             "path": "aws-cdk-eks-helm-test/AdminRole",
             "children": {
+              "ImportAdminRole": {
+                "id": "ImportAdminRole",
+                "path": "aws-cdk-eks-helm-test/AdminRole/ImportAdminRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-eks-helm-test/AdminRole/Resource",
@@ -733,9 +741,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "dd8086b05eeea461708bd66ad140d8965ddf70c0e144af871d078fdbddf0a67d.zip"
+                      "s3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.23; /opt/helm/helm 3.9",
+                    "description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -746,8 +754,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v23.KubectlV23Layer",
-              "version": "2.0.0"
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
+              "version": "2.0.27"
             }
           },
           "Cluster": {
@@ -758,6 +766,14 @@
                 "id": "Role",
                 "path": "aws-cdk-eks-helm-test/Cluster/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-cdk-eks-helm-test/Cluster/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-eks-helm-test/Cluster/Role/Resource",
@@ -845,6 +861,14 @@
                     "id": "CreationRole",
                     "path": "aws-cdk-eks-helm-test/Cluster/Resource/CreationRole",
                     "children": {
+                      "ImportCreationRole": {
+                        "id": "ImportCreationRole",
+                        "path": "aws-cdk-eks-helm-test/Cluster/Resource/CreationRole/ImportCreationRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-helm-test/Cluster/Resource/CreationRole/Resource",
@@ -995,7 +1019,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.161"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1060,6 +1084,14 @@
                     "id": "NodeGroupRole",
                     "path": "aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole",
                     "children": {
+                      "ImportNodeGroupRole": {
+                        "id": "ImportNodeGroupRole",
+                        "path": "aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
@@ -1321,6 +1353,14 @@
                     "id": "ServiceRole",
                     "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
@@ -1486,6 +1526,14 @@
                     "id": "ServiceRole",
                     "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
@@ -1655,6 +1703,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -1875,6 +1931,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
@@ -2085,6 +2149,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
@@ -2295,6 +2367,14 @@
                         "id": "Role",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
@@ -2307,15 +2387,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2425,20 +2497,12 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.161"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/custom-resources.Provider",
-                  "version": "0.0.0"
-                }
-              },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -2490,7 +2554,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/f1d631fd1ffb40c3cf9d5579a61c156a6f58564d876b2f921659eedac8bb2c85.json"
+                          "/d6d1ba3a5e916f8041c02da68c6ffa4a86b870b02df526dfde317afefb03ceeb.json"
                         ]
                       ]
                     },
@@ -2512,7 +2576,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.161"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2527,6 +2591,14 @@
                     "id": "ServiceRole",
                     "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
@@ -2838,6 +2910,14 @@
                         "id": "ServiceRole",
                         "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -3178,7 +3258,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.161"
             }
           },
           "ChartAsset": {
@@ -3242,7 +3322,7 @@
                 "path": "aws-cdk-eks-helm/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.161"
                 }
               },
               "DeployAssert": {
@@ -3288,7 +3368,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.161"
         }
       }
     },
