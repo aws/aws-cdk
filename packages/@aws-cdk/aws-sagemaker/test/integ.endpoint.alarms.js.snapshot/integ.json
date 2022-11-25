@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "integtest-endpoint-alarms/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sagemaker-endpoint-alarms"
+      ],
+      "assertionStack": "integtest-endpoint-alarms/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestendpointalarmsDefaultTestDeployAssert25A3073D"
+    }
+  }
+}
