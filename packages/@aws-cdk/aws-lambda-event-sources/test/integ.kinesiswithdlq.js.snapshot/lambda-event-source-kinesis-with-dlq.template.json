@@ -53,6 +53,7 @@
       {
        "Action": [
         "kinesis:DescribeStream",
+        "kinesis:DescribeStreamConsumer",
         "kinesis:DescribeStreamSummary",
         "kinesis:GetRecords",
         "kinesis:GetShardIterator",

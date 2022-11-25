@@ -32,6 +32,7 @@ describe('KinesisEventSource', () => {
               'kinesis:SubscribeToShard',
               'kinesis:DescribeStream',
               'kinesis:ListStreams',
+              'kinesis:DescribeStreamConsumer',
             ],
             'Effect': 'Allow',
             'Resource': {
