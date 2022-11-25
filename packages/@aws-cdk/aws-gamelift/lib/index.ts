@@ -1,3 +1,4 @@
+export * from './alias';
 export * from './content';
 export * from './build';
 export * from './script';
