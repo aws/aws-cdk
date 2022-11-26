@@ -1728,6 +1728,46 @@ describe('instance', () => {
       Engine: 'postgres',
     });
   });
+
+  test('gp3 storage type', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 500,
+      storageType: rds.StorageType.GP3,
+      storageThroughput: 500,
+      iops: 4000,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageType: 'gp3',
+      StorageThroughput: 500,
+      Iops: 4000,
+    });
+  });
+
+  test('throws with storage throughput and not GP3', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      storageType: rds.StorageType.GP2,
+      storageThroughput: 500,
+    })).toThrow(/storage throughput can only be specified with GP3 storage type/);
+  });
+
+  test('throws with a ratio of storage throughput to IOPS greater than 0.25', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 1000,
+      storageType: rds.StorageType.GP3,
+      iops: 5000,
+      storageThroughput: 2500,
+    })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
+  });
 });
 
 test.each([
