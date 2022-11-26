@@ -1,0 +1,1979 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.133"
+        }
+      },
+      "canary-one": {
+        "id": "canary-one",
+        "path": "canary-one",
+        "children": {
+          "mytestbucket": {
+            "id": "mytestbucket",
+            "path": "canary-one/mytestbucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/mytestbucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "MyCanary": {
+            "id": "MyCanary",
+            "path": "canary-one/MyCanary",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-one/MyCanary/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanary/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "mytestbucket8DC16178",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "mytestbucket8DC16178",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/integ/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/MyCanary/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "mytestbucket8DC16178"
+                          },
+                          "/integ"
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "index.handler",
+                      "script": "\n      exports.handler = async () => {\n        console.log('hello world');\n      };"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MyCanaryServiceRole593F9DD9",
+                        "Arn"
+                      ]
+                    },
+                    "name": "canary-integ",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.2",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(1 minute)"
+                    },
+                    "startCanaryAfterCreation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-synthetics.CfnCanary",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-synthetics.Canary",
+              "version": "0.0.0"
+            }
+          },
+          "MyCanaryOne": {
+            "id": "MyCanaryOne",
+            "path": "canary-one/MyCanaryOne",
+            "children": {
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "canary-one/MyCanaryOne/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryOne/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "canary-one/MyCanaryOne/ArtifactsBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "canary-one/MyCanaryOne/ArtifactsBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "MyCanaryOneArtifactsBucketDF4A487D"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:*",
+                                  "Condition": {
+                                    "Bool": {
+                                      "aws:SecureTransport": "false"
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyCanaryOneArtifactsBucketDF4A487D",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyCanaryOneArtifactsBucketDF4A487D",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-one/MyCanaryOne/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryOne/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyCanaryOneArtifactsBucketDF4A487D",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyCanaryOneArtifactsBucketDF4A487D",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "canary-one/MyCanaryOne/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "canary-one/MyCanaryOne/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "canary-one/MyCanaryOne/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/MyCanaryOne/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "MyCanaryOneArtifactsBucketDF4A487D"
+                          }
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "canary.handler",
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb.zip"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MyCanaryOneServiceRole41995561",
+                        "Arn"
+                      ]
+                    },
+                    "name": "assetcanary-one",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.2",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(5 minutes)"
+                    },
+                    "startCanaryAfterCreation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-synthetics.CfnCanary",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-synthetics.Canary",
+              "version": "0.0.0"
+            }
+          },
+          "MyCanaryTwo": {
+            "id": "MyCanaryTwo",
+            "path": "canary-one/MyCanaryTwo",
+            "children": {
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "canary-one/MyCanaryTwo/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryTwo/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "canary-one/MyCanaryTwo/ArtifactsBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "canary-one/MyCanaryTwo/ArtifactsBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "MyCanaryTwoArtifactsBucket79B179B6"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:*",
+                                  "Condition": {
+                                    "Bool": {
+                                      "aws:SecureTransport": "false"
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyCanaryTwoArtifactsBucket79B179B6",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyCanaryTwoArtifactsBucket79B179B6",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-one/MyCanaryTwo/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryTwo/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyCanaryTwoArtifactsBucket79B179B6",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyCanaryTwoArtifactsBucket79B179B6",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "canary-one/MyCanaryTwo/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "canary-one/MyCanaryTwo/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "canary-one/MyCanaryTwo/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/MyCanaryTwo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "MyCanaryTwoArtifactsBucket79B179B6"
+                          }
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "canary.handler",
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MyCanaryTwoServiceRole041E85D4",
+                        "Arn"
+                      ]
+                    },
+                    "name": "assetcanary-two",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.2",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(5 minutes)"
+                    },
+                    "startCanaryAfterCreation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-synthetics.CfnCanary",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-synthetics.Canary",
+              "version": "0.0.0"
+            }
+          },
+          "MyCanaryThree": {
+            "id": "MyCanaryThree",
+            "path": "canary-one/MyCanaryThree",
+            "children": {
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "canary-one/MyCanaryThree/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryThree/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "canary-one/MyCanaryThree/ArtifactsBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "canary-one/MyCanaryThree/ArtifactsBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "MyCanaryThreeArtifactsBucket894E857E"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:*",
+                                  "Condition": {
+                                    "Bool": {
+                                      "aws:SecureTransport": "false"
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyCanaryThreeArtifactsBucket894E857E",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyCanaryThreeArtifactsBucket894E857E",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-one/MyCanaryThree/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryThree/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyCanaryThreeArtifactsBucket894E857E",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyCanaryThreeArtifactsBucket894E857E",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "canary-one/MyCanaryThree/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "canary-one/MyCanaryThree/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "canary-one/MyCanaryThree/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/MyCanaryThree/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "MyCanaryThreeArtifactsBucket894E857E"
+                          }
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "canary.handler",
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MyCanaryThreeServiceRole68117E65",
+                        "Arn"
+                      ]
+                    },
+                    "name": "assetcanary-three",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.3",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(5 minutes)"
+                    },
+                    "startCanaryAfterCreation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-synthetics.CfnCanary",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-synthetics.Canary",
+              "version": "0.0.0"
+            }
+          },
+          "MyCanaryFour": {
+            "id": "MyCanaryFour",
+            "path": "canary-one/MyCanaryFour",
+            "children": {
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "canary-one/MyCanaryFour/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryFour/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "canary-one/MyCanaryFour/ArtifactsBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "canary-one/MyCanaryFour/ArtifactsBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "MyCanaryFourArtifactsBucketE259973B"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:*",
+                                  "Condition": {
+                                    "Bool": {
+                                      "aws:SecureTransport": "false"
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyCanaryFourArtifactsBucketE259973B",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyCanaryFourArtifactsBucketE259973B",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-one/MyCanaryFour/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryFour/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyCanaryFourArtifactsBucketE259973B",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyCanaryFourArtifactsBucketE259973B",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "canary-one/MyCanaryFour/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "canary-one/MyCanaryFour/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "canary-one/MyCanaryFour/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/MyCanaryFour/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "MyCanaryFourArtifactsBucketE259973B"
+                          }
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "canary.handler",
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MyCanaryFourServiceRoleA532F905",
+                        "Arn"
+                      ]
+                    },
+                    "name": "assetcanary-four",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.7",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(5 minutes)"
+                    },
+                    "startCanaryAfterCreation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-synthetics.CfnCanary",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-synthetics.Canary",
+              "version": "0.0.0"
+            }
+          },
+          "MyCanaryRuntime38": {
+            "id": "MyCanaryRuntime38",
+            "path": "canary-one/MyCanaryRuntime38",
+            "children": {
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "canary-one/MyCanaryRuntime38/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryRuntime38/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "canary-one/MyCanaryRuntime38/ArtifactsBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "canary-one/MyCanaryRuntime38/ArtifactsBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "MyCanaryRuntime38ArtifactsBucket66BD74F0"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:*",
+                                  "Condition": {
+                                    "Bool": {
+                                      "aws:SecureTransport": "false"
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyCanaryRuntime38ArtifactsBucket66BD74F0",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyCanaryRuntime38ArtifactsBucket66BD74F0",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-one/MyCanaryRuntime38/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyCanaryRuntime38/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyCanaryRuntime38ArtifactsBucket66BD74F0",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyCanaryRuntime38ArtifactsBucket66BD74F0",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "canary-one/MyCanaryRuntime38/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "canary-one/MyCanaryRuntime38/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "canary-one/MyCanaryRuntime38/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/MyCanaryRuntime38/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "MyCanaryRuntime38ArtifactsBucket66BD74F0"
+                          }
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "canary.handler",
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "b1b777dcb79a2fa2790059927207d10bf5f4747d6dd1516e2780726d9d6fa820.zip"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MyCanaryRuntime38ServiceRole9FE5290C",
+                        "Arn"
+                      ]
+                    },
+                    "name": "assetcanary-five",
+                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(5 minutes)"
+                    },
+                    "startCanaryAfterCreation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-synthetics.CfnCanary",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-synthetics.Canary",
+              "version": "0.0.0"
+            }
+          },
+          "MyPythonCanary": {
+            "id": "MyPythonCanary",
+            "path": "canary-one/MyPythonCanary",
+            "children": {
+              "ArtifactsBucket": {
+                "id": "ArtifactsBucket",
+                "path": "canary-one/MyPythonCanary/ArtifactsBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyPythonCanary/ArtifactsBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "aws:kms"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "canary-one/MyPythonCanary/ArtifactsBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "canary-one/MyPythonCanary/ArtifactsBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "MyPythonCanaryArtifactsBucket7AE88133"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:*",
+                                  "Condition": {
+                                    "Bool": {
+                                      "aws:SecureTransport": "false"
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyPythonCanaryArtifactsBucket7AE88133",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "MyPythonCanaryArtifactsBucket7AE88133",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-one/MyPythonCanary/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-one/MyPythonCanary/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyPythonCanaryArtifactsBucket7AE88133",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyPythonCanaryArtifactsBucket7AE88133",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "canary-one/MyPythonCanary/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "canary-one/MyPythonCanary/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "canary-one/MyPythonCanary/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-one/MyPythonCanary/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "MyPythonCanaryArtifactsBucket7AE88133"
+                          }
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "canary.handler",
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "9d00e437db1f5f8788ce938a3f00a9a1b946820e78c9b4c36207c8475db882bb.zip"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "MyPythonCanaryServiceRole41A363E1",
+                        "Arn"
+                      ]
+                    },
+                    "name": "py-canary-integ",
+                    "runtimeVersion": "syn-python-selenium-1.0",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(5 minutes)"
+                    },
+                    "startCanaryAfterCreation": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-synthetics.CfnCanary",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-synthetics.Canary",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

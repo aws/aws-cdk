@@ -7,77 +7,30 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as gamelift from '../lib';
 
 describe('build', () => {
-  const buildId = 'test-identifier';
-  const buildName = 'test-build';
-  let stack: cdk.Stack;
-
-  beforeEach(() => {
-    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    stack = new cdk.Stack(app);
-  });
-
-  describe('.fromBuildId()', () => {
-    test('with required fields', () => {
-      const build = gamelift.Build.fromBuildId(stack, 'ImportedBuild', buildId);
-
-      expect(build.buildId).toEqual(buildId);
-      expect(build.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: build }));
-    });
-  });
-
-  describe('.fromBuildAttributes()', () => {
-    test('with required attrs only', () => {
-      const build = gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { buildId });
-
-      expect(build.buildId).toEqual(buildId);
-      expect(build.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: build }));
-    });
-
-    test('with all attrs', () => {
-      const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
-      const build = gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { buildId, role });
-
-      expect(buildId).toEqual(buildId);
-      expect(build.grantPrincipal).toEqual(role);
-    });
-  });
 
   describe('new', () => {
     const localAsset = path.join(__dirname, 'my-game-build');
     const contentBucketName = 'bucketname';
+    const buildName = 'test-build';
+    let stack: cdk.Stack;
     const contentBucketAccessStatement = {
       Action: [
-        's3:GetObject*',
-        's3:GetBucket*',
-        's3:List*',
+        's3:GetObject',
+        's3:GetObjectVersion',
       ],
       Effect: 'Allow',
-      Resource: [
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              `:s3:::${contentBucketName}`,
-            ],
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            `:s3:::${contentBucketName}/content`,
           ],
-        },
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              `:s3:::${contentBucketName}/content`,
-            ],
-          ],
-        },
-      ],
+        ],
+      },
     };
     let contentBucket: s3.IBucket;
     let content: gamelift.Content;
@@ -85,6 +38,8 @@ describe('build', () => {
     let defaultProps: gamelift.BuildProps;
 
     beforeEach(() => {
+      const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      stack = new cdk.Stack(app);
       contentBucket = s3.Bucket.fromBucketName(stack, 'ContentBucket', contentBucketName);
       content = gamelift.Content.fromBucket(contentBucket, 'content');
       defaultProps = {
@@ -100,7 +55,7 @@ describe('build', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
           StorageLocation: {
             Bucket: {
-              Ref: 'AssetParameters6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7S3Bucket72AA8348',
+              Ref: 'AssetParametersb95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37S3Bucket3626B74C',
             },
           },
         });
@@ -227,6 +182,92 @@ describe('build', () => {
           content,
           buildName: incorrectBuildName,
         })).toThrow(/Build name can not be longer than 1024 characters but has 1025 characters./);
+      });
+    });
+  });
+
+  describe('test import methods', () => {
+    test('Build.fromBuildArn', () => {
+      // GIVEN
+      const stack2 = new cdk.Stack();
+
+      // WHEN
+      const imported = gamelift.Build.fromBuildArn(stack2, 'Imported', 'arn:aws:gamelift:us-east-1:123456789012:build/sample-build-id');
+
+      // THEN
+      expect(imported.buildArn).toEqual('arn:aws:gamelift:us-east-1:123456789012:build/sample-build-id');
+      expect(imported.buildId).toEqual('sample-build-id');
+    });
+
+    test('Build.fromBuildId', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const imported = gamelift.Build.fromBuildId(stack, 'Imported', 'sample-build-id');
+
+      // THEN
+      expect(stack.resolve(imported.buildArn)).toStrictEqual({
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':gamelift:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':build/sample-build-id',
+        ]],
+      });
+      expect(stack.resolve(imported.buildId)).toStrictEqual('sample-build-id');
+    });
+  });
+
+  describe('Build.fromBuildAttributes()', () => {
+    let stack: cdk.Stack;
+    const buildId = 'build-test-identifier';
+    const buildArn = `arn:aws:gamelift:build-region:123456789012:build/${buildId}`;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('', () => {
+      test('with required attrs only', () => {
+        const importedFleet = gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { buildArn });
+
+        expect(importedFleet.buildId).toEqual(buildId);
+        expect(importedFleet.buildArn).toEqual(buildArn);
+        expect(importedFleet.env.account).toEqual('123456789012');
+        expect(importedFleet.env.region).toEqual('build-region');
+      });
+
+      test('with missing attrs', () => {
+        expect(() => gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { }))
+          .toThrow(/Either buildId or buildArn must be provided in BuildAttributes/);
+      });
+
+      test('with invalid ARN', () => {
+        expect(() => gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { buildArn: 'arn:aws:gamelift:build-region:123456789012:build' }))
+          .toThrow(/No build identifier found in ARN: 'arn:aws:gamelift:build-region:123456789012:build'/);
+      });
+    });
+
+    describe('for an build in a different account and region', () => {
+      let build: gamelift.IBuild;
+
+      beforeEach(() => {
+        build = gamelift.Build.fromBuildAttributes(stack, 'ImportedBuild', { buildArn });
+      });
+
+      test("the build's region is taken from the ARN", () => {
+        expect(build.env.region).toBe('build-region');
+      });
+
+      test("the build's account is taken from the ARN", () => {
+        expect(build.env.account).toBe('123456789012');
       });
     });
   });

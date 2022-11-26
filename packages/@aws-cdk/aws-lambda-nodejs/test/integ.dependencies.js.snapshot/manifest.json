@@ -1,0 +1,238 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "cdk-integ-lambda-nodejs-dependencies.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-lambda-nodejs-dependencies.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-lambda-nodejs-dependencies": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-nodejs-dependencies.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ae67d6de6aad9dabd1d24af0fdf8fa677b1aa04d23d84398b053e1768b70e741.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-lambda-nodejs-dependencies.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-nodejs-dependencies.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-lambda-nodejs-dependencies/external/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "externalServiceRole85A00A90"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies/external/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "external068F12D1"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies/Exports/Output{\"Ref\":\"external068F12D1\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefexternal068F12D12C72A375"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-nodejs-dependencies"
+    },
+    "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/67bbaef5f181193ab4a0b3f9a75ba294f02b6e28a2a24e33479056eef65b4525.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "externalsdkv3ServiceRole9C835365"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "externalsdkv3B69F9D99"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/Exports/Output{\"Ref\":\"externalsdkv3B69F9D99\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3"
+    },
+    "LambdaDependenciesDefaultTestDeployAssert259C940B.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LambdaDependenciesDefaultTestDeployAssert259C940B.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LambdaDependenciesDefaultTestDeployAssert259C940B": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaDependenciesDefaultTestDeployAssert259C940B.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4efc8f1a2c0b0f1f18d1cb27a1d752a4cd6b71b6676f0ee88ebdab71a7bdaffc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LambdaDependenciesDefaultTestDeployAssert259C940B.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-integ-lambda-nodejs-dependencies",
+        "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3",
+        "LambdaDependenciesDefaultTestDeployAssert259C940B.assets"
+      ],
+      "metadata": {
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke5050b1f640cc49956b59f2a71febe95c/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke5050b1f640cc49956b59f2a71febe95c"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke5050b1f640cc49956b59f2a71febe95c/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke5050b1f640cc49956b59f2a71febe95cInvokeB4FBC029"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke5050b1f640cc49956b59f2a71febe95c/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke5050b1f640cc49956b59f2a71febe95c"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke7d0602e4b9f40ae057f935d874b5f971"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke7d0602e4b9f40ae057f935d874b5f971Invoke970717DE"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke7d0602e4b9f40ae057f935d874b5f971"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LambdaDependencies/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LambdaDependencies/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

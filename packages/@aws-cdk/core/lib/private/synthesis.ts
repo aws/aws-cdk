@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
 import { Annotations } from '../annotations';
+import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
@@ -21,6 +22,8 @@ export interface SynthesisOptions extends StageSynthesisOptions {
 }
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+  // add the TreeMetadata resource to the App first
+  injectTreeMetadata(root);
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
   synthNestedAssemblies(root, options);
 
@@ -163,6 +166,22 @@ function injectMetadataResources(root: IConstruct) {
     if (construct.node.tryFindChild(CDKMetadata)) { return; }
 
     new MetadataResource(construct, CDKMetadata);
+  });
+}
+
+/**
+ * Find the root App and add the TreeMetadata resource (if enabled).
+ *
+ * There is no good generic place to do this. Can't do it in the constructor
+ * (because adding a child construct makes it impossible to set context on the
+ * node), and the generic prepare phase is deprecated.
+ */
+function injectTreeMetadata(root: IConstruct) {
+  visit(root, 'post', construct => {
+    if (!App.isApp(construct) || !construct._treeMetadata) return;
+    const CDKTreeMetadata = 'Tree';
+    if (construct.node.tryFindChild(CDKTreeMetadata)) return;
+    new TreeMetadata(construct);
   });
 }
 
