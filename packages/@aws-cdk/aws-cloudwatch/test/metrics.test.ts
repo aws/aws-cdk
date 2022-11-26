@@ -286,6 +286,7 @@ describe('Metrics', () => {
     // Check single statistics
     checkParsingSingle('p9',     'p',  'percentile',     9);
     checkParsingSingle('p99',    'p',  'percentile',     99);
+    checkParsingSingle('P99',    'p',  'percentile',     99);
     checkParsingSingle('p99.99', 'p',  'percentile',     99.99);
     checkParsingSingle('tm99',   'tm', 'trimmedMean',    99);
     checkParsingSingle('wm99',   'wm', 'winsorizedMean', 99);
@@ -303,6 +304,7 @@ describe('Metrics', () => {
     checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, true,  'tm90',    10,    90);
 
     // Check every case
+    checkParsingPair('tm(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);
     checkParsingPair('TM(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);
     checkParsingPair('TM(:90%)',            'TM', 'trimmedMean', true,  true,  'tm90',          undefined,   90);
     checkParsingPair('TM(10%:)',            'TM', 'trimmedMean', true,  false, undefined,       10,          undefined);

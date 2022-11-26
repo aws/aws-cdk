@@ -269,6 +269,25 @@ describe('Alarm', () => {
     });
   });
 
+  test('can use a generic pair string for extended statistic to make alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: 'TM(10%:90%)',
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Statistic: Match.absent(),
+      ExtendedStatistic: 'TM(10%:90%)',
+    });
+  });
+
   test('metric warnings are added to Alarm', () => {
     const stack = new Stack(undefined, 'MyStack');
     const m = new MathExpression({ expression: 'oops' });

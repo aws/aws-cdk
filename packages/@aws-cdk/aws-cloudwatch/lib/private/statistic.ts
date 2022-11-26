@@ -51,6 +51,9 @@ export interface TrimmedSumStatistic extends PairStatistic {
 function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleStatistic, 'statName'> | undefined {
   const prefixLower = prefix.toLowerCase();
 
+  // Allow `P99` uppercase
+  statistic = statistic.toLowerCase();
+
   if (!statistic.startsWith(prefixLower)) {
     return undefined;
   }
@@ -74,6 +77,9 @@ function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleSta
 
 function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatistic, 'statName'> | undefined {
   const prefixUpper = prefix.toUpperCase();
+
+  // Allow `tm(10%:90%)` lowercase
+  statistic = statistic.toUpperCase();
 
   if (!statistic.startsWith(prefixUpper)) {
     return undefined;
@@ -277,6 +283,16 @@ export function parseStatistic(
 }
 
 export function normalizeStatistic(parsed: ReturnType<typeof parseStatistic>): string {
+  /* eslint-disable no-console */
+  console.log('normalizeStatistic');
+  console.log('normalizeStatistic');
+  console.log('normalizeStatistic');
+  console.log('normalizeStatistic');
+  console.log('normalizeStatistic');
+  console.log('normalizeStatistic');
+  console.log('normalizeStatistic');
+  console.log(parsed);
+  console.log(parsed.type);
   if (parsed.type === 'simple' || parsed.type === 'generic') {
     return parsed.statistic;
   } else if (parsed.type === 'single') {
