@@ -205,7 +205,7 @@ test('Can add new groups to policy', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'MyVpc', {
-    cidr: '10.0.0.0/16',
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
   // create some rules
   const statelessRule1 = new NetFW.StatelessRule({

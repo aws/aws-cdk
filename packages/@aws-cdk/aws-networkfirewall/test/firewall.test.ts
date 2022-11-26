@@ -8,7 +8,7 @@ test('Default property', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'MyTestVpc', {
-    cidr: '10.0.0.0/16',
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
 
   // WHEN
@@ -44,7 +44,7 @@ test('Can get firewall name', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'MyTestVpc', {
-    cidr: '10.0.0.0/16',
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
   const policy = new NetFW.FirewallPolicy(stack, 'MyNetworkFirewallPolicy', {
     statelessDefaultActions: [NetFW.StatelessStandardAction.DROP],
@@ -93,7 +93,7 @@ test('firewall name is verified', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'MyTestVpc', {
-    cidr: '10.0.0.0/16',
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
   const policy = new NetFW.FirewallPolicy(stack, 'MyNetworkFirewallPolicy', {
     statelessDefaultActions: [NetFW.StatelessStandardAction.DROP],
@@ -115,7 +115,7 @@ test('Can provide Policy by Arn', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'MyTestVpc', {
-    cidr: '10.0.0.0/16',
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
   const policy = NetFW.FirewallPolicy.fromFirewallPolicyArn(stack, 'MyNetworkFirewallPolicy',
     'arn:aws:network-firewall:us-east-1:012345678910:firewall-policy/MyNetworkFirewallPolicy645720A6',
@@ -150,7 +150,7 @@ test('Can provide full props', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'MyTestVpc', {
-    cidr: '10.0.0.0/16',
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   });
   const policy = new NetFW.FirewallPolicy(stack, 'MyNetworkFirewallPolicy', {
     statelessDefaultActions: [NetFW.StatelessStandardAction.DROP],
