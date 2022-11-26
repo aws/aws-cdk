@@ -22,7 +22,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   public readonly roleArn: string;
   public readonly roleName: string;
   private readonly attachedPolicies = new AttachedPolicies();
-  private readonly defaultPolicyName?: string;
+  private readonly defaultPolicyName: string;
   private defaultPolicy?: Policy;
 
   constructor(scope: Construct, id: string, props: ImportedRoleProps) {
@@ -33,7 +33,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.roleArn = props.roleArn;
     this.roleName = props.roleName;
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
-    this.defaultPolicyName = props.defaultPolicyName;
+    this.defaultPolicyName = props.defaultPolicyName ?? 'Policy';
     this.principalAccount = props.account;
   }
 
@@ -43,7 +43,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
-      this.defaultPolicy = new Policy(this, this.defaultPolicyName ?? 'Policy');
+      this.defaultPolicy = new Policy(this, this.defaultPolicyName);
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
