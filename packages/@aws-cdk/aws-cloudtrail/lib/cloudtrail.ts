@@ -127,6 +127,13 @@ export interface TrailProps {
    * @default - false
    */
   readonly isOrganizationTrail?: boolean
+
+  /**
+   * A JSON string that contains the insight types you want to log on a trail.
+   *
+   * @default - No Value.
+   */
+  readonly insightSelectors?: InsightSelector[]
 }
 
 /**
@@ -156,6 +163,24 @@ export enum ReadWriteType {
    * No events
    */
   NONE = 'None',
+}
+
+/**
+ * Util element for InsightSelector
+ */
+export class Insight {
+
+  /**
+   * The type of insights to log on a trail. (API Call Rate)
+   */
+  public static readonly TYPE_API_CALL_RATE = 'ApiCallRateInsight'
+
+  /**
+   * The type of insights to log on a trail. (API Error Rate)
+   */
+  public static readonly TYPE_API_ERROR_RATE = 'ApiErrorRateInsight'
+
+  protected constructor(public readonly value: string) {}
 }
 
 /**
@@ -298,6 +323,7 @@ export class Trail extends Resource {
       snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
       isOrganizationTrail: props.isOrganizationTrail,
+      insightSelectors: props.insightSelectors,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
@@ -501,4 +527,16 @@ interface EventSelector {
 interface EventSelectorData {
   readonly type: string;
   readonly values: string[];
+}
+
+/**
+ * A JSON string that contains a list of insight types that are logged on a trail.
+ */
+export interface InsightSelector {
+  /**
+   * The type of insights to log on a trail.
+   *
+   * @default - No Value.
+   */
+  readonly insightType?: string;
 }
