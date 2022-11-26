@@ -1,4 +1,5 @@
-import { Resource, Token, TokenComparison, Annotations } from '@aws-cdk/core';
+import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '@aws-cdk/core';
+import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
@@ -33,7 +34,11 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.roleArn = props.roleArn;
     this.roleName = props.roleName;
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
-    this.defaultPolicyName = props.defaultPolicyName ?? 'Policy';
+
+    const defaultDefaultPolicyName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME)
+        ? `Policy${Names.uniqueId(this)}`
+        : 'Policy';
+    this.defaultPolicyName = props.defaultPolicyName ?? defaultDefaultPolicyName;
     this.principalAccount = props.account;
   }
 
