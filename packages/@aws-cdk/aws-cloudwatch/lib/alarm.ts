@@ -1,5 +1,5 @@
 import { ArnFormat, Lazy, Stack, Token, Annotations } from '@aws-cdk/core';
-import { normalizeStatistic, parseStatistic } from './private/statistic';
+import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
@@ -9,6 +9,7 @@ import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-type
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
+import { normalizeStatistic, parseStatistic } from './private/statistic';
 
 /**
  * Properties for Alarms

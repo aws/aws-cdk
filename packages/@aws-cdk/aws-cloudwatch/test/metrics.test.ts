@@ -258,10 +258,10 @@ describe('Metrics', () => {
       statPrefix: string,
       statName: string,
       isPercent: boolean,
-      lower?: number,
-      upper?: number,
-      asSingleStatStr?: string,
       canBeSingleStat: boolean,
+      asSingleStatStr?: string,
+      lower?: number,
+      upper?: number
     ) => {
       const parsed = parseStatistic(statistic);
       expect(parsed.type).toEqual('pair');
@@ -291,31 +291,31 @@ describe('Metrics', () => {
     checkParsingSingle('ts99',   'ts', 'trimmedSum',     99);
 
     // Check all pair statistics
-    checkParsingPair('TM(10%:90%)',       'TM', 'trimmedMean',    true, 10,    90,    undefined, false);
-    checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean',    true, 10.99, 90.99, undefined, false);
-    checkParsingPair('WM(10%:90%)',       'WM', 'winsorizedMean', true, 10,    90,    undefined, false);
-    checkParsingPair('TC(10%:90%)',       'TC', 'trimmedCount',   true, 10,    90,    undefined, false);
-    checkParsingPair('TS(10%:90%)',       'TS', 'trimmedSum',     true, 10,    90,    undefined, false);
+    checkParsingPair('TM(10%:90%)',       'TM', 'trimmedMean',    true, false, undefined, 10,    90);
+    checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean',    true, false, undefined, 10.99, 90.99);
+    checkParsingPair('WM(10%:90%)',       'WM', 'winsorizedMean', true, false, undefined, 10,    90);
+    checkParsingPair('TC(10%:90%)',       'TC', 'trimmedCount',   true, false, undefined, 10,    90);
+    checkParsingPair('TS(10%:90%)',       'TS', 'trimmedSum',     true, false, undefined, 10,    90);
 
     // Check can be represented as a single statistic
-    checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, 10,    90,    'tm90',    true);
+    checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, true,  'tm90',    10,    90);
 
     // Check every case
-    checkParsingPair('TM(10%:90%)',         'TM', 'trimmedMean', true,  10,          90,          undefined,       false);
-    checkParsingPair('TM(:90%)',            'TM', 'trimmedMean', true,  undefined,   90,          'tm90',          true);
-    checkParsingPair('TM(10%:)',            'TM', 'trimmedMean', true,  10,          undefined,   undefined,       false);
-    checkParsingPair('TM(10:1500)',         'TM', 'trimmedMean', false, 10,          1500,        undefined,       false);
-    checkParsingPair('TM(10:)',             'TM', 'trimmedMean', false, 10,          undefined,   undefined,       false);
-    checkParsingPair('TM(:5000)',           'TM', 'trimmedMean', false, undefined,   5000,        undefined,       false);
-    checkParsingPair('TM(0.123456789:)',    'TM', 'trimmedMean', false, 0.123456789, undefined,   undefined,       false);
-    checkParsingPair('TM(0.123456789:)',    'TM', 'trimmedMean', false, 0.123456789, undefined,   undefined,       false);
-    checkParsingPair('TM(:0.123456789)',    'TM', 'trimmedMean', false, undefined,   0.123456789, undefined,       false);
-    checkParsingPair('TM(0.123456789%:)',   'TM', 'trimmedMean', true,  0.123456789, undefined,   undefined,       false);
-    checkParsingPair('TM(:0.123456789%)',   'TM', 'trimmedMean', true,  undefined,   0.123456789, 'tm0.123456789', true);
-    checkParsingPair('TM(0.123:0.4543)',    'TM', 'trimmedMean', false, 0.123,       0.4543,      undefined,       false);
-    checkParsingPair('TM(0.123%:0.4543%)',  'TM', 'trimmedMean', true,  0.123,       0.4543,      undefined,       false);
-    checkParsingPair('TM(0.1000%:0.1000%)', 'TM', 'trimmedMean', true,  0.1,         0.1,         undefined,       false);
-    checkParsingPair('TM(0.9999:100.9999)', 'TM', 'trimmedMean', false, 0.9999,      100.9999,    undefined,       false);
+    checkParsingPair('TM(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);
+    checkParsingPair('TM(:90%)',            'TM', 'trimmedMean', true,  true,  'tm90',          undefined,   90);
+    checkParsingPair('TM(10%:)',            'TM', 'trimmedMean', true,  false, undefined,       10,          undefined);
+    checkParsingPair('TM(10:1500)',         'TM', 'trimmedMean', false, false, undefined,       10,          1500);
+    checkParsingPair('TM(10:)',             'TM', 'trimmedMean', false, false, undefined,       10,          undefined);
+    checkParsingPair('TM(:5000)',           'TM', 'trimmedMean', false, false, undefined,       undefined,   5000);
+    checkParsingPair('TM(0.123456789:)',    'TM', 'trimmedMean', false, false, undefined,       0.123456789, undefined);
+    checkParsingPair('TM(0.123456789:)',    'TM', 'trimmedMean', false, false, undefined,       0.123456789, undefined);
+    checkParsingPair('TM(:0.123456789)',    'TM', 'trimmedMean', false, false, undefined,       undefined,   0.123456789);
+    checkParsingPair('TM(0.123456789%:)',   'TM', 'trimmedMean', true,  false, undefined,       0.123456789, undefined);
+    checkParsingPair('TM(:0.123456789%)',   'TM', 'trimmedMean', true,  true,  'tm0.123456789', undefined,   0.123456789);
+    checkParsingPair('TM(0.123:0.4543)',    'TM', 'trimmedMean', false, false, undefined,       0.123,       0.4543);
+    checkParsingPair('TM(0.123%:0.4543%)',  'TM', 'trimmedMean', true,  false, undefined,       0.123,       0.4543);
+    checkParsingPair('TM(0.1000%:0.1000%)', 'TM', 'trimmedMean', true,  false, undefined,       0.1,         0.1);
+    checkParsingPair('TM(0.9999:100.9999)', 'TM', 'trimmedMean', false, false, undefined,       0.9999,      100.9999);
 
     // FIXME: Change these to expect throw if code is changed to throw on parse fail
     // Check invalid statistics

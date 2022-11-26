@@ -68,6 +68,8 @@ function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleSta
       value: parseFloat(r[1]),
     };
   }
+
+  return undefined;
 }
 
 function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatistic, 'statName'> | undefined {
