@@ -36,8 +36,8 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     const defaultDefaultPolicyName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME)
-        ? `Policy${Names.uniqueId(this)}`
-        : 'Policy';
+      ? `Policy${Names.uniqueId(this)}`
+      : 'Policy';
     this.defaultPolicyName = props.defaultPolicyName ?? defaultDefaultPolicyName;
     this.principalAccount = props.account;
   }

@@ -56,15 +56,15 @@ describe('IAM Role.fromRoleArn', () => {
 
       describe('future flag: @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName', () => {
         test('the same role imported in different stacks has different default policy names', () => {
-          const app = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
-          const roleStack1 = new Stack(app, 'RoleStack1');
+          const appWithFeatureFlag = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+          const roleStack1 = new Stack(appWithFeatureFlag, 'RoleStack1');
           const importedRoleInStack1 = Role.fromRoleArn(roleStack1, 'ImportedRole',
-              `arn:aws:iam::${roleAccount}:role/${roleName}`);
+            `arn:aws:iam::${roleAccount}:role/${roleName}`);
           importedRoleInStack1.addToPolicy(somePolicyStatement());
 
-          const roleStack2 = new Stack(app, 'RoleStack2');
+          const roleStack2 = new Stack(appWithFeatureFlag, 'RoleStack2');
           const importedRoleInStack2 = Role.fromRoleArn(roleStack2, 'ImportedRole',
-              `arn:aws:iam::${roleAccount}:role/${roleName}`);
+            `arn:aws:iam::${roleAccount}:role/${roleName}`);
           importedRoleInStack2.addToPolicy(somePolicyStatement());
 
           const stack1PolicyNameCapture = new Capture();
@@ -75,7 +75,7 @@ describe('IAM Role.fromRoleArn', () => {
 
           expect(stack1PolicyNameCapture.asString()).not.toBe(stack2PolicyNameCapture.asString());
         });
-      })
+      });
 
       describe('then attaching a Policy to it', () => {
         let policyStack: Stack;
