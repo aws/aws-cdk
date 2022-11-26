@@ -166,6 +166,60 @@ below).
 > happen to know the Metric you want to alarm on makes sense as a rate
 > (`Average`) you can always choose to change the statistic.
 
+### Available Aggregation Statistics
+
+For your metrics aggregation, you can use the following statistics:
+
+| Statistic                |    Short format     |                 Long format                  | Enum name                |
+| ------------------------ | :-----------------: | :------------------------------------------: | ------------------------ |
+| SampleCount (n)          |         ❌          |                      ❌                      | `Statistic.SAMPLE_COUNT` |
+| Average (avg)            |         ❌          |                      ❌                      | `Statistic.AVERAGE`      |
+| Sum                      |         ❌          |                      ❌                      | `Statistic.SUM`          |
+| Minimum (min)            |         ❌          |                      ❌                      | `Statistic.MINIMUM`      |
+| Maximum (max)            |         ❌          |                      ❌                      | `Statistic.MAXIMUM`      |
+| Interquartile mean (IQM) |         ❌          |                      ❌                      | `Statistic.IQM`          |
+| Percentile (p)           |        `p99`        |                      ❌                      | `Statistic.P...`         |
+| Winsorized mean (WM)     | `wm99` = `WM(:99%)` | `WM(x:y) \| WM(x%:y%) \| WM(x%:) \| WM(:y%)` | `Statistic.WM...`        |
+| Trimmed count (TC)       | `tc99` = `TC(:99%)` | `TC(x:y) \| TC(x%:y%) \| TC(x%:) \| TC(:y%)` | `Statistic.TC...`        |
+| Trimmed sum (TS)         | `ts99` = `TS(:99%)` | `TS(x:y) \| TS(x%:y%) \| TS(x%:) \| TS(:y%)` | `Statistic.TS...`        |
+| Percentile rank (PR)     |         ❌          |        `PR(x:y) \| PR(x:) \| PR(:y)`         | ❌                       |
+
+The most common values are provided in the `cloudwatch.Statistic` enum. You can provide any string if your statistic is not in the enum.
+
+Read more at [CloudWatch statistics definitions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html).
+
+```ts
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: cloudwatch.Statistic.SAMPLE_COUNT,
+  period: cloudwatch.Duration.minutes(5)
+});
+
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: cloudwatch.Statistic.P99,
+  period: cloudwatch.Duration.minutes(5)
+});
+
+new cloudwatch.Metric({
+  namespace: 'AWS/Route53',
+  metricName: 'DNSQueries',
+  dimensionsMap: {
+    HostedZoneId: hostedZone.hostedZoneId
+  },
+  statistic: 'TS(7.5%:90%)',
+  period: cloudwatch.Duration.minutes(5)
+});
+```
+
 ### Labels
 
 Metric labels are displayed in the legend of graphs that include the metrics.
