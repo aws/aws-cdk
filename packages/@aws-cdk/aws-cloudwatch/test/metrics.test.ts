@@ -281,6 +281,8 @@ describe('Metrics', () => {
     expect(parseStatistic(Statistic.MAXIMUM).type).toEqual('simple');
     expect(parseStatistic(Statistic.IQM).type).toEqual('simple');
 
+    /* eslint-disable no-multi-spaces */
+
     // Check single statistics
     checkParsingSingle('p9',     'p',  'percentile',     9);
     checkParsingSingle('p99',    'p',  'percentile',     99);
@@ -289,17 +291,17 @@ describe('Metrics', () => {
     checkParsingSingle('wm99',   'wm', 'winsorizedMean', 99);
     checkParsingSingle('tc99',   'tc', 'trimmedCount',   99);
     checkParsingSingle('ts99',   'ts', 'trimmedSum',     99);
-
+    
     // Check all pair statistics
     checkParsingPair('TM(10%:90%)',       'TM', 'trimmedMean',    true, false, undefined, 10,    90);
     checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean',    true, false, undefined, 10.99, 90.99);
     checkParsingPair('WM(10%:90%)',       'WM', 'winsorizedMean', true, false, undefined, 10,    90);
     checkParsingPair('TC(10%:90%)',       'TC', 'trimmedCount',   true, false, undefined, 10,    90);
     checkParsingPair('TS(10%:90%)',       'TS', 'trimmedSum',     true, false, undefined, 10,    90);
-
+    
     // Check can be represented as a single statistic
     checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, true,  'tm90',    10,    90);
-
+    
     // Check every case
     checkParsingPair('TM(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);
     checkParsingPair('TM(:90%)',            'TM', 'trimmedMean', true,  true,  'tm90',          undefined,   90);
@@ -317,6 +319,8 @@ describe('Metrics', () => {
     checkParsingPair('TM(0.1000%:0.1000%)', 'TM', 'trimmedMean', true,  false, undefined,       0.1,         0.1);
     checkParsingPair('TM(0.9999:100.9999)', 'TM', 'trimmedMean', false, false, undefined,       0.9999,      100.9999);
 
+    /* eslint-enable no-multi-spaces */
+    
     // FIXME: Change these to expect throw if code is changed to throw on parse fail
     // Check invalid statistics
     expect(parseStatistic('p99.99.99').type).toEqual('generic');
