@@ -261,7 +261,7 @@ describe('Metrics', () => {
       canBeSingleStat: boolean,
       asSingleStatStr?: string,
       lower?: number,
-      upper?: number
+      upper?: number,
     ) => {
       const parsed = parseStatistic(statistic);
       expect(parsed.type).toEqual('pair');
@@ -291,17 +291,17 @@ describe('Metrics', () => {
     checkParsingSingle('wm99',   'wm', 'winsorizedMean', 99);
     checkParsingSingle('tc99',   'tc', 'trimmedCount',   99);
     checkParsingSingle('ts99',   'ts', 'trimmedSum',     99);
-    
+
     // Check all pair statistics
     checkParsingPair('TM(10%:90%)',       'TM', 'trimmedMean',    true, false, undefined, 10,    90);
     checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean',    true, false, undefined, 10.99, 90.99);
     checkParsingPair('WM(10%:90%)',       'WM', 'winsorizedMean', true, false, undefined, 10,    90);
     checkParsingPair('TC(10%:90%)',       'TC', 'trimmedCount',   true, false, undefined, 10,    90);
     checkParsingPair('TS(10%:90%)',       'TS', 'trimmedSum',     true, false, undefined, 10,    90);
-    
+
     // Check can be represented as a single statistic
     checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, true,  'tm90',    10,    90);
-    
+
     // Check every case
     checkParsingPair('TM(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);
     checkParsingPair('TM(:90%)',            'TM', 'trimmedMean', true,  true,  'tm90',          undefined,   90);
@@ -320,7 +320,7 @@ describe('Metrics', () => {
     checkParsingPair('TM(0.9999:100.9999)', 'TM', 'trimmedMean', false, false, undefined,       0.9999,      100.9999);
 
     /* eslint-enable no-multi-spaces */
-    
+
     // FIXME: Change these to expect throw if code is changed to throw on parse fail
     // Check invalid statistics
     expect(parseStatistic('p99.99.99').type).toEqual('generic');
