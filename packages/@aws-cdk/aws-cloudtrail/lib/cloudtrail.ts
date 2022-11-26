@@ -133,7 +133,7 @@ export interface TrailProps {
    *
    * @default - No Value.
    */
-  readonly insightSelectors?: InsightSelector[]
+  readonly insightTypes?: InsightType[]
 }
 
 /**
@@ -168,17 +168,16 @@ export enum ReadWriteType {
 /**
  * Util element for InsightSelector
  */
-export class Insight {
-
+export class InsightType {
   /**
    * The type of insights to log on a trail. (API Call Rate)
    */
-  public static readonly TYPE_API_CALL_RATE = 'ApiCallRateInsight'
+  public static readonly API_CALL_RATE = new InsightType('ApiCallRateInsight');
 
   /**
    * The type of insights to log on a trail. (API Error Rate)
    */
-  public static readonly TYPE_API_ERROR_RATE = 'ApiErrorRateInsight'
+  public static readonly API_ERROR_RATE = new InsightType('ApiErrorRateInsight');
 
   protected constructor(public readonly value: string) {}
 }
@@ -238,6 +237,7 @@ export class Trail extends Resource {
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
   private topic: sns.ITopic | undefined;
+  private insightTypeValues: InsightSelector[] | undefined;
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
@@ -308,6 +308,12 @@ export class Trail extends Resource {
       throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
     }
 
+    if (props.insightTypes) {
+      this.insightTypeValues = props.insightTypes.map(function(t) {
+        return { insightType: t.value };
+      });
+    }
+
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
     const trail = new CfnTrail(this, 'Resource', {
       isLogging: true,
@@ -323,7 +329,7 @@ export class Trail extends Resource {
       snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
       isOrganizationTrail: props.isOrganizationTrail,
-      insightSelectors: props.insightSelectors,
+      insightSelectors: this.insightTypeValues,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
@@ -529,14 +535,6 @@ interface EventSelectorData {
   readonly values: string[];
 }
 
-/**
- * A JSON string that contains a list of insight types that are logged on a trail.
- */
-export interface InsightSelector {
-  /**
-   * The type of insights to log on a trail.
-   *
-   * @default - No Value.
-   */
+interface InsightSelector {
   readonly insightType?: string;
 }

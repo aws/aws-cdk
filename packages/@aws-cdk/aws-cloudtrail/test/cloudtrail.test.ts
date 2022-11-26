@@ -7,7 +7,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
-import { ManagementEventSources, ReadWriteType, Trail, Insight } from '../lib';
+import { ManagementEventSources, ReadWriteType, Trail, InsightType } from '../lib';
 
 const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
@@ -706,7 +706,7 @@ describe('cloudtrail', () => {
     test('no properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightSelectors: [],
+        insightTypes: [],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
         InsightSelectors: [],
@@ -715,10 +715,8 @@ describe('cloudtrail', () => {
     test('API Call Rate properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightSelectors: [
-          {
-            insightType: Insight.TYPE_API_CALL_RATE,
-          },
+        insightTypes: [
+          InsightType.API_CALL_RATE,
         ],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
@@ -727,13 +725,11 @@ describe('cloudtrail', () => {
         }],
       });
     });
-    test('API Call Rate properties', () => {
+    test('API Error Rate properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightSelectors: [
-          {
-            insightType: Insight.TYPE_API_ERROR_RATE,
-          },
+        insightTypes: [
+          InsightType.API_ERROR_RATE,
         ],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
@@ -745,13 +741,9 @@ describe('cloudtrail', () => {
     test('duplicate properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightSelectors: [
-          {
-            insightType: Insight.TYPE_API_CALL_RATE,
-          },
-          {
-            insightType: Insight.TYPE_API_CALL_RATE,
-          },
+        insightTypes: [
+          InsightType.API_CALL_RATE,
+          InsightType.API_CALL_RATE,
         ],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
@@ -768,13 +760,9 @@ describe('cloudtrail', () => {
     test('ALL properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightSelectors: [
-          {
-            insightType: Insight.TYPE_API_CALL_RATE,
-          },
-          {
-            insightType: Insight.TYPE_API_ERROR_RATE,
-          },
+        insightTypes: [
+          InsightType.API_CALL_RATE,
+          InsightType.API_ERROR_RATE,
         ],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {

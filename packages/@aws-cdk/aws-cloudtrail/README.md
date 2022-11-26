@@ -205,13 +205,9 @@ Insights selector values can be `ApiCallRateInsight`, `ApiErrorRateInsight`, or 
 
 ```ts
 new Trail(stack, 'Insights', {
-  insightSelectors: [
-    {
-      insightType: Insight.TYPE_API_CALL_RATE,
-    },
-    {
-      insightType: Insight.TYPE_API_ERROR_RATE,
-    },
-  ],
+    insightTypes: [
+      InsightType.API_CALL_RATE,
+      InsightType.API_ERROR_RATE,
+    ],
 });
 ```
