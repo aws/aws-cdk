@@ -4,9 +4,9 @@ import { Construct, IConstruct } from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
-import { normalizeStatistic, parseStatistic } from './private/statistic';
+import { normalizeRawStringStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
 
-export type DimensionHash = {[dim: string]: any};
+export type DimensionHash = { [dim: string]: any };
 
 export type DimensionsMap = { [dim: string]: string };
 
@@ -197,13 +197,13 @@ export interface MathExpressionOptions {
   readonly searchAccount?: string;
 
   /**
-    * Region to evaluate search expressions within.
-    *
-    * Specifying a searchRegion has no effect to the region used
-    * for metrics within the expression (passed via usingMetrics).
-    *
-    * @default - Deployment region.
-    */
+   * Region to evaluate search expressions within.
+   *
+   * Specifying a searchRegion has no effect to the region used
+   * for metrics within the expression (passed via usingMetrics).
+   *
+   * @default - Deployment region.
+   */
   readonly searchRegion?: string;
 }
 
@@ -295,7 +295,8 @@ export class Metric implements IMetric {
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || 'Average');
+    // FIXME: this actually doesn't throw if it's not a valid stat, it just returns the raw input string
+    this.statistic = normalizeRawStringStatistic(props.statistic || 'Average');
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
@@ -389,14 +390,22 @@ export class Metric implements IMetric {
       throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
-    const stat = parseStatistic(metricConfig.metricStat.statistic);
+    const parsed = parseStatistic(metricConfig.metricStat.statistic);
+
+    let extendedStatistic: string | undefined = undefined;
+    if (parsed.type === 'single') {
+      extendedStatistic = singleStatisticToString(parsed);
+    } else if (parsed.type === 'pair') {
+      extendedStatistic = pairStatisticToString(parsed);
+    }
+
     return {
       dimensions: metricConfig.metricStat.dimensions,
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       period: metricConfig.metricStat.period.toSeconds(),
-      statistic: stat.type === 'simple' ? stat.statistic : undefined,
-      extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
+      statistic: parsed.type === 'simple' ? parsed.statistic : undefined,
+      extendedStatistic,
       unit: this.unit,
     };
   }
