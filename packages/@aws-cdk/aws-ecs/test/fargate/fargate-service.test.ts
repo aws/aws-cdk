@@ -14,7 +14,7 @@ import { App } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectProps } from '../../lib/base/base-service';
 import { addDefaultCapacityProvider } from '../util';
 
 describe('fargate service', () => {
@@ -955,6 +955,420 @@ describe('fargate service', () => {
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
+      });
+    });
+  });
+
+  describe('when enabling service connect', () => {
+    describe('when validating service connect configurations', () => {
+
+      let service: ecs.FargateService;
+
+      beforeEach(() => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        });
+
+        service = new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+        });
+      });
+
+      test('throws an exception if serviceconnectservice.port is a string and it does not exists on the task definition', () => {
+        // GIVEN
+        const config: ServiceConnectProps = {
+          services: [
+            {
+              portMappingName: '100',
+              dnsName: 'backend.prod',
+            },
+          ],
+          namespace: 'test namespace',
+        };
+        expect(() => {
+          service.enableServiceConnect(config);
+        }).toThrowError(/Port Mapping '100' does not exist on the task definition./);
+      });
+
+      test('throws an exception when adding multiple services without different discovery names', () => {
+        // GIVEN
+        service.taskDefinition.addContainer('mobile', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          portMappings: [
+            {
+              containerPort: 100,
+              name: 'abc',
+            },
+          ],
+        });
+        const config: ServiceConnectProps = {
+          services: [
+            {
+              portMappingName: 'abc',
+              dnsName: 'backend.prod',
+              port: 5005,
+            },
+            {
+              portMappingName: 'abc',
+              dnsName: 'backend.prod.local',
+            },
+          ],
+          namespace: 'test namespace',
+        };
+        expect(() => {
+          service.enableServiceConnect(config);
+        }).toThrowError(/Cannot create multiple services with the discoveryName 'abc'./);
+      });
+
+      test('throws an exception if ingressPortOverride is not valid.', () => {
+        // GIVEN
+        service.taskDefinition.addContainer('mobile', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          portMappings: [
+            {
+              containerPort: 100,
+              name: '100',
+            },
+          ],
+        });
+        const config: ServiceConnectProps = {
+          services: [
+            {
+              portMappingName: '100',
+              dnsName: 'backend.prod',
+              port: 5005,
+              ingressPortOverride: 100000,
+            },
+          ],
+          namespace: 'test namespace',
+        };
+        expect(() => {
+          service.enableServiceConnect(config);
+        }).toThrowError(/ingressPortOverride 100000 is not valid./);
+      });
+
+      test('throws an exception if Client Alias port is not valid', () => {
+        // GIVEN
+        service.taskDefinition.addContainer('mobile', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          portMappings: [
+            {
+              containerPort: 100,
+              name: '100',
+            },
+          ],
+        });
+        const config: ServiceConnectProps = {
+          services: [
+            {
+              portMappingName: '100',
+              dnsName: 'backend.prod',
+              port: 100000,
+              ingressPortOverride: 3000,
+            },
+          ],
+          namespace: 'test namespace',
+        };
+        expect(() => {
+          service.enableServiceConnect(config);
+        }).toThrowError(/Client Alias port 100000 is not valid./);
+      });
+    });
+
+    describe('when creating a FargateService with service connect', () => {
+
+      let service: ecs.FargateService;
+      let stack: cdk.Stack;
+      let cluster: ecs.Cluster;
+
+      beforeEach(() => {
+        // GIVEN
+        stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          portMappings: [
+            {
+              containerPort: 80,
+              name: 'api',
+            },
+          ],
+        });
+
+        service = new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+        });
+      });
+
+      test('service connect cannot be enabled twice', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect();
+
+        // THEN
+
+        expect(() => {
+          service.enableServiceConnect({});
+        }).toThrow('Service connect configuration cannot be specified more than once.');
+      });
+
+      test('client alias port is defaulted to containerport', () => {
+        service.enableServiceConnect({
+          namespace: 'cool',
+          services: [
+            {
+              portMappingName: 'api',
+            },
+          ],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                ClientAliases: [
+                  {
+                    Port: 80,
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      test('with explicit enable', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect({});
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+          },
+        });
+      });
+
+      test('with explicit enable and no props', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect();
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+          },
+        });
+      });
+
+      test('explicit enable and non default namespace', () => {
+        // WHEN
+        const ns = new cloudmap.HttpNamespace(stack, 'ns', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          namespace: ns.namespaceName,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+          },
+        });
+      });
+
+      test('namespace inferred from cluster', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect({});
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+          },
+        });
+      });
+
+      test('namespace inferred from cluster; empty props', () => {
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect();
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+          },
+        });
+      });
+
+      test('no namespace errors out', () => {
+        // THEN
+        expect(() => {
+          service.enableServiceConnect({});
+        }).toThrow();
+      });
+
+      test('error when enabling service connect with no container', () => {
+        // GIVEN
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'td2');
+        const svc = new ecs.FargateService(stack, 'svc2', {
+          cluster,
+          taskDefinition,
+        });
+        expect(() => {
+          svc.enableServiceConnect({
+            logDriver: ecs.LogDrivers.awsLogs({
+              streamPrefix: 'sc',
+            }),
+          });
+        }).toThrow('Task definition must have at least one container to enable service connect.');
+      });
+
+      test('with all options exercised', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              discoveryName: 'svc',
+              ingressPortOverride: 1000,
+              port: 80,
+              dnsName: 'api',
+            },
+          ],
+          namespace: 'cool',
+          logDriver: ecs.LogDrivers.awsLogs({
+            streamPrefix: 'sc',
+          }),
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                IngressPortOverride: 1000,
+                DiscoveryName: 'svc',
+                ClientAliases: [
+                  {
+                    Port: 80,
+                    DnsName: 'api',
+                  },
+                ],
+              },
+            ],
+            LogConfiguration: {
+              LogDriver: 'awslogs',
+              Options: {
+                'awslogs-stream-prefix': 'sc',
+              },
+            },
+          },
+        });
+      });
+
+      test('with no alias name', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              port: 80,
+            },
+          ],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                ClientAliases: [
+                  {
+                    Port: 80,
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      test('with no alias specified', () => {
+        // WHEN
+        cluster.addDefaultCloudMapNamespace({
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+            },
+          ],
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                ClientAliases: [
+                  {
+                    Port: 80,
+                  },
+                ],
+              },
+            ],
+          },
+        });
       });
     });
   });

@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "ServiceConnect/DefaultTest": {
+      "stacks": [
+        "aws-ecs-service-connect"
+      ],
+      "assertionStack": "ServiceConnect/DefaultTest/DeployAssert",
+      "assertionStackName": "ServiceConnectDefaultTestDeployAssert88F6A66F"
+    }
+  }
+}
