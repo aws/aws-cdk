@@ -93,6 +93,30 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
 }));
 ```
 
+### Filter policy scope
+
+A filter policy scope can be specified along with a filter policy. The two optional scopes are `MessageAttributes` (default) or `MessageBody`.
+
+Example with a Lambda subscription:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const myTopic = new sns.Topic(this, 'MyTopic');
+declare const fn: lambda.Function;
+
+// Lambda should receive only message matching the following conditions on message body:
+// color: 'red' or 'orange'
+myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
+  filterPolicy: {
+    color: sns.SubscriptionFilter.stringFilter({
+      allowlist: ['red', 'orange'],
+    }),
+  },
+  filterPolcyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
+}));
+```
+
 ### Example of Firehose Subscription
 
 ```ts
