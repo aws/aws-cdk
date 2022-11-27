@@ -8,10 +8,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Token } from '@aws-cdk/core';
 import { Construct, IDependable, Node } from 'constructs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
-import { PipelineQueries } from '../../helpers-internal/pipeline-queries';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
-import { hash, stackVariableNamespace } from '../../private/identifiers';
+import { hash } from '../../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../../private/javascript';
 import { ArtifactMap } from '../artifact-map';
 import { CodeBuildStep } from '../codebuild-step';
@@ -315,10 +314,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       });
     }
 
-    const queries = new PipelineQueries(options.pipeline);
-
     const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, outputRef =>
-      `#{${stackVariableNamespace(queries.producingStack(outputRef))}.${outputRef.outputName}}`,
+      options.stackOutputsMap!.mapOutputReference(outputRef),
     );
 
     const configHashEnv = options.beforeSelfMutation
