@@ -294,14 +294,14 @@ describe('Metrics', () => {
     checkParsingSingle('ts99',   'ts', 'trimmedSum',     99);
 
     // Check all pair statistics
-    checkParsingPair('TM(10%:90%)',       'TM', 'trimmedMean',    true, false, undefined, 10,    90);
-    checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean',    true, false, undefined, 10.99, 90.99);
-    checkParsingPair('WM(10%:90%)',       'WM', 'winsorizedMean', true, false, undefined, 10,    90);
-    checkParsingPair('TC(10%:90%)',       'TC', 'trimmedCount',   true, false, undefined, 10,    90);
-    checkParsingPair('TS(10%:90%)',       'TS', 'trimmedSum',     true, false, undefined, 10,    90);
+    checkParsingPair('TM(10%:90%)',       'TM', 'trimmedMean',    true, false, undefined, 10,        90);
+    checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean',    true, false, undefined, 10.99,     90.99);
+    checkParsingPair('WM(10%:90%)',       'WM', 'winsorizedMean', true, false, undefined, 10,        90);
+    checkParsingPair('TC(10%:90%)',       'TC', 'trimmedCount',   true, false, undefined, 10,        90);
+    checkParsingPair('TS(10%:90%)',       'TS', 'trimmedSum',     true, false, undefined, 10,        90);
 
     // Check can be represented as a single statistic
-    checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, true,  'tm90',    10,    90);
+    checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, true,  'tm90',    undefined, 90);
 
     // Check every case
     checkParsingPair('tm(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);

@@ -62,7 +62,7 @@ function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleSta
 
   // p99.99
   // /^p(\d{1,2}(?:\.\d+)?)$/
-  r = new RegExp(`/^${prefixLower}(\\d{1,2}(?:\\.\\d+)?)$/`).exec(statistic);
+  r = new RegExp(`^${prefixLower}(\\d{1,2}(?:\\.\\d+)?)$`).exec(statistic);
   if (r) {
     return {
       type: 'single',
@@ -96,7 +96,7 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
 
   // TM(99.999:)
   // /TM\((\d{1,2}(?:\.\d+)?):\)/
-  r = new RegExp(`/^${prefixUpper}\\((\\d+(?:\\.\\d+)?)\\:\\)$/`).exec(statistic);
+  r = new RegExp(`^${prefixUpper}\\((\\d+(?:\\.\\d+)?)\\:\\)$`).exec(statistic);
   if (r) {
     return {
       ...common,
@@ -108,7 +108,7 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
 
   // TM(99.999%:)
   // /TM\((\d{1,2}(?:\.\d+)?)%:\)/
-  r = new RegExp(`/^${prefixUpper}\\((\\d{1,2}(?:\\.\\d+)?)%\\:\\)$/`).exec(statistic);
+  r = new RegExp(`^${prefixUpper}\\((\\d{1,2}(?:\\.\\d+)?)%\\:\\)$`).exec(statistic);
   if (r) {
     return {
       ...common,
@@ -120,7 +120,7 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
 
   // TM(:99.999)
   // /TM\(:(\d{1,2}(?:\.\d+)?)\)/
-  r = new RegExp(`/^${prefixUpper}\\(\\:(\\d+(?:\\.\\d+)?)\\)$/`).exec(statistic);
+  r = new RegExp(`^${prefixUpper}\\(\\:(\\d+(?:\\.\\d+)?)\\)$`).exec(statistic);
   if (r) {
     return {
       ...common,
@@ -133,7 +133,7 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
   // TM(:99.999%)
   // /TM\(:(\d{1,2}(?:\.\d+)?)%\)/
   // Note: this can be represented as a single stat! TM(:90%) = tm90
-  r = new RegExp(`/^${prefixUpper}\\(\\:(\\d{1,2}(?:\\.\\d+)?)%\\)$/`).exec(statistic);
+  r = new RegExp(`^${prefixUpper}\\(\\:(\\d{1,2}(?:\\.\\d+)?)%\\)$`).exec(statistic);
   if (r) {
     return {
       ...common,
@@ -147,7 +147,7 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
 
   // TM(99.999:99.999)
   // /TM\((\d{1,2}(?:\.\d+)?):(\d{1,2}(?:\.\d+)?)\)/
-  r = new RegExp(`/^${prefixUpper}\\((\\d+(?:\\.\\d+)?)\\:(\\d+(?:\\.\\d+)?)\\)$/`).exec(statistic);
+  r = new RegExp(`^${prefixUpper}\\((\\d+(?:\\.\\d+)?)\\:(\\d+(?:\\.\\d+)?)\\)$`).exec(statistic);
   if (r) {
     return {
       ...common,
@@ -159,7 +159,7 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
 
   // TM(99.999%:99.999%)
   // /TM\((\d{1,2}(?:\.\d+)?)%:(\d{1,2}(?:\.\d+)?)%\)/
-  r = new RegExp(`/^${prefixUpper}\\((\\d{1,2}(?:\\.\\d+)?)%\\:(\\d{1,2}(?:\\.\\d+)?)%\\)$/`).exec(statistic);
+  r = new RegExp(`^${prefixUpper}\\((\\d{1,2}(?:\\.\\d+)?)%\\:(\\d{1,2}(?:\\.\\d+)?)%\\)$`).exec(statistic);
   if (r) {
     return {
       ...common,
@@ -283,16 +283,6 @@ export function parseStatistic(
 }
 
 export function normalizeStatistic(parsed: ReturnType<typeof parseStatistic>): string {
-  /* eslint-disable no-console */
-  console.log('normalizeStatistic');
-  console.log('normalizeStatistic');
-  console.log('normalizeStatistic');
-  console.log('normalizeStatistic');
-  console.log('normalizeStatistic');
-  console.log('normalizeStatistic');
-  console.log('normalizeStatistic');
-  console.log(parsed);
-  console.log(parsed.type);
   if (parsed.type === 'simple' || parsed.type === 'generic') {
     return parsed.statistic;
   } else if (parsed.type === 'single') {
