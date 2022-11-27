@@ -861,6 +861,43 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
 }
 ```
 
+Another example, adding a lambda step referencing outputs from a stack:
+
+```ts
+class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActionFactory {
+  private stackOutputReference: pipelines.StackOutputReference
+
+  constructor(
+    private readonly function: lambda.Function,
+    stackOutput: CfnOutput,
+  ) {
+    super('MyLambdaStep');
+    this.stackOutputReference = pipelines.StackOutputReference.fromCfnOutput(stackOutput);
+  }
+
+  public produceAction(stage: codepipeline.IStage, options: pipelines.ProduceActionOptions): pipelines.CodePipelineActionFactoryResult {
+
+    stage.addAction(new cpactions.LambdaInvokeAction({
+      actionName: options.actionName,
+      runOrder: options.runOrder,
+      // Map the reference to the variable name the CDK has generated for you.
+      userParameters: {stackOutput: options.stackOutputsMap.mapOutputReference(this.stackOutputReference)},
+      lambda: this.function,
+    }));
+
+    return { runOrdersConsumed: 1 };
+  }
+
+  /**
+   * Expose stack output references, letting the CDK know
+   * we want these variables accessible for this step.
+   */
+  public get stackOutputDependencies(): pipelines.StackOutputReference[] {
+    return [this.stackOutputReference];
+  }
+}
+```
+
 ### Using an existing AWS Codepipeline
 
 If you wish to use an existing `CodePipeline.Pipeline` while using the modern API's
