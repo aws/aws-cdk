@@ -256,20 +256,42 @@ export interface ProcessorFeatures {
 
 /**
  * The type of storage.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html
  */
 export enum StorageType {
   /**
    * Standard.
+   *
+   * Amazon RDS supports magnetic storage for backward compatibility. It is recommended to use
+   * General Purpose SSD or Provisioned IOPS SSD for any new storage needs.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#CHAP_Storage.Magnetic
    */
   STANDARD = 'standard',
 
   /**
-   * General purpose (SSD).
+   * General purpose SSD (gp2).
+   *
+   * Baseline performance determined by volume size
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
    */
   GP2 = 'gp2',
 
   /**
+   * General purpose SSD (gp3).
+   *
+   * Performance scales independently from storage
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
+   */
+  GP3 = 'gp3',
+
+  /**
    * Provisioned IOPS (SSD).
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#USER_PIOPS
    */
   IO1 = 'io1'
 }
@@ -317,10 +339,26 @@ export interface DatabaseInstanceNewProps {
   readonly storageType?: StorageType;
 
   /**
+   * The storage throughput, specified in mebibytes per second (MiBps).
+   *
+   * Only applicable for GP3.
+   *
+   * @see https://docs.aws.amazon.com//AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage
+   *
+   * @default - 125 MiBps if allocated storage is less than 400 GiB for MariaDB, MySQL, and PostgreSQL,
+   * less than 200 GiB for Oracle and less than 20 GiB for SQL Server. 500 MiBps otherwise (except for
+   * SQL Server where the default is always 125 MiBps).
+   */
+  readonly storageThroughput?: number;
+
+  /**
    * The number of I/O operations per second (IOPS) that the database provisions.
    * The value must be equal to or greater than 1000.
    *
-   * @default - no provisioned iops
+   * @default - no provisioned iops if storage type is not specified. For GP3: 3,000 IOPS if allocated
+   * storage is less than 400 GiB for MariaDB, MySQL, and PostgreSQL, less than 200 GiB for Oracle and
+   * less than 20 GiB for SQL Server. 12,000 IOPS otherwise (except for SQL Server where the default is
+   * always 3,000 IOPS).
    */
   readonly iops?: number;
 
@@ -712,8 +750,16 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
-    const storageType = props.storageType || StorageType.GP2;
-    const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
+    const storageType = props.storageType ?? StorageType.GP2;
+    const iops = defaultIops(storageType, props.iops);
+    if (props.storageThroughput && storageType !== StorageType.GP3) {
+      throw new Error(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`);
+    }
+    if (storageType === StorageType.GP3 && props.storageThroughput && iops
+        && !Token.isUnresolved(props.storageThroughput) && !Token.isUnresolved(iops)
+        && props.storageThroughput/iops > 0.25) {
+      throw new Error(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`);
+    }
 
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
@@ -777,6 +823,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
       storageType,
+      storageThroughput: props.storageThroughput,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
       domain: this.domainId,
@@ -1233,4 +1280,16 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
+}
+
+function defaultIops(storageType: StorageType, iops?: number): number | undefined {
+  switch (storageType) {
+    case StorageType.STANDARD:
+    case StorageType.GP2:
+      return undefined;
+    case StorageType.GP3:
+      return iops;
+    case StorageType.IO1:
+      return iops ?? 1000;
+  }
 }
