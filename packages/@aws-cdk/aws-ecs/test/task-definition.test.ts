@@ -199,6 +199,36 @@ describe('task definition', () => {
         },
       });
     });
+
+    test('A task definition where multiple containers have a port mapping with the same name throws an error', () =>{
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+        portMappings: [{
+          containerPort: 80,
+          name: 'api',
+        }],
+      });
+      new ecs.ContainerDefinition(stack, 'Container2', {
+        taskDefinition,
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        memoryLimitMiB: 2048,
+        portMappings: [{
+          containerPort: 8080,
+          name: 'api',
+        }],
+      });
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow("Port mapping name 'api' cannot appear in both 'Container2' and 'Container'");
+    });
   });
 
   describe('When importing from an existing Task definition', () => {
