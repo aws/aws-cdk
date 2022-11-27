@@ -830,7 +830,7 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
   ) {
     super('MyJenkinsStep');
 
-    // This is necessary if your step accepts parametres, like environment variables,
+    // This is necessary if your step accepts parameters, like environment variables,
     // that may contain outputs from other steps. It doesn't matter what the
     // structure is, as long as it contains the values that may contain outputs.
     this.discoverReferencedOutputs({
