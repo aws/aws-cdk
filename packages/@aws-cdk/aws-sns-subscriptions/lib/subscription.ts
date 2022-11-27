@@ -11,6 +11,12 @@ export interface SubscriptionProps {
    * @default - all messages are delivered
    */
   readonly filterPolicy?: { [attribute: string]: sns.SubscriptionFilter };
+  /**
+   * The filter policy scope.
+   * 
+   * @default - Filter applied through message attributes
+   */
+  readonly filterPolicyScope?: sns.SubscriptionFilterPolicyScope;
 
   /**
    * Queue to be used as dead letter queue.

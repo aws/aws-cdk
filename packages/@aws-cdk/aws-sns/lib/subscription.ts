@@ -39,6 +39,13 @@ export interface SubscriptionOptions {
   readonly filterPolicy?: { [attribute: string]: SubscriptionFilter };
 
   /**
+   * The filter policy scope.
+   *
+   * @default -  Filter applied through message attributes
+   */
+  readonly filterPolicyScope?: SubscriptionFilterPolicyScope;
+
+  /**
    * The region where the topic resides, in the case of cross-region subscriptions
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-region
    * @default - the region where the CloudFormation stack is being deployed.
@@ -129,6 +136,7 @@ export class Subscription extends Resource {
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
       filterPolicy: this.filterPolicy,
+      filterPolicyScope: props.filterPolicyScope,
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
@@ -214,4 +222,18 @@ export enum SubscriptionProtocol {
    * Notifications put records into a firehose delivery stream.
    */
   FIREHOSE = 'firehose'
+}
+
+/**
+ * The type of subscription filter policy scope determining what field SNS messages should be filtered by.
+ */
+export enum SubscriptionFilterPolicyScope {
+  /**
+   * Filter is applied through the message body
+   */
+  MESSAGE_BODY = 'MessageBody',
+  /**
+   * Filter is applied through the message attributes
+   */
+  MESSAGE_ATTRIBUTES = 'MessageAttributes'
 }

@@ -1892,6 +1892,7 @@ test('with filter policy', () => {
         between: { start: 100, stop: 200 },
       }),
     },
+    filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_ATTRIBUTES,
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
@@ -1924,6 +1925,7 @@ test('with filter policy', () => {
         },
       ],
     },
+    FilterPolicyScope: 'MessageAttributes',
   });
 });
 

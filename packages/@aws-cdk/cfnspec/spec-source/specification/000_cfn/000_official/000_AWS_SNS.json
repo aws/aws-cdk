@@ -41,6 +41,12 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
+        "FilterPolicyScope": {
+          "Documentation": "https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
         "Protocol": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-protocol",
           "PrimitiveType": "String",

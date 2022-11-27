@@ -124,6 +124,7 @@ describe('Subscription', () => {
           lessThanOrEqualTo: -2,
         }),
       },
+      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
     });
@@ -149,6 +150,7 @@ describe('Subscription', () => {
           { numeric: ['>', 2000, '<', 3000] },
         ],
       },
+      FilterPolicyScope: 'MessageBody',
     });
 
   });
@@ -169,6 +171,7 @@ describe('Subscription', () => {
           lessThanOrEqualTo: 0,
         }),
       },
+      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_ATTRIBUTES,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
     });
@@ -183,6 +186,7 @@ describe('Subscription', () => {
           { numeric: ['<=', 0] },
         ],
       },
+      FilterPolicyScope: 'MessageAttributes',
     });
 
   });
