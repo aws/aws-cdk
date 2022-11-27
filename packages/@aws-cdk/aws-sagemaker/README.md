@@ -195,3 +195,70 @@ const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
   ]
 });
 ```
+
+### Endpoint
+
+When you create an endpoint from an `EndpointConfig`, Amazon SageMaker launches the ML compute
+instances and deploys the model or models as specified in the configuration. To get inferences from
+the model, client applications send requests to the Amazon SageMaker Runtime HTTPS endpoint. For
+more information about the API, see the
+[InvokeEndpoint](https://docs.aws.amazon.com/sagemaker/latest/dg/API_runtime_InvokeEndpoint.html)
+API. Defining an endpoint requires at minimum the associated endpoint configuration:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+declare const endpointConfig: sagemaker.EndpointConfig;
+
+const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+```
+
+### AutoScaling
+
+To enable autoscaling on the production variant, use the `autoScaleInstanceCount` method:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+declare const model: sagemaker.Model;
+
+const variantName = 'my-variant';
+const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+  instanceProductionVariants: [
+    {
+      model: model,
+      variantName: variantName,
+    },
+  ]
+});
+
+const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+const productionVariant = endpoint.findInstanceProductionVariant(variantName);
+const instanceCount = productionVariant.autoScaleInstanceCount({
+  maxCapacity: 3
+});
+instanceCount.scaleOnInvocations('LimitRPS', {
+  maxRequestsPerSecond: 30,
+});
+```
+
+For load testing guidance on determining the maximum requests per second per instance, please see
+this [documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-scaling-loadtest.html).
+
+### Metrics
+
+To monitor CloudWatch metrics for a production variant, use one or more of the metric convenience
+methods:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+declare const endpointConfig: sagemaker.EndpointConfig;
+
+const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+const productionVariant = endpoint.findInstanceProductionVariant('my-variant');
+productionVariant.metricModelLatency().createAlarm(this, 'ModelLatencyAlarm', {
+  threshold: 100000,
+  evaluationPeriods: 3,
+});
+```

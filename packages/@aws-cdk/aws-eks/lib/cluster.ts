@@ -827,16 +827,19 @@ export class KubernetesVersion {
 
   /**
    * Kubernetes version 1.18
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
   /**
    * Kubernetes version 1.19
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_19 = KubernetesVersion.of('1.19');
 
   /**
    * Kubernetes version 1.20
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_20 = KubernetesVersion.of('1.20');
 
@@ -862,6 +865,15 @@ export class KubernetesVersion {
    * `@aws-cdk/lambda-layer-kubectl-v23`.
    */
   public static readonly V1_23 = KubernetesVersion.of('1.23');
+
+  /**
+   * Kubernetes version 1.24
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV24Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v24`.
+   */
+  public static readonly V1_24 = KubernetesVersion.of('1.24');
 
   /**
    * Custom cluster version
