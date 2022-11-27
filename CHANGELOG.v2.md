@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.52.0](https://github.com/aws/aws-cdk/compare/v2.51.1...v2.52.0) (2022-11-27)
+
+
+### Features
+
+* **ecs:** enable Amazon ECS Service Connect ([96ec613](https://github.com/aws/aws-cdk/commit/96ec6139e1ad7637466e95b71e824965b081154f))
+
 ## [2.51.1](https://github.com/aws/aws-cdk/compare/v2.51.0...v2.51.1) (2022-11-18)
 
 
