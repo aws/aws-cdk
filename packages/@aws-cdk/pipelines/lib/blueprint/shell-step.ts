@@ -233,6 +233,10 @@ export class ShellStep extends Step {
     }
     return fileSet;
   }
+
+  public get stackOutputDependencies(): StackOutputReference[] {
+    return Object.values(this.envFromCfnOutputs);
+  }
 }
 
 /**

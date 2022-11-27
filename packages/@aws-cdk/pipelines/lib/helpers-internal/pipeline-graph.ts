@@ -1,4 +1,4 @@
-import { AssetType, FileSet, ShellStep, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
+import { AssetType, FileSet, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
@@ -274,11 +274,9 @@ export class PipelineGraph {
 
     // Add stack dependencies (by use of the dependency builder this also works
     // if we encounter the Step before the Stack has been properly added yet)
-    if (step instanceof ShellStep) {
-      for (const output of Object.values(step.envFromCfnOutputs)) {
-        const stack = this.queries.producingStack(output);
-        this.stackOutputDependencies.get(stack).dependBy(node);
-      }
+    for (const output of step.stackOutputDependencies) {
+      const stack = this.queries.producingStack(output);
+      this.stackOutputDependencies.get(stack).dependBy(node);
     }
 
     return node;
