@@ -200,6 +200,18 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
   /**
    * A principal which is trusted to assume a role for zone delegation
    *
+   * If supplied, this will create a Role in the same account as the Hosted
+   * Zone, which can be assumed by the `CrossAccountZoneDelegationRecord` to
+   * create a delegation record to a zone in a different account.
+   *
+   * Be sure to indicate the account(s) that you trust to create delegation
+   * records, using either `iam.AccountPrincipal` or `iam.OrganizationPrincipal`.
+   *
+   * If you are planning to use `iam.ServicePrincipal`s here, be sure to include
+   * region-specific service principals for every opt-in region you are going to
+   * be delegating to; or don't use this feature and create separate roles
+   * with appropriate permissions for every opt-in region instead.
+   *
    * @default - No delegation configuration
    */
   readonly crossAccountZoneDelegationPrincipal?: iam.IPrincipal;
