@@ -25,6 +25,16 @@ export interface AwsApiCallOptions {
    * @default - no parameters
    */
   readonly parameters?: any;
+
+  /**
+   * Restrict the data returned by the API call to specific paths in
+   * the API response. Use this to limit the data returned by the custom
+   * resource if working with API calls that could potentially result in custom
+   * response objects exceeding the hard limit of 4096 bytes.
+   *
+   * @default - return all data
+   */
+  readonly outputPaths?: string[];
 }
 
 /**
@@ -59,6 +69,7 @@ export class AwsApiCall extends ApiCallBase {
   private readonly name: string;
 
   private _assertAtPath?: string;
+  private _outputPaths?: string[];
   private readonly api: string;
   private readonly service: string;
 
@@ -70,6 +81,7 @@ export class AwsApiCall extends ApiCallBase {
     this.name = `${props.service}${props.api}`;
     this.api = props.api;
     this.service = props.service;
+    this._outputPaths = props.outputPaths;
 
     this.apiCallResource = new CustomResource(this, 'Default', {
       serviceToken: this.provider.serviceToken,
@@ -81,6 +93,7 @@ export class AwsApiCall extends ApiCallBase {
         stateMachineArn: Lazy.string({ produce: () => this.stateMachineArn }),
         parameters: this.provider.encode(props.parameters),
         flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
+        outputPaths: Lazy.list({ produce: () => this._outputPaths }),
         salt: Date.now().toString(),
       },
       resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
@@ -107,6 +120,7 @@ export class AwsApiCall extends ApiCallBase {
 
   public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
     this._assertAtPath = path;
+    this._outputPaths = [path];
     this.expectedResult = expected.result;
     this.flattenResponse = 'true';
     return this;
