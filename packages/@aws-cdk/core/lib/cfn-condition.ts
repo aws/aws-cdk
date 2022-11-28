@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
 import { IResolvable, IResolveContext } from './resolvable';
+import { ResolutionTypeHint } from './type-hints';
 
 export interface CfnConditionProps {
   /**
@@ -21,6 +22,8 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
    */
   public expression?: ICfnConditionExpression;
 
+  public readonly typeHint: ResolutionTypeHint;
+
   /**
    * Build a new condition. The condition must be constructed with a condition token,
    * that the condition is based on.
@@ -28,6 +31,7 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
   constructor(scope: Construct, id: string, props?: CfnConditionProps) {
     super(scope, id);
     this.expression = props && props.expression;
+    this.typeHint = this.expression?.typeHint ?? ResolutionTypeHint.STRING;
   }
 
   /**

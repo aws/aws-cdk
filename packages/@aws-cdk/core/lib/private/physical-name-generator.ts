@@ -5,6 +5,7 @@ import { IResolvable, IResolveContext } from '../resolvable';
 import { IResource } from '../resource';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { ResolutionTypeHint } from '../type-hints';
 import { TokenMap } from './token-map';
 
 export function generatePhysicalName(resource: IResource): string {
@@ -82,9 +83,11 @@ const GENERATE_IF_NEEDED_SYMBOL = Symbol.for('@aws-cdk/core.<private>.GenerateIf
  */
 export class GeneratedWhenNeededMarker implements IResolvable {
   public readonly creationStack: string[] = [];
+  public readonly typeHint: ResolutionTypeHint;
 
   constructor() {
     Object.defineProperty(this, GENERATE_IF_NEEDED_SYMBOL, { value: true });
+    this.typeHint = ResolutionTypeHint.ERROR;
   }
 
   public resolve(_ctx: IResolveContext): never {

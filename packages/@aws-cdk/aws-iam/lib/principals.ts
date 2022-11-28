@@ -864,8 +864,10 @@ export class CompositePrincipal extends PrincipalBase {
  */
 class StackDependentToken implements cdk.IResolvable {
   public readonly creationStack: string[];
+  public readonly typeHint: cdk.ResolutionTypeHint;
   constructor(private readonly fn: (stack: cdk.Stack) => any) {
     this.creationStack = cdk.captureStackTrace();
+    this.typeHint = cdk.ResolutionTypeHint.STRING; // ???
   }
 
   public resolve(context: cdk.IResolveContext) {
@@ -888,10 +890,12 @@ class StackDependentToken implements cdk.IResolvable {
 
 class ServicePrincipalToken implements cdk.IResolvable {
   public readonly creationStack: string[];
+  public readonly typeHint: cdk.ResolutionTypeHint;
   constructor(
     private readonly service: string,
     private readonly opts: ServicePrincipalOpts) {
     this.creationStack = cdk.captureStackTrace();
+    this.typeHint = cdk.ResolutionTypeHint.STRING; // ???
   }
 
   public resolve(ctx: cdk.IResolveContext) {

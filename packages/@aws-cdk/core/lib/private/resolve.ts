@@ -1,6 +1,7 @@
 import { IConstruct } from 'constructs';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
+import { ResolutionTypeHint } from '../type-hints';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
 
@@ -27,15 +28,6 @@ const RESOLUTION_TYPEHINT_SYM = Symbol.for('@aws-cdk/core.resolvedTypeHint');
  * object keys.
  */
 export const INTRINSIC_KEY_PREFIX = '$IntrinsicKey$';
-
-/**
- * Type hints for resolved values
- */
-export enum ResolutionTypeHint {
-  STRING = 'string',
-  NUMBER = 'number',
-  LIST = 'list',
-}
 
 /**
  * Options to the resolve() operation

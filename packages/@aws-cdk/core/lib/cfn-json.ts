@@ -6,6 +6,7 @@ import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
+import { ResolutionTypeHint } from './type-hints';
 
 export interface CfnJsonProps {
   /**
@@ -41,6 +42,8 @@ export class CfnJson extends Construct implements IResolvable {
    */
   public readonly value: Reference;
 
+  public readonly typeHint: ResolutionTypeHint;
+
   private readonly jsonString: string;
 
   constructor(scope: Construct, id: string, props: CfnJsonProps) {
@@ -60,6 +63,9 @@ export class CfnJson extends Construct implements IResolvable {
     });
 
     this.value = resource.getAtt('Value');
+
+    // jsonString => this should be STRING?
+    this.typeHint = ResolutionTypeHint.STRING;
   }
 
   /**

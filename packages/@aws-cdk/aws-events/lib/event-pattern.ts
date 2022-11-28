@@ -1,4 +1,4 @@
-import { captureStackTrace, IResolvable, IResolveContext, Token } from '@aws-cdk/core';
+import { captureStackTrace, IResolvable, IResolveContext, ResolutionTypeHint, Token } from '@aws-cdk/core';
 
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
 
@@ -184,10 +184,12 @@ export class Match implements IResolvable {
   }
 
   public readonly creationStack: string[];
+  public readonly typeHint: ResolutionTypeHint;
 
   private constructor(private readonly matchers: any[],
     private readonly options: MatchOptions) {
     this.creationStack = captureStackTrace();
+    this.typeHint = ResolutionTypeHint.LIST; // TODO
   }
 
   resolve(context: IResolveContext): any {

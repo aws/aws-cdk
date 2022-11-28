@@ -2,6 +2,7 @@ import { CDK_DEBUG, debugModeEnabled } from './debug';
 import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
+import { ResolutionTypeHint } from './type-hints';
 
 /**
  * Interface for lazy string producers
@@ -333,6 +334,7 @@ interface ILazyProducer<A> {
 
 abstract class LazyBase<A> implements IResolvable {
   public readonly creationStack: string[];
+  abstract typeHint: ResolutionTypeHint;
   private _cached?: A;
 
   constructor(private readonly producer: ILazyProducer<A>, private readonly cache: boolean) {
@@ -369,14 +371,26 @@ abstract class LazyBase<A> implements IResolvable {
 }
 
 class LazyString extends LazyBase<string> {
+  public readonly typeHint: ResolutionTypeHint;
+  constructor(producer: ILazyProducer<string>, cache: boolean) {
+    super(producer, cache);
+    this.typeHint = ResolutionTypeHint.STRING;
+  }
 }
 
 class LazyNumber extends LazyBase<number> {
+  public readonly typeHint: ResolutionTypeHint;
+  constructor(producer: ILazyProducer<number>, cache: boolean) {
+    super(producer, cache);
+    this.typeHint = ResolutionTypeHint.NUMBER;
+  }
 }
 
 class LazyList extends LazyBase<Array<string>> {
+  public readonly typeHint: ResolutionTypeHint;
   constructor(producer: IListProducer, cache: boolean, private readonly options: LazyListValueOptions = {}) {
     super(producer, cache);
+    this.typeHint = ResolutionTypeHint.LIST;
   }
 
   public resolve(context: IResolveContext) {
@@ -389,8 +403,11 @@ class LazyList extends LazyBase<Array<string>> {
 }
 
 class LazyAny extends LazyBase<any> {
+  public readonly typeHint: ResolutionTypeHint;
   constructor(producer: IAnyProducer, cache: boolean, private readonly options: LazyAnyValueOptions = {}) {
     super(producer, cache);
+    // we can't tell what this is, default to STRING
+    this.typeHint = ResolutionTypeHint.STRING;
   }
 
   public resolve(context: IResolveContext) {

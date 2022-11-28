@@ -1,4 +1,4 @@
-import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '@aws-cdk/core';
+import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, ResolutionTypeHint, StringConcat, Token, Tokenization } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import { IPolicy } from './policy';
 
@@ -112,9 +112,11 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
   }
 
   public readonly creationStack: string[];
+  public readonly typeHint: ResolutionTypeHint;
 
   private constructor(private readonly fn: () => string[]) {
     this.creationStack = captureStackTrace();
+    this.typeHint = ResolutionTypeHint.LIST;
   }
 
   public resolve(context: IResolveContext) {

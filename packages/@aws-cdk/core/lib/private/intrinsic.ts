@@ -1,6 +1,7 @@
 import { IResolvable, IResolveContext } from '../resolvable';
 import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
+import { ResolutionTypeHint } from '../type-hints';
 
 /**
  * Customization properties for an Intrinsic token
@@ -30,6 +31,11 @@ export class Intrinsic implements IResolvable {
    */
   public readonly creationStack: string[];
 
+  /**
+   * Type hint
+   */
+  public readonly typeHint: ResolutionTypeHint;
+
   private readonly value: any;
 
   constructor(value: any, options: IntrinsicProps = {}) {
@@ -39,6 +45,14 @@ export class Intrinsic implements IResolvable {
 
     this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
     this.value = value;
+
+    if (Array.isArray(value)) {
+      this.typeHint = ResolutionTypeHint.LIST;
+    } else if (!isNaN(value)) {
+      this.typeHint = ResolutionTypeHint.NUMBER;
+    } else {
+      this.typeHint = ResolutionTypeHint.STRING;
+    }
   }
 
   public resolve(_context: IResolveContext) {

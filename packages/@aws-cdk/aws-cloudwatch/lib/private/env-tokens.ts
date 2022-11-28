@@ -19,8 +19,10 @@ export function accountIfDifferentFromStack(account: string): string {
  */
 class StackDependentToken implements cdk.IResolvable {
   public readonly creationStack: string[];
+  public readonly typeHint: cdk.ResolutionTypeHint;
   constructor(private readonly originalValue: string, private readonly fn: (stack: cdk.Stack) => string) {
     this.creationStack = cdk.captureStackTrace();
+    this.typeHint = cdk.ResolutionTypeHint.STRING; // TODO
   }
 
   public resolve(context: cdk.IResolveContext) {

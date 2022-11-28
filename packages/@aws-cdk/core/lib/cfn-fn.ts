@@ -6,6 +6,7 @@ import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
+import { ResolutionTypeHint } from './type-hints';
 
 /* eslint-disable max-len */
 
@@ -810,6 +811,7 @@ class FnValueOfAll extends FnBase {
  */
 class FnJoin implements IResolvable {
   public readonly creationStack: string[];
+  public readonly typeHint: ResolutionTypeHint;
 
   private readonly delimiter: string;
   private readonly listOfValues: any[];
@@ -828,6 +830,7 @@ class FnJoin implements IResolvable {
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
     this.creationStack = captureStackTrace();
+    this.typeHint = ResolutionTypeHint.STRING;
   }
 
   public resolve(context: IResolveContext): any {
@@ -867,12 +870,14 @@ class FnJoin implements IResolvable {
  */
 class FnToJsonString implements IResolvable {
   public readonly creationStack: string[];
+  public readonly typeHint: ResolutionTypeHint;
 
   private readonly object: any;
 
   constructor(object: any) {
     this.object = object;
     this.creationStack = captureStackTrace();
+    this.typeHint = ResolutionTypeHint.STRING;
   }
 
   public resolve(context: IResolveContext): any {
@@ -895,12 +900,14 @@ class FnToJsonString implements IResolvable {
  */
 class FnLength implements IResolvable {
   public readonly creationStack: string[];
+  public readonly typeHint: ResolutionTypeHint;
 
   private readonly array: any;
 
   constructor(array: any) {
     this.array = array;
     this.creationStack = captureStackTrace();
+    this.typeHint = ResolutionTypeHint.NUMBER;
   }
 
   public resolve(context: IResolveContext): any {
