@@ -1007,6 +1007,23 @@ describe('cluster', () => {
 
   });
 
+  test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: 'foo.com',
+      useForServiceConnect: true,
+    });
+
+    // THEN
+    expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+  });
+
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
@@ -1277,6 +1294,7 @@ describe('cluster', () => {
 
 
   });
+
 
   test('export/import of a cluster with a namespace', () => {
     // GIVEN
