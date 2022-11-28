@@ -210,6 +210,14 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/customerDs/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/customerDs/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/customerDs/ServiceRole/Resource",
@@ -222,7 +230,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
@@ -702,6 +710,14 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/orderDs/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/orderDs/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/orderDs/ServiceRole/Resource",
@@ -714,7 +730,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
@@ -2045,6 +2061,14 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/paymentDs/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/Resource",
@@ -2057,7 +2081,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
@@ -2304,6 +2328,14 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/ds/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/ds/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/ds/ServiceRole/Resource",
@@ -2316,7 +2348,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
@@ -2605,7 +2637,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.161"
         }
       }
     },

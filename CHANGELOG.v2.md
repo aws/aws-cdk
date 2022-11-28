@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.52.1](https://github.com/aws/aws-cdk/compare/v2.52.0...v2.52.1) (2022-11-28)
+
+
+### Bug Fixes
+
+* **cli:** typescript init templates fails with error in build step ([#23125](https://github.com/aws/aws-cdk/issues/23125)) ([764b725](https://github.com/aws/aws-cdk/commit/764b725a31937abadeef97ba4306cea967afc61f)), closes [#23126](https://github.com/aws/aws-cdk/issues/23126)
+
 ## [2.52.0](https://github.com/aws/aws-cdk/compare/v2.51.1...v2.52.0) (2022-11-27)
 
 
