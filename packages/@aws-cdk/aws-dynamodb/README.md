@@ -87,6 +87,7 @@ times of the day:
 Auto-scaling is only relevant for tables with the billing mode, PROVISIONED.
 
 [Example of configuring autoscaling](test/integ.autoscaling.lit.ts)
+[Example of configuring the table as a scalable target](test/integ.dynamodb.scalable-target.ts)
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html
