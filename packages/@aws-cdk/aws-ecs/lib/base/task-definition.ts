@@ -722,7 +722,40 @@ export class TaskDefinition extends TaskDefinitionBase {
         }
       }
     }
+
+    // Validate that there are no named port mapping conflicts for Service Connect.
+    const portMappingNames = new Map<string, string>(); // Map from port mapping name to most recent container it appears in.
+    this.containers.forEach(container => {
+      for (const pm of container.portMappings) {
+        if (pm.name) {
+          if (portMappingNames.has(pm.name)) {
+            ret.push(`Port mapping name '${pm.name}' cannot appear in both '${container.containerName}' and '${portMappingNames.get(pm.name)}'`);
+          }
+          portMappingNames.set(pm.name, container.containerName);
+        }
+      }
+    });
+
+
     return ret;
+  }
+
+  /**
+   * Determine the existing port mapping for the provided name.
+   * @param name: port mapping name
+   * @returns PortMapping for the provided name, if it exists.
+   */
+  public findPortMappingByName(name: string): PortMapping | undefined {
+    let portMapping;
+
+    this.containers.forEach(container => {
+      const pm = container.findPortMappingByName(name);
+      if (pm) {
+        portMapping = pm;
+      };
+    });
+
+    return portMapping;
   }
 
   /**
