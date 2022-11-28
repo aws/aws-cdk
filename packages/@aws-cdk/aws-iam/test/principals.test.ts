@@ -1,6 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as iam from '../lib';
+import { ServicePrincipal } from '../lib';
 
 test('use of cross-stack role reference does not lead to URLSuffix being exported', () => {
   // GIVEN
@@ -307,34 +309,67 @@ test('AccountPrincipal can specify an organization', () => {
   });
 });
 
-test('ServicePrincipalName returns just a string representing the principal', () => {
-  // GIVEN
-  const usEastStack = new Stack(undefined, undefined, { env: { region: 'us-east-1' } });
-  const afSouthStack = new Stack(undefined, undefined, { env: { region: 'af-south-1' } });
-  const principalName = iam.ServicePrincipal.servicePrincipalName('ssm.amazonaws.com');
+describe('deprecated ServicePrincipal behavior', () => {
+  // This behavior makes use of deprecated region-info lookup tables
 
-  expect(usEastStack.resolve(principalName)).toEqual('ssm.amazonaws.com');
-  expect(afSouthStack.resolve(principalName)).toEqual('ssm.af-south-1.amazonaws.com');
-});
+  test('ServicePrincipalName returns just a string representing the principal', () => {
+    // GIVEN
+    const usEastStack = new Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const afSouthStack = new Stack(undefined, undefined, { env: { region: 'af-south-1' } });
+    const principalName = iam.ServicePrincipal.servicePrincipalName('states.amazonaws.com');
 
-test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
-  expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
-});
-
-test('ServicePrincipal in agnostic stack generates lookup table', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal('ssm.amazonaws.com'),
+    expect(usEastStack.resolve(principalName)).toEqual('states.us-east-1.amazonaws.com');
+    expect(afSouthStack.resolve(principalName)).toEqual('states.af-south-1.amazonaws.com');
   });
 
-  // THEN
-  const template = Template.fromStack(stack);
-  const mappings = template.findMappings('ServiceprincipalMap');
-  expect(mappings.ServiceprincipalMap['af-south-1']?.ssm).toEqual('ssm.af-south-1.amazonaws.com');
-  expect(mappings.ServiceprincipalMap['us-east-1']?.ssm).toEqual('ssm.amazonaws.com');
+  test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
+    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+  });
+
+  test('ServicePrincipal in agnostic stack generates lookup table', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const mappings = template.findMappings('ServiceprincipalMap');
+    expect(mappings.ServiceprincipalMap['af-south-1']?.states).toEqual('states.af-south-1.amazonaws.com');
+    expect(mappings.ServiceprincipalMap['us-east-1']?.states).toEqual('states.us-east-1.amazonaws.com');
+  });
+});
+
+describe('standardized Service Principal behavior', () => {
+  const agnosticStatesPrincipal = new ServicePrincipal('states.amazonaws.com');
+  const afSouth1StatesPrincipal = new ServicePrincipal('states.amazonaws.com', { region: 'af-south-1' });
+  // af-south-1 is an opt-in region
+
+  let app: App;
+  beforeEach(() => {
+    app = new App({
+      postCliContext: { [cxapi.IAM_STANDARDIZED_SERVICE_PRINCIPALS]: true },
+    });
+  });
+
+  test('no more regional service principals by default', () => {
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' } });
+    expect(stack.resolve(agnosticStatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.amazonaws.com'] });
+  });
+
+  test('regional service principal is added for cross-region reference to opt-in region', () => {
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' } });
+    expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.af-south-1.amazonaws.com'] });
+  });
+
+  test('regional service principal is not added for same-region reference in opt-in region', () => {
+    const stack = new Stack(app, 'Stack', { env: { region: 'af-south-1' } });
+    expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.amazonaws.com'] });
+  });
+
 });
 
 test('Can enable session tags', () => {

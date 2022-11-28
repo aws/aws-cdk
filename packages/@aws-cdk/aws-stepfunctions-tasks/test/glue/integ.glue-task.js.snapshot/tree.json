@@ -1,0 +1,405 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-stepfunctions-integ": {
+        "id": "aws-stepfunctions-integ",
+        "path": "aws-stepfunctions-integ",
+        "children": {
+          "Glue Job Script": {
+            "id": "Glue Job Script",
+            "path": "aws-stepfunctions-integ/Glue Job Script",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "aws-stepfunctions-integ/Glue Job Script/Stage",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "aws-stepfunctions-integ/Glue Job Script/AssetBucket",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3-assets.Asset",
+              "version": "0.0.0"
+            }
+          },
+          "Glue Job Role": {
+            "id": "Glue Job Role",
+            "path": "aws-stepfunctions-integ/Glue Job Role",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-integ/Glue Job Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "glue"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-stepfunctions-integ/Glue Job Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-integ/Glue Job Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetBucket*",
+                                "s3:GetObject*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "GlueJobRoleDefaultPolicy3D94D6F1",
+                        "roles": [
+                          {
+                            "Ref": "GlueJobRole1CD031E0"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "Glue Job": {
+            "id": "Glue Job",
+            "path": "aws-stepfunctions-integ/Glue Job",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "glueetl",
+                  "pythonVersion": "3",
+                  "scriptLocation": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "s3://",
+                        {
+                          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                        },
+                        "/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d.py"
+                      ]
+                    ]
+                  }
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "GlueJobRole1CD031E0",
+                    "Arn"
+                  ]
+                },
+                "glueVersion": "1.0",
+                "name": "My Glue Job"
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue.CfnJob",
+              "version": "0.0.0"
+            }
+          },
+          "Glue Job Task": {
+            "id": "Glue Job Task",
+            "path": "aws-stepfunctions-integ/Glue Job Task",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Task",
+              "version": "0.0.0"
+            }
+          },
+          "Start Task": {
+            "id": "Start Task",
+            "path": "aws-stepfunctions-integ/Start Task",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "End Task": {
+            "id": "End Task",
+            "path": "aws-stepfunctions-integ/End Task",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "State Machine": {
+            "id": "State Machine",
+            "path": "aws-stepfunctions-integ/State Machine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-integ/State Machine/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-integ/State Machine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-integ/State Machine/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-integ/State Machine/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "glue:BatchStopJobRun",
+                                    "glue:GetJobRun",
+                                    "glue:GetJobRuns",
+                                    "glue:StartJobRun"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":glue:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":job/My Glue Job"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineRoleDefaultPolicyDA5F7DA8",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineRole543B9670"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-integ/State Machine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRole543B9670",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"Start Task\",\"States\":{\"Start Task\":{\"Type\":\"Pass\",\"Next\":\"Glue Job Task\"},\"Glue Job Task\":{\"Next\":\"End Task\",\"Parameters\":{\"JobName\":\"My Glue Job\",\"Arguments\":{\"--enable-metrics\":\"true\"}},\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::glue:startJobRun.sync\"},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "State Machine ARN Output": {
+            "id": "State Machine ARN Output",
+            "path": "aws-stepfunctions-integ/State Machine ARN Output",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

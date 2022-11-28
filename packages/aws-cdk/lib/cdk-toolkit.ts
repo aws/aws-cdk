@@ -6,6 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
@@ -67,6 +68,24 @@ export interface CdkToolkitProps {
    */
   sdkProvider: SdkProvider;
 }
+
+/**
+ * When to build assets
+ */
+export enum AssetBuildTime {
+  /**
+   * Build all assets before deploying the first stack
+   *
+   * This is intended for expensive Docker image builds; so that if the Docker image build
+   * fails, no stacks are unnecessarily deployed (with the attendant wait time).
+   */
+  ALL_BEFORE_DEPLOY,
+
+  /**
+   * Build assets just-in-time, before publishing
+   */
+  JUST_IN_TIME,
+};
 
 /**
  * Toolkit logic
@@ -166,17 +185,22 @@ export class CdkToolkit {
     }
 
     const stacks = stackCollection.stackArtifacts;
+    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
+
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    try {
-      await buildAllStackAssets(stackCollection.stackArtifacts, {
-        buildStackAssets: (a) => this.buildAllAssetsForSingleStack(a, options),
-      });
-    } catch (e) {
-      error('\n ❌ Building assets failed: %s', e);
-      throw e;
+    if (assetBuildTime === AssetBuildTime.ALL_BEFORE_DEPLOY) {
+      // Prebuild all assets
+      try {
+        await buildAllStackAssets(stackCollection.stackArtifacts, {
+          buildStackAssets: (a) => this.buildAllAssetsForSingleStack(a, options),
+        });
+      } catch (e) {
+        error('\n ❌ Building assets failed: %s', e);
+        throw e;
+      }
     }
 
     const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
@@ -247,6 +271,7 @@ export class CdkToolkit {
           tags,
           execute: options.execute,
           changeSetName: options.changeSetName,
+          deploymentMethod: options.deploymentMethod,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
@@ -255,7 +280,8 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
-          buildAssets: false,
+          buildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY,
+          assetParallelism: options.assetParallelism,
         });
 
         const message = result.noOp
@@ -462,8 +488,11 @@ export class CdkToolkit {
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
       tags,
-      execute: options.execute,
-      changeSetName: options.changeSetName,
+      deploymentMethod: {
+        method: 'change-set',
+        changeSetName: options.changeSetName,
+        execute: options.execute,
+      },
       usePreviousParameters: true,
       progress: options.progress,
       rollback: options.rollback,
@@ -759,7 +788,7 @@ export class CdkToolkit {
     }
   }
 
-  private async buildAllAssetsForSingleStack(stack: cxapi.CloudFormationStackArtifact, options: Pick<DeployOptions, 'roleArn' | 'toolkitStackName'>): Promise<void> {
+  private async buildAllAssetsForSingleStack(stack: cxapi.CloudFormationStackArtifact, options: Pick<DeployOptions, 'roleArn' | 'toolkitStackName' | 'assetParallelism'>): Promise<void> {
     // Check whether the stack has an asset manifest before trying to build and publish.
     if (!stack.dependencies.some(cxapi.AssetManifestArtifact.isAssetManifestArtifact)) {
       return;
@@ -770,6 +799,9 @@ export class CdkToolkit {
       stack,
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
+      buildOptions: {
+        parallel: options.assetParallelism,
+      },
     });
     print('\n%s: assets built\n', chalk.bold(stack.displayName));
   }
@@ -860,15 +892,24 @@ interface CfnDeployOptions {
   /**
    * Optional name to use for the CloudFormation change set.
    * If not provided, a name will be generated automatically.
+   *
+   * @deprecated Use 'deploymentMethod' instead
    */
   changeSetName?: string;
 
   /**
    * Whether to execute the ChangeSet
    * Not providing `execute` parameter will result in execution of ChangeSet
+   *
    * @default true
+   * @deprecated Use 'deploymentMethod' instead
    */
   execute?: boolean;
+
+  /**
+   * Deployment method
+   */
+  readonly deploymentMethod?: DeploymentMethod;
 
   /**
    * Display mode for stack deployment progress.
@@ -1015,6 +1056,24 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Build/publish assets for a single stack in parallel
+   *
+   * Independent of whether stacks are being done in parallel or no.
+   *
+   * @default true
+   */
+  readonly assetParallelism?: boolean;
+
+  /**
+   * When to build assets
+   *
+   * The default is the Docker-friendly default.
+   *
+   * @default AssetBuildTime.ALL_BEFORE_DEPLOY
+   */
+  readonly assetBuildTime?: AssetBuildTime;
 }
 
 export interface ImportOptions extends CfnDeployOptions {

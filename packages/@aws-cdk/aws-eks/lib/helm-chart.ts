@@ -30,7 +30,7 @@ export interface HelmChartOptions {
   readonly version?: string;
 
   /**
-   * The repository which contains the chart. For example: https://kubernetes-charts.storage.googleapis.com/
+   * The repository which contains the chart. For example: https://charts.helm.sh/stable/
    * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
   readonly repository?: string;
@@ -51,6 +51,11 @@ export interface HelmChartOptions {
 
   /**
    * The values to be used by the chart.
+   * For nested values use a nested dictionary. For example:
+   * values: {
+   *  installationCRDs: true,
+   *  webhook: { port: 9443 }
+   * }
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};

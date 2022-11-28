@@ -34,6 +34,11 @@ const templateJson = '{ "Resources": ... }'; /* The CloudFormation template as J
 const template = Template.fromString(templateJson);
 ```
 
+**Cyclical Resources Note**
+
+If allowing cyclical references is desired, for example in the case of unprocessed Transform templates, supply TemplateParsingOptions and
+set skipCyclicalDependenciesCheck to true. In all other cases, will fail on detecting cyclical dependencies.
+
 ## Full Template Match
 
 The simplest assertion would be to assert that the template matches a given
@@ -97,7 +102,18 @@ The following code asserts that the `Properties` section of a resource of type
 
 ```ts
 template.hasResourceProperties('Foo::Bar', {
-  Foo: 'Bar',
+  Lorem: 'Ipsum',
+  Baz: 5,
+  Qux: [ 'Waldo', 'Fred' ],
+});
+```
+
+You can also assert that the `Properties` section of all resources of type
+`Foo::Bar` contains the specified properties -
+
+```ts
+template.allResourcesProperties('Foo::Bar', {
+  Lorem: 'Ipsum',
   Baz: 5,
   Qux: [ 'Waldo', 'Fred' ],
 });
@@ -108,7 +124,17 @@ can use the `hasResource()` API.
 
 ```ts
 template.hasResource('Foo::Bar', {
-  Properties: { Foo: 'Bar' },
+  Properties: { Lorem: 'Ipsum' },
+  DependsOn: [ 'Waldo', 'Fred' ],
+});
+```
+
+You can also assert the definitions of all resources of a type using the 
+`allResources()` API.
+
+```ts
+template.allResources('Foo::Bar', {
+  Properties: { Lorem: 'Ipsum' },
   DependsOn: [ 'Waldo', 'Fred' ],
 });
 ```
@@ -568,7 +594,7 @@ Here are the available APIs for `Annotations`:
 The corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead
 of asserting its presence, it returns the set of matching messages.
 
-In addition, this suite of APIs is compatable with `Matchers` for more fine-grained control.
+In addition, this suite of APIs is compatible with `Matchers` for more fine-grained control.
 For example, the following assertion works as well:
 
 ```ts

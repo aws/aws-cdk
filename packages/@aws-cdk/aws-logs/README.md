@@ -73,7 +73,7 @@ logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 
 Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
 This is because CloudWatch Logs Resource Policies do not accept ARNs as principals, but they do accept
-Account ID strings. Non-ARN principals, like Service principals or Any princpals, are accepted by CloudWatch.
+Account ID strings. Non-ARN principals, like Service principals or Any principals, are accepted by CloudWatch.
 
 ## Encrypting Log Groups
 
@@ -146,7 +146,7 @@ declare const logGroup: logs.LogGroup;
 logGroup.extractMetric('$.jsonField', 'Namespace', 'MetricName');
 ```
 
-Will extract the value of `jsonField` wherever it occurs in JSON-structed
+Will extract the value of `jsonField` wherever it occurs in JSON-structured
 log records in the LogGroup, and emit them to CloudWatch Metrics under
 the name `Namespace/MetricName`.
 
@@ -163,6 +163,9 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   metricName: 'Latency',
   filterPattern: logs.FilterPattern.exists('$.latency'),
   metricValue: '$.latency',
+  dimensions: {
+    ErrorCode: '$.errorCode',
+  }
 });
 
 //expose a metric from the metric filter

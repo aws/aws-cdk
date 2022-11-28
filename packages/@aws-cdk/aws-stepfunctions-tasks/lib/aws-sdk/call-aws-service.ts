@@ -52,6 +52,18 @@ export interface CallAwsServiceProps extends sfn.TaskStateBaseProps {
    * @default - service:action
    */
   readonly iamAction?: string;
+
+  /**
+   * Additional IAM statements that will be added to the state machine
+   * role's policy.
+   *
+   * Use in the case where the call requires more than a single statement to
+   * be executed, e.g. `rekognition:detectLabels` requires also S3 permissions
+   * to read the object on which it must act.
+   *
+   * @default - no additional statements are added
+   */
+  readonly additionalIamStatements?: iam.PolicyStatement[];
 }
 
 /**
@@ -75,6 +87,7 @@ export class CallAwsService extends sfn.TaskStateBase {
         // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
         actions: [props.iamAction ?? `${props.service}:${props.action}`],
       }),
+      ...props.additionalIamStatements ?? [],
     ];
   }
 
