@@ -9,6 +9,7 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@types/babel__traverse": "7.18.2",
     "@types/jest": "^27.5.2",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
