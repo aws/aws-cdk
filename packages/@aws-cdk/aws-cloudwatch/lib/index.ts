@@ -5,6 +5,7 @@ export * from './alarm-rule';
 export * from './composite-alarm';
 export * from './dashboard';
 export * from './graph';
+export * from './insight-rule';
 export * from './layout';
 export * from './metric';
 export * from './metric-types';

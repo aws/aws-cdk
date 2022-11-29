@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "InsightRuleIntegrationTest/DefaultTest": {
+      "stacks": [
+        "InsightRuleIntegrationTestStack"
+      ],
+      "assertionStack": "InsightRuleIntegrationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InsightRuleIntegrationTestDefaultTestDeployAssertA7A5F4FD"
+    }
+  }
+}

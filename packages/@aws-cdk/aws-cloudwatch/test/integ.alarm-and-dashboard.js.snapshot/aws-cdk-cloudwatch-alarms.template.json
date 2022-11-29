@@ -116,7 +116,11 @@
          "QueueName"
         ]
        },
-       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":56,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
+       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":56,\"properties\":{\"insightRule\":{\"maxContributorCount\":10,\"orderBy\":\"Sum\",\"ruleName\":\"my-insight-rule\"},\"legend\":{\"position\":\"bottom\"},\"period\":300,\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"title\":\"My Insight Widget\",\"view\":\"timeSeries\"}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":62,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
       ]
      ]
     },

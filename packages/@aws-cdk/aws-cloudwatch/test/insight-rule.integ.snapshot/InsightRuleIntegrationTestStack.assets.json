@@ -1,15 +1,15 @@
 {
-  "version": "22.0.0",
+  "version": "21.0.0",
   "files": {
-    "9ed85e3f3d41b1fadabb47defd1c2d842b9e55d7becc519b0742d5a92164f195": {
+    "49a3a4ffb2b17bfe85979244e1091af84ce050972f5ea7da717c1a90d0956078": {
       "source": {
-        "path": "aws-cdk-cloudwatch-alarms.template.json",
+        "path": "InsightRuleIntegrationTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9ed85e3f3d41b1fadabb47defd1c2d842b9e55d7becc519b0742d5a92164f195.json",
+          "objectKey": "49a3a4ffb2b17bfe85979244e1091af84ce050972f5ea7da717c1a90d0956078.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
