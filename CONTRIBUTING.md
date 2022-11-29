@@ -360,7 +360,7 @@ $ yarn watch & # runs in the background
 
 * Shout out to collaborators.
 
-* Call out any new [unconventional dependencies](#adding-new-unconventional-dependencies) that are created as part of your PR.
+* Call out any new [runtime dependencies](#adding-construct-runtime-dependencies) that are created as part of your PR.
 
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
