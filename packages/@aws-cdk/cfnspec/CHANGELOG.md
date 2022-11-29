@@ -1,3 +1,106 @@
+# CloudFormation Resource Specification v99.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ElastiCache::CacheCluster IpDiscovery (__added__)
+* AWS::ElastiCache::CacheCluster NetworkType (__added__)
+* AWS::ElastiCache::ReplicationGroup IpDiscovery (__added__)
+* AWS::ElastiCache::ReplicationGroup NetworkType (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__deleted__)
+
+## Property Type Changes
+
+
+## Unapplied changes
+
+* AWS::AmplifyUIBuilder is at 97.0.0
+* AWS::AppFlow is at 94.0.0
+
+# CloudFormation Resource Specification v98.0.0
+
+## New Resource Types
+
+* AWS::Organizations::OrganizationalUnit
+* AWS::SSM::ResourcePolicy
+
+## Attribute Changes
+
+* AWS::Panorama::Package StorageLocation.BinaryPrefixLocation (__added__)
+* AWS::Panorama::Package StorageLocation.Bucket (__added__)
+* AWS::Panorama::Package StorageLocation.GeneratedPrefixLocation (__added__)
+* AWS::Panorama::Package StorageLocation.ManifestPrefixLocation (__added__)
+* AWS::Panorama::Package StorageLocation.RepoPrefixLocation (__added__)
+* AWS::RDS::DBParameterGroup DBParameterGroupName (__added__)
+
+## Property Changes
+
+* AWS::Amplify::App Platform (__added__)
+* AWS::Amplify::Branch Framework (__added__)
+* AWS::ApiGateway::BasePathMapping Id (__deleted__)
+* AWS::AppSync::FunctionConfiguration Code (__added__)
+* AWS::AppSync::FunctionConfiguration CodeS3Location (__added__)
+* AWS::AppSync::FunctionConfiguration Runtime (__added__)
+* AWS::AppSync::FunctionConfiguration FunctionVersion.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppSync::Resolver Code (__added__)
+* AWS::AppSync::Resolver CodeS3Location (__added__)
+* AWS::AppSync::Resolver Runtime (__added__)
+* AWS::BillingConductor::PricingRule BillingEntity (__added__)
+* AWS::CloudWatch::CompositeAlarm AlarmName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::NatGateway PrivateIpAddress (__added__)
+* AWS::ECS::Cluster ServiceConnectDefaults (__added__)
+* AWS::ECS::Service ServiceConnectConfiguration (__added__)
+* AWS::EMR::Cluster OSReleaseLabel (__added__)
+* AWS::ElastiCache::User AuthenticationMode (__added__)
+* AWS::IVS::RecordingConfiguration RecordingReconnectWindowSeconds (__added__)
+* AWS::IoTTwinMaker::ComponentType PropertyGroups (__added__)
+* AWS::SageMaker::ModelPackage Tag (__deleted__)
+
+## Property Type Changes
+
+* AWS::AppSync::FunctionConfiguration.AppSyncRuntime (__added__)
+* AWS::AppSync::Resolver.AppSyncRuntime (__added__)
+* AWS::AutoScaling::AutoScalingGroup.NetworkBandwidthGbpsRequest (__added__)
+* AWS::ECS::Cluster.ServiceConnectDefaults (__added__)
+* AWS::ECS::Service.LogConfiguration (__added__)
+* AWS::ECS::Service.Secret (__added__)
+* AWS::ECS::Service.ServiceConnectClientAlias (__added__)
+* AWS::ECS::Service.ServiceConnectConfiguration (__added__)
+* AWS::ECS::Service.ServiceConnectService (__added__)
+* AWS::IoTTwinMaker::ComponentType.PropertyGroup (__added__)
+* AWS::IoTTwinMaker::Entity.PropertyGroup (__added__)
+* AWS::Panorama::Package.StorageLocation (__added__)
+* AWS::S3::StorageLens.AdvancedCostOptimizationMetrics (__added__)
+* AWS::S3::StorageLens.AdvancedDataProtectionMetrics (__added__)
+* AWS::S3::StorageLens.DetailedStatusCodesMetrics (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig Framework (__added__)
+* AWS::AutoScaling::AutoScalingGroup.InstanceRequirements AllowedInstanceTypes (__added__)
+* AWS::AutoScaling::AutoScalingGroup.InstanceRequirements NetworkBandwidthGbps (__added__)
+* AWS::ECS::TaskDefinition.PortMapping AppProtocol (__added__)
+* AWS::ECS::TaskDefinition.PortMapping Name (__added__)
+* AWS::IoT::AccountAuditConfiguration.AuditCheckConfigurations IntermediateCaRevokedForActiveDeviceCertificatesCheck (__added__)
+* AWS::IoTTwinMaker::Entity.Component PropertyGroups (__added__)
+* AWS::S3::StorageLens.AccountLevel AdvancedCostOptimizationMetrics (__added__)
+* AWS::S3::StorageLens.AccountLevel AdvancedDataProtectionMetrics (__added__)
+* AWS::S3::StorageLens.AccountLevel DetailedStatusCodesMetrics (__added__)
+* AWS::S3::StorageLens.BucketLevel AdvancedCostOptimizationMetrics (__added__)
+* AWS::S3::StorageLens.BucketLevel AdvancedDataProtectionMetrics (__added__)
+* AWS::S3::StorageLens.BucketLevel DetailedStatusCodesMetrics (__added__)
+
+## Unapplied changes
+
+* AWS::AmplifyUIBuilder is at 97.0.0
+* AWS::AppFlow is at 94.0.0
+
 # CloudFormation Resource Specification v97.0.0
 
 ## New Resource Types

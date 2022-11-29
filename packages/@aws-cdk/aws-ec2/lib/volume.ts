@@ -442,6 +442,14 @@ export interface VolumeProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The throughput that the volume supports, in MiB/s
+   * Takes a minimum of 125 and maximum of 1000.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
+   * @default - 125 MiB/s. Only valid on gp3 volumes.
+   */
+  readonly throughput?: number;
 }
 
 /**
@@ -702,6 +710,17 @@ export class Volume extends VolumeBase {
       if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
         throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
       }
+
+      const maximumThroughputRatios: { [key: string]: number } = {};
+      maximumThroughputRatios[EbsDeviceVolumeType.GP3] = 0.25;
+      const maximumThroughputRatio = maximumThroughputRatios[volumeType];
+      if (props.throughput && props.iops) {
+        const iopsRatio = (props.throughput / props.iops);
+        if (iopsRatio > maximumThroughputRatio) {
+          throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
+        }
+
+      }
     }
 
     if (props.enableMultiAttach) {
@@ -732,6 +751,21 @@ export class Volume extends VolumeBase {
       const { Min, Max } = sizeRanges[volumeType];
       if (size < Min || size > Max) {
         throw new Error(`\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`);
+      }
+    }
+
+    if (props.throughput) {
+      const throughputRange = { Min: 125, Max: 1000 };
+      const { Min, Max } = throughputRange;
+      if (props.volumeType != EbsDeviceVolumeType.GP3) {
+        throw new Error(
+          'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
+        );
+      }
+      if (props.throughput < Min || props.throughput > Max) {
+        throw new Error(
+          `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
+        );
       }
     }
   }
