@@ -1,7 +1,10 @@
+/**
+ * Generate FEATURE_FLAGS.md, a report of all current feature flags
+ */
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as feats from '../lib/features';
-import { FlagInfo, FlagType } from '../lib/private/flag-modeling';
+import { FlagInfo, FlagType, compareVersions } from '../lib/private/flag-modeling';
 
 async function main() {
   await updateMarkdownFile(path.join(__dirname, '..', 'FEATURE_FLAGS.md'), {
@@ -16,9 +19,14 @@ async function main() {
 
 function flagsTable() {
   return renderTable([
-    ['Flag', 'Summary', 'Since', 'Type', 'Recommended'],
+    ['Flag', 'Summary', 'Since', 'Type'],
     ...v2flags().map(([name, flag]) =>
-      [name, flag.summary, flag.introducedIn.v2 ?? '', renderType(flag.type), '`' + JSON.stringify(flag.recommendedValue) + '`'],
+      [
+        renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
+        flag.summary,
+        flag.introducedIn.v2 ?? '',
+        renderType(flag.type),
+      ],
     ),
   ]);
 }
@@ -27,10 +35,13 @@ function removedFlags() {
   const removedInV2 = flags(flag => flag.introducedIn.v2 === undefined && flag.introducedIn.v1 !== undefined);
 
   return renderTable([
-    ['Flag', 'Summary', 'Type', 'Since', 'Value in v2'],
-    ...removedInV2.map(([name, flag]) =>
-      [name, flag.summary, renderType(flag.type), flag.introducedIn.v1 ?? '', renderValue(flag.defaults?.v2)],
-    ),
+    ['Flag', 'Summary', 'Type', 'Since'],
+    ...removedInV2.map(([name, flag]) => [
+      renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
+      flag.summary,
+      renderType(flag.type),
+      flag.introducedIn.v1 ?? '',
+    ]),
   ]);
 }
 
@@ -39,9 +50,14 @@ function changedFlags() {
 
   return renderTable([
     ['Flag', 'Summary', 'Type', 'Since', 'v1 default', 'v2 default'],
-    ...changedInV2.map(([name, flag]) =>
-      [name, flag.summary, renderType(flag.type), flag.introducedIn.v1 ?? '', renderValue(false), renderValue(flag.defaults?.v2)],
-    ),
+    ...changedInV2.map(([name, flag]) => [
+      renderLink(mdEsc(name), githubHeadingLink(flagDetailsHeading(name, flag))),
+      flag.summary,
+      renderType(flag.type),
+      flag.introducedIn.v1 ?? '',
+      renderValue(false),
+      renderValue(flag.defaults?.v2),
+    ]),
   ]);
 }
 
@@ -58,16 +74,44 @@ function migrateJson() {
 }
 
 function flagsDetails() {
-  return v2flags().flatMap(([name, flag]) => [
-    `### ${name}`,
+  const allFlags = flags(_ => true);
+
+  return allFlags.flatMap(([name, flag]) => [
+    `### ${flagDetailsHeading(name, flag)}`,
     '',
-    `${flag.summary} ${renderType(flag.type)}`,
+    `*${flag.summary}* ${renderType(flag.type)}`,
     '',
-    dedent(flag.details),
+    dedent(flag.detailsMd),
     '',
-    `Introduced in **${flag.introducedIn.v2}**, recommended value ${renderValue(flag.recommendedValue)}.`,
+    renderTable([
+      ['Since', 'Default', 'Recommended'],
+
+      // V1
+      flag.introducedIn.v1
+        ? [flag.introducedIn.v1, renderValue(false), renderValue(flag.recommendedValue)]
+        : ['(not in v1)', '', ''],
+
+      // V2
+      flag.introducedIn.v2
+        ? [flag.introducedIn.v2, renderValue(flag.defaults?.v2 ?? false), renderValue(flag.recommendedValue)]
+        : flag.defaults?.v2 !== undefined
+          ? ['(default in v2)', renderValue(flag.defaults?.v2), '']
+          : ['(not in v2)', '', ''],
+    ]),
+    ...oldBehavior(flag) ? [
+      `**Compatibility with old behavior:** ${oldBehavior(flag)}`,
+      '',
+    ] : [],
     '',
   ]).join('\n');
+}
+
+function oldBehavior(flag: FlagInfo): string | undefined {
+  switch (flag.type) {
+    case FlagType.ApiDefault: return flag.compatibilityWithOldBehaviorMd;
+    case FlagType.BugFix: return flag.compatibilityWithOldBehaviorMd;
+    case FlagType.VisibleContext: return undefined;
+  }
 }
 
 function recommendedJson() {
@@ -88,8 +132,8 @@ function flags(pred: (x: FlagInfo) => boolean) {
 
   entries.sort((a, b) => firstCmp(
     // Sort by versions first
-    cmpVersions(a[1].introducedIn.v2, b[1].introducedIn.v2),
-    cmpVersions(a[1].introducedIn.v1, b[1].introducedIn.v1),
+    compareVersions(a[1].introducedIn.v2, b[1].introducedIn.v2),
+    compareVersions(a[1].introducedIn.v1, b[1].introducedIn.v1),
     // Then sort by name
     a[0].localeCompare(b[0])));
 
@@ -115,6 +159,20 @@ function renderTable(rows: string[][]) {
 }
 
 /**
+ * Return the heading that will be used to caption this flag's details
+ */
+function flagDetailsHeading(name: string, _: FlagInfo) {
+  return name;
+}
+
+/**
+ * Return a link that is valid on GitHub to refer to a heading
+ */
+function githubHeadingLink(heading: string) {
+  return `#${heading.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]/g, '')}`;
+}
+
+/**
  * Remove shared leading whitespace from all non-empty lines
  */
 function dedent(body: string) {
@@ -129,6 +187,14 @@ function renderValue(x: any) {
   return `\`${JSON.stringify(x)}\``;
 }
 
+function renderLink(caption: string, link: string) {
+  return `[${caption}](${link})`;
+}
+
+function mdEsc(x: string) {
+  return x.replace(/_/g, '\\_');
+}
+
 async function updateMarkdownFile(filename: string, sections: Record<string, string>) {
   let contents = await fs.readFile(filename, { encoding: 'utf-8' });
 
@@ -138,21 +204,6 @@ async function updateMarkdownFile(filename: string, sections: Record<string, str
   }
 
   await fs.writeFile(filename, contents, { encoding: 'utf-8' });
-}
-
-function cmpVersions(a: string | undefined, b: string | undefined): number {
-  if (a === undefined && b === undefined) { return 0; }
-  if (a === undefined) { return -1; }
-  if (b === undefined) { return 1; }
-
-  const as = a.split('.').map(x => parseInt(x, 10));
-  const bs = b.split('.').map(x => parseInt(x, 10));
-
-  for (let i = 0; i < Math.min(as.length, bs.length); i++) {
-    if (as[i] < bs[i]) { return -1; }
-    if (as[i] > bs[i]) { return 1; }
-  }
-  return as.length - bs.length;
 }
 
 function firstCmp(...xs: number[]) {

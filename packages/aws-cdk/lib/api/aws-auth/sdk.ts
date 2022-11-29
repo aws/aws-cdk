@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { traceMethods } from '../../util/tracing';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
@@ -8,7 +9,7 @@ import { Account } from './sdk-provider';
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
 // It's not part of the public API, but it's also unlikely to go away.
 //
-// Reuse that function, and add a safety check so we don't accidentally break if they ever
+// Reuse that function, and add a safety check, so we don't accidentally break if they ever
 // refactor that away.
 
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -52,6 +53,7 @@ export interface ISDK {
   lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
   ec2(): AWS.EC2;
+  iam(): AWS.IAM;
   ssm(): AWS.SSM;
   s3(): AWS.S3;
   route53(): AWS.Route53;
@@ -81,6 +83,7 @@ export interface SdkOptions {
 /**
  * Base functionality of SDK without credential fetching
  */
+@traceMethods
 export class SDK implements ISDK {
   private static readonly accountCache = new AccountAccessKeyCache();
 
@@ -159,6 +162,10 @@ export class SDK implements ISDK {
 
   public ec2(): AWS.EC2 {
     return this.wrapServiceErrorHandling(new AWS.EC2(this.config));
+  }
+
+  public iam(): AWS.IAM {
+    return this.wrapServiceErrorHandling(new AWS.IAM(this.config));
   }
 
   public ssm(): AWS.SSM {

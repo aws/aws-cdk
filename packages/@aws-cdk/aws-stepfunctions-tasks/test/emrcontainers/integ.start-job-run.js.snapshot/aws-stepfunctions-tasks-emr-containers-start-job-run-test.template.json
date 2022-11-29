@@ -980,7 +980,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b73d210baee7beae6e54240f8ac66b15d58e71b593c9b12ee0d84ab110295f94.json"
+       "/35095179411a39bfcf3668f0b9792ab6c226f9bbfed6ed11f64266838c2fb3f3.json"
       ]
      ]
     },
@@ -1015,7 +1015,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/377955fefe761e204612574a0b897dad2a0a7e421252e2db0ef9dd6f0f3c140a.json"
+       "/e089d05accc52f6f51c5b40401a767550506efa521391b1c3aad9366e5582d33.json"
       ]
      ]
     },
@@ -1087,15 +1087,7 @@
        "Principal": {
         "Service": [
          "emr-containers.amazonaws.com",
-         {
-          "Fn::FindInMap": [
-           "ServiceprincipalMap",
-           {
-            "Ref": "AWS::Region"
-           },
-           "states"
-          ]
-         }
+         "states.amazonaws.com"
         ]
        }
       }
@@ -1204,7 +1196,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+     "S3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1528,15 +1520,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": {
-         "Fn::FindInMap": [
-          "ServiceprincipalMap",
-          {
-           "Ref": "AWS::Region"
-          },
-          "states"
-         ]
-        }
+        "Service": "states.amazonaws.com"
        }
       }
      ],
@@ -1728,100 +1712,6 @@
   "stateMachineArn": {
    "Value": {
     "Ref": "StateMachine2E01A3A5"
-   }
-  }
- },
- "Mappings": {
-  "ServiceprincipalMap": {
-   "af-south-1": {
-    "states": "states.af-south-1.amazonaws.com"
-   },
-   "ap-east-1": {
-    "states": "states.ap-east-1.amazonaws.com"
-   },
-   "ap-northeast-1": {
-    "states": "states.ap-northeast-1.amazonaws.com"
-   },
-   "ap-northeast-2": {
-    "states": "states.ap-northeast-2.amazonaws.com"
-   },
-   "ap-northeast-3": {
-    "states": "states.ap-northeast-3.amazonaws.com"
-   },
-   "ap-south-1": {
-    "states": "states.ap-south-1.amazonaws.com"
-   },
-   "ap-southeast-1": {
-    "states": "states.ap-southeast-1.amazonaws.com"
-   },
-   "ap-southeast-2": {
-    "states": "states.ap-southeast-2.amazonaws.com"
-   },
-   "ap-southeast-3": {
-    "states": "states.ap-southeast-3.amazonaws.com"
-   },
-   "ca-central-1": {
-    "states": "states.ca-central-1.amazonaws.com"
-   },
-   "cn-north-1": {
-    "states": "states.cn-north-1.amazonaws.com"
-   },
-   "cn-northwest-1": {
-    "states": "states.cn-northwest-1.amazonaws.com"
-   },
-   "eu-central-1": {
-    "states": "states.eu-central-1.amazonaws.com"
-   },
-   "eu-north-1": {
-    "states": "states.eu-north-1.amazonaws.com"
-   },
-   "eu-south-1": {
-    "states": "states.eu-south-1.amazonaws.com"
-   },
-   "eu-south-2": {
-    "states": "states.eu-south-2.amazonaws.com"
-   },
-   "eu-west-1": {
-    "states": "states.eu-west-1.amazonaws.com"
-   },
-   "eu-west-2": {
-    "states": "states.eu-west-2.amazonaws.com"
-   },
-   "eu-west-3": {
-    "states": "states.eu-west-3.amazonaws.com"
-   },
-   "me-south-1": {
-    "states": "states.me-south-1.amazonaws.com"
-   },
-   "sa-east-1": {
-    "states": "states.sa-east-1.amazonaws.com"
-   },
-   "us-east-1": {
-    "states": "states.us-east-1.amazonaws.com"
-   },
-   "us-east-2": {
-    "states": "states.us-east-2.amazonaws.com"
-   },
-   "us-gov-east-1": {
-    "states": "states.us-gov-east-1.amazonaws.com"
-   },
-   "us-gov-west-1": {
-    "states": "states.us-gov-west-1.amazonaws.com"
-   },
-   "us-iso-east-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-iso-west-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-isob-east-1": {
-    "states": "states.amazonaws.com"
-   },
-   "us-west-1": {
-    "states": "states.us-west-1.amazonaws.com"
-   },
-   "us-west-2": {
-    "states": "states.us-west-2.amazonaws.com"
    }
   }
  },

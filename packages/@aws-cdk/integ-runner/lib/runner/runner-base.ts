@@ -150,7 +150,10 @@ export abstract class IntegRunner {
       },
     });
     this.cdkOutDir = options.integOutDir ?? this.test.temporaryOutputDir;
-    this.cdkApp = `node ${path.relative(this.directory, this.test.fileName)}`;
+
+    const testRunCommand = this.test.appCommand;
+    this.cdkApp = testRunCommand.replace('{filePath}', path.relative(this.directory, this.test.fileName));
+
     this.profile = options.profile;
     if (this.hasSnapshot()) {
       this.expectedTestSuite = this.loadManifest();
