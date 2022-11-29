@@ -24,8 +24,6 @@ export function isVersionBetween(version: string, lower: string, upper: string) 
   while (lo.length < ver.length) { lo.push(0); }
   while (up.length < ver.length) { up.push(9999999); }
 
-  console.log(version);
-
   let n = ver.length;
   for (let i = 0; i < n; i++) {
     if (lo[i] < ver[i] && ver[i] < up[i]) { return true; }
