@@ -389,32 +389,39 @@ $ yarn watch & # runs in the background
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
-#### Adding dependencies bundled in lambda layers
+#### Adding construct runtime dependencies
 
-Sometimes, constructs introduce runtime dependencies bundled in lambda layers for use in custom resources.
-The CDK includes three of these as direct dependencies for legacy purposes: `@aws-cdk/asset-awscli-v1`,
-`@aws-cdk/asset-kubectl-v20`, and `@aws-cdk/asset-node-proxy-agent-v5`. The actual dependencies are pulled out
-to separate repositories (like this [one](https://github.com/cdklabs/awscdk-asset-kubectl) for kubectl)
-and managed there. If you would like to introduce additional runtime dependencies, it likely involves discussing
-with a CDK maintainer and opening a new repository in cdklabs that vends the lambda layer. Generally, each branch
-on the repository will focus on a specific version of the dependency. For example, in `awscdk-asset-kubectl`,
-branch `kubectl-v20/main` vends kubectl v1.20, branch `kubectl-v21/main` vends kubectl v1.21, and so on.
+Any tool that is not part of the CDK, and needs to be used by a construct during
+deployment or runtime, can be included in the CDK Framework Library in one of two
+ways.
 
-After creating the repository, there are two possible paths to follow on a case-by-case basis:
+1. Add a direct dependency on an npm package containing the tool. For example,
+   `@aws-cdk/asset-awscli-v1`.
+2. Expose a property on the construct you are creating that allows users to
+   supply their own version of the tool. For example, the `eks.Cluster`
+   construct has a construct prop called `kubectlLayer` where you must provide a
+   version of `kubectl` from one of the `@aws-cdk/asset-kubectl-vXY` packages.
+   The version of `kubectl` must be compatible with the Kubernetes version of
+   the cluster.
 
-- Add a direct dependency in the module's `package.json` on a specific version of the dependency. This means that you
-  lock yourself to a specific version of the dependency, which makes sense for something like `awscli` v1.
-- In addition to having a direct dependency acting as a default, expose a property on the construct you are creating
-  that allows users to supply their own version of the dependency if need be. This makes the most sense for dependencies
-  like `kubectl`, which have multiple minor versions to choose from.
-  
-To see an example of this in action, take a look at how this works in the `eks.Cluster`
-[construct](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/aws-eks/README.md#L685-L692).
+Both options involve creating separate repositories (like this
+[one](https://github.com/cdklabs/awscdk-asset-kubectl) for kubectl). If you
+would like to introduce additional runtime dependencies, it likely involves
+discussing with a CDK maintainer and opening a new repository in cdklabs that
+vends the dependency as a lambda layer. Generally, each branch on the repository
+will focus on a specific version of the dependency. For example, in
+`awscdk-asset-kubectl`, branch `kubectl-v20/main` vends kubectl v1.20, branch
+`kubectl-v21/main` vends kubectl v1.21, and so on.
 
-**If your PR introduces runtime dependencies in lambda layers, make sure to call it out int he description
-so that we can discuss the best way to manage that dependency.**
+**If your PR introduces runtime dependencies in lambda layers, make sure to call
+it out in the description so that we can discuss the best way to manage that
+dependency.**
 
 #### Adding new unconventional dependencies
+
+> :warning: Do not add these. If there is a tool that you want to use in your
+CDK constructs, see [Adding construct runtime dependencies](# Adding construct
+runtime dependencies).
 
 **For the aws-cdk, an unconventional dependency is defined as any dependency that is not managed via the module's
 `package.json` file.**
