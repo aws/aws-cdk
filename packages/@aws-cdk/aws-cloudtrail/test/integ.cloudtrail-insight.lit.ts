@@ -4,7 +4,6 @@ import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 
 import * as cloudtrail from '../lib';
-import { InsightType } from '../lib/cloudtrail';
 
 class CloudTrailInsightStack extends Stack {
   constructor(scope: App, id: string) {
@@ -35,8 +34,8 @@ class CloudTrailInsightStack extends Stack {
     new cloudtrail.Trail(this, 'Trail', {
       bucket: Trailbucket,
       insightTypes: [
-        InsightType.API_CALL_RATE,
-        InsightType.API_ERROR_RATE,
+        cloudtrail.InsightType.API_CALL_RATE,
+        cloudtrail.InsightType.API_ERROR_RATE,
       ],
     });
   };
