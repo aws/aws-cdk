@@ -134,31 +134,6 @@ export enum InstanceClass {
   MEMORY6_AMD = 'memory6-amd',
 
   /**
-   * Memory optimized instances based on AMD EPYC, 6th generation
-   */
-  R6A = 'r6a',
-
-  /**
-   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   */
-  MEMORY6_INTEL = 'memory6-intel',
-
-  /**
-   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   */
-  R6I = 'r6i',
-
-  /**
-   * Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   */
-  MEMORY6_INTEL_NVME_DRIVE = 'memory6-intel-nvme-drive',
-
-  /**
-   * Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   */
-  R6ID = 'r6id',
-
-  /**
    * Memory optimized instances for high performance computing, 5th generation
    */
   MEMORY5_HIGH_PERFORMANCE = 'memory5-high-performance',
@@ -202,6 +177,41 @@ export enum InstanceClass {
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
   MEMORY5_AMD_NVME_DRIVE = 'memory5-amd-nvme-drive',
+
+  /**
+   * Memory optimized instances based on AMD EPYC, 6th generation
+   */
+  R6A = 'r6a',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  MEMORY6_INTEL = 'memory6-intel',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  R6I = 'r6i',
+
+  /**
+   * Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  MEMORY6_INTEL_NVME_DRIVE = 'memory6-intel-nvme-drive',
+
+  /**
+   * Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  R6ID = 'r6id',
+
+  /**
+   * Memory optimized instances with local NVME drive, 7th generation with Intel Xeon Scalable processors (4th generation Intel Xeon Scalable processors code named Sapphire Rapids)
+   */
+  MEMORY7_INTEL_HIGH_PERFORMANCE = 'memory7-intel-high-perrformance',
+
+  /**
+   * Memory optimized instances with local NVME drive, 7th generation with Intel Xeon Scalable processors (4th generation Intel Xeon Scalable processors code named Sapphire Rapids)
+   */
+  R7IZ = 'r7iz',
 
   /**
    * High memory instances (3TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
@@ -1069,12 +1079,6 @@ export class InstanceType {
       [InstanceClass.R4]: 'r4',
       [InstanceClass.MEMORY5]: 'r5',
       [InstanceClass.R5]: 'r5',
-      [InstanceClass.MEMORY6_AMD]: 'r6a',
-      [InstanceClass.R6A]: 'r6a',
-      [InstanceClass.MEMORY6_INTEL]: 'r6i',
-      [InstanceClass.R6I]: 'r6i',
-      [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
-      [InstanceClass.R6ID]: 'r6id',
       [InstanceClass.MEMORY5_HIGH_PERFORMANCE]: 'r5n',
       [InstanceClass.R5N]: 'r5n',
       [InstanceClass.MEMORY5_NVME_DRIVE]: 'r5d',
@@ -1085,6 +1089,14 @@ export class InstanceType {
       [InstanceClass.R5A]: 'r5a',
       [InstanceClass.MEMORY5_AMD_NVME_DRIVE]: 'r5ad',
       [InstanceClass.R5AD]: 'r5ad',
+      [InstanceClass.MEMORY6_AMD]: 'r6a',
+      [InstanceClass.R6A]: 'r6a',
+      [InstanceClass.MEMORY6_INTEL]: 'r6i',
+      [InstanceClass.R6I]: 'r6i',
+      [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
+      [InstanceClass.R6ID]: 'r6id',
+      [InstanceClass.MEMORY7_INTEL_HIGH_PERFORMANCE]: 'r7id',
+      [InstanceClass.R7IZ]: 'r7id',
       [InstanceClass.HIGH_MEMORY_3TB_1]: 'u-3tb1',
       [InstanceClass.U_3TB1]: 'u-3tb1',
       [InstanceClass.HIGH_MEMORY_6TB_1]: 'u-6tb1',
