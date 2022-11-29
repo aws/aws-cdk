@@ -420,8 +420,8 @@ dependency.**
 #### Adding new unconventional dependencies
 
 > :warning: Do not add these. If there is a tool that you want to use in your
-CDK constructs, see [Adding construct runtime dependencies](#Adding construct
-runtime dependencies).
+CDK constructs, see [Adding construct runtime
+dependencies](#Adding-construct-runtime-dependencies).
 
 **For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
 `package.json` file.**
