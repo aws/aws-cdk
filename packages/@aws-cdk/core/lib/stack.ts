@@ -1234,7 +1234,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
     }
 
-    const exportIsAList = isExportAList(exportedValue, resolved);
+    const exportIsAList = resolvable.typeHint === ResolutionTypeHint.LIST;
 
     // if it's a list, export an Fn::Join expression
     // and import an Fn::Split expression,
@@ -1436,47 +1436,6 @@ function generateExportName(stackExports: Construct, id: string) {
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
-function isExportAList(exportedValue: any, resolved: any) {
-  const target = exportedValue.target;
-  const resolvedGetAtt = resolved['Fn::GetAtt'];
-  const resolvedRef = resolved.Ref;
-
-  if (resolvedGetAtt && resolvedRef) {
-    throw new Error(`found a reference with both 'Fn::GetAtt' and 'Fn::Ref' ${JSON.stringify(resolved)}`);
-  }
-
-  if (resolvedGetAtt) {
-    if (target === undefined) {
-      return false;
-    }
-
-    const desiredAttribute = 'attr' + resolvedGetAtt[1];
-    const exportAttr = target[desiredAttribute];
-
-    return Array.isArray(exportAttr) && typeof exportAttr[0] === 'string';
-  } else if (resolvedRef) {
-    let valueAsList = undefined;
-    try {
-      // target might be a `CfnParameter`,
-      // which is the only case where a Ref to a List is possible
-      valueAsList = target.valueAsList;
-    } catch (e) {
-      // either `valueAsList` isn't defined,
-      // or if it is, then the parameter value
-      // isn't a list; either way, this parameter
-      // value is not a list.
-
-      return false;
-    }
-
-    if (valueAsList) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 interface StackDependency {
   stack: Stack;
   reasons: string[];
@@ -1522,4 +1481,5 @@ import { getExportable } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
+import { ResolutionTypeHint } from './type-hints';
 

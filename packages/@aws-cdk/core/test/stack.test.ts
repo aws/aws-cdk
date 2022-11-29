@@ -7,7 +7,7 @@ import {
   CfnResource, Lazy, ScopedAws, Stack, validateString,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
-  Aws, Fn,
+  Aws, Fn, ResolutionTypeHint,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -477,7 +477,7 @@ describe('stack', () => {
     new CfnResource(stack2, 'SomeResource', {
       type: 'BLA',
       properties: {
-        Prop: exportResource.getAtt('List'),
+        Prop: exportResource.getAtt('List', ResolutionTypeHint.LIST),
       },
     });
 
@@ -538,7 +538,7 @@ describe('stack', () => {
     new CfnResource(stack2, 'SomeResource', {
       type: 'BLA',
       properties: {
-        Prop: Fn.select(3, exportResource.getAtt('List') as any),
+        Prop: Fn.select(3, exportResource.getAtt('List', ResolutionTypeHint.LIST) as any),
       },
     });
 
@@ -1140,14 +1140,14 @@ describe('stack', () => {
     const consumerA = new Stack(appA, 'Consumer');
     const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
     (resourceA as any).attrAtt = ['Foo', 'Bar'];
-    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att')}` });
+    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att', ResolutionTypeHint.LIST)}` });
 
     // GIVEN: manual
     const appM = new App();
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
     (resourceM as any).attrAtt = ['Foo', 'Bar'];
-    producerM.exportListValue(resourceM.getAtt('Att'));
+    producerM.exportListValue(resourceM.getAtt('Att', ResolutionTypeHint.LIST));
 
     // THEN - producers are the same
     const templateA = appA.synth().getStackByName(producerA.stackName).template;

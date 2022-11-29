@@ -14,6 +14,13 @@ export interface IntrinsicProps {
    * @default true
    */
   readonly stackTrace?: boolean;
+
+  /**
+   * Capture the stack trace of where this token is created
+   *
+   * @default true
+   */
+  readonly typeHint?: ResolutionTypeHint;
 }
 
 /**
@@ -45,14 +52,7 @@ export class Intrinsic implements IResolvable {
 
     this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
     this.value = value;
-
-    if (Array.isArray(value)) {
-      this.typeHint = ResolutionTypeHint.LIST;
-    } else if (!isNaN(value)) {
-      this.typeHint = ResolutionTypeHint.NUMBER;
-    } else {
-      this.typeHint = ResolutionTypeHint.STRING;
-    }
+    this.typeHint = options.typeHint ?? ResolutionTypeHint.STRING;
   }
 
   public resolve(_context: IResolveContext) {
