@@ -52,10 +52,26 @@ export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, 
       ...flatten(respond),
     };
 
-    const resp = request.flattenResponse === 'true' ? flatData : respond;
+    let resp: AwsApiCallResult | { [key: string]: string } = respond;
+    if (request.outputPaths) {
+      resp = filterKeys(flatData, request.outputPaths!);
+    } else if (request.flattenResponse === 'true') {
+      resp = flatData;
+    }
     console.log(`Returning result ${JSON.stringify(resp)}`);
     return resp;
   }
+}
+
+function filterKeys(object: object, searchStrings: string[]): { [key: string]: string } {
+  return Object.entries(object).reduce((filteredObject: { [key: string]: string }, [key, value]) => {
+    for (const searchString of searchStrings) {
+      if (key.startsWith(`apiCallResponse.${searchString}`)) {
+        filteredObject[key] = value;
+      }
+    }
+    return filteredObject;
+  }, {});
 }
 
 function isJsonString(value: string): any {

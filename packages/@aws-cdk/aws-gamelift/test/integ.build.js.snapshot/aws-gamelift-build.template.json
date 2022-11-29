@@ -40,7 +40,7 @@
           {
            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "/6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip"
+          "/b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip"
          ]
         ]
        }
@@ -59,23 +59,57 @@
   "Build45A36621": {
    "Type": "AWS::GameLift::Build",
    "Properties": {
+    "OperatingSystem": "AMAZON_LINUX_2",
     "StorageLocation": {
      "Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "Key": "6019bfc8ab05a24b0ae9b5d8f4585cbfc7d1c30a23286d0b25ce7066a368a5d7.zip",
+     "Key": "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip",
      "RoleArn": {
       "Fn::GetAtt": [
        "BuildServiceRole1F57E904",
        "Arn"
       ]
      }
-    }
+    },
+    "Version": "1.0"
    },
    "DependsOn": [
     "BuildServiceRoleDefaultPolicyCB7101C6",
     "BuildServiceRole1F57E904"
    ]
+  }
+ },
+ "Outputs": {
+  "BuildArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:",
+      {
+       "Ref": "AWS::Partition"
+      },
+      ":gamelift:",
+      {
+       "Ref": "AWS::Region"
+      },
+      ":",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":build/",
+      {
+       "Ref": "Build45A36621"
+      }
+     ]
+    ]
+   }
+  },
+  "BuildId": {
+   "Value": {
+    "Ref": "Build45A36621"
+   }
   }
  },
  "Parameters": {

@@ -68,6 +68,10 @@ export function withSamIntegrationCdkApp<A extends TestContext & AwsContext>(blo
       }
       await block(fixture);
     } catch (e) {
+      // We survive certain cases involving gopkg.in
+      if (errorCausedByGoPkg(e.message)) {
+        return;
+      }
       success = false;
       throw e;
     } finally {
@@ -78,6 +82,30 @@ export function withSamIntegrationCdkApp<A extends TestContext & AwsContext>(blo
       }
     }
   };
+}
+
+/**
+ * Return whether or not the error is being caused by gopkg.in being down
+ *
+ * Our Go build depends on https://gopkg.in/, which has errors pretty often
+ * (every couple of days). It is run by a single volunteer.
+ */
+function errorCausedByGoPkg(error: string) {
+  // The error is different depending on what request fails. Messages recognized:
+  ////////////////////////////////////////////////////////////////////
+  //    go: github.com/aws/aws-lambda-go@v1.28.0 requires
+  //        gopkg.in/yaml.v3@v3.0.0-20200615113413-eeeca48fe776: invalid version: git ls-remote -q origin in /go/pkg/mod/cache/vcs/0901dc1ef67fcce1c9b3ae51078740de4a0e2dc673e720584ac302973af82f36: exit status 128:
+  //        remote: Cannot obtain refs from GitHub: cannot talk to GitHub: Get https://github.com/go-yaml/yaml.git/info/refs?service=git-upload-pack: net/http: request canceled (Client.Timeout exceeded while awaiting headers)
+  //        fatal: unable to access 'https://gopkg.in/yaml.v3/': The requested URL returned error: 502
+  ////////////////////////////////////////////////////////////////////
+  //    go: downloading github.com/aws/aws-lambda-go v1.28.0
+  //    go: github.com/aws/aws-lambda-go@v1.28.0 requires
+  //        gopkg.in/yaml.v3@v3.0.0-20200615113413-eeeca48fe776: unrecognized import path "gopkg.in/yaml.v3": reading https://gopkg.in/yaml.v3?go-get=1: 502 Bad Gateway
+  //        server response: Cannot obtain refs from GitHub: cannot talk to GitHub: Get https://github.com/go-yaml/yaml.git/info/refs?service=git-upload-pack: net/http: request canceled (Client.Timeout exceeded while awaiting headers)
+  ////////////////////////////////////////////////////////////////////
+
+  return (error.includes('unable to access \'https://gopkg.in/')
+    || error.match(/unrecognized import path[^\n]gopkg\.in/));
 }
 
 /**

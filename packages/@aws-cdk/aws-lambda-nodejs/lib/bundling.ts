@@ -113,7 +113,7 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     this.externals = [
-      ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
+      ...props.externalModules ?? (isSdkV2Runtime(props.runtime) ? ['aws-sdk'] : ['@aws-sdk/*']), // Mark aws-sdk as external by default (available in the runtime)
       ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
     ];
 
@@ -366,4 +366,18 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   }
 
   return args.join(' ');
+}
+
+function isSdkV2Runtime(runtime: Runtime): boolean {
+  const sdkV2RuntimeList = [
+    Runtime.NODEJS,
+    Runtime.NODEJS_4_3,
+    Runtime.NODEJS_6_10,
+    Runtime.NODEJS_8_10,
+    Runtime.NODEJS_10_X,
+    Runtime.NODEJS_12_X,
+    Runtime.NODEJS_14_X,
+    Runtime.NODEJS_16_X,
+  ];
+  return sdkV2RuntimeList.includes(runtime);
 }

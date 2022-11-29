@@ -7,7 +7,7 @@ import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-24';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
@@ -131,8 +131,6 @@ class EksClusterStack extends Stack {
 
     // make sure namespace is deployed before the chart
     nginxIngress.node.addDependency(nginxNamespace);
-
-
   }
 
   private assertSimpleCdk8sChart() {

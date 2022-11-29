@@ -75,7 +75,7 @@ logging the domain logs and slow search logs.
 
 Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/slr.html) Service-Linked Role.
 
-When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message simlar to:
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message similar to:
 
 ```console
 Before you can proceed, you must enable a service-linked role to give Amazon OpenSearch Service...
@@ -228,7 +228,7 @@ means anyone can access the domain using the configured master username and
 password.
 
 To enable unsigned basic auth access the domain is configured with an access
-policy that allows anyonmous requests, HTTPS required, node to node encryption,
+policy that allows anonymous requests, HTTPS required, node to node encryption,
 encryption at rest and fine grained access control.
 
 If the above settings are not set they will be configured as part of enabling

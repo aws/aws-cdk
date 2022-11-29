@@ -1,6 +1,6 @@
 import { Template, Match, Annotations } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy } from '@aws-cdk/core';
+import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
@@ -906,6 +906,224 @@ describe('IAM role', () => {
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
+});
+
+describe('permissions boundary', () => {
+  test('can be applied to an app', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
+          name: 'cdk-${Qualifier}-PermissionsBoundary',
+        },
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      PermissionsBoundary: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':policy/cdk-hnb659fds-PermissionsBoundary',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('can be applied to a stage', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+    });
+    const stack = new Stack(stage);
+
+    // WHEN
+    new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      PermissionsBoundary: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':policy/cdk-hnb659fds-PermissionsBoundary',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('can be applied to a stage, and will replace placeholders', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      env: {
+        region: 'test-region',
+        account: '123456789012',
+      },
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+    });
+    const stack = new Stack(stage);
+
+    // WHEN
+    new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      PermissionsBoundary: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::123456789012:policy/cdk-hnb659fds-PermissionsBoundary-123456789012-test-region',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('with a custom qualifier', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+    });
+    const stack = new Stack(stage, 'MyStack', {
+      synthesizer: new DefaultStackSynthesizer({
+        qualifier: 'custom',
+      }),
+    });
+
+    // WHEN
+    new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      PermissionsBoundary: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':policy/cdk-custom-PermissionsBoundary',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('with a custom permissions boundary', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      permissionsBoundary: PermissionsBoundary.fromName('my-permissions-boundary'),
+    });
+    const stack = new Stack(stage);
+
+    // WHEN
+    new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      PermissionsBoundary: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':policy/my-permissions-boundary',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('with a custom permissions boundary and qualifier', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage', {
+      permissionsBoundary: PermissionsBoundary.fromName('my-${Qualifier}-permissions-boundary'),
+    });
+    const stack = new Stack(stage, 'MyStack', {
+      synthesizer: new CliCredentialsStackSynthesizer({
+        qualifier: 'custom',
+      }),
+    });
+
+    // WHEN
+    new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      PermissionsBoundary: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':policy/my-custom-permissions-boundary',
+          ],
+        ],
+      },
+    });
+  });
+
 });
 
 test('managed policy ARNs are deduplicated', () => {
