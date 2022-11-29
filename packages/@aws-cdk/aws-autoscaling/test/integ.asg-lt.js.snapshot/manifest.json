@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
     "Tree": {
       "type": "cdk:tree",
@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb1b7cc4cd8286ab836dcbb42f408e2c39d60c34a017d1dac4b998c1891d843b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ca8f144c3e288148d58c9b9e86c9034f6a72b09cecffac3a5d406f8f53d5b18.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -235,6 +235,48 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AsgFromMipWithoutDistributionASG4BF292F9"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceInstanceRoleF52FB39B"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceInstanceProfile2FC414A5"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceLaunchConfig24411F5E"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgWithGp3Blockdevice/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgWithGp3BlockdeviceASGE82AA487"
+          }
+        ],
+        "/aws-cdk-asg-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-asg-integ/BootstrapVersion": [
