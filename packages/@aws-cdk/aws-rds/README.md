@@ -359,9 +359,11 @@ When the master password is generated and stored in AWS Secrets Manager, it can 
 import * as cdk from '@aws-cdk/core';
 
 declare const instance: rds.DatabaseInstance;
+declare const mySecurityGroup: ec2.SecurityGroup;
 instance.addRotationSingleUser({
   automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
   excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+  securityGroup: mySecurityGroup, // defaults to an auto-created security group
 });
 ```
 
