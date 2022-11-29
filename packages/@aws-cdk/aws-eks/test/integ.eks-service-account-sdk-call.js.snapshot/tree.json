@@ -677,6 +677,14 @@
                 "id": "Role",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-eks-service-account-sdk-calls-test/Cluster/Role/Resource",
@@ -764,6 +772,14 @@
                     "id": "CreationRole",
                     "path": "aws-eks-service-account-sdk-calls-test/Cluster/Resource/CreationRole",
                     "children": {
+                      "ImportCreationRole": {
+                        "id": "ImportCreationRole",
+                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/Resource/CreationRole/ImportCreationRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-eks-service-account-sdk-calls-test/Cluster/Resource/CreationRole/Resource",
@@ -914,7 +930,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.161"
                 }
               },
               "KubectlReadyBarrier": {
@@ -937,6 +953,14 @@
                 "id": "MastersRole",
                 "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole",
                 "children": {
+                  "ImportMastersRole": {
+                    "id": "ImportMastersRole",
+                    "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole/ImportMastersRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-eks-service-account-sdk-calls-test/Cluster/MastersRole/Resource",
@@ -1029,6 +1053,14 @@
                     "id": "NodeGroupRole",
                     "path": "aws-eks-service-account-sdk-calls-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole",
                     "children": {
+                      "ImportNodeGroupRole": {
+                        "id": "ImportNodeGroupRole",
+                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-eks-service-account-sdk-calls-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
@@ -1196,6 +1228,14 @@
                     "id": "Role",
                     "path": "aws-eks-service-account-sdk-calls-test/Cluster/my-service-account/Role",
                     "children": {
+                      "ImportRole": {
+                        "id": "ImportRole",
+                        "path": "aws-eks-service-account-sdk-calls-test/Cluster/my-service-account/Role/ImportRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-eks-service-account-sdk-calls-test/Cluster/my-service-account/Role/Resource",
@@ -1246,7 +1286,21 @@
                                     {
                                       "Action": "s3:CreateBucket",
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:s3:::*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:aws:s3:::eks-bucket-",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            "-",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -1440,6 +1494,14 @@
                     "id": "ServiceRole",
                     "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
@@ -1605,6 +1667,14 @@
                     "id": "ServiceRole",
                     "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
@@ -1774,6 +1844,14 @@
                         "id": "ServiceRole",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -1994,6 +2072,14 @@
                         "id": "ServiceRole",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
@@ -2204,6 +2290,14 @@
                         "id": "ServiceRole",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
@@ -2414,6 +2508,14 @@
                         "id": "Role",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
@@ -2426,15 +2528,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2544,20 +2638,12 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.161"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/custom-resources.Provider",
-                  "version": "0.0.0"
-                }
-              },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -2609,7 +2695,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/43e69401d10a989e34de359b086e70945c6cfa0dc82576f00de458ac040afe9d.json"
+                          "/ee3591b9f41899543a43bf01dc88511400507dbaeb7af4f5467197b44103e233.json"
                         ]
                       ]
                     },
@@ -2631,7 +2717,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.161"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2646,6 +2732,14 @@
                     "id": "ServiceRole",
                     "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Handler/ServiceRole/Resource",
@@ -2972,6 +3066,14 @@
                         "id": "ServiceRole",
                         "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
@@ -3301,7 +3403,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.161"
             }
           },
           "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
@@ -3372,6 +3474,14 @@
               "version": "0.0.0"
             }
           },
+          "kplus-sa": {
+            "id": "kplus-sa",
+            "path": "aws-eks-service-account-sdk-calls-test/kplus-sa",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.161"
+            }
+          },
           "S3BucketPinger": {
             "id": "S3BucketPinger",
             "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger",
@@ -3384,6 +3494,14 @@
                     "id": "ServiceRole",
                     "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/ServiceRole/Resource",
@@ -3414,18 +3532,6 @@
                                     ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
                                   ]
                                 ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                                  ]
-                                ]
                               }
                             ]
                           }
@@ -3453,7 +3559,21 @@
                                         "s3:ListBucket"
                                       ],
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:s3:::*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:aws:s3:::eks-bucket-",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            "-",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            }
+                                          ]
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -3509,40 +3629,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatic security group for Lambda Function awseksserviceaccountsdkcallstestS3BucketPingerFunction630FD1F5",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "Vpc8378EB38"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Function/Resource",
@@ -3553,7 +3639,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d75a212991386411deef17a64b16165f25a2fd42daf48824455a47f1c25c3f22.zip"
+                          "s3Key": "52afb3e2686860c4a72b179852db125e37824bbfccee63ff90cd7b45b9560da1.zip"
                         },
                         "role": {
                           "Fn::GetAtt": [
@@ -3561,27 +3647,28 @@
                             "Arn"
                           ]
                         },
-                        "handler": "index.handler",
-                        "runtime": "python3.9",
-                        "timeout": 60,
-                        "vpcConfig": {
-                          "subnetIds": [
-                            {
-                              "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                            },
-                            {
-                              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                            }
-                          ],
-                          "securityGroupIds": [
-                            {
-                              "Fn::GetAtt": [
-                                "S3BucketPingerFunctionSecurityGroup470A4668",
-                                "GroupId"
+                        "environment": {
+                          "variables": {
+                            "BUCKET_NAME": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "eks-bucket-",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  "-",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  }
+                                ]
                               ]
                             }
-                          ]
-                        }
+                          }
+                        },
+                        "handler": "index.handler",
+                        "runtime": "python3.9",
+                        "timeout": 60
                       }
                     },
                     "constructInfo": {
@@ -3607,6 +3694,14 @@
                         "id": "ServiceRole",
                         "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Provider/framework-onEvent/ServiceRole",
                         "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-eks-service-account-sdk-calls-test/S3BucketPinger/Provider/framework-onEvent/ServiceRole/Resource",
@@ -3810,7 +3905,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.161"
             }
           },
           "PingerResponse": {
@@ -3856,7 +3951,7 @@
                 "path": "aws-cdk-eks-service-account-sdk-call/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.161"
                 }
               },
               "DeployAssert": {
@@ -3902,7 +3997,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.161"
         }
       }
     },

@@ -1,11 +1,24 @@
 import { FlagInfo, FlagType } from './private/flag-modeling';
 
-// --------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////
+//
 // This file defines context keys that enable certain features that are
 // implemented behind a flag in order to preserve backwards compatibility for
 // existing apps. When a new app is initialized through `cdk init`, the CLI will
 // automatically add enable these features by adding them to the generated
 // `cdk.json` file.
+//
+////////////////////////////////////////////////////////////////////////
+//
+//  !!! IMPORTANT !!!
+//
+//  When you introduce a new flag, set its 'introducedIn.v2' value to the literal string
+// 'V2·NEXT', without the dot.
+//
+//  DO NOT USE A VARIABLE. DO NOT DEFINE A CONSTANT. The actual value will be string-replaced at
+//  version bump time.
+//
+////////////////////////////////////////////////////////////////////////
 //
 // There are three types of flags: ApiDefault, BugFix, and VisibleContext flags.
 //
@@ -59,6 +72,7 @@ export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscri
 export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
+export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -511,6 +525,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       This flag applies to SQS Queues that are used as the target of event Rules. When enabled, only principals
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
+      `,
+    introducedIn: { v2: '2.51.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_STANDARDIZED_SERVICE_PRINCIPALS]: {
+    type: FlagType.BugFix,
+    summary: 'Use standardized (global) service principals everywhere',
+    detailsMd: `
+      We used to maintain a database of exceptions to Service Principal names in various regions. This database
+      is no longer necessary: all service principals names have been standardized to their global form (\`SERVICE.amazonaws.com\`).
+
+      This flag disables use of that exceptions database and always uses the global service principal.
       `,
     introducedIn: { v2: '2.51.0' },
     recommendedValue: true,

@@ -27,20 +27,6 @@ entire machine learning workflow to label and prepare your data, choose an algor
 model, tune and optimize it for deployment, make predictions, and take action. Your models get to
 production faster with much less effort and lower cost.
 
-## Installation
-
-Install the module:
-
-```console
-$ npm i @aws-cdk/aws-sagemaker
-```
-
-Import it into your code:
-
-```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
-```
-
 ## Model
 
 To create a machine learning model with Amazon Sagemaker, use the `Model` construct. This construct
@@ -155,4 +141,110 @@ import * as sagemaker from '@aws-cdk/aws-sagemaker';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 const modelData = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
+```
+
+## Model Hosting
+
+Amazon SageMaker provides model hosting services for model deployment. Amazon SageMaker provides an
+HTTPS endpoint where your machine learning model is available to provide inferences.
+
+### Endpoint Configuration
+
+By using the `EndpointConfig` construct, you can define a set of endpoint configuration which can be
+used to provision one or more endpoints. In this configuration, you identify one or more models to
+deploy and the resources that you want Amazon SageMaker to provision. You define one or more
+production variants, each of which identifies a model. Each production variant also describes the
+resources that you want Amazon SageMaker to provision. If you are hosting multiple models, you also
+assign a variant weight to specify how much traffic you want to allocate to each model. For example,
+suppose that you want to host two models, A and B, and you assign traffic weight 2 for model A and 1
+for model B. Amazon SageMaker distributes two-thirds of the traffic to Model A, and one-third to
+model B:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+declare const modelA: sagemaker.Model;
+declare const modelB: sagemaker.Model;
+
+const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+  instanceProductionVariants: [
+    {
+      model: modelA,
+      variantName: 'modelA',
+      initialVariantWeight: 2.0,
+    },
+    {
+      model: modelB,
+      variantName: 'variantB',
+      initialVariantWeight: 1.0,
+    },
+  ]
+});
+```
+
+### Endpoint
+
+When you create an endpoint from an `EndpointConfig`, Amazon SageMaker launches the ML compute
+instances and deploys the model or models as specified in the configuration. To get inferences from
+the model, client applications send requests to the Amazon SageMaker Runtime HTTPS endpoint. For
+more information about the API, see the
+[InvokeEndpoint](https://docs.aws.amazon.com/sagemaker/latest/dg/API_runtime_InvokeEndpoint.html)
+API. Defining an endpoint requires at minimum the associated endpoint configuration:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+declare const endpointConfig: sagemaker.EndpointConfig;
+
+const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+```
+
+### AutoScaling
+
+To enable autoscaling on the production variant, use the `autoScaleInstanceCount` method:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+declare const model: sagemaker.Model;
+
+const variantName = 'my-variant';
+const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+  instanceProductionVariants: [
+    {
+      model: model,
+      variantName: variantName,
+    },
+  ]
+});
+
+const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+const productionVariant = endpoint.findInstanceProductionVariant(variantName);
+const instanceCount = productionVariant.autoScaleInstanceCount({
+  maxCapacity: 3
+});
+instanceCount.scaleOnInvocations('LimitRPS', {
+  maxRequestsPerSecond: 30,
+});
+```
+
+For load testing guidance on determining the maximum requests per second per instance, please see
+this [documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-scaling-loadtest.html).
+
+### Metrics
+
+To monitor CloudWatch metrics for a production variant, use one or more of the metric convenience
+methods:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker';
+
+declare const endpointConfig: sagemaker.EndpointConfig;
+
+const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
+const productionVariant = endpoint.findInstanceProductionVariant('my-variant');
+productionVariant.metricModelLatency().createAlarm(this, 'ModelLatencyAlarm', {
+  threshold: 100000,
+  evaluationPeriods: 3,
+});
 ```
