@@ -857,6 +857,16 @@ export enum InstanceClass {
   INF1 = 'inf1',
 
   /**
+   * Inferentia Chips based instances for machine learning inference applications, 2nd generation
+   */
+  INFERENCE2 = 'inference2',
+
+  /**
+   * Inferentia Chips based instances for machine learning inference applications, 2nd generation
+   */
+  INF2 = 'inf2',
+
+  /**
    * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
    */
   MACINTOSH1_INTEL = 'macintosh1-intel',
@@ -1205,6 +1215,8 @@ export class InstanceType {
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',
       [InstanceClass.INF1]: 'inf1',
+      [InstanceClass.INFERENCE2]: 'inf2',
+      [InstanceClass.INF2]: 'inf2',
       [InstanceClass.MACINTOSH1_INTEL]: 'mac1',
       [InstanceClass.MAC1]: 'mac1',
       [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
