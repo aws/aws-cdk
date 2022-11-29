@@ -27,20 +27,6 @@ entire machine learning workflow to label and prepare your data, choose an algor
 model, tune and optimize it for deployment, make predictions, and take action. Your models get to
 production faster with much less effort and lower cost.
 
-## Installation
-
-Install the module:
-
-```console
-$ npm i @aws-cdk/aws-sagemaker
-```
-
-Import it into your code:
-
-```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
-```
-
 ## Model
 
 To create a machine learning model with Amazon Sagemaker, use the `Model` construct. This construct
