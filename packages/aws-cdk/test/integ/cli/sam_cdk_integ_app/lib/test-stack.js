@@ -20,6 +20,8 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var { RetentionDays } = require('aws-cdk-lib/aws-logs');
 }
 
+const isRunningOnCodeBuild = !!process.env.CODEBUILD_BUILD_ID;
+
 class CDKSupportDemoRootStack extends Stack{
   constructor(scope, id, props) {
     super(scope, id, props);
@@ -99,6 +101,8 @@ class CDKSupportDemoRootStack extends Stack{
       entry: './src/go/GoFunctionConstruct',
       bundling: {
         forcedDockerBundling: true,
+        // Only use Google proxy in the CI tests, as it is blocked on workstations
+        goProxies: isRunningOnCodeBuild ? [GoFunction.GOOGLE_GOPROXY, 'direct'] : undefined,
       },
     });
 
