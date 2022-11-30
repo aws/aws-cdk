@@ -32,7 +32,6 @@ export function isVersionBetween(version: string, lower: string, upper: string) 
 
   return false;
 
-  // return lo[n-1] <= ver[n-1] && ver[n-1] <= up[n-1];
 }
 
 function splitVersion(version: string): number[] {
