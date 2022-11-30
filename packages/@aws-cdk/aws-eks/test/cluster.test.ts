@@ -2103,6 +2103,13 @@ describe('cluster', () => {
               ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
             ]],
           },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
+            ]],
+          },
         ],
       });
     });
@@ -2295,6 +2302,13 @@ describe('cluster', () => {
               'arn:',
               { Ref: 'AWS::Partition' },
               ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+            ]],
+          },
+          {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly',
             ]],
           },
         ],
