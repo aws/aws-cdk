@@ -1,12 +1,6 @@
 {
   "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-eks-handlers-in-vpc-test.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3588cd68fb4cb4a7e3ca848e2eb493dcc8cb6f8ee00fc21344c5ac93b360ceb3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a846cfa4f8b5686555d2adcd5c5be678aca9eefb4811ec4eff26d96b83eec49.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -42,7 +36,10 @@
         "/aws-cdk-eks-handlers-in-vpc-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-handlers-in-vpc-test/EksAllHandlersInVpcStack/DefaultVpc/Resource": [
@@ -399,12 +396,6 @@
             "data": "Providerwaiterstatemachine5D4A9DF0"
           }
         ],
-        "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceprincipalMap"
-          }
-        ],
         "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkekshandlersinvpctestawscdkawseksClusterResourceProviderframeworkonEvent5C6C2463Arn": [
           {
             "type": "aws:cdk:logicalId",
@@ -592,6 +583,12 @@
         ]
       },
       "displayName": "aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

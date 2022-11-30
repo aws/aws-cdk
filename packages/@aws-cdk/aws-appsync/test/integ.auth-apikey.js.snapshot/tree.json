@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-appsync-integ": {
         "id": "aws-appsync-integ",
         "path": "aws-appsync-integ",
@@ -78,8 +70,8 @@
                 "id": "LogGroup",
                 "path": "aws-appsync-integ/Api/LogGroup",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "testDataSource": {
@@ -90,6 +82,14 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/testDataSource/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/testDataSource/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/testDataSource/ServiceRole/Resource",
@@ -334,8 +334,8 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/TestTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -343,17 +343,41 @@
               "fqn": "@aws-cdk/aws-dynamodb.Table",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appsync-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appsync-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.161"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

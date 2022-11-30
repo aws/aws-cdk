@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.140"
         }
       },
       "aws-cdk-s3": {
@@ -36,9 +36,6 @@
                           "status": "Enabled"
                         }
                       ]
-                    },
-                    "versioningConfiguration": {
-                      "status": "Enabled"
                     }
                   }
                 },
@@ -55,14 +52,14 @@
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

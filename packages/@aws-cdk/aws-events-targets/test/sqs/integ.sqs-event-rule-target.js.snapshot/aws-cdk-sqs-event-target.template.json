@@ -35,6 +35,13 @@
         "kms:GenerateDataKey*",
         "kms:ReEncrypt*"
        ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "events.amazonaws.com"
@@ -98,6 +105,13 @@
         "sqs:GetQueueUrl",
         "sqs:SendMessage"
        ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "events.amazonaws.com"

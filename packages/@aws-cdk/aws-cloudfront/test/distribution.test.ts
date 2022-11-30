@@ -976,6 +976,60 @@ describe('origin IDs', () => {
   });
 });
 
+describe('custom origin ids', () => {
+  test('test that originId param is respected', () => {
+    const origin = defaultOrigin(undefined, 'custom-origin-id');
+
+    const distribution = new Distribution(stack, 'Http1Distribution', {
+      defaultBehavior: { origin },
+      additionalBehaviors: {
+        secondUsage: {
+          origin,
+        },
+      },
+    });
+    distribution.addBehavior(
+      'thirdUsage',
+      origin,
+    );
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
+          TargetOriginId: 'custom-origin-id',
+          ViewerProtocolPolicy: 'allow-all',
+        },
+        CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
+          PathPattern: 'secondUsage',
+          TargetOriginId: 'custom-origin-id',
+          ViewerProtocolPolicy: 'allow-all',
+        },
+        {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
+          PathPattern: 'thirdUsage',
+          TargetOriginId: 'custom-origin-id',
+          ViewerProtocolPolicy: 'allow-all',
+        }],
+        Enabled: true,
+        HttpVersion: 'http2',
+        IPV6Enabled: true,
+        Origins: [{
+          DomainName: 'www.example.com',
+          Id: 'custom-origin-id',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
+        }],
+      },
+    });
+  });
+});
+
 describe('supported HTTP versions', () => {
   test('setting HTTP/1.1 renders HttpVersion correctly', () => {
     new Distribution(stack, 'Http1Distribution', {

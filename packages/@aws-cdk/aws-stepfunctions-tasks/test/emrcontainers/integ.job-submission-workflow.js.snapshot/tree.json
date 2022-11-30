@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-stepfunctions-tasks-emr-containers-all-services-test": {
         "id": "aws-stepfunctions-tasks-emr-containers-all-services-test",
         "path": "aws-stepfunctions-tasks-emr-containers-all-services-test",
@@ -1248,7 +1240,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4288ebb3652acdf2d828b7db7ca44a7162a401ace50ebb4026e84b18a02a06ee.zip"
+                          "s3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -2258,15 +2250,7 @@
                                       "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Principal": {
-                                        "Service": {
-                                          "Fn::FindInMap": [
-                                            "ServiceprincipalMap",
-                                            {
-                                              "Ref": "AWS::Region"
-                                            },
-                                            "states"
-                                          ]
-                                        }
+                                        "Service": "states.amazonaws.com"
                                       }
                                     }
                                   ],
@@ -2385,14 +2369,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Service-principalMap": {
-                "id": "Service-principalMap",
-                "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/Service-principalMap",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnMapping",
-                  "version": "0.0.0"
-                }
-              },
               "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderframeworkonEventCA24F7F6Arn": {
                 "id": "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderframeworkonEventCA24F7F6Arn",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.ClusterResourceProvider/awsstepfunctionstasksemrcontainersallservicestestawscdkawseksClusterResourceProviderframeworkonEventCA24F7F6Arn",
@@ -2441,7 +2417,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/f75e820959b02dd00b4beed4e373c13244cd22da837690c04088430abf02ef85.json"
+                          "/d1b34e66c6be119ae9005daae34410d1d8ea5e74fd250fef738efb0f2a2ac2c7.json"
                         ]
                       ]
                     },
@@ -2720,7 +2696,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+                          "s3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2776,7 +2752,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "c6964dbf0c556ec82ce09622e99ad6f6d4e488cdaac0ef9e8492e078ec61ffed.zip"
+                          "s3Key": "7e5f48d1e79c915595d938c932b6f0101715a162780d01a55845367e014fbcda.zip"
                         },
                         "description": "/opt/kubectl/kubectl and /opt/helm/helm"
                       }
@@ -3093,7 +3069,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/09cb2a8f4caee55702274de89ee12759f098f9a4ccbe7a8d1d757e19e82163a1.json"
+                          "/17137801c7ebddafbce232d699e0d7a1361587047dadb9a49b557e6fc8b42d2d.json"
                         ]
                       ]
                     },
@@ -3154,15 +3130,7 @@
                           "Principal": {
                             "Service": [
                               "emr-containers.amazonaws.com",
-                              {
-                                "Fn::FindInMap": [
-                                  "ServiceprincipalMap",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  "states"
-                                ]
-                              }
+                              "states.amazonaws.com"
                             ]
                           }
                         }
@@ -3416,15 +3384,7 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": {
-                                  "Fn::FindInMap": [
-                                    "ServiceprincipalMap",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    "states"
-                                  ]
-                                }
+                                "Service": "states.amazonaws.com"
                               }
                             }
                           ],
@@ -3641,11 +3601,19 @@
               "version": "0.0.0"
             }
           },
-          "Service-principalMap": {
-            "id": "Service-principalMap",
-            "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/Service-principalMap",
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnMapping",
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-tasks-emr-containers-all-services-test/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
@@ -3674,6 +3642,24 @@
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -3689,6 +3675,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.140"
         }
       }
     },

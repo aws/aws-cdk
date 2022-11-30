@@ -75,7 +75,7 @@ const allProblems = new cloudwatch.MathExpression({
   expression: "errors + throttles",
   usingMetrics: {
     errors: fn.metricErrors(),
-    faults: fn.metricThrottles(),
+    throttles: fn.metricThrottles(),
   }
 });
 ```
@@ -505,6 +505,17 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TextWidget({
   markdown: '# Key Performance Indicators'
+}));
+```
+
+Optionally set the TextWidget background to be transparent
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TextWidget({
+  markdown: '# Key Performance Indicators',
+  background: TextWidgetBackground.TRANSPARENT
 }));
 ```
 

@@ -399,8 +399,9 @@ export class Distribution extends Resource implements IDistribution {
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new Construct(this, `Origin${originIndex}`);
-      const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
-      const originBindConfig = origin.bind(scope, { originId });
+      const generatedId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
+      const originBindConfig = origin.bind(scope, { originId: generatedId });
+      const originId = originBindConfig.originProperty?.id ?? generatedId;
       const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
       if (duplicateId) {
         throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
