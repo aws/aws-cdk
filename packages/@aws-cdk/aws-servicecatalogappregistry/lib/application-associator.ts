@@ -35,9 +35,9 @@ export interface ApplicationAssociatorProps {
  */
 export class ApplicationAssociator extends Construct {
   /**
-   * Map of region to application. An application can be one that is created or imported.
-   * Because a stack can only be associated with one application in a region,
-   * one region will map to only one application.
+   * Maps one region to exactly one application.
+   * The mapping is 1:1 because a stack can only be associated
+   * with one application in a region.
    */
   private readonly regionToApplication: Map<string, IApplication> = new Map();
   private readonly associatedStages: Set<cdk.Stage> = new Set();
