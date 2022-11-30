@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -1745,5 +1746,72 @@ added the ellipsis so a user would know there was more to r...`,
     expect(dist.distributionId).toEqual('012345ABCDEF');
 
 
+  });
+});
+
+test('grants custom actions', () => {
+  const stack = new cdk.Stack();
+  const distribution = new CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [{
+      customOriginSource: { domainName: 'myorigin.com' },
+      behaviors: [{ isDefaultBehavior: true }],
+    }],
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+  distribution.grant(role, 'cloudfront:ListInvalidations', 'cloudfront:GetInvalidation');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'cloudfront:ListInvalidations',
+            'cloudfront:GetInvalidation',
+          ],
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::', { Ref: 'AWS::AccountId' }, ':distribution/',
+                { Ref: 'DistributionCFDistribution882A7313' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('grants createInvalidation', () => {
+  const stack = new cdk.Stack();
+  const distribution = new CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [{
+      customOriginSource: { domainName: 'myorigin.com' },
+      behaviors: [{ isDefaultBehavior: true }],
+    }],
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+  distribution.grantCreateInvalidation(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'cloudfront:CreateInvalidation',
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::', { Ref: 'AWS::AccountId' }, ':distribution/',
+                { Ref: 'DistributionCFDistribution882A7313' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
   });
 });
