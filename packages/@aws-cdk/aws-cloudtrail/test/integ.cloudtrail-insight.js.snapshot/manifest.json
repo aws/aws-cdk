@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
     "aws-cdk-cloudtrail-inshights-test.assets": {
       "type": "cdk:asset-manifest",
