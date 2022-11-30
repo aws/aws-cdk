@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "PlaceIndexTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-location-place-index"
+      ],
+      "assertionStack": "PlaceIndexTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PlaceIndexTestDefaultTestDeployAssert3F96C508"
+    }
+  }
+}
