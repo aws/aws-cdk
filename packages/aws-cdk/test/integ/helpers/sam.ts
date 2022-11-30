@@ -103,8 +103,13 @@ function errorCausedByGoPkg(error: string) {
   //        gopkg.in/yaml.v3@v3.0.0-20200615113413-eeeca48fe776: unrecognized import path "gopkg.in/yaml.v3": reading https://gopkg.in/yaml.v3?go-get=1: 502 Bad Gateway
   //        server response: Cannot obtain refs from GitHub: cannot talk to GitHub: Get https://github.com/go-yaml/yaml.git/info/refs?service=git-upload-pack: net/http: request canceled (Client.Timeout exceeded while awaiting headers)
   ////////////////////////////////////////////////////////////////////
+  //    go: github.com/aws/aws-lambda-go@v1.28.0 requires
+  //        gopkg.in/yaml.v3@v3.0.0-20200615113413-eeeca48fe776: invalid version: git fetch -f origin refs/heads/*:refs/heads/* refs/tags/*:refs/tags/* in /go/pkg/mod/cache/vcs/0901dc1ef67fcce1c9b3ae51078740de4a0e2dc673e720584ac302973af82f36: exit status 128:
+  //        error: RPC failed; HTTP 502 curl 22 The requested URL returned error: 502
+  //        fatal: the remote end hung up unexpectedly
+  ////////////////////////////////////////////////////////////////////
 
-  return (error.includes('unable to access \'https://gopkg.in/')
+  return (error.includes('gopkg\.in.*invalid version.*exit status 128')
     || error.match(/unrecognized import path[^\n]gopkg\.in/));
 }
 
