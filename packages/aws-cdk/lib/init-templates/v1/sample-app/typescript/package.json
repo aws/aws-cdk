@@ -13,6 +13,7 @@
   "devDependencies": {
     "aws-cdk": "%cdk-version%",
     "@aws-cdk/assertions": "%cdk-version%",
+    "@types/babel__traverse": "7.18.2",
     "@types/jest": "^27.5.0",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
