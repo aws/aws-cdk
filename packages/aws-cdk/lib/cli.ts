@@ -296,7 +296,11 @@ async function initCommandLine() {
     setCI(true);
   }
 
-  await checkForPlatformWarnings();
+  try {
+    await checkForPlatformWarnings();
+  } catch (e) {
+    debug(`Error while checking for platform warnings: ${e}`);
+  }
 
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
