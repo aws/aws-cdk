@@ -75,7 +75,7 @@ const allProblems = new cloudwatch.MathExpression({
   expression: "errors + throttles",
   usingMetrics: {
     errors: fn.metricErrors(),
-    faults: fn.metricThrottles(),
+    throttles: fn.metricThrottles(),
   }
 });
 ```
@@ -288,6 +288,30 @@ new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
 });
 ```
 
+#### Actions Suppressor
+
+If you want to disable actions of a Composite Alarm based on a certain condition, you can use [Actions Suppression](https://www.amazonaws.cn/en/new/2022/amazon-cloudwatch-supports-composite-alarm-actions-suppression/).
+
+```ts
+declare const childAlarm1: cloudwatch.Alarm;
+declare const childAlarm2: cloudwatch.Alarm;
+declare const onAlarmAction: cloudwatch.IAlarmAction;
+declare const onOkAction: cloudwatch.IAlarmAction;
+declare const actionsSuppressor: cloudwatch.Alarm;
+
+const alarmRule = cloudwatch.AlarmRule.anyOf(alarm1, alarm2);
+
+const myCompositeAlarm = new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
+  alarmRule,
+  actionsSuppressor,
+});
+myCompositeAlarm.addAlarmActions(onAlarmAction);
+myComposireAlarm.addOkAction(onOkAction);
+```
+
+In the provided example, if `actionsSuppressor` is in `ALARM` state, `onAlarmAction` won't be triggered even if `myCompositeAlarm` goes into `ALARM` state.
+Similar, if `actionsSuppressor` is in `ALARM` state and `myCompositeAlarm` goes from `ALARM` into `OK` state, `onOkAction` won't be triggered.
+
 ### A note on units
 
 In CloudWatch, Metrics datums are emitted with units, such as `seconds` or
@@ -399,6 +423,24 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+### Gauge widget
+
+Gauge graph requires the max and min value of the left Y axis, if no value is informed the limits will be from 0 to 100.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+declare const gaugeMetric: cloudwatch.Metric;
+
+dashboard.addWidgets(new cloudwatch.GaugeWidget({
+  metrics: [gaugeMetric],
+  leftYAxis: {
+    min: 0,
+    max: 1000,
+  }
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:
@@ -463,6 +505,17 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TextWidget({
   markdown: '# Key Performance Indicators'
+}));
+```
+
+Optionally set the TextWidget background to be transparent
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TextWidget({
+  markdown: '# Key Performance Indicators',
+  background: TextWidgetBackground.TRANSPARENT
 }));
 ```
 

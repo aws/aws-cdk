@@ -288,6 +288,30 @@ test('Scheduled Fargate Task - with subnetSelection defined', () => {
   });
 });
 
+test('Scheduled Fargate Task - can take 8 vCpu and 60GB memory sizes', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 61440,
+      cpu: 8192,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', Match.objectLike({
+    Cpu: '8192',
+    Memory: '61440',
+  }),
+  );
+});
+
 test('Scheduled Fargate Task - with platformVersion defined', () => {
   // GIVEN
   const stack = new cdk.Stack();

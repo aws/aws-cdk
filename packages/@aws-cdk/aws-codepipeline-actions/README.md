@@ -633,7 +633,7 @@ The actions available for updating StackSets are:
 
 * **CloudFormationDeployStackSetAction** - Create or update a CloudFormation StackSet directly from the pipeline, optionally
   immediately create and update Stack Instances as well.
-* **CloudFormationDeployStackInstancesAction** - Update outdated Stack Instaces using the current version of the StackSet.
+* **CloudFormationDeployStackInstancesAction** - Update outdated Stack Instances using the current version of the StackSet.
 
 Here's an example of using both of these actions:
 
@@ -942,6 +942,28 @@ new codepipeline.Pipeline(this, 'Pipeline', {
       ],
     },
   ],
+});
+```
+
+### Elastic Beanstalk Deployment
+
+To deploy an Elastic Beanstalk Application in CodePipeline:
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const targetBucket = new s3.Bucket(this, 'MyBucket');
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployAction = new codepipeline_actions.ElasticBeanstalkDeployAction({
+  actionName: 'ElasticBeanstalkDeploy',
+  input: sourceOutput,
+  environmentName: 'envName',
+  applicationName: 'appName',
+});
+
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [deployAction],
 });
 ```
 

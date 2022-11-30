@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-private-endpoint/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-private-endpoint-test"
+      ],
+      "assertionStack": "aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA"
+    }
+  }
+}

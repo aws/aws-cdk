@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-interence/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-inference-test"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-interence/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterinterenceDefaultTestDeployAssert715EC778"
+    }
+  }
+}

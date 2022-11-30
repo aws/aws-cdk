@@ -845,6 +845,32 @@ describe('record set', () => {
     }
   });
 
+  test('Cross account zone context flag', () => {
+    // GIVEN
+    const stack = new Stack();
+    stack.node.setContext('@aws-cdk/aws-route53:useRegionalStsEndpoint', true);
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneName: 'myzone.com',
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
+      UseRegionalStsEndpoint: 'true',
+    });
+  });
+
   test('Delete existing record', () => {
     // GIVEN
     const stack = new Stack();
@@ -884,10 +910,7 @@ describe('record set', () => {
               },
               {
                 Effect: 'Allow',
-                Action: [
-                  'route53:ChangeResourceRecordSets',
-                  'route53:ListResourceRecordSets',
-                ],
+                Action: 'route53:ListResourceRecordSets',
                 Resource: {
                   'Fn::Join': ['', [
                     'arn:',
@@ -895,6 +918,24 @@ describe('record set', () => {
                     ':route53:::hostedzone/',
                     { Ref: 'HostedZoneDB99F866' },
                   ]],
+                },
+              },
+              {
+                Effect: 'Allow',
+                Action: 'route53:ChangeResourceRecordSets',
+                Resource: {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':route53:::hostedzone/',
+                    { Ref: 'HostedZoneDB99F866' },
+                  ]],
+                },
+                Condition: {
+                  'ForAllValues:StringEquals': {
+                    'route53:ChangeResourceRecordSetsRecordTypes': ['A'],
+                    'route53:ChangeResourceRecordSetsActions': ['DELETE'],
+                  },
                 },
               },
             ],

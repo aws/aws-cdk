@@ -1,0 +1,99 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.129"
+        }
+      },
+      "DashboardIntegrationTestStack": {
+        "id": "DashboardIntegrationTestStack",
+        "path": "DashboardIntegrationTestStack",
+        "children": {
+          "Dash": {
+            "id": "Dash",
+            "path": "DashboardIntegrationTestStack/Dash",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DashboardIntegrationTestStack/Dash/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardBody": "{\"widgets\":[]}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboard",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Dashboard",
+              "version": "0.0.0"
+            }
+          },
+          "DashboardArn": {
+            "id": "DashboardArn",
+            "path": "DashboardIntegrationTestStack/DashboardArn",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "DashboardIntegrationTest": {
+        "id": "DashboardIntegrationTest",
+        "path": "DashboardIntegrationTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "DashboardIntegrationTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "DashboardIntegrationTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.129"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "DashboardIntegrationTest/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -1,5 +1,3 @@
-import { before, RULE_SSM_PRINCIPALS_ARE_REGIONAL } from './aws-entities';
-
 /**
  * Provides default values for certain regional information points.
  */
@@ -23,6 +21,14 @@ export class Default {
    * @param urlSuffix deprecated and ignored.
    */
   public static servicePrincipal(serviceFqn: string, region: string, urlSuffix: string): string {
+    // NOTE: this whole method is deprecated, and should not be used or updated anymore. The global service
+    // principal is always correct, when referenced from within a region.
+    // (As a note, regional principals (`<SERVICE>.<REGION>.amazonaws.com`) are required in
+    // case of a cross-region reference to an opt-in region, but that's the only case, and that is not
+    // controlled here).
+    //
+    // (It cannot be actually @deprecated since many of our tests use it :D)
+
     const serviceName = extractSimpleName(serviceFqn);
     if (!serviceName) {
       // Return "service" if it does not look like any of the following:
@@ -81,12 +87,6 @@ export class Default {
       }
 
       switch (service) {
-        // SSM turned from global to regional at some point
-        case 'ssm':
-          return before(region, RULE_SSM_PRINCIPALS_ARE_REGIONAL)
-            ? universal
-            : regional;
-
         // CodeDeploy is regional+partitional in CN, only regional everywhere else
         case 'codedeploy':
           return region.startsWith('cn-')
@@ -101,10 +101,6 @@ export class Default {
         // Services with a regional principal
         case 'states':
           return regional;
-
-        // Services with a partitional principal
-        case 'ec2':
-          return partitional;
 
         case 'elasticmapreduce':
           return region.startsWith('cn-')

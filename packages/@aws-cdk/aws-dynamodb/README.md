@@ -134,6 +134,11 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 });
 ```
 
+A maximum of 10 tables with replication can be added to a stack without a limit increase for 
+[managed policies attached to an IAM role](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entities).
+This is because more than 10 managed policies will be attached to the DynamoDB service replication role - one policy per replication table.
+Consider splitting your tables across multiple stacks if your reach this limit.
+
 ## Encryption
 
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
@@ -206,5 +211,28 @@ const stream = new kinesis.Stream(this, 'Stream');
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   kinesisStream: stream,
+});
+```
+
+## Alarm metrics
+
+Alarms can be configured on the DynamoDB table to captured metric data
+
+```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+});
+
+const metric = table.metricThrottledRequestsForOperations({
+  operations: [dynamodb.Operation.PUT_ITEM],
+  period: Duration.minutes(1),
+});
+
+new cloudwatch.Alarm(stack, 'Alarm', {
+  metric: metric,
+  evaluationPeriods: 1,
+  threshold: 1,
 });
 ```

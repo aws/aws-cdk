@@ -89,8 +89,7 @@ function validateProperties(
         expectedKeys.push('Type');
         expect(property.Type).toBeTruthy();
         const fqn = `${typeName.split('.')[0]}.${property.Type}`;
-        const resolvedType = specification.PropertyTypes && specification.PropertyTypes[fqn];
-        expect(resolvedType).toBeTruthy();
+        expect(Object.keys(specification.PropertyTypes)).toContain(fqn);
 
       } else if (schema.isUnionProperty(property)) {
         expectedKeys.push('PrimitiveTypes', 'PrimitiveItemTypes', 'ItemTypes', 'Types', 'InclusivePrimitiveItemTypes', 'InclusiveItemTypes', 'InclusiveItemPattern');
@@ -145,15 +144,17 @@ function validateAttributes(
         expect(('ItemType' in attribute)).toBeFalsy();
       } else if (schema.isComplexListAttribute(attribute)) {
         expect(attribute.ItemType).toBeTruthy();
-        const fqn = `${typeName.split('.')[0]}.${attribute.ItemType}`;
-        const resolvedType = specification.PropertyTypes && specification.PropertyTypes[fqn];
-        expect(resolvedType).toBeTruthy();
+        if (attribute.ItemType !== 'Tag') {
+          const fqn = `${typeName.split('.')[0]}.${attribute.ItemType}`;
+          const resolvedType = specification.PropertyTypes && specification.PropertyTypes[fqn];
+          expect(resolvedType).toBeTruthy();
+        }
         expect(('PrimitiveItemType' in attribute)).toBeFalsy();
       } else if (schema.isPrimitiveMapAttribute(attribute)) {
         expect(schema.isPrimitiveType(attribute.PrimitiveItemType)).toBeTruthy();
         expect(('ItemType' in attribute)).toBeFalsy();
       } else {
-        expect(false).toBeTruthy(); // `${typeName}.Attributes.${name} has a valid type`);
+        throw new Error(`No valid attribute type in ${JSON.stringify(attribute)}`);
       }
     });
   }

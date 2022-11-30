@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
+import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
@@ -53,6 +54,21 @@ export interface StageProps {
    * temporary directory will be created.
    */
   readonly outdir?: string;
+
+  /**
+   * Name of this stage.
+   *
+   * @default - Derived from the id.
+   */
+  readonly stageName?: string;
+
+  /**
+   * Options for applying a permissions boundary to all IAM Roles
+   * and Users created within this Stage
+   *
+   * @default - no permissions boundary is applied
+   */
+  readonly permissionsBoundary?: PermissionsBoundary;
 }
 
 /**
@@ -135,8 +151,11 @@ export class Stage extends Construct {
     this.region = props.env?.region ?? this.parentStage?.region;
     this.account = props.env?.account ?? this.parentStage?.account;
 
+
+    props.permissionsBoundary?._bind(this);
+
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
   }
 
   /**

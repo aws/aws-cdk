@@ -37,12 +37,9 @@ function removeStringKeys(obj: any, keys: string[]) {
       }
     }
   }
-
   const cloned = clone(obj);
   _recurse(cloned);
-
   return cloned;
-
 }
 
 function clone(obj: any) {
