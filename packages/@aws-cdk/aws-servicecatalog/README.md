@@ -209,7 +209,7 @@ class LambdaProduct extends servicecatalog.ProductStack {
 }
 
 const userDefinedBucket = new Bucket(this, `UserDefinedBucket`, {
-  assetBucketName: 'user-defined-bucket-for-product-stack-assets',
+  bucketName: 'user-defined-bucket-for-product-stack-assets',
 });
 
 const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
@@ -231,6 +231,39 @@ will automatically grant read permissions to the spoke account.
 Note, it is not recommended using a referenced bucket as permissions cannot be added from CDK. 
 In this case, it will be your responsibility to grant read permissions for the asset bucket to
 the spoke account.
+If you want to provide your own bucket policy or scope down your bucket policy further to only allow 
+reads from a specific launch role, refer to the following example policy:
+
+```ts
+new iam.PolicyStatement({
+	actions: [
+		's3:GetObject*',
+		's3:GetBucket*',
+		's3:List*', ],
+	effect: iam.Effect.ALLOW,
+	resources: [
+		bucket.bucketArn,
+		bucket.arnForObjects('*'),
+	],
+	principals: [
+		new iam.ArnPrincipal(cdk.Stack.of(this).formatArn({
+        			service: 'iam',
+        			region: '',
+        			sharedAccount,
+        			resource: 'role',
+        			resourceName: launchRoleName,
+        		}))
+	],
+	conditions: {
+		'ForAnyValue:StringEquals': {
+			'aws:CalledVia': ['cloudformation.amazonaws.com'],
+		},
+		'Bool': {
+			'aws:ViaAWSService': true,
+		},
+	},
+});
+```
 
 Furthermore, in order for a spoke account to provision a product with an asset, the role launching 
 the product needs permissions to read from the asset bucket.

@@ -1,8 +1,9 @@
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as servicecatalog from '../lib';
 import { ProductStackHistory, ProductStackProps } from '../lib';
 
@@ -48,7 +49,7 @@ import { ProductStackHistory, ProductStackProps } from '../lib';
  *
  * 7. Disassociate your principal from your portfolio.
  ```
- $ aws servicecatalog disassociate-principal-with-portfolio \
+ $ aws servicecatalog disassociate-principal-from-portfolio \
  --portfolio-id=<PLACEHOLDER - PORTFOLIO ID> \
  --principal-arn=<PLACEHOLDER - PRINCIPAL ARN> \
  ```
@@ -60,7 +61,12 @@ import { ProductStackHistory, ProductStackProps } from '../lib';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
+const stack = new cdk.Stack(app, 'integ-servicecatalog-product', {
+  env: {
+    account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,
+  },
+});
 
 class TestProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string) {
@@ -81,8 +87,10 @@ class TestAssetProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string, props?: ProductStackProps) {
     super(scope, id, props);
 
-    new s3_assets.Asset(this, 'testAsset', {
-      path: path.join(__dirname, 'products.template.zip'),
+    new lambda.Function(this, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset('./assets'),
+      handler: 'index.handler',
     });
   }
 }
@@ -94,7 +102,7 @@ const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory'
 });
 
 const testAssetBucket = new s3.Bucket(stack, 'TestAssetBucket', {
-  bucketName: 'product-stack-asset-bucket-12345678-test-region',
+  bucketName: `product-stack-asset-bucket-${stack.account}-${stack.region}`,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
@@ -129,6 +137,11 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
     },
     productStackHistory.currentVersion(),
   ],
+});
+
+new IntegTest(app, 'integ-product', {
+  testCases: [stack],
+  enableLookups: true,
 });
 
 portfolio.addProduct(product);
