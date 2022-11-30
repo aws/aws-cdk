@@ -28,6 +28,158 @@ describe('Scope based Associations with Application within Same Account', () => 
       Resource: { Ref: 'AWS::StackId' },
     });
   });
+
+  test('ApplicationAssociator will associate resource on imported application', () => {
+    const resource = new cdk.Stack(app, 'MyStack');
+
+    new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [appreg.TargetApplication.existingApplicationFromArn({
+        applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+      })],
+    });
+
+    Template.fromStack(resource).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Application: '0a17wtxeg5vilok0sbxfozwpq9',
+      Resource: { Ref: 'AWS::StackId' },
+    });
+  });
+});
+describe('Scope based Associations with multi-region Application within Same Account', () => {
+  let app: cdk.App;
+  beforeEach(() => {
+    app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+  });
+  test('ApplicationAssociator creation throws error when neither Application name nor ARN is provided', () => {
+    expect(() => {
+      new appreg.ApplicationAssociator(app, 'MyApplication', {
+        applications: [],
+      });
+    }).toThrow('Please pass at least 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
+  });
+
+  test('ApplicationAssociator creation throws error when both Application name and ARN are provided in same region', () => {
+    expect(() => {
+      new appreg.ApplicationAssociator(app, 'MyApplication', {
+        applications: [
+          appreg.TargetApplication.createApplicationStack({
+            applicationName: 'MyAssociatedApplication',
+            env: { account: '482211128593', region: 'us-east-1' },
+          }),
+          appreg.TargetApplication.existingApplicationFromArn({
+            applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+          }),
+        ],
+      });
+    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-us-east-1\' in App');
+  });
+
+  test('ApplicationAssociator creation throws error when both Application name and ARN are provided in same region', () => {
+    expect(() => {
+      new appreg.ApplicationAssociator(app, 'MyApplication', {
+        applications: [
+          appreg.TargetApplication.createApplicationStack({
+            applicationName: 'MyAssociatedApplication',
+            env: { account: '482211128593', region: 'us-east-1' },
+          }),
+          appreg.TargetApplication.existingApplicationFromArn({
+            applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+          }),
+        ],
+      });
+    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-us-east-1\' in App');
+  });
+
+  test('ApplicationAssociator creation throws error when two Applications by name are provided in same region', () => {
+    expect(() => {
+      new appreg.ApplicationAssociator(app, 'MyApplication', {
+        applications: [
+          appreg.TargetApplication.createApplicationStack({
+            applicationName: 'MyAssociatedApplication1',
+            env: { account: 'account', region: 'region' },
+          }),
+          appreg.TargetApplication.createApplicationStack({
+            applicationName: 'MyAssociatedApplication2',
+            env: { account: 'account', region: 'region' },
+          }),
+        ],
+      });
+    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-region\' in App');
+  });
+
+  test('ApplicationAssociator creation throws error when two Applications by existing ARN are provided in same region', () => {
+    expect(() => {
+      new appreg.ApplicationAssociator(app, 'MyApplication', {
+        applications: [
+          appreg.TargetApplication.existingApplicationFromArn({
+            applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+          }),
+          appreg.TargetApplication.existingApplicationFromArn({
+            applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/03ojbhs7cwbb8y2mow3rmmrvu2',
+          }),
+        ],
+      });
+      app.synth();
+    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-us-east-1\' in App');
+  });
+
+  test('ApplicationAssociator will associate regional stacks with their respective regional applications created inside cdkApp', () => {
+    new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+          env: { account: 'account', region: 'region1' },
+        }),
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+          env: { account: 'account', region: 'region2' },
+        }),
+      ],
+    });
+    const anotherStack1 = new AppRegistrySampleStack(app, 'SampleStack-region1', { env: { account: 'account', region: 'region1' } });
+    const anotherStack2 = new AppRegistrySampleStack(app, 'SampleStack-region2', { env: { account: 'account', region: 'region2' } });
+    Template.fromStack(anotherStack1).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    Template.fromStack(anotherStack1).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Application: 'MyAssociatedApplication',
+      Resource: { Ref: 'AWS::StackId' },
+    });
+    Template.fromStack(anotherStack2).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+    Template.fromStack(anotherStack2).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Application: 'MyAssociatedApplication',
+      Resource: { Ref: 'AWS::StackId' },
+    });
+  });
+
+  test('ApplicationAssociator will associate regional resource on respective regional imported application', () => {
+    const resourceUsEast1 = new cdk.Stack(app, 'MyStack-us-east-1', { env: { account: 'account', region: 'us-east-1' } });
+    const resourceUsWest2 = new cdk.Stack(app, 'MyStack-us-west-2', { env: { account: 'account', region: 'us-west-2' } });
+
+    new appreg.ApplicationAssociator(app, 'MyApplication', {
+      applications: [
+        appreg.TargetApplication.existingApplicationFromArn({
+          applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+        }),
+        appreg.TargetApplication.existingApplicationFromArn({
+          applicationArnValue: 'arn:aws:servicecatalog:us-west-2:482211128593:/applications/03ojbhs7cwbb8y2mow3rmmrvu2',
+        }),
+      ],
+    });
+
+    Template.fromStack(resourceUsEast1).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Application: '0a17wtxeg5vilok0sbxfozwpq9',
+      Resource: { Ref: 'AWS::StackId' },
+    });
+    Template.fromStack(resourceUsWest2).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Application: '03ojbhs7cwbb8y2mow3rmmrvu2',
+      Resource: { Ref: 'AWS::StackId' },
+    });
+  });
+
 });
 describe('Scope based Associations with Application with Cross Region/Account', () => {
   let app: cdk.App;
@@ -55,43 +207,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
 
-  test('ApplicationAssociator creation failed when neither Application name nor ARN is provided', () => {
-    expect(() => {
-      new appreg.ApplicationAssociator(app, 'MyApplication', {
-        applications: [],
-      });
-    }).toThrow('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
-  });
-
-  test('ApplicationAssociator creation failed when both Application name and ARN is provided', () => {
-    expect(() => {
-      new appreg.ApplicationAssociator(app, 'MyApplication', {
-        applications: [appreg.TargetApplication.existingApplicationFromArn({
-          applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
-        }),
-        appreg.TargetApplication.createApplicationStack({
-          applicationName: 'MyAssociatedApplication',
-        })],
-      });
-    }).toThrow('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
-  });
-
-  test('associate resource on imported application', () => {
-    const resource = new cdk.Stack(app, 'MyStack');
-
-    new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.existingApplicationFromArn({
-        applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
-      })],
-    });
-
-    Template.fromStack(resource).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
-      Application: '0a17wtxeg5vilok0sbxfozwpq9',
-      Resource: { Ref: 'AWS::StackId' },
-    });
-  }),
-
-  test('ApplicationAssociator with cross region stacks inside cdkApp throws error', () => {
+  test('ApplicationAssociator with cross region stacks inside cdkApp throws warning', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
       applications: [appreg.TargetApplication.createApplicationStack({
         applicationName: 'MyAssociatedApplication',
@@ -103,7 +219,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     const crossRegionStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossRegionStack).hasError('*', 'AppRegistry does not support cross region associations. Application region region2, stack region region');
+    Annotations.fromStack(crossRegionStack).hasWarning('*', 'AppRegistry does not support cross region associations. Application region region2, stack region region');
   });
 
   test('Environment Agnostic ApplicationAssociator with cross region stacks inside cdkApp gives warning', () => {

@@ -432,7 +432,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
   });
 
-  test('Associate Stage in cross region throw error', () => {
+  test('Associate Stage in cross region throw warning', () => {
     const application = new appreg.Application(stack, 'MyApplication', {
       applicationName: 'MyApplication',
     });
@@ -441,7 +441,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
     const stageStack = new cdk.Stack(stage, 'MyStack');
     application.associateAllStacksInScope(stage);
-    Annotations.fromStack(stageStack).hasError('*',
+    Annotations.fromStack(stageStack).hasWarning('*',
       'AppRegistry does not support cross region associations. Application region region, stack region region1');
   });
 });

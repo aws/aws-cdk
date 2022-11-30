@@ -90,11 +90,12 @@ class CreateTargetApplication extends TargetApplication {
     super();
   }
   public bind(scope: Construct): BindTargetApplicationResult {
-    const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
     (this.applicationOptions.description as string) =
             this.applicationOptions.description || `Stack that holds the ${this.applicationOptions.applicationName} application`;
     (this.applicationOptions.env as cdk.Environment) =
             this.applicationOptions.env || { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+    const appRegion = this.applicationOptions.env?.region;
+    const stackId = this.applicationOptions.stackId ?? `ApplicationAssociatorStack-${appRegion}`;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = new Application(applicationStack, 'DefaultCdkApplication', {
       applicationName: this.applicationOptions.applicationName,
@@ -116,7 +117,11 @@ class ExistingTargetApplication extends TargetApplication {
     super();
   }
   public bind(scope: Construct): BindTargetApplicationResult {
-    const stackId = this.applicationOptions.stackId ?? 'ApplicationAssociatorStack';
+    const arnComponent = cdk.Arn.split(this.applicationOptions.applicationArnValue, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
+    const appAccount = arnComponent.account!;
+    const appRegion = arnComponent.region!;
+    (this.applicationOptions.env as cdk.Environment) = { account: appAccount, region: appRegion };
+    const stackId = this.applicationOptions.stackId ?? `ApplicationAssociatorStack-${appRegion}`;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = Application.fromApplicationArn(applicationStack, 'ExistingApplication', this.applicationOptions.applicationArnValue);
     return {

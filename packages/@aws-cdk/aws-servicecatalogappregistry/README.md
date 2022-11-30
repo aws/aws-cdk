@@ -84,6 +84,29 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
+Following up on the above example, if you want to deploy to multiple regions such as both `us-east-1` and `us-west-2`
+then use as shown in the example below:
+
+```ts
+const app = new App();
+const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
+  applications: [
+    appreg.TargetApplication.createApplicationStack({
+      applicationName: 'MyAssociatedApplication',
+      applicationDescription: 'Associated Application description',
+      stackName: 'MyAssociatedApplicationStack',
+      env: { account: '123456789012', region: 'us-east-1' },
+    }),
+    appreg.TargetApplication.createApplicationStack({
+      applicationName: 'MyAssociatedApplication',
+      applicationDescription: 'Associated Application description',
+      stackName: 'MyAssociatedApplicationStack',
+      env: { account: '123456789012', region: 'us-west-2' },
+    }),
+  ],
+});
+```
+
 If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
 and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:
 

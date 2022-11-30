@@ -32,7 +32,9 @@ abstract class StackAssociatorBase implements IAspect {
     if (Stack.isStack(node)) {
       this.handleCrossRegionStack(node);
       this.handleCrossAccountStack(node);
-      this.associate(node);
+      if (this.isSameRegion(node)) {
+        this.associate(node);
+      }
     }
   }
 
@@ -43,6 +45,15 @@ abstract class StackAssociatorBase implements IAspect {
    */
   private associate(node: Stack): void {
     this.application.associateApplicationWithStack(node);
+  }
+
+  /**
+   * Determines if the stack and application are in the same region.
+   *
+   * @param stack Cfn Stack.
+   */
+  private isSameRegion(stack: Stack): boolean {
+    return isRegionUnresolved(this.application.env.region, stack.region) || this.application.env.region === stack.region;
   }
 
   /**
@@ -66,10 +77,10 @@ abstract class StackAssociatorBase implements IAspect {
   }
 
   /**
-   * Handle cross-region association. AppRegistry do not support
-   * cross region association at this moment,
+   * Handle cross-region association. AppRegistry does not support
+   * cross region association at this moment.
    * If any stack is evaluated as cross-region than that of application,
-   * we will throw an error.
+   * we will display a warning and skip the association.
    *
    * @param node Cfn stack.
    */
@@ -80,7 +91,7 @@ abstract class StackAssociatorBase implements IAspect {
     }
 
     if (node.region != this.application.env.region) {
-      this.error(node, 'AppRegistry does not support cross region associations. Application region '
+      this.warning(node, 'AppRegistry does not support cross region associations. Application region '
       + this.application.env.region + ', stack region ' + node.region);
     }
   }
@@ -113,10 +124,10 @@ export class CheckedStageStackAssociator extends StackAssociatorBase {
   protected readonly application: IApplication;
   protected readonly applicationAssociator?: ApplicationAssociator;
 
-  constructor(app: ApplicationAssociator) {
+  constructor(appAssociator: ApplicationAssociator, region: string) {
     super();
-    this.application = app.appRegistryApplication();
-    this.applicationAssociator = app;
+    this.application = appAssociator.getApplication(region);
+    this.applicationAssociator = appAssociator;
   }
 }
 
