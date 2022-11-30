@@ -56,7 +56,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    * Determines how the load balancer handles requests that
    * might pose a security risk to your application
    *
-   * @default DesyncMitigationMode.DEFENSIVE
+   * @default - `DEFENSIVE` mode
    */
   readonly desyncMitigationMode?: DesyncMitigationMode;
 }
