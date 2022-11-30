@@ -69,6 +69,9 @@ export function normalizeStatistic(stat: string): string {
 /**
  * Enum for simple statistics
  *
+ * (This is a private copy of the type in `metric-types.ts`; this type should always
+ * been private, the public one has been deprecated and isn't used anywhere).
+ *
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html
  */
 export enum Statistic {
