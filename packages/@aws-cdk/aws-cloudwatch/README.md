@@ -508,6 +508,17 @@ dashboard.addWidgets(new cloudwatch.TextWidget({
 }));
 ```
 
+Optionally set the TextWidget background to be transparent
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TextWidget({
+  markdown: '# Key Performance Indicators',
+  background: TextWidgetBackground.TRANSPARENT
+}));
+```
+
 ### Alarm Status widget
 
 An alarm status widget displays instantly the status of any type of alarms and gives the
