@@ -50,8 +50,8 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_23,
-  kubectlLayer: new KubectlV23Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_24,
+  kubectlLayer: new KubectlV24Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
