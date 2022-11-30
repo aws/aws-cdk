@@ -38,6 +38,8 @@ export interface CommonMetricOptions {
    * - "tcNN.NN" | "tc(NN.NN%:NN.NN%)"
    * - "tsNN.NN" | "ts(NN.NN%:NN.NN%)"
    *
+   * Use the factory functions on the `Stats` object to construct valid input strings.
+   *
    * @default Average
    */
   readonly statistic?: string;
