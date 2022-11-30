@@ -1,8 +1,25 @@
+import * as AWS from 'aws-sdk';
 import * as lambda from '../lib/lambda';
 
 afterEach(() => {
-  jest.resetAllMocks();
+  jest.clearAllMocks();
 });
+
+jest.mock('aws-sdk');
+
+const promiseMock = jest.fn().mockResolvedValue({
+  StatusCode: 200,
+});
+
+const invokeMock = jest.fn().mockReturnValue({
+  promise: promiseMock,
+});
+
+(AWS.Lambda as jest.MockedClass<any>).mockImplementation(() => ({
+  invoke: invokeMock,
+}));
+
+jest.useFakeTimers();
 
 const handlerArn = 'arn:aws:lambda:us-east-1:123456789012:function:MyTrigger';
 const mockRequest = {
@@ -19,35 +36,26 @@ const mockRequest = {
 };
 
 test('Create', async () => {
-  const invokeMock = jest.spyOn(lambda, 'invoke').mockResolvedValue({
-    StatusCode: 200,
-  });
-
   await lambda.handler({ RequestType: 'Create', ...mockRequest });
 
   expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith(handlerArn);
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
 });
 
 test('Update', async () => {
-  const invokeMock = jest.spyOn(lambda, 'invoke').mockResolvedValue({
-    StatusCode: 200,
-  });
-
   await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: {}, ...mockRequest });
 
   expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith(handlerArn);
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
 });
 
 test('Delete - handler not called', async () => {
-  const invokeMock = jest.spyOn(lambda, 'invoke');
   await lambda.handler({ RequestType: 'Delete', PhysicalResourceId: 'PRID', ...mockRequest });
   expect(invokeMock).not.toBeCalled();
 });
 
 test('non-200 status code throws an error', async () => {
-  const invokeMock = jest.spyOn(lambda, 'invoke').mockResolvedValue({
+  promiseMock.mockResolvedValueOnce({
     StatusCode: 500,
   });
 
@@ -56,14 +64,43 @@ test('non-200 status code throws an error', async () => {
     .toMatchObject({ message: 'Trigger handler failed with status code 500' });
 
   expect(invokeMock).toBeCalledTimes(1);
-  expect(invokeMock).toBeCalledWith(handlerArn);
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+});
+
+test('retry with access denied exception', async () => {
+  promiseMock.mockImplementationOnce(() => {
+    const error = new Error();
+    (error as AWS.AWSError).code = 'AccessDeniedException';
+    throw error;
+  });
+
+  const response = lambda.handler({ RequestType: 'Create', ...mockRequest });
+
+  await Promise.resolve().then(() => jest.runAllTimers());
+
+  await response;
+
+  expect(invokeMock).toBeCalledTimes(2);
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
+});
+
+test('throws an error for other exceptions', async () => {
+  promiseMock.mockImplementationOnce(() => {
+    throw new Error();
+  });
+
+  await expect(lambda.handler({ RequestType: 'Create', ...mockRequest }))
+    .rejects
+    .toThrow();
+
+  expect(invokeMock).toBeCalledTimes(1);
+  expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
 });
 
 describe('function error', () => {
-
   const makeTest = (payload: string | undefined, expectedError: string) => {
     return async () => {
-      const invokeMock = jest.spyOn(lambda, 'invoke').mockResolvedValue({
+      promiseMock.mockResolvedValueOnce({
         StatusCode: 200,
         FunctionError: 'Unhandled',
         Payload: payload,
@@ -74,7 +111,7 @@ describe('function error', () => {
         .toMatchObject({ message: expectedError });
 
       expect(invokeMock).toBeCalledTimes(1);
-      expect(invokeMock).toBeCalledWith(handlerArn);
+      expect(invokeMock).toBeCalledWith({ FunctionName: handlerArn });
     };
   };
 
