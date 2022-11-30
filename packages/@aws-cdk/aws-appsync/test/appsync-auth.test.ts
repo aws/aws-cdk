@@ -90,7 +90,8 @@ describe('AppSync API Key Authorization', () => {
   });
 
   test('apiKeyConfig creates default with valid expiration date', () => {
-    const expirationDate: number = cdk.Expiration.after(cdk.Duration.days(10)).toEpoch();
+    const expires = cdk.Expiration.after(cdk.Duration.days(10));
+    const expirationDate: number = expires.toEpoch();
 
     // WHEN
     new appsync.GraphqlApi(stack, 'API', {
@@ -100,7 +101,7 @@ describe('AppSync API Key Authorization', () => {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.API_KEY,
           apiKeyConfig: {
-            expires: cdk.Expiration.after(cdk.Duration.days(10)),
+            expires,
           },
         },
       },
