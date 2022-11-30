@@ -65,3 +65,27 @@ test('before/after', () => {
   dependsOn(topic3Id, triggerId);
   dependsOn(topic4Id, triggerId);
 });
+
+test('multiple functions', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new triggers.TriggerFunction(stack, 'MyTrigger', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  new triggers.TriggerFunction(stack, 'MySecondTrigger', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('bar'),
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  const roles = template.findResources('AWS::IAM::Role');
+  const triggerIamRole = roles.AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A;
+  expect(triggerIamRole.Properties.Policies[0].PolicyDocument.Statement.length).toBe(2);
+});
