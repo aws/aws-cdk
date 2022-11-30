@@ -412,7 +412,7 @@ async function transformPackage(
 
   // if libRoot is _not_ under the root of the package, generate a file at the
   // root that will refer to the one under lib/ so that users can still import
-  // from "monocdk/aws-lambda".
+  // from "aws-cdk-lib/aws-lambda".
   const relativeLibRoot = uberPackageJson.ubergen?.libRoot;
   if (relativeLibRoot && relativeLibRoot !== '.') {
     await fs.writeFile(
@@ -563,7 +563,7 @@ async function copyLiterateSources(from: string, to: string, libraries: readonly
 }
 
 /**
- * Rewrites the imports in README.md from v1 ('@aws-cdk') to v2 ('aws-cdk-lib') or monocdk ('monocdk').
+ * Rewrites the imports in README.md from v1 ('@aws-cdk') to v2 ('aws-cdk-lib').
  */
 async function rewriteReadmeImports(fromFile: string, libName: string): Promise<string> {
   const sourceCode = await fs.readFile(fromFile, { encoding: 'utf8' });
