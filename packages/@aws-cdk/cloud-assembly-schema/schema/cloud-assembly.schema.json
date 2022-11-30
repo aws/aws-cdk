@@ -429,42 +429,8 @@
                     "description": "The provider from which we expect this context key to be obtained."
                 },
                 "props": {
-                    "description": "A set of provider-specific options.",
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/AmiContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/AvailabilityZonesContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/HostedZoneContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/SSMParameterContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/VpcContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/LoadBalancerContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/LoadBalancerListenerContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/SecurityGroupContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/KeyContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/PluginContextQuery"
-                        }
-                    ]
+                    "$ref": "#/definitions/ContextQueryProperties",
+                    "description": "A set of provider-specific options."
                 }
             },
             "required": [
@@ -489,6 +455,43 @@
                 "vpc-provider"
             ],
             "type": "string"
+        },
+        "ContextQueryProperties": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/AmiContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/AvailabilityZonesContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/HostedZoneContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/SSMParameterContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/VpcContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/LoadBalancerContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/LoadBalancerListenerContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/SecurityGroupContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/KeyContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/PluginContextQuery"
+                }
+            ]
         },
         "AmiContextQuery": {
             "description": "Query to AMI context provider",
