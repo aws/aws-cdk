@@ -13,6 +13,7 @@ import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
  */
 export class PhysicalResourceIdReference implements cdk.IResolvable {
   public readonly creationStack: string[] = cdk.captureStackTrace();
+  public readonly typeHint: cdk.ResolutionTypeHint = cdk.ResolutionTypeHint.STRING;
 
   /**
    * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.

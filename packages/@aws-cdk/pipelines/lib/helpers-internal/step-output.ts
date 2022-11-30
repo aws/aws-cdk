@@ -1,4 +1,4 @@
-import { IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/core';
+import { IResolvable, IResolveContext, ResolutionTypeHint, Token, Tokenization } from '@aws-cdk/core';
 import { Step } from '../blueprint/step';
 
 
@@ -84,6 +84,7 @@ export class StepOutput implements IResolvable {
   public readonly engineSpecificInformation: any;
 
   public readonly creationStack: string[] = [];
+  public readonly typeHint: ResolutionTypeHint = ResolutionTypeHint.STRING;
   private resolution: any = undefined;
 
   constructor(step: Step, engineName: string, engineSpecificInformation: any) {
