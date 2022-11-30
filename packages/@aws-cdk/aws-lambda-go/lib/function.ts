@@ -74,7 +74,7 @@ export class GoFunction extends lambda.Function {
   /**
    * The address of the Google Go proxy
    */
-  public static GOOGLE_GOPROXY = 'https://proxy.golang.org';
+  public static readonly GOOGLE_GOPROXY = 'https://proxy.golang.org';
 
   constructor(scope: Construct, id: string, props: GoFunctionProps) {
     if (props.runtime && (props.runtime.family !== lambda.RuntimeFamily.GO && props.runtime.family != lambda.RuntimeFamily.OTHER)) {
