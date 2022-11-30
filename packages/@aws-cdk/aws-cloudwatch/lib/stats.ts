@@ -164,8 +164,34 @@ export abstract class Stats {
   /**
    * Shorter alias for `trimmedSum()`.
    */
-  public static ts(p1: number, p2: number) {
+  public static ts(p1: number, p2?: number) {
     return Stats.trimmedSum(p1, p2);
+  }
+
+  /**
+   * Percentile rank (PR) is the percentage of values that meet a fixed threshold.
+   *
+   * - If two numbers are given, they define the lower and upper bounds in absolute values,
+   *   respectively.
+   * - If one number is given, it defines the upper bound (the lower bound is assumed to
+   *   be 0).
+   *
+   * For example, `percentileRank(300)` returns the percentage of data points that have a value of 300 or less.
+   * `percentileRank(100, 2000)` returns the percentage of data points that have a value between 100 and 2000.
+   */
+  public static percentileRank(v1: number, v2?: number) {
+    if (v2 !== undefined) {
+      return `PR(${v1}:${v2})`;
+    } else {
+      return `PR(:${v1})`;
+    }
+  }
+
+  /**
+   * Shorter alias for `percentileRank()`.
+   */
+  public static pr(v1: number, v2?: number) {
+    return this.percentileRank(v1, v2);
   }
 }
 
