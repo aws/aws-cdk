@@ -1,29 +1,10 @@
 {
  "Resources": {
-  "DashCCD7F836": {
-   "Type": "AWS::CloudWatch::Dashboard",
+  "PlaceIndex21B3574E": {
+   "Type": "AWS::Location::PlaceIndex",
    "Properties": {
-    "DashboardBody": "{\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"I don't have a background\",\"background\":\"transparent\"}}]}"
-   }
-  }
- },
- "Outputs": {
-  "DashboardArn": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "arn:",
-      {
-       "Ref": "AWS::Partition"
-      },
-      ":cloudwatch::",
-      {
-       "Ref": "AWS::AccountId"
-      },
-      ":dashboard/"
-     ]
-    ]
+    "DataSource": "Esri",
+    "IndexName": "cdkinteglocationplaceindexPlaceIndex21A03EAC"
    }
   }
  },

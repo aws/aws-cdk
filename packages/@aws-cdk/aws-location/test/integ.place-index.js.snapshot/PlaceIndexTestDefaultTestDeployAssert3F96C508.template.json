@@ -1,32 +1,4 @@
 {
- "Resources": {
-  "DashCCD7F836": {
-   "Type": "AWS::CloudWatch::Dashboard",
-   "Properties": {
-    "DashboardBody": "{\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"I don't have a background\",\"background\":\"transparent\"}}]}"
-   }
-  }
- },
- "Outputs": {
-  "DashboardArn": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "arn:",
-      {
-       "Ref": "AWS::Partition"
-      },
-      ":cloudwatch::",
-      {
-       "Ref": "AWS::AccountId"
-      },
-      ":dashboard/"
-     ]
-    ]
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
