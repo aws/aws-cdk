@@ -1,6 +1,5 @@
-import { writeFileSync } from 'fs';
 import * as mockfs from 'mock-fs';
-import { IntegrationTests, IntegrationTestsDiscoveryOptions } from '../../lib/runner/integration-tests';
+import { IntegrationTests } from '../../lib/runner/integration-tests';
 
 describe('IntegrationTests', () => {
   const tests = new IntegrationTests('test');
@@ -85,83 +84,6 @@ describe('IntegrationTests', () => {
     test('can set app command', async () => {
       const otherTestDir = new IntegrationTests('test');
       const integTests = await otherTestDir.fromCliArgs({ app: 'node --no-warnings {filePath}' });
-
-      expect(integTests.length).toEqual(3);
-      expect(integTests[0].appCommand).toEqual('node --no-warnings {filePath}');
-    });
-  });
-
-  describe('from file', () => {
-    const configFile = 'integ.config.json';
-    const writeConfig = (settings: IntegrationTestsDiscoveryOptions, fileName = configFile) => {
-      writeFileSync(fileName, JSON.stringify(settings, null, 2), { encoding: 'utf-8' });
-    };
-
-    test('find all', async () => {
-      writeConfig({});
-      const integTests = await tests.fromFile(configFile);
-
-      expect(integTests.length).toEqual(3);
-      expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.integ-test1.js$/));
-      expect(integTests[1].fileName).toEqual(expect.stringMatching(/integ.integ-test2.js$/));
-      expect(integTests[2].fileName).toEqual(expect.stringMatching(/integ.integ-test3.js$/));
-    });
-
-
-    test('find named tests', async () => {
-      writeConfig({ tests: ['test-data/integ.integ-test1.js'] });
-      const integTests = await tests.fromFile(configFile);
-
-      expect(integTests.length).toEqual(1);
-      expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.integ-test1.js$/));
-    });
-
-
-    test('test not found', async () => {
-      writeConfig({ tests: ['test-data/integ.integ-test16.js'] });
-      const integTests = await tests.fromFile(configFile);
-
-      expect(integTests.length).toEqual(0);
-      expect(stderrMock.mock.calls[0][0]).toContain(
-        'No such integ test: test-data/integ.integ-test16.js',
-      );
-      expect(stderrMock.mock.calls[1][0]).toContain(
-        'Available tests: test-data/integ.integ-test1.js test-data/integ.integ-test2.js test-data/integ.integ-test3.js',
-      );
-    });
-
-    test('exclude tests', async () => {
-      writeConfig({ tests: ['test-data/integ.integ-test1.js'], exclude: true });
-      const integTests = await tests.fromFile(configFile);
-
-      const fileNames = integTests.map(test => test.fileName);
-      expect(integTests.length).toEqual(2);
-      expect(fileNames).not.toContain(
-        'test/test-data/integ.integ-test1.js',
-      );
-    });
-
-    test('match regex', async () => {
-      writeConfig({ testRegex: ['1\.js$', '2\.js'] });
-      const integTests = await tests.fromFile(configFile);
-
-      expect(integTests.length).toEqual(2);
-      expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.integ-test1.js$/));
-      expect(integTests[1].fileName).toEqual(expect.stringMatching(/integ.integ-test2.js$/));
-    });
-
-    test('match regex with path', async () => {
-      writeConfig({ testRegex: ['other-data/integ\..*\.js$'] });
-      const otherTestDir = new IntegrationTests('.');
-      const integTests = await otherTestDir.fromFile(configFile);
-
-      expect(integTests.length).toEqual(1);
-      expect(integTests[0].fileName).toEqual(expect.stringMatching(/integ.other-test1.js$/));
-    });
-
-    test('can set app command', async () => {
-      writeConfig({ app: 'node --no-warnings {filePath}' });
-      const integTests = await tests.fromFile(configFile);
 
       expect(integTests.length).toEqual(3);
       expect(integTests[0].appCommand).toEqual('node --no-warnings {filePath}');

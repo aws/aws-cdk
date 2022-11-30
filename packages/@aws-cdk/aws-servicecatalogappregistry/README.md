@@ -22,7 +22,7 @@
 <!--END STABILITY BANNER-->
 
 [AWS Service Catalog App Registry](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/appregistry.html)
-enables organizations to create and manage repositores of applications and associated resources.
+enables organizations to create and manage repositories of applications and associated resources.
 
 ## Table Of Contents
 
@@ -140,7 +140,7 @@ const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineSta
 ## Attribute Group
 
 An AppRegistry attribute group acts as a container for user-defined attributes for an application.
-Metadata is attached in a machine-readble format to integrate with automated workflows and tools.
+Metadata is attached in a machine-readable format to integrate with automated workflows and tools.
 
 ```ts
 const attributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
