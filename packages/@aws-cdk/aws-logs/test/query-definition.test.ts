@@ -20,7 +20,7 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message | sort @timestamp desc | limit 20',
+      QueryString: 'fields @timestamp, @message\n| sort @timestamp desc\n| limit 20',
     });
   });
 
@@ -44,7 +44,7 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message | sort @timestamp desc | limit 20',
+      QueryString: 'fields @timestamp, @message\n| sort @timestamp desc\n| limit 20',
       LogGroupNames: [{ Ref: 'MyLogGroup5C0DAD85' }],
     });
   });
@@ -72,7 +72,7 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message | parse @message "[*] *" as loggingType, loggingMessage | filter loggingType = "ERROR" | sort @timestamp desc | limit 20 | display loggingMessage',
+      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| filter loggingType = "ERROR"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage',
     });
   });
 });

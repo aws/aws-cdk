@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.95"
-        }
-      },
       "integ-servicecatalogappregistry-application": {
         "id": "integ-servicecatalogappregistry-application",
         "path": "integ-servicecatalogappregistry-application",
@@ -35,6 +27,22 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "BootstrapVersion": {
+                "id": "BootstrapVersion",
+                "path": "integ-servicecatalogappregistry-application/resourcesStack/BootstrapVersion",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
+              "CheckBootstrapVersion": {
+                "id": "CheckBootstrapVersion",
+                "path": "integ-servicecatalogappregistry-application/resourcesStack/CheckBootstrapVersion",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnRule",
                   "version": "0.0.0"
                 }
               }
@@ -61,6 +69,22 @@
               "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-servicecatalogappregistry-application/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-servicecatalogappregistry-application/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -76,22 +100,22 @@
           "version": "0.0.0"
         }
       },
-      "ApplicationAssociatorStack": {
-        "id": "ApplicationAssociatorStack",
-        "path": "ApplicationAssociatorStack",
+      "AppRegistryApplicationStack": {
+        "id": "AppRegistryApplicationStack",
+        "path": "AppRegistryApplicationStack",
         "children": {
           "DefaultCdkApplication": {
             "id": "DefaultCdkApplication",
-            "path": "ApplicationAssociatorStack/DefaultCdkApplication",
+            "path": "AppRegistryApplicationStack/DefaultCdkApplication",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ApplicationAssociatorStack/DefaultCdkApplication/Resource",
+                "path": "AppRegistryApplicationStack/DefaultCdkApplication/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
                     "name": "AppRegistryAssociatedApplication",
-                    "description": "Testing AppRegistry ApplicationAssociator"
+                    "description": "Application containing stacks deployed via CDK."
                   }
                 },
                 "constructInfo": {
@@ -107,7 +131,7 @@
           },
           "AppRegistryAssociation": {
             "id": "AppRegistryAssociation",
-            "path": "ApplicationAssociatorStack/AppRegistryAssociation",
+            "path": "AppRegistryApplicationStack/AppRegistryAssociation",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
               "aws:cdk:cloudformation:props": {
@@ -127,11 +151,35 @@
               "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnResourceAssociation",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "AppRegistryApplicationStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "AppRegistryApplicationStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.161"
         }
       }
     },
