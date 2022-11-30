@@ -33,7 +33,7 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
       sourceArn: Stack.of(route).formatArn({
         service: 'execute-api',
         resource: route.webSocketApi.apiId,
-        resourceName: `*/*${route.routeKey}`,
+        resourceName: `*/${route.routeKey}`,
       }),
     });
 
