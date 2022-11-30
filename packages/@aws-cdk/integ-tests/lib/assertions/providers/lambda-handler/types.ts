@@ -42,6 +42,16 @@ export interface AwsApiCallRequest {
    * @default 'false'
    */
   readonly flattenResponse?: string;
+
+  /**
+   * Restrict the data returned by the API call to specific paths in
+   * the API response. Use this to limit the data returned by the custom
+   * resource if working with API calls that could potentially result in custom
+   * response objects exceeding the hard limit of 4096 bytes.
+   *
+   * @default - return all data
+   */
+  readonly outputPaths?: string[];
 }
 
 /**

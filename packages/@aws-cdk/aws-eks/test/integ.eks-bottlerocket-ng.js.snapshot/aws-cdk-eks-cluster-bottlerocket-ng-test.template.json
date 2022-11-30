@@ -434,9 +434,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "dd8086b05eeea461708bd66ad140d8965ddf70c0e144af871d078fdbddf0a67d.zip"
+     "S3Key": "c475180f5b1bbabac165414da13a9b843b111cd3b6d5fae9c954c006640c4064.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.23; /opt/helm/helm 3.9",
+    "Description": "/opt/kubectl/kubectl 1.24; /opt/helm/helm 3.9",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -640,7 +640,7 @@
      ]
     },
     "Config": {
-     "version": "1.23",
+     "version": "1.24",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -794,17 +794,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": {
-         "Fn::Join": [
-          "",
-          [
-           "ec2.",
-           {
-            "Ref": "AWS::URLSuffix"
-           }
-          ]
-         ]
-        }
+        "Service": "ec2.amazonaws.com"
        }
       }
      ],
@@ -888,17 +878,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": {
-         "Fn::Join": [
-          "",
-          [
-           "ec2.",
-           {
-            "Ref": "AWS::URLSuffix"
-           }
-          ]
-         ]
-        }
+        "Service": "ec2.amazonaws.com"
        }
       }
      ],
@@ -992,7 +972,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/2ef01d7ffcb016f5d9bd5285ab9741a81e86dc0762cf0deaa1960978f34efec7.json"
+       "/71f37ec27bcc91052d7473953ff26acaf0809e05a170be3ea94b703361a557cb.json"
       ]
      ]
     },
@@ -1027,7 +1007,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/10fc72b78ad6e3acf1381cc99a752d56c6423ccb3628bfa0ec6d51434244d42c.json"
+       "/3043a1b67672745d02056ba21b9def813297bf697c51a24b94893c965615f0f6.json"
       ]
      ]
     },
