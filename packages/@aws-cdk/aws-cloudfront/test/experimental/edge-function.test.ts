@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cloudfront from '../../lib';
+import {Stack} from "@aws-cdk/core";
 
 let app: cdk.App;
 let stack: cdk.Stack;
@@ -179,6 +180,22 @@ describe('stacks', () => {
     Template.fromStack(fn2Stack).resourceCountIs('AWS::Lambda::Function', 1);
   });
 
+  test('can set the stack id and stack name for each function', () => {
+    const fn1StackId = 'edge-lambda-stack-testregion-1';
+    const fn1StackName = 'edge-lambda-stack-testregion-1-name';
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps(fn1StackId, fn1StackName));
+    const fn2StackId = 'edge-lambda-stack-testregion-2';
+    const fn2StackName = 'edge-lambda-stack-testregion-2-name';
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps(fn2StackId, fn2StackName));
+
+    const fn1Stack = app.node.findChild(fn1StackId) as cdk.Stack;
+    Template.fromStack(fn1Stack).resourceCountIs('AWS::Lambda::Function', 1);
+    hasStackName(fn1Stack, fn1StackName)
+    const fn2Stack = app.node.findChild(fn2StackId) as cdk.Stack;
+    Template.fromStack(fn2Stack).resourceCountIs('AWS::Lambda::Function', 1);
+    hasStackName(fn2Stack, fn2StackName)
+  });
+
   test('cross-region stack supports defining functions within stages', () => {
     app = new cdk.App();
     const stage = new cdk.Stage(app, 'Stage');
@@ -306,15 +323,34 @@ test('SSM parameter name is sanitized to remove disallowed characters', () => {
   });
 });
 
-function defaultEdgeFunctionProps(stackId?: string) {
+test('custom SSM parameter name', () => {
+  const ssmParameterName = 'ssmparametername'
+  new cloudfront.experimental.EdgeFunction(stack, 'My Bad#Fn$Name-With.Bonus', defaultEdgeFunctionProps(undefined, undefined, ssmParameterName));
+
+  const fnStack = getFnStack();
+
+  Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
+    Name: ssmParameterName,
+  });
+});
+
+function defaultEdgeFunctionProps(stackId?: string, stackName?: string, ssmParameterName?: string) {
   return {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
     runtime: lambda.Runtime.NODEJS_14_X,
     stackId: stackId,
+    stackName: stackName,
+    ssmParameterName: ssmParameterName
   };
 }
 
 function getFnStack(): cdk.Stack {
   return app.node.findChild(`edge-lambda-stack-${stack.node.addr}`) as cdk.Stack;
+}
+
+function hasStackName(stack: Stack, stackName: string) {
+  if (stack.stackName !== stackName) {
+    throw new Error(`Expected ${stackName} but found ${stack.stackName}`);
+  }
 }
