@@ -223,7 +223,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
-   * Enable profiling.
+   * Enable SnapStart for Lambda Function.
+   *
+   * @default false
+   */
+  readonly snapStart?: boolean;
+
+  /** Enable profiling.
    * @see https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html
    *
    * @default - No profiling.
@@ -805,6 +811,7 @@ export class Function extends FunctionBase {
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
+      snapStart: props.snapStart ? { applyOn: 'PublishedVersions' } : undefined,
     });
 
     resource.node.addDependency(this.role);

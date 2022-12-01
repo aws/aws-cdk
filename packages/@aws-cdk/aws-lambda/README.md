@@ -772,6 +772,19 @@ CodeGuru profiling is supported for all Java runtimes and Python3.6+ runtimes.
 See [the AWS documentation](https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html)
 to learn more about AWS Lambda's Profiling support.
 
+## Lambda with SnapStart
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromAsset('handler.zip'),
+  runtime: lambda.Runtime.JAVA_11,
+  handler: 'example.Handler::handleRequest',
+  snapStart: true,
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
+
 ## Lambda with Reserved Concurrent Executions
 
 ```ts

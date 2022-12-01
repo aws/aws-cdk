@@ -3152,6 +3152,29 @@ test('set SnapStart to desired value', () => {
   });
 });
 
+test('function using SnapStart', () => {
+  const stack = new cdk.Stack();
+  //WHEN
+  new lambda.Function(stack, 'MyLambda', {
+    code: lambda.Code.fromAsset('test/handler.zip'),
+    handler: 'example.Handler::handleRequest',
+    runtime: lambda.Runtime.JAVA_11,
+    snapStart: true,
+  });
+
+  //THEN
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
+  });
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),

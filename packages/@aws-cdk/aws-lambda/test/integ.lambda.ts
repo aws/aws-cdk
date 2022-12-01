@@ -36,4 +36,12 @@ alias.addFunctionUrl({
 // to validate the changed function hash.
 cdk.Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
 
+// Integ test for lambda with snapStart
+new lambda.Function(stack, 'MySnapStartLambda', {
+  code: lambda.Code.fromAsset('handler.zip'),
+  runtime: lambda.Runtime.JAVA_11,
+  handler: 'example.Handler::handleRequest',
+  snapStart: true,
+});
+
 app.synth();
