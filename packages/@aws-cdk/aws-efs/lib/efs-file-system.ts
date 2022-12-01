@@ -88,14 +88,14 @@ export enum PerformanceMode {
  */
 export enum ThroughputMode {
   /**
-   * This mode on Amazon EFS scales as the size of the file system in the standard storage class grows.
+   * This mode scales as the size of the file system in the standard storage class grows.
    */
   BURSTING = 'bursting',
 
   /**
    * This mode can instantly provision the throughput of the file system (in MiB/s) independent of the amount of data stored.
    */
-  PROVISIONED = 'provisioned'
+  PROVISIONED = 'provisioned',
 
   /**
   * This mode scales the throughput automatically regardless of file system size.
