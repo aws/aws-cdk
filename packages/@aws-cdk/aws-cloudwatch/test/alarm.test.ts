@@ -1,7 +1,7 @@
 import { Match, Template, Annotations } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric } from '../lib';
+import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -285,6 +285,42 @@ describe('Alarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Statistic: Match.absent(),
       ExtendedStatistic: 'TM(10%:90%)',
+    });
+  });
+
+  test('can use stats class to make alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: Stats.p(99.9),
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ExtendedStatistic: 'p99.9',
+    });
+  });
+
+  test('can use stats class pair to make alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: Stats.ts(10, 90),
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ExtendedStatistic: 'TS(10:90)',
     });
   });
 
