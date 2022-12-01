@@ -211,6 +211,7 @@ export function parseStatistic(
     samplecount: Stats.SAMPLE_COUNT,
     n: Stats.SAMPLE_COUNT,
     sum: Stats.SUM,
+    iqm: Stats.IQM,
   };
 
   if (lowerStat in statMap) {

@@ -320,7 +320,7 @@ describe('Alarm', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-      ExtendedStatistic: 'TS(10:90)',
+      ExtendedStatistic: 'TS(10%:90%)',
     });
   });
 
