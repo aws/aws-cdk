@@ -315,6 +315,30 @@ const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
 fleet.grant(role, 'gamelift:ListFleets');
 ```
 
+### Alias
+
+A GameLift alias is used to abstract a fleet designation. Fleet designations
+tell Amazon GameLift where to search for available resources when creating new
+game sessions for players. By using aliases instead of specific fleet IDs, you
+can more easily and seamlessly switch player traffic from one fleet to another
+by changing the alias's target location.
+
+```ts
+declare const fleet: gamelift.BuildFleet;
+
+// Add an alias to an existing fleet using a dedicated fleet method
+const liveAlias = fleet.addAlias('live');
+
+// You can also create a standalone alias
+new gamelift.Alias(this, 'TerminalAlias', {
+  aliasName: 'terminal-alias',
+  terminalMessage: 'A terminal message',
+});
+```
+
+See [Add an alias to a GameLift fleet](https://docs.aws.amazon.com/gamelift/latest/developerguide/aliases-creating.html)
+in the *Amazon GameLift Developer Guide*.
+
 ### Monitoring your Fleet
 
 GameLift is integrated with CloudWatch, so you can monitor the performance of
