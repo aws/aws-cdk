@@ -11,16 +11,17 @@ const topic1 = new sns.Topic(stack, 'Topic1');
 const topic2 = new sns.Topic(stack, 'Topic2');
 
 const triggerFunction = new triggers.TriggerFunction(stack, 'MyTriggerFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function() { console.log("hi"); };'),
   executeBefore: [topic1],
 });
 
 const func = new lambda.Function(stack, 'MyLambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_16_X,
   handler: 'index.handler',
-  code: lambda.Code.fromInline('exports.handler = function() { console.log("hi"); };'),
+  timeout: Duration.minutes(15),
+  code: lambda.Code.fromInline('exports.handler = function() { await setTimeout(3*60*1000, "hi"); };'),
 });
 
 const trigger = new triggers.Trigger(stack, 'MyTrigger', {

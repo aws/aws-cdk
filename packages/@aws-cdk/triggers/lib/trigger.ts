@@ -62,6 +62,9 @@ export interface TriggerOptions {
   readonly executeOnHandlerChange?: boolean;
 }
 
+/**
+ * The invocation type to apply to a trigger. This determines whether the trigger function should await the result of the to be triggered function or not.
+ */
 export enum InvocationType {
   /**
    * Invoke the function synchronously. Keep the connection open until the function returns a response or times out.
