@@ -82,7 +82,7 @@ export interface ProduceActionOptions {
    * configurations.
    *
    */
-  readonly stackOutputsMap: StackOutputsMap
+  readonly stackOutputsMap: StackOutputsMap;
 }
 
 /**

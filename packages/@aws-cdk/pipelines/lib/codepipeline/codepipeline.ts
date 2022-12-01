@@ -314,7 +314,7 @@ export class CodePipeline extends PipelineBase {
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
   private readonly cachedFnSub = new CachedFnSub();
-  private stackOutputs: StackOutputsMap
+  private stackOutputs: StackOutputsMap;
 
   /**
    * Asset roles shared for publishing
