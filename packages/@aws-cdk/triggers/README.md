@@ -57,7 +57,7 @@ const func = new lambda.Function(stack, 'MyFunction', {
 new triggers.Trigger(stack, 'MyTrigger', {
   handler: func,
   timeout: Duration.minutes(10),
-  invocationType: 'Event',
+  invocationType: triggers.InvocationType.EVENT,
 });
 ```
 

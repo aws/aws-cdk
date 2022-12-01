@@ -2,6 +2,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import * as triggers from '../lib';
+import { InvocationType } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'MyStack');
@@ -24,7 +25,7 @@ const func = new lambda.Function(stack, 'MyLambdaFunction', {
 
 const trigger = new triggers.Trigger(stack, 'MyTrigger', {
   handler: func,
-  invocationType: 'Event',
+  invocationType: InvocationType.EVENT,
   timeout: Duration.minutes(1),
   executeAfter: [topic1],
 });
