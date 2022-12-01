@@ -8,6 +8,7 @@ interface ResourceProperties {
   DelegatedZoneName: string,
   DelegatedZoneNameServers: string[],
   TTL: number,
+  UseRegionalStsEndpoint?: string,
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -23,13 +24,13 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
-  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL } = props;
+  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL, UseRegionalStsEndpoint } = props;
 
   if (!ParentZoneId && !ParentZoneName) {
     throw Error('One of ParentZoneId or ParentZoneName must be specified');
   }
 
-  const credentials = await getCrossAccountCredentials(AssumeRoleArn);
+  const credentials = await getCrossAccountCredentials(AssumeRoleArn, !!UseRegionalStsEndpoint);
   const route53 = new Route53({ credentials });
 
   const parentZoneId = ParentZoneId ?? await getHostedZoneIdByName(ParentZoneName!, route53);
@@ -50,8 +51,8 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
   }).promise();
 }
 
-async function getCrossAccountCredentials(roleArn: string): Promise<Credentials> {
-  const sts = new STS({ stsRegionalEndpoints: 'regional' });
+async function getCrossAccountCredentials(roleArn: string, regionalEndpoint: boolean): Promise<Credentials> {
+  const sts = new STS(regionalEndpoint ? { stsRegionalEndpoints: 'regional' } : {});
   const timestamp = (new Date()).getTime();
 
   const { Credentials: assumedCredentials } = await sts

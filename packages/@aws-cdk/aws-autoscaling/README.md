@@ -278,6 +278,36 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 });
 ```
 
+### Block Devices
+
+This type specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
+
+#### GP3 Volumes
+
+You can only specify the `throughput` on GP3 volumes.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+  blockDevices: [{
+    {
+        deviceName: 'gp3-volume',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+          throughput: 125,
+        }),
+      },
+  }],
+  // ...
+});
+```
+
 ## Configuring Instances using CloudFormation Init
 
 It is possible to use the CloudFormation Init mechanism to configure the
