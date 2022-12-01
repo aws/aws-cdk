@@ -13,6 +13,12 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
 export enum LifecyclePolicy {
+
+  /**
+   * After 1 day of not being accessed.
+   */
+  AFTER_1_DAY = 'AFTER_1_DAY',
+
   /**
    * After 7 days of not being accessed.
    */
@@ -90,6 +96,11 @@ export enum ThroughputMode {
    * This mode can instantly provision the throughput of the file system (in MiB/s) independent of the amount of data stored.
    */
   PROVISIONED = 'provisioned'
+
+  /**
+  * This mode scales the throughput automatically regardless of file system size.
+  */
+  ELASTIC = 'elastic'
 }
 
 /**
