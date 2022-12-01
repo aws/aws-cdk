@@ -11,6 +11,8 @@ updates:
     labels:
       - "auto-approve"
     open-pull-requests-limit: 5
+    ignore: 
+      - dependency-name: "aws-actions/stale-issue-cleanup"
   - package-ecosystem: "pip"
     directory: "/packages/@aws-cdk/lambda-layer-awscli"
     schedule:
@@ -28,6 +30,8 @@ updates:
     labels: 
       - "auto-approve"
     open-pull-requests-limit: 5
+    ignore: 
+      - dependency-name: "aws-actions/stale-issue-cleanup"
   - package-ecosystem: "pip"
     directory: "/packages/@aws-cdk/lambda-layer-awscli"
     target-branch: "v1-main"
