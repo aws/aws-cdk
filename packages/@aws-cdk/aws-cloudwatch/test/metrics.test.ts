@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Alarm, Metric, Statistic } from '../lib';
+import { Alarm, Metric, Stats } from '../lib';
 import { PairStatistic, parseStatistic, SingleStatistic } from '../lib/private/statistic';
 
 describe('Metrics', () => {
@@ -274,12 +274,12 @@ describe('Metrics', () => {
       expect((parsed as PairStatistic).statName).toEqual(statName);
     };
 
-    expect(parseStatistic(Statistic.SAMPLE_COUNT).type).toEqual('simple');
-    expect(parseStatistic(Statistic.AVERAGE).type).toEqual('simple');
-    expect(parseStatistic(Statistic.SUM).type).toEqual('simple');
-    expect(parseStatistic(Statistic.MINIMUM).type).toEqual('simple');
-    expect(parseStatistic(Statistic.MAXIMUM).type).toEqual('simple');
-    expect(parseStatistic(Statistic.IQM).type).toEqual('simple');
+    expect(parseStatistic(Stats.SAMPLE_COUNT).type).toEqual('simple');
+    expect(parseStatistic(Stats.AVERAGE).type).toEqual('simple');
+    expect(parseStatistic(Stats.SUM).type).toEqual('simple');
+    expect(parseStatistic(Stats.MINIMUM).type).toEqual('simple');
+    expect(parseStatistic(Stats.MAXIMUM).type).toEqual('simple');
+    expect(parseStatistic(Stats.IQM).type).toEqual('simple');
 
     /* eslint-disable no-multi-spaces */
 
@@ -323,7 +323,6 @@ describe('Metrics', () => {
 
     /* eslint-enable no-multi-spaces */
 
-    // FIXME: Change these to expect throw if code is changed to throw on parse fail
     // Check invalid statistics
     expect(parseStatistic('p99.99.99').type).toEqual('generic');
     expect(parseStatistic('p200').type).toEqual('generic');

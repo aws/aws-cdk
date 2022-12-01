@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
+import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeRawStringStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
 
@@ -404,7 +404,7 @@ export class Metric implements IMetric {
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       period: metricConfig.metricStat.period.toSeconds(),
-      statistic: parsed.type === 'simple' ? parsed.statistic : undefined,
+      statistic: parsed.type === 'simple' ? parsed.statistic as Statistic : undefined,
       extendedStatistic,
       unit: this.unit,
     };

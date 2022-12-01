@@ -170,21 +170,21 @@ below).
 
 For your metrics aggregation, you can use the following statistics:
 
-| Statistic                |    Short format     |                 Long format                  | Enum name                |
-| ------------------------ | :-----------------: | :------------------------------------------: | ------------------------ |
-| SampleCount (n)          |         ❌          |                      ❌                      | `Statistic.SAMPLE_COUNT` |
-| Average (avg)            |         ❌          |                      ❌                      | `Statistic.AVERAGE`      |
-| Sum                      |         ❌          |                      ❌                      | `Statistic.SUM`          |
-| Minimum (min)            |         ❌          |                      ❌                      | `Statistic.MINIMUM`      |
-| Maximum (max)            |         ❌          |                      ❌                      | `Statistic.MAXIMUM`      |
-| Interquartile mean (IQM) |         ❌          |                      ❌                      | `Statistic.IQM`          |
-| Percentile (p)           |        `p99`        |                      ❌                      | `Statistic.P...`         |
-| Winsorized mean (WM)     | `wm99` = `WM(:99%)` | `WM(x:y) \| WM(x%:y%) \| WM(x%:) \| WM(:y%)` | `Statistic.WM...`        |
-| Trimmed count (TC)       | `tc99` = `TC(:99%)` | `TC(x:y) \| TC(x%:y%) \| TC(x%:) \| TC(:y%)` | `Statistic.TC...`        |
-| Trimmed sum (TS)         | `ts99` = `TS(:99%)` | `TS(x:y) \| TS(x%:y%) \| TS(x%:) \| TS(:y%)` | `Statistic.TS...`        |
-| Percentile rank (PR)     |         ❌          |        `PR(x:y) \| PR(x:) \| PR(:y)`         | ❌                       |
+| Statistic                |    Short format     |                 Long format                  | Factory name         |
+| ------------------------ | :-----------------: | :------------------------------------------: | -------------------- |
+| SampleCount (n)          |         ❌          |                      ❌                      | `Stats.SAMPLE_COUNT` |
+| Average (avg)            |         ❌          |                      ❌                      | `Stats.AVERAGE`      |
+| Sum                      |         ❌          |                      ❌                      | `Stats.SUM`          |
+| Minimum (min)            |         ❌          |                      ❌                      | `Stats.MINIMUM`      |
+| Maximum (max)            |         ❌          |                      ❌                      | `Stats.MAXIMUM`      |
+| Interquartile mean (IQM) |         ❌          |                      ❌                      | `Stats.IQM`          |
+| Percentile (p)           |        `p99`        |                      ❌                      | `Stats.p(99)`        |
+| Winsorized mean (WM)     | `wm99` = `WM(:99%)` | `WM(x:y) \| WM(x%:y%) \| WM(x%:) \| WM(:y%)` | `Stats.wm(10, 90)`   |
+| Trimmed count (TC)       | `tc99` = `TC(:99%)` | `TC(x:y) \| TC(x%:y%) \| TC(x%:) \| TC(:y%)` | `Stats.tc(10, 90)`   |
+| Trimmed sum (TS)         | `ts99` = `TS(:99%)` | `TS(x:y) \| TS(x%:y%) \| TS(x%:) \| TS(:y%)` | `Stats.ts(10, 90)`   |
+| Percentile rank (PR)     |         ❌          |        `PR(x:y) \| PR(x:) \| PR(:y)`         | `Stats.pr(10, 5000)` |
 
-The most common values are provided in the `cloudwatch.Statistic` enum. You can provide any string if your statistic is not in the enum.
+The most common values are provided in the `cloudwatch.Stats` class. You can provide any string if your statistic is not in the class.
 
 Read more at [CloudWatch statistics definitions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html).
 
@@ -195,7 +195,7 @@ new cloudwatch.Metric({
   dimensionsMap: {
     HostedZoneId: hostedZone.hostedZoneId
   },
-  statistic: cloudwatch.Statistic.SAMPLE_COUNT,
+  statistic: cloudwatch.Stats.SAMPLE_COUNT,
   period: cloudwatch.Duration.minutes(5)
 });
 
@@ -205,7 +205,7 @@ new cloudwatch.Metric({
   dimensionsMap: {
     HostedZoneId: hostedZone.hostedZoneId
   },
-  statistic: cloudwatch.Statistic.P99,
+  statistic: cloudwatch.Stats.p(99),
   period: cloudwatch.Duration.minutes(5)
 });
 
@@ -213,7 +213,7 @@ new cloudwatch.Metric({
   namespace: 'AWS/Route53',
   metricName: 'DNSQueries',
   dimensionsMap: {
-    HostedZoneId: hostedZone.hostedZoneId
+    HostedZoneId: hostedZone.hostedZoneId,
   },
   statistic: 'TS(7.5%:90%)',
   period: cloudwatch.Duration.minutes(5)

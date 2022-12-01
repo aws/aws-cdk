@@ -1,6 +1,8 @@
+import { Stats } from '../stats';
+
 export interface SimpleStatistic {
   type: 'simple';
-  statistic: Statistic;
+  statistic: string;
 }
 
 export interface GenericStatistic {
@@ -172,49 +174,6 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
   return undefined;
 }
 
-/**
- * Enum for simple statistics
- *
- * (This is a private copy of the type in `metric-types.ts`; this type should always
- * been private, the public one has been deprecated and isn't used anywhere).
- *
- * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html
- */
-export enum Statistic {
-  /**
-   * The count (number) of data points used for the statistical calculation.
-   */
-  SAMPLE_COUNT = 'SampleCount',
-
-  /**
-   * The value of Sum / SampleCount during the specified period.
-   */
-  AVERAGE = 'Average',
-  /**
-   * All values submitted for the matching metric added together.
-   * This statistic can be useful for determining the total volume of a metric.
-   */
-  SUM = 'Sum',
-  /**
-   * The lowest value observed during the specified period.
-   * You can use this value to determine low volumes of activity for your application.
-   */
-  MINIMUM = 'Minimum',
-
-  /**
-   * The highest value observed during the specified period.
-   * You can use this value to determine high volumes of activity for your application.
-   */
-  MAXIMUM = 'Maximum',
-
-  /**
-   * Interquartile mean (IQM) is the trimmed mean of the interquartile range, or the middle 50% of values.
-   *
-   * It is equivalent to `trimmedMean(25, 75)`.
-   */
-  IQM = 'IQM',
-}
-
 export function singleStatisticToString(parsed: SingleStatistic): string {
   return `${parsed.statPrefix}${parsed.value}`;
 }
@@ -242,17 +201,16 @@ export function parseStatistic(
   const lowerStat = stat.toLowerCase();
 
   // Simple statistics
-  const statMap: { [k: string]: Statistic } = {
-    average: Statistic.AVERAGE,
-    avg: Statistic.AVERAGE,
-    minimum: Statistic.MINIMUM,
-    min: Statistic.MINIMUM,
-    maximum: Statistic.MAXIMUM,
-    max: Statistic.MAXIMUM,
-    samplecount: Statistic.SAMPLE_COUNT,
-    n: Statistic.SAMPLE_COUNT,
-    sum: Statistic.SUM,
-    iqm: Statistic.IQM,
+  const statMap: { [k: string]: string } = {
+    average: Stats.AVERAGE,
+    avg: Stats.AVERAGE,
+    minimum: Stats.MINIMUM,
+    min: Stats.MINIMUM,
+    maximum: Stats.MAXIMUM,
+    max: Stats.MAXIMUM,
+    samplecount: Stats.SAMPLE_COUNT,
+    n: Stats.SAMPLE_COUNT,
+    sum: Stats.SUM,
   };
 
   if (lowerStat in statMap) {
