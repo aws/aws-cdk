@@ -200,11 +200,19 @@ export enum Statistic {
    * You can use this value to determine low volumes of activity for your application.
    */
   MINIMUM = 'Minimum',
+
   /**
    * The highest value observed during the specified period.
    * You can use this value to determine high volumes of activity for your application.
    */
   MAXIMUM = 'Maximum',
+
+  /**
+   * Interquartile mean (IQM) is the trimmed mean of the interquartile range, or the middle 50% of values.
+   *
+   * It is equivalent to `trimmedMean(25, 75)`.
+   */
+  IQM = 'IQM',
 }
 
 export function singleStatisticToString(parsed: SingleStatistic): string {
