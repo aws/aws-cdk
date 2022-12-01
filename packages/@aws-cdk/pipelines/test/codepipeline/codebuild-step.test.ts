@@ -299,7 +299,7 @@ test('step has caching set', () => {
   });
 });
 
-test('step exposes stack output reference dependencies', () => {
+test('step exposes consumed stack output reference', () => {
   // WHEN
   const myApp = new AppWithOutput(app, 'AppWithOutput', {
     stackId: 'Stack',
@@ -312,5 +312,5 @@ test('step exposes stack output reference dependencies', () => {
   });
 
   // THEN
-  expect(step.stackOutputDependencies).toContainEqual(StackOutputReference.fromCfnOutput(myApp.theOutput));
+  expect(step.consumedStackOutputs).toContainEqual(StackOutputReference.fromCfnOutput(myApp.theOutput));
 });

@@ -25,7 +25,7 @@ export class PipelineQueries {
 
     const ret = new Array<string>();
     for (const step of steps) {
-      for (const outputRef of step.stackOutputDependencies) {
+      for (const outputRef of step.consumedStackOutputs) {
         if (outputRef.isProducedBy(stack)) {
           ret.push(outputRef.outputName);
         }

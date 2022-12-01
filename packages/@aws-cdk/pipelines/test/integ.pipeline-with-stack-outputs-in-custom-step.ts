@@ -16,7 +16,7 @@ class CustomStep extends Step implements ICodePipelineActionFactory {
   }
 
   public produceAction(stage: IStage, options: pipelines.ProduceActionOptions): pipelines.CodePipelineActionFactoryResult {
-    const [outputRef] = this.stackOutputDependencies;
+    const [outputRef] = this.consumedStackOutputs;
 
     const handler = new lambda.Function(options.scope, 'CustomFunction', {
       runtime: lambda.Runtime.NODEJS_16_X,
@@ -38,7 +38,7 @@ class CustomStep extends Step implements ICodePipelineActionFactory {
     return { runOrdersConsumed: 1 };
   }
 
-  public get stackOutputDependencies(): pipelines.StackOutputReference[] {
+  public get consumedStackOutputs(): pipelines.StackOutputReference[] {
     return [pipelines.StackOutputReference.fromCfnOutput(this.stackOutput)];
   }
 }

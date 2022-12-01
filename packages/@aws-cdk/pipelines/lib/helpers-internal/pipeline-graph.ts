@@ -274,7 +274,7 @@ export class PipelineGraph {
 
     // Add stack dependencies (by use of the dependency builder this also works
     // if we encounter the Step before the Stack has been properly added yet)
-    for (const output of step.stackOutputDependencies) {
+    for (const output of step.consumedStackOutputs) {
       const stack = this.queries.producingStack(output);
       this.stackOutputDependencies.get(stack).dependBy(node);
     }

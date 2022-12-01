@@ -121,7 +121,7 @@ export abstract class Step implements IFileSetProducer {
   /**
    * StackOutputReferences this step consumes.
    */
-  public get stackOutputDependencies(): StackOutputReference[] {
+  public get consumedStackOutputs(): StackOutputReference[] {
     return [];
   }
 }

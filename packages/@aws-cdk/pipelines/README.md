@@ -892,7 +892,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
    * Expose stack output references, letting the CDK know
    * we want these variables accessible for this step.
    */
-  public get stackOutputDependencies(): pipelines.StackOutputReference[] {
+  public get consumedStackOutputs(): pipelines.StackOutputReference[] {
     return [this.stackOutputReference];
   }
 }
