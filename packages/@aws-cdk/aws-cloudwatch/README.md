@@ -213,7 +213,7 @@ new cloudwatch.Metric({
   namespace: 'AWS/Route53',
   metricName: 'DNSQueries',
   dimensionsMap: {
-    HostedZoneId: hostedZone.hostedZoneId,
+    HostedZoneId: hostedZone.hostedZoneId
   },
   statistic: 'TS(7.5%:90%)',
   period: cloudwatch.Duration.minutes(5)
