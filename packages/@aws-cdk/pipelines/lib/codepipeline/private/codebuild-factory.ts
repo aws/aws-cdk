@@ -315,7 +315,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     }
 
     const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, outputRef =>
-      options.stackOutputsMap!.mapOutputReference(outputRef),
+      options.stackOutputsMap.mapOutputReference(outputRef),
     );
 
     const configHashEnv = options.beforeSelfMutation

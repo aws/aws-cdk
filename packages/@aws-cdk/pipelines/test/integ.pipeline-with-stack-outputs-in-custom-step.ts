@@ -32,7 +32,7 @@ class CustomStep extends Step implements ICodePipelineActionFactory {
       new cpactions.LambdaInvokeAction({
         actionName: options.actionName,
         runOrder: options.runOrder,
-        userParameters: { stackOutput: options.stackOutputsMap!.mapOutputReference(outputRef) },
+        userParameters: { stackOutput: options.stackOutputsMap.mapOutputReference(outputRef) },
         lambda: handler,
       }));
     return { runOrdersConsumed: 1 };

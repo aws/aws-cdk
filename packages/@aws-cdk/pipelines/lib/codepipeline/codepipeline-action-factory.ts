@@ -81,9 +81,8 @@ export interface ProduceActionOptions {
    * Note - Codepipeline variables can only be referenced in action
    * configurations.
    *
-   * @default - No stack output references to map
    */
-  readonly stackOutputsMap?: StackOutputsMap
+  readonly stackOutputsMap: StackOutputsMap
 }
 
 /**
