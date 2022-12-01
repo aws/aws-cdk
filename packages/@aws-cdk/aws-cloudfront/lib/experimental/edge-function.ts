@@ -22,6 +22,11 @@ export interface EdgeFunctionProps extends lambda.FunctionProps {
    * @default - `edge-lambda-stack-${region}`
    */
   readonly stackId?: string;
+
+  /**
+   * The stack name of Lambda@Edge function.
+   */
+  readonly stackName?: string;
 }
 
 /**
@@ -162,7 +167,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     // SSM parameter names must only contain letters, numbers, ., _, -, or /.
     const sanitizedPath = this.node.path.replace(/[^\/\w.-]/g, '_');
     const parameterName = `/${parameterNamePrefix}/${this.env.region}/${sanitizedPath}`;
-    const functionStack = this.edgeStack(props.stackId);
+    const functionStack = this.edgeStack(props.stackId, props.stackName);
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
@@ -222,7 +227,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     return resource.getAttString('FunctionArn');
   }
 
-  private edgeStack(stackId?: string): Stack {
+  private edgeStack(stackId?: string, stackName?: string): Stack {
     const stage = Stage.of(this);
     if (!stage) {
       throw new Error('stacks which use EdgeFunctions must be part of a CDK app or stage');
@@ -232,6 +237,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
+        stackName: stackName,
         env: {
           region: EdgeFunction.EDGE_REGION,
           account: Stack.of(this).account,
