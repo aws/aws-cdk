@@ -413,7 +413,7 @@ declare const messageHandler: lambda.Function;
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 webSocketApi.addRoute('sendmessage', {
   integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
-  shouldReturnResponse: true,
+  returnResponse: true,
 });
 ```
 

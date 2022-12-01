@@ -131,7 +131,7 @@ describe('WebSocketRoute', () => {
       webSocketApi,
       integration: new DummyIntegration(),
       routeKey: 'message',
-      shouldReturnResponse: true,
+      returnResponse: true,
     });
 
     // THEN

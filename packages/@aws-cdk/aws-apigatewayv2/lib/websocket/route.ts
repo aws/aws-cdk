@@ -42,7 +42,7 @@ export interface WebSocketRouteOptions {
    * Should the route send a response to the client
    * @default false
    */
-  readonly shouldReturnResponse?: boolean;
+  readonly returnResponse?: boolean;
 
 }
 
@@ -109,10 +109,10 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       target: `integrations/${config.integrationId}`,
       authorizerId: authBindResult.authorizerId,
       authorizationType: authBindResult.authorizationType,
-      routeResponseSelectionExpression: props.shouldReturnResponse ? '$default' : undefined,
+      routeResponseSelectionExpression: props.returnResponse ? '$default' : undefined,
     });
     this.routeId = route.ref;
-    if (props.shouldReturnResponse) {
+    if (props.returnResponse) {
       new CfnRouteResponse(this, 'Response', {
         apiId: props.webSocketApi.apiId,
         routeId: route.ref,
