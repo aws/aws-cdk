@@ -55,6 +55,13 @@ export interface ClusterProps {
   readonly capacityProviders?: string[];
 
   /**
+   * The cluster default capacity provider
+   *
+   * @default - undefined
+   */
+  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
+
+  /**
    * Whether to enable Fargate Capacity Providers
    *
    * @default false
@@ -245,7 +252,7 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames));
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames, props.defaultCapacityProviderStrategy));
   }
 
   /**
@@ -924,8 +931,6 @@ enum ContainerInsights {
 
 /**
  * A Capacity Provider strategy to use for the service.
- *
- * NOTE: defaultCapacityProviderStrategy on cluster not currently supported.
  */
 export interface CapacityProviderStrategy {
   /**
@@ -1175,13 +1180,16 @@ export class AsgCapacityProvider extends Construct {
 class MaybeCreateCapacityProviderAssociations implements IAspect {
   private scope: Construct;
   private id: string;
-  private capacityProviders: string[]
-  private resource?: CfnClusterCapacityProviderAssociations
+  private capacityProviders: string[];
+  private resource?: CfnClusterCapacityProviderAssociations;
+  private defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
 
-  constructor(scope: Construct, id: string, capacityProviders: string[] ) {
+
+  constructor(scope: Construct, id: string, capacityProviders: string[], defaultCapacityProviderStrategy?: CapacityProviderStrategy[]) {
     this.scope = scope;
     this.id = id;
     this.capacityProviders = capacityProviders;
+    this.defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
 
   public visit(node: IConstruct): void {
@@ -1189,7 +1197,7 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
       if (this.capacityProviders.length > 0 && !this.resource) {
         const resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
-          defaultCapacityProviderStrategy: [],
+          defaultCapacityProviderStrategy: this.defaultCapacityProviderStrategy || [],
           capacityProviders: Lazy.list({ produce: () => this.capacityProviders }),
         });
         this.resource = resource;
