@@ -455,6 +455,20 @@ const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
 });
 ```
 
+If the name of the stack and the name of the ssm parameter is importen, 
+it can also be configured in the properties.
+
+```ts
+const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
+  stackId: 'edge-lambda-stack-id-1', 
+  stackName: 'edge-lambda-stack-1',
+  ssmParameterName: 'edge-lambda-stack-1-parameter'
+});
+```
+
 Lambda@Edge functions can also be associated with additional behaviors,
 either at or after Distribution creation time.
 
