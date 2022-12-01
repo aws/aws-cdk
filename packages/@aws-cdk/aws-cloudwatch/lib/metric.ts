@@ -4,7 +4,8 @@ import { Construct, IConstruct } from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
-import { normalizeRawStringStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
+import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
+import { Stats } from './stats';
 
 export type DimensionHash = { [dim: string]: any };
 
@@ -24,6 +25,8 @@ export interface CommonMetricOptions {
   /**
    * What function to use for aggregating.
    *
+   * Use the `aws_cloudwatch.Stats` helper class to construct valid input strings.
+   *
    * Can be one of the following:
    *
    * - "Minimum" | "min"
@@ -37,8 +40,6 @@ export interface CommonMetricOptions {
    * - "wmNN.NN" | "wm(NN.NN%:NN.NN%)"
    * - "tcNN.NN" | "tc(NN.NN%:NN.NN%)"
    * - "tsNN.NN" | "ts(NN.NN%:NN.NN%)"
-   *
-   * Use the factory functions on the `Stats` object to construct valid input strings.
    *
    * @default Average
    */
@@ -294,9 +295,20 @@ export class Metric implements IMetric {
     this.dimensions = this.validateDimensions(props.dimensionsMap ?? props.dimensions);
     this.namespace = props.namespace;
     this.metricName = props.metricName;
-    // Try parsing, this will throw if it's not a valid stat
-    // FIXME: this actually doesn't throw if it's not a valid stat, it just returns the raw input string
-    this.statistic = normalizeRawStringStatistic(props.statistic || 'Average');
+
+    const parsedStat = parseStatistic(props.statistic || Stats.AVERAGE);
+    if (parsedStat.type === 'generic') {
+      // Unrecognized statistic, do not throw, just warn
+      // There may be a new statistic that this lib does not support yet
+      // eslint-disable-next-line no-console
+      console.warn(
+        `WARNING: Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}", label "${props.label}" and metric name "${props.metricName}".` +
+          ' Use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+          ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.',
+      );
+    }
+    this.statistic = normalizeStatistic(parsedStat);
+
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
