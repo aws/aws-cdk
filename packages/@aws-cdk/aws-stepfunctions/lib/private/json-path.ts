@@ -1,4 +1,4 @@
-import { captureStackTrace, IResolvable, IResolveContext, ResolutionTypeHint, Token, Tokenization } from '@aws-cdk/core';
+import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/core';
 import { IntrinsicParser, IntrinsicExpression } from './intrinstics';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
@@ -9,12 +9,10 @@ export class JsonPathToken implements IResolvable {
   }
 
   public readonly creationStack: string[];
-  public readonly typeHint: ResolutionTypeHint;
   public displayHint: string;
 
   constructor(public readonly path: string) {
     this.creationStack = captureStackTrace();
-    this.typeHint = ResolutionTypeHint.STRING;
     this.displayHint = path.replace(/^[^a-zA-Z]+/, '');
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
   }
