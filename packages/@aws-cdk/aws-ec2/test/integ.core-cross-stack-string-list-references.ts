@@ -1,8 +1,8 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { App, CfnParameter, Stack, StackProps } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
+import { InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, Vpc } from '../lib';
 
 // GIVEN
 const app = new App({
@@ -17,10 +17,10 @@ class ProducerStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'vpc');
-    this.stringListGetAtt = new ec2.InterfaceVpcEndpoint(this, 'endpoint', {
+    const vpc = new Vpc(this, 'vpc');
+    this.stringListGetAtt = new InterfaceVpcEndpoint(this, 'endpoint', {
       vpc,
-      service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
     }).vpcEndpointDnsEntries;
 
     this.stringListRef = new CfnParameter(this, 'stringListParam', {

@@ -3,7 +3,6 @@ import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRI
 import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
-import { ResolutionTypeHint } from '../lib/type-hints';
 import { evaluateCFN } from './evaluate-cfn';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
@@ -713,7 +712,6 @@ describe('tokens', () => {
 
 class Promise2 implements IResolvable {
   public readonly creationStack = [];
-  public readonly typeHint = ResolutionTypeHint.STRING;
 
   public resolve() {
     return {
@@ -729,7 +727,6 @@ class Promise2 implements IResolvable {
 class Promise1 implements IResolvable {
   public readonly creationStack = [];
   public p2 = [new Promise2(), new Promise2()];
-  public readonly typeHint = ResolutionTypeHint.STRING;
 
   public resolve() {
     return this.p2;

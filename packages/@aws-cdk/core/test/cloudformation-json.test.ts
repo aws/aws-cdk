@@ -1,6 +1,5 @@
 import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
-import { ResolutionTypeHint } from '../lib/type-hints';
 import { evaluateCFN } from './evaluate-cfn';
 
 let app: App;
@@ -417,11 +416,9 @@ function tokensThatResolveTo(value: any): Token[] {
 
 class DummyPostProcessor implements IResolvable, IPostProcessor {
   public readonly creationStack: string[];
-  public readonly typeHint: ResolutionTypeHint;
 
   constructor(private readonly value: any) {
     this.creationStack = ['test'];
-    this.typeHint = ResolutionTypeHint.STRING;
   }
 
   public resolve(context: IResolveContext) {

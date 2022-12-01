@@ -3,19 +3,15 @@
  */
 export enum ResolutionTypeHint {
   /**
-   * adsf
+   * This value is expected to resolve to a String
    */
   STRING = 'string',
   /**
-   * adsf
+   * This value is expected to resolve to a Number
    */
   NUMBER = 'number',
   /**
-   * adsf
+   * This value is expected to resolve to a String List
    */
   LIST = 'list',
-  /**
-   * adsf
-   */
-  ERROR = 'error',
 }

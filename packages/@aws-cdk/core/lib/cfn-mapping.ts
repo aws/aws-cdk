@@ -5,7 +5,6 @@ import { Fn } from './cfn-fn';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token } from './token';
-import { ResolutionTypeHint } from './type-hints';
 
 type Mapping = { [k1: string]: { [k2: string]: any } };
 
@@ -130,13 +129,8 @@ export class CfnMapping extends CfnRefElement {
 
 class CfnMappingEmbedder implements IResolvable {
   readonly creationStack: string[] = [];
-  readonly typeHint: ResolutionTypeHint;
 
-  constructor(private readonly cfnMapping: CfnMapping, readonly mapping: Mapping, private readonly key1: string, private readonly key2: string) {
-    // Mappings can only contain lists or strings as values
-    const keys = Object.keys(mapping);
-    this.typeHint = Array.isArray(mapping[keys[0]]) ? ResolutionTypeHint.LIST : ResolutionTypeHint.STRING;
-  }
+  constructor(private readonly cfnMapping: CfnMapping, readonly mapping: Mapping, private readonly key1: string, private readonly key2: string) {}
 
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);

@@ -64,7 +64,7 @@ export interface IResolvable {
   /**
    * The type that this token will likely resolve to.
    */
-  readonly typeHint: ResolutionTypeHint;
+  readonly typeHint?: ResolutionTypeHint;
 
   /**
    * Produce the Token's value at resolution time

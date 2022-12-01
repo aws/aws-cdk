@@ -63,7 +63,6 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   public readonly creationStack: string[];
-  public readonly typeHint: cdk.ResolutionTypeHint;
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
   private readonly minimize?: boolean;
@@ -74,7 +73,6 @@ export class PolicyDocument implements cdk.IResolvable {
     this.minimize = props.minimize;
 
     this.addStatements(...props.statements || []);
-    this.typeHint = cdk.ResolutionTypeHint.STRING; // should this be a new type, JSON?
   }
 
   public resolve(context: cdk.IResolveContext): any {

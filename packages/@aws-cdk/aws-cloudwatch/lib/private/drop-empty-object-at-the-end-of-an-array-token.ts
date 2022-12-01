@@ -9,11 +9,9 @@ import { dropUndefined } from './object';
  */
 export class DropEmptyObjectAtTheEndOfAnArray implements cdk.IResolvable, cdk.IPostProcessor {
   public readonly creationStack: string[];
-  public readonly typeHint: cdk.ResolutionTypeHint;
 
   constructor(private readonly value: any) {
     this.creationStack = cdk.captureStackTrace();
-    this.typeHint = cdk.ResolutionTypeHint.STRING; //????
   }
 
   public resolve(context: cdk.IResolveContext) {

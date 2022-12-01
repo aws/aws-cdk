@@ -1,6 +1,6 @@
 import {
   captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, ResolutionTypeHint, Stack, StringConcat, Token, Tokenization,
+  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
 } from '@aws-cdk/core';
 import { IRule } from './rule-ref';
 
@@ -294,7 +294,6 @@ export class EventField implements IResolvable {
    */
   public readonly displayHint: string;
   public readonly creationStack: string[];
-  public readonly typeHint: ResolutionTypeHint;
 
   /**
    *
@@ -304,7 +303,6 @@ export class EventField implements IResolvable {
     this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
     this.creationStack = captureStackTrace();
-    this.typeHint = ResolutionTypeHint.STRING;
   }
 
   public resolve(_ctx: IResolveContext): any {

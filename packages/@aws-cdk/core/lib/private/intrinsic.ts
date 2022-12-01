@@ -41,7 +41,7 @@ export class Intrinsic implements IResolvable {
   /**
    * Type hint
    */
-  public readonly typeHint: ResolutionTypeHint;
+  public readonly typeHint?: ResolutionTypeHint;
 
   private readonly value: any;
 

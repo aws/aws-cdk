@@ -369,13 +369,11 @@ function isStringType(type: string) {
 }
 
 function typeToTypeHint(type: string): ResolutionTypeHint {
-  if (isStringType(type)) {
-    return ResolutionTypeHint.STRING;
-  } else if (isListType(type)) {
+  if (isListType(type)) {
     return ResolutionTypeHint.LIST;
   } else if (isNumberType(type)) {
     return ResolutionTypeHint.NUMBER;
   }
 
-  return ResolutionTypeHint.ERROR;
+  return ResolutionTypeHint.STRING;
 }
