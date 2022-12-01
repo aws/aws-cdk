@@ -881,7 +881,7 @@ class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActi
       actionName: options.actionName,
       runOrder: options.runOrder,
       // Map the reference to the variable name the CDK has generated for you.
-      userParameters: {stackOutput: options.stackOutputsMap.mapOutputReference(this.stackOutputReference)},
+      userParameters: {stackOutput: options.stackOutputsMap.toCodePipeline(this.stackOutputReference)},
       lambda: this.function,
     }));
 

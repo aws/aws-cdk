@@ -16,7 +16,7 @@ export class StackOutputsMap {
   /**
    * Return the matching variable reference string for a StackOutputReference
    */
-  public mapOutputReference(x: StackOutputReference): string {
+  public toCodePipeline(x: StackOutputReference): string {
     return `#{${stackVariableNamespace(this.queries.producingStack(x))}.${x.outputName}}`;
   }
 }
