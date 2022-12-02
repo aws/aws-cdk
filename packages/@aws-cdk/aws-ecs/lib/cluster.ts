@@ -55,6 +55,25 @@ export interface ClusterProps {
   readonly capacityProviders?: string[];
 
   /**
+<<<<<<< Updated upstream
+=======
+   * The cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
+   *
+   * For example
+   * [
+   *  {
+   *    capacityProvider: 'FARGATE',
+   *    base: 10,
+   *    weight: 50
+   *  }
+   * ]
+   *
+   * @default null
+   */
+  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
+
+  /**
+>>>>>>> Stashed changes
    * Whether to enable Fargate Capacity Providers
    *
    * @default false
