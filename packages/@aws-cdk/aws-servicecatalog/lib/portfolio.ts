@@ -359,10 +359,11 @@ export class Portfolio extends PortfolioBase {
       this.associateTagOptions(props.tagOptions);
     }
 
+    const portfolioNodeId = this.node.id;
     cdk.Aspects.of(this).add({
       visit(c: IConstruct) {
-        if (c instanceof Portfolio) {
-          c.addBucketPermissionsToSharedAccounts();
+        if (c.node.id === portfolioNodeId) {
+          (c as Portfolio).addBucketPermissionsToSharedAccounts();
         };
       },
     });
