@@ -28,7 +28,7 @@ class ProducerStack extends Stack {
       type: 'List<String>',
     });
 
-    this.manualExport = this.exportListValue(['string1', 'string2'], {
+    this.manualExport = this.exportStringListValue(['string1', 'string2'], {
       name: 'ManualExport',
     });
   }
