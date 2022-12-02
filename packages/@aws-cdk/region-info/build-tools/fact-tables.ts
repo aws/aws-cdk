@@ -106,6 +106,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
+// Any not listed regions use the service principal "logdelivery.elasticloadbalancing.amazonaws.com"
 export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'af-south-1': '098369216593',
   'ap-east-1': '754344448648',
