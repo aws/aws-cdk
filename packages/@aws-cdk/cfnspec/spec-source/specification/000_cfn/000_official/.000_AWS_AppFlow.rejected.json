@@ -2097,7 +2097,7 @@
       }
     }
   },
-  "ResourceSpecificationVersion": "96.0.0",
+  "ResourceSpecificationVersion": "99.0.0",
   "ResourceTypes": {
     "AWS::AppFlow::ConnectorProfile": {
       "Attributes": {

@@ -1,5 +1,5 @@
 {
-  "$version": "96.0.0",
+  "$version": "99.0.0",
   "PropertyTypes": {
     "AWS::IoT::AccountAuditConfiguration.AuditCheckConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-accountauditconfiguration-auditcheckconfiguration.html",
@@ -53,6 +53,12 @@
         },
         "DeviceCertificateSharedCheck": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-accountauditconfiguration-auditcheckconfigurations.html#cfn-iot-accountauditconfiguration-auditcheckconfigurations-devicecertificatesharedcheck",
+          "Required": false,
+          "Type": "AuditCheckConfiguration",
+          "UpdateType": "Mutable"
+        },
+        "IntermediateCaRevokedForActiveDeviceCertificatesCheck": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-accountauditconfiguration-auditcheckconfigurations.html#cfn-iot-accountauditconfiguration-auditcheckconfigurations-intermediatecarevokedforactivedevicecertificatescheck",
           "Required": false,
           "Type": "AuditCheckConfiguration",
           "UpdateType": "Mutable"
@@ -2166,12 +2172,6 @@
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"
-        },
-        "JobExecutionsRetryConfig": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot-jobtemplate.html#cfn-iot-jobtemplate-jobexecutionsretryconfig",
-          "PrimitiveType": "Json",
-          "Required": false,
-          "UpdateType": "Mutable"
         },
         "JobExecutionsRolloutConfig": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot-jobtemplate.html#cfn-iot-jobtemplate-jobexecutionsrolloutconfig",

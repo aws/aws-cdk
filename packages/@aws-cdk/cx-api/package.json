@@ -41,6 +41,7 @@
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint && madge --circular --extensions js lib",
+    "on-bump": "yarn build && node ./build-tools/update-vnext && yarn build && node ./build-tools/flag-report",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
@@ -74,7 +75,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
-    "@types/semver": "^7.3.12",
+    "@types/semver": "^7.3.13",
     "jest": "^27.5.1",
     "madge": "^5.0.1",
     "mock-fs": "^4.14.0"
