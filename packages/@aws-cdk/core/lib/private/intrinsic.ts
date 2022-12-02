@@ -39,7 +39,7 @@ export class Intrinsic implements IResolvable {
   public readonly creationStack: string[];
 
   /**
-   * Type hint
+   * Type that the Intrinsic is expected to evaluate to.
    */
   public readonly typeHint?: ResolutionTypeHint;
 
