@@ -25,7 +25,7 @@ export const AWS_CDK_METADATA = new Set([
   'eu-north-1',
   'eu-south-1',
   'me-south-1',
-  'me-central-1',
+  // 'me-central-1',
   'sa-east-1',
 ]);
 
