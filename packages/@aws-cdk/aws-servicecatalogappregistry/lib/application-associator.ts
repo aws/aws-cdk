@@ -27,7 +27,7 @@ export interface ApplicationAssociatorProps {
  * in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
  * needs to be associated separately.
  *
- * If cross region stack is detected, then this construct will give a warning and skip that association.
+ * If cross region stack is detected, then this construct will display a warning and skip the association.
  * Only stacks and an application within the same region will be associated.
  *
  * If cross account stack is detected, then this construct will automatically share the application to consumer accounts.
@@ -60,8 +60,7 @@ export class ApplicationAssociator extends Construct {
 
   /**
    * Associate an application with the given stage of the same region.
-   * If there does not exist an application for the given region, then skip the
-   * association.
+   * If there does not exist an application for the given region, then throws error.
    *
    */
   public associateStage(stage: cdk.Stage): cdk.Stage {
@@ -70,7 +69,7 @@ export class ApplicationAssociator extends Construct {
     if (application) {
       cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this, stage.region!));
     } else {
-      cdk.Annotations.of(stage).addWarning(`There is no application defined in ${stage.region}. Skipping association.`);
+      cdk.Annotations.of(stage).addError(`There is no application defined for ${stage.region}. Please specify an application in this region.`);
     }
     return stage;
   }

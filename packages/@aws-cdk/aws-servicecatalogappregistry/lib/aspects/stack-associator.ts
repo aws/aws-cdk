@@ -32,7 +32,14 @@ abstract class StackAssociatorBase implements IAspect {
     if (Stack.isStack(node)) {
       this.handleCrossRegionStack(node);
       this.handleCrossAccountStack(node);
-      if (this.isSameRegion(node)) {
+      if (isRegionUnresolved(this.application.env.region, node.region) || this.isSameRegion(node)) {
+        /**
+         * If application or stack are region-agnostic, then the association could still be attempted during deployment.
+         * However, if there are multiple possible associations on a stack with an application, the synthesis will
+         * fail because a stack can only be associated with one application. Thus, it is encouraged to make use of
+         * the 'env' property to specify the region explicitly per stack and application.
+         *
+         */
         this.associate(node);
       }
     }
@@ -53,7 +60,7 @@ abstract class StackAssociatorBase implements IAspect {
    * @param stack Cfn Stack.
    */
   private isSameRegion(stack: Stack): boolean {
-    return isRegionUnresolved(this.application.env.region, stack.region) || this.application.env.region === stack.region;
+    return this.application.env.region === stack.region;
   }
 
   /**

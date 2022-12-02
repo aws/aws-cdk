@@ -1,0 +1,13 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "ServiceCatalogAppRegistryMultiRegionAppTests/DefaultTest": {
+      "stacks": [
+        "integ-servicecatalogappregistry-application-us-east-1",
+        "integ-servicecatalogappregistry-application-us-west-2"
+      ],
+      "assertionStack": "integ-servicecatalogappregistry-application-us-east-1",
+      "assertionStackName": "integ-servicecatalogappregistry-application-us-east-1"
+    }
+  }
+}
