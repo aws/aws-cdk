@@ -82,7 +82,6 @@ export class FileAssetHandler implements IAssetHandler {
     if (this.host.aborted) { return; }
     const publishFile = this.asset.source.executable ?
       await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
-    }
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
 
