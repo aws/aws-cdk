@@ -1,6 +1,5 @@
-import { IType } from './type';
-import { CM2, IRenderable } from './cm2';
-import { ANY } from './well-known-types';
+import { IType, ANY } from './type';
+import { CM2, IRenderable, CodePart } from './cm2';
 
 export interface IValue extends IRenderable {
   readonly type: IType;
@@ -21,7 +20,7 @@ export class ObjectLiteral implements IValue {
     this.fields.set(key, value);
   }
 
-  public set(fields: Record<string, IValue>) {
+  public set(fields: Record<string, IRenderable>) {
     for (const [key, value] of Object.entries(fields)) {
       this.set1(key as any, value as any);
     }
@@ -46,8 +45,22 @@ export class ObjectLiteral implements IValue {
   }
 }
 
-export function objLit(xs: Record<string, IValue>): ObjectLiteral {
+export function objLit(xs: Record<string, IRenderable>): ObjectLiteral {
   const x = new ObjectLiteral();
   x.set(xs);
   return x;
+}
+
+export function litVal(x: CodePart | CodePart[], type: IType = ANY): IValue {
+  return {
+    type,
+    render(code) {
+      if (Array.isArray(x)) {
+        code.add(...x);
+      } else {
+        code.add(x);
+      }
+    },
+    toString: () => `${x}`,
+  };
 }

@@ -6,6 +6,7 @@ export interface ISourceModule {
 }
 export declare class SourceFile implements ISourceModule {
     readonly fileName: string;
+    static of(x: string | SourceFile): SourceFile;
     readonly identifier: string;
     constructor(fileName: string);
     importName(code: CM2): string;

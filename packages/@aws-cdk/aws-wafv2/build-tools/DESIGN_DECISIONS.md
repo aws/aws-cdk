@@ -7,7 +7,8 @@ Interesting Design Decisions
     - All other targets require scope=REGIONAL, and exclude CloudFront targets
   - Decision:
     - Integration classes for the targets
-    - Scope is implicit based on the target
+    - Scope can be implicit based on the target (but can also be explicit in case the integrations
+      are added later, with an `add`er).
 
 - Properties: flattening many deeply nested structs as per our style guide.
 

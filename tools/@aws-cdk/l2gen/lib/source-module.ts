@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { CM2 } from './cm2';
 
 export interface ISourceModule {
@@ -8,6 +7,10 @@ export interface ISourceModule {
 }
 
 export class SourceFile implements ISourceModule {
+  public static of(x: string | SourceFile) {
+    return typeof x === 'string' ? new SourceFile(x) : x;
+  }
+
   public readonly identifier: string;
 
   constructor(public readonly fileName: string) {
@@ -15,8 +18,7 @@ export class SourceFile implements ISourceModule {
   }
 
   public importName(code: CM2): string {
-    const relativePath = path.posix.relative(path.dirname(code.currentModule.fileName), this.fileName).replace(/\.ts$/, '');
-    return relativePath.startsWith('../') ? relativePath : `./${relativePath}`;
+    return code.relativeImportName(this.fileName);
   }
 
   public equals(rhs: ISourceModule): boolean {

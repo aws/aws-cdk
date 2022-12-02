@@ -1,14 +1,65 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { generate, L2Gen, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, enumMapping, BOOLEAN, TRUE, FALSE, javascriptValue, EnumClass, ANY, literalValue, NUMBER, ifDefinedAny, definedOrElse } from '@aws-cdk/l2gen';
+import { generate, L2Gen, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, BOOLEAN, TRUE, FALSE, jsVal, EnumClass, ANY, litVal, NUMBER, ifDefinedAny, definedOrElse, IntegrationType, arrayOf, stackToJsonString } from '@aws-cdk/l2gen';
+
+//////////////////////////////////////////////////////////////////////
 
 const scope = new Enum('Scope');
-const cloudFrontScope = scope.addMember({ name: 'CLOUDFRONT', summary: '' });
-const regionalScope = scope.addMember({ name: 'REGIONAL', summary: '' });
+const cloudFrontScope = scope.addMember({ name: 'CLOUDFRONT', cloudFormationString: 'CLOUDFRONT', summary: '' });
+const regionalScope = scope.addMember({ name: 'REGIONAL', cloudFormationString: 'REGIONAL', summary: '' });
 
-const defaulActionType = new EnumClass('DefaultAction', {
+//////////////////////////////////////////////////////////////////////
+
+const protectedResource = new IntegrationType('ProtectedResource');
+protectedResource.bindResult({
+  name: 'scope',
+  type: scope,
+  required: true,
+  summary: 'The scope associated with this resource',
+});
+protectedResource.bindResult({
+  name: 'id',
+  type: STRING,
+  required: true,
+  summary: 'Construct identifier for the association',
+});
+protectedResource.bindResult({
+  name: 'resourceArn',
+  type: STRING,
+  required: false,
+  summary: 'ARN of the protected resource',
+  details: 'If not supplied, no WebACLAssociation resource will be created. The association must happen on the protected resource itself.',
+});
+protectedResource.integration('ProtectedCloudFrontDistribution', int => {
+  int.wireBindResult({
+    id: int.positional('id', STRING),
+    scope: cloudFrontScope,
+  });
+});
+protectedResource.integration('ProtectedRestApi', int => {
+  int.wireBindResult({
+    id: int.positional('id', STRING),
+    scope: regionalScope,
+  });
+});
+protectedResource.integration('ProtectedApplicationLoadBalancer', int => {
+  int.wireBindResult({
+    id: int.positional('id', STRING),
+    scope: regionalScope,
+  });
+});
+protectedResource.integration('ProtectedGraphQlApi', int => {
+  int.wireBindResult({
+    id: int.positional('id', STRING),
+    scope: regionalScope,
+  });
+});
+
+//////////////////////////////////////////////////////////////////////
+
+const defaultActionType = new EnumClass('DefaultAction', {
   typeCheckedReturnType: L2Gen.genTypeForProperty('AWS::WAFv2::WebACL', 'DefaultAction'),
 });
-defaulActionType.alternative('allow', allow => {
+defaultActionType.alternative('allow', allow => {
   const customHeaders = allow.option({
     name: 'customHeaders',
     type: ANY, // FIXME:
@@ -19,12 +70,12 @@ defaulActionType.alternative('allow', allow => {
   allow.wire({
     allow: objLit({
       customRequestHandling: ifDefined(customHeaders, objLit({
-        insertHeaders: literalValue('[]'), // FIXME
+        insertHeaders: litVal('[]'), // FIXME
       })),
     }),
   });
 });
-defaulActionType.alternative('block', block => {
+defaultActionType.alternative('block', block => {
   const responseCode = block.option({
     name: 'responseCode',
     type: NUMBER,
@@ -55,31 +106,106 @@ defaulActionType.alternative('block', block => {
     block: objLit({
       customResponse: ifDefinedAny([responseBodyKey, responseCode, responseHeaders], objLit({
         customResponseBodyKey: responseBodyKey,
-        responseCode: definedOrElse(responseCode, javascriptValue(403)),
+        responseCode: definedOrElse(responseCode, jsVal(403)),
         responseHeaders,
       })),
     }),
   });
 });
 
+//////////////////////////////////////////////////////////////////////
+
+const customResponseBody = new EnumClass('CustomResponseBody', {
+  typeCheckedReturnType: L2Gen.genTypeForPropertyType('AWS::WAFv2::WebACL', 'CustomResponseBody'),
+});
+customResponseBody.alternative('custom', custom => {
+  custom.option({
+    name: 'contentType',
+    type: STRING,
+    required: true,
+    summary: 'The type of content in the payload that you are defining in the Content string.',
+    wire: 'contentType',
+  });
+  custom.option({
+    name: 'content',
+    type: STRING,
+    required: true,
+    summary: 'The payload of the custom response.',
+    wire: 'content',
+  });
+});
+customResponseBody.alternative('text', custom => {
+  custom.wire({
+    contentType: jsVal('TEXT_PLAIN'),
+  });
+  custom.positional({
+    name: 'content',
+    type: STRING,
+    required: true,
+    summary: 'The text payload of the custom response.',
+    wire: 'content',
+  });
+});
+customResponseBody.alternative('html', custom => {
+  custom.wire({
+    contentType: jsVal('TEXT_HTML'),
+  });
+  custom.positional({
+    name: 'content',
+    type: STRING,
+    required: true,
+    summary: 'The HTML payload of the custom response.',
+    wire: 'content',
+  });
+});
+customResponseBody.alternative('jsonString', custom => {
+  custom.wire({
+    contentType: jsVal('APPLICATION_JSON'),
+  });
+  custom.positional({
+    name: 'str',
+    type: STRING,
+    required: true,
+    summary: 'The JSON string to use as custom response.',
+    wire: 'content',
+  });
+});
+customResponseBody.alternative('jsonObject', custom => {
+  custom.wire({
+    contentType: jsVal('APPLICATION_JSON'),
+  });
+  custom.positional({
+    name: 'obj',
+    type: STRING,
+    required: true,
+    summary: 'The JSON object to use as custom response.',
+    wire: 'content',
+    wireTransform: stackToJsonString,
+  });
+});
+
+//////////////////////////////////////////////////////////////////////
+
 const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
-  const scopeProp = res.addProperty({
+  /* const protectedResources = */ res.addProperty({
+    name: 'protectedResources',
+    type: arrayOf(protectedResource),
+    required: false,
+    summary: 'Resources protected by this WebACL',
+    defaultDescription: 'Protected resources are added later',
+  });
+
+  res.addLazyPrivateProperty({
     name: 'scope',
-    type: scope,
+    type: STRING,
     required: true,
     summary: 'Specifies whether this is for an Amazon CloudFront distribution or for a regional application.',
     details: `
       A regional application can be an Application Load Balancer (ALB), an
       Amazon API Gateway REST API, an AWS AppSync GraphQL API, or an Amazon
       Cognito user pool.`,
+    wire: 'scope',
   });
-
-  const scopeMapping = enumMapping([
-    [cloudFrontScope, 'CLOUDFRONT'],
-    [regionalScope, 'REGIONAL'],
-  ]);
-
-  res.wire({ scope: scopeMapping(scopeProp) });
 
   res.addProperty({
     name: 'description',
@@ -140,7 +266,7 @@ const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
     type: STRING,
     required: false,
     summary: 'The value used for the "Rule" dimension when the default action is taken.',
-    defaultValue: javascriptValue('DefaultAction'),
+    defaultValue: jsVal('DefaultAction'),
   });
 
   res.wire({
@@ -154,18 +280,51 @@ const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
 
   const defaultAction = res.addProperty({
     name: 'defaultAction',
-    type: defaulActionType,
+    type: defaultActionType,
     required: true,
     summary: 'The action to perform if none of the Rules contained in the WebACL match.',
   });
 
   res.wire({
-    defaultAction: defaulActionType.unfold(defaultAction),
+    defaultAction: defaultActionType.unfold(defaultAction),
+  });
+
+  res.identification({
+    arnFormat: 'arn:${Partition}:wafv2:${Region}:${Account}:${Scope}/webacl/${Name}/${Id}',
+    arnProperty: {
+      name: 'webAclArn',
+      sourceProperty: 'attrArn',
+      summary: 'The Amazon Resource Name (ARN) of the web ACL.',
+    },
+    fields: {
+      Name: {
+        name: 'webAclName',
+        sourceProperty: 'ref',
+        summary: 'The Name of the web ACL.',
+        splitSelect: 0,
+      },
+      Id: {
+        name: 'webAclId',
+        sourceProperty: 'ref',
+        summary: 'The ID of the web ACL.',
+        splitSelect: 1,
+      },
+      Scope: {
+        name: 'webAclScopeName',
+        sourceProperty: 'ref',
+        summary: 'String representation of the web ACL scope.',
+        splitSelect: 2,
+      },
+    },
   });
 });
+
+//////////////////////////////////////////////////////////////////////
 
 generate(
   scope,
   webAcl,
-  defaulActionType,
+  defaultActionType,
+  protectedResource,
+  customResponseBody,
 );

@@ -10,3 +10,4 @@ export * from './well-known-types';
 export * from './well-known-values';
 export * from './enumclass';
 export * from './arguments';
+export * from './integrationtype';

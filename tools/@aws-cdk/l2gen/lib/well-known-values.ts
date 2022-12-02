@@ -1,9 +1,9 @@
-import { IValue } from './value';
-import { DURATION, STRING, BOOLEAN, NUMBER, ANY } from './well-known-types';
-import { HelperFunction, CM2 } from './cm2';
-import { IType } from './type';
+import { IValue, litVal } from './value';
+import { DURATION, FN, TOKENIZATION } from './well-known-types';
+import { CM2, interleave, CodePart, IRenderable } from './cm2';
+import { IType, ANY, BOOLEAN, STRING, NUMBER } from './type';
 
-export function javascriptValue(x: any): IValue {
+export function jsVal(x: any): IValue {
   const type = ((): IType => {
     switch (typeof x) {
       case 'boolean': return BOOLEAN;
@@ -22,19 +22,19 @@ export function javascriptValue(x: any): IValue {
   };
 }
 
-export function literalValue(x: string, type: IType = ANY): IValue {
+export function arrayVal(xs: CodePart[]): IValue {
   return {
-    type,
+    type: ANY,
     render(code) {
-      code.add(x);
+      code.add('[', ...interleave(', ', xs), ']');
     },
-    toString: () => x,
+    toString: () => JSON.stringify(xs),
   };
 }
 
-export const TRUE = javascriptValue(true);
-export const FALSE = javascriptValue(false);
-export const UNDEFINED = literalValue('undefined');
+export const TRUE = jsVal(true);
+export const FALSE = jsVal(false);
+export const UNDEFINED = litVal('undefined');
 
 export function renderDuration(v: IValue, style: 'toMinutes' | 'toSeconds'): IValue {
   if (v.type !== DURATION) {
@@ -77,6 +77,16 @@ export function ifDefinedAny(cs: IValue[], v: IValue, otherwise: IValue = UNDEFI
   };
 }
 
+export function invoke(fn: IValue): IValue {
+  return {
+    type: ANY,
+    toString() { return `${fn}()` },
+    render(code: CM2) {
+      code.add(fn, '()');
+    },
+  };
+}
+
 export function definedOrElse(v: IValue, otherwise: IValue): IValue {
   return {
     type: v.type,
@@ -87,34 +97,12 @@ export function definedOrElse(v: IValue, otherwise: IValue): IValue {
   };
 }
 
-export function enumMapping(mapping: Array<[IValue, string]>) {
-  if (mapping.length === 0) { throw new Error('Mapping is empty'); }
-  const enumType = mapping[0][0].type;
-  if (!mapping.every(([v, _]) => v.type === enumType)) {
-    throw new Error('All enums in mapping must be from the same type');
-  }
-  const functionName = `${enumType.typeRefName}ToCloudFormation`;
+export function splitSelect(sep: string, fieldNr: number | undefined, value: IRenderable) {
+  if (fieldNr === undefined) { return value; }
 
-  // FIXME: Exhaustiveness check?
+  return FN.callExp('select')(jsVal(fieldNr), FN.callExp('split')(jsVal(sep), value));
+}
 
-  const renderFn = new HelperFunction(functionName, code => {
-    code.openBlock('function ', functionName, '(x: ', enumType, '): string');
-    code.openBlock('switch (x)');
-
-    for (const [enumMember, str] of mapping) {
-      code.line('case ', enumMember, ': return ', JSON.stringify(str), ';');
-    }
-
-    code.closeBlock(); // switch
-    code.closeBlock();
-  });
-
-  return (value: IValue): IValue => ({
-    type: STRING,
-    toString: () => `${functionName}(${value})`,
-    render(code: CM2) {
-      code.addHelper(renderFn);
-      code.add(functionName, '(', value, ')');
-    },
-  });
+export function stackToJsonString(x: IRenderable): IRenderable {
+  return TOKENIZATION.callExp('toJsonString')(x);
 }

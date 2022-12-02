@@ -16,6 +16,10 @@ export function isTagsProperty(prop: [string, schema.Property]) {
   return prop[0] === 'Tags';
 }
 
+export function genTypeForPropertyType(typeName: string, propertyTypeName: string): IType {
+  return l1PropertyType(typeName, propertyTypeName);
+}
+
 export function genTypeForProperty(typeName: string, ...propertyPath: string[]): IType {
   const propPath = [...propertyPath];
 

@@ -1,22 +1,31 @@
 import { IGeneratable, fileFor } from './generatable';
-import { IType, standardTypeRender } from './type';
-import { CM2 } from './cm2';
+import { IType, standardTypeRender, STRING } from './type';
+import { CM2, SymbolImport } from './cm2';
 import { IValue } from './value';
-import { ISourceModule, SourceFile } from './source-module';
+import { SourceFile } from './source-module';
+import { Diagnostic } from './diagnostic';
+import { toCamelCase } from 'codemaker';
+import { jsVal } from './well-known-values';
 
 export class Enum implements IGeneratable, IType {
   public readonly typeRefName: string;
-  public readonly definingModule: ISourceModule;
+  public readonly definingModule: SourceFile;
   private readonly members = new Array<MemberProps>();
+  private readonly mappings = new Array<EnumMapping>();
+  private cloudFormationMapping?: EnumMapping;
 
   constructor(public readonly enumName: string) {
     this.typeRefName = enumName;
-    this.definingModule = new SourceFile(fileFor(this.typeRefName));
+    this.definingModule = new SourceFile(fileFor(this.typeRefName, 'public'));
   }
 
   public addMember(props: MemberProps): IValue {
+    if (this.members.length && !!this.members[0].cloudFormationString !== !!props.cloudFormationString) {
+      throw new Error('Either all enum members must have a cloudFormationString, or none of them should');
+    }
+
     this.members.push(props);
-    return {
+    const value = {
       type: this,
       toString: () => {
         return `${this.typeRefName}.${props.name}`;
@@ -25,10 +34,28 @@ export class Enum implements IGeneratable, IType {
         code.add(this, '.', props.name);
       }
     };
+
+    if (props.cloudFormationString) {
+      if (!this.cloudFormationMapping) {
+        this.cloudFormationMapping = new EnumMapping(toCamelCase(`${this.enumName}ToCloudFormation`));
+        this.mappings.push(this.cloudFormationMapping);
+      }
+      this.cloudFormationMapping.addMapping(value, jsVal(props.cloudFormationString));
+    }
+
+    return value;
+  }
+
+  public toCloudFormation(value: IValue) {
+    if (!this.cloudFormationMapping?.hasValues) {
+      throw new Error('No CloudFormation mappings defined');
+    }
+
+    return this.cloudFormationMapping.map(value);
   }
 
   generateFiles(): CM2[] {
-    const code = new CM2(fileFor(this.enumName));
+    const code = new CM2(this.definingModule.fileName);
     code.openBlock(`export enum ${this.enumName}`);
     for (const mem of this.members) {
       code.docBlock([
@@ -36,11 +63,11 @@ export class Enum implements IGeneratable, IType {
         '',
         mem.details ?? '',
       ]);
-      code.line(`${mem.name},`);
+      code.line(`${mem.name} = \'${this.enumName}.${mem.name}\',`);
     }
     code.closeBlock();
 
-    return [code];
+    return [code, ...this.mappings.flatMap(m => m.generateFiles())];
   }
 
   public render(code: CM2): void {
@@ -56,4 +83,62 @@ export interface MemberProps {
   readonly name: string;
   readonly summary: string;
   readonly details?: string;
+  readonly cloudFormationString?: string;
+}
+
+
+export class EnumMapping implements IGeneratable {
+  private readonly sourceFile: SourceFile;
+  private readonly mapping = new Array<[IValue, IValue]>();
+  private fromType?: IType;
+  private toType?: IType;
+
+  constructor(private readonly functionName: string) {
+    this.sourceFile = new SourceFile(fileFor(this.functionName, 'private'));
+  }
+
+  public get hasValues() {
+    return this.mapping.length > 0;
+  }
+
+  public addMapping(from: IValue, to: IValue) {
+    if (this.fromType && from.type !== this.fromType) { throw new Error(`Mapping: all fromTypes must be the same`); }
+    if (this.toType && to.type !== this.toType) { throw new Error(`Mapping: all toTypes must be the same`); }
+    this.fromType = from.type;
+    this.toType = to.type;
+
+    this.mapping.push([from, to]);
+  }
+
+  public diagnostics(): Diagnostic[] {
+    return [];
+  }
+
+  public generateFiles(): CM2[] {
+    if (!this.fromType || !this.toType) { return []; }
+
+    const code = new CM2(this.sourceFile);
+
+    code.block(['export function ', this.functionName, '(x: ', this.fromType, '): ', this.toType], () => {
+      code.block('switch (x)', () => {
+        for (const [enumMember, str] of this.mapping) {
+          code.line('case ', enumMember, ': return ', str, ';');
+        }
+      });
+    });
+
+    return [code];
+  }
+
+  public map(value: IValue): IValue {
+    return {
+      type: STRING,
+      toString: () => `${this.functionName}(${value})`,
+      render: (code: CM2) => {
+        code.addHelper(new SymbolImport(this.functionName, this.sourceFile));
+        code.add(this.functionName, '(', value, ')');
+      },
+    };
+  }
+
 }

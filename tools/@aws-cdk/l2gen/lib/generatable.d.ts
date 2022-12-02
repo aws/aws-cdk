@@ -4,4 +4,4 @@ export interface IGeneratable {
     generateFiles(): CM2[];
     diagnostics(): Diagnostic[];
 }
-export declare function fileFor(typeName: string): string;
+export declare function fileFor(typeName: string, visibility: 'public' | 'private'): string;

@@ -1,9 +1,8 @@
-import { IRenderable, CM2 } from './cm2';
+import { IRenderable, CM2, CodePart, interleave } from './cm2';
 import { IType } from './type';
-import { IValue } from './value';
 
 export class Arguments implements IRenderable {
-  private readonly args = new Array<Argument>();
+  public readonly args = new Array<Argument>();
 
   public arg(name: string, type: IType, options: ArgumentOptions = {}) {
     if (options.defaultValue && options.required === true) {
@@ -15,21 +14,23 @@ export class Arguments implements IRenderable {
       type,
       required: options.required || options.defaultValue === undefined,
       defaultValue: options.defaultValue,
+      summary: options.summary,
      });
     return this;
   }
 
   public render(code: CM2): void {
-    let first = true;
-    for (const arg of this.args) {
-      if (!first) { code.add(', '); }
-      first = false;
-
-      code.add(arg.name, !arg.required && !arg.defaultValue ? '?' : '', ': ', arg.type);
+    code.add(...interleave(', ', this.args.map(arg => {
+      const ret: CodePart[] = [arg.name, !arg.required && !arg.defaultValue ? '?' : '', ': ', arg.type];
       if (arg.defaultValue) {
-        code.add(' = ', arg.defaultValue);
+        ret.push(' = ', arg.defaultValue);
       }
-    }
+      return ret;
+    })));
+  }
+
+  public docBlockLines(): string[] {
+    return this.args.filter(a => a.summary).map(a => `@param {${a.type}} ${a.name} ${a.summary}`);
   }
 
   public copy() {
@@ -41,12 +42,14 @@ export class Arguments implements IRenderable {
 
 export interface ArgumentOptions {
   readonly required?: boolean;
-  readonly defaultValue?: IValue;
+  readonly defaultValue?: IRenderable;
+  readonly summary?: string;
 }
 
-interface Argument {
+export interface Argument {
   readonly name: string;
   readonly type: IType;
   readonly required: boolean;
-  readonly defaultValue?: IValue;
+  readonly defaultValue?: IRenderable;
+  readonly summary?: string;
 }

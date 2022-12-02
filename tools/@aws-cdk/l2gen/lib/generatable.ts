@@ -6,6 +6,6 @@ export interface IGeneratable {
   diagnostics(): Diagnostic[];
 }
 
-export function fileFor(typeName: string) {
-  return `lib/gen/${typeName.toLowerCase()}.generated.ts`;
+export function fileFor(typeName: string, visibility: 'public' | 'private') {
+  return `lib/gen/${visibility === 'private' ? 'private/' : ''}${typeName.toLowerCase()}.generated.ts`;
 }

@@ -1,5 +1,5 @@
+import * as path from 'path';
 import * as fs from 'fs-extra';
-import { existingType } from "./type";
 import { SourceFile, ISourceModule } from './source-module';
 
 // Missing from upstream CodeMaker
@@ -22,8 +22,8 @@ export class CM2 {
   private pendingIndent = false;
   private delegateHelpers?: CM2;
 
-  constructor(public readonly fileName: string) {
-    this.currentModule = new SourceFile(fileName);
+  constructor(fileName: string | SourceFile) {
+    this.currentModule = SourceFile.of(fileName);
     this.buffer = new WriteBuffer();
   }
 
@@ -38,7 +38,8 @@ export class CM2 {
   }
 
   public save() {
-    fs.writeFileSync(this.fileName, this.render());
+    fs.ensureDirSync(path.dirname(this.currentModule.fileName));
+    fs.writeFileSync(this.currentModule.fileName, this.render());
   }
 
   public add(...xs: Array<CodePart>) {
@@ -73,7 +74,12 @@ export class CM2 {
       return;
     }
 
-    this.helpers.set(helper.identifier, helper);
+    const existing = this.helpers.get(helper.helperKey);
+    if (existing) {
+      existing.absorb(helper);
+    } else {
+      this.helpers.set(helper.helperKey, helper);
+    }
   }
 
   public openBlock(...xs: CodePart[]) {
@@ -118,16 +124,17 @@ export class CM2 {
     this.line(' */');
   }
 
-  public typeInThisFile(name: string) {
-    return existingType(name, this.currentModule);
-  }
-
   public indent(add: string) {
     this.indents.push(add);
   }
 
   public unindent() {
     this.indents.pop();
+  }
+
+  public relativeImportName(fileName: string) {
+    const relativePath = path.posix.relative(path.dirname(this.currentModule.fileName), fileName).replace(/\.ts$/, '');
+    return relativePath.startsWith('../') ? relativePath : `./${relativePath}`;
   }
 
   private get currentIndent() {
@@ -153,7 +160,7 @@ export class CM2 {
     const hs = Array.from(this.helpers.values()).filter(h => h.position === where);
     if (hs.length === 0) { return []; }
 
-    const f = new CM2(this.fileName);
+    const f = new CM2(this.currentModule);
     f.delegateHelpers = this; // Any further helpers, relegate to here
 
     for (const helper of hs) {
@@ -189,40 +196,75 @@ class WriteBuffer {
 
 export interface IHelper extends IRenderable {
   readonly position: HelperPosition;
-  readonly identifier: string;
+  readonly helperKey: string;
+
+  absorb(other: this): void;
 }
 
 export class SymbolImport implements IHelper {
   public readonly position = 'top';
-  public readonly identifier: string;
+  public readonly helperKey: string;
+  private readonly symbols = new Set<string>();
 
-  constructor(public readonly symbolName: string, public readonly module: ISourceModule) {
-    this.identifier = `${module.identifier}.${symbolName}`;
+  constructor(symbolName: string, public readonly module: ISourceModule) {
+    this.helperKey = module.identifier;
+    this.symbols.add(symbolName);
   }
 
   public render(code: CM2) {
-    code.line(`import { ${this.symbolName} } from '${this.module.importName(code)}';`);
+    const syms = Array.from(this.symbols).sort();
+    code.line('import { ', ...interleave(', ', syms), ` } from '${this.module.importName(code)}';`);
+  }
+
+  public absorb(other: SymbolImport) {
+    for (const s of other.symbols) {
+      this.symbols.add(s);
+    }
   }
 }
 
 export class HelperFunction implements IHelper {
   public readonly position = 'bottom';
-  public readonly identifier: string;
+  public readonly helperKey: string;
 
   constructor(public readonly functionName: string, private readonly block: (x: CM2) => void) {
-    this.identifier = functionName;
+    this.helperKey = functionName;
   }
 
   public render(code: CM2) {
     this.block(code);
   }
+
+  public absorb() {
+    // Let's hope the other definition is the same :>
+  }
 }
 
 export class RenderableHelper implements IHelper {
-  constructor(public readonly identifier: string, public readonly position: HelperPosition, private readonly renderable: IRenderable) {
+  constructor(public readonly helperKey: string, public readonly position: HelperPosition, private readonly renderable: IRenderable) {
   }
 
   public render(code: CM2) {
     this.renderable.render(code);
   }
+
+  public absorb() {
+    // Let's hope the other definition is the same :>
+  }
+}
+
+export function interleave(sep: CodePart, xs: Array<CodePart | CodePart[]>): CodePart[] {
+  const ret = new Array<CodePart>();
+  let first = true;
+  for (const x of xs) {
+    if (!first) { ret.push(sep); }
+    first = false;
+
+    if (Array.isArray(x)) {
+      ret.push(...x);
+    } else {
+      ret.push(x);
+    }
+  }
+  return ret;
 }

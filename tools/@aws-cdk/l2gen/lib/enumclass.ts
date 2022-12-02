@@ -1,28 +1,38 @@
-import { IType, standardTypeRender } from './type';
+import { IType, standardTypeRender, ANY } from './type';
 import { IGeneratable, fileFor } from './generatable';
 import { CM2, IRenderable } from './cm2';
 import { Diagnostic } from './diagnostic';
 import { SourceFile } from './source-module';
-import { InterfaceProperty, InterfaceTypeDefinition } from './private/interfacetype';
-import { ANY } from './well-known-types';
+import { InterfaceField, InterfaceTypeDefinition } from './private/interfacetype';
 import { ArgumentOptions, Arguments } from './arguments';
-import { IValue, ObjectLiteral } from './value';
-import { literalValue } from './well-known-values';
+import { IValue, ObjectLiteral, litVal } from './value';
 import { toPascalCase } from 'codemaker';
+import { WireableProps, maybeWire } from './integrationtype';
 
 export interface EnumClassProps {
   readonly declaredReturnType?: IType;
   readonly typeCheckedReturnType?: IType;
+  readonly private?: boolean;
 }
 
 export class EnumClass implements IGeneratable, IType {
   public readonly typeRefName: string;
   public readonly definingModule: SourceFile;
   private readonly alternatives = new Array<Alternative>();
+  private readonly _summary = new Array<string>();
+  private readonly _details = new Array<string>();
 
   constructor(public readonly className: string, private readonly props: EnumClassProps = {}) {
     this.typeRefName = className;
-    this.definingModule = new SourceFile(fileFor(className));
+    this.definingModule = new SourceFile(fileFor(className, props.private ? 'private' : 'public'));
+  }
+
+  public summary(summary: string) {
+    this._summary.push(summary, '');
+  }
+
+  public details(...lines: string[]) {
+    this._details.push(...lines);
   }
 
   public alternative(name: string, build: AlternativeBuilder) {
@@ -35,7 +45,10 @@ export class EnumClass implements IGeneratable, IType {
   generateFiles(): CM2[] {
     const code = new CM2(this.definingModule.fileName);
 
-    // FIXME: DocBlock
+    code.docBlock([
+      ...this._summary,
+      ...this._details,
+    ]);
     code.openBlock('export abstract class ', this.typeRefName);
 
     for (const alt of this.alternatives) {
@@ -57,7 +70,7 @@ export class EnumClass implements IGeneratable, IType {
     return standardTypeRender(this, code);
   }
 
-  public unfold(v: IValue): IValue {
+  public unfold(v: IRenderable): IValue {
     return {
       type: this.props.declaredReturnType ?? ANY,
       render: (code) => {
@@ -79,37 +92,48 @@ export class Alternative {
   private readonly positionalArgs = new Arguments();
   private readonly optionsType: InterfaceTypeDefinition;
   private readonly retVal = new ObjectLiteral();
+  private readonly _summary = new Array<string>();
+  private readonly _details = new Array<string>();
 
   constructor(private readonly parent: EnumClass, public readonly name: string) {
-    this.optionsType = new InterfaceTypeDefinition({
-      typeName: `${toPascalCase(this.name)}Options`,
-      sourceFile: parent.definingModule,
+    this.optionsType = new InterfaceTypeDefinition(`${toPascalCase(this.name)}Options`, parent.definingModule, {
+      automaticallyRender: 'bottom',
     });
   }
 
-  public positional(name: string, type: IType, options: ArgumentOptions = {}): IValue {
-    this.positionalArgs.arg(name, type, options);
-    return literalValue(name);
+  public summary(summary: string) {
+    this._summary.push(summary, '');
   }
 
-  public option(opt: InterfaceProperty): IValue {
-    return this.optionsType.addInputProperty('options', opt);
+  public details(...lines: string[]) {
+    this._details.push(...lines);
   }
 
-  public wire(props: Record<string, IValue>) {
+
+  public positional(arg: PositionalArg): IRenderable {
+    this.positionalArgs.arg(arg.name, arg.type, arg);
+    return maybeWire(this, arg, litVal(arg.name));
+  }
+
+  public option(opt: InterfaceField & WireableProps): IValue {
+    const ret = this.optionsType.addInputProperty('options', opt);
+    return maybeWire(this, opt, ret);
+  }
+
+  public wire(props: Record<string, IRenderable>) {
     this.retVal.set(props);
   }
 
   public factoryMethod(typeCheckedReturnType?: IType): IRenderable {
     return {
       render: (code: CM2) => {
-        const args = this.positionalArgs.copy();
-
-        if (this.optionsType.hasProps) {
-          code.addHelper(this.optionsType.toHelper('bottom'));
-          args.arg('options', this.optionsType.typeReference, { defaultValue: this.optionsType.defaultValue });
-        }
-
+        const args = this.factoryArguments();
+        code.docBlock([
+          ...this._summary,
+          ...this._details,
+          '',
+          ...args.docBlockLines()
+        ]);
         code.block(['public static ', this.name, '(', args, '): ', this.parent], () => {
           code.block(['return new class extends ', this.parent], () => {
             code.block(['public render(): ', typeCheckedReturnType ?? ANY], () => {
@@ -121,4 +145,19 @@ export class Alternative {
     }
   }
 
+  private factoryArguments() {
+    const args = this.positionalArgs.copy();
+    if (this.optionsType.hasProps) {
+      args.arg('options', this.optionsType, {
+        defaultValue: this.optionsType.defaultValue,
+        summary: `Options for the ${this.name} method`,
+      });
+    }
+    return args;
+  }
+}
+
+export interface PositionalArg extends ArgumentOptions, WireableProps {
+  readonly name: string;
+  readonly type: IType;
 }

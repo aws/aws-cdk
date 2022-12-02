@@ -6,6 +6,7 @@ import { resolve } from './private/resolve';
 import { TokenMap } from './private/token-map';
 import { IResolvable, ITokenResolver } from './resolvable';
 import { TokenizedStringFragments } from './string-fragments';
+import { CloudFormationLang } from './private/cloudformation-lang';
 
 /**
  * An enum-like class that represents the result of comparing two Tokens.
@@ -226,6 +227,16 @@ export class Tokenization {
     } else {
       return typeof x !== 'number' ? x : `${x}`;
     }
+  }
+
+  /**
+   * Convert an object, potentially containing tokens, to a JSON string
+   *
+   * This function call also be found on the Stack class, but this version is
+   * static because it doesn't need any information from the Stack class.
+   */
+  public static toJsonString(obj: any, space?: number): string {
+    return CloudFormationLang.toJSON(obj, space).toString();
   }
 
   private constructor() {

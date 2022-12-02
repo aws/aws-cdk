@@ -7,15 +7,28 @@ export interface IType extends IRenderable {
   toString(): string;
 }
 
-export function existingType(typeRefName: string, definingModule: ISourceModule): IType {
-  return new Type(typeRefName, definingModule);
+export function existingType(typeRefName: string, definingModule: ISourceModule): StandardType {
+  return new StandardType(typeRefName, definingModule);
 }
 
-export function ambientType(typeRefName: string): IType {
-  return new Type(typeRefName, undefined);
+export function builtinType(typeRefName: string): StandardType {
+  return new StandardType(typeRefName, undefined);
 }
 
-class Type implements IType {
+export function arrayOf(type: IType): IType {
+  return {
+    definingModule: type.definingModule,
+    typeRefName: `Array<${type.typeRefName}>`,
+    render(code: CM2) {
+      code.add('Array<', type, '>');
+    },
+    toString() {
+      return this.typeRefName;
+    },
+  };
+}
+
+export class StandardType implements IType {
   constructor(
     public readonly typeRefName: string,
     public readonly definingModule: ISourceModule | undefined) { }
@@ -42,3 +55,9 @@ export function standardTypeRender(type: IType, code: CM2) {
 
   code.write(type.typeRefName);
 }
+
+export const STRING = builtinType('string');
+export const NUMBER = builtinType('number');
+export const BOOLEAN = builtinType('boolean');
+export const ANY = builtinType('any');
+export const VOID = builtinType('void');

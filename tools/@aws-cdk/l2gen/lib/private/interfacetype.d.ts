@@ -3,30 +3,42 @@ import { IType } from '../type';
 import { SourceFile } from '../source-module';
 import { IValue } from '../value';
 export interface InterfaceTypeDefinitionProps {
-    readonly typeName: string;
-    readonly sourceFile: SourceFile;
-    readonly properties?: InterfaceProperty[];
+    readonly properties?: InterfaceField[];
+    /**
+     * Renders the type only if its used
+     */
+    readonly automaticallyRender?: HelperPosition;
+    readonly baseInterface?: InterfaceTypeDefinition;
+    readonly baseType?: IType;
 }
-export declare class InterfaceTypeDefinition implements IRenderable {
+export declare class InterfaceTypeDefinition implements IType {
+    private readonly typeName;
+    readonly sourceFile: SourceFile;
     private readonly props;
-    readonly typeReference: IType;
     private readonly ifProps;
-    constructor(props: InterfaceTypeDefinitionProps);
+    readonly declaration: IRenderable;
+    constructor(typeName: string, sourceFile: SourceFile, props?: InterfaceTypeDefinitionProps);
+    get definingModule(): SourceFile;
+    get typeRefName(): string;
     render(code: CM2): void;
     toString(): string;
-    addProperty(...props: InterfaceProperty[]): void;
-    addInputProperty(propsVariable: string, prop: InterfaceProperty): IValue;
+    addProperty(...props: InterfaceField[]): void;
+    addInputProperty(propsVariable: string, prop: InterfaceField): IValue;
     get allPropertiesOptional(): boolean;
     get hasProps(): boolean;
     get defaultValue(): IValue | undefined;
     toHelper(position: HelperPosition): RenderableHelper;
+    /**
+     * Return a code file just for this type
+     */
+    toCM2(): CM2;
 }
-export interface InterfaceProperty {
+export interface InterfaceField {
     readonly name: string;
     readonly type: IType;
     readonly summary: string;
     readonly details?: string;
     readonly required: boolean;
-    readonly defaultValue?: IValue;
+    readonly defaultValue?: IRenderable;
     readonly defaultDescription?: string;
 }

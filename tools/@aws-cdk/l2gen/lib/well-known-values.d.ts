@@ -1,12 +1,14 @@
 import { IValue } from './value';
-import { IType } from './type';
-export declare function javascriptValue(x: any): IValue;
-export declare function literalValue(x: string, type?: IType): IValue;
+import { CodePart, IRenderable } from './cm2';
+export declare function jsVal(x: any): IValue;
+export declare function arrayVal(xs: CodePart[]): IValue;
 export declare const TRUE: IValue;
 export declare const FALSE: IValue;
 export declare const UNDEFINED: IValue;
 export declare function renderDuration(v: IValue, style: 'toMinutes' | 'toSeconds'): IValue;
 export declare function ifDefined(c: IValue, v: IValue, otherwise?: IValue): IValue;
 export declare function ifDefinedAny(cs: IValue[], v: IValue, otherwise?: IValue): IValue;
+export declare function invoke(fn: IValue): IValue;
 export declare function definedOrElse(v: IValue, otherwise: IValue): IValue;
-export declare function enumMapping(mapping: Array<[IValue, string]>): (value: IValue) => IValue;
+export declare function splitSelect(sep: string, fieldNr: number | undefined, value: IRenderable): IRenderable;
+export declare function stackToJsonString(x: IRenderable): IRenderable;
