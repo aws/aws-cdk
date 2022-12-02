@@ -3126,6 +3126,32 @@ test('function using a reserved environment variable', () => {
   })).toThrow(/AWS_REGION environment variable is reserved/);
 });
 
+test('set SnapStart to desired value', () => {
+  const stack = new cdk.Stack();
+  new lambda.CfnFunction(stack, 'MyLambda', {
+    code: {
+      zipFile: 'java11-test-function.zip',
+    },
+    functionName: 'MyCDK-SnapStart-Function',
+    handler: 'example.Handler::handleRequest',
+    role: 'testRole',
+    runtime: 'java11',
+    snapStart: { applyOn: 'PublishedVersions' },
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+        {
+          Code: { ZipFile: 'java11-test-function.zip' },
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
+  });
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),

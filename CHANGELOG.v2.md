@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.53.0](https://github.com/aws/aws-cdk/compare/v2.52.1...v2.53.0) (2022-11-29)
+
+
+### Features
+
+* **lambda:** Add SnapStart resource spec patch ([4dda029](https://github.com/aws/aws-cdk/commit/4dda0295ac0ece271886609b140f71efebd3d22d))
+
+## [2.52.1](https://github.com/aws/aws-cdk/compare/v2.52.0...v2.52.1) (2022-11-28)
+
+
+### Bug Fixes
+
+* **cli:** typescript init templates fails with error in build step ([#23125](https://github.com/aws/aws-cdk/issues/23125)) ([764b725](https://github.com/aws/aws-cdk/commit/764b725a31937abadeef97ba4306cea967afc61f)), closes [#23126](https://github.com/aws/aws-cdk/issues/23126)
+
+## [2.52.0](https://github.com/aws/aws-cdk/compare/v2.51.1...v2.52.0) (2022-11-27)
+
+
+### Features
+
+* **ecs:** enable Amazon ECS Service Connect ([96ec613](https://github.com/aws/aws-cdk/commit/96ec6139e1ad7637466e95b71e824965b081154f))
+
+## [2.51.1](https://github.com/aws/aws-cdk/compare/v2.51.0...v2.51.1) (2022-11-18)
+
+
+### Bug Fixes
+
+* ECS service replacement regression ([#22978](https://github.com/aws/aws-cdk/issues/22978)) ([680e048](https://github.com/aws/aws-cdk/commit/680e048abc0c1e778b64c4e29fefcff0704f4d30)), closes [#22467](https://github.com/aws/aws-cdk/issues/22467)
+
 ## [2.51.0](https://github.com/aws/aws-cdk/compare/v2.50.0...v2.51.0) (2022-11-18)
 
 
