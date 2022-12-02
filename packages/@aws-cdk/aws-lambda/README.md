@@ -774,6 +774,10 @@ to learn more about AWS Lambda's Profiling support.
 
 ## Lambda with SnapStart
 
+SnapStart is currently supported only on Java 11 runtime. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
+
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.fromAsset('handler.zip'),
@@ -781,9 +785,9 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'example.Handler::handleRequest',
   snapStart: true,
 });
-```
 
-See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
+const version = fn.currentVersion;
+```
 
 ## Lambda with Reserved Concurrent Executions
 

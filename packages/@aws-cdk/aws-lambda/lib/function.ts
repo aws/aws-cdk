@@ -224,6 +224,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Enable SnapStart for Lambda Function.
+   * SnapStart is currently supported only for Java 11 runtime
    *
    * @default false
    */
