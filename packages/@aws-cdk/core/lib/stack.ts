@@ -971,7 +971,7 @@ export class Stack extends Construct implements ITaggable {
 
 
   /**
-   * Create a CloudFormation Export for a value
+   * Create a CloudFormation Export for a string value
    *
    * Returns a string representing the corresponding `Fn.importValue()`
    * expression for this Export. You can control the name for the export by
@@ -1028,7 +1028,7 @@ export class Stack extends Construct implements ITaggable {
     const importValue = this.determineImportValue(exportedValue);
 
     if (Array.isArray(importValue)) {
-      throw new Error('Attempted to export a list value from `exportValue()`: use `exportListValue()` instead');
+      throw new Error('Attempted to export a list value from `exportValue()`: use `exportStringListValue()` instead');
     }
 
     return importValue;
@@ -1055,7 +1055,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * # See `exportValue` for an example of this process.
    */
-  public exportListValue(exportedValue: any, options: ExportValueOptions = {}): string[] {
+  public exportStringListValue(exportedValue: any, options: ExportValueOptions = {}): string[] {
     if (options.name) {
       new CfnOutput(this, `Export${options.name}`, {
         value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, exportedValue),
@@ -1067,7 +1067,7 @@ export class Stack extends Construct implements ITaggable {
     const importValue = this.determineImportValue(exportedValue);
 
     if (!Array.isArray(importValue)) {
-      throw new Error('Attempted to export a string value from `exportListValue()`: use `exportValue()` instead');
+      throw new Error('Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead');
     }
 
     return importValue;

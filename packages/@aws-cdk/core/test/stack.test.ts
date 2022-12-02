@@ -1151,7 +1151,7 @@ describe('stack', () => {
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
     (resourceM as any).attrAtt = ['Foo', 'Bar'];
-    producerM.exportListValue(resourceM.getAtt('Att', ResolutionTypeHint.LIST));
+    producerM.exportStringListValue(resourceM.getAtt('Att', ResolutionTypeHint.LIST));
 
     // THEN - producers are the same
     const templateA = appA.synth().getStackByName(producerA.stackName).template;
@@ -1244,7 +1244,7 @@ describe('stack', () => {
     const stack = new Stack(app, 'Stack');
 
     expect(() => {
-      stack.exportListValue(['someValue']);
+      stack.exportStringListValue(['someValue']);
     }).toThrow(/or make sure to export a resource attribute/);
   });
 
@@ -1261,7 +1261,7 @@ describe('stack', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
 
-    const importV = stack.exportListValue(['someValue', 'anotherValue'], { name: 'MyExport' });
+    const importV = stack.exportStringListValue(['someValue', 'anotherValue'], { name: 'MyExport' });
 
     expect(stack.resolve(importV)).toEqual(
       {

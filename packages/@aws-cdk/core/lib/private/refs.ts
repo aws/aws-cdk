@@ -195,7 +195,7 @@ function createImportValue(reference: Reference): Intrinsic {
   let importExpr;
 
   if (Array.isArray((exportingStack as any).determineImportValue(reference))) {
-    importExpr = exportingStack.exportListValue(reference);
+    importExpr = exportingStack.exportStringListValue(reference);
     // I happen to know this returns a Fn.split() which implements Intrinsic.
     return Tokenization.reverseList(importExpr) as Intrinsic;
   }
