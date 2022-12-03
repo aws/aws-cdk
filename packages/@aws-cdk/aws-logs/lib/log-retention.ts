@@ -139,6 +139,7 @@ export class LogRetention extends Construct {
  */
 class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
+
   public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
 
   private readonly role: iam.IRole;
@@ -146,12 +147,10 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
-    // Code
     const asset = new s3_assets.Asset(this, 'Code', {
       path: path.join(__dirname, 'log-retention-provider'),
     });
 
-    // Role
     const role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
@@ -195,6 +194,9 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     });
   }
 
+  /**
+   * @internal
+   */
   grantDeleteLogGroup(logGroupName: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:DeleteLogGroup'],
