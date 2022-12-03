@@ -3175,6 +3175,17 @@ test('function using SnapStart', () => {
   });
 });
 
+test('runtime validation for snapStart', () => {
+  const stack = new cdk.Stack();
+
+  expect(() => new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    snapStart: true,
+  })).toThrowError('SnapStart is currently supported only Java 11 runtime');
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),

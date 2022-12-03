@@ -776,6 +776,10 @@ export class Function extends FunctionBase {
       throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
     }
 
+    if (props.snapStart && props.runtime != Runtime.JAVA_11) {
+      throw new Error('SnapStart is currently supported only Java 11 runtime');
+    }
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
