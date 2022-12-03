@@ -63,4 +63,27 @@ describe('Cognito Authorizer', () => {
 
     expect(authorizer.authorizerArn.endsWith(`/authorizers/${authorizer.authorizerId}`)).toBeTruthy();
   });
+
+  test('rest api depends on the authorizer', () => {
+    const stack = new Stack();
+    const userPool1 = new cognito.UserPool(stack, 'UserPool');
+
+    const authorizer = new CognitoUserPoolsAuthorizer(stack, 'Authorizer', {
+      cognitoUserPools: [userPool1],
+    });
+
+    const restApi = new RestApi(stack, 'Api');
+
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer,
+      authorizationType: AuthorizationType.COGNITO,
+    });
+
+    const template = Template.fromStack(stack);
+
+    const authorizerId = Object.keys(template.findResources('AWS::ApiGateway::Authorizer'))[0];
+    const deployment = Object.values(template.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
+  });
 });

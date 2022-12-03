@@ -524,4 +524,60 @@ describe('lambda authorizer', () => {
 
     expect(() => stack.resolve(auth.authorizerArn)).toThrow(/must be attached to a RestApi/);
   });
+
+  test('rest api depends on the token authorizer', () => {
+    const stack = new Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    const auth = new TokenAuthorizer(stack, 'myauthorizer', {
+      handler: func,
+    });
+
+    const restApi = new RestApi(stack, 'myrestapi');
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer: auth,
+      authorizationType: AuthorizationType.CUSTOM,
+    });
+
+    const template = Template.fromStack(stack);
+
+    const authorizerId = Object.keys(template.findResources('AWS::ApiGateway::Authorizer'))[0];
+    const deployment = Object.values(template.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
+  });
+
+  test('rest api depends on the request authorizer', () => {
+    const stack = new Stack();
+
+    const func = new lambda.Function(stack, 'myfunction', {
+      handler: 'handler',
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+    });
+
+    const auth = new RequestAuthorizer(stack, 'myauthorizer', {
+      handler: func,
+      resultsCacheTtl: Duration.seconds(0),
+      identitySources: [],
+    });
+
+    const restApi = new RestApi(stack, 'myrestapi');
+    restApi.root.addMethod('ANY', undefined, {
+      authorizer: auth,
+      authorizationType: AuthorizationType.CUSTOM,
+    });
+
+    const template = Template.fromStack(stack);
+
+    const authorizerId = Object.keys(template.findResources('AWS::ApiGateway::Authorizer'))[0];
+    const deployment = Object.values(template.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
+  });
 });

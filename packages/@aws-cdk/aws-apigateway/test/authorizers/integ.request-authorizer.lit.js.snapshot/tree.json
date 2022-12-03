@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "RequestAuthorizerInteg": {
         "id": "RequestAuthorizerInteg",
         "path": "RequestAuthorizerInteg",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "RequestAuthorizerInteg/MyAuthorizerFunction/ServiceRole/Resource",
@@ -77,8 +77,8 @@
                     "id": "Stage",
                     "path": "RequestAuthorizerInteg/MyAuthorizerFunction/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -198,6 +198,14 @@
                 "id": "CloudWatchRole",
                 "path": "RequestAuthorizerInteg/MyRestApi/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "RequestAuthorizerInteg/MyRestApi/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "RequestAuthorizerInteg/MyRestApi/CloudWatchRole/Resource",
@@ -303,7 +311,7 @@
                           "Ref": "MyRestApi2D1F47A9"
                         },
                         "deploymentId": {
-                          "Ref": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
+                          "Ref": "MyRestApiDeploymentB555B5824e51b8fe7583a45923d0b84d7acf920f"
                         },
                         "stageName": "prod"
                       }
@@ -323,8 +331,8 @@
                 "id": "Endpoint",
                 "path": "RequestAuthorizerInteg/MyRestApi/Endpoint",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Default": {
@@ -412,6 +420,7 @@
                       "Ref": "MyRestApi2D1F47A9"
                     },
                     "type": "REQUEST",
+                    "authorizerResultTtlInSeconds": 300,
                     "authorizerUri": {
                       "Fn::Join": [
                         "",
@@ -474,17 +483,41 @@
               "fqn": "@aws-cdk/aws-apigateway.RequestAuthorizer",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "RequestAuthorizerInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "RequestAuthorizerInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.168"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "RequestAuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ba1108f5d1f7ce23d5bad675df22e0d3beb4f42fc970713488ea99585299b43.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db56bec5f59c4cf3fdaeaa7e7b0746ff83ab06ca08c8f630255b247955809c6e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -78,7 +72,7 @@
         "/RequestAuthorizerInteg/MyRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
+            "data": "MyRestApiDeploymentB555B5824e51b8fe7583a45923d0b84d7acf920f"
           }
         ],
         "/RequestAuthorizerInteg/MyRestApi/DeploymentStage.prod/Resource": [
@@ -116,9 +110,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyRestApiDeploymentB555B582c9fa9012dc4214c7d039e2831a8cf116": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentB555B582c9fa9012dc4214c7d039e2831a8cf116",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "RequestAuthorizerInteg"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

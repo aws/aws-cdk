@@ -1,7 +1,7 @@
 import * as cognito from '@aws-cdk/aws-cognito';
 import { Duration, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnAuthorizer } from '../apigateway.generated';
+import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { AuthorizationType } from '../method';
 import { IRestApi } from '../restapi';
@@ -64,18 +64,25 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
 
   private restApiId?: string;
 
+  private readonly authorizerProps: CfnAuthorizerProps;
+
   constructor(scope: Construct, id: string, props: CognitoUserPoolsAuthorizerProps) {
     super(scope, id);
 
     const restApiId = this.lazyRestApiId();
-    const resource = new CfnAuthorizer(this, 'Resource', {
+
+    const authorizerProps = {
       name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'COGNITO_USER_POOLS',
       providerArns: props.cognitoUserPools.map(userPool => userPool.userPoolArn),
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySource || 'method.request.header.Authorization',
-    });
+    };
+
+    this.authorizerProps = authorizerProps;
+
+    const resource = new CfnAuthorizer(this, 'Resource', authorizerProps);
 
     this.authorizerId = resource.ref;
     this.authorizerArn = Stack.of(this).formatArn({
@@ -96,6 +103,14 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
     }
 
     this.restApiId = restApi.restApiId;
+
+    const deployment = restApi.latestDeployment;
+    if (deployment) {
+      deployment.node.addDependency(this);
+      deployment.addToLogicalId({
+        authorizer: this.authorizerProps,
+      });
+    }
   }
 
   /**

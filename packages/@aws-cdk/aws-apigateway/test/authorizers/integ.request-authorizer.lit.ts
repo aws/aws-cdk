@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import { MockIntegration, PassthroughBehavior, RestApi } from '../../lib';
 import { RequestAuthorizer } from '../../lib/authorizers';
 import { IdentitySource } from '../../lib/authorizers/identity-source';
@@ -24,6 +24,7 @@ const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
 const authorizer = new RequestAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,
   identitySources: [IdentitySource.header('Authorization'), IdentitySource.queryString('allow')],
+  resultsCacheTtl: Duration.minutes(5),
 });
 
 restapi.root.addMethod('ANY', new MockIntegration({
