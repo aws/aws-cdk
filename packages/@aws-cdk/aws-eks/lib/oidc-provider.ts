@@ -41,6 +41,7 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
    * @param props Initialization properties
    */
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
+
     const clientIds = ['sts.amazonaws.com'];
 
     super(scope, id, {

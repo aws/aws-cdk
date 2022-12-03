@@ -28,7 +28,7 @@ endpoint or third-party services such as Datadog, Dynatrace, LogicMonitor, Mongo
 Relic, and Sumo Logic.
 
 Kinesis Data Firehose delivery streams are distinguished from Kinesis data streams in
-their models of consumtpion. Whereas consumers read from a data stream by actively pulling
+their models of consumption. Whereas consumers read from a data stream by actively pulling
 data from the stream, a delivery stream pushes data to its destination on a regular
 cadence. This means that data streams are intended to have consumers that do on-demand
 processing, like AWS Lambda or Amazon EC2. On the other hand, delivery streams are

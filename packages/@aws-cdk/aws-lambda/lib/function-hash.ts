@@ -1,5 +1,5 @@
-import * as crypto from 'crypto';
 import { CfnResource, FeatureFlags, Stack } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS } from '@aws-cdk/cx-api';
 import { Function as LambdaFunction } from './function';
 import { ILayerVersion } from './layers';
@@ -34,9 +34,7 @@ export function calculateFunctionHash(fn: LambdaFunction) {
     stringifiedConfig = stringifiedConfig + calculateLayersHash(fn._layers);
   }
 
-  const hash = crypto.createHash('md5');
-  hash.update(stringifiedConfig);
-  return hash.digest('hex');
+  return md5hash(stringifiedConfig);
 }
 
 export function trimFromStart(s: string, maxLength: number) {
@@ -76,6 +74,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   PackageType: true,
   Role: true,
   Runtime: true,
+  SnapStart: true,
   Timeout: true,
   TracingConfig: true,
   VpcConfig: true,
@@ -146,7 +145,5 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
     layerConfig[layer.node.id] = properties;
   }
 
-  const hash = crypto.createHash('md5');
-  hash.update(JSON.stringify(layerConfig));
-  return hash.digest('hex');
+  return md5hash(JSON.stringify(layerConfig));
 }

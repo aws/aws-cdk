@@ -7,6 +7,7 @@ import * as minimatch from 'minimatch';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
+import { Aspects } from './aspect';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -15,6 +16,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
+import { PermissionsBoundary, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
@@ -151,6 +153,14 @@ export interface StackProps {
    * @default false
    */
   readonly crossRegionReferences?: boolean;
+
+  /**
+   * Options for applying a permissions boundary to all IAM Roles
+   * and Users created within this Stage
+   *
+   * @default - no permissions boundary is applied
+   */
+  readonly permissionsBoundary?: PermissionsBoundary;
 }
 
 /**
@@ -420,6 +430,82 @@ export class Stack extends Construct implements ITaggable {
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
+
+    props.permissionsBoundary?._bind(this);
+
+    // add the permissions boundary aspect
+    this.addPermissionsBoundaryAspect();
+  }
+
+  /**
+   * If a permissions boundary has been applied on this scope or any parent scope
+   * then this will return the ARN of the permissions boundary.
+   *
+   * This will return the permissions boundary that has been applied to the most
+   * specific scope.
+   *
+   * For example:
+   *
+   * const stage = new Stage(app, 'stage', {
+   *   permissionsBoundary: PermissionsBoundary.fromName('stage-pb'),
+   * });
+   *
+   * const stack = new Stack(stage, 'Stack', {
+   *   permissionsBoundary: PermissionsBoundary.fromName('some-other-pb'),
+   * });
+   *
+   *  Stack.permissionsBoundaryArn === 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/some-other-pb';
+   *
+   * @param scope the construct scope to retrieve the permissions boundary name from
+   * @returns the name of the permissions boundary or undefined if not set
+   */
+  private get permissionsBoundaryArn(): string | undefined {
+    const qualifier = this.synthesizer.bootstrapQualifier
+      ?? this.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT)
+      ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const spec = new StringSpecializer(this, qualifier);
+    const context = this.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    let arn: string | undefined;
+    if (context && context.arn) {
+      arn = spec.specialize(context.arn);
+    } else if (context && context.name) {
+      arn = spec.specialize(this.formatArn({
+        service: 'iam',
+        resource: 'policy',
+        region: '',
+        resourceName: context.name,
+      }));
+    }
+    if (arn &&
+      (arn.includes('${Qualifier}')
+      || arn.includes('${AWS::AccountId}')
+      || arn.includes('${AWS::Region}')
+      || arn.includes('${AWS::Partition}'))) {
+      throw new Error(`The permissions boundary ${arn} includes a pseudo parameter, ` +
+      'which is not supported for environment agnostic stacks');
+    }
+    return arn;
+  }
+
+  /**
+   * Adds an aspect to the stack that will apply the permissions boundary.
+   * This will only add the aspect if the permissions boundary has been set
+   */
+  private addPermissionsBoundaryAspect(): void {
+    const permissionsBoundaryArn = this.permissionsBoundaryArn;
+    if (permissionsBoundaryArn) {
+      Aspects.of(this).add({
+        visit(node: IConstruct) {
+          if (
+            CfnResource.isCfnResource(node) &&
+              (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
+          ) {
+            node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
+          }
+        },
+      });
+
+    }
   }
 
   /**
@@ -870,11 +956,14 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const partitions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
-    if (partitions !== undefined && !Array.isArray(partitions)) {
-      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(cxapi.TARGET_PARTITIONS)}`);
+    if (partitions !== undefined && partitions !== 'undefined' && !Array.isArray(partitions)) {
+      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(partitions)}`);
     }
 
-    const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
+    const lookupMap =
+      partitions !== undefined && partitions !== 'undefined'
+        ? RegionInfo.limitedRegionMap(factName, partitions)
+        : RegionInfo.regionMap(factName);
 
     return deployTimeLookup(this, factName, lookupMap, defaultValue);
   }
@@ -1410,7 +1499,8 @@ import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT } from './stack-synthesizers';
+import { StringSpecializer } from './stack-synthesizers/_shared';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';

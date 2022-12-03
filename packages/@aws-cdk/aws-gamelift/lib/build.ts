@@ -23,6 +23,13 @@ export interface IBuild extends cdk.IResource, iam.IGrantable {
    * @attribute
    */
   readonly buildId: string;
+
+  /**
+   * The ARN of the build
+   *
+   * @attribute
+   */
+  readonly buildArn: string;
 }
 
 /**
@@ -33,6 +40,10 @@ export abstract class BuildBase extends cdk.Resource implements IBuild {
      * The Identifier of the build.
      */
   public abstract readonly buildId: string;
+  /**
+     * The ARN of the build.
+     */
+  public abstract readonly buildArn: string;
 
   public abstract readonly grantPrincipal: iam.IPrincipal;
 }
@@ -52,12 +63,25 @@ export enum OperatingSystem {
  */
 export interface BuildAttributes {
   /**
-     * The identifier of the build
+     * The ARN of the build
+     *
+     * At least one of `buildArn` and `buildId` must be provided.
+     *
+     * @default derived from `buildId`.
      */
-  readonly buildId: string;
+  readonly buildArn?: string;
+
+  /**
+    * The identifier of the build
+    *
+    * At least one of `buildId` and `buildArn`  must be provided.
+    *
+    * @default derived from `buildArn`.
+    */
+  readonly buildId?: string;
   /**
    * The IAM role assumed by GameLift to access server build in S3.
-   * @default - undefined
+   * @default the imported fleet cannot be granted access to other resources as an `iam.IGrantable`.
    */
   readonly role?: iam.IRole;
 }
@@ -152,14 +176,44 @@ export class Build extends BuildBase {
   }
 
   /**
+     * Import a build into CDK using its ARN
+     */
+  static fromBuildArn(scope: Construct, id: string, buildArn: string): IBuild {
+    return this.fromBuildAttributes(scope, id, { buildArn });
+  }
+
+  /**
    * Import an existing build from its attributes.
    */
   static fromBuildAttributes(scope: Construct, id: string, attrs: BuildAttributes): IBuild {
-    class Import extends BuildBase {
-      public readonly buildId = attrs.buildId;
-      public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
+    if (!attrs.buildId && !attrs.buildArn) {
+      throw new Error('Either buildId or buildArn must be provided in BuildAttributes');
+    }
+    const buildId = attrs.buildId ??
+      cdk.Stack.of(scope).splitArn(attrs.buildArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+
+    if (!buildId) {
+      throw new Error(`No build identifier found in ARN: '${attrs.buildArn}'`);
     }
 
+    const buildArn = attrs.buildArn ?? cdk.Stack.of(scope).formatArn({
+      service: 'gamelift',
+      resource: 'build',
+      resourceName: attrs.buildId,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+    });
+    class Import extends BuildBase {
+      public readonly buildId = buildId!;
+      public readonly buildArn = buildArn;
+      public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
+      public readonly role = attrs.role;
+
+      constructor(s: Construct, i: string) {
+        super(s, i, {
+          environmentFromArn: buildArn,
+        });
+      }
+    }
     return new Import(scope, id);
   }
 
@@ -167,6 +221,11 @@ export class Build extends BuildBase {
    * The Identifier of the build.
    */
   public readonly buildId: string;
+
+  /**
+   * The ARN of the build.
+   */
+  public readonly buildArn: string;
 
   /**
    * The IAM role GameLift assumes to acccess server build content.
@@ -188,6 +247,7 @@ export class Build extends BuildBase {
         throw new Error(`Build name can not be longer than 1024 characters but has ${props.buildName.length} characters.`);
       }
     }
+
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
     });
@@ -206,7 +266,15 @@ export class Build extends BuildBase {
       },
     });
 
-    this.buildId = resource.ref;
+    resource.node.addDependency(this.role);
+
+    this.buildId = this.getResourceNameAttribute(resource.ref);
+    this.buildArn = cdk.Stack.of(scope).formatArn({
+      service: 'gamelift',
+      resource: 'build',
+      resourceName: this.buildId,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+    });
   }
 
 
