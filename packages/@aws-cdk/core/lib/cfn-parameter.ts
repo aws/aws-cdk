@@ -370,7 +370,7 @@ function isStringType(type: string) {
 
 function typeToTypeHint(type: string): ResolutionTypeHint {
   if (isListType(type)) {
-    return ResolutionTypeHint.LIST;
+    return ResolutionTypeHint.STRING_LIST;
   } else if (isNumberType(type)) {
     return ResolutionTypeHint.NUMBER;
   }

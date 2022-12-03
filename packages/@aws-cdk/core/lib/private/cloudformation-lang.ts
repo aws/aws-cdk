@@ -217,7 +217,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         pushLiteral('"');
         return;
 
-      case ResolutionTypeHint.LIST:
+      case ResolutionTypeHint.STRING_LIST:
         // We need this to look like:
         //
         //    '{"listValue":' ++ STRINGIFY(CFN_EVAL({ Ref: MyList })) ++ '}'

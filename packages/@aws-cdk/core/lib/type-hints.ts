@@ -13,5 +13,5 @@ export enum ResolutionTypeHint {
   /**
    * This value is expected to resolve to a String List
    */
-  LIST = 'list',
+  STRING_LIST = 'string-list',
 }

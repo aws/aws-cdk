@@ -481,7 +481,7 @@ describe('stack', () => {
     new CfnResource(stack2, 'SomeResource', {
       type: 'BLA',
       properties: {
-        Prop: exportResource.getAtt('List', ResolutionTypeHint.LIST),
+        Prop: exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST),
       },
     });
 
@@ -542,7 +542,7 @@ describe('stack', () => {
     new CfnResource(stack2, 'SomeResource', {
       type: 'BLA',
       properties: {
-        Prop: Fn.select(3, exportResource.getAtt('List', ResolutionTypeHint.LIST) as any),
+        Prop: Fn.select(3, exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST) as any),
       },
     });
 
@@ -1144,14 +1144,14 @@ describe('stack', () => {
     const consumerA = new Stack(appA, 'Consumer');
     const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
     (resourceA as any).attrAtt = ['Foo', 'Bar'];
-    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att', ResolutionTypeHint.LIST)}` });
+    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att', ResolutionTypeHint.STRING_LIST)}` });
 
     // GIVEN: manual
     const appM = new App();
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
     (resourceM as any).attrAtt = ['Foo', 'Bar'];
-    producerM.exportStringListValue(resourceM.getAtt('Att', ResolutionTypeHint.LIST));
+    producerM.exportStringListValue(resourceM.getAtt('Att', ResolutionTypeHint.STRING_LIST));
 
     // THEN - producers are the same
     const templateA = appA.synth().getStackByName(producerA.stackName).template;

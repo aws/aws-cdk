@@ -182,7 +182,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (Array.isArray(obj)) {
     if (containsListTokenElement(obj)) {
-      return tagResolvedValue(options.resolver.resolveList(obj, makeContext()[0]), ResolutionTypeHint.LIST);
+      return tagResolvedValue(options.resolver.resolveList(obj, makeContext()[0]), ResolutionTypeHint.STRING_LIST);
     }
 
     const arr = obj

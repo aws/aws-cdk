@@ -1323,7 +1323,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
     }
 
-    const exportIsAList = resolvable.typeHint === ResolutionTypeHint.LIST;
+    const exportIsAList = resolvable.typeHint === ResolutionTypeHint.STRING_LIST;
 
     // if it's a list, export an Fn::Join expression
     // and import an Fn::Split expression,
