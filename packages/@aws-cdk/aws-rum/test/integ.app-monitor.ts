@@ -1,5 +1,6 @@
 import * as identitypool from '@aws-cdk/aws-cognito-identitypool';
 import { App, Stack } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as rum from '../lib';
 
 const app = new App();
@@ -26,4 +27,4 @@ new rum.AppMonitor(stack, 'CustomValueAppMonitor', {
   telemetries: [],
 });
 
-app.synth();
+new IntegTest(app, 'Integ', { testCases: [stack] });

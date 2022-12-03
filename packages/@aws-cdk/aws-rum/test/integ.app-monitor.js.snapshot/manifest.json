@@ -1,0 +1,177 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-app-monitor.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-app-monitor.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-app-monitor": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-app-monitor.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8c425e50a0b54f6e9f94003a64fd785e61e15132ebee5902fc6a2daaf198c147.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-app-monitor.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-app-monitor.assets"
+      ],
+      "metadata": {
+        "/integ-app-monitor/DefaultValueAppMonitor/IdentityPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultValueAppMonitorIdentityPoolD3418A23"
+          }
+        ],
+        "/integ-app-monitor/DefaultValueAppMonitor/IdentityPool/AuthenticatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultValueAppMonitorIdentityPoolAuthenticatedRoleB49490BC"
+          }
+        ],
+        "/integ-app-monitor/DefaultValueAppMonitor/IdentityPool/UnauthenticatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleF744D694"
+          }
+        ],
+        "/integ-app-monitor/DefaultValueAppMonitor/IdentityPool/UnauthenticatedRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultValueAppMonitorIdentityPoolUnauthenticatedRoleDefaultPolicyD3650374"
+          }
+        ],
+        "/integ-app-monitor/DefaultValueAppMonitor/IdentityPool/DefaultRoleAttachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultValueAppMonitorIdentityPoolDefaultRoleAttachmentC8E11D44"
+          }
+        ],
+        "/integ-app-monitor/DefaultValueAppMonitor/AppMonitor": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultValueAppMonitor212AADC5"
+          }
+        ],
+        "/integ-app-monitor/MyIdentityPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyIdentityPool9DBCF48C"
+          }
+        ],
+        "/integ-app-monitor/MyIdentityPool/AuthenticatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyIdentityPoolAuthenticatedRoleAE259B88"
+          }
+        ],
+        "/integ-app-monitor/MyIdentityPool/UnauthenticatedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyIdentityPoolUnauthenticatedRole8827D18F"
+          }
+        ],
+        "/integ-app-monitor/MyIdentityPool/UnauthenticatedRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyIdentityPoolUnauthenticatedRoleDefaultPolicy67D891CC"
+          }
+        ],
+        "/integ-app-monitor/MyIdentityPool/DefaultRoleAttachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyIdentityPoolDefaultRoleAttachmentD367CC64"
+          }
+        ],
+        "/integ-app-monitor/CustomValueAppMonitor/AppMonitor": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomValueAppMonitor730913A4"
+          }
+        ],
+        "/integ-app-monitor/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-app-monitor/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-app-monitor"
+    },
+    "IntegDefaultTestDeployAssert4E6713E1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegDefaultTestDeployAssert4E6713E1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IntegDefaultTestDeployAssert4E6713E1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegDefaultTestDeployAssert4E6713E1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IntegDefaultTestDeployAssert4E6713E1.assets"
+      ],
+      "metadata": {
+        "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Integ/DefaultTest/DeployAssert"
+    }
+  }
+}
