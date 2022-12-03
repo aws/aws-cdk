@@ -179,5 +179,5 @@ import { Construct, IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
-import { Token } from '../token';import { ResolutionTypeHint } from '../type-hints';
-
+import { Token } from '../token';
+import { ResolutionTypeHint } from '../type-hints';

@@ -369,15 +369,9 @@ abstract class LazyBase<A> implements IResolvable {
 }
 
 class LazyString extends LazyBase<string> {
-  constructor(producer: ILazyProducer<string>, cache: boolean) {
-    super(producer, cache);
-  }
 }
 
 class LazyNumber extends LazyBase<number> {
-  constructor(producer: ILazyProducer<number>, cache: boolean) {
-    super(producer, cache);
-  }
 }
 
 class LazyList extends LazyBase<Array<string>> {

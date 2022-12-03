@@ -16,9 +16,10 @@ export interface IntrinsicProps {
   readonly stackTrace?: boolean;
 
   /**
-   * Capture the stack trace of where this token is created
    *
-   * @default true
+   * Type that this token is expected to evaluate to
+   *
+   * @default ResolutionTypeHint.STRING
    */
   readonly typeHint?: ResolutionTypeHint;
 }
