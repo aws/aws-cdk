@@ -55,6 +55,13 @@ new sfn.StateMachine(stack, 'StateMachineWithLiteralCredentials', {
   timeout: cdk.Duration.seconds(30),
 });
 
+const crossAccountRole = iam.Role.fromRoleArn(stack, 'CrossAccountRole', 'arn:aws:iam::123456789012:role/CrossAccountRole');
+
+new sfn.StateMachine(stack, 'StateMachineWithCrossAccountLiteralCredentials', {
+  definition: new FakeTask(stack, 'FakeTaskWithCrossAccountLiteralCredentials', { credentials: { role: sfn.TaskRole.fromRole(crossAccountRole) } }),
+  timeout: cdk.Duration.seconds(30),
+});
+
 new sfn.StateMachine(stack, 'StateMachineWithJsonPathCredentials', {
   definition: new FakeTask(stack, 'FakeTaskWithJsonPathCredentials', { credentials: { role: sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn') } }),
   timeout: cdk.Duration.seconds(30),

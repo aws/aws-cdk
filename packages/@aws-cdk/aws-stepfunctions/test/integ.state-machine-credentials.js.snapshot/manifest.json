@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ef2e2e42395e76d3d661ab3e7b0afc151fce88ba150806ebb84ff00faa4c1b6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d775f19c6469457d54fcd62837c1d84ec75c1b8aea7b635bb10dc74dcc0e474d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,6 +55,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineWithLiteralCredentialsBF5A67AE"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCrossAccountLiteralCredentialsRole4AA04DBC"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCrossAccountLiteralCredentialsRoleDefaultPolicy9B9943BD"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCrossAccountLiteralCredentialsA2DD713D"
           }
         ],
         "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role/Resource": [
