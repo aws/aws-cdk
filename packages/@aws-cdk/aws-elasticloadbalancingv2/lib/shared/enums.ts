@@ -259,3 +259,25 @@ export enum TargetGroupLoadBalancingAlgorithmType {
    */
   LEAST_OUTSTANDING_REQUESTS = 'least_outstanding_requests',
 }
+
+/**
+ * How the load balancer handles requests that might pose a security risk to your application
+ *
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#desync-mitigation-mode
+ */
+export enum DesyncMitigationMode {
+  /**
+   * Allows all traffic
+   */
+  MONITOR = 'monitor',
+
+  /**
+   * Provides durable mitigation against HTTP desync while maintaining the availability of your application
+   */
+  DEFENSIVE = 'defensive',
+
+  /**
+   * Receives only requests that comply with RFC 7230
+   */
+  STRICTEST = 'strictest',
+}
