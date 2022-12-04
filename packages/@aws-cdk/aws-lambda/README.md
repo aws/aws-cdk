@@ -85,9 +85,9 @@ To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Archi
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
 
 ```ts
-new DockerImageFunction(this, 'AssetFunction', {
-  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
-  architecture: Architecture.ARM_64,
+new lambda.DockerImageFunction(this, 'AssetFunction', {
+  code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
+  architecture: lambda.Architecture.ARM_64,
 });
 ```
 
@@ -286,7 +286,7 @@ const version = new lambda.Version(this, 'MyVersion', {
 Or setting the `currentVersionOptions` when creating a new lambda
 
 ```ts
-new lambda.Function(stack, 'MyVersionedLambda', {
+new lambda.Function(this, 'MyVersionedLambda', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
