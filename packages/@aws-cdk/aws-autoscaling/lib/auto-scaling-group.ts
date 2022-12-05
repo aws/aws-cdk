@@ -408,6 +408,13 @@ export enum SpotAllocationStrategy {
    * honors the instance type priorities on a best-effort basis but optimizes for capacity first.
    */
   CAPACITY_OPTIMIZED_PRIORITIZED = 'capacity-optimized-prioritized',
+
+  /**
+   * The price and capacity optimized allocation strategy looks at both price and
+   * capacity to select the Spot Instance pools that are the least likely to be
+   * interrupted and have the lowest possible price.
+   */
+  PRICE_CAPACITY_OPTIMIZED = 'price-capacity-optimized',
 }
 
 /**
