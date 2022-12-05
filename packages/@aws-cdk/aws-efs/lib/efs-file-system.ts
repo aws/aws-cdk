@@ -345,7 +345,7 @@ export class FileSystem extends FileSystemBase {
     }
 
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
-      throw new Error('Property performanceMode cannot be MAX_IO when throughputMode is ELASTIC');
+      throw new Error('Elastic ThroughputMode is not supported for file systems with PerformanceMode of MaxIO');
     }
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
