@@ -38,6 +38,19 @@ export interface IRuleSetContent {
 }
 
 /**
+ * Properties for a new matchmaking ruleSet content
+ */
+export interface RuleSetContentProps {
+
+  /**
+   * RuleSet body content
+   *
+   * @default use a default empty RuleSet body
+   */
+  readonly content?: IRuleSetBody;
+}
+
+/**
  * The rule set determines the two key elements of a match: your game's team structure and size, and how to group players together for the best possible match.
  *
  * For example, a rule set might describe a match like this:
@@ -67,11 +80,20 @@ export class RuleSetContent implements IRuleSetContent {
 
   /**
    * Inline body for Matchmaking ruleSet
-   * @returns `RuleSetContentBase` with inline code.
+   * @returns `RuleSetContent` with inline code.
    * @param body The actual ruleSet body (maximum 65535 characters)
    */
   public static fromInline(body: string): IRuleSetContent {
-    return new RuleSetContent(body);
+    if (body && body.length > 65535) {
+      throw new Error(`RuleSet body cannot exceed 65535 characters, actual ${body.length}`);
+    }
+    try {
+      return new RuleSetContent({
+        content: JSON.parse(body),
+      });
+    } catch (err) {
+      throw new Error('RuleSet body has an invalid Json format');
+    }
   }
 
   /**
@@ -79,15 +101,8 @@ export class RuleSetContent implements IRuleSetContent {
    */
   public readonly content: IRuleSetBody;
 
-  constructor(body?: string) {
-    if (body && body.length > 65535) {
-      throw new Error(`RuleSet body cannot exceed 65535 characters, actual ${body.length}`);
-    }
-    try {
-      this.content = body && JSON.parse(body) || {};
-    } catch (err) {
-      throw new Error('RuleSet body has an invalid Json format');
-    }
+  constructor(props: RuleSetContentProps) {
+    this.content = props.content || {};
   }
 
   /**
