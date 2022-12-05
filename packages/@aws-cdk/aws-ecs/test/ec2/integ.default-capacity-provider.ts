@@ -1,6 +1,7 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as ecs from '../../lib';
 
 const app = new cdk.App();
@@ -41,5 +42,7 @@ new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,
   taskDefinition,
 });
-
+new integ.IntegTest(app, 'CapacityProviders', {
+  testCases: [stack],
+});
 app.synth();
