@@ -228,10 +228,14 @@ export interface ScalingSchedule {
   readonly maxCapacity?: number;
 
   /**
-   * The time zone used when referring to the date and time of a scheduled action,
-   * when the scheduled action uses an at or cron expression.
+   * Specifies the time zone for a cron expression. If a time zone is not provided, UTC is used by default.
    *
-   * @default - No specific time zone.
+   * Valid values are the canonical names of the IANA time zones, derived from the IANA Time Zone Database (such as Etc/GMT+9 or Pacific/Tahiti).
+   *
+   * For more information, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
+   *
+   * @default - UTC
+   *
    */
   readonly timezone?: string;
 }
