@@ -108,7 +108,7 @@ describe('output', () => {
     // WHEN
     expect(() => {
       new CfnOutput(stack, 'SomeOutput', { value: ['listValue'] as any });
-    }).toThrow(/CloudFormation output was given a string list instead of a string or number/);
+    }).toThrow(/CloudFormation output was given a string list instead of a string/);
   });
 
   test('Verify maximum length of export name', () => {

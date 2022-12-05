@@ -54,7 +54,7 @@ export class CfnOutput extends CfnElement {
     } else if (Array.isArray(props.value)) {
       // `props.value` is a string, but because cross-stack exports allow passing any,
       // we need to check for lists here.
-      throw new Error(`CloudFormation output was given a string list instead of a string or number at path "${this.node.path}"`);
+      throw new Error(`CloudFormation output was given a string list instead of a string at path "${this.node.path}"`);
     }
 
     this._description = props.description;
