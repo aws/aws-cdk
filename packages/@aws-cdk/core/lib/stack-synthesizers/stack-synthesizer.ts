@@ -19,8 +19,6 @@ import { IStackSynthesizer, ISynthesisSession } from './types';
  * and could not be accessed by external implementors.
  */
 export abstract class StackSynthesizer implements IStackSynthesizer {
-  public readonly bootstrapQualifier?: string;
-
   private _boundStack?: Stack;
 
   /**
