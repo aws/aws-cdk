@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33c56e02291eaea4afa147afc5d42ce6d80c4f482906b78fa47ddbe2582f19bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf7620e382e2aa15559aba9e2cdca5e3f155cb9f1faca27986aeed5f01ffca07.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -127,6 +127,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NODEJS16XfunctionName"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_18_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS18XServiceRole4D18036A"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_18_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS18X7B6E6033"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_18_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS18XfunctionName"
           }
         ],
         "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [

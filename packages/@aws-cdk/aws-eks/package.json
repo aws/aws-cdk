@@ -80,7 +80,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/lambda-layer-kubectl-v23": "^2.0.1",
+    "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.27",
     "aws-cdk-lib": "2.47.0",
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
@@ -93,9 +93,8 @@
     "@types/sinon": "^9.0.11",
     "@types/yaml": "1.9.6",
     "aws-sdk": "^2.1211.0",
-    "cdk8s": "^2.5.39",
-    "cdk8s-plus-21": "^2.0.0-beta.12",
-    "cdk8s-plus-23": "2.0.21",
+    "cdk8s": "^2.5.53",
+    "cdk8s-plus-24": "2.0.28",
     "jest": "^27.5.1",
     "sinon": "^9.2.4"
   },

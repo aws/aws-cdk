@@ -204,6 +204,33 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
+### Load Balancer attributes
+
+You can modify attributes of Application Load Balancers:
+
+```ts
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+
+  // Whether HTTP/2 is enabled
+  http2Enabled: false,
+
+  // The idle timeout value, in seconds
+  idleTimeout: cdk.Duration.seconds(1000),
+  
+  // Whether HTTP headers with header fields thatare not valid
+  // are removed by the load balancer (true), or routed to targets
+  dropInvalidHeaderFields: true,
+
+  // How the load balancer handles requests that might
+  // pose a security risk to your application
+  desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+});
+```
+
+For more information, see [Load balancer attributes](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes)
+
 ## Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load

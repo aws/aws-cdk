@@ -1,5 +1,5 @@
 {
-  "$version": "97.0.0",
+  "$version": "99.0.0",
   "PropertyTypes": {
     "AWS::SSM::Association.InstanceAssociationOutputLocation": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-association-instanceassociationoutputlocation.html",
@@ -1147,6 +1147,31 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-resourcedatasync.html#cfn-ssm-resourcedatasync-synctype",
           "PrimitiveType": "String",
           "Required": false,
+          "UpdateType": "Immutable"
+        }
+      }
+    },
+    "AWS::SSM::ResourcePolicy": {
+      "Attributes": {
+        "PolicyHash": {
+          "PrimitiveType": "String"
+        },
+        "PolicyId": {
+          "PrimitiveType": "String"
+        }
+      },
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-resourcepolicy.html",
+      "Properties": {
+        "Policy": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-resourcepolicy.html#cfn-ssm-resourcepolicy-policy",
+          "PrimitiveType": "Json",
+          "Required": true,
+          "UpdateType": "Mutable"
+        },
+        "ResourceArn": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-resourcepolicy.html#cfn-ssm-resourcepolicy-resourcearn",
+          "PrimitiveType": "String",
+          "Required": true,
           "UpdateType": "Immutable"
         }
       }
