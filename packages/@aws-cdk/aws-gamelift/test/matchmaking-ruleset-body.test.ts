@@ -12,14 +12,14 @@ describe('MatchmakingRuleSetBody', () => {
 
   describe('gamelift.MatchmakingRuleSetBody.fromInline', () => {
     test('new RuleSetBody from Inline content', () => {
-      const ruleSet = gamelift.RuleSetBody.fromInline('{}');
+      const ruleSet = gamelift.RuleSetContent.fromInline('{}');
       const content = ruleSet.bind(stack);
       expect(content.ruleSetBody).toEqual('{}');
     });
 
-    test('fails if empty content', () => {
-      expect(() => gamelift.RuleSetBody.fromInline(''))
-        .toThrow(/Matchmaking ruleSet body cannot be empty/);
+    test('fails if invlaid JSON format', () => {
+      expect(() => gamelift.RuleSetContent.fromInline('{ name }'))
+        .toThrow(/RuleSet body has an invalid Json format/);
     });
 
     test('fails if content too large', () => {
@@ -28,29 +28,29 @@ describe('MatchmakingRuleSetBody', () => {
         incorrectContent += 'A';
       }
 
-      expect(() => gamelift.RuleSetBody.fromInline(incorrectContent))
-        .toThrow(/Matchmaking ruleSet body cannot exceed 65535 characters, actual 65536/);
+      expect(() => gamelift.RuleSetContent.fromInline(JSON.stringify({ name: incorrectContent })))
+        .toThrow(/RuleSet body cannot exceed 65535 characters, actual 65547/);
     });
   });
 
   describe('gamelift.MatchmakingRuleSetBody.fromJsonFile', () => {
     test('new RuleSetBody from Json file', () => {
-      const ruleSet = gamelift.RuleSetBody.fromJsonFile(path.join(__dirname, 'my-ruleset/ruleset.json'));
+      const ruleSet = gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset/ruleset.json'));
       const content = ruleSet.bind(stack);
-      const result = fs.readFileSync(path.join(__dirname, 'my-ruleset/ruleset.json'));
-      expect(content.ruleSetBody).toEqual(result.toString());
+      const result = JSON.parse(fs.readFileSync(path.join(__dirname, 'my-ruleset/ruleset.json')).toString());
+      expect(content.ruleSetBody).toEqual(JSON.stringify(result));
     });
 
     test('fails if file not exist', () => {
       const content = path.join(__dirname, 'my-ruleset/file-not-exist.json');
-      expect(() => gamelift.RuleSetBody.fromJsonFile(content))
-        .toThrow(`Matchmaking ruleSet path does not exist, please verify it, actual ${content}`);
+      expect(() => gamelift.RuleSetContent.fromJsonFile(content))
+        .toThrow(`RuleSet path does not exist, please verify it, actual ${content}`);
     });
 
     test('fails if file is a directory', () => {
-      const content = path.join(__dirname, 'my-ruleset');
-      expect(() => gamelift.RuleSetBody.fromJsonFile(content))
-        .toThrow(`Matchmaking ruleSet path is not link to a single file, please verify your path, actual ${content}`);
+      const contentPath = path.join(__dirname, 'my-ruleset');
+      expect(() => gamelift.RuleSetContent.fromJsonFile(contentPath))
+        .toThrow(`RuleSet path is not link to a single file, please verify your path, actual ${contentPath}`);
     });
   });
 });

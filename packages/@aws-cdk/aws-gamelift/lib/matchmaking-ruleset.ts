@@ -2,7 +2,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from './gamelift.generated';
-import { RuleSetBody } from './matchmaking-ruleset-body';
+import { RuleSetContent } from './matchmaking-ruleset-body';
+
 
 /**
  * Represents a Gamelift matchmaking ruleset
@@ -58,7 +59,7 @@ export interface MatchmakingRuleSetProps {
   /**
    * A collection of matchmaking rules.
    */
-  readonly content: RuleSetBody;
+  readonly content: RuleSetContent;
 }
 
 /**
@@ -207,7 +208,6 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
         throw new Error(`RuleSet name ${props.matchmakingRuleSetName} can contain only letters, numbers, hyphens, back slash or dot with no spaces.`);
       }
     }
-
     const content = props.content.bind(this);
 
     const resource = new CfnMatchmakingRuleSet(this, 'Resource', {

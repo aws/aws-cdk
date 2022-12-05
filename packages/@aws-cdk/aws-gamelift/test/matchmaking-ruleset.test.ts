@@ -6,7 +6,7 @@ describe('MatchmakingRuleSet', () => {
 
   describe('new', () => {
     let stack: cdk.Stack;
-    const ruleSetBody = '{}';
+    const ruleSetBody = JSON.stringify('{}');
 
     beforeEach(() => {
       stack = new cdk.Stack();
@@ -15,7 +15,7 @@ describe('MatchmakingRuleSet', () => {
     test('default new ruleSet', () => {
       new gamelift.MatchmakingRuleSet(stack, 'MyMatchmakingRuleSet', {
         matchmakingRuleSetName: 'test-ruleSet',
-        content: gamelift.RuleSetBody.fromInline(ruleSetBody),
+        content: gamelift.RuleSetContent.fromInline(ruleSetBody),
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::MatchmakingRuleSet', {
@@ -35,7 +35,7 @@ describe('MatchmakingRuleSet', () => {
 
       expect(() => new gamelift.MatchmakingRuleSet(stack, 'MyMatchmakingRuleSet', {
         matchmakingRuleSetName: incorrectName,
-        content: gamelift.RuleSetBody.fromInline(ruleSetBody),
+        content: gamelift.RuleSetContent.fromInline(ruleSetBody),
       })).toThrow(/RuleSet name can not be longer than 128 characters but has 129 characters./);
     });
 
@@ -44,7 +44,7 @@ describe('MatchmakingRuleSet', () => {
 
       expect(() => new gamelift.MatchmakingRuleSet(stack, 'MyMatchmakingRuleSet', {
         matchmakingRuleSetName: incorrectName,
-        content: gamelift.RuleSetBody.fromInline(ruleSetBody),
+        content: gamelift.RuleSetContent.fromInline(ruleSetBody),
       })).toThrow(/RuleSet name test with space can contain only letters, numbers, hyphens, back slash or dot with no spaces./);
     });
   });

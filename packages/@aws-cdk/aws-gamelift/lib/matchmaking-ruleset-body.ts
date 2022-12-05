@@ -2,6 +2,42 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 
 /**
+ * Interface to represent Matchmaking RuleSet schema
+ */
+export interface IRuleSetBody {}
+
+/**
+ * Interface to represent output result of a RuleSetContent binding
+ */
+export interface RuleSetBodyConfig {
+  /**
+  * Inline ruleSet body.
+  */
+  readonly ruleSetBody: string;
+}
+
+/**
+ * Interface to represent a Matchmaking RuleSet content
+ */
+export interface IRuleSetContent {
+
+  /**
+   * RuleSet body content
+   *
+   * @attribute
+   */
+  readonly content: IRuleSetBody;
+
+  /**
+    * Called when the matchmaking ruleSet is initialized to allow this object to bind
+    * to the stack and add resources.
+    *
+    * @param _scope The binding scope.
+    */
+  bind(_scope: Construct): RuleSetBodyConfig;
+}
+
+/**
  * The rule set determines the two key elements of a match: your game's team structure and size, and how to group players together for the best possible match.
  *
  * For example, a rule set might describe a match like this:
@@ -9,105 +45,60 @@ import { Construct } from 'constructs';
  * - A team can have novice and experienced players, but the average skill of the two teams must be within 10 points of each other.
  * - If no match is made after 30 seconds, gradually relax the skill requirements.
  */
-export abstract class RuleSetBody {
+export class RuleSetContent implements IRuleSetContent {
 
   /**
    * Matchmaking ruleSet body from a file
-   * @returns `JsonFileRuleSetBody` with inline code.
+   * @returns `RuleSetContentBase` based on JSON file content.
    * @param path The path to the ruleSet body file
    */
-  public static fromJsonFile(path: string): RuleSetBody {
-    return new JsonFileRuleSetBody(path);
+  public static fromJsonFile(path: string): IRuleSetContent {
+    if (!fs.existsSync(path)) {
+      throw new Error(`RuleSet path does not exist, please verify it, actual ${path}`);
+    }
+
+    if (!fs.lstatSync(path).isFile()) {
+      throw new Error(`RuleSet path is not link to a single file, please verify your path, actual ${path}`);
+    }
+    const file = fs.readFileSync(path);
+
+    return this.fromInline(file.toString());
   }
 
   /**
    * Inline body for Matchmaking ruleSet
-   * @returns `InlineRuleSetBody` with inline code.
+   * @returns `RuleSetContentBase` with inline code.
    * @param body The actual ruleSet body (maximum 65535 characters)
    */
-  public static fromInline(body: string): RuleSetBody {
-    return new InlineRuleSetBody(body);
+  public static fromInline(body: string): IRuleSetContent {
+    return new RuleSetContent(body);
+  }
+
+  /**
+   * RuleSet body content
+   */
+  public readonly content: IRuleSetBody;
+
+  constructor(body?: string) {
+    if (body && body.length > 65535) {
+      throw new Error(`RuleSet body cannot exceed 65535 characters, actual ${body.length}`);
+    }
+    try {
+      this.content = body && JSON.parse(body) || {};
+    } catch (err) {
+      throw new Error('RuleSet body has an invalid Json format');
+    }
   }
 
   /**
     * Called when the matchmaking ruleSet is initialized to allow this object to bind
     * to the stack and add resources.
     *
-    * @param scope The binding scope.
+    * @param _scope The binding scope.
     */
-  public abstract bind(scope: Construct): RuleSetBodyConfig;
-}
-
-/**
- * Result of binding `RuleSetBody` into a `MatchmakingRuleSet`.
- */
-export interface RuleSetBodyConfig {
-  /**
-     * Inline ruleSet body.
-     */
-  readonly ruleSetBody: string;
-}
-
-/**
- * Matchmaking ruleSet body from an inline string.
- */
-export class InlineRuleSetBody extends RuleSetBody {
-
-  /**
-   * @param path The ruleSet body.
-   */
-  constructor(private body: string) {
-    super();
-
-    if (body.length === 0) {
-      throw new Error('Matchmaking ruleSet body cannot be empty');
-    }
-
-    if (body.length > 65535) {
-      throw new Error(`Matchmaking ruleSet body cannot exceed 65535 characters, actual ${body.length}`);
-    }
-  }
-
   public bind(_scope: Construct): RuleSetBodyConfig {
     return {
-      ruleSetBody: this.body,
-    };
-  }
-}
-
-/**
- * Matchmaking ruleSet body from aJSON File.
- */
-export class JsonFileRuleSetBody extends RuleSetBody {
-  /**
-   * Json file body content
-   */
-  private content: string;
-
-  /**
-   * @param path The path to the ruleSert body file.
-   */
-  constructor(private path: string) {
-    super();
-    if (!fs.existsSync(path)) {
-      throw new Error(`Matchmaking ruleSet path does not exist, please verify it, actual ${this.path}`);
-    }
-
-    if (!fs.lstatSync(path).isFile()) {
-      throw new Error(`Matchmaking ruleSet path is not link to a single file, please verify your path, actual ${this.path}`);
-    }
-    const file = fs.readFileSync(path);
-
-    if (file.toString().length > 65535) {
-      throw new Error(`Matchmaking ruleSet body cannot exceed 65535 characters, actual ${file.toString().length}`);
-    }
-
-    this.content = file.toString();
-  }
-
-  public bind(_scope: Construct): RuleSetBodyConfig {
-    return {
-      ruleSetBody: this.content,
+      ruleSetBody: JSON.stringify(this.content),
     };
   }
 }
