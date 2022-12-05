@@ -71,6 +71,13 @@ export class RegionInfo {
   }
 
   /**
+   * Whether the given region is an opt-in region
+   */
+  public get isOptInRegion(): boolean {
+    return Fact.find(this.name, FactName.IS_OPT_IN_REGION) === 'YES';
+  }
+
+  /**
    * The domain name suffix (e.g: amazonaws.com) for this region.
    */
   public get domainSuffix(): string | undefined {
@@ -124,7 +131,6 @@ export class RegionInfo {
 
   /**
    * The account ID for ELBv2 in this region
-   *
    */
   public get elbv2Account(): string | undefined {
     return Fact.find(this.name, FactName.ELBV2_ACCOUNT);

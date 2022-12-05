@@ -10,6 +10,7 @@ import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
+import { formatDistributionArn } from './private/utils';
 
 /**
  * HTTP status code to failover to second origin
@@ -758,6 +759,13 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
       }
+
+      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
+      }
+      public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+        return this.grant(identity, 'cloudfront:CreateInvalidation');
+      }
     }();
   }
 
@@ -981,6 +989,26 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this distribution to an IAM
+   * principal's policy.
+   *
+   * @param identity The principal
+   * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
+   */
+  public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
+  }
+
+  /**
+   * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity, 'cloudfront:CreateInvalidation');
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

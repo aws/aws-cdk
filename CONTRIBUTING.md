@@ -360,7 +360,7 @@ $ yarn watch & # runs in the background
 
 * Shout out to collaborators.
 
-* Call out any new [unconventional dependencies](#adding-new-unconventional-dependencies) that are created as part of your PR.
+* Call out any new [runtime dependencies](#adding-construct-runtime-dependencies) that are created as part of your PR.
 
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
@@ -389,26 +389,47 @@ $ yarn watch & # runs in the background
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
+#### Adding construct runtime dependencies
+
+Any tool that is not part of the CDK, and needs to be used by a construct during
+deployment or runtime, can be included in the CDK Framework Library in one of two
+ways.
+
+1. Add a direct dependency on an npm package containing the tool. For example,
+   `@aws-cdk/asset-awscli-v1`.
+2. Expose a property on the construct you are creating that allows users to
+   supply their own version of the tool. For example, the `eks.Cluster`
+   construct has a construct prop called `kubectlLayer` where you must provide a
+   version of `kubectl` from one of the `@aws-cdk/asset-kubectl-vXY` packages.
+   The version of `kubectl` must be compatible with the Kubernetes version of
+   the cluster.
+
+Both options involve creating separate repositories (like this
+[one](https://github.com/cdklabs/awscdk-asset-kubectl) for kubectl). If you
+would like to introduce additional runtime dependencies, it likely involves
+discussing with a CDK maintainer and opening a new repository in cdklabs that
+vends the dependency as a lambda layer. Generally, each branch on the repository
+will focus on a specific version of the dependency. For example, in
+`awscdk-asset-kubectl`, branch `kubectl-v20/main` vends kubectl v1.20, branch
+`kubectl-v21/main` vends kubectl v1.21, and so on.
+
+**If your PR introduces runtime dependencies in lambda layers, make sure to call
+it out in the description so that we can discuss the best way to manage that
+dependency.**
+
 #### Adding new unconventional dependencies
+
+> :warning: Do not add these. If there is a tool that you want to use in your
+CDK constructs, see [Adding construct runtime
+dependencies](#Adding-construct-runtime-dependencies).
 
 **For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
 `package.json` file.**
 
-Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
-an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
+Sometimes, constructs introduce new unconventional dependencies. Any new unconventional dependency that is introduced needs to have
+an auto upgrade process in place. The recommended way to update dependencies is through
+[dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates).
 You can find the dependabot config file [here](./.github/dependabot.yml).
-
-An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
-This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
-dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
-of the AWS CLI that is bundled is not managed by the `package.json` file.
-
-In order to automatically update the version of the AWS CLI, a custom build process was
-created that takes upgrades into consideration. You can take a look at the files in
-[packages/@aws-cdk/lambda-layer-awscli/layer](packages/@aws-cdk/lambda-layer-awscli/layer)
-to see how the build works, but at a high level a [requirements.txt](packages/@aws-cdk/lambda-layer-awscli/layer/requirements.txt)
-file was created to manage the version. This file was then added to [dependabot.yml](https://github.com/aws/aws-cdk/blob/ab57eb6d1ed69b40ed6ec774853c275785acace8/.github/dependabot.yml#L14-L20)
-so that dependabot will automatically upgrade the version as new versions are released.
 
 **If you think your PR introduces a new unconventional dependency, make sure to call it
 out in the description so that we can discuss the best way to manage that dependency.**
@@ -953,21 +974,35 @@ changes are only allowed in major versions and those are rare.
 To address this need, we have a feature flags pattern/mechanism. It allows us to
 introduce new breaking behavior which is disabled by default (so existing
 projects will not be affected) but enabled automatically for new projects
-created through `cdk init`.
+created through `cdk init`. Existing users can selectively opt in to new
+behavior on their own schedule.
 
-The pattern is simple:
+Whenever a change leads to CloudFormation template differences that cause any of
+the following during an update, it is not safe to apply the new behavior
+automatically, and we have to use a feature flag:
+
+- Resources replacement leading to service disruption; or
+- Users could have taken assumptions on the old setup and the change will break them.
+
+Adding a new flag looks as follows:
 
 1. Define a new const under
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts)
-   with the name of the context key that **enables** this new feature (for
+   with the name of the context key that enables this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
+    - Set `introducedIn.v2` to the literal string `'V2NEXT'`.
+    - Double negatives should be avoided. If you want to add a flag that disables something that was previously
+      enabled, set `default.v2` to `true` and the `recommendedValue` to `false`. You will need to update
+      a test in `features.test.ts` -- this is okay if you have a good reason.
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
-3. Add your feature flag to the `FUTURE_FLAGS` map in
-   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts).
-   This map is inserted to generated `cdk.json` files for new projects created
-   through `cdk init`.
+3. Add your feature flag to the `FLAGS` map in
+   [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/lib/features.ts). In
+   your description, be sure to cover the following:
+   - Consciously pick the type of feature flag. Can the flag be removed in a future major version, or not?
+   - Motivate why the feature flag exists. What is the change to existing infrastructure and why is it not safe?
+   - In case of a "default change flag", describe what the user needs to do to restore the old behavior.
 4. Add an entry for your feature flag in the [README](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/README.md) file.
 5. In your tests, ensure that you test your feature with and without the feature flag enabled. You can do this by passing the feature flag to the `context` property when instantiating an `App`.
    ```ts
