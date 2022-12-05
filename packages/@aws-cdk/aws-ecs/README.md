@@ -1139,6 +1139,17 @@ new ecs.Ec2Service(this, 'EC2Service', {
 });
 ```
 
+### Cluster Default Provider Strategy
+When the service does not have a capacity provider strategy, cluster's default capacity provider strategy will be used.
+```ts
+new ecs.Cluster(stack, 'EC2CPCluster', {
+  vpc,
+  defaultCapacityProviderStrategy: [
+    { capacityProvider: capacityProvider.capacityProviderName, base: 1, weight: 1 },
+  ],
+});
+```
+
 ## Elastic Inference Accelerators
 
 Currently, this feature is only supported for services with EC2 launch types.
