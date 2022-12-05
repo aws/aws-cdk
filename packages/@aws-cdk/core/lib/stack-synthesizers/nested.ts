@@ -11,7 +11,6 @@ import { IStackSynthesizer, ISynthesisSession } from './types';
  * App builder do not need to use this class directly.
  */
 export class NestedStackSynthesizer extends StackSynthesizer {
-  public readonly bootstrapQualifier?: string;
   constructor(private readonly parentDeployment: IStackSynthesizer) {
     super();
     this.bootstrapQualifier = parentDeployment.bootstrapQualifier;
