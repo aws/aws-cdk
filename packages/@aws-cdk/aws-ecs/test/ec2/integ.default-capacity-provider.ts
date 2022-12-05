@@ -8,11 +8,6 @@ const stack = new cdk.Stack(app, 'integ-ec2-capacity-provider');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
-const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
-  vpc,
-  enableFargateCapacityProviders: true,
-});
-
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
 taskDefinition.addContainer('web', {
@@ -32,17 +27,19 @@ const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
   enableManagedTerminationProtection: false,
 });
 
+const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
+  vpc,
+  enableFargateCapacityProviders: true,
+  defaultCapacityProviderStrategy: [
+    { capacityProvider: cp.capacityProviderName, base: 1, weight: 1 },
+  ],
+});
+
 cluster.addAsgCapacityProvider(cp);
 
 new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,
   taskDefinition,
-  capacityProviderStrategies: [
-    {
-      capacityProvider: cp.capacityProviderName,
-      weight: 1,
-    },
-  ],
 });
 
 app.synth();

@@ -407,13 +407,7 @@
     "Cluster": {
      "Ref": "EC2CPClusterD5F0FD32"
     },
-    "DefaultCapacityProviderStrategy": [
-      {
-        "Base": 10,
-        "CapacityProvider": "EC2",
-        "Weight": 50
-      }
-    ]
+    "DefaultCapacityProviderStrategy": []
    }
   },
   "TaskDefTaskRole1EDB4A67": {
