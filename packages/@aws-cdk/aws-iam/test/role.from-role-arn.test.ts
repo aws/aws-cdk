@@ -60,12 +60,12 @@ describe('IAM Role.fromRoleArn', () => {
           const roleStack1 = new Stack(appWithFeatureFlag, 'RoleStack1');
           const importedRoleInStack1 = Role.fromRoleArn(roleStack1, 'ImportedRole',
             `arn:aws:iam::${roleAccount}:role/${roleName}`);
-          importedRoleInStack1.addToPolicy(somePolicyStatement());
+          importedRoleInStack1.addToPrincipalPolicy(somePolicyStatement());
 
           const roleStack2 = new Stack(appWithFeatureFlag, 'RoleStack2');
           const importedRoleInStack2 = Role.fromRoleArn(roleStack2, 'ImportedRole',
             `arn:aws:iam::${roleAccount}:role/${roleName}`);
-          importedRoleInStack2.addToPolicy(somePolicyStatement());
+          importedRoleInStack2.addToPrincipalPolicy(somePolicyStatement());
 
           const stack1PolicyNameCapture = new Capture();
           Template.fromStack(roleStack1).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack1PolicyNameCapture });
@@ -74,6 +74,30 @@ describe('IAM Role.fromRoleArn', () => {
           Template.fromStack(roleStack2).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack2PolicyNameCapture });
 
           expect(stack1PolicyNameCapture.asString()).not.toBe(stack2PolicyNameCapture.asString());
+          expect(stack1PolicyNameCapture.asString()).toMatch(/ImportedRolePolicyRoleStack1ImportedRole.*/);
+          expect(stack2PolicyNameCapture.asString()).toMatch(/ImportedRolePolicyRoleStack2ImportedRole.*/);
+        });
+
+        test('the same role imported in different stacks has the same default policy name without flag', () => {
+          const appWithoutFeatureFlag = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: false } });
+          const roleStack1 = new Stack(appWithoutFeatureFlag, 'RoleStack1');
+          const importedRoleInStack1 = Role.fromRoleArn(roleStack1, 'ImportedRole',
+            `arn:aws:iam::${roleAccount}:role/${roleName}`);
+          importedRoleInStack1.addToPrincipalPolicy(somePolicyStatement());
+
+          const roleStack2 = new Stack(appWithoutFeatureFlag, 'RoleStack2');
+          const importedRoleInStack2 = Role.fromRoleArn(roleStack2, 'ImportedRole',
+            `arn:aws:iam::${roleAccount}:role/${roleName}`);
+          importedRoleInStack2.addToPrincipalPolicy(somePolicyStatement());
+
+          const stack1PolicyNameCapture = new Capture();
+          Template.fromStack(roleStack1).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack1PolicyNameCapture });
+
+          const stack2PolicyNameCapture = new Capture();
+          Template.fromStack(roleStack2).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack2PolicyNameCapture });
+
+          expect(stack1PolicyNameCapture.asString()).toBe(stack2PolicyNameCapture.asString());
+          expect(stack1PolicyNameCapture.asString()).toMatch(/ImportedRolePolicy.{8}/);
         });
       });
 
