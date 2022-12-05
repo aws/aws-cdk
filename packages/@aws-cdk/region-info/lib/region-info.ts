@@ -131,7 +131,6 @@ export class RegionInfo {
 
   /**
    * The account ID for ELBv2 in this region
-   *
    */
   public get elbv2Account(): string | undefined {
     return Fact.find(this.name, FactName.ELBV2_ACCOUNT);
