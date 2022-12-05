@@ -1915,6 +1915,47 @@ test('can use Vpc imported from unparseable list tokens', () => {
   });
 });
 
+test('add price-capacity-optimized', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    mixedInstancesPolicy: {
+      launchTemplate: lt,
+      launchTemplateOverrides: [{
+        instanceType: new InstanceType('t4g.micro'),
+        launchTemplate: lt,
+        weightedCapacity: 9,
+      }],
+      instancesDistribution: {
+        onDemandAllocationStrategy: OnDemandAllocationStrategy.PRIORITIZED,
+        onDemandBaseCapacity: 1,
+        onDemandPercentageAboveBaseCapacity: 2,
+        spotAllocationStrategy: SpotAllocationStrategy.PRICE_CAPACITY_OPTIMIZED,
+        spotInstancePools: 3,
+        spotMaxPrice: '4',
+      },
+    },
+    vpc: mockVpc(stack),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    MixedInstancesPolicy: {
+      InstancesDistribution: {
+        SpotAllocationStrategy: 'price-capacity-optimized',
+      },
+    },
+  });
+});
+
+
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }
