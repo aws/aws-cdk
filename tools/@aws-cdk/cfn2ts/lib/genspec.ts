@@ -216,7 +216,7 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
   if (attrType === 'number') {
     typeHint = 'NUMBER';
   } else if (attrType === 'string[]') {
-    typeHint = 'LIST';
+    typeHint = 'STRING_LIST';
   }
   const constructorArguments = `this.getAtt('${attributeName}', cdk.ResolutionTypeHint.${typeHint})`;
   return new Attribute(propertyName, attrType, constructorArguments);
