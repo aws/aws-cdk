@@ -70,6 +70,24 @@ export interface CdkToolkitProps {
 }
 
 /**
+ * When to build assets
+ */
+export enum AssetBuildTime {
+  /**
+   * Build all assets before deploying the first stack
+   *
+   * This is intended for expensive Docker image builds; so that if the Docker image build
+   * fails, no stacks are unnecessarily deployed (with the attendant wait time).
+   */
+  ALL_BEFORE_DEPLOY,
+
+  /**
+   * Build assets just-in-time, before publishing
+   */
+  JUST_IN_TIME,
+};
+
+/**
  * Toolkit logic
  *
  * The toolkit runs the `cloudExecutable` to obtain a cloud assembly and
@@ -167,17 +185,22 @@ export class CdkToolkit {
     }
 
     const stacks = stackCollection.stackArtifacts;
+    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
+
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    try {
-      await buildAllStackAssets(stackCollection.stackArtifacts, {
-        buildStackAssets: (a) => this.buildAllAssetsForSingleStack(a, options),
-      });
-    } catch (e) {
-      error('\n ❌ Building assets failed: %s', e);
-      throw e;
+    if (assetBuildTime === AssetBuildTime.ALL_BEFORE_DEPLOY) {
+      // Prebuild all assets
+      try {
+        await buildAllStackAssets(stackCollection.stackArtifacts, {
+          buildStackAssets: (a) => this.buildAllAssetsForSingleStack(a, options),
+        });
+      } catch (e) {
+        error('\n ❌ Building assets failed: %s', e);
+        throw e;
+      }
     }
 
     const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
@@ -258,7 +281,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
-          buildAssets: false,
+          buildAssets: assetBuildTime !== AssetBuildTime.ALL_BEFORE_DEPLOY,
           assetParallelism: options.assetParallelism,
         });
 
@@ -1043,6 +1066,15 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default true
    */
   readonly assetParallelism?: boolean;
+
+  /**
+   * When to build assets
+   *
+   * The default is the Docker-friendly default.
+   *
+   * @default AssetBuildTime.ALL_BEFORE_DEPLOY
+   */
+  readonly assetBuildTime?: AssetBuildTime;
 }
 
 export interface ImportOptions extends CfnDeployOptions {

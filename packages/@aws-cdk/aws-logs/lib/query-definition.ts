@@ -102,7 +102,7 @@ export class QueryString {
       sort: this.sort,
       limit: this.limit,
       display: this.display,
-    }).join(' | ');
+    }).join('\n| ');
   }
 }
 
