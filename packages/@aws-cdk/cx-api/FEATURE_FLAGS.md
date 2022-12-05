@@ -39,6 +39,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
+| [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -68,7 +69,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
-    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true
+    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
+    "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true
   }
 }
 ```
@@ -693,6 +695,23 @@ This flag disables use of that exceptions database and always uses the global se
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.51.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
+
+*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
+
+Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
+to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
+of a role using the same default policy name.
+
+This new implementation creates default policy names based on the constructs node path in their stack.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
