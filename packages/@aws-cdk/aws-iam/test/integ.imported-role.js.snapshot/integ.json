@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "testCases": {
-    "integ.role": {
+    "integ.imported-role": {
       "stacks": [
         "integ-iam-imported-role-1"
       ],
