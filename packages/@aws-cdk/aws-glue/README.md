@@ -45,7 +45,7 @@ An ETL job processes data in batches using Apache Spark.
 declare const bucket: s3.Bucket;
 new glue.Job(this, 'ScalaSparkEtlJob', {
   executable: glue.JobExecutable.scalaEtl({
-    glueVersion: glue.GlueVersion.V2_0,
+    glueVersion: glue.GlueVersion.V4_0,
     script: glue.Code.fromBucket(bucket, 'src/com/example/HelloWorld.scala'),
     className: 'com.example.HelloWorld',
     extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
@@ -61,7 +61,7 @@ A Streaming job is similar to an ETL job, except that it performs ETL on data st
 ```ts
 new glue.Job(this, 'PythonSparkStreamingJob', {
   executable: glue.JobExecutable.pythonStreaming({
-    glueVersion: glue.GlueVersion.V2_0,
+    glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE,
     script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
   }),
