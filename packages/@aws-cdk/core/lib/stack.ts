@@ -1035,7 +1035,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Create a CloudFormation Export for a value
+   * Create a CloudFormation Export for a string list value
    *
    * Returns a string list representing the corresponding `Fn.importValue()`
    * expression for this Export. The export expression is automatically wrapped with an
