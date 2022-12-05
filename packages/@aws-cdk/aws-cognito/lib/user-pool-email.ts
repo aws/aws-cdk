@@ -164,9 +164,20 @@ class SESEmail extends UserPoolEmail {
       throw new Error('Your stack region cannot be determined so "sesRegion" is required in SESOptions');
     }
 
-    let from = this.options.fromEmail;
+    let from = encodeAndTest(this.options.fromEmail);
     if (this.options.fromName) {
-      from = `${this.options.fromName} <${this.options.fromEmail}>`;
+      let fromName = this.options.fromName;
+      // see RFC 5322 Section 3.4 for details
+      if (/[^\u0020-\u007E]/u.test(fromName)) {
+        // mime encoding for non US-ASCII characters (RFC 2047)
+        fromName = `=?UTF-8?B?${Buffer.from(fromName, 'utf-8').toString('base64')}?=`;
+      } else if (/^(?:"(?:[^\\"]|\\.)+"|[\w !#$%&'*+-\/=?^_`{|}~]+)$/.test(fromName)) {
+        // atom or quoted-string
+      } else {
+        // make quoted-string
+        fromName = `"${fromName.replace(/["\\]/g, '\\$&')}"`;
+      }
+      from = `${fromName} <${from}>`;
     }
 
     if (this.options.sesVerifiedDomain) {
@@ -177,7 +188,7 @@ class SESEmail extends UserPoolEmail {
     }
 
     return {
-      from: encodeAndTest(from),
+      from,
       replyToEmailAddress: encodeAndTest(this.options.replyTo),
       configurationSet: this.options.configurationSetName,
       emailSendingAccount: 'DEVELOPER',
