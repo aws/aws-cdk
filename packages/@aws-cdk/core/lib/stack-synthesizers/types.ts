@@ -11,7 +11,7 @@ export interface IStackSynthesizer {
    *
    * @default - no qualifier
    */
-  bootstrapQualifier?: string;
+  readonly bootstrapQualifier?: string;
 
   /**
    * Bind to the stack this environment is going to be used on
