@@ -344,6 +344,9 @@ export class FileSystem extends FileSystemBase {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
+    if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
+      throw new Error('Property performanceMode cannot be MAX_IO when throughputMode is ELASTIC');
+    }
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
