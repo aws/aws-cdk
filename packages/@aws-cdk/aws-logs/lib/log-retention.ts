@@ -197,7 +197,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   /**
    * @internal
    */
-  grantDeleteLogGroup(logGroupName: string) {
+  public grantDeleteLogGroup(logGroupName: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:DeleteLogGroup'],
       //Only allow deleting the specific log group.
