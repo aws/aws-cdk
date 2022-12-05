@@ -857,8 +857,8 @@ export class Function extends FunctionBase {
       });
     }
 
+    this.currentVersionOptions = props.currentVersionOptions;
     if (props.currentVersionOptions) {
-      this.currentVersionOptions = props.currentVersionOptions;
       this.currentVersion;
     }
 
