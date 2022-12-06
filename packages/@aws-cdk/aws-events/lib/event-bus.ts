@@ -136,8 +136,6 @@ abstract class EventBusBase extends Resource implements IEventBus {
    */
   public abstract readonly eventSourceName?: string;
 
-  protected abstract readonly autoCreatePolicy: boolean;
-
   public archive(id: string, props: BaseArchiveProps): Archive {
     return new Archive(this, id, {
       sourceEventBus: this,
@@ -311,8 +309,6 @@ export class EventBus extends EventBusBase {
    */
   public readonly eventSourceName?: string;
 
-  protected autoCreatePolicy: boolean;
-
   private policy?: EventBusPolicy;
 
   constructor(scope: Construct, id: string, props?: EventBusProps) {
@@ -337,7 +333,6 @@ export class EventBus extends EventBusBase {
     this.eventBusName = this.getResourceNameAttribute(eventBus.ref);
     this.eventBusPolicy = eventBus.attrPolicy;
     this.eventSourceName = eventBus.eventSourceName;
-    this.autoCreatePolicy = true;
   }
 
   /**
@@ -353,17 +348,13 @@ export class EventBus extends EventBusBase {
       return { statementAdded: false };
     }
 
-    if (this.autoCreatePolicy) {
-      this.policy = new EventBusPolicy(this, 'Policy', {
-        eventBus: this,
-        statement: statement.toJSON(),
-        statementId: statement.sid,
-      });
+    this.policy = new EventBusPolicy(this, 'Policy', {
+      eventBus: this,
+      statement: statement.toJSON(),
+      statementId: statement.sid,
+    });
 
-      return { statementAdded: true, policyDependable: this.policy };
-    }
-
-    return { statementAdded: false };
+    return { statementAdded: true, policyDependable: this.policy };
   }
 }
 
