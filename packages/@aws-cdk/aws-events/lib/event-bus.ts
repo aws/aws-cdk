@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
-import { CfnEventBus } from './events.generated';
+import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -135,6 +135,8 @@ abstract class EventBusBase extends Resource implements IEventBus {
    * The name of the partner event source
    */
   public abstract readonly eventSourceName?: string;
+
+  protected abstract readonly autoCreatePolicy: boolean;
 
   public archive(id: string, props: BaseArchiveProps): Archive {
     return new Archive(this, id, {
@@ -309,6 +311,10 @@ export class EventBus extends EventBusBase {
    */
   public readonly eventSourceName?: string;
 
+  protected autoCreatePolicy: boolean = true;
+
+  private policy?: EventBusPolicy;
+
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
       Lazy.string({ produce: () => Names.uniqueId(this) }),
@@ -332,6 +338,29 @@ export class EventBus extends EventBusBase {
     this.eventBusPolicy = eventBus.attrPolicy;
     this.eventSourceName = eventBus.eventSourceName;
   }
+
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (statement.sid == null) {
+      throw new Error('Event Bus policy statements must have a sid');
+    }
+
+    if (this.policy) {
+      // The policy can contain only one statement
+      return { statementAdded: false };
+    }
+
+    if (this.autoCreatePolicy) {
+      this.policy = new EventBusPolicy(this, 'Policy', {
+        eventBus: this,
+        statement: statement.toJSON(),
+        statementId: statement.sid,
+      });
+
+      return { statementAdded: true, policyDependable: this.policy };
+    }
+
+    return { statementAdded: false };
+  }
 }
 
 class ImportedEventBus extends EventBusBase {
@@ -339,6 +368,9 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusName: string;
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
+
+  protected readonly autoCreatePolicy = false;
+
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
     const arnParts = Stack.of(scope).splitArn(attrs.eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
     super(scope, id, {
@@ -350,5 +382,23 @@ class ImportedEventBus extends EventBusBase {
     this.eventBusName = attrs.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
     this.eventSourceName = attrs.eventSourceName;
+  }
+}
+
+export interface EventBusPolicyProps {
+  readonly eventBus: IEventBus;
+  readonly statement: iam.PolicyStatement;
+  readonly statementId: string;
+}
+
+export class EventBusPolicy extends Resource {
+  constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
+    super(scope, id);
+
+    new CfnEventBusPolicy(this, 'Resource', {
+      statementId: props.statementId!,
+      statement: props.statement,
+      eventBusName: props.eventBus.eventBusName,
+    });
   }
 }
