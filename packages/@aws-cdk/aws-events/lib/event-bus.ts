@@ -311,7 +311,7 @@ export class EventBus extends EventBusBase {
    */
   public readonly eventSourceName?: string;
 
-  protected autoCreatePolicy: boolean = true;
+  protected autoCreatePolicy: boolean;
 
   private policy?: EventBusPolicy;
 
@@ -337,8 +337,12 @@ export class EventBus extends EventBusBase {
     this.eventBusName = this.getResourceNameAttribute(eventBus.ref);
     this.eventBusPolicy = eventBus.attrPolicy;
     this.eventSourceName = eventBus.eventSourceName;
+    this.autoCreatePolicy = true;
   }
 
+  /**
+   * Adds a statement to the IAM resource policy associated with this event bus.
+   */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.sid == null) {
       throw new Error('Event Bus policy statements must have a sid');
@@ -369,7 +373,7 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
 
-  protected readonly autoCreatePolicy = false;
+  protected autoCreatePolicy: boolean;
 
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
     const arnParts = Stack.of(scope).splitArn(attrs.eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
@@ -382,15 +386,45 @@ class ImportedEventBus extends EventBusBase {
     this.eventBusName = attrs.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
     this.eventSourceName = attrs.eventSourceName;
+    this.autoCreatePolicy = false;
   }
 }
 
+/**
+ * Properties to associate Event Buses with a policy
+ */
 export interface EventBusPolicyProps {
+  /**
+   * The event bus to which the policy applies
+   */
   readonly eventBus: IEventBus;
+
+  /**
+   * An IAM Policy Statement to apply to the Event Bus
+   */
   readonly statement: iam.PolicyStatement;
+
+  /**
+   * An identifier string for the external account that
+   * you are granting permissions to.
+   */
   readonly statementId: string;
 }
 
+/**
+ * The policy for an Event Bus
+ *
+ * Policies define the operations that are allowed on this resource.
+ *
+ * You almost never need to define this construct directly.
+ *
+ * All AWS resources that support resource policies have a method called
+ * `addToResourcePolicy()`, which will automatically create a new resource
+ * policy if one doesn't exist yet, otherwise it will add to the existing
+ * policy.
+ *
+ * Prefer to use `addToResourcePolicy()` instead.
+ */
 export class EventBusPolicy extends Resource {
   constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
     super(scope, id);
