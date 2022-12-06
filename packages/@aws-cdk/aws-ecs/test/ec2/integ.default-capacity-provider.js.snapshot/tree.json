@@ -1524,8 +1524,6 @@
                   "aws:cdk:cloudformation:type": "AWS::ECS::ClusterCapacityProviderAssociations",
                   "aws:cdk:cloudformation:props": {
                     "capacityProviders": [
-                      "FARGATE",
-                      "FARGATE_SPOT",
                       {
                         "Ref": "EC2CapacityProvider5A2E35CD"
                       }
