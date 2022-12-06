@@ -70,7 +70,7 @@ export const AWS_REGIONS = AWS_REGIONS_AND_RULES
   .sort() as readonly string[];
 
 /**
- * Possibly non-exaustive list of all service names, used to locate service principals.
+ * Possibly non-exhaustive list of all service names, used to locate service principals.
  *
  * Not in the list ==> default service principal mappings.
  */
