@@ -364,8 +364,6 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
 
-  protected autoCreatePolicy: boolean;
-
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
     const arnParts = Stack.of(scope).splitArn(attrs.eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
     super(scope, id, {
@@ -377,7 +375,6 @@ class ImportedEventBus extends EventBusBase {
     this.eventBusName = attrs.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
     this.eventSourceName = attrs.eventSourceName;
-    this.autoCreatePolicy = false;
   }
 }
 
