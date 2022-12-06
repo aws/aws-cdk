@@ -315,6 +315,71 @@ describe('State Machine', () => {
     });
   });
 
+  test('Instantiate a State Machine with a task assuming a literal roleArn from same account', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const role = iam.Role.fromRoleName(stack, 'Role', 'example-role');
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': [
+          '',
+          [
+            '{"StartAt":"fakeTask","States":{"fakeTask":{"End":true,"Type":"Task","Credentials":{"RoleArn":"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':role/example-role"},"Resource":"my-resource","Parameters":{"MyParameter":"myParameter"}}}}',
+          ],
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'sts:AssumeRole',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':role/example-role',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
   test('Instantiate a State Machine with a task assuming a JSONPath roleArn', () => {
     // GIVEN
     const stack = new cdk.Stack();
