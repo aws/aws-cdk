@@ -798,8 +798,14 @@ export class Stack extends Construct implements ITaggable {
     if (!dep) {
       dep = this._stackDependencies[Names.uniqueId(target)] = { stack: target, reasons: [] };
     }
-    let reasons = filterReasons(dep, reason);
-    if (reasons.length > 0) {
+    // Check for a duplicate reason already existing
+    let existingReasons: Set<StackDependencyReason> = new Set();
+    dep.reasons.forEach((existingReason) => {
+      if (existingReason.source == reason.source && existingReason.target == reason.target) {
+        existingReasons.add(existingReason);
+      }
+    });
+    if (existingReasons.size > 0) {
       // Dependency already exists and for the provided reason
       return;
     }
@@ -819,12 +825,19 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason={ description: '' }): IElement[] {
+  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason): IElement[] {
+    if (!reasonFilter.source) {
+      throw new Error('reasonFilter.source must be defined!');
+    }
+    // Assume reasonFilter has only source defined
     let dependencies: Set<IElement> = new Set();
     Object.values(this._stackDependencies).forEach((dep) => {
-      filterReasons(dep, reasonFilter).forEach(r => {
-        if (r.target) {
-          dependencies.add(r.target);
+      dep.reasons.forEach((reason) => {
+        if (reasonFilter.source == reason.source) {
+          if (!reason.target) {
+            throw new Error(`Encountered an invalid dependency target from source '${reasonFilter.source!.node.path}'`);
+          }
+          dependencies.add(reason.target);
         }
       });
     });
@@ -862,15 +875,20 @@ export class Stack extends Construct implements ITaggable {
     }
 
     // Find and remove the specified reason from the dependency
-    let filteredReasons = filterReasons(dep, reasonFilter);
-    if (filteredReasons.length > 1) {
-      throw new Error(`There cannot be more than one reason for dependency removal, found: ${filteredReasons}`);
+    let matchedReasons: Set<StackDependencyReason> = new Set();
+    dep.reasons.forEach((reason) => {
+      if (reasonFilter.source == reason.source && reasonFilter.target == reason.target) {
+        matchedReasons.add(reason);
+      }
+    });
+    if (matchedReasons.size > 1) {
+      throw new Error(`There cannot be more than one reason for dependency removal, found: ${matchedReasons}`);
     }
-    if (filteredReasons.length == 0) {
+    if (matchedReasons.size == 0) {
       // Reason is already not there - return now
       return;
     }
-    let matchedReason = filteredReasons[0];
+    let matchedReason = Array.from(matchedReasons)[0];
 
     let index = dep.reasons.indexOf(matchedReason, 0);
     dep.reasons.splice(index, 1);
@@ -1455,17 +1473,6 @@ function generateExportName(stackExports: Construct, id: string) {
   const localPart = makeUniqueId(components);
   const maxLength = 255;
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
-}
-
-
-function filterReasons(dependency: StackDependency, reasonFilter: StackDependencyReason) {
-  let reasons: Set<StackDependencyReason> = new Set();
-  dependency.reasons.forEach((reason) => {
-    if ((!reasonFilter.source || reasonFilter.source == reason.source) && (!reasonFilter.target || reasonFilter.target == reason.target)) {
-      reasons.add(reason);
-    }
-  });
-  return Array.from(reasons);
 }
 
 interface StackDependencyReason {
