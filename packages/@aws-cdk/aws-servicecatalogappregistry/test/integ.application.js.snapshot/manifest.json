@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-servicecatalogappregistry-application.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d03aa6239eb3b20f4b72fb3dd44a4082d06d7a5451d0ac3855bd1aa78aecfbe9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9865325ce7d796431795070b89be47ba38a72d3daf71cf6958de99f1850c6013.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,6 +39,12 @@
             "data": "TestApplication2FBC585F"
           }
         ],
+        "/integ-servicecatalogappregistry-application/TestApplication/ApplicationManagerUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationApplicationManagerUrlE1058321"
+          }
+        ],
         "/integ-servicecatalogappregistry-application/TestApplication/ResourceAssociationd232b63e52a8": [
           {
             "type": "aws:cdk:logicalId",
@@ -57,10 +57,10 @@
             "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F"
           }
         ],
-        "/integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd": [
+        "/integ-servicecatalogappregistry-application/TestApplication/RAMShare3dc6227daec1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestApplicationRAMSharead8ba81b8cdd40199FD1"
+            "data": "TestApplicationRAMShare3dc6227daec11BF3E108"
           }
         ],
         "/integ-servicecatalogappregistry-application/TestAttributeGroup/Resource": [
@@ -86,9 +86,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "TestApplicationRAMSharead8ba81b8cdd40199FD1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationRAMSharead8ba81b8cdd40199FD1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-servicecatalogappregistry-application"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

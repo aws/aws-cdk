@@ -35,6 +35,12 @@ export interface IApplication extends cdk.IResource {
   readonly applicationName?: string;
 
   /**
+   * Application manager URL for the Application.
+   * @attribute
+   */
+  readonly applicationManagerUrl?: cdk.CfnOutput;
+
+  /**
    * Associate this application with an attribute group.
    *
    * @param attributeGroup AppRegistry attribute group
@@ -94,6 +100,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   public abstract readonly applicationArn: string;
   public abstract readonly applicationId: string;
   public abstract readonly applicationName?: string;
+  public abstract readonly applicationManagerUrl?: cdk.CfnOutput;
   private readonly associatedAttributeGroups: Set<string> = new Set();
   private readonly associatedResources: Set<string> = new Set();
 
@@ -134,20 +141,26 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Associate stack with the application in the stack passed as parameter.
    *
-   * If the stack is already associated, it will ignore duplicate request.
    * A stack can only be associated with one application.
    */
   public associateApplicationWithStack(stack: cdk.Stack): void {
     if (!this.associatedResources.has(stack.node.addr)) {
-      new CfnResourceAssociation(stack, 'AppRegistryAssociation', {
+      const stackCondition = stack.nestedStackResource?.cfnOptions.condition;
+      const association = new CfnResourceAssociation(stack, 'AppRegistryAssociation', {
         application: stack === cdk.Stack.of(this) ? this.applicationId : this.applicationName ?? this.applicationId,
         resource: stack.stackId,
         resourceType: 'CFN_STACK',
       });
 
-      this.associatedResources.add(stack.node.addr);
-      if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack)) {
-        stack.addDependency(cdk.Stack.of(this));
+      if (stackCondition) {
+        association.addOverride('Condition', stackCondition.logicalId);
+      }
+
+      if (!stack.nested) {
+        this.associatedResources.add(stack.node.addr);
+        if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack)) {
+          stack.addDependency(cdk.Stack.of(this));
+        }
       }
     }
   }
@@ -240,6 +253,7 @@ export class Application extends ApplicationBase {
       public readonly applicationArn = applicationArn;
       public readonly applicationId = applicationId!;
       public readonly applicationName = undefined;
+      public readonly applicationManagerUrl = undefined;
 
       protected generateUniqueHash(resourceAddress: string): string {
         return hashValues(this.applicationArn, resourceAddress);
@@ -254,6 +268,7 @@ export class Application extends ApplicationBase {
   public readonly applicationArn: string;
   public readonly applicationId: string;
   public readonly applicationName?: string;
+  public readonly applicationManagerUrl?: cdk.CfnOutput;
   private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
@@ -270,6 +285,10 @@ export class Application extends ApplicationBase {
     this.applicationId = application.attrId;
     this.applicationName = props.applicationName;
     this.nodeAddress = cdk.Names.nodeUniqueId(application.node);
+
+    this.applicationManagerUrl = new cdk.CfnOutput(this, 'ApplicationManagerUrl', {
+      value: `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`,
+    });
   }
 
   protected generateUniqueHash(resourceAddress: string): string {

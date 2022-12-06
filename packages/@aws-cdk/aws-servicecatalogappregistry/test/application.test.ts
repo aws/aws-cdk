@@ -34,11 +34,13 @@ describe('Application', () => {
 
   test('application with explicit description', () => {
     const description = 'my test application description';
-    new appreg.Application(stack, 'MyApplication', {
+    const application = new appreg.Application(stack, 'MyApplication', {
       applicationName: 'testApplication',
       description: description,
     });
 
+    Template.fromStack(stack).hasOutput('MyApplicationApplicationManagerUrlB79EF34D', {});
+    expect(application.applicationManagerUrl?.value).toContain('AWS_AppRegistry_Application-testApplication');
     Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Description: description,
     });
@@ -254,7 +256,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharee6e0e560e6f8',
+        Name: 'RAMShare5bb637032063',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -268,7 +270,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharee6e0e560e6f8',
+        Name: 'RAMShare5bb637032063',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -284,7 +286,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharee6e0e560e6f8',
+        Name: 'RAMShare5bb637032063',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -300,7 +302,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharee6e0e560e6f8',
+        Name: 'RAMShare5bb637032063',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -315,7 +317,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharee6e0e560e6f8',
+        Name: 'RAMShare5bb637032063',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -330,7 +332,7 @@ describe('Application', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMSharee6e0e560e6f8',
+        Name: 'RAMShare5bb637032063',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation'],
@@ -446,8 +448,60 @@ describe('Scope based Associations with Application with Cross Region/Account', 
   });
 });
 
+describe('Conditional nested stack Associations with Application within Same Account', () => {
+  let app: cdk.App;
+  beforeEach(() => {
+    app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+  });
+
+  test('Associate conditional nested stack with application', () => {
+    const stack = new MainStack(app, 'cdkApplication');
+    const application = new appreg.Application(stack, 'MyApplication', {
+      applicationName: 'MyApplication',
+    });
+    application.associateApplicationWithStack(stack);
+    application.associateApplicationWithStack(stack.nestedStack);
+    Template.fromStack(stack.nestedStack).hasResource('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Properties: {
+        Application: 'MyApplication',
+        Resource: { Ref: 'AWS::StackId' },
+        ResourceType: 'CFN_STACK',
+      },
+      Condition: 'ShouldCreateStackCondition',
+    });
+    Template.fromStack(stack.nestedStack).hasCondition('ShouldCreateStackCondition', {
+      'Fn::Equals': ['us-east-1'],
+    });
+  });
+
+});
+
+
 class AppRegistrySampleStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+  }
+}
+
+class MainStack extends cdk.Stack {
+  public readonly nestedStack: cdk.Stack;
+  public constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
+    super(parent, id, props);
+    this.nestedStack = new AppRegistryNestedStack(this, 'nested-stack');
+  }
+}
+
+class AppRegistryNestedStack extends cdk.NestedStack {
+  public constructor(scope: Construct, id: string, props?: cdk.NestedStackProps) {
+    super(scope, id, props);
+
+    const shouldCreateStack = new cdk.CfnCondition(this, 'ShouldCreateStackCondition', {
+      expression: cdk.Fn.conditionEquals(process.env.CDK_DEFAULT_REGION, 'us-east-1'),
+    });
+    (this.nestedStackResource as cdk.CfnStack).cfnOptions.condition = shouldCreateStack;
   }
 }
