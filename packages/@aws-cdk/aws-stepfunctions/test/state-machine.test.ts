@@ -280,28 +280,52 @@ describe('State Machine', () => {
     });
   });
 
-  test('Instantiate a State Machine with a task assuming a literal roleArn', () => {
+  test('Instantiate a State Machine with a task assuming a literal roleArn (cross-account)', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stateMachineStack = new cdk.Stack(app, 'StateMachineStack', { env: { account: '123456789' } });
+    const roleStack = new cdk.Stack(app, 'RoleStack', { env: { account: '987654321' } });
+    const role = iam.Role.fromRoleName(roleStack, 'Role', 'example-role');
 
     // WHEN
-    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
-    new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
+    new sfn.StateMachine(stateMachineStack, 'MyStateMachine', {
+      definition: new FakeTask(stateMachineStack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
-      DefinitionString: '{"StartAt":"fakeTask","States":{"fakeTask":{"End":true,"Type":"Task","Credentials":{"RoleArn":"arn:aws:iam::123456789012:role/example-role"},"Resource":"my-resource","Parameters":{"MyParameter":"myParameter"}}}}',
+    Template.fromStack(stateMachineStack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': [
+          '',
+          [
+            '{"StartAt":"fakeTask","States":{"fakeTask":{"End":true,"Type":"Task","Credentials":{"RoleArn":"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::987654321:role/example-role"},"Resource":"my-resource","Parameters":{"MyParameter":"myParameter"}}}}',
+          ],
+        ],
+      },
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(stateMachineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Effect: 'Allow',
             Action: 'sts:AssumeRole',
-            Resource: 'arn:aws:iam::123456789012:role/example-role',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::987654321:role/example-role',
+                ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -315,7 +339,7 @@ describe('State Machine', () => {
     });
   });
 
-  test('Instantiate a State Machine with a task assuming a literal roleArn from same account', () => {
+  test('Instantiate a State Machine with a task assuming a literal roleArn (same-account)', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
