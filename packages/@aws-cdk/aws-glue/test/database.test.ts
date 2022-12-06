@@ -87,3 +87,14 @@ test('locationUri length must be <= 1024', () => {
     }),
   ).toThrow();
 });
+
+test('set a specify physical name', () => {
+  new glue.Database(stack, 'Database', {
+    databaseName: 'my_database',
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Database', {
+    DatabaseInput: {
+      Name: 'my_database',
+    },
+  });
+});

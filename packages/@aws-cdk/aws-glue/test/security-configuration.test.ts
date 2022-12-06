@@ -115,3 +115,16 @@ test('fromSecurityConfigurationName', () => {
 
   expect(securityConfiguration.securityConfigurationName).toEqual(name);
 });
+
+test('set a specify physical name', () => {
+  const stack = new cdk.Stack();
+  new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
+    securityConfigurationName: 'MySecurityConfiguration',
+    cloudWatchEncryption: {
+      mode: glue.CloudWatchEncryptionMode.KMS,
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::SecurityConfiguration', {
+    Name: 'MySecurityConfiguration',
+  });
+});
