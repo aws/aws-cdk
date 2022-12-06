@@ -11,13 +11,12 @@ import { IStackSynthesizer, ISynthesisSession } from './types';
  * App builder do not need to use this class directly.
  */
 export class NestedStackSynthesizer extends StackSynthesizer {
-  /**
-   * The qualifier used to bootstrap this stack
-   */
-  public readonly bootstrapQualifier?: string;
   constructor(private readonly parentDeployment: IStackSynthesizer) {
     super();
-    this.bootstrapQualifier = parentDeployment.bootstrapQualifier;
+  }
+
+  public get bootstrapQualifier(): string | undefined {
+    return this.parentDeployment.bootstrapQualifier;
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
