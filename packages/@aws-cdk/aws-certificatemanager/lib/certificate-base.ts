@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Statistic } from '@aws-cdk/aws-cloudwatch';
+import { Stats } from '@aws-cdk/aws-cloudwatch';
 import { Duration, Resource } from '@aws-cdk/core';
 import { ICertificate } from './certificate';
 
@@ -26,7 +26,7 @@ export abstract class CertificateBase extends Resource implements ICertificate {
       metricName: 'DaysToExpiry',
       namespace: 'AWS/CertificateManager',
       region: this.region,
-      statistic: Statistic.MINIMUM,
+      statistic: Stats.MINIMUM,
     });
   }
 }

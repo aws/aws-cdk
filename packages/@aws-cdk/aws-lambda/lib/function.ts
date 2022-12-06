@@ -33,7 +33,7 @@ import { addAlias } from './util';
 export enum Tracing {
   /**
    * Lambda will respect any tracing header it receives from an upstream service.
-   * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
+   * If no tracing header is received, Lambda will sample the request based on a fixed rate. Please see the [Using AWS Lambda with AWS X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html) documentation for details on this sampling behavior.
    */
   ACTIVE = 'Active',
   /**
@@ -867,6 +867,9 @@ export class Function extends FunctionBase {
     }
 
     this.currentVersionOptions = props.currentVersionOptions;
+    if (props.currentVersionOptions) {
+      this.currentVersion;
+    }
 
     if (props.filesystem) {
       if (!props.vpc) {

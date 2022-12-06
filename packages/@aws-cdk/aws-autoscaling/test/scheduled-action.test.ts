@@ -154,6 +154,20 @@ describeDeprecated('scheduled action', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
     expect(annotations.length).toBe(0);
   });
+
+  test('ScheduledActions have a name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    const action = asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
+      schedule: autoscaling.Schedule.cron({ hour: '12', minute: '0' }),
+      minCapacity: 12,
+      timeZone: 'Asia/Seoul',
+    });
+
+    expect(action.scheduledActionName).toBeDefined();
+  });
 });
 
 function makeAutoScalingGroup(scope: constructs.Construct) {
