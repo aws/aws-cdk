@@ -3,7 +3,7 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "myApplicationtest",
+    "Name": "myCdkApplication",
     "Description": "my application description"
    }
   },
@@ -84,7 +84,7 @@
       "release": "go time"
      }
     },
-    "Name": "myAttributeGroupTest",
+    "Name": "myCdkAttributeGroup",
     "Description": "my attribute group description"
    }
   },
@@ -131,7 +131,7 @@
       {
        "Ref": "AWS::Region"
       },
-      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-myApplicationtest"
+      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-myCdkApplication"
      ]
     ]
    }

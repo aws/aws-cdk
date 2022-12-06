@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
-                    "name": "myApplicationtest",
+                    "name": "myCdkApplication",
                     "description": "my application description"
                   }
                 },
@@ -149,7 +149,7 @@
                         "release": "go time"
                       }
                     },
-                    "name": "myAttributeGroupTest",
+                    "name": "myCdkAttributeGroup",
                     "description": "my attribute group description"
                   }
                 },
