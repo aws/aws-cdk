@@ -13,6 +13,7 @@ import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
+import { ResolutionTypeHint } from '../type-hints';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
@@ -194,7 +195,7 @@ function createImportValue(reference: Reference): Intrinsic {
   const exportingStack = Stack.of(reference.target);
   let importExpr;
 
-  if (Array.isArray((exportingStack as any).determineImportValue(reference))) {
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
     importExpr = exportingStack.exportStringListValue(reference);
     // I happen to know this returns a Fn.split() which implements Intrinsic.
     return Tokenization.reverseList(importExpr) as Intrinsic;

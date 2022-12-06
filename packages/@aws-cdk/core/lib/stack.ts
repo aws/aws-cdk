@@ -1025,7 +1025,17 @@ export class Stack extends Construct implements ITaggable {
       return Fn.importValue(options.name);
     }
 
-    const importValue = this.determineImportValue(exportedValue);
+    const { exportName, exportsScope, id, exportable } = this.resolveExportedValue(exportedValue);
+
+    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
+    if (!output) {
+      new CfnOutput(exportsScope, id, {
+        value: Token.asString(exportable),
+        exportName,
+      });
+    }
+
+    const importValue = Fn.importValue(exportName);
 
     if (Array.isArray(importValue)) {
       throw new Error('Attempted to export a list value from `exportValue()`: use `exportStringListValue()` instead');
@@ -1064,7 +1074,22 @@ export class Stack extends Construct implements ITaggable {
       return Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(options.name));
     }
 
-    const importValue = this.determineImportValue(exportedValue);
+    const { exportName, exportsScope, id, exportable } = this.resolveExportedValue(exportedValue);
+
+    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
+    if (!output) {
+      new CfnOutput(exportsScope, id, {
+        // this is a list so export an Fn::Join expression
+        // and import an Fn::Split expression,
+        // since CloudFormation Outputs can only be strings
+        // (string lists are invalid)
+        value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(exportable)),
+        exportName,
+      });
+    }
+
+    // we don't use `Fn.importListValue()` since this array is a CFN attribute, and we don't know how long this attribute is
+    const importValue = Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(exportName));
 
     if (!Array.isArray(importValue)) {
       throw new Error('Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead');
@@ -1298,7 +1323,7 @@ export class Stack extends Construct implements ITaggable {
     return makeStackName(ids);
   }
 
-  private determineImportValue(exportedValue: any) {
+  private resolveExportedValue(exportedValue: any): ResolvedExport {
     const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
       throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
@@ -1323,25 +1348,12 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
     }
 
-    const exportIsAList = resolvable.typeHint === ResolutionTypeHint.STRING_LIST;
-
-    // if it's a list, export an Fn::Join expression
-    // and import an Fn::Split expression,
-    // since CloudFormation Outputs can only be strings
-    // (string lists are invalid)
-    const valueToExport = exportIsAList ?
-      Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(exportable))
-      : Token.asString(exportable);
-
-    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
-    if (!output) {
-      new CfnOutput(exportsScope, id, { value: valueToExport, exportName });
-    }
-
-    // we don't use `Fn.importListValue()` since this array is a CFN attribute, and we don't know how long this attribute is
-    return exportIsAList ?
-      Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(exportName))
-      : Fn.importValue(exportName);
+    return {
+      exportable,
+      exportsScope,
+      id,
+      exportName,
+    };
   }
 
   /**
@@ -1530,6 +1542,12 @@ interface StackDependency {
   reasons: string[];
 }
 
+interface ResolvedExport {
+  exportable: Reference;
+  exportsScope: Construct;
+  id: string;
+  exportName: string;
+}
 
 /**
  * Options for the `stack.exportValue()` method
@@ -1571,5 +1589,4 @@ import { getExportable } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
-import { ResolutionTypeHint } from './type-hints';
 
