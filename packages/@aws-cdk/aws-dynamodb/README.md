@@ -87,7 +87,25 @@ times of the day:
 Auto-scaling is only relevant for tables with the billing mode, PROVISIONED.
 
 [Example of configuring autoscaling](test/integ.autoscaling.lit.ts)
-[Example of configuring the table as a scalable target](test/integ.dynamodb.scalable-target.ts)
+```ts
+const target = new appscaling.ScalableTarget(this, 'Target', {
+  serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
+  scalableDimension: 'dynamodb:table:ReadCapacityUnits',
+  resourceId: `table/${table.tableName}`,
+  minCapacity: 1,
+  maxCapacity: 20,
+});
+
+target.scaleOnSchedule('scheduledScaling', {
+  timezone: 'America/New_York',
+  schedule: appscaling.Schedule.cron({
+    hour: '0',
+    minute: '10',
+  }),
+  minCapacity: 20,
+  maxCapacity: 100,
+});
+```
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html
