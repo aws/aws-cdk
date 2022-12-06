@@ -40,7 +40,7 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
 });
 ```
 
-⚠️ An Amazon EFS file system's performance mode can't be MaxIo while its throughputMode is ELASTIC.
+⚠️ An Amazon EFS file system's performance mode can't be MAX_IO when its throughputMode is ELASTIC.
 
 ⚠️ An Amazon EFS file system's performance mode can't be changed after the file system has been created.
 Updating this property will replace the file system.

@@ -182,7 +182,7 @@ test('Exception when throughput mode is set to ELASTIC, performance mode cannot 
       throughputMode: ThroughputMode.ELASTIC,
       performanceMode: PerformanceMode.MAX_IO,
     });
-  }).toThrowError(/Elastic ThroughputMode is not supported for file systems with PerformanceMode of MaxIO/);
+  }).toThrowError(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
 });
 
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
