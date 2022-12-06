@@ -85,9 +85,9 @@ To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Archi
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
 
 ```ts
-new DockerImageFunction(this, 'AssetFunction', {
-  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
-  architecture: Architecture.ARM_64,
+new lambda.DockerImageFunction(this, 'AssetFunction', {
+  code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
+  architecture: lambda.Architecture.ARM_64,
 });
 ```
 
@@ -280,6 +280,19 @@ You could create a version to your lambda function using the `Version` construct
 declare const fn: lambda.Function;
 const version = new lambda.Version(this, 'MyVersion', {
   lambda: fn,
+});
+```
+
+Or setting the `currentVersionOptions` when creating a new lambda
+
+```ts
+new lambda.Function(this, 'MyVersionedLambda', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  currentVersionOptions: {
+    provisionedConcurrentExecutions: 3,
+  },
 });
 ```
 
@@ -648,7 +661,7 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 fn.addEventSource(new eventsources.DynamoEventSource(table, {
   startingPosition: lambda.StartingPosition.LATEST,
-  filters: [{ eventName: lambda.FilterRule.isEqual('INSERT') }],
+  filters: [lambda.FilterCriteria.filter({ eventName: lambda.FilterRule.isEqual('INSERT') })],
 }));
 ```
 
