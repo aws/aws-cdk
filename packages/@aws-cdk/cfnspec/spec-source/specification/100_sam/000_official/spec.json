@@ -699,6 +699,17 @@
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
             "Properties": {}
         },
+        "AWS::Serverless::Function.EventBridgeSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "EventBusName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.EventBridgeRuleEvent": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
             "Properties": {
@@ -1180,6 +1191,11 @@
                 "ElasticsearchHttpPostPolicy": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "Type": "DomainSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "EventBridgePutEventsPolicy":{
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EventBridgeSAMPT",
                     "UpdateType": "Immutable"
                 },
                 "FilterLogEventsPolicy": {
