@@ -3,7 +3,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Chain } from '../chain';
+import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
+import { Credentials } from '../task-credentials';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State } from './state';
 
@@ -91,6 +93,16 @@ export interface TaskStateBaseProps {
    *
    */
   readonly integrationPattern?: IntegrationPattern;
+
+  /**
+   * Credentials for an IAM Role that the State Machine assumes for executing the task.
+   * This enables cross-account resource invocations.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-access-cross-acct-resources.html
+   *
+   * @default - None (Task is executed using the State Machine's execution role)
+   */
+  readonly credentials?: Credentials;
 }
 
 /**
@@ -112,12 +124,14 @@ export abstract class TaskStateBase extends State implements INextable {
 
   private readonly timeout?: cdk.Duration;
   private readonly heartbeat?: cdk.Duration;
+  private readonly credentials?: Credentials;
 
   constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
     this.endStates = [this];
     this.timeout = props.timeout;
     this.heartbeat = props.heartbeat;
+    this.credentials = props.credentials;
   }
 
   /**
@@ -263,6 +277,13 @@ export abstract class TaskStateBase extends State implements INextable {
     for (const policyStatement of this.taskPolicies || []) {
       graph.registerPolicyStatement(policyStatement);
     }
+    if (this.credentials) {
+      graph.registerPolicyStatement(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['sts:AssumeRole'],
+        resources: [this.credentials.role.resource],
+      }));
+    }
   }
 
   /**
@@ -277,6 +298,10 @@ export abstract class TaskStateBase extends State implements INextable {
     return this.metric(prefix + suffix, props);
   }
 
+  private renderCredentials() {
+    return this.credentials ? FieldUtils.renderObject({ Credentials: { RoleArn: this.credentials.role.roleArn } }) : undefined;
+  }
+
   private renderTaskBase() {
     return {
       Type: 'Task',
@@ -287,6 +312,7 @@ export abstract class TaskStateBase extends State implements INextable {
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderResultSelector(),
+      ...this.renderCredentials(),
     };
   }
 }
