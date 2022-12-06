@@ -88,7 +88,7 @@ test('locationUri length must be <= 1024', () => {
   ).toThrow();
 });
 
-test('set a specify physical name', () => {
+test('can specify a physical name', () => {
   new glue.Database(stack, 'Database', {
     databaseName: 'my_database',
   });

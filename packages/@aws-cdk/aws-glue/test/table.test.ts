@@ -1578,7 +1578,7 @@ test('Partition filtering on table is not defined (default behavior)', () => {
   });
 });
 
-test('set a specify physical name', () => {
+test('can specify a physical name', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Stack');
   const database = new glue.Database(stack, 'Database');

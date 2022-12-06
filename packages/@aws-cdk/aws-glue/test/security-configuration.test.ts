@@ -116,7 +116,7 @@ test('fromSecurityConfigurationName', () => {
   expect(securityConfiguration.securityConfigurationName).toEqual(name);
 });
 
-test('set a specify physical name', () => {
+test('can specify a physical name', () => {
   const stack = new cdk.Stack();
   new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'MySecurityConfiguration',
