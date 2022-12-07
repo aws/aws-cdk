@@ -107,10 +107,10 @@ export interface BundlingOptions {
    * use the Google proxy by default. To recreate that behavior, do the following:
    *
    * ```ts
-   * new go.GoFunction(this, 'GoFunction', {
+   * new lambda.GoFunction(this, 'GoFunction', {
    *   entry: 'app/cmd/api',
    *   bundling: {
-   *     goProxies: [go.GoFunction.GOOGLE_GOPROXY, 'direct'],
+   *     goProxies: [lambda.GoFunction.GOOGLE_GOPROXY, 'direct'],
    *   },
    * });
    * ```
