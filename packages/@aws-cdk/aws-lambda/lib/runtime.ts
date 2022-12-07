@@ -87,6 +87,11 @@ export class Runtime {
   public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 18.x runtime (nodejs18.x) supported in all commercial regions except me-central-1, eu-central-2 and eu-south-2.
+   */
+  public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
    * The Python 2.7 runtime (python2.7)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
@@ -156,24 +161,25 @@ export class Runtime {
 
   /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
-   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
   public static readonly DOTNET_CORE_1 = new Runtime('dotnetcore1.0', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 2.0 runtime (dotnetcore2.0)
-   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
   public static readonly DOTNET_CORE_2 = new Runtime('dotnetcore2.0', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 2.1 runtime (dotnetcore2.1)
-   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
   public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 3.1 runtime (dotnetcore3.1)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
   public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE);
 
@@ -184,7 +190,7 @@ export class Runtime {
 
   /**
    * The Ruby 2.5 runtime (ruby2.5)
-   * Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Ruby runtime.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Ruby runtime.
    */
   public static readonly RUBY_2_5 = new Runtime('ruby2.5', RuntimeFamily.RUBY);
 
