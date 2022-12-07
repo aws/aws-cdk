@@ -6,6 +6,7 @@ import * as fs from 'fs-extra';
 import { invokeBuiltinHooks } from './init-hooks';
 import { error, print, warning } from './logging';
 import { cdkHomeDir, rootDir } from './util/directories';
+import { getPackageManager } from './util/get-package-manager';
 import { rangeFromSemver } from './util/version-range';
 
 
@@ -297,7 +298,7 @@ async function postInstallJavascript(canUseNetwork: boolean, cwd: string) {
 }
 
 async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
-  const command = 'npm';
+  const command = getPackageManager();
 
   if (!canUseNetwork) {
     warning(`Please run '${command} install'!`);
