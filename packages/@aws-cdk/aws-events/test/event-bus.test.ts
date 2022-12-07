@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import { Effect } from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '@aws-cdk/core';
 import { EventBus } from '../lib';
@@ -528,5 +529,92 @@ describe('event bus', () => {
     Template.fromStack(stack1).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'stack1stack1busca19bdf8ab2e51b62a5a',
     });
+  });
+
+  test('can add one event bus policy', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const bus = new EventBus(stack, 'Bus');
+
+    // WHEN
+    bus.addToResourcePolicy(new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new iam.AccountPrincipal('111111111111111')],
+      actions: ['events:PutEvents'],
+      sid: '123',
+      resources: [bus.eventBusArn],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+      StatementId: '123',
+      EventBusName: {
+        Ref: 'BusEA82B648',
+      },
+      Statement: {
+        Action: 'events:PutEvents',
+        Effect: 'Allow',
+        Principal: {
+          AWS: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::111111111111111:root',
+              ],
+            ],
+          },
+        },
+        Sid: '123',
+        Resource: {
+          'Fn::GetAtt': [
+            'BusEA82B648',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
+
+  test('cannot add more than one event bus policy', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const bus = new EventBus(stack, 'Bus');
+
+
+    const statement = new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new iam.ArnPrincipal('arn')],
+      actions: ['events:PutEvents'],
+      sid: '123',
+      resources: [bus.eventBusArn],
+    });
+
+    // WHEN
+    const add1 = bus.addToResourcePolicy(statement);
+    const add2 = bus.addToResourcePolicy(statement);
+
+    // THEN
+    expect(add1.statementAdded).toBe(true);
+    expect(add2.statementAdded).toBe(false);
+  });
+
+  test('Event Bus policy statements must have a sid', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const bus = new EventBus(stack, 'Bus');
+
+    // THEN
+    expect(() => bus.addToResourcePolicy(new iam.PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new iam.ArnPrincipal('arn')],
+      actions: ['events:PutEvents'],
+    }))).toThrow('Event Bus policy statements must have a sid');
   });
 });
