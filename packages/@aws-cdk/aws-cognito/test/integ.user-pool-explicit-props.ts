@@ -1,6 +1,6 @@
 import { Code, Function, IFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
+import { AdvancedSecurityMode, BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
@@ -73,6 +73,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
     userMigration: dummyTrigger('userMigration'),
     verifyAuthChallengeResponse: dummyTrigger('verifyAuthChallengeResponse'),
   },
+  advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
   snsRegion: Stack.of(stack).region,
 });
 

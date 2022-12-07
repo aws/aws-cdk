@@ -588,7 +588,13 @@ Out of the box customization options are also available as arguments. To use a p
 - `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
 - `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
 
-A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as an example. Edit the content and reference the example policy if you're testing out the feature, turn it into a new policy for actual deployments (if one does not already exist). The concern here is drift as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as
+an example. Edit the content and reference the example policy if you're testing out the feature, turn
+it into a new policy for actual deployments (if one does not already exist). The concern here is drift
+as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+
+For more information on configuring permissions, including using permissions
+boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 ### `cdk doctor`
 
