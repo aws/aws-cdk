@@ -229,7 +229,7 @@ export class Cluster extends Resource implements ICluster {
       const defaultCapacityProviders = props.defaultCapacityProviderStrategy.map(cp => cp.capacityProvider);
       defaultCapacityProviders.forEach(dcp => {
         if (this._capacityProviderNames.findIndex(c => c === dcp) === -1) {
-          throw new Error(`Default capacity provide ${dcp} is not present in cluster's capaciry providers.`);
+          throw new Error(`Default capacity provide ${dcp} is not present in cluster's capacity providers.`);
         }
       });
     }
