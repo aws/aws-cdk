@@ -124,6 +124,24 @@ describe('rules', () => {
     });
   });
 
+  test('Only one moment can be defined for transition rules', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        transitions: [{
+          storageClass: StorageClass.GLACIER,
+          transitionMoment: TransitionMoment.after(Duration.days(30)),
+          transitionDate: new Date(),
+        }],
+      }],
+    });
+
+    expect(() => Template.fromStack(stack))
+      .toThrow(/Exactly one of transitionMoment, transitionAfter or transitionDate should be specified/);
+  });
 
   test('Bucket with expiredObjectDeleteMarker', () => {
     // GIVEN

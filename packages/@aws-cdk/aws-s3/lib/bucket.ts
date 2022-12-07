@@ -27,7 +27,7 @@ import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule } from './rule';
+import { LifecycleRule, Transition } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
@@ -2025,11 +2025,14 @@ export class Bucket extends BucketBase {
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: mapOrUndefined(rule.transitions, t => ({
-          storageClass: t.storageClass.value,
-          transitionDate: t.transitionMoment?.transitionDate ?? t.transitionDate,
-          transitionInDays: (t.transitionMoment?.transitionAfter ?? t.transitionAfter)?.toDays(),
-        })),
+        transitions: mapOrUndefined(rule.transitions, t => {
+          assertSingleTimeDefinition(t);
+          return {
+            storageClass: t.storageClass.value,
+            transitionDate: t.transitionMoment?.transitionDate ?? t.transitionDate,
+            transitionInDays: (t.transitionMoment?.transitionAfter ?? t.transitionAfter)?.toDays(),
+          };
+        }),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
         objectSizeLessThan: rule.objectSizeLessThan,
@@ -2037,6 +2040,16 @@ export class Bucket extends BucketBase {
       };
 
       return x;
+    }
+
+    function assertSingleTimeDefinition(t: Transition) {
+      const count = [t.transitionMoment, t.transitionAfter, t.transitionDate]
+        .filter(x => x != null)
+        .length;
+
+      if (count !== 1) {
+        throw new Error('Exactly one of transitionMoment, transitionAfter or transitionDate should be specified when declaring a transition lifecycle rule.');
+      }
     }
   }
 

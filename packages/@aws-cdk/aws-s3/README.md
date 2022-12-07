@@ -581,8 +581,6 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
     objectSizeLessThan: 10000, 
     transitions: [{
       storageClass: s3.StorageClass.GLACIER,
-
-      // this property is optional
       transitionMoment: s3.TransitionMoment.after(cdk.Duration.days(30)),
     }],
   }]
