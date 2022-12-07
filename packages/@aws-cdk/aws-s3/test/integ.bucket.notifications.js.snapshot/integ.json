@@ -1,14 +1,12 @@
 {
   "version": "22.0.0",
   "testCases": {
-    "integ.bucket.notifications": {
+    "NotificationTest/DefaultTest": {
       "stacks": [
         "aws-cdk-s3-notifications"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "NotificationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NotificationTestDefaultTestDeployAssertBFB81666"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
