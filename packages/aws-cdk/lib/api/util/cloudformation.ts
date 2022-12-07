@@ -373,11 +373,11 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
       return undefined;
     } else if (status.isReviewInProgress) {
       // This may happen if a stack creation operation is interrupted before the ChangeSet execution starts. Recovering
-      // from this would requiring manual intervention (deleting or executing the pending ChangeSet), abd failing to do
+      // from this would requiring manual intervention (deleting or executing the pending ChangeSet), and failing to do
       // so will result in an endless wait here (the ChangeSet wont delete or execute itself). Instead of blocking
       // "forever" we proceed as if the stack was existing and stable. If there is a concurrent operation that just
       // hasn't finished proceeding just yet, either this operation or the concurrent one may fail due to the other one
-      // having made progress. Which is file. I guess.
+      // having made progress. Which is fine. I guess.
       debug('Stack %s is in REVIEW_IN_PROGRESS state. Considering this is a stable status (%s)', stackName, status);
     }
 
