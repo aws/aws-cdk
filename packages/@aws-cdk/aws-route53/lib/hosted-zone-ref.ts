@@ -53,3 +53,8 @@ export interface HostedZoneAttributes {
  * Reference to a public hosted zone
  */
 export interface PublicHostedZoneAttributes extends HostedZoneAttributes { }
+
+/**
+ * Reference to a private hosted zone
+ */
+export interface PrivateHostedZoneAttributes extends HostedZoneAttributes { }

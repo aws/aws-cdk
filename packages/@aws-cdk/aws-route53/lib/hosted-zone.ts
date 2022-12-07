@@ -4,7 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
-import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes } from './hosted-zone-ref';
+import { HostedZoneAttributes, IHostedZone, PrivateHostedZoneAttributes, PublicHostedZoneAttributes } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { makeHostedZoneArn, validateZoneName } from './util';
@@ -394,8 +394,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   /**
    * Import a Route 53 private hosted zone defined either outside the CDK, or in a different CDK stack
    *
-   * Use when hosted zone ID is known. If a HostedZone is imported with this method the zoneName cannot be referenced.
-   * If the zoneName is needed then you cannot import a PrivateHostedZone.
+   * Use when hosted zone ID is known. If a PrivateHostedZone is imported with this method then the zoneName cannot be referenced.
+   * If the zoneName is needed then the PrivateHostedZone should be imported with `fromPrivateHostedZoneAttributes()`.
    *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
@@ -405,6 +405,26 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
       public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`'); }
+      public get hostedZoneArn(): string {
+        return makeHostedZoneArn(this, this.hostedZoneId);
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Imports a private hosted zone from another stack.
+   *
+   * Use when both hosted zone ID and hosted zone name are known.
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id  the logical name of this Construct
+   * @param attrs the PrivateHostedZoneAttributes (hosted zone ID and hosted zone name)
+   */
+  public static fromPrivateHostedZoneAttributes(scope: Construct, id: string, attrs: PrivateHostedZoneAttributes): IPrivateHostedZone {
+    class Import extends Resource implements IPrivateHostedZone {
+      public readonly hostedZoneId = attrs.hostedZoneId;
+      public readonly zoneName = attrs.zoneName;
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }

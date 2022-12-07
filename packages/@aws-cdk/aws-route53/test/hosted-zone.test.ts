@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { HostedZone, PrivateHostedZone, PublicHostedZone } from '../lib';
+import { ARecord, HostedZone, PrivateHostedZone, PublicHostedZone, RecordTarget } from '../lib';
 
 describe('hosted zone', () => {
   describe('Hosted Zone', () => {
@@ -226,6 +226,33 @@ describe('Vpc', () => {
         },
       ],
       Name: Match.anyValue(),
+    });
+  });
+
+  describe('PrivateHostedZone', () => {
+    test('fromPrivateHostedZoneAttributes resource import', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+
+      // WHEN
+      const privateHostedZone = PrivateHostedZone.fromPrivateHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: '1234ABCD',
+        zoneName: 'test.zone',
+      });
+
+      new ARecord(stack, 'RecordSet', {
+        zone: privateHostedZone,
+        target: RecordTarget.fromIpAddresses('127.0.1.1'),
+        recordName: 'www',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+        HostedZoneName: 'test.zone.',
+        Name: 'www.test.zone.',
+      });
     });
   });
 });

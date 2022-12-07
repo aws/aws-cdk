@@ -12,6 +12,11 @@ const privateZone = new PrivateHostedZone(stack, 'PrivateZone', {
   zoneName: 'cdk.local', vpc,
 });
 
+const importedPrivateZone = PrivateHostedZone.fromPrivateHostedZoneAttributes(stack, 'ImportedPrivateZone', {
+  hostedZoneId: 'ZA1B2C3D4E5F6G',
+  zoneName: 'cdk.test',
+});
+
 const publicZone = new PublicHostedZone(stack, 'PublicZone', {
   zoneName: 'cdk.test',
 });
@@ -38,6 +43,12 @@ new CnameRecord(stack, 'CNAME', {
 
 new ARecord(stack, 'A', {
   zone: privateZone,
+  recordName: 'test',
+  target: RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+});
+
+new ARecord(stack, 'A', {
+  zone: importedPrivateZone,
   recordName: 'test',
   target: RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
 });

@@ -242,6 +242,9 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
+The same can be done for importing a Private Hosted Zone using `PrivateHostedZone.fromPublicHostedZoneId` and
+`PrivateHostedZone.fromPrivateHostedZoneId` methods.
+
 ## VPC Endpoint Service Private DNS
 
 When you create a VPC endpoint service, AWS generates endpoint-specific DNS hostnames that consumers use to communicate with the service.
