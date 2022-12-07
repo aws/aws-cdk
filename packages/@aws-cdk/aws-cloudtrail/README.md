@@ -197,3 +197,17 @@ new cloudtrail.Trail(this, 'OrganizationTrail', {
   isOrganizationTrail: true,
 });
 ```
+
+## CloudTrail Insights
+
+Set `InsightSelector` to enable Insight.
+Insights selector values can be `ApiCallRateInsight`, `ApiErrorRateInsight`, or both.
+
+```ts
+new Trail(stack, 'Insights', {
+    insightTypes: [
+      InsightType.API_CALL_RATE,
+      InsightType.API_ERROR_RATE,
+    ],
+});
+```
