@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'stack');
 
 const api = new appsync.GraphqlApi(stack, 'NoneAPI', {
   name: 'NoneAPI',
-  schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.none.graphql')),
+  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.none.graphql')),
 });
 
 api.addNoneDataSource('NoneDS', {

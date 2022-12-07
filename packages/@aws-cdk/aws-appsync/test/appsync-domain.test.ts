@@ -20,7 +20,7 @@ describe('Tests of AppSync Domain Name', () => {
   test('DomainNameAssociation depends on DomainName construct', () => {
     new appsync.GraphqlApi(stack, 'baseApi', {
       name: 'api',
-      schema: appsync.Schema.fromAsset(
+      schema: appsync.SchemaFile.fromAsset(
         path.join(__dirname, 'appsync.test.graphql'),
       ),
       domainName: {
@@ -44,7 +44,7 @@ describe('Tests of AppSync Domain Name', () => {
   test('appSyncDomainName exposes the domain of the associated AWS::AppSync::DomainName', () => {
     const api = new appsync.GraphqlApi(stack, 'baseApi', {
       name: 'api',
-      schema: appsync.Schema.fromAsset(
+      schema: appsync.SchemaFile.fromAsset(
         path.join(__dirname, 'appsync.test.graphql'),
       ),
       domainName: {
@@ -59,7 +59,7 @@ describe('Tests of AppSync Domain Name', () => {
   test('appSyncDomainName should throw an error when no custom domain has been configured', () => {
     const api = new appsync.GraphqlApi(stack, 'baseApi', {
       name: 'api',
-      schema: appsync.Schema.fromAsset(
+      schema: appsync.SchemaFile.fromAsset(
         path.join(__dirname, 'appsync.test.graphql'),
       ),
     });
