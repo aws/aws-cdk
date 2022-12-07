@@ -136,7 +136,6 @@ A `SecurityConfiguration` is a set of security properties that can be used by AW
 
 ```ts
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  securityConfigurationName: 'name',
   cloudWatchEncryption: {
     mode: glue.CloudWatchEncryptionMode.KMS,
   },
@@ -154,7 +153,6 @@ By default, a shared KMS key is created for use with the encryption configuratio
 ```ts
 declare const key: kms.Key;
 new glue.SecurityConfiguration(this, 'MySecurityConfiguration', {
-  securityConfigurationName: 'name',
   cloudWatchEncryption: {
     mode: glue.CloudWatchEncryptionMode.KMS,
     kmsKey: key,
@@ -169,9 +167,7 @@ See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-securi
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 
 ```ts
-new glue.Database(this, 'MyDatabase', {
-  databaseName: 'my_database',
-});
+new glue.Database(this, 'MyDatabase');
 ```
 
 ## Table
@@ -182,7 +178,6 @@ A Glue table describes a table of data in S3: its structure (column names and ty
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -205,7 +200,6 @@ new glue.Table(this, 'MyTable', {
   s3Prefix: 'my-table/',
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -224,7 +218,6 @@ To improve query performance, a table can specify `partitionKeys` on which data 
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -256,7 +249,6 @@ property:
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -294,7 +286,6 @@ If you have a table with a large number of partitions that grows over time, cons
 declare const myDatabase: glue.Database;
 new glue.Table(this, 'MyTable', {
     database: myDatabase,
-    tableName: 'my_table',
     columns: [{
         name: 'col1',
         type: glue.Schema.STRING,
@@ -324,7 +315,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.S3_MANAGED,
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -342,7 +332,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS,
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -356,7 +345,6 @@ new glue.Table(this, 'MyTable', {
   encryptionKey: new kms.Key(this, 'MyKey'),
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -373,7 +361,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.KMS_MANAGED,
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -391,7 +378,6 @@ new glue.Table(this, 'MyTable', {
   encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -405,7 +391,6 @@ new glue.Table(this, 'MyTable', {
   encryptionKey: new kms.Key(this, 'MyKey'),
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.STRING,
@@ -447,7 +432,6 @@ new glue.Table(this, 'MyTable', {
   }],
   // ...
   database: myDatabase,
-  tableName: 'my_table',
   dataFormat: glue.DataFormat.JSON,
 });  
 ```

@@ -6,9 +6,8 @@ import * as glue from '../lib';
 test('throws when a security configuration has no encryption config', () => {
   const stack = new cdk.Stack();
 
-  expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
-    securityConfigurationName: 'name',
-  })).toThrowError(/One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined/);
+  expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration'))
+    .toThrowError(/One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined/);
 });
 
 test('a security configuration with encryption configuration requiring kms key and providing an explicit one', () => {
@@ -17,7 +16,6 @@ test('a security configuration with encryption configuration requiring kms key a
   const key = kms.Key.fromKeyArn(stack, 'ImportedKey', keyArn);
 
   const securityConfiguration = new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
-    securityConfigurationName: 'name',
     cloudWatchEncryption: {
       mode: glue.CloudWatchEncryptionMode.KMS,
       kmsKey: key,
@@ -29,7 +27,7 @@ test('a security configuration with encryption configuration requiring kms key a
   expect(securityConfiguration.s3EncryptionKey).toBeUndefined();
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::SecurityConfiguration', {
-    Name: 'name',
+    Name: 'SecurityConfiguration',
     EncryptionConfiguration: {
       CloudWatchEncryption: {
         CloudWatchEncryptionMode: 'SSE-KMS',
@@ -43,7 +41,6 @@ test('a security configuration with an encryption configuration requiring kms ke
   const stack = new cdk.Stack();
 
   const securityConfiguration = new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
-    securityConfigurationName: 'name',
     cloudWatchEncryption: {
       mode: glue.CloudWatchEncryptionMode.KMS,
     },
@@ -56,7 +53,7 @@ test('a security configuration with an encryption configuration requiring kms ke
   Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::SecurityConfiguration', {
-    Name: 'name',
+    Name: 'SecurityConfiguration',
     EncryptionConfiguration: {
       CloudWatchEncryption: {
         CloudWatchEncryptionMode: 'SSE-KMS',
@@ -72,7 +69,6 @@ test('a security configuration with all encryption configs and mixed kms key inp
   const key = kms.Key.fromKeyArn(stack, 'ImportedKey', keyArn);
 
   const securityConfiguration = new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
-    securityConfigurationName: 'name',
     cloudWatchEncryption: {
       mode: glue.CloudWatchEncryptionMode.KMS,
     },
@@ -92,7 +88,7 @@ test('a security configuration with all encryption configs and mixed kms key inp
   Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::SecurityConfiguration', {
-    Name: 'name',
+    Name: 'SecurityConfiguration',
     EncryptionConfiguration: {
       CloudWatchEncryption: {
         CloudWatchEncryptionMode: 'SSE-KMS',
@@ -118,4 +114,17 @@ test('fromSecurityConfigurationName', () => {
   const securityConfiguration = glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'ImportedSecurityConfiguration', name);
 
   expect(securityConfiguration.securityConfigurationName).toEqual(name);
+});
+
+test('can specify a physical name', () => {
+  const stack = new cdk.Stack();
+  new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
+    securityConfigurationName: 'MySecurityConfiguration',
+    cloudWatchEncryption: {
+      mode: glue.CloudWatchEncryptionMode.KMS,
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::SecurityConfiguration', {
+    Name: 'MySecurityConfiguration',
+  });
 });
