@@ -27,6 +27,10 @@ cd ${pwd}/packages/@aws-cdk/cfnspec
 yarn update
 version=$(cat cfn.version)
 
+# Running a full build saving awslint exclusion rules in case any of them fails
+export AWSLINT_SAVE=true
+yarn lerna run build --stream --include-dependencies
+
 # Come back to root, add all files to git and commit
 cd ${pwd}
 git add .
