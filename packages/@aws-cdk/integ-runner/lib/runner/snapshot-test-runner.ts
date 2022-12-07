@@ -165,9 +165,11 @@ export class IntegSnapshotRunner extends IntegRunner {
         // if we are not verifying asset hashes then remove the specific
         // asset hashes from the templates so they are not part of the diff
         // comparison
+        let verifiedAssetHashes = true;
         if (!this.actualTestSuite.getOptionsForStack(templateId)?.diffAssets) {
           actualTemplate = canonicalizeTemplate(actualTemplate);
           expectedTemplate = canonicalizeTemplate(expectedTemplate);
+          verifiedAssetHashes = false;
         }
         const templateDiff = diffTemplate(expectedTemplate, actualTemplate);
         if (!templateDiff.isEmpty) {
@@ -206,7 +208,10 @@ export class IntegSnapshotRunner extends IntegRunner {
           formatDifferences(writable, templateDiff);
           failures.push({
             reason: DiagnosticReason.SNAPSHOT_FAILED,
-            message: writable.data,
+            message: [
+              verifiedAssetHashes ? '(asset hashes were verified)' : '(asset hashes were ignored)',
+              writable.data,
+            ].join('\n'),
             testName: this.testName,
           });
         }

@@ -96,6 +96,28 @@ export interface BundlingOptions {
    * @default - false
    */
   readonly cgoEnabled?: boolean;
+
+  /**
+   * What Go proxies to use to fetch the packages involved in the build
+   *
+   * Pass a list of proxy addresses in order, and/or the string `'direct'` to
+   * attempt direct access.
+   *
+   * By default this construct uses no proxies, but a standard Go install would
+   * use the Google proxy by default. To recreate that behavior, do the following:
+   *
+   * ```ts
+   * new lambda.GoFunction(this, 'GoFunction', {
+   *   entry: 'app/cmd/api',
+   *   bundling: {
+   *     goProxies: [lambda.GoFunction.GOOGLE_GOPROXY, 'direct'],
+   *   },
+   * });
+   * ```
+   *
+   * @default - Direct access
+   */
+  readonly goProxies?: string[];
 }
 
 /**
