@@ -76,6 +76,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   PackageType: true,
   Role: true,
   Runtime: true,
+  SnapStart: true,
   Timeout: true,
   TracingConfig: true,
   VpcConfig: true,
