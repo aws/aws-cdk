@@ -71,6 +71,11 @@ export interface GoFunctionProps extends lambda.FunctionOptions {
  * A Golang Lambda function
  */
 export class GoFunction extends lambda.Function {
+  /**
+   * The address of the Google Go proxy
+   */
+  public static readonly GOOGLE_GOPROXY = 'https://proxy.golang.org';
+
   constructor(scope: Construct, id: string, props: GoFunctionProps) {
     if (props.runtime && (props.runtime.family !== lambda.RuntimeFamily.GO && props.runtime.family != lambda.RuntimeFamily.OTHER)) {
       throw new Error('Only `go` and `provided` runtimes are supported.');
