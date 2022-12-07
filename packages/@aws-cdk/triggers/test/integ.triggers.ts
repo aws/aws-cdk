@@ -18,4 +18,10 @@ const trigger = new triggers.TriggerFunction(stack, 'MyFunction', {
 
 trigger.executeAfter(topic2);
 
+new triggers.TriggerFunction(stack, 'MySecondFunction', {
+  runtime: lambda.Runtime.NODEJS_16_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function() { console.log("hello"); };'),
+});
+
 app.synth();

@@ -127,6 +127,13 @@ export interface TrailProps {
    * @default - false
    */
   readonly isOrganizationTrail?: boolean
+
+  /**
+   * A JSON string that contains the insight types you want to log on a trail.
+   *
+   * @default - No Value.
+   */
+  readonly insightTypes?: InsightType[]
 }
 
 /**
@@ -156,6 +163,23 @@ export enum ReadWriteType {
    * No events
    */
   NONE = 'None',
+}
+
+/**
+ * Util element for InsightSelector
+ */
+export class InsightType {
+  /**
+   * The type of insights to log on a trail. (API Call Rate)
+   */
+  public static readonly API_CALL_RATE = new InsightType('ApiCallRateInsight');
+
+  /**
+   * The type of insights to log on a trail. (API Error Rate)
+   */
+  public static readonly API_ERROR_RATE = new InsightType('ApiErrorRateInsight');
+
+  protected constructor(public readonly value: string) {}
 }
 
 /**
@@ -213,6 +237,7 @@ export class Trail extends Resource {
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
   private topic: sns.ITopic | undefined;
+  private insightTypeValues: InsightSelector[] | undefined;
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
@@ -283,6 +308,12 @@ export class Trail extends Resource {
       throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
     }
 
+    if (props.insightTypes) {
+      this.insightTypeValues = props.insightTypes.map(function(t) {
+        return { insightType: t.value };
+      });
+    }
+
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
     const trail = new CfnTrail(this, 'Resource', {
       isLogging: true,
@@ -298,6 +329,7 @@ export class Trail extends Resource {
       snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
       isOrganizationTrail: props.isOrganizationTrail,
+      insightSelectors: this.insightTypeValues,
     });
 
     this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
@@ -501,4 +533,8 @@ interface EventSelector {
 interface EventSelectorData {
   readonly type: string;
   readonly values: string[];
+}
+
+interface InsightSelector {
+  readonly insightType?: string;
 }

@@ -106,13 +106,17 @@ export class Bundling implements cdk.BundlingOptions {
 
     const cgoEnabled = props.cgoEnabled ? '1' : '0';
 
-    const environment = {
+    const environment: Record<string, string> = {
       CGO_ENABLED: cgoEnabled,
       GO111MODULE: 'on',
       GOARCH: props.architecture.dockerPlatform.split('/')[1],
       GOOS: 'linux',
       ...props.environment,
     };
+
+    if (props.goProxies) {
+      environment.GOPROXY = props.goProxies.join(',');
+    }
 
     // Docker bundling
     const shouldBuildImage = props.forcedDockerBundling || !Bundling.runsLocally;

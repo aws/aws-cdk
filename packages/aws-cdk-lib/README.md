@@ -1237,4 +1237,23 @@ _~/.cdk.json_
 }
 ```
 
+## IAM Permissions Boundary
+
+It is possible to apply an [IAM permissions boundary](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+to all roles within a specific construct scope. The most common use case would
+be to apply a permissions boundary at the `Stage` level.
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+});
+```
+
+Any IAM Roles or Users created within this Stage will have the default
+permissions boundary attached.
+
+For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
+
 <!--END CORE DOCUMENTATION-->

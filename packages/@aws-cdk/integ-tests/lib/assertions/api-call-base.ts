@@ -60,6 +60,8 @@ export interface IApiCall extends IConstruct {
    * Assert that the ExpectedResult is equal
    * to the result of the AwsApiCall at the given path.
    *
+   * Providing a path will filter the output of the initial API call.
+   *
    * For example the SQS.receiveMessage api response would look
    * like:
    *

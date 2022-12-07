@@ -11,22 +11,6 @@ export function validateHttpMethod(method: string, messagePrefix: string = '') {
   }
 }
 
-/**
- * Response header values need to be enclosed in single quotes.
- */
-export function normalizeResponseParameterValue(value: string) {
-  if (!value) {
-    return value;
-  }
-
-  // check if the value is already enclosed in single quotes
-  if (value.startsWith("'") && value.endsWith("'")) {
-    return value;
-  }
-
-  return `'${value}'`;
-}
-
 export function parseMethodOptionsPath(originalPath: string): { resourcePath: string, httpMethod: string } {
   if (!originalPath.startsWith('/')) {
     throw new Error(`Method options path must start with '/': ${originalPath}`);

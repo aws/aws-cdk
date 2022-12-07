@@ -170,6 +170,19 @@ new go.GoFunction(this, 'handler', {
 });
 ```
 
+By default this construct doesn't use any Go module proxies. This is contrary to
+a standard Go installation, which would use the Google proxy by default. To
+recreate that behavior, do the following:
+
+```ts
+new go.GoFunction(this, 'GoFunction', {
+  entry: 'app/cmd/api',
+  bundling: {
+    goProxies: [go.GoFunction.GOOGLE_GOPROXY, 'direct'],
+  },
+});
+```
+
 ## Command hooks
 
 It is  possible to run additional commands by specifying the `commandHooks` prop:
@@ -210,7 +223,7 @@ By default this parameter is set to `AssetHashType.OUTPUT` which means that the 
 
 If you specify `AssetHashType.SOURCE`, the CDK will calculate the asset hash by looking at the folder
 that contains your `go.mod` file. If you are deploying a single Lambda function, or you want to redeploy
-all of your functions if anything changes, then `AssetHashType.SOURCE` will probaby work.
+all of your functions if anything changes, then `AssetHashType.SOURCE` will probably work.
 
 
 For example, if my app looked like this:
@@ -232,7 +245,7 @@ will determine that the protect root is `lambda-app` (it contains the `go.mod` f
 Since I only have a single Lambda function, and any update to files within the `lambda-app` directory
 should trigger a new deploy, I could specify `AssetHashType.SOURCE`.
 
-On the other hand, if I had a project that deployed mmultiple Lambda functions, for example:
+On the other hand, if I had a project that deployed multiple Lambda functions, for example:
 
 ```bash
 lamda-app

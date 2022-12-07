@@ -5,9 +5,9 @@
 
 * [ ] Have you followed the guidelines in our [Contributing guide?](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md)
 
-### Adding new Unconventional Dependencies:
+### Adding new Construct Runtime Dependencies:
 
-* [ ] This PR adds new unconventional dependencies following the process described [here](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md/#adding-new-unconventional-dependencies)
+* [ ] This PR adds new construct runtime dependencies following the process described [here](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md/#adding-construct-runtime-dependencies)
 
 ### New Features
 

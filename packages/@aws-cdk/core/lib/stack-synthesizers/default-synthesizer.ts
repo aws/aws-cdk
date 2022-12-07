@@ -324,6 +324,13 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     }
   }
 
+  /**
+   * The qualifier used to bootstrap this stack
+   */
+  public get bootstrapQualifier(): string | undefined {
+    return this.qualifier;
+  }
+
   public bind(stack: Stack): void {
     super.bind(stack);
 

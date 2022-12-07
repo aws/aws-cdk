@@ -32,6 +32,13 @@ export interface CommonMetricOptions {
    * - "Sum" | "sum"
    * - "SampleCount | "n"
    * - "pNN.NN"
+   * - "tmNN.NN" | "tm(NN.NN%:NN.NN%)"
+   * - "iqm"
+   * - "wmNN.NN" | "wm(NN.NN%:NN.NN%)"
+   * - "tcNN.NN" | "tc(NN.NN%:NN.NN%)"
+   * - "tsNN.NN" | "ts(NN.NN%:NN.NN%)"
+   *
+   * Use the factory functions on the `Stats` object to construct valid input strings.
    *
    * @default Average
    */

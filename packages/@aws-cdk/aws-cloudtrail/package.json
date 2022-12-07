@@ -115,7 +115,8 @@
   },
   "awslint": {
     "exclude": [
-      "events-method-signature:@aws-cdk/aws-cloudtrail.Trail.onEvent"
+      "events-method-signature:@aws-cdk/aws-cloudtrail.Trail.onEvent",
+      "docs-public-apis:@aws-cdk/aws-cloudtrail.InsightType.value"
     ]
   },
   "engines": {

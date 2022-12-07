@@ -108,6 +108,16 @@
          "prefix": "sensitive-"
         }
        }
+      ],
+      "suffix": [
+       {
+        "suffix": ".com"
+       }
+      ],
+      "equalsIgnoreCase": [
+       {
+        "equals-ignore-case": "ignore case"
+       }
       ]
      },
      "detail-type": [

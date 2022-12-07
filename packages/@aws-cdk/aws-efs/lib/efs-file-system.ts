@@ -13,6 +13,12 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
 export enum LifecyclePolicy {
+
+  /**
+   * After 1 day of not being accessed.
+   */
+  AFTER_1_DAY = 'AFTER_1_DAY',
+
   /**
    * After 7 days of not being accessed.
    */
@@ -82,14 +88,19 @@ export enum PerformanceMode {
  */
 export enum ThroughputMode {
   /**
-   * This mode on Amazon EFS scales as the size of the file system in the standard storage class grows.
+   * This mode scales as the size of the file system in the standard storage class grows.
    */
   BURSTING = 'bursting',
 
   /**
    * This mode can instantly provision the throughput of the file system (in MiB/s) independent of the amount of data stored.
    */
-  PROVISIONED = 'provisioned'
+  PROVISIONED = 'provisioned',
+
+  /**
+  * This mode scales the throughput automatically regardless of file system size.
+  */
+  ELASTIC = 'elastic'
 }
 
 /**
@@ -333,6 +344,9 @@ export class FileSystem extends FileSystemBase {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
+    if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
+      throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
+    }
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(

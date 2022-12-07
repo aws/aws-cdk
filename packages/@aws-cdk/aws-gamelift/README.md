@@ -50,6 +50,73 @@ deliver inexpensive, resilient game hosting for your players
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project. It allows you to define components for your matchmaking
 configuration or game server fleet management system.
 
+## GameLift FlexMatch
+
+### Matchmaking RuleSet
+
+Every FlexMatch matchmaker must have a rule set. The rule set determines the
+two key elements of a match: your game's team structure and size, and how to
+group players together for the best possible match.
+
+For example, a rule set might describe a match like this: Create a match with
+two teams of four to eight players each, one team is the cowboy and the other
+team the aliens. A team can have novice and experienced players, but the
+average skill of the two teams must be within 10 points of each other. If no
+match is made after 30 seconds, gradually relax the skill requirements.
+
+```ts
+new gamelift.MatchmakingRuleSet(this, 'RuleSet', {
+  matchmakingRuleSetName: 'my-test-ruleset',
+  content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset/ruleset.json')),
+});
+```
+
+### FlexMatch Monitoring
+
+You can monitor GameLift FlexMatch activity for matchmaking configurations and
+matchmaking rules using Amazon CloudWatch. These statistics are used to provide
+a historical perspective on how your Gamelift FlexMatch solution is performing.
+
+#### FlexMatch Metrics
+
+GameLift FlexMatch sends metrics to CloudWatch so that you can collect and
+analyze the activity of your matchmaking solution, including match acceptance
+workflow, ticket consumtion.
+
+You can then use CloudWatch alarms to alert you, for example, when matches has
+been rejected (potential matches that were rejected by at least one player
+since the last report) exceed a certain thresold which could means that you may
+have an issue in your matchmaking rules.
+
+CDK provides methods for accessing GameLift FlexMatch metrics with default configuration,
+such as `metricRuleEvaluationsPassed`, or `metricRuleEvaluationsFailed` (see
+[`IMatchmakingRuleSet`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-gamelift.IMatchmakingRuleSet.html)
+for a full list). CDK also provides a generic `metric` method that can be used
+to produce metric configurations for any metric provided by GameLift FlexMatch;
+the configurations are pre-populated with the correct dimensions for the
+matchmaking configuration.
+
+```ts
+declare const matchmakingRuleSet: gamelift.MatchmakingRuleSet;
+// Alarm that triggers when the per-second average of not placed matches exceed 10%
+const ruleEvaluationRatio = new cloudwatch.MathExpression({
+  expression: '1 - (ruleEvaluationsPassed / ruleEvaluationsFailed)',
+  usingMetrics: {
+    ruleEvaluationsPassed: matchmakingRuleSet.metricRuleEvaluationsPassed({ statistic: cloudwatch.Statistic.SUM }),
+    ruleEvaluationsFailed: matchmakingRuleSet.metric('ruleEvaluationsFailed'),
+  },
+});
+new cloudwatch.Alarm(this, 'Alarm', {
+  metric: ruleEvaluationRatio,
+  threshold: 0.1,
+  evaluationPeriods: 3,
+});
+```
+
+See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/gamelift/latest/developerguide/monitoring-cloudwatch.html)
+in the *Amazon GameLift Developer Guide*.
+
+
 ## GameLift Hosting
 
 ### Uploading builds and scripts to GameLift
@@ -80,9 +147,12 @@ services.
 
 ```ts
 declare const bucket: s3.Bucket;
-new gamelift.Build(this, 'Build', {
+const build = new gamelift.Build(this, 'Build', {
   content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
 });
+
+new CfnOutput(this, 'BuildArn', { value: build.buildArn });
+new CfnOutput(this, 'BuildId', { value: build.buildId });
 ```
 
 #### Upload a realtime server Script
@@ -286,7 +356,7 @@ fleet.addLocation('ap-southeast-1', 5, 2, 10);
 Some GameLift features require you to extend limited access to your AWS
 resources. This is done by creating an AWS IAM role. The GameLift Fleet class
 automatically created an IAM role with all the minimum necessary permissions
-for GameLift to access your ressources. If you wish, you may
+for GameLift to access your resources. If you wish, you may
 specify your own IAM role.
 
 ```ts
@@ -312,12 +382,36 @@ const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
 fleet.grant(role, 'gamelift:ListFleets');
 ```
 
+### Alias
+
+A GameLift alias is used to abstract a fleet designation. Fleet designations
+tell Amazon GameLift where to search for available resources when creating new
+game sessions for players. By using aliases instead of specific fleet IDs, you
+can more easily and seamlessly switch player traffic from one fleet to another
+by changing the alias's target location.
+
+```ts
+declare const fleet: gamelift.BuildFleet;
+
+// Add an alias to an existing fleet using a dedicated fleet method
+const liveAlias = fleet.addAlias('live');
+
+// You can also create a standalone alias
+new gamelift.Alias(this, 'TerminalAlias', {
+  aliasName: 'terminal-alias',
+  terminalMessage: 'A terminal message',
+});
+```
+
+See [Add an alias to a GameLift fleet](https://docs.aws.amazon.com/gamelift/latest/developerguide/aliases-creating.html)
+in the *Amazon GameLift Developer Guide*.
+
 ### Monitoring your Fleet
 
 GameLift is integrated with CloudWatch, so you can monitor the performance of
 your game servers via logs and metrics.
 
-#### Metrics
+#### Fleet Metrics
 
 GameLift Fleet sends metrics to CloudWatch so that you can collect and analyze
 the activity of your Fleet, including game  and player sessions and server
@@ -325,7 +419,7 @@ processes.
 
 You can then use CloudWatch alarms to alert you, for example, when matches has
 been rejected (potential matches that were rejected by at least one player
-since the last report) exceed a certain thresold which could means that you may
+since the last report) exceed a certain threshold which could means that you may
 have an issue in your matchmaking rules.
 
 CDK provides methods for accessing GameLift Fleet metrics with default configuration,
@@ -433,7 +527,7 @@ in the *Amazon GameLift FleetIQ Developer Guide*.
 
 The GameLift FleetIQ class automatically creates an IAM role with all the minimum necessary
 permissions for GameLift to access your Amazon EC2 Auto Scaling groups. If you wish, you may
-specify your own IAM role. It must have the correct permissions, or FleetIQ creation or ressource usage may fail.
+specify your own IAM role. It must have the correct permissions, or FleetIQ creation or resource usage may fail.
 
 ```ts
 declare const launchTemplate: ec2.ILaunchTemplate;
@@ -490,7 +584,7 @@ new gamelift.GameServerGroup(this, 'GameServerGroup', {
 });
 ```
 
-### Monitoring
+### FleetIQ Monitoring
 
 GameLift FleetIQ sends metrics to CloudWatch so that you can collect and
 analyze the activity of your Game server fleet, including the number of
@@ -499,7 +593,7 @@ limited Spot availability.
 
 You can then use CloudWatch alarms to alert you, for example, when the portion
 of game servers that are currently supporting game executions exceed a certain
-thresold which could means that your autoscaling policy need to be adjust to
+threshold which could means that your autoscaling policy need to be adjust to
 add more instances to match with player demand.
 
 CDK provides a generic `metric` method that can be used

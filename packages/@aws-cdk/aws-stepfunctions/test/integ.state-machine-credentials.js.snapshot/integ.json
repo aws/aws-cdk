@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "StateMachineCredentials/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-state-machine-credentials-integ"
+      ],
+      "assertionStack": "StateMachineCredentials/DefaultTest/DeployAssert",
+      "assertionStackName": "StateMachineCredentialsDefaultTestDeployAssert3F5E6D8D"
+    }
+  }
+}

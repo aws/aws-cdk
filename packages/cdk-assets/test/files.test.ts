@@ -310,18 +310,6 @@ test('correctly identify asset path if path is absolute', async () => {
   expect(true).toBeTruthy(); // No exception, satisfy linter
 });
 
-test('empty directory prints failures', async () => {
-  const progressListener = new FakeListener();
-  const pub = new AssetPublishing(AssetManifest.fromPath('/emptyzip/cdk.out'), { aws, progressListener });
-
-  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
-  aws.mockS3.upload = mockUpload(); // Should not be hit
-
-  await pub.publish();
-
-  expect(progressListener.messages).toContainEqual(expect.stringContaining('EMPTY ZIP FILE'));
-});
-
 describe('external assets', () => {
   let pub: AssetPublishing;
   beforeEach(() => {

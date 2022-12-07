@@ -14,6 +14,7 @@ const READ_OPERATIONS = [
   'kinesis:SubscribeToShard',
   'kinesis:DescribeStream',
   'kinesis:ListStreams',
+  'kinesis:DescribeStreamConsumer',
 ];
 
 const WRITE_OPERATIONS = [

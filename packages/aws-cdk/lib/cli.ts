@@ -25,6 +25,7 @@ import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
 import { enableTracing } from './util/tracing';
+import { checkForPlatformWarnings } from './platform-warnings';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -92,6 +93,8 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
+      .option('example-permissions-boundary', { type: 'boolean', alias: ['epb', 'example-permissions-boundary'], desc: 'Use the example permissions boundary.', default: undefined, conflicts: 'custom-permissions-boundary' })
+      .option('custom-permissions-boundary', { type: 'string', alias: ['cpb', 'custom-permissions-boundary'], desc: 'Use the permissions boundary specified by name.', default: undefined, conflicts: 'example-permissions-boundary' })
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
@@ -292,6 +295,13 @@ async function initCommandLine() {
   if (argv.ci) {
     setCI(true);
   }
+
+  try {
+    await checkForPlatformWarnings();
+  } catch (e) {
+    debug(`Error while checking for platform warnings: ${e}`);
+  }
+
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
@@ -462,6 +472,8 @@ async function initCommandLine() {
             createCustomerMasterKey: args.bootstrapCustomerKey,
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
+            examplePermissionsBoundary: argv.examplePermissionsBoundary,
+            customPermissionsBoundary: argv.customPermissionsBoundary,
             trustedAccounts: arrayFromYargs(args.trust),
             trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),
             cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),

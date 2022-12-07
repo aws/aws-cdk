@@ -115,7 +115,8 @@
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.runCommandParameters",
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.sqsParameters",
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.httpParameters",
-      "from-method:@aws-cdk/aws-events.ApiDestination"
+      "from-method:@aws-cdk/aws-events.ApiDestination",
+      "props-physical-name:@aws-cdk/aws-events.EventBusPolicyProps"
     ]
   },
   "stability": "stable",

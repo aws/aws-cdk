@@ -15,7 +15,7 @@ CDK Pipelines is an *opinionated construct library*. It is purpose-built to
 deploy one or more copies of your CDK applications using CloudFormation with a
 minimal amount of effort on your part. It is *not* intended to support arbitrary
 deployment pipelines, and very specifically it is not built to use CodeDeploy to
-applications to instances, or deploy your custom-built ECR images to an ECS
+deploy applications to instances, or deploy your custom-built ECR images to an ECS
 cluster directly: use CDK file assets with CloudFormation Init for instances, or
 CDK container assets for ECS clusters instead.
 
@@ -212,7 +212,7 @@ const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
 });
 ```
 
-## Definining the pipeline
+## Defining the pipeline
 
 This section of the documentation describes the AWS CodePipeline engine,
 which comes with this library. If you want to use a different deployment
@@ -1006,7 +1006,7 @@ For authenticating to Docker registries that require a username and password com
 (like DockerHub), create a Secrets Manager Secret with fields named `username`
 and `secret`, and import it (the field names change be customized).
 
-Authentication to ECR repostories is done using the execution role of the
+Authentication to ECR repositories is done using the execution role of the
 relevant CodeBuild job. Both types of credentials can be provided with an
 optional role to assume before requesting the credentials.
 
@@ -1113,7 +1113,7 @@ These command lines explained:
   trusted account, only allowing it to look up values such as availability zones, EC2 images and
   VPCs. `--trust-for-lookup` does not give permissions to modify anything in the account.
   Note that `--trust` implies `--trust-for-lookup`, so you don't need to specify
-  the same acocunt twice.
+  the same account twice.
 - `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
 
 > Be aware that anyone who has access to the trusted Accounts **effectively has all

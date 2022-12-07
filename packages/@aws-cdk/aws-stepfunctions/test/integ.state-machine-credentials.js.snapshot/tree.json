@@ -1,0 +1,546 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-stepfunctions-state-machine-credentials-integ": {
+        "id": "aws-stepfunctions-state-machine-credentials-integ",
+        "path": "aws-stepfunctions-state-machine-credentials-integ",
+        "children": {
+          "Role": {
+            "id": "Role",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/Role",
+            "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "FakeTaskWithLiteralCredentials": {
+            "id": "FakeTaskWithLiteralCredentials",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/FakeTaskWithLiteralCredentials",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineWithLiteralCredentials": {
+            "id": "StateMachineWithLiteralCredentials",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Role1ABCC5F0",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineWithLiteralCredentialsRoleDefaultPolicy331008EE",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineWithLiteralCredentialsRole1F1DEEC1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineWithLiteralCredentialsRole1F1DEEC1",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"FakeTaskWithLiteralCredentials\",\"States\":{\"FakeTaskWithLiteralCredentials\":{\"End\":true,\"Type\":\"Task\",\"Credentials\":{\"RoleArn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "Role1ABCC5F0",
+                              "Arn"
+                            ]
+                          },
+                          "\"},\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}}}},\"TimeoutSeconds\":30}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "CrossAccountRole": {
+            "id": "CrossAccountRole",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/CrossAccountRole",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "FakeTaskWithCrossAccountLiteralCredentials": {
+            "id": "FakeTaskWithCrossAccountLiteralCredentials",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/FakeTaskWithCrossAccountLiteralCredentials",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineWithCrossAccountLiteralCredentials": {
+            "id": "StateMachineWithCrossAccountLiteralCredentials",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": "arn:aws:iam::123456789012:role/CrossAccountRole"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineWithCrossAccountLiteralCredentialsRoleDefaultPolicy9B9943BD",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineWithCrossAccountLiteralCredentialsRole4AA04DBC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineWithCrossAccountLiteralCredentialsRole4AA04DBC",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": "{\"StartAt\":\"FakeTaskWithCrossAccountLiteralCredentials\",\"States\":{\"FakeTaskWithCrossAccountLiteralCredentials\":{\"End\":true,\"Type\":\"Task\",\"Credentials\":{\"RoleArn\":\"arn:aws:iam::123456789012:role/CrossAccountRole\"},\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}}}},\"TimeoutSeconds\":30}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "FakeTaskWithJsonPathCredentials": {
+            "id": "FakeTaskWithJsonPathCredentials",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/FakeTaskWithJsonPathCredentials",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskStateBase",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineWithJsonPathCredentials": {
+            "id": "StateMachineWithJsonPathCredentials",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StateMachineWithJsonPathCredentialsRoleDefaultPolicy1DA1C50B",
+                            "roles": [
+                              {
+                                "Ref": "StateMachineWithJsonPathCredentialsRole7BDE9FA6"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineWithJsonPathCredentialsRole7BDE9FA6",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": "{\"StartAt\":\"FakeTaskWithJsonPathCredentials\",\"States\":{\"FakeTaskWithJsonPathCredentials\":{\"End\":true,\"Type\":\"Task\",\"Credentials\":{\"RoleArn.$\":\"$.RoleArn\"},\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}}}},\"TimeoutSeconds\":30}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-state-machine-credentials-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "StateMachineCredentials": {
+        "id": "StateMachineCredentials",
+        "path": "StateMachineCredentials",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "StateMachineCredentials/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "StateMachineCredentials/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.161"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "StateMachineCredentials/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "StateMachineCredentials/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "StateMachineCredentials/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.161"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

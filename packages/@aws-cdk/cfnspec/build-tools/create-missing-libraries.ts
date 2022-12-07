@@ -297,7 +297,6 @@ async function main() {
 
     await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), module.packageName, version, ['dependencies', 'peerDependencies']);
     await addDependencyToMegaPackage('aws-cdk-lib', module.packageName, version, ['devDependencies']);
-    await addDependencyToMegaPackage('monocdk', module.packageName, version, ['devDependencies']);
   }
 }
 
