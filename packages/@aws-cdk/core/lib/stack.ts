@@ -500,8 +500,10 @@ export class Stack extends Construct implements ITaggable {
    * This can be used to define dependencies between any two stacks within an
    * app, and also supports nested stacks.
    */
+  //@ts-ignore: reason is declared but never read
   public addDependency(target: Stack, reason?: string) {
-    addDependency(this, target, reason);
+    // Ignoring the no-longer-used diagnostic arg, reason
+    addDependency(this, target);
   }
 
   /**
@@ -784,14 +786,11 @@ export class Stack extends Construct implements ITaggable {
     if (!reason.target) {
       reason.target = target;
     }
-    if (!reason.description) {
-      reason.description = `'${target.node.path}' depends on '${this.node.path}'`;
-    }
 
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
       // eslint-disable-next-line max-len
-      throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.map(x=>x.description).join(', ')}). Adding this dependency (${reason.description}) would create a cyclic reference.`);
+      throw new Error(`'${target.node.path}' depends on '${this.node.path}'. Adding this dependency would create a cyclic reference.`);
     }
 
     let dep = this._stackDependencies[Names.uniqueId(target)];
@@ -813,7 +812,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (process.env.CDK_DEBUG_DEPS) {
       // eslint-disable-next-line no-console
-      console.error(`[CDK_DEBUG_DEPS] stack "${reason.source.node.path}" depends on "${reason.target.node.path}" because: ${reason.description}`);
+      console.error(`[CDK_DEBUG_DEPS] stack "${reason.source.node.path}" depends on "${reason.target.node.path}"`);
     }
   }
 
@@ -853,7 +852,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason={ description: 'dependency removed using stack.removeDependency()' }) {
+  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason={}) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
       throw new Error('There cannot be assembly-level dependencies for nested stacks');
@@ -1476,7 +1475,6 @@ function generateExportName(stackExports: Construct, id: string) {
 }
 
 interface StackDependencyReason {
-  description? : string;
   source?: IElement;
   target?: IElement;
 }

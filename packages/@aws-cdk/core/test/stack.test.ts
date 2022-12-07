@@ -1416,7 +1416,7 @@ describe('stack', () => {
     expect(() => {
       app.synth();
       // eslint-disable-next-line max-len
-    }).toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
+    }).toThrow("'Stack1' depends on 'Stack2'. Adding this dependency would create a cyclic reference.");
   });
 
   test('stacks know about their dependencies', () => {

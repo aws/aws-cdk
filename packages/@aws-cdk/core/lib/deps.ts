@@ -27,11 +27,9 @@ export interface IElement extends IConstruct {
  *
  * @param source The source resource/stack (the dependent)
  * @param target The target resource/stack (the dependency)
- * @param reason Optional resource to associate with the dependency for
- * diagnostics
  */
-export function addDependency(source: IElement, target: IElement, reason: string='dependency added using stack.addDependency()') {
-  operateOnDependency(DependencyOperation.ADD, source, target, reason);
+export function addDependency(source: IElement, target: IElement) {
+  operateOnDependency(DependencyOperation.ADD, source, target);
 }
 
 /**
@@ -53,8 +51,8 @@ export function addDependency(source: IElement, target: IElement, reason: string
  * @param reason Optional description to associate with the dependency for
  * diagnostics
  */
-export function removeDependency(source: IElement, target: IElement, reason: string='dependency added using stack.removeDependency()') {
-  operateOnDependency(DependencyOperation.REMOVE, source, target, reason);
+export function removeDependency(source: IElement, target: IElement) {
+  operateOnDependency(DependencyOperation.REMOVE, source, target);
 }
 
 enum DependencyOperation {
@@ -67,7 +65,7 @@ enum DependencyOperation {
  *
  * @internal
  */
-function operateOnDependency(operation: DependencyOperation, source: IElement, target: IElement, reasonDescription: string) {
+function operateOnDependency(operation: DependencyOperation, source: IElement, target: IElement) {
   if (source === target) {
     return;
   }
@@ -92,7 +90,7 @@ function operateOnDependency(operation: DependencyOperation, source: IElement, t
   if (!commonStack) {
     const topLevelSource = sourcePath[0]; // first path element is the top-level stack
     const topLevelTarget = targetPath[0];
-    const reason = { description: reasonDescription, source: source, target: target };
+    const reason = { source: source, target: target };
     switch (operation) {
       case DependencyOperation.ADD: {
         topLevelSource._addAssemblyDependency(topLevelTarget, reason);
@@ -126,7 +124,7 @@ function operateOnDependency(operation: DependencyOperation, source: IElement, t
   // `source` is a direct or indirect nested stack of `target`, and this is not
   // possible (nested stacks cannot depend on their parents).
   if (commonStack === target) {
-    throw new Error(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}': ${reasonDescription}`);
+    throw new Error(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
   }
 
   // we have a common stack from which we can reach both `source` and `target`
@@ -161,7 +159,7 @@ export function obtainDependencies(source: IElement) {
 
   let stacks = pathToRoot(Stack.of(source));
   stacks.forEach((stack) => {
-    dependencies = [...dependencies, ...stack._obtainAssemblyDependencies({ description: '', source: source })];
+    dependencies = [...dependencies, ...stack._obtainAssemblyDependencies({ source: source })];
   });
 
   return dependencies;

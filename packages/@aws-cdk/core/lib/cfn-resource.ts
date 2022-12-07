@@ -16,7 +16,6 @@ import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 
-
 export interface CfnResourceProps {
   /**
    * CloudFormation resource type (e.g. `AWS::S3::Bucket`).
@@ -297,7 +296,7 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    addDependency(this, target, `"${Node.of(this).path}" depends on "${Node.of(target).path}"`);
+    addDependency(this, target);
   }
 
   /**
@@ -312,7 +311,7 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    removeDependency(this, target, `"${Node.of(this).path}" depends on "${Node.of(target).path}"`);
+    removeDependency(this, target);
   }
 
   /**
