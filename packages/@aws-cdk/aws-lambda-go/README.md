@@ -170,6 +170,19 @@ new lambda.GoFunction(this, 'handler', {
 });
 ```
 
+By default this construct doesn't use any Go module proxies. This is contrary to
+a standard Go installation, which would use the Google proxy by default. To
+recreate that behavior, do the following:
+
+```ts
+new lambda.GoFunction(this, 'GoFunction', {
+  entry: 'app/cmd/api',
+  bundling: {
+    goProxies: [lambda.GoFunction.GOOGLE_GOPROXY, 'direct'],
+  },
+});
+```
+
 ## Command hooks
 
 It is  possible to run additional commands by specifying the `commandHooks` prop:
