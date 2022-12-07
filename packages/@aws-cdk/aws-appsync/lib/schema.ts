@@ -86,7 +86,7 @@ export class SchemaFile implements ISchema {
    *
    * @param api The binding GraphQL Api
    */
-  public bind(api: IGraphqlApi): ISchemaConfig {
+  public bind(api: IGraphqlApi, _options?: SchemaBindOptions): ISchemaConfig {
     return {
       apiId: api.apiId,
       definition: this.definition,
