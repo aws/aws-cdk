@@ -37,6 +37,7 @@ export interface ISchema {
     *
     * @returns ISchemaConfig with apiId and schema definition string
     * @param api the api to bind the schema to
+    * @param options configuration for bind behavior
     */
   bind(api: IGraphqlApi, options?: SchemaBindOptions): ISchemaConfig;
 }
