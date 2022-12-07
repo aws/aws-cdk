@@ -2027,8 +2027,8 @@ export class Bucket extends BucketBase {
         status: enabled ? 'Enabled' : 'Disabled',
         transitions: mapOrUndefined(rule.transitions, t => ({
           storageClass: t.storageClass.value,
-          transitionDate: t.transitionDate,
-          transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
+          transitionDate: t.transitionMoment?.transitionDate ?? t.transitionDate,
+          transitionInDays: (t.transitionMoment?.transitionAfter ?? t.transitionAfter)?.toDays(),
         })),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),

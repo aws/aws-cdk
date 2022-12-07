@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Bucket, StorageClass } from '../lib';
+import { Bucket, StorageClass, TransitionMoment } from '../lib';
 
 describe('rules', () => {
   test('Bucket with expiration days', () => {
@@ -95,6 +95,35 @@ describe('rules', () => {
       },
     });
   });
+
+  test('Bucket with transition rule using a TransitionMoment', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        transitions: [{
+          storageClass: StorageClass.GLACIER,
+          transitionMoment: TransitionMoment.after(Duration.days(30)),
+        }],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [{
+          Transitions: [{
+            StorageClass: 'GLACIER',
+            TransitionInDays: 30,
+          }],
+          Status: 'Enabled',
+        }],
+      },
+    });
+  });
+
 
   test('Bucket with expiredObjectDeleteMarker', () => {
     // GIVEN

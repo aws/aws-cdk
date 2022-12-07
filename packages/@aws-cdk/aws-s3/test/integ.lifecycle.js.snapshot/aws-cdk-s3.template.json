@@ -20,6 +20,26 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "AnotherBucketDF5494D7": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "GLACIER",
+         "TransitionInDays": 30
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
