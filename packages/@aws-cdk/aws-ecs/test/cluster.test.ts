@@ -2141,6 +2141,23 @@ describe('cluster', () => {
 
   });
 
+  test('should throw an error if default capacity provider is not present in capacity providers', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: true,
+        defaultCapacityProviderStrategy: [
+          { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+        ],
+      });
+    }).toThrow(/Default capacity provide test capacityProvider is not present in cluster's capacity providers./);
+
+  });
+
   test('can add ASG capacity via Capacity Provider with default capacity provider', () => {
     // GIVEN
     const app = new cdk.App();

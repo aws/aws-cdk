@@ -225,6 +225,15 @@ export class Cluster extends Resource implements ICluster {
       this.enableFargateCapacityProviders();
     }
 
+    if (this._capacityProviderNames.length > 0 && props.defaultCapacityProviderStrategy && props.defaultCapacityProviderStrategy.length > 0) {
+      const defaultCapacityProviders = props.defaultCapacityProviderStrategy.map(cp => cp.capacityProvider);
+      defaultCapacityProviders.forEach(dcp => {
+        if (this._capacityProviderNames.findIndex(c => c === dcp) === -1) {
+          throw new Error(`Default capacity provide ${dcp} is not present in cluster's capaciry providers.`);
+        }
+      });
+    }
+
     if (props.executeCommandConfiguration) {
       if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
         (props.executeCommandConfiguration.logConfiguration !== undefined)) {
