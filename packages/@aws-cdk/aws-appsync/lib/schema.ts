@@ -19,6 +19,14 @@ export interface ISchemaConfig {
 }
 
 /**
+ * Used for configuring schema bind behavior.
+ *
+ * This is intended to prevent breaking changes to implementors of ISchema
+ * if needing to add new behavior.
+ */
+export interface SchemaBindOptions {}
+
+/**
   * Interface for implementing your own schema
   *
   * Useful for providing schema's from sources other than assets
@@ -30,7 +38,7 @@ export interface ISchema {
     * @returns ISchemaConfig with apiId and schema definition string
     * @param api the api to bind the schema to
     */
-  bind(api: IGraphqlApi): ISchemaConfig;
+  bind(api: IGraphqlApi, options?: SchemaBindOptions): ISchemaConfig;
 }
 
 /**
