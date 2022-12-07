@@ -2154,8 +2154,22 @@ describe('cluster', () => {
           { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
         ],
       });
-    }).toThrow(/Default capacity provide test capacityProvider is not present in cluster's capacity providers./);
+    }).toThrow(/Default capacity provider test capacityProvider is not present in cluster's capacity providers./);
+  });
 
+  test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        enableFargateCapacityProviders: false,
+        defaultCapacityProviderStrategy: [
+          { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+        ],
+      });
+    }).toThrow(/Default capacity provider test capacityProvider is not present in cluster's capacity providers./);
   });
 
   test('can add ASG capacity via Capacity Provider with default capacity provider', () => {
@@ -2164,8 +2178,9 @@ describe('cluster', () => {
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+      enableFargateCapacityProviders: true,
       defaultCapacityProviderStrategy: [
-        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
       ],
     });
 
@@ -2180,8 +2195,6 @@ describe('cluster', () => {
       autoScalingGroup,
       enableManagedTerminationProtection: false,
     });
-
-    cluster.enableFargateCapacityProviders();
 
     // Ensure not added twice
     cluster.addAsgCapacityProvider(capacityProvider);
@@ -2200,7 +2213,7 @@ describe('cluster', () => {
         },
       ],
       DefaultCapacityProviderStrategy: [
-        { CapacityProvider: 'test capacityProvider', Base: 10, Weight: 50 },
+        { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
       ],
     });
 

@@ -1151,7 +1151,7 @@ new ecs.Cluster(stack, 'EC2CPCluster', {
   vpc,
   defaultCapacityProviderStrategy: [
     { capacityProvider: capacityProvider.capacityProviderName, base: 1, weight: 1 },
-    { capacityProvider: 'FARGATE_SPOT' },
+    { capacityProvider: 'FARGATE_SPOT', base: 0, weight: 1 },
   ],
 });
 ```
