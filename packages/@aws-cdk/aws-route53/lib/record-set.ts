@@ -11,6 +11,26 @@ const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDel
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
 
 /**
+ * Context key to control whether to use the regional STS endpoint, instead of the global one
+ *
+ * There is only exactly one use case where you want to turn this on. If:
+ *
+ * - you are building an AWS service; AND
+ * - would like to your own Global Service Principal in the trust policy of the delegation role; AND
+ * - the target account is opted in in the same region as well
+ *
+ * Then you can turn this on. For all other use cases, the global endpoint is preferable:
+ *
+ * - if you are a regular customer, your trust policy would be in terms of account ids or
+ *   organization ids, or ARNs, not Service Principals, so you don't care about this behavior.
+ * - if the target account is not opted in as well, the AssumeRole call would fail
+ *
+ * Because this configuration option is so rare, turn it into a context setting instead
+ * of a publicly available prop.
+ */
+const USE_REGIONAL_STS_ENDPOINT_CONTEXT_KEY = '@aws-cdk/aws-route53:useRegionalStsEndpoint';
+
+/**
  * A record set
  */
 export interface IRecordSet extends IResource {
@@ -749,6 +769,8 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       resources: [props.delegationRole.roleArn],
     }));
 
+    const useRegionalStsEndpoint = this.node.tryGetContext(USE_REGIONAL_STS_ENDPOINT_CONTEXT_KEY);
+
     const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
@@ -760,6 +782,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
+        UseRegionalStsEndpoint: useRegionalStsEndpoint ? 'true' : undefined,
       },
     });
 
