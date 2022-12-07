@@ -87,6 +87,7 @@ times of the day:
 Auto-scaling is only relevant for tables with the billing mode, PROVISIONED.
 
 [Example of configuring autoscaling](test/integ.autoscaling.lit.ts)
+
 ```ts
 const target = new appscaling.ScalableTarget(this, 'Target', {
   serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
