@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { CfnGameSessionQueue } from './gamelift.generated';
 
 /**
- *
+ * Represents a game session queue destination
  */
 export interface IGameSessionQueueDestination {
   /**
@@ -38,6 +38,7 @@ export enum PriorityType {
    */
   LOCATION = 'LOCATION'
 }
+
 /**
  * Custom prioritization settings for use by a game session queue when placing new game sessions with available game servers.
  * When defined, this configuration replaces the default FleetIQ prioritization process, which is as follows:
@@ -63,6 +64,7 @@ export interface PriorityConfiguration {
    */
   readonly priorityOrder: PriorityType[];
 }
+
 /**
  * The queue setting that determines the highest latency allowed for individual players when placing a game session.
  * When a latency policy is in force, a game session cannot be placed with any fleet in a Region where a player reports latency higher than the cap.
@@ -84,6 +86,7 @@ export interface PlayerLatencyPolicy {
    */
   readonly policyDuration?: cdk.Duration;
 }
+
 /**
  * Represents a Gamelift GameSessionQueue for a Gamelift fleet destination.
  */
@@ -230,7 +233,7 @@ export interface GameSessionQueueProps {
   /**
      * A list of fleets and/or fleet alias that can be used to fulfill game session placement requests in the queue.
      *
-     * Destinations are are listed in order of placement preference.
+     * Destinations are listed in order of placement preference.
      */
   readonly destinations: IGameSessionQueueDestination[];
 }
@@ -253,7 +256,7 @@ export abstract class GameSessionQueueBase extends cdk.Resource implements IGame
       namespace: 'AWS/GameLift',
       metricName: metricName,
       dimensionsMap: {
-        GameSessionQueueArn: this.gameSessionQueueArn,
+        GameSessionQueueName: this.gameSessionQueueName,
       },
       ...props,
     }).attachTo(this);
@@ -368,10 +371,12 @@ export class GameSessionQueue extends GameSessionQueueBase {
       }
     }
 
-    if (props.customEventData && !cdk.Token.isUnresolved(props. customEventData)) {
-      if (props.customEventData.length > 256) {
-        throw new Error(`GameSessionQueue cudtom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`);
-      }
+    if (props.customEventData && props.customEventData.length > 256) {
+      throw new Error(`GameSessionQueue cudtom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`);
+    }
+
+    if (props.allowedLocations && props.allowedLocations.length > 100) {
+      throw new Error(`No more than 100 allowed locations are allowed per game session queue, given ${props.allowedLocations.length}`);
     }
 
     // Add all destinations
@@ -381,7 +386,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
       name: this.physicalName,
       customEventData: props.customEventData,
       destinations: cdk.Lazy.any({ produce: () => this.parseDestinations() }),
-      filterConfiguration: this.parseAllowedLocations(props),
+      filterConfiguration: this.parseFilterConfiguration(props),
       notificationTarget: props.notificationTarget && props.notificationTarget.topicArn,
       playerLatencyPolicies: this.parsePlayerLatencyPolicies(props),
       priorityConfiguration: this.parsePriorityConfiguration(props),
@@ -440,7 +445,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
     }
   }
 
-  protected parseAllowedLocations(props: GameSessionQueueProps): CfnGameSessionQueue.FilterConfigurationProperty | undefined {
+  protected parseFilterConfiguration(props: GameSessionQueueProps): CfnGameSessionQueue.FilterConfigurationProperty | undefined {
     if (!props.allowedLocations) {
       return undefined;
     }

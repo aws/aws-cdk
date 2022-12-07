@@ -449,6 +449,33 @@ new cloudwatch.Alarm(this, 'Alarm', {
 See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/gamelift/latest/developerguide/monitoring-cloudwatch.html)
 in the *Amazon GameLift Developer Guide*.
 
+## Game session queue
+
+The game session queue is the primary mechanism for processing new game session
+requests and locating available game servers to host them. Although it is
+possible to request a new game session be hosted on specific fleet or location.
+
+The `GameSessionQueue` resource creates a placement queue that processes requests for
+new game sessions. A queue uses FleetIQ algorithms to determine the best placement
+locations and find an available game server, then prompts the game server to start a
+new game session. Queues can have destinations (GameLift fleets or aliases), which
+determine where the queue can place new game sessions. A queue can have destinations
+with varied fleet type (Spot and On-Demand), instance type, and AWS Region.
+
+```ts
+declare const fleet: gamelift.BuildFleet;
+declare const alias: gamelift.Alias;
+
+const queue = new gamelift.GameSessionQueue(this, 'GameSessionQueue', {
+  gameSessionQueueName: 'my-queue-name',
+  destinations: [fleet]
+});
+queue.addDestination(alias);
+```
+
+See [Setting up GameLift queues for game session placement](https://docs.aws.amazon.com/gamelift/latest/developerguide/realtime-script-uploading.html)
+in the *Amazon GameLift Developer Guide*.
+
 ## GameLift FleetIQ
 
 The GameLift FleetIQ solution is a game hosting layer that supplements the full
