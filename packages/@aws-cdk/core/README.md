@@ -431,7 +431,7 @@ A stack dependency has the following implications:
 
 ### CfnResource Dependencies
 
-To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependesOn(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependsOn`, `replaceDependsOn`, and `obtainDependsOn` methods, respectively.
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
 
 ## Custom Resources
 
@@ -858,7 +858,7 @@ rawBucket.cfnOptions.metadata = {
 ```
 
 Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
+`cfnResource.addDependency` method:
 
 ```ts
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
