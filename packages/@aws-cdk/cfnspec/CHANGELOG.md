@@ -1,3 +1,93 @@
+# CloudFormation Resource Specification v100.0.0
+
+## New Resource Types
+
+* AWS::CloudFront::ContinuousDeploymentPolicy
+* AWS::Oam::Link
+* AWS::Oam::Sink
+
+## Attribute Changes
+
+* AWS::EC2::NetworkInsightsAnalysis SuggestedAccounts (__added__)
+* AWS::EC2::NetworkInsightsPath DestinationArn (__added__)
+* AWS::EC2::NetworkInsightsPath SourceArn (__added__)
+* AWS::EC2::Volume Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+* AWS::EC2::Volume VolumeId (__deleted__)
+
+## Property Changes
+
+* AWS::EC2::NetworkInsightsAnalysis AdditionalAccounts (__added__)
+* AWS::EC2::Volume AutoEnableIO.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-autoenableio
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-autoenableio
+* AWS::EC2::Volume AvailabilityZone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-availabilityzone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-availabilityzone
+* AWS::EC2::Volume AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Volume Encrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-encrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-encrypted
+* AWS::EC2::Volume Encrypted.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Volume Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-iops
+* AWS::EC2::Volume KmsKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-kmskeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-kmskeyid
+* AWS::EC2::Volume KmsKeyId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Volume MultiAttachEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-multiattachenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-multiattachenabled
+* AWS::EC2::Volume OutpostArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-outpostarn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-outpostarn
+* AWS::EC2::Volume Size.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-size
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-size
+* AWS::EC2::Volume SnapshotId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-snapshotid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-snapshotid
+* AWS::EC2::Volume SnapshotId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Volume Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-tags
+* AWS::EC2::Volume Throughput.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
+* AWS::EC2::Volume VolumeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-volumetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-volumetype
+* AWS::KinesisFirehose::DeliveryStream AmazonOpenSearchServerlessDestinationConfiguration (__added__)
+* AWS::Lambda::Function SnapStart (__added__)
+* AWS::Logs::LogGroup DataProtectionPolicy (__added__)
+* AWS::S3::AccessPoint BucketAccountId (__added__)
+
+## Property Type Changes
+
+* AWS::KinesisFirehose::DeliveryStream.AmazonOpenSearchServerlessBufferingHints (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonOpenSearchServerlessDestinationConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonOpenSearchServerlessRetryOptions (__added__)
+* AWS::Lambda::Function.SnapStart (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig ContinuousDeploymentPolicyId (__added__)
+* AWS::CloudFront::Distribution.DistributionConfig Staging (__added__)
+* AWS::IoT::AccountAuditConfiguration.AuditCheckConfigurations IoTPolicyPotentialMisConfigurationCheck (__added__)
+
+## Unapplied changes
+
+* AWS::AmplifyUIBuilder is at 94.0.0
+* AWS::AppFlow is at 94.0.0
+* AWS::GameLift is at 99.0.0
+
 # CloudFormation Resource Specification v99.0.0
 
 ## New Resource Types
