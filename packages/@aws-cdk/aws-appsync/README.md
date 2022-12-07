@@ -308,8 +308,10 @@ import * as route53 from '@aws-cdk/aws-route53';
 
 const myDomainName = 'api.example.com';
 const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName });
+const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
 const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
+  schema,
   domainName: {
     certificate,
     domainName: myDomainName,
