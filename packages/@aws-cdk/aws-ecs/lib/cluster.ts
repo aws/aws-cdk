@@ -231,6 +231,11 @@ export class Cluster extends Resource implements ICluster {
           throw new Error(`Default capacity provider ${dcp.capacityProvider} is not present in cluster's capacity providers.`);
         }
       });
+
+      const defaultCapacityProvidersWithBase = props.defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
+      if (defaultCapacityProvidersWithBase.length > 1) {
+        throw new Error('Only 1 default capacity provider can have a base.');
+      }
     }
 
     if (props.executeCommandConfiguration) {
