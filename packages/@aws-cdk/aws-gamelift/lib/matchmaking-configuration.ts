@@ -1,6 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { IMatchmakingRuleSet } from '.';
 
 /**
    * A set of custom properties for a game session, formatted as key-value pairs.
@@ -30,7 +32,7 @@ export interface IMatchmakingConfiguration extends cdk.IResource {
      *
      * @attribute
      */
-  readonly matchmakingconfigurationId: string;
+  readonly matchmakingConfigurationId: string;
 
   /**
      * The ARN of the matchmaking configuration.
@@ -85,6 +87,29 @@ export interface IMatchmakingConfiguration extends cdk.IResource {
 }
 
 /**
+ * A full specification of a matchmaking configuration that can be used to import it fluently into the CDK application.
+ */
+export interface MatchmakingConfigurationAttributes {
+  /**
+        * The ARN of the Matchmaking configuration
+        *
+        * At least one of `matchmakingConfigurationArn` and `matchmakingConfigurationId` must be provided.
+        *
+        * @default derived from `matchmakingConfigurationId`.
+        */
+  readonly matchmakingConfigurationArn?: string;
+
+  /**
+      * The identifier of the Matchmaking configuration
+      *
+      * At least one of `matchmakingConfigurationId` and `matchmakingConfigurationArn`  must be provided.
+      *
+      * @default derived from `matchmakingConfigurationArn`.
+      */
+  readonly matchmakingConfigurationId?: string;
+}
+
+/**
  * Properties for a new Gamelift matchmaking configuration
  */
 export interface MatchmakingConfigurationProps {
@@ -108,7 +133,7 @@ export interface MatchmakingConfigurationProps {
      *
      * @default Acceptance is not required
      */
-  readonly requireAcceptance?: boolean;
+  readonly requireAcceptance: boolean;
 
   /**
    * The length of time (in seconds) to wait for players to accept a proposed match, if acceptance is required.
@@ -146,58 +171,94 @@ export interface MatchmakingConfigurationProps {
    *
    * A matchmaking configuration can only use rule sets that are defined in the same Region.
    */
-  readonly ruleSet: string;
+  readonly ruleSet: IMatchmakingRuleSet;
 }
 
 /**
- * Properties for a new queued matchmaking configuration
+ * Base class for new and imported GameLift Matchmaking configuration.
  */
-export interface QueuedMatchmakingConfigurationProps extends MatchmakingConfigurationProps {
-/**
-   * The number of player slots in a match to keep open for future players.
-   * For example, if the configuration's rule set specifies a match for a single 12-person team, and the additional player count is set to 2, only 10 players are selected for the match.
-   *
-   * @default no additional player slots
-   */
-  readonly additionalPlayerCount?: number;
+export abstract class MatchmakingConfigurationBase extends cdk.Resource implements IMatchmakingConfiguration {
+
 
   /**
-   * The method used to backfill game sessions that are created with this matchmaking configuration.
-   * - Choose manual when your game manages backfill requests manually or does not use the match backfill feature.
-   * - Otherwise backfill is settled to automatic to have GameLift create a `StartMatchBackfill` request whenever a game session has one or more open slots.
-   *
-   * @see https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-backfill.html
-   *
-   * @default automatic backfill mode
+   * Import an existing matchmaking configuration from its attributes.
    */
-  readonly manualBackfillMode?: boolean;
+  static fromMatchmakingConfigurationAttributes(scope: Construct, id: string, attrs: MatchmakingConfigurationAttributes): IMatchmakingConfiguration {
+    if (!attrs.matchmakingConfigurationId && !attrs.matchmakingConfigurationArn) {
+      throw new Error('Either matchmakingconfigurationId or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes');
+    }
+    const matchmakingConfigurationId = attrs.matchmakingConfigurationId ??
+     cdk.Stack.of(scope).splitArn(attrs.matchmakingConfigurationArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+
+    if (!matchmakingConfigurationId) {
+      throw new Error(`No matchmaking configuration identifier found in ARN: '${attrs.matchmakingConfigurationArn}'`);
+    }
+
+    const matchmakingConfigurationArn = attrs.matchmakingConfigurationArn ?? cdk.Stack.of(scope).formatArn({
+      service: 'gamelift',
+      resource: 'matchmakingconfiguration',
+      resourceName: attrs.matchmakingConfigurationId,
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+    });
+    class Import extends MatchmakingConfigurationBase {
+      public readonly matchmakingConfigurationId = matchmakingConfigurationId!;
+      public readonly matchmakingConfigurationArn = matchmakingConfigurationArn;
+
+      constructor(s: Construct, i: string) {
+        super(s, i, {
+          environmentFromArn: matchmakingConfigurationArn,
+        });
+      }
+    }
+    return new Import(scope, id);
+  }
 
   /**
-   * A set of custom properties for a game session, formatted as key-value pairs.
-   * These properties are passed to a game server process with a request to start a new game session.
-   *
-   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession
-   */
-  readonly gameProperties?: GameProperty[];
-
+     * The Identifier of the matchmaking configuration.
+     */
+  public abstract readonly matchmakingConfigurationId: string;
   /**
-   * A set of custom game session properties, formatted as a single string value.
-   * This data is passed to a game server process with a request to start a new game session.
-   *
-   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession
-   */
-  readonly gameSessionData?: string;
+     * The ARN of the matchmaking configuration.
+     */
+  public abstract readonly matchmakingConfigurationArn: string;
 
-  /**
-   * Queues are used to start new GameLift-hosted game sessions for matches that are created with this matchmaking configuration.
-   *
-   * Queues can be located in any Region.
-   */
-  readonly gameSessionQueues: string[]
-}
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/GameLift',
+      metricName: metricName,
+      dimensionsMap: {
+        MatchmakingConfigurationArn: this.matchmakingConfigurationArn,
+      },
+      ...props,
+    }).attachTo(this);
+  }
 
-/**
- * Properties for a new standalone matchmaking configuration
- */
-export interface StandaloneMatchmakingConfigurationProps extends MatchmakingConfigurationProps {
+  metricCurrentTickets(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('CurrentTickets', props);
+  }
+
+  metricMatchesAccepted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('MatchesAccepted', props);
+  }
+
+  metricMatchesCreated(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('MatchesCreated', props);
+  }
+
+  metricMatchesPlaced(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('MatchesPlaced', props);
+  }
+
+  metricMatchesRejected(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('MatchesRejected', props);
+  }
+
+  metricPlayersStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('PlayersStarted', props);
+  }
+
+  metricTimeToMatch(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('TimeToMatch', props);
+  }
+
 }
