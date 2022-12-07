@@ -1,5 +1,5 @@
 {
-  "$version": "97.0.0",
+  "$version": "100.0.0",
   "PropertyTypes": {
     "AWS::SageMaker::App.ResourceSpec": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-app-resourcespec.html",
@@ -5059,12 +5059,6 @@
           "Required": false,
           "Type": "SourceAlgorithmSpecification",
           "UpdateType": "Immutable"
-        },
-        "Tag": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-tag",
-          "Required": false,
-          "Type": "Tag",
-          "UpdateType": "Mutable"
         },
         "Tags": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-modelpackage.html#cfn-sagemaker-modelpackage-tags",
