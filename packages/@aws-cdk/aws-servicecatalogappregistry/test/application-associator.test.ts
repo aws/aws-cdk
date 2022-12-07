@@ -67,14 +67,14 @@ describe('Scope based Associations with multi-region Application within Same Acc
         applications: [
           appreg.TargetApplication.createApplicationStack({
             applicationName: 'MyAssociatedApplication',
-            env: { account: '482211128593', region: 'us-east-1' },
+            env: { account: 'account1', region: 'region1' },
           }),
           appreg.TargetApplication.existingApplicationFromArn({
-            applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+            applicationArnValue: 'arn:aws:servicecatalog:region1:account1:/applications/0a17wtxeg5vilok0sbxfozwpq9',
           }),
         ],
       });
-    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-us-east-1\' in App');
+    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-region1\' in App');
   });
 
   test('ApplicationAssociator creation throws error when both Application name and ARN are provided in same region', () => {
@@ -83,14 +83,14 @@ describe('Scope based Associations with multi-region Application within Same Acc
         applications: [
           appreg.TargetApplication.createApplicationStack({
             applicationName: 'MyAssociatedApplication',
-            env: { account: '482211128593', region: 'us-east-1' },
+            env: { account: 'account1', region: 'region1' },
           }),
           appreg.TargetApplication.existingApplicationFromArn({
-            applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+            applicationArnValue: 'arn:aws:servicecatalog:region1:account1:/applications/0a17wtxeg5vilok0sbxfozwpq9',
           }),
         ],
       });
-    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-us-east-1\' in App');
+    }).toThrow('There is already a Construct with name \'ApplicationAssociatorStack-region1\' in App');
   });
 
   test('ApplicationAssociator creation throws error when two Applications by name are provided in same region', () => {
