@@ -149,4 +149,4 @@ incompatible-argument:@aws-cdk/aws-route53-targets.InterfaceVpcEndpointTarget.<i
 changed-type:@aws-cdk/cx-api.AssetManifestArtifact.requiresBootstrapStackVersion
 
 # removed mistyped ec2 instance class
-removed:@aws-cdk/aws-ec2.InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH
+removed:aws-cdk-lib.aws_ec2.InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH
