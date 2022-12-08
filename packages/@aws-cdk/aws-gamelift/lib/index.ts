@@ -8,6 +8,7 @@ export * from './fleet-base';
 export * from './build-fleet';
 export * from './matchmaking-configuration';
 export * from './queued-matchmaking-configuration';
+export * from './game-session-queue';
 export * from './matchmaking-ruleset';
 export * from './matchmaking-ruleset-body';
 
