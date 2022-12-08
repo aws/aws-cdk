@@ -106,7 +106,7 @@ export enum MetricUnit {
   /**
    * Megabytes per second
    */
-  MEGYTES_PER_SECOND = 'Megabytes/Second',
+  MEGABYTES_PER_SECOND = 'Megabytes/Second',
 
   /**
    * Microseconds
