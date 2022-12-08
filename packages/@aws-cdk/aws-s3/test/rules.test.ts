@@ -1,8 +1,9 @@
 import { Template } from '@aws-cdk/assertions';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Bucket, StorageClass, TransitionMoment } from '../lib';
 
-describe('rules', () => {
+describeDeprecated('rules', () => {
   test('Bucket with expiration days', () => {
     // GIVEN
     const stack = new Stack();
