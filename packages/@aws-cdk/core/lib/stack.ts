@@ -824,12 +824,12 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason): IElement[] {
+  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason): Element[] {
     if (!reasonFilter.source) {
       throw new Error('reasonFilter.source must be defined!');
     }
     // Assume reasonFilter has only source defined
-    let dependencies: Set<IElement> = new Set();
+    let dependencies: Set<Element> = new Set();
     Object.values(this._stackDependencies).forEach((dep) => {
       dep.reasons.forEach((reason) => {
         if (reasonFilter.source == reason.source) {
@@ -1475,8 +1475,8 @@ function generateExportName(stackExports: Construct, id: string) {
 }
 
 interface StackDependencyReason {
-  source?: IElement;
-  target?: IElement;
+  source?: Element;
+  target?: Element;
 }
 
 interface StackDependency {
@@ -1510,7 +1510,7 @@ function count(xs: string[]): Record<string, number> {
 
 // These imports have to be at the end to prevent circular imports
 import { CfnOutput } from './cfn-output';
-import { addDependency, IElement } from './deps';
+import { addDependency, Element } from './deps';
 import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';

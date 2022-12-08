@@ -2,14 +2,8 @@ import { CfnResource } from './cfn-resource';
 import { Stack } from './stack';
 import { Stage } from './stage';
 import { findLastCommonElement, pathToTopLevelStack as pathToRoot } from './util';
-import { IConstruct } from 'constructs';
 
-/**
- * This interface is intended to represent an object that is either a Stack or a CfnResource
- */
-export interface IElement extends IConstruct {
-
-}
+export type Element = CfnResource | Stack;
 
 /**
  * Adds a dependency between two resources or stacks, across stack and nested
@@ -28,7 +22,7 @@ export interface IElement extends IConstruct {
  * @param source The source resource/stack (the dependent)
  * @param target The target resource/stack (the dependency)
  */
-export function addDependency(source: IElement, target: IElement) {
+export function addDependency(source: Element, target: Element) {
   operateOnDependency(DependencyOperation.ADD, source, target);
 }
 
@@ -51,7 +45,7 @@ export function addDependency(source: IElement, target: IElement) {
  * @param reason Optional description to associate with the dependency for
  * diagnostics
  */
-export function removeDependency(source: IElement, target: IElement) {
+export function removeDependency(source: Element, target: Element) {
   operateOnDependency(DependencyOperation.REMOVE, source, target);
 }
 
@@ -65,7 +59,7 @@ enum DependencyOperation {
  *
  * @internal
  */
-function operateOnDependency(operation: DependencyOperation, source: IElement, target: IElement) {
+function operateOnDependency(operation: DependencyOperation, source: Element, target: Element) {
   if (source === target) {
     return;
   }
@@ -148,11 +142,11 @@ function operateOnDependency(operation: DependencyOperation, source: IElement, t
 }
 
 /**
- * Get a list of all resource-to-resource dependencies assembled from this IElement, Stack or assembly-dependencies
+ * Get a list of all resource-to-resource dependencies assembled from this Element, Stack or assembly-dependencies
  * @param source The source resource/stack (the dependent)
  */
-export function obtainDependencies(source: IElement) {
-  let dependencies: IElement[] = [];
+export function obtainDependencies(source: Element) {
+  let dependencies: Element[] = [];
   if (source instanceof CfnResource) {
     dependencies = source.obtainResourceDependencies();
   }
@@ -170,7 +164,7 @@ export function obtainDependencies(source: IElement) {
  *
  * @internal
  */
-function resourceInCommonStackFor(element: IElement, commonStack: Stack): CfnResource {
+function resourceInCommonStackFor(element: Element, commonStack: Stack): CfnResource {
   const resource: CfnResource = (Stack.isStack(element) ? element.nestedStackResource : element) as CfnResource;
   if (!resource) {
     // see "assertion" in operateOnDependency above
