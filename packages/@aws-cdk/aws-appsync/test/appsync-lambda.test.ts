@@ -11,7 +11,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 });
 
@@ -73,7 +73,7 @@ describe('Lambda Data Source configuration', () => {
       const newStack = new cdk.Stack();
       const graphqlapi = new appsync.GraphqlApi(newStack, 'baseApi', {
         name: 'api',
-        schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       });
       const dummyFunction = new lambda.Function(newStack, 'func', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
