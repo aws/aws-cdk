@@ -579,7 +579,7 @@ describe('tests', () => {
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
-      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
+      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345678');
       expect(loadBalancer.env.region).toEqual('us-west-2');
     });
 
