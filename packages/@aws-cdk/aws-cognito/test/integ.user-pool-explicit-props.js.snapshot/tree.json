@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.123"
-        }
-      },
       "integ-user-pool": {
         "id": "integ-user-pool",
         "path": "integ-user-pool",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/createAuthChallenge/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/createAuthChallenge/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/createAuthChallenge/ServiceRole/Resource",
@@ -108,6 +108,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/customMessage/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/customMessage/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/customMessage/ServiceRole/Resource",
@@ -192,6 +200,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/defineAuthChallenge/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/defineAuthChallenge/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/defineAuthChallenge/ServiceRole/Resource",
@@ -276,6 +292,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/postAuthentication/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/postAuthentication/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/postAuthentication/ServiceRole/Resource",
@@ -360,6 +384,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/postConfirmation/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/postConfirmation/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/postConfirmation/ServiceRole/Resource",
@@ -444,6 +476,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/preAuthentication/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/preAuthentication/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/preAuthentication/ServiceRole/Resource",
@@ -528,6 +568,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/preSignUp/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/preSignUp/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/preSignUp/ServiceRole/Resource",
@@ -612,6 +660,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/preTokenGeneration/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/preTokenGeneration/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/preTokenGeneration/ServiceRole/Resource",
@@ -696,6 +752,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/userMigration/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/userMigration/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/userMigration/ServiceRole/Resource",
@@ -780,6 +844,14 @@
                 "id": "ServiceRole",
                 "path": "integ-user-pool/verifyAuthChallengeResponse/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-user-pool/verifyAuthChallengeResponse/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/verifyAuthChallengeResponse/ServiceRole/Resource",
@@ -1134,6 +1206,14 @@
                 "id": "smsRole",
                 "path": "integ-user-pool/myuserpool/smsRole",
                 "children": {
+                  "ImportsmsRole": {
+                    "id": "ImportsmsRole",
+                    "path": "integ-user-pool/myuserpool/smsRole/ImportsmsRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-user-pool/myuserpool/smsRole/Resource",
@@ -1356,6 +1436,9 @@
                         "phone_number"
                       ]
                     },
+                    "userPoolAddOns": {
+                      "advancedSecurityMode": "ENFORCED"
+                    },
                     "userPoolName": "MyUserPool",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
@@ -1418,11 +1501,35 @@
               "fqn": "@aws-cdk/core.CfnOutput",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-user-pool/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-user-pool/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
         }
       }
     },
