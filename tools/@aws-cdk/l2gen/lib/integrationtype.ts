@@ -1,6 +1,6 @@
 import { IType, standardTypeRender, VOID } from './type';
 import { IGeneratable, fileFor } from './generatable';
-import { CM2, IRenderable } from './cm2';
+import { CM2 } from './cm2';
 import { Diagnostic } from './diagnostic';
 import { SourceFile } from './source-module';
 import { InterfaceField, InterfaceTypeDefinition } from './private/interfacetype';
@@ -8,6 +8,7 @@ import { CONSTRUCT } from './well-known-types';
 import { ArgumentOptions, Arguments } from './arguments';
 import { IValue, ObjectLiteral, litVal } from './value';
 import { toPascalCase } from 'codemaker';
+import { GenerationRoot } from './root';
 
 export class IntegrationType implements IGeneratable, IType {
   public readonly typeRefName: string;
@@ -16,7 +17,8 @@ export class IntegrationType implements IGeneratable, IType {
   public readonly bindResultType: InterfaceTypeDefinition;
   private readonly integrations = new Array<Integration>();
 
-  constructor(public readonly className: string) {
+  constructor(root: GenerationRoot, public readonly className: string) {
+    root.add(this);
     this.typeRefName = className;
     this.definingModule = new SourceFile(fileFor(className, 'public'));
     this.bindOptionsType = new InterfaceTypeDefinition(`${className}BindOptions`, this.definingModule, {
@@ -157,24 +159,4 @@ export class Integration implements IGeneratable {
   public option(opt: InterfaceField): IValue {
     return this.optionsType.addInputProperty('this.options', opt);
   }
-}
-
-export type ValueTransform = (x: IRenderable) => IRenderable;
-
-export interface WireableProps {
-  readonly wire?: string;
-  readonly wireTransform?: ValueTransform;
-}
-
-export interface IWireable {
-  wire(props: Record<string, IRenderable>): void;
-}
-
-export function maybeWire<A extends IRenderable>(receiver: IWireable, props: WireableProps, value: A): A {
-  if (props.wire) {
-    receiver.wire({
-      [props.wire]: props.wireTransform ? props.wireTransform(value) : value,
-    });
-  }
-  return value;
 }

@@ -11,7 +11,8 @@ import { Arguments } from './arguments';
 import { IType, existingType, STRING } from './type';
 import { analyzeArnFormat, formatArnExpression, splitArnExpression } from './private/arns';
 import { splitSelect } from './well-known-values';
-import { WireableProps, maybeWire } from './integrationtype';
+import { WireableProps, maybeWire } from './wiring';
+import { GenerationRoot } from './root';
 
 export class L2Gen implements IGeneratable {
   /**
@@ -25,12 +26,6 @@ export class L2Gen implements IGeneratable {
     return genTypeForPropertyType(typeName, propertyTypeName);
   }
 
-  public static define(typeName: string, cb: (x: L2Gen) => void) {
-    const ret = new L2Gen(typeName);
-    cb(ret);
-    return ret;
-  }
-
   private readonly props: InterfaceTypeDefinition;
   private readonly baseProps: InterfaceTypeDefinition;
   private readonly interfaceType: InterfaceTypeDefinition;
@@ -42,7 +37,8 @@ export class L2Gen implements IGeneratable {
   private readonly statics = new Array<IRenderable>();
   private readonly baseClassName: string;
 
-  constructor(public readonly cloudFormationResourceType: string) {
+  constructor(root: GenerationRoot, public readonly cloudFormationResourceType: string) {
+    root.add(this);
     const resourceName = cloudFormationResourceType.split('::')[2];
     this.baseClassName = toPascalCase(resourceName);
 
@@ -162,6 +158,11 @@ export class L2Gen implements IGeneratable {
         });
       }
     });
+  }
+
+  public define(cb: (x: L2Gen) => void) {
+    cb(this);
+    return this;
   }
 
   public generateFiles(): CM2[] {

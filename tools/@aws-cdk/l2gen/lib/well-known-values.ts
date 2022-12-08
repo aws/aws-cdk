@@ -36,22 +36,24 @@ export const TRUE = jsVal(true);
 export const FALSE = jsVal(false);
 export const UNDEFINED = litVal('undefined');
 
-export function renderDuration(v: IValue, style: 'toMinutes' | 'toSeconds'): IValue {
-  if (v.type !== DURATION) {
-    throw new Error(`Expecting a Duration, got ${v.type}`);
-  }
-  return {
-    type: DURATION,
-    toString() { return `${v}.${style}()` },
-    render(code: CM2) {
-      code.add(v, `.${style}()`);
-    },
+export function renderDuration(style: 'toMinutes' | 'toSeconds') {
+  return (v: IValue): IValue => {
+    if (v.type !== DURATION) {
+      throw new Error(`Expecting a Duration, got ${v.type}`);
+    }
+    return {
+      type: DURATION,
+      toString() { return `${v}.${style}()` },
+      render(code: CM2) {
+        code.add(v, `.${style}()`);
+      },
+    };
   };
 }
 
-export function ifDefined(c: IValue, v: IValue, otherwise: IValue = UNDEFINED): IValue {
+export function ifDefined(c: IRenderable, v: IRenderable, otherwise: IRenderable = UNDEFINED): IValue {
   return {
-    type: v.type,
+    type: ANY,
     toString() { return `conditional ${v}` },
     render(code: CM2) {
       code.add(c, ' !== undefined ? ', v, ' : ', otherwise);
@@ -106,3 +108,20 @@ export function splitSelect(sep: string, fieldNr: number | undefined, value: IRe
 export function stackToJsonString(x: IRenderable): IRenderable {
   return TOKENIZATION.callExp('toJsonString')(x);
 }
+
+export function transformArray(tx: ValueTransform) {
+  return (x: IRenderable): IRenderable => ({
+    render(code: CM2) {
+      code.add(x, '.map(x => ', tx(litVal('x')), ')');
+    },
+  });
+}
+
+export function transformMap(tx: ValueTransform) {
+  return (x: IRenderable): IRenderable => ({
+    render(code: CM2) {
+      code.add('Object.fromEntries(Object.entries(', x, ').map(([k, v]) => [k, ', tx(litVal('v')), '] as const))');
+    },
+  });
+}
+export type ValueTransform = (x: IRenderable) => IRenderable;

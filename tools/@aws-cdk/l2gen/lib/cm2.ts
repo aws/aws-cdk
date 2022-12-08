@@ -117,6 +117,8 @@ export class CM2 {
       }
     }
 
+    if (flat.length === 0) { return; }
+
     this.line('/**');
     for (const l of flat) {
       this.line(` * ${l.trimEnd()}`);

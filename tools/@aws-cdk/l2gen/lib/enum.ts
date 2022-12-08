@@ -6,17 +6,34 @@ import { SourceFile } from './source-module';
 import { Diagnostic } from './diagnostic';
 import { toCamelCase } from 'codemaker';
 import { jsVal } from './well-known-values';
+import { GenerationRoot } from './root';
 
 export class Enum implements IGeneratable, IType {
   public readonly typeRefName: string;
   public readonly definingModule: SourceFile;
+  public readonly schemaRefs = new Array<string>();
   private readonly members = new Array<MemberProps>();
   private readonly mappings = new Array<EnumMapping>();
+  private readonly docs = new Array<string>();
   private cloudFormationMapping?: EnumMapping;
 
-  constructor(public readonly enumName: string) {
+  constructor(root: GenerationRoot, public readonly enumName: string) {
     this.typeRefName = enumName;
     this.definingModule = new SourceFile(fileFor(this.typeRefName, 'public'));
+    root.add(this);
+  }
+
+  public schemaRef(x: string) {
+    this.schemaRefs.push(x);
+  }
+
+  public doc(...xs: string[]) {
+    this.docs.push(...xs);
+  }
+
+  public define(cb: (x: Enum) => void) {
+    cb(this);
+    return this;
   }
 
   public addMember(props: MemberProps): IValue {
@@ -56,6 +73,7 @@ export class Enum implements IGeneratable, IType {
 
   generateFiles(): CM2[] {
     const code = new CM2(this.definingModule.fileName);
+    code.docBlock(this.docs);
     code.openBlock(`export enum ${this.enumName}`);
     for (const mem of this.members) {
       code.docBlock([

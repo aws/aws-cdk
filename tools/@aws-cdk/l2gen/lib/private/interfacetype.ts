@@ -20,17 +20,21 @@ export class InterfaceTypeDefinition implements IType {
   private readonly ifProps = new Array<InterfaceField>();
   public readonly declaration: IRenderable;
 
-  constructor(private readonly typeName: string, public readonly sourceFile: SourceFile, private readonly props: InterfaceTypeDefinitionProps = {}) {
+  constructor(private typeName: string, public readonly sourceFile: SourceFile, private readonly props: InterfaceTypeDefinitionProps = {}) {
     this.addProperty(...props.properties ?? []);
 
     if (props.baseInterface && props.baseType) {
       throw new Error('Cannot supply baseInterface and baseType at the same time');
     }
 
-    const baseType = props.baseType ?? props.baseInterface;
-
     this.declaration = {
       render: (code: CM2) => {
+        // Nothing to render if we skip ourselves
+        if (this.skipSelf) { return; }
+
+        // Only render the base interface if it has props
+        const baseType = props.baseType ?? (props.baseInterface?.hasProps ? props.baseInterface : undefined);
+
         code.openBlock('export interface ', this.typeName, ...baseType ? [' extends ', baseType] : []);
         for (const prop of this.ifProps) {
           code.docBlock([
@@ -47,15 +51,26 @@ export class InterfaceTypeDefinition implements IType {
     };
   }
 
-  public get definingModule() {
-    return this.sourceFile;
+  public makeClassNameEndWith(suffix: string) {
+    if (!this.typeName.endsWith(suffix)) {
+      this.typeName = `${this.typeName}${suffix}`;
+    }
   }
 
-  public get typeRefName() {
-    return this.typeName;
+  public get definingModule() {
+    return this.skipSelf ? this.props.baseInterface!.sourceFile : this.sourceFile;
+  }
+
+  public get typeRefName(): string {
+    return this.skipSelf ? this.props.baseInterface!.typeRefName : this.typeName;
   }
 
   public render(code: CM2) {
+    if (this.skipSelf) {
+      this.props.baseInterface!.render(code);
+      return;
+    }
+
     if (this.props.automaticallyRender && code.currentModule.equals(this.sourceFile)) {
       code.addHelper(new RenderableHelper(this.typeName, this.props.automaticallyRender, this.declaration));
     }
@@ -87,8 +102,12 @@ export class InterfaceTypeDefinition implements IType {
     return this.ifProps.every(p => !p.required) && (!this.props.baseInterface || this.props.baseInterface.allPropertiesOptional);
   }
 
-  public get hasProps() {
-    return this.ifProps.length > 0;
+  public get hasProps(): boolean {
+    return this.ifProps.length > 0 || !!this.props.baseInterface?.hasProps;
+  }
+
+  public get skipSelf(): boolean {
+    return this.ifProps.length === 0 && !!this.props.baseInterface?.hasProps;
   }
 
   public get defaultValue() {

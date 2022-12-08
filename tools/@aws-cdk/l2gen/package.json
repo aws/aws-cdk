@@ -10,13 +10,7 @@
     "directory": "tools/@aws-cdk/l2gen"
   },
   "bin": {
-    "cdk-build": "bin/cdk-build",
-    "cdk-compat": "bin/cdk-compat",
-    "cdk-watch": "bin/cdk-watch",
-    "cdk-test": "bin/cdk-test",
-    "cdk-package": "bin/cdk-package",
-    "cdk-awslint": "bin/cdk-awslint",
-    "cdk-lint": "bin/cdk-lint"
+    "gui": "bin/gui"
   },
   "scripts": {
     "build": "tsc -b",
@@ -37,27 +31,34 @@
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
+    "@types/ink": "^2.0.3",
+    "@types/ink-select-input": "^3.0.1",
     "@types/jest": "^27.5.2",
+    "@types/react": "^18.0.26",
     "@types/semver": "^7.3.13",
     "@types/yargs": "^15.0.14"
   },
   "dependencies": {
-    "codemaker": "^1.71.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "chalk": "^4",
+    "codemaker": "^1.71.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^24.7.0",
     "fs-extra": "^9.1.0",
+    "ink": "^3.2.0",
+    "ink-form": "^1.0.2",
+    "ink-select-input": "^4.2.1",
     "jest": "^27.5.1",
     "jest-junit": "^13.2.0",
     "jsii-reflect": "1.71.0",
     "markdownlint-cli": "^0.32.2",
+    "react": "^18.2.0",
     "semver": "^7.3.8",
     "ts-jest": "^27.1.5",
     "typescript": "~3.9.10",

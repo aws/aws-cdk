@@ -28,6 +28,19 @@ export function arrayOf(type: IType): IType {
   };
 }
 
+export function mapOf(type: IType): IType {
+  return {
+    definingModule: type.definingModule,
+    typeRefName: `Record<string, ${type.typeRefName}>`,
+    render(code: CM2) {
+      code.add('Record<string, ', type, '>');
+    },
+    toString() {
+      return this.typeRefName;
+    },
+  };
+}
+
 export class StandardType implements IType {
   constructor(
     public readonly typeRefName: string,

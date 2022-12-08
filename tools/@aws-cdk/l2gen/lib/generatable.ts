@@ -2,6 +2,7 @@ import { CM2 } from './cm2';
 import { Diagnostic } from './diagnostic';
 
 export interface IGeneratable {
+  readonly schemaRefs?: string[];
   generateFiles(): CM2[];
   diagnostics(): Diagnostic[];
 }

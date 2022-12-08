@@ -7,12 +7,12 @@ export interface IValue extends IRenderable {
 }
 
 export class ObjectLiteral implements IValue {
-  private readonly fields = new Map<string, IValue>();
+  private readonly fields = new Map<string, IRenderable>();
 
   constructor(public readonly type: IType = ANY) {
   }
 
-  public set1(key: string, value: IValue) {
+  public set1(key: string, value: IRenderable) {
     if (this.fields.has(key)) {
       throw new Error(`Already has a value: ${key}`);
     }
@@ -28,6 +28,13 @@ export class ObjectLiteral implements IValue {
 
   public has(field: string) {
     return this.fields.has(field);
+  }
+
+  public combine(rhs: ObjectLiteral) {
+    const ret = new ObjectLiteral(this.type);
+    ret.set(Object.fromEntries(this.fields));
+    ret.set(Object.fromEntries(rhs.fields));
+    return ret;
   }
 
   public toString(): string {

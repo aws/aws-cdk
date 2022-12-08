@@ -7,7 +7,8 @@ import { InterfaceField, InterfaceTypeDefinition } from './private/interfacetype
 import { ArgumentOptions, Arguments } from './arguments';
 import { IValue, ObjectLiteral, litVal } from './value';
 import { toPascalCase } from 'codemaker';
-import { WireableProps, maybeWire } from './integrationtype';
+import { WireableProps, maybeWire } from './wiring';
+import { GenerationRoot } from './root';
 
 export interface EnumClassProps {
   readonly declaredReturnType?: IType;
@@ -18,13 +19,35 @@ export interface EnumClassProps {
 export class EnumClass implements IGeneratable, IType {
   public readonly typeRefName: string;
   public readonly definingModule: SourceFile;
+  public readonly unfold: (x: IRenderable) => IValue;
+  public readonly schemaRefs = new Array<string>();
   private readonly alternatives = new Array<Alternative>();
   private readonly _summary = new Array<string>();
   private readonly _details = new Array<string>();
+  private readonly sharedOptionsType: InterfaceTypeDefinition;
+  private readonly sharedRetVal = new ObjectLiteral();
 
-  constructor(public readonly className: string, private readonly props: EnumClassProps = {}) {
+  constructor(root: GenerationRoot, public readonly className: string, private readonly props: EnumClassProps = {}) {
+    root.add(this);
     this.typeRefName = className;
     this.definingModule = new SourceFile(fileFor(className, props.private ? 'private' : 'public'));
+    this.sharedOptionsType = new InterfaceTypeDefinition(`${className}Options`, this.definingModule, {
+      automaticallyRender: 'bottom',
+    });
+
+    this.unfold = (v: IRenderable): IValue => {
+      return {
+        type: this.props.declaredReturnType ?? ANY,
+        render: (code) => {
+          code.add(v, '.render()');
+        },
+        toString: () => v.toString(),
+      };
+    }
+  }
+
+  public schemaRef(x: string) {
+    this.schemaRefs.push(x);
   }
 
   public summary(summary: string) {
@@ -36,10 +59,26 @@ export class EnumClass implements IGeneratable, IType {
   }
 
   public alternative(name: string, build: AlternativeBuilder) {
-    const alt = new Alternative(this, name);
+    const alt = new Alternative(name, {
+      sharedOptionsType: this.sharedOptionsType,
+      sharedRetVal: this.sharedRetVal,
+      sourceFile: this.definingModule,
+      parentType: this,
+    });
     build(alt);
     this.alternatives.push(alt);
     return this;
+  }
+
+  public sharedOption(opt: InterfaceField & WireableProps): IValue {
+    const ret = this.sharedOptionsType.addInputProperty('options', opt);
+    return maybeWire({
+      wire: (...args) => this.sharedWire(...args),
+    }, opt, ret);
+  }
+
+  public sharedWire(props: Record<string, IRenderable>) {
+    this.sharedRetVal.set(props);
   }
 
   generateFiles(): CM2[] {
@@ -70,17 +109,6 @@ export class EnumClass implements IGeneratable, IType {
     return standardTypeRender(this, code);
   }
 
-  public unfold(v: IRenderable): IValue {
-    return {
-      type: this.props.declaredReturnType ?? ANY,
-      render: (code) => {
-        code.add(v, '.render()');
-      },
-      toString: () => v.toString(),
-    };
-
-  }
-
   toString(): string {
     return this.className;
   }
@@ -95,8 +123,9 @@ export class Alternative {
   private readonly _summary = new Array<string>();
   private readonly _details = new Array<string>();
 
-  constructor(private readonly parent: EnumClass, public readonly name: string) {
-    this.optionsType = new InterfaceTypeDefinition(`${toPascalCase(this.name)}Options`, parent.definingModule, {
+  constructor(public readonly name: string, private readonly host: IHostEnumClass) {
+    this.optionsType = new InterfaceTypeDefinition(`${toPascalCase(this.name)}Options`, host.sourceFile, {
+      baseInterface: host.sharedOptionsType,
       automaticallyRender: 'bottom',
     });
   }
@@ -134,10 +163,10 @@ export class Alternative {
           '',
           ...args.docBlockLines()
         ]);
-        code.block(['public static ', this.name, '(', args, '): ', this.parent], () => {
-          code.block(['return new class extends ', this.parent], () => {
+        code.block(['public static ', this.name, '(', args, '): ', this.host.parentType], () => {
+          code.block(['return new class extends ', this.host.parentType], () => {
             code.block(['public render(): ', typeCheckedReturnType ?? ANY], () => {
-              code.line('return ', this.retVal, ';');
+              code.line('return ', this.retVal.combine(this.host.sharedRetVal), ';');
             });
           });
         });
@@ -160,4 +189,11 @@ export class Alternative {
 export interface PositionalArg extends ArgumentOptions, WireableProps {
   readonly name: string;
   readonly type: IType;
+}
+
+export interface IHostEnumClass {
+  readonly sharedOptionsType: InterfaceTypeDefinition;
+  readonly sharedRetVal: ObjectLiteral;
+  readonly sourceFile: SourceFile;
+  readonly parentType: IType;
 }
