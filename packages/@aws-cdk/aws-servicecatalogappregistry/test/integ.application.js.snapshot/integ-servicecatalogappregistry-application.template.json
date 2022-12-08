@@ -123,6 +123,7 @@
  },
  "Outputs": {
   "TestApplicationApplicationManagerUrlE1058321": {
+   "Description": "Application manager url for application myCdkApplication",
    "Value": {
     "Fn::Join": [
      "",

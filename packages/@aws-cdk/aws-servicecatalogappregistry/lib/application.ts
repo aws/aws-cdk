@@ -35,12 +35,6 @@ export interface IApplication extends cdk.IResource {
   readonly applicationName?: string;
 
   /**
-   * Application manager URL for the Application.
-   * @attribute
-   */
-  readonly applicationManagerUrl?: cdk.CfnOutput;
-
-  /**
    * Associate this application with an attribute group.
    *
    * @param attributeGroup AppRegistry attribute group
@@ -100,7 +94,6 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   public abstract readonly applicationArn: string;
   public abstract readonly applicationId: string;
   public abstract readonly applicationName?: string;
-  public abstract readonly applicationManagerUrl?: cdk.CfnOutput;
   private readonly associatedAttributeGroups: Set<string> = new Set();
   private readonly associatedResources: Set<string> = new Set();
 
@@ -253,7 +246,6 @@ export class Application extends ApplicationBase {
       public readonly applicationArn = applicationArn;
       public readonly applicationId = applicationId!;
       public readonly applicationName = undefined;
-      public readonly applicationManagerUrl = undefined;
 
       protected generateUniqueHash(resourceAddress: string): string {
         return hashValues(this.applicationArn, resourceAddress);
@@ -265,10 +257,14 @@ export class Application extends ApplicationBase {
     });
   }
 
+  /**
+   * Application manager URL for the Application.
+   * @attribute
+   */
+  public readonly applicationManagerUrl?: cdk.CfnOutput;
   public readonly applicationArn: string;
   public readonly applicationId: string;
   public readonly applicationName?: string;
-  public readonly applicationManagerUrl?: cdk.CfnOutput;
   private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
@@ -288,6 +284,7 @@ export class Application extends ApplicationBase {
 
     this.applicationManagerUrl = new cdk.CfnOutput(this, 'ApplicationManagerUrl', {
       value: `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`,
+      description: `Application manager url for application ${this.applicationName}`,
     });
   }
 
