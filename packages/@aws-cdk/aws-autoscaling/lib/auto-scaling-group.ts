@@ -336,6 +336,18 @@ export interface CommonAutoScalingGroupProps {
    * @default - `TerminationPolicy.DEFAULT`
    */
   readonly terminationPolicies?: TerminationPolicy[];
+
+  /**
+   * The amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics.
+   * This delay lets an instance finish initializing before Amazon EC2 Auto Scaling aggregates instance metrics,
+   * resulting in more reliable usage data. Set this value equal to the amount of time that it takes for resource
+   * consumption to become stable after an instance reaches the InService state.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html
+   *
+   * @default Duration.seconds(0)
+   */
+  readonly defaultInstanceWarmup?: Duration;
 }
 
 /**
@@ -1344,6 +1356,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
       terminationPolicies: props.terminationPolicies,
+      defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       ...this.getLaunchSettings(launchConfig, props.launchTemplate, props.mixedInstancesPolicy),
     };
 
