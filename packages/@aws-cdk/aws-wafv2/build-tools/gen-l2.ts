@@ -1,15 +1,18 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { generate, L2Gen, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, BOOLEAN, TRUE, FALSE, jsVal, EnumClass, ANY, litVal, NUMBER, ifDefinedAny, definedOrElse, IntegrationType, arrayOf, stackToJsonString } from '@aws-cdk/l2gen';
+import { L2Gen, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, BOOLEAN, TRUE, FALSE, jsVal, EnumClass, ANY, litVal, NUMBER, ifDefinedAny, definedOrElse, IntegrationType, arrayOf, stackToJsonString, mapOf, transformMap, GenerationRoot, SchemaParser } from '@aws-cdk/l2gen';
+
+const root = new GenerationRoot();
+const parser = SchemaParser.fromFile('webacl.schema.json');
 
 //////////////////////////////////////////////////////////////////////
 
-const scope = new Enum('Scope');
+const scope = new Enum(root, 'Scope');
 const cloudFrontScope = scope.addMember({ name: 'CLOUDFRONT', cloudFormationString: 'CLOUDFRONT', summary: '' });
 const regionalScope = scope.addMember({ name: 'REGIONAL', cloudFormationString: 'REGIONAL', summary: '' });
 
 //////////////////////////////////////////////////////////////////////
 
-const protectedResource = new IntegrationType('ProtectedResource');
+const protectedResource = new IntegrationType(root, 'ProtectedResource');
 protectedResource.bindResult({
   name: 'scope',
   type: scope,
@@ -56,7 +59,7 @@ protectedResource.integration('ProtectedGraphQlApi', int => {
 
 //////////////////////////////////////////////////////////////////////
 
-const defaultActionType = new EnumClass('DefaultAction', {
+const defaultActionType = new EnumClass(root, 'DefaultAction', {
   typeCheckedReturnType: L2Gen.genTypeForProperty('AWS::WAFv2::WebACL', 'DefaultAction'),
 });
 defaultActionType.alternative('allow', allow => {
@@ -115,7 +118,7 @@ defaultActionType.alternative('block', block => {
 
 //////////////////////////////////////////////////////////////////////
 
-const customResponseBody = new EnumClass('CustomResponseBody', {
+const customResponseBody = new EnumClass(root, 'CustomResponseBody', {
   typeCheckedReturnType: L2Gen.genTypeForPropertyType('AWS::WAFv2::WebACL', 'CustomResponseBody'),
 });
 customResponseBody.alternative('custom', custom => {
@@ -186,13 +189,28 @@ customResponseBody.alternative('jsonObject', custom => {
 
 //////////////////////////////////////////////////////////////////////
 
-const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
+new L2Gen(root, 'AWS::WAFv2::WebACL').define(res => {
   /* const protectedResources = */ res.addProperty({
     name: 'protectedResources',
     type: arrayOf(protectedResource),
     required: false,
     summary: 'Resources protected by this WebACL',
     defaultDescription: 'Protected resources are added later',
+  });
+
+  res.addProperty({
+    name: 'customResponseBodies',
+    summary: 'Custom responses which can be referenced in actions by their keys.',
+    details: `
+      When you create a rule with a block action, you can send a custom response
+      to the web request. You define these for the web ACL, and then use them in
+      the rules and default actions that you define in the web ACL.
+    `,
+    type: mapOf(customResponseBody),
+    required: false,
+    wire: 'customResponseBodies',
+    wireTransform: transformMap(customResponseBody.unfold),
+    defaultDescription: 'No custom response bodies available',
   });
 
   res.addLazyPrivateProperty({
@@ -238,7 +256,7 @@ const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
   res.wire({
     captchaConfig: ifDefined(immunityTime, objLit({
       immunityTimeProperty: objLit({
-        immunityTime: renderDuration(immunityTime, 'toSeconds'),
+        immunityTime: renderDuration('toSeconds')(immunityTime),
       }),
     })),
   });
@@ -278,15 +296,14 @@ const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
     }),
   });
 
-  const defaultAction = res.addProperty({
+  res.addProperty({
     name: 'defaultAction',
     type: defaultActionType,
     required: true,
     summary: 'The action to perform if none of the Rules contained in the WebACL match.',
-  });
 
-  res.wire({
-    defaultAction: defaultActionType.unfold(defaultAction),
+    wire: 'defaultAction',
+    wireTransform: defaultActionType.unfold,
   });
 
   res.identification({
@@ -321,10 +338,11 @@ const webAcl = L2Gen.define('AWS::WAFv2::WebACL', res => {
 
 //////////////////////////////////////////////////////////////////////
 
-generate(
-  scope,
-  webAcl,
-  defaultActionType,
-  protectedResource,
-  customResponseBody,
-);
+parser.deriveEnumClass(root, 'TextTransformation', {
+  positionalArgs: ['Priority'],
+});
+
+//////////////////////////////////////////////////////////////////////
+
+root.generateHintsFrom(parser);
+root.generate();

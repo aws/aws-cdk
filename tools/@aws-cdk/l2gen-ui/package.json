@@ -1,13 +1,13 @@
 {
-  "name": "@aws-cdk/l2gen",
+  "name": "@aws-cdk/l2gen-ui",
   "private": true,
   "version": "0.0.0",
-  "description": "Code generation for L2s",
+  "description": "UI for L2 codegen",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "tools/@aws-cdk/l2gen"
+    "directory": "tools/@aws-cdk/l2gen-ui"
   },
   "scripts": {
     "build": "tsc -b",
@@ -30,15 +30,15 @@
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
     "@types/semver": "^7.3.13",
-    "@types/yargs": "^15.0.14"
+    "@types/yargs": "^15.0.14",
+    "esbuild": "^0.16.2"
   },
   "dependencies": {
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "chalk": "^4",
-    "codemaker": "^1.71.0",
+    "@aws-cdk/l2gen": "0.0.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.7.1",
