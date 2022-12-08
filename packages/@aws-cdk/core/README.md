@@ -1,23 +1,54 @@
-# AWS Cloud Development Kit Core Library
-<!--BEGIN STABILITY BANNER-->
+# AWS Cloud Development Kit Library
 
----
+The AWS CDK construct library provides APIs to define your CDK application and add
+CDK constructs to the application.
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+## Usage
 
-![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+### Upgrade from CDK 1.x
 
----
+When upgrading from CDK 1.x, remove all dependencies to individual CDK packages
+from your dependencies file and follow the rest of the sections.
 
-<!--END STABILITY BANNER-->
+### Installation
 
-This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
-AWS Construct Library.
+To use this package, you need to declare this package and the `constructs` package as
+dependencies.
 
-See the [AWS CDK Developer
-Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html) for
-information of most of the capabilities of this library. The rest of this
-README will only cover topics not already covered in the Developer Guide.
+According to the kind of project you are developing:
+
+- For projects that are CDK libraries, declare them both under the `devDependencies`
+  **and** `peerDependencies` sections.
+- For CDK apps, declare them under the `dependencies` section only.
+
+### Use in your code
+
+#### Classic import
+
+You can use a classic import to get access to each service namespaces:
+
+```ts
+import { Stack, App, aws_s3 as s3 } from 'aws-cdk-lib';
+
+const app = new App();
+const stack = new Stack(app, 'TestStack');
+
+new s3.Bucket(stack, 'TestBucket');
+```
+
+#### Barrel import
+
+Alternatively, you can use "barrel" imports:
+
+```ts
+import { App, Stack } from 'aws-cdk-lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+
+const app = new App();
+const stack = new Stack(app, 'TestStack');
+
+new Bucket(stack, 'TestBucket');
+```
 
 <!--BEGIN CORE DOCUMENTATION-->
 
@@ -1209,5 +1240,24 @@ _~/.cdk.json_
   }
 }
 ```
+
+## IAM Permissions Boundary
+
+It is possible to apply an [IAM permissions boundary](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+to all roles within a specific construct scope. The most common use case would
+be to apply a permissions boundary at the `Stage` level.
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+});
+```
+
+Any IAM Roles or Users created within this Stage will have the default
+permissions boundary attached.
+
+For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
 
 <!--END CORE DOCUMENTATION-->

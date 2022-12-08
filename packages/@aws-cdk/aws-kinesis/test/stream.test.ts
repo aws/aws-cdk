@@ -603,6 +603,7 @@ describe('Kinesis data streams', () => {
                     'kinesis:SubscribeToShard',
                     'kinesis:DescribeStream',
                     'kinesis:ListStreams',
+                    'kinesis:DescribeStreamConsumer',
                   ],
                   Effect: 'Allow',
                   Resource: {
@@ -775,6 +776,7 @@ describe('Kinesis data streams', () => {
                     'kinesis:SubscribeToShard',
                     'kinesis:DescribeStream',
                     'kinesis:ListStreams',
+                    'kinesis:DescribeStreamConsumer',
                     'kinesis:PutRecord',
                     'kinesis:PutRecords',
                   ],

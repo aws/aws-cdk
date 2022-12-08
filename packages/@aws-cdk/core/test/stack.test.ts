@@ -8,6 +8,10 @@ import {
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws,
+  PermissionsBoundary,
+  PERMISSIONS_BOUNDARY_CONTEXT_KEY,
+  Aspects,
+  Stage,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -1822,6 +1826,75 @@ describe('stack', () => {
   });
 });
 
+describe('permissions boundary', () => {
+  test('can specify a valid permissions boundary name', () => {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack = new Stack(app, 'Stack', {
+      permissionsBoundary: PermissionsBoundary.fromName('valid'),
+    });
+
+    // THEN
+    const pbContext = stack.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    expect(pbContext).toEqual({
+      name: 'valid',
+    });
+  });
+
+  test('can specify a valid permissions boundary arn', () => {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack = new Stack(app, 'Stack', {
+      permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::12345678912:policy/valid'),
+    });
+
+    // THEN
+    const pbContext = stack.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    expect(pbContext).toEqual({
+      name: undefined,
+      arn: 'arn:aws:iam::12345678912:policy/valid',
+    });
+  });
+
+  test('single aspect is added to stack', () => {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stage = new Stage(app, 'Stage', {
+      permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::12345678912:policy/stage'),
+    });
+    const stack = new Stack(stage, 'Stack', {
+      permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::12345678912:policy/valid'),
+    });
+
+    // THEN
+    const aspects = Aspects.of(stack).all;
+    expect(aspects.length).toEqual(1);
+    const pbContext = stack.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    expect(pbContext).toEqual({
+      name: undefined,
+      arn: 'arn:aws:iam::12345678912:policy/valid',
+    });
+  });
+
+  test('throws if pseudo parameters are in the name', () => {
+    // GIVEN
+    const app = new App();
+
+    // THEN
+    expect(() => {
+      new Stack(app, 'Stack', {
+        permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::${AWS::AccountId}:policy/valid'),
+      });
+    }).toThrow(/The permissions boundary .* includes a pseudo parameter/);
+  });
+});
+
 describe('regionalFact', () => {
   Fact.register({ name: 'MyFact', region: 'us-east-1', value: 'x.amazonaws.com' });
   Fact.register({ name: 'MyFact', region: 'eu-west-1', value: 'x.amazonaws.com' });
@@ -1844,6 +1917,31 @@ describe('regionalFact', () => {
     const stack = new Stack();
     Node.of(stack).setContext(cxapi.TARGET_PARTITIONS, ['aws']);
     expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
+  });
+
+  test('regional facts use the global lookup map if partition is the literal string of "undefined"', () => {
+    const stack = new Stack();
+    Node.of(stack).setContext(cxapi.TARGET_PARTITIONS, 'undefined');
+    new CfnOutput(stack, 'TheFact', {
+      value: stack.regionalFact('WeirdFact'),
+    });
+
+    expect(toCloudFormation(stack)).toEqual({
+      Mappings: {
+        WeirdFactMap: {
+          'eu-west-1': { value: 'otherformat' },
+          'us-east-1': { value: 'oneformat' },
+        },
+      },
+      Outputs: {
+        TheFact: {
+          Value: {
+            'Fn::FindInMap': ['WeirdFactMap', { Ref: 'AWS::Region' }, 'value'],
+          },
+        },
+      },
+    });
+
   });
 
   test('regional facts generate a mapping if necessary', () => {

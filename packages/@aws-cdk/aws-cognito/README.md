@@ -72,7 +72,7 @@ new cognito.UserPool(this, 'myuserpool', {
 ```
 
 By default, usernames and email addresses in user pools are case sensitive, which means `user@example.com` and `User@example.com`
-are considered different. In most situations it is prefered to have usernames and email addresses be case insensitive so that
+are considered different. In most situations it is preferred to have usernames and email addresses be case insensitive so that
 capitalization differences are ignored. As shown above, you can make a user pool case insensitive by setting `signInCaseSensitive`
 to `false`. The case sensitivity cannot be changed once a user pool is created.
 
@@ -356,6 +356,16 @@ new cognito.UserPool(this, 'UserPool', {
 The default for account recovery is by phone if available and by email otherwise.
 A user will not be allowed to reset their password via phone if they are also using it for MFA.
 
+#### Advanced Security Mode
+
+User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
+});
+```
 
 ### Emails
 

@@ -7,10 +7,7 @@ import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
-import { Schema } from './schema';
-import { IIntermediateType } from './schema-base';
-import { ResolvableField } from './schema-field';
-import { ObjectType } from './schema-intermediate';
+import { ISchema } from './schema';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -307,7 +304,7 @@ export interface GraphqlApiProps {
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    *
    */
-  readonly schema?: Schema;
+  readonly schema: ISchema;
   /**
    * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
    *
@@ -456,7 +453,7 @@ export class GraphqlApi extends GraphqlApiBase {
   /**
    * the schema attached to this api
    */
-  public readonly schema: Schema;
+  public readonly schema: ISchema;
 
   /**
    * The Authorization Types for this GraphQL Api
@@ -507,8 +504,8 @@ export class GraphqlApi extends GraphqlApiBase {
     this.arn = this.api.attrArn;
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
-    this.schema = props.schema ?? new Schema();
-    this.schemaResource = this.schema.bind(this);
+    this.schema = props.schema;
+    this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.schema.bind(this));
 
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
@@ -706,75 +703,6 @@ export class GraphqlApi extends GraphqlApiBase {
       apiId: this.apiId,
     });
   }
-
-  /**
-   * Escape hatch to append to Schema as desired. Will always result
-   * in a newline.
-   *
-   * @param addition the addition to add to schema
-   * @param delimiter the delimiter between schema and addition
-   * @default - ''
-   *
-   */
-  public addToSchema(addition: string, delimiter?: string): void {
-    this.schema.addToSchema(addition, delimiter);
-  }
-
-  /**
-   * Add type to the schema
-   *
-   * @param type the intermediate type to add to the schema
-   *
-   */
-  public addType(type: IIntermediateType): IIntermediateType {
-    return this.schema.addType(type);
-  }
-
-  /**
-   * Add a query field to the schema's Query. CDK will create an
-   * Object Type called 'Query'. For example,
-   *
-   * type Query {
-   *   fieldName: Field.returnType
-   * }
-   *
-   * @param fieldName the name of the query
-   * @param field the resolvable field to for this query
-   */
-  public addQuery(fieldName: string, field: ResolvableField): ObjectType {
-    return this.schema.addQuery(fieldName, field);
-  }
-
-  /**
-   * Add a mutation field to the schema's Mutation. CDK will create an
-   * Object Type called 'Mutation'. For example,
-   *
-   * type Mutation {
-   *   fieldName: Field.returnType
-   * }
-   *
-   * @param fieldName the name of the Mutation
-   * @param field the resolvable field to for this Mutation
-   */
-  public addMutation(fieldName: string, field: ResolvableField): ObjectType {
-    return this.schema.addMutation(fieldName, field);
-  }
-
-  /**
-   * Add a subscription field to the schema's Subscription. CDK will create an
-   * Object Type called 'Subscription'. For example,
-   *
-   * type Subscription {
-   *   fieldName: Field.returnType
-   * }
-   *
-   * @param fieldName the name of the Subscription
-   * @param field the resolvable field to for this Subscription
-   */
-  public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
-    return this.schema.addSubscription(fieldName, field);
-  }
-
 
   /**
    * The AppSyncDomainName of the associated custom domain

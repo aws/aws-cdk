@@ -2871,7 +2871,7 @@ describe('function', () => {
 
   describe('FunctionUrl', () => {
     test('addFunctionUrl creates a function url with default options', () => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
@@ -2895,7 +2895,7 @@ describe('function', () => {
     });
 
     test('addFunctionUrl creates a function url with all options', () => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
@@ -3045,6 +3045,31 @@ describe('function', () => {
       },
     });
   });
+
+  test('Generates a version when currentVersionOptions is set', () => {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      currentVersionOptions: {
+        provisionedConcurrentExecutions: 3,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: 3,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Code: { ZipFile: 'foo' },
+      Handler: 'index.handler',
+      Runtime: 'nodejs14.x',
+    });
+  });
 });
 
 test('throws if ephemeral storage size is out of bound', () => {
@@ -3124,6 +3149,32 @@ test('function using a reserved environment variable', () => {
       AWS_REGION: 'ap-southeast-2',
     },
   })).toThrow(/AWS_REGION environment variable is reserved/);
+});
+
+test('set SnapStart to desired value', () => {
+  const stack = new cdk.Stack();
+  new lambda.CfnFunction(stack, 'MyLambda', {
+    code: {
+      zipFile: 'java11-test-function.zip',
+    },
+    functionName: 'MyCDK-SnapStart-Function',
+    handler: 'example.Handler::handleRequest',
+    role: 'testRole',
+    runtime: 'java11',
+    snapStart: { applyOn: 'PublishedVersions' },
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+    {
+      Code: { ZipFile: 'java11-test-function.zip' },
+      Handler: 'example.Handler::handleRequest',
+      Runtime: 'java11',
+      SnapStart: {
+        ApplyOn: 'PublishedVersions',
+      },
+    },
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
