@@ -146,7 +146,7 @@ export enum MetricUnit {
   /**
    * Terabytes
    */
-  TERRABYTES = 'Terabytes',
+  TERABYTES = 'Terabytes',
 
   /**
    * Terabytes per second
