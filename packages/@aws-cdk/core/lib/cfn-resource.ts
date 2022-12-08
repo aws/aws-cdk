@@ -15,6 +15,7 @@ import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
+import { ResolutionTypeHint } from './type-hints';
 
 export interface CfnResourceProps {
   /**
@@ -172,8 +173,8 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string): Reference {
-    return CfnReference.for(this, attributeName);
+  public getAtt(attributeName: string, typeHint?: ResolutionTypeHint): Reference {
+    return CfnReference.for(this, attributeName, undefined, typeHint);
   }
 
   /**
