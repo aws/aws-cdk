@@ -28,11 +28,11 @@ export interface GameProperty {
  */
 export interface IMatchmakingConfiguration extends cdk.IResource {
   /**
-     * The Identifier of the matchmaking configuration.
+     * The name of the matchmaking configuration.
      *
      * @attribute
      */
-  readonly matchmakingConfigurationId: string;
+  readonly matchmakingConfigurationName: string;
 
   /**
      * The ARN of the matchmaking configuration.
@@ -40,6 +40,13 @@ export interface IMatchmakingConfiguration extends cdk.IResource {
      * @attribute
      */
   readonly matchmakingConfigurationArn: string;
+
+  /**
+   * The notification target for matchmaking events
+   *
+   * @attribute
+   */
+  readonly notificationTarget?: sns.ITopic;
 
 
   /**
@@ -93,20 +100,29 @@ export interface MatchmakingConfigurationAttributes {
   /**
         * The ARN of the Matchmaking configuration
         *
-        * At least one of `matchmakingConfigurationArn` and `matchmakingConfigurationId` must be provided.
+        * At least one of `matchmakingConfigurationArn` and `matchmakingConfigurationName` must be provided.
         *
-        * @default derived from `matchmakingConfigurationId`.
+        * @default derived from `matchmakingConfigurationName`.
         */
   readonly matchmakingConfigurationArn?: string;
 
   /**
       * The identifier of the Matchmaking configuration
       *
-      * At least one of `matchmakingConfigurationId` and `matchmakingConfigurationArn`  must be provided.
+      * At least one of `matchmakingConfigurationName` and `matchmakingConfigurationArn`  must be provided.
       *
       * @default derived from `matchmakingConfigurationArn`.
       */
-  readonly matchmakingConfigurationId?: string;
+  readonly matchmakingConfigurationName?: string;
+
+  /**
+   * An SNS topic ARN that is set up to receive matchmaking notifications.
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-notification.html
+   *
+   * @default no notification target binded to imported ressource
+   */
+  readonly notificationTarget?: sns.ITopic;
 }
 
 /**
@@ -117,8 +133,14 @@ export interface MatchmakingConfigurationProps {
   /**
      * A unique identifier for the matchmaking configuration.
      * This name is used to identify the configuration associated with a matchmaking request or ticket.
+     *
+     * If you don't specify a name, AWS CloudFormation generates a unique
+     * physical ID and uses that ID for the topic name. For more information,
+     * see Name Type.
+     *
+     * @default Generated name
      */
-  readonly matchmakingConfigurationName: string;
+  readonly matchmakingConfigurationName?: string;
 
   /**
    * A human-readable description of the matchmaking configuration.
@@ -133,7 +155,7 @@ export interface MatchmakingConfigurationProps {
      *
      * @default Acceptance is not required
      */
-  readonly requireAcceptance: boolean;
+  readonly requireAcceptance?: boolean;
 
   /**
    * The length of time (in seconds) to wait for players to accept a proposed match, if acceptance is required.
@@ -184,25 +206,26 @@ export abstract class MatchmakingConfigurationBase extends cdk.Resource implemen
    * Import an existing matchmaking configuration from its attributes.
    */
   static fromMatchmakingConfigurationAttributes(scope: Construct, id: string, attrs: MatchmakingConfigurationAttributes): IMatchmakingConfiguration {
-    if (!attrs.matchmakingConfigurationId && !attrs.matchmakingConfigurationArn) {
+    if (!attrs.matchmakingConfigurationName && !attrs.matchmakingConfigurationArn) {
       throw new Error('Either matchmakingconfigurationId or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes');
     }
-    const matchmakingConfigurationId = attrs.matchmakingConfigurationId ??
+    const matchmakingConfigurationName = attrs.matchmakingConfigurationName ??
      cdk.Stack.of(scope).splitArn(attrs.matchmakingConfigurationArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
-    if (!matchmakingConfigurationId) {
+    if (!matchmakingConfigurationName) {
       throw new Error(`No matchmaking configuration identifier found in ARN: '${attrs.matchmakingConfigurationArn}'`);
     }
 
     const matchmakingConfigurationArn = attrs.matchmakingConfigurationArn ?? cdk.Stack.of(scope).formatArn({
       service: 'gamelift',
       resource: 'matchmakingconfiguration',
-      resourceName: attrs.matchmakingConfigurationId,
+      resourceName: attrs.matchmakingConfigurationName,
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
     class Import extends MatchmakingConfigurationBase {
-      public readonly matchmakingConfigurationId = matchmakingConfigurationId!;
+      public readonly matchmakingConfigurationName = matchmakingConfigurationName!;
       public readonly matchmakingConfigurationArn = matchmakingConfigurationArn;
+      public readonly notificationTarget = attrs.notificationTarget;
 
       constructor(s: Construct, i: string) {
         super(s, i, {
@@ -216,11 +239,16 @@ export abstract class MatchmakingConfigurationBase extends cdk.Resource implemen
   /**
      * The Identifier of the matchmaking configuration.
      */
-  public abstract readonly matchmakingConfigurationId: string;
+  public abstract readonly matchmakingConfigurationName: string;
   /**
      * The ARN of the matchmaking configuration.
      */
   public abstract readonly matchmakingConfigurationArn: string;
+
+  /**
+   * The notification target for matchmaking events
+   */
+  public abstract readonly notificationTarget?: sns.ITopic;
 
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
