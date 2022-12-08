@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
@@ -975,6 +976,60 @@ describe('origin IDs', () => {
   });
 });
 
+describe('custom origin ids', () => {
+  test('test that originId param is respected', () => {
+    const origin = defaultOrigin(undefined, 'custom-origin-id');
+
+    const distribution = new Distribution(stack, 'Http1Distribution', {
+      defaultBehavior: { origin },
+      additionalBehaviors: {
+        secondUsage: {
+          origin,
+        },
+      },
+    });
+    distribution.addBehavior(
+      'thirdUsage',
+      origin,
+    );
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
+          TargetOriginId: 'custom-origin-id',
+          ViewerProtocolPolicy: 'allow-all',
+        },
+        CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
+          PathPattern: 'secondUsage',
+          TargetOriginId: 'custom-origin-id',
+          ViewerProtocolPolicy: 'allow-all',
+        },
+        {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
+          PathPattern: 'thirdUsage',
+          TargetOriginId: 'custom-origin-id',
+          ViewerProtocolPolicy: 'allow-all',
+        }],
+        Enabled: true,
+        HttpVersion: 'http2',
+        IPV6Enabled: true,
+        Origins: [{
+          DomainName: 'www.example.com',
+          Id: 'custom-origin-id',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
+        }],
+      },
+    });
+  });
+});
+
 describe('supported HTTP versions', () => {
   test('setting HTTP/1.1 renders HttpVersion correctly', () => {
     new Distribution(stack, 'Http1Distribution', {
@@ -1023,5 +1078,64 @@ describe('supported HTTP versions', () => {
         HttpVersion: 'http2and3',
       },
     });
+  });
+});
+
+test('grants custom actions', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+  distribution.grant(role, 'cloudfront:ListInvalidations', 'cloudfront:GetInvalidation');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'cloudfront:ListInvalidations',
+            'cloudfront:GetInvalidation',
+          ],
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                { Ref: 'Distribution830FAC52' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('grants createInvalidation', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+  distribution.grantCreateInvalidation(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'cloudfront:CreateInvalidation',
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                { Ref: 'Distribution830FAC52' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
   });
 });

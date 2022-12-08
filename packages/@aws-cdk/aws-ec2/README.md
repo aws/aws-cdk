@@ -217,6 +217,87 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 ```
 
+### Ip Address Management
+
+The VPC spans a supernet IP range, which contains the non-overlapping IPs of its contained subnets. Possible sources for this IP range are:
+
+* You specify an IP range directly by specifying a CIDR
+* You allocate an IP range of a given size automatically from AWS IPAM
+
+By default the Vpc will allocate the `10.0.0.0/16` address range which will be exhaustively spread across all subnets in the subnet configuration. This behavior can be changed by passing an object that implements `IIpAddresses` to the `ipAddress` property of a Vpc. See the subsequent sections for the options.
+
+Be aware that if you don't explicitly reserve subnet groups in `subnetConfiguration`, the address space will be fully allocated! If you predict you may need to add more subnet groups later, add them early on and set `reserved: true` (see the "Advanced Subnet Configuration" section for more information).
+
+#### Specifying a CIDR directly
+
+Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
+
+```ts
+import { IpAddresses } from '@aws-cdk/aws-ec2';
+
+new ec2.Vpc(stack, 'TheVPC', {
+  ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
+});
+```
+
+Space will be allocated to subnets in the following order:
+
+* First, spaces is allocated for all subnets groups that explicitly have a `cidrMask` set as part of their configuration (including reserved subnets).
+* Afterwards, any remaining space is divided evenly between the rest of the subnets (if any).
+
+The argument to `IpAddresses.cidr` may not be a token, and concrete Cidr values are generated in the synthesized CloudFormation template.
+
+#### Allocating an IP range from AWS IPAM
+
+Amazon VPC IP Address Manager (IPAM) manages a large IP space, from which chunks can be allocated for use in the Vpc. For information on Amazon VPC IP Address Manager please see the [official documentation](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html). An example of allocating from AWS IPAM looks like this:
+
+```ts
+import { IpAddresses } from '@aws-cdk/aws-ec2';
+
+declare const pool: ec2.CfnIPAMPool;
+
+new ec2.Vpc(stack, 'TheVPC', {
+  ipAddresses: ec2.IpAddresses.awsIpamAllocation({
+    ipv4IpamPoolId: pool.ref,
+    ipv4NetmaskLength: 18,
+    defaultSubnetIpv4NetmaskLength: 24
+  })
+});
+```
+
+`IpAddresses.awsIpamAllocation` requires the following:
+
+* `ipv4IpamPoolId`, the id of an IPAM Pool from which the VPC range should be allocated.
+* `ipv4NetmaskLength`, the size of the IP range that will be requested from the Pool at deploy time.
+* `defaultSubnetIpv4NetmaskLength`, the size of subnets in groups that don't have `cidrMask` set.
+
+With this method of IP address management, no attempt is made to guess at subnet group sizes or to exhaustively allocate the IP range. All subnet groups must have an explicit `cidrMask` set as part of their subnet configuration, or `defaultSubnetIpv4NetmaskLength` must be set for a default size. If not, synthesis will fail and you must provide one or the other.
+
+### Reserving availability zones
+
+There are situations where the IP space for availability zones will
+need to be reserved. This is useful in situations where availability
+zones would need to be added after the vpc is originally deployed,
+without causing IP renumbering for availability zones subnets. The IP
+space for reserving `n` availability zones can be done by setting the
+`reservedAzs` to `n` in vpc props, as shown below:
+
+```ts
+const vpc = new ec2.Vpc(this, 'TheVPC', {
+  cidr: '10.0.0.0/21',
+  maxAzs: 3,
+  reservedAzs: 1,
+});
+```
+
+In the example above, the subnets for reserved availability zones is not
+actually provisioned but its IP space is still reserved. If, in the future,
+new availability zones needs to be provisioned, then we would decrement
+the value of `reservedAzs` and increment the `maxAzs` or `availabilityZones`
+accordingly. This action would not cause the IP address of subnets to get
+renumbered, but rather the IP space that was previously reserved will be
+used for the new availability zones subnets.
+
 ### Advanced Subnet Configuration
 
 If the default VPC configuration (public and private subnets spanning the
@@ -227,9 +308,9 @@ subnet configuration could look like this:
 
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
-  // 'cidr' configures the IP range and size of the entire VPC.
-  // The IP space will be divided over the configured subnets.
-  cidr: '10.0.0.0/21',
+  // 'IpAddresses' configures the IP range and size of the entire VPC.
+  // The IP space will be divided based on configuration for the subnets.
+  ipAddresses: IpAddresses.cidr('10.0.0.0/21'),
 
   // 'maxAzs' configures the maximum number of availability zones to use.
   // If you want to specify the exact availability zones you want the VPC
@@ -594,7 +675,7 @@ const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroupImport', 's
 });
 ```
 
-Alternatively, use lookup methods to import security groups if you do not know the ID or the configuration details. Method `SecurityGroup.fromLookupByName` looks up a security group if the secruity group ID is unknown.
+Alternatively, use lookup methods to import security groups if you do not know the ID or the configuration details. Method `SecurityGroup.fromLookupByName` looks up a security group if the security group ID is unknown.
 
 ```ts fixture=with-vpc
 const sg = ec2.SecurityGroup.fromLookupByName(this, 'SecurityGroupLookup', 'security-group-name', vpc);
@@ -948,11 +1029,11 @@ new ec2.Instance(this, 'Instance2', {
   }),
 });
 
-// AWS Linux 2 with kernel 5.x 
+// AWS Linux 2 with kernel 5.x
 new ec2.Instance(this, 'Instance3', {
   vpc,
   instanceType,
-  machineImage: new ec2.AmazonLinuxImage({ 
+  machineImage: new ec2.AmazonLinuxImage({
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
     kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
   }),
@@ -962,7 +1043,7 @@ new ec2.Instance(this, 'Instance3', {
 new ec2.Instance(this, 'Instance4', {
   vpc,
   instanceType,
-  machineImage: new ec2.AmazonLinuxImage({ 
+  machineImage: new ec2.AmazonLinuxImage({
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
   }),
 });
@@ -1245,6 +1326,19 @@ You can configure [tag propagation on volume creation](https://docs.aws.amazon.c
   });
 ```
 
+#### Throughput on GP3 Volumes
+
+You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZone: 'us-east-1a',
+  size: cdk.Size.gibibytes(125),
+  volumeType: EbsDeviceVolumeType.GP3,
+  throughput: 125,
+});
+```
+
 ### Configuring Instance Metadata Service (IMDS)
 
 #### Toggling IMDSv1
@@ -1320,6 +1414,38 @@ vpc.addFlowLog('FlowLogCloudWatch', {
   maxAggregationInterval: FlowLogMaxAggregationInterval.ONE_MINUTE,
 });
 ```
+
+### Custom Formatting
+
+You can also custom format flow logs.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.DST_PORT,
+    ec2.LogFormat.SRC_PORT,
+  ],
+});
+
+// If you just want to add a field to the default field
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.VERSION,
+    ec2.LogFormat.ALL_DEFAULT_FIELDS,
+  ],
+});
+
+// If AWS CDK does not support the new fields
+vpc.addFlowLog('FlowLog', {
+  logFormat: [
+    ec2.LogFormat.SRC_PORT,
+    ec2.LogFormat.custom('${new-field}'),
+  ],
+});
+```
+
 
 By default, the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
 it will create a CloudWatch Logs Log Group as well as the IAM role with the necessary permissions to publish to
@@ -1407,9 +1533,9 @@ asset.grantRead(instance.role);
 ### Persisting user data
 
 By default, EC2 UserData is run once on only the first time that an instance is started. It is possible to make the
-user data script run on every start of the instance. 
+user data script run on every start of the instance.
 
-When creating a Windows UserData you can use the `persist` option to set whether or not to add 
+When creating a Windows UserData you can use the `persist` option to set whether or not to add
 `<persist>true</persist>` [to the user data script](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html#user-data-scripts). it can be used as follows:
 
 ```ts
@@ -1466,7 +1592,7 @@ For more information see
 #### Using add*Command on MultipartUserData
 
 To use the `add*Command` methods, that are inherited from the `UserData` interface, on `MultipartUserData` you must add a part
-to the `MultipartUserData` and designate it as the reciever for these methods. This is accomplished by using the `addUserDataPart()`
+to the `MultipartUserData` and designate it as the receiver for these methods. This is accomplished by using the `addUserDataPart()`
 method on `MultipartUserData` with the `makeDefault` argument set to `true`:
 
 ```ts

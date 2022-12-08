@@ -1,0 +1,268 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "integ-user-pool.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-user-pool": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d52bd1bc71dfc61d4ad7024fe0716269f71e86ea085d0ccd71bcbe68e8df1c34.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-user-pool.assets"
+      ],
+      "metadata": {
+        "/integ-user-pool/createAuthChallenge/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createAuthChallengeServiceRole611710B5"
+          }
+        ],
+        "/integ-user-pool/createAuthChallenge/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createAuthChallengeB185B225"
+          }
+        ],
+        "/integ-user-pool/customMessage/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "customMessageServiceRoleB4AE7F17"
+          }
+        ],
+        "/integ-user-pool/customMessage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "customMessage52BA91E2"
+          }
+        ],
+        "/integ-user-pool/defineAuthChallenge/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defineAuthChallengeServiceRole9E2D15DF"
+          }
+        ],
+        "/integ-user-pool/defineAuthChallenge/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defineAuthChallengeAE7BCDA1"
+          }
+        ],
+        "/integ-user-pool/postAuthentication/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "postAuthenticationServiceRole5B3B242A"
+          }
+        ],
+        "/integ-user-pool/postAuthentication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "postAuthentication741BD8E3"
+          }
+        ],
+        "/integ-user-pool/postConfirmation/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "postConfirmationServiceRole864BE5F9"
+          }
+        ],
+        "/integ-user-pool/postConfirmation/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "postConfirmationD5E3F1DD"
+          }
+        ],
+        "/integ-user-pool/preAuthentication/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "preAuthenticationServiceRole9712F4D8"
+          }
+        ],
+        "/integ-user-pool/preAuthentication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "preAuthentication56F78C81"
+          }
+        ],
+        "/integ-user-pool/preSignUp/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "preSignUpServiceRole0A7E91EB"
+          }
+        ],
+        "/integ-user-pool/preSignUp/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "preSignUp1934B27C"
+          }
+        ],
+        "/integ-user-pool/preTokenGeneration/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "preTokenGenerationServiceRole430C3D14"
+          }
+        ],
+        "/integ-user-pool/preTokenGeneration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "preTokenGeneration1E968302"
+          }
+        ],
+        "/integ-user-pool/userMigration/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userMigrationServiceRole091766B0"
+          }
+        ],
+        "/integ-user-pool/userMigration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userMigrationAAA960EC"
+          }
+        ],
+        "/integ-user-pool/verifyAuthChallengeResponse/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "verifyAuthChallengeResponseServiceRole7077884C"
+          }
+        ],
+        "/integ-user-pool/verifyAuthChallengeResponse/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "verifyAuthChallengeResponse211FE4A6"
+          }
+        ],
+        "/integ-user-pool/myuserpool/CreateAuthChallengeCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolCreateAuthChallengeCognitoCE4A6821"
+          }
+        ],
+        "/integ-user-pool/myuserpool/CustomMessageCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolCustomMessageCognito8057432C"
+          }
+        ],
+        "/integ-user-pool/myuserpool/DefineAuthChallengeCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolDefineAuthChallengeCognito81526ECF"
+          }
+        ],
+        "/integ-user-pool/myuserpool/PostAuthenticationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolPostAuthenticationCognito83D5BAE9"
+          }
+        ],
+        "/integ-user-pool/myuserpool/PostConfirmationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolPostConfirmationCognitoB4F79E1C"
+          }
+        ],
+        "/integ-user-pool/myuserpool/PreAuthenticationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolPreAuthenticationCognitoE1C7AED3"
+          }
+        ],
+        "/integ-user-pool/myuserpool/PreSignUpCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolPreSignUpCognitoD6CE8CAD"
+          }
+        ],
+        "/integ-user-pool/myuserpool/PreTokenGenerationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolPreTokenGenerationCognitoF1714665"
+          }
+        ],
+        "/integ-user-pool/myuserpool/UserMigrationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolUserMigrationCognito56734AFB"
+          }
+        ],
+        "/integ-user-pool/myuserpool/VerifyAuthChallengeResponseCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolVerifyAuthChallengeResponseCognitoAEAB40FD"
+          }
+        ],
+        "/integ-user-pool/myuserpool/smsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolsmsRole0E16FDD9"
+          }
+        ],
+        "/integ-user-pool/myuserpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-pool/myuserpool/myuserpooldomain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolmyuserpooldomainEE1E11AF"
+          }
+        ],
+        "/integ-user-pool/userpoolId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userpoolId"
+          }
+        ],
+        "/integ-user-pool/cognitoDomainName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "cognitoDomainName"
+          }
+        ],
+        "/integ-user-pool/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

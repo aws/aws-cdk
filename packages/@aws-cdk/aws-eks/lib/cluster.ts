@@ -8,6 +8,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
@@ -826,16 +827,19 @@ export class KubernetesVersion {
 
   /**
    * Kubernetes version 1.18
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
   /**
    * Kubernetes version 1.19
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_19 = KubernetesVersion.of('1.19');
 
   /**
    * Kubernetes version 1.20
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_20 = KubernetesVersion.of('1.20');
 
@@ -843,6 +847,33 @@ export class KubernetesVersion {
    * Kubernetes version 1.21
    */
   public static readonly V1_21 = KubernetesVersion.of('1.21');
+
+  /**
+   * Kubernetes version 1.22
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV22Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v22`.
+   */
+  public static readonly V1_22 = KubernetesVersion.of('1.22');
+
+  /**
+   * Kubernetes version 1.23
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV23Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v23`.
+   */
+  public static readonly V1_23 = KubernetesVersion.of('1.23');
+
+  /**
+   * Kubernetes version 1.24
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV24Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v24`.
+   */
+  public static readonly V1_24 = KubernetesVersion.of('1.24');
 
   /**
    * Custom cluster version
@@ -1362,6 +1393,11 @@ export class Cluster extends ClusterBase {
 
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
+
+    const kubectlVersion = new semver.SemVer(`${props.version.version}.0`);
+    if (semver.gte(kubectlVersion, '1.22.0') && !props.kubectlLayer) {
+      Annotations.of(this).addWarning(`You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
+    };
     this.version = props.version;
     this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
 
@@ -2287,7 +2323,7 @@ export enum CoreDnsComputeType {
   /**
    * Deploy CoreDNS on Fargate-managed instances.
    */
-  FARGATE = 'fargate'
+  FARGATE = 'fargate',
 }
 
 /**
@@ -2301,7 +2337,7 @@ export enum DefaultCapacityType {
   /**
    * EC2 autoscaling group
    */
-  EC2
+  EC2,
 }
 
 /**
@@ -2315,7 +2351,7 @@ export enum MachineImageType {
   /**
    * Bottlerocket AMI
    */
-  BOTTLEROCKET
+  BOTTLEROCKET,
 }
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {

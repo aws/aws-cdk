@@ -7,10 +7,11 @@ import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-21';
+import * as kplus from 'cdk8s-plus-24';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
+import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 
 class EksClusterStack extends Stack {
@@ -36,7 +37,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_21,
+      ...getClusterVersionConfig(this),
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -130,8 +131,6 @@ class EksClusterStack extends Stack {
 
     // make sure namespace is deployed before the chart
     nginxIngress.node.addDependency(nginxNamespace);
-
-
   }
 
   private assertSimpleCdk8sChart() {
@@ -338,6 +337,13 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
   testCases: [stack],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
 });
 
 app.synth();

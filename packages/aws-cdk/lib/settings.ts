@@ -289,6 +289,8 @@ export class Settings {
       lookups: argv.lookups,
       rollback: argv.rollback,
       notices: argv.notices,
+      assetParallelism: argv['asset-parallelism'],
+      assetPrebuild: argv['asset-prebuild'],
     });
   }
 

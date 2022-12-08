@@ -212,7 +212,13 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
     attrType = TOKEN_NAME.fqn;
   }
 
-  const constructorArguments = `this.getAtt('${attributeName}')`;
+  let typeHint = 'STRING';
+  if (attrType === 'number') {
+    typeHint = 'NUMBER';
+  } else if (attrType === 'string[]') {
+    typeHint = 'STRING_LIST';
+  }
+  const constructorArguments = `this.getAtt('${attributeName}', cdk.ResolutionTypeHint.${typeHint})`;
   return new Attribute(propertyName, attrType, constructorArguments);
 }
 
