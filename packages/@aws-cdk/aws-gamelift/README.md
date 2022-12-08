@@ -473,6 +473,38 @@ const queue = new gamelift.GameSessionQueue(this, 'GameSessionQueue', {
 queue.addDestination(alias);
 ```
 
+A more complex configuration can also be definied to override how FleetIQ algorithms prioritize game session placement in order to favour a destination based on `Cost`, `Latency`, `Destination order`or `Location`.
+
+```ts
+declare const fleet: gamelift.BuildFleet;
+declare const topic: sns.Topic;
+
+new gamelift.GameSessionQueue(this, 'MyGameSessionQueue', {
+      gameSessionQueueName: 'test-gameSessionQueue',
+      customEventData: 'test-event-data',
+      allowedLocations: ['eu-west-1', 'eu-west-2'],
+      destinations: [fleet],
+      notificationTarget: topic,
+      playerLatencyPolicies: [{
+        maximumIndividualPlayerLatency: Duration.millis(100),
+        policyDuration: Duration.seconds(300),
+      }],
+      priorityConfiguration: {
+        locationOrder: [
+          'eu-west-1',
+          'eu-west-2',
+        ],
+        priorityOrder: [
+          gamelift.PriorityType.LATENCY,
+          gamelift.PriorityType.COST,
+          gamelift.PriorityType.DESTINATION,
+          gamelift.PriorityType.LOCATION,
+        ],
+      },
+      timeout: Duration.seconds(300),
+    });
+```
+
 See [Setting up GameLift queues for game session placement](https://docs.aws.amazon.com/gamelift/latest/developerguide/realtime-script-uploading.html)
 in the *Amazon GameLift Developer Guide*.
 

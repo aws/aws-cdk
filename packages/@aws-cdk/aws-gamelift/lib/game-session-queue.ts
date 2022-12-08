@@ -372,7 +372,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
     }
 
     if (props.customEventData && props.customEventData.length > 256) {
-      throw new Error(`GameSessionQueue cudtom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`);
+      throw new Error(`GameSessionQueue custom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`);
     }
 
     if (props.allowedLocations && props.allowedLocations.length > 100) {

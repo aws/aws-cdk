@@ -341,7 +341,7 @@ describe('gameSessionQueue', () => {
         gameSessionQueueName: 'test-name',
         destinations: [fleet],
         customEventData: incorrectCustomEventData,
-      })).toThrow(/GameSessionQueue cudtom event data can not be longer than 256 characters but has 257 characters./);
+      })).toThrow(/GameSessionQueue custom event data can not be longer than 256 characters but has 257 characters./);
     });
 
     test('with an incorrect number of locations', () => {
