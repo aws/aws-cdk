@@ -526,7 +526,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       from the same account as the Rule can send messages. If a queue is unencrypted, this restriction will
       always apply, regardless of the value of this flag.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
   },
 
@@ -540,7 +540,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This flag disables use of that exceptions database and always uses the global service principal.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
   },
 
@@ -555,7 +555,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This is a feature flag as the new behavior provides a better default experience for the users.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
   },
 };

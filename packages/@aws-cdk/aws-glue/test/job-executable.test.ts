@@ -11,6 +11,8 @@ describe('GlueVersion', () => {
 
   test('.V3_0 should set the name correctly', () => expect(glue.GlueVersion.V3_0.name).toEqual('3.0'));
 
+  test('.V4_0 should set the name correctly', () => expect(glue.GlueVersion.V4_0.name).toEqual('4.0'));
+
   test('of(customVersion) should set the name correctly', () => expect(glue.GlueVersion.of('CustomVersion').name).toEqual('CustomVersion'));
 });
 
@@ -74,7 +76,7 @@ describe('JobExecutable', () => {
       })).toThrow(/extraPythonFiles is not supported for languages other than JobLanguage.PYTHON/);
     });
 
-    [glue.GlueVersion.V0_9, glue.GlueVersion.V2_0, glue.GlueVersion.V3_0].forEach((glueVersion) => {
+    [glue.GlueVersion.V0_9, glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
       test(`with JobType.PYTHON_SHELL and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.PYTHON_SHELL,
@@ -99,7 +101,7 @@ describe('JobExecutable', () => {
       });
     });
 
-    [glue.GlueVersion.V2_0, glue.GlueVersion.V3_0].forEach((glueVersion) => {
+    [glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
       test(`with PythonVersion.TWO and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.ETL,

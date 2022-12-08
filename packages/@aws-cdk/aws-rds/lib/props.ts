@@ -492,6 +492,13 @@ export interface CommonRotationUserOptions {
    * @default https://secretsmanager.<region>.amazonaws.com
    */
   readonly endpoint?: ec2.IInterfaceVpcEndpoint;
+
+  /**
+   * The security group for the Lambda rotation function
+   *
+   * @default - a new security group is created
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 /**

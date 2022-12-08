@@ -497,6 +497,19 @@ export interface DeviceTracking {
 }
 
 /**
+ * The different ways in which a user pool's Advanced Security Mode can be configured.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html#cfn-cognito-userpool-userpooladdons-advancedsecuritymode
+ */
+export enum AdvancedSecurityMode {
+  /** Enable advanced security mode */
+  ENFORCED = 'ENFORCED',
+  /** gather metrics on detected risks without taking action. Metrics are published to Amazon CloudWatch */
+  AUDIT = 'AUDIT',
+  /** Advanced security mode is disabled */
+  OFF = 'OFF'
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -692,6 +705,12 @@ export interface UserPoolProps {
    * @default - no key ID configured
    */
   readonly customSenderKmsKey?: IKey;
+
+  /**
+   * The user pool's Advanced Security Mode
+   * @default - no value
+   */
+  readonly advancedSecurityMode?: AdvancedSecurityMode;
 }
 
 /**
@@ -934,6 +953,9 @@ export class UserPool extends UserPoolBase {
       emailVerificationSubject,
       smsVerificationMessage,
       verificationMessageTemplate,
+      userPoolAddOns: undefinedIfNoKeys({
+        advancedSecurityMode: props.advancedSecurityMode,
+      }),
       schema: this.schemaConfiguration(props),
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
