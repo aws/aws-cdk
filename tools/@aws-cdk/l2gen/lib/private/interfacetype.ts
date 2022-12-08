@@ -1,7 +1,7 @@
 import { IRenderable, CM2, HelperPosition, RenderableHelper } from '../cm2';
 import { IType, standardTypeRender } from '../type';
 import { SourceFile } from '../source-module';
-import { IValue, litVal } from '../value';
+import { IValue, litVal, objLit } from '../value';
 
 export interface InterfaceTypeDefinitionProps {
   readonly properties?: InterfaceField[];
@@ -49,6 +49,12 @@ export class InterfaceTypeDefinition implements IType {
         code.closeBlock();
       }
     };
+  }
+
+  public exampleValue(): IRenderable {
+    return objLit(Object.fromEntries(this.allProperties.map(prop =>
+      [prop.name, prop.type.exampleValue(prop.name)]
+    )));
   }
 
   public makeClassNameEndWith(suffix: string) {
@@ -125,6 +131,13 @@ export class InterfaceTypeDefinition implements IType {
     const code = new CM2(this.sourceFile);
     code.add(this.declaration);
     return code;
+  }
+
+  public get allProperties(): InterfaceField[] {
+    return [
+      ...this.props.baseInterface?.allProperties ?? [],
+      ...this.ifProps
+    ];
   }
 }
 

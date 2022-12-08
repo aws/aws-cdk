@@ -1,10 +1,10 @@
 import { IGeneratable, fileFor } from './generatable';
 import { IType, standardTypeRender, STRING } from './type';
-import { CM2, SymbolImport } from './cm2';
+import { CM2, SymbolImport, IRenderable, renderable } from './cm2';
 import { IValue } from './value';
 import { SourceFile } from './source-module';
 import { Diagnostic } from './diagnostic';
-import { toCamelCase } from 'codemaker';
+import { toCamelCase } from './private/camel';
 import { jsVal } from './well-known-values';
 import { GenerationRoot } from './root';
 
@@ -21,6 +21,17 @@ export class Enum implements IGeneratable, IType {
     this.typeRefName = enumName;
     this.definingModule = new SourceFile(fileFor(this.typeRefName, 'public'));
     root.add(this);
+  }
+
+  toString(): string {
+    return `${this.typeRefName}`;
+  }
+
+  public exampleValue(): IRenderable {
+    if (this.members.length > 0) {
+      return renderable([this.typeRefName, '.', this.members[0].name]);
+    }
+    return renderable(['<NONE>']);
   }
 
   public schemaRef(x: string) {

@@ -1,6 +1,6 @@
 import { IGeneratable, fileFor } from './generatable';
-import { toPascalCase } from 'codemaker';
-import { CM2, IRenderable } from './cm2';
+import { toPascalCase } from './private/camel';
+import { CM2, IRenderable, renderable } from './cm2';
 import { RESOURCE, CONSTRUCT, factoryFunction, LAZY, IRESOURCE, STACK } from './well-known-types';
 import { ObjectLiteral, litVal, IValue } from './value';
 import { SourceFile } from './source-module';
@@ -177,7 +177,7 @@ export class L2Gen implements IGeneratable {
     const l1Type = l1ResourceType(this.cloudFormationResourceType);
 
     const code = new CM2(this.sourceFile.fileName);
-    const propsType = existingType(`${this.genClassName}Props`, this.sourceFile);
+    const propsType = existingType(`${this.genClassName}Props`, this.sourceFile, () => renderable(['...']));
 
     code.docBlock(['@internal']);
     code.add(this.baseProps.declaration);

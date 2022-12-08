@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import type { GenerationRoot } from './root';
 import { EnumClass } from './enumclass';
 import { genTypeForPropertyType } from './private/cfn2ts-conventions';
-import { toCamelCase } from 'codemaker';
+import { toCamelCase } from './private/camel';
 import { STRING, NUMBER, BOOLEAN, IType } from './type';
 import { jsVal } from './well-known-values';
 
@@ -146,13 +146,19 @@ export class SchemaParser {
     }
   }
 
+  public definitions(): ResolvedType[] {
+    return Object.keys(this.schema.definitions ?? {}).map(name => {
+      return this.definition(name);
+    });
+  }
+
   private definition(name: string): ResolvedType {
     if (!this.schema.definitions?.[name]) {
       throw new Error(`No such definition: ${name}`);
     }
 
     return {
-      schemaLocation: `${this.schema.typeName}#/definitions`,
+      schemaLocation: `${this.schema.typeName}#/definitions/${name}`,
       ...this.schema.definitions?.[name]
     };
   }
@@ -249,7 +255,7 @@ function parseSchemaObject(x: ResolvedType): SchemaObject | undefined {
   };
 }
 
-function nameFromType(x: ResolvedType) {
+export function nameFromType(x: ResolvedType) {
   return x.schemaLocation.split('/').slice(-1)[0];
 }
 

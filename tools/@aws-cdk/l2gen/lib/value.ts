@@ -1,5 +1,5 @@
 import { IType, ANY } from './type';
-import { CM2, IRenderable, CodePart } from './cm2';
+import { CM2, IRenderable, CodePart, renderObjectLiteral } from './cm2';
 
 export interface IValue extends IRenderable {
   readonly type: IType;
@@ -42,13 +42,7 @@ export class ObjectLiteral implements IValue {
   }
 
   public render(code: CM2): void {
-    code.indent('  ');
-    code.write('{\n');
-    for (const [k, v] of this.fields.entries()) {
-      code.add(k as string, `: `, v, ',\n');
-    }
-    code.unindent();
-    code.write('}');
+    renderObjectLiteral(code, this.fields.entries());
   }
 }
 

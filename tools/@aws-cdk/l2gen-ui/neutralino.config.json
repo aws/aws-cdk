@@ -32,11 +32,11 @@
   },
   "modes": {
     "window": {
-      "title": "myapp",
-      "width": 800,
-      "height": 500,
-      "minWidth": 400,
-      "minHeight": 200,
+      "title": "aws-cdk L2 Customization",
+      "width": 1024,
+      "height": 800,
+      "minWidth": 800,
+      "minHeight": 400,
       "fullScreen": false,
       "alwaysOnTop": false,
       "icon": "/resources/icons/appIcon.png",
@@ -45,7 +45,7 @@
       "maximize": false,
       "hidden": false,
       "resizable": true,
-      "exitProcessOnClose": false
+      "exitProcessOnClose": true
     },
     "browser": {
       "globalVariables": {
@@ -75,7 +75,7 @@
     "binaryName": "myapp",
     "resourcesPath": "/resources/",
     "extensionsPath": "/extensions/",
-    "clientLibrary": "/resources/js/neutralino.js",
+    "clientLibrary": "/resources/build/neutralino.js",
     "binaryVersion": "4.9.0",
     "clientVersion": "3.8.0"
   }

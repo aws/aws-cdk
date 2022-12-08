@@ -1,7 +1,8 @@
 import { schema, resourceSpecification, propertySpecification } from '@aws-cdk/cfnspec';
-import { toCamelCase } from 'codemaker';
+import { toCamelCase } from './camel';
 import { IType, existingType } from '../type';
 import { SourceFile } from '../source-module';
+import { renderable } from '../cm2';
 
 export function l1ClassName(cloudFormationResourceType: string) {
   const resourceName = cloudFormationResourceType.split('::')[2];
@@ -56,11 +57,19 @@ export function genTypeForProperty(typeName: string, ...propertyPath: string[]):
 }
 
 export function l1ResourceType(cloudFormationResourceType: string) {
-  return existingType(l1ClassName(cloudFormationResourceType), l1File(cloudFormationResourceType));
+  return existingType(
+    l1ClassName(cloudFormationResourceType),
+    l1File(cloudFormationResourceType),
+    () => renderable(['...']),
+  );
 }
 
 export function l1PropertyType(cloudFormationResourceType: string, propTypeName: string) {
-  return existingType(`${l1ClassName(cloudFormationResourceType)}.${propTypeName}Property`, l1File(cloudFormationResourceType));
+  return existingType(
+    `${l1ClassName(cloudFormationResourceType)}.${propTypeName}Property`,
+    l1File(cloudFormationResourceType),
+    () => renderable(['...']),
+    );
 }
 
 function l1File(cloudFormationResourceType: string) {

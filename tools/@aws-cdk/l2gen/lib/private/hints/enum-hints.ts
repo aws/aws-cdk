@@ -1,6 +1,6 @@
 import { EnumDefinition } from '../../schema-parser';
 import { CM2 } from '../../cm2';
-import { toCamelCase } from 'codemaker';
+import { toCamelCase } from '../camel';
 import { objLit } from '../../value';
 import { jsVal } from '../../well-known-values';
 import { Hint } from './hint';

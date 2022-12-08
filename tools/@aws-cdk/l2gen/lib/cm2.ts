@@ -14,6 +14,15 @@ export type CodePart = string | IRenderable;
 export type HelperPosition = 'top' | 'bottom';
 
 export class CM2 {
+  public static renderSingle(fileName: string | SourceFile, ...parts: CodePart[]) {
+    const ret = new CM2(fileName);
+    ret.add(...parts);
+
+    // Before rendering, get rid of the helpers
+    ret.clearHelpers();
+    return ret.render();
+  }
+
   public readonly currentModule: SourceFile;
 
   private readonly buffer: WriteBuffer;
@@ -171,10 +180,26 @@ export class CM2 {
 
     return [f.render()];
   }
+
+  public clearHelpers() {
+    this.helpers.clear();
+  }
 }
 
 export interface IRenderable {
   render(code: CM2): void;
+}
+
+export function renderable(render: ((x: CM2) => void) | CodePart[]): IRenderable {
+  if (Array.isArray(render)) {
+    return {
+      render(code: CM2) {
+        code.add(...render);
+      }
+    };
+  } else {
+    return { render };
+  }
 }
 
 class WriteBuffer {
@@ -269,4 +294,14 @@ export function interleave(sep: CodePart, xs: Array<CodePart | CodePart[]>): Cod
     }
   }
   return ret;
+}
+
+export function renderObjectLiteral(code: CM2, props: Iterable<[string, CodePart]>) {
+  code.indent('  ');
+  code.write('{\n');
+  for (const [k, v] of props) {
+    code.add(k as string, `: `, v, ',\n');
+  }
+  code.unindent();
+  code.write('}');
 }

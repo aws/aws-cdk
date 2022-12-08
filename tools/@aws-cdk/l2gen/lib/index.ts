@@ -13,3 +13,4 @@ export * from './schema-parser';
 export * from './arguments';
 export * from './integrationtype';
 export * from './wiring';
+export * from './suggestions';

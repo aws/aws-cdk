@@ -1,12 +1,12 @@
 import { IType, standardTypeRender, ANY } from './type';
 import { IGeneratable, fileFor } from './generatable';
-import { CM2, IRenderable } from './cm2';
+import { CM2, IRenderable, renderable } from './cm2';
 import { Diagnostic } from './diagnostic';
 import { SourceFile } from './source-module';
 import { InterfaceField, InterfaceTypeDefinition } from './private/interfacetype';
 import { ArgumentOptions, Arguments } from './arguments';
 import { IValue, ObjectLiteral, litVal } from './value';
-import { toPascalCase } from 'codemaker';
+import { toPascalCase } from './private/camel';
 import { WireableProps, maybeWire } from './wiring';
 import { GenerationRoot } from './root';
 
@@ -44,6 +44,21 @@ export class EnumClass implements IGeneratable, IType {
         toString: () => v.toString(),
       };
     }
+  }
+
+  public exampleValue(): IRenderable {
+    if (this.alternatives.length > 0) {
+      return this.alternatives[0].exampleUsage();
+    }
+    return renderable(['<NONE>']);
+  }
+
+  public allExampleValues(): IRenderable {
+    return renderable((code: CM2) => {
+      for (const alt of this.alternatives) {
+        code.line(alt.exampleUsage());
+      }
+    });
   }
 
   public schemaRef(x: string) {
@@ -112,6 +127,7 @@ export class EnumClass implements IGeneratable, IType {
   toString(): string {
     return this.className;
   }
+
 }
 
 export type AlternativeBuilder = (x: Alternative) => void;
@@ -183,6 +199,12 @@ export class Alternative {
       });
     }
     return args;
+  }
+
+  public exampleUsage() {
+    return renderable((code: CM2) => {
+      code.add(this.host.parentType, '.', this.name, '(', ...this.factoryArguments().exampleValuesCommaSeparated(), ')');
+    });
   }
 }
 

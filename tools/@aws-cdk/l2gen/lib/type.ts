@@ -1,18 +1,22 @@
 import { ISourceModule } from './source-module';
-import { IRenderable, CM2, SymbolImport } from './cm2';
+import { IRenderable, CM2, SymbolImport, renderable, renderObjectLiteral } from './cm2';
+
+
+export type ExampleProducer = (name: string) => IRenderable;
 
 export interface IType extends IRenderable {
   readonly typeRefName: string;
   readonly definingModule: ISourceModule | undefined;
   toString(): string;
+  exampleValue(name: string): IRenderable;
 }
 
-export function existingType(typeRefName: string, definingModule: ISourceModule): StandardType {
-  return new StandardType(typeRefName, definingModule);
+export function existingType(typeRefName: string, definingModule: ISourceModule, ex: ExampleProducer): StandardType {
+  return new StandardType(typeRefName, definingModule, ex);
 }
 
-export function builtinType(typeRefName: string): StandardType {
-  return new StandardType(typeRefName, undefined);
+export function builtinType(typeRefName: string, ex: ExampleProducer): StandardType {
+  return new StandardType(typeRefName, undefined, ex);
 }
 
 export function arrayOf(type: IType): IType {
@@ -25,6 +29,9 @@ export function arrayOf(type: IType): IType {
     toString() {
       return this.typeRefName;
     },
+    exampleValue(name: string) {
+      return renderable(['[', type.exampleValue(name), ']']);
+    }
   };
 }
 
@@ -38,13 +45,19 @@ export function mapOf(type: IType): IType {
     toString() {
       return this.typeRefName;
     },
+    exampleValue(name: string) {
+      return renderable(code => renderObjectLiteral(code, Object.entries({
+        key: type.exampleValue(name),
+      })));
+    }
   };
 }
 
 export class StandardType implements IType {
   constructor(
     public readonly typeRefName: string,
-    public readonly definingModule: ISourceModule | undefined) { }
+    public readonly definingModule: ISourceModule | undefined,
+    public readonly exampleValue: (name: string) => IRenderable) { }
 
   public render(code: CM2): void {
     return standardTypeRender(this, code);
@@ -69,8 +82,8 @@ export function standardTypeRender(type: IType, code: CM2) {
   code.write(type.typeRefName);
 }
 
-export const STRING = builtinType('string');
-export const NUMBER = builtinType('number');
-export const BOOLEAN = builtinType('boolean');
-export const ANY = builtinType('any');
-export const VOID = builtinType('void');
+export const STRING = builtinType('string', name => renderable([JSON.stringify(name)]));
+export const NUMBER = builtinType('number', _ => renderable(['123']));
+export const BOOLEAN = builtinType('boolean', _ => renderable(['true']));
+export const ANY = builtinType('any', _ => renderable(['...']));
+export const VOID = builtinType('void', _ => renderable(['undefined']));

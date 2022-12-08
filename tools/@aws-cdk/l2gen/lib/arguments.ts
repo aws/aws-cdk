@@ -38,6 +38,14 @@ export class Arguments implements IRenderable {
     ret.args.push(...this.args);
     return ret;
   }
+
+  public exampleValues() {
+    return this.args.map(arg => arg.type.exampleValue(arg.name));
+  }
+
+  public exampleValuesCommaSeparated() {
+    return interleave(', ', this.exampleValues());
+  }
 }
 
 export interface ArgumentOptions {

@@ -13,3 +13,8 @@ nyc.config.js
 
 junit.xml
 bin/
+!vendor/
+!do-bundle.js
+*.log
+resources/build
+!resources/js/

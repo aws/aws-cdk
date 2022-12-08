@@ -17,7 +17,8 @@
     "build+test+package": "yarn build+test",
     "build+test": "yarn build && yarn test",
     "build+extract": "yarn build",
-    "build+test+extract": "yarn build+test"
+    "build+test+extract": "yarn build+test",
+    "bundle": "node do-bundle.js"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -29,6 +30,8 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.9",
     "@types/semver": "^7.3.13",
     "@types/yargs": "^15.0.14",
     "esbuild": "^0.16.2"
@@ -36,9 +39,12 @@
   "dependencies": {
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/eslint-plugin": "0.0.0",
+    "@aws-cdk/l2gen": "0.0.0",
+    "@blueprintjs/core": "^4.13.0",
+    "@blueprintjs/icons": "^4.11.0",
+    "@blueprintjs/select": "^4.8.12",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "@aws-cdk/l2gen": "0.0.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.7.1",
@@ -49,6 +55,8 @@
     "jest-junit": "^13.2.0",
     "jsii-reflect": "1.71.0",
     "markdownlint-cli": "^0.32.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "semver": "^7.3.8",
     "ts-jest": "^27.1.5",
     "typescript": "~3.9.10",

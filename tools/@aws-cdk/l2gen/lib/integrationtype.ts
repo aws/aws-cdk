@@ -1,13 +1,13 @@
 import { IType, standardTypeRender, VOID } from './type';
 import { IGeneratable, fileFor } from './generatable';
-import { CM2 } from './cm2';
+import { CM2, IRenderable, renderable } from './cm2';
 import { Diagnostic } from './diagnostic';
 import { SourceFile } from './source-module';
 import { InterfaceField, InterfaceTypeDefinition } from './private/interfacetype';
 import { CONSTRUCT } from './well-known-types';
 import { ArgumentOptions, Arguments } from './arguments';
 import { IValue, ObjectLiteral, litVal } from './value';
-import { toPascalCase } from 'codemaker';
+import { toPascalCase } from './private/camel';
 import { GenerationRoot } from './root';
 
 export class IntegrationType implements IGeneratable, IType {
@@ -88,6 +88,13 @@ export class IntegrationType implements IGeneratable, IType {
   toString(): string {
     return this.className;
   }
+
+  public exampleValue(): IRenderable {
+    if (this.integrations.length > 0) {
+      return this.integrations[0].exampleUsage();
+    }
+    return renderable(['<NONE>']);
+  }
 }
 
 export type IntegrationBuilder = (x: Integration) => void;
@@ -147,6 +154,12 @@ export class Integration implements IGeneratable {
     return [code];
   }
 
+  public exampleUsage() {
+    return renderable((code: CM2) => {
+      code.add('new ', this.name, '(', ...this.constructorArguments().exampleValuesCommaSeparated(), ')');
+    });
+  }
+
   public diagnostics(): Diagnostic[] {
     return [];
   }
@@ -159,4 +172,5 @@ export class Integration implements IGeneratable {
   public option(opt: InterfaceField): IValue {
     return this.optionsType.addInputProperty('this.options', opt);
   }
+
 }
