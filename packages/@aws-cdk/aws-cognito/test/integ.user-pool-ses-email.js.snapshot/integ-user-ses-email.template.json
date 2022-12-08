@@ -20,7 +20,7 @@
     },
     "EmailConfiguration": {
      "EmailSendingAccount": "DEVELOPER",
-     "From": "noreply@example.com",
+     "From": "\"myname@mycompany.com\" <noreply@example.com>",
      "ReplyToEmailAddress": "support@example.com",
      "SourceArn": {
       "Fn::Join": [
