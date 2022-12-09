@@ -10,10 +10,10 @@ export interface SubscriptionProps {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicy?: { [attribute: string]: sns.SubscriptionFilter };
+  readonly filterPolicy?: sns.SubscriptionFilterPolicy;
   /**
    * The filter policy scope.
-   * 
+   *
    * @default - Filter applied through message attributes
    */
   readonly filterPolicyScope?: sns.SubscriptionFilterPolicyScope;

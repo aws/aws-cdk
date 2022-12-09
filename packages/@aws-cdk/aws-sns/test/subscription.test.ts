@@ -124,7 +124,6 @@ describe('Subscription', () => {
           lessThanOrEqualTo: -2,
         }),
       },
-      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
     });
@@ -150,9 +149,59 @@ describe('Subscription', () => {
           { numeric: ['>', 2000, '<', 3000] },
         ],
       },
-      FilterPolicyScope: 'MessageBody',
     });
 
+  });
+
+  test('with filter policy scope', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        background: {
+          color: sns.SubscriptionFilter.stringFilter({
+            allowlist: ['red', 'green'],
+            denylist: ['white', 'orange'],
+          }),
+        },
+        price: sns.SubscriptionFilter.numericFilter({
+          allowlist: [100, 200],
+          between: { start: 300, stop: 350 },
+          greaterThan: 500,
+          lessThan: 1000,
+          betweenStrict: { start: 2000, stop: 3000 },
+        }),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      FilterPolicy: {
+        background: {
+          color: [
+            'red',
+            'green',
+            { 'anything-but': ['white', 'orange'] },
+          ],
+        },
+        price: [
+          { numeric: ['=', 100] },
+          { numeric: ['=', 200] },
+          { numeric: ['>', 500] },
+          { numeric: ['<', 1000] },
+          { numeric: ['>=', 300, '<=', 350] },
+          { numeric: ['>', 2000, '<', 3000] },
+        ],
+      },
+      FilterPolicyScope: 'MessageBody',
+    });
   });
 
   test('with numeric filter and 0 values', () => {
@@ -241,7 +290,7 @@ describe('Subscription', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
-    const cond = { conditions: [] };
+    const cond = { conditions: new sns.SubscriptionFilter([]) };
 
     // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
@@ -271,11 +320,29 @@ describe('Subscription', () => {
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
       filterPolicy: {
-        a: { conditions: [...Array.from(Array(2).keys())] },
-        b: { conditions: [...Array.from(Array(10).keys())] },
-        c: { conditions: [...Array.from(Array(6).keys())] },
+        a: new sns.SubscriptionFilter([...Array.from(Array(2).keys())]),
+        b: new sns.SubscriptionFilter([...Array.from(Array(10).keys())]),
+        c: new sns.SubscriptionFilter([...Array.from(Array(8).keys())]),
       },
-    })).toThrow(/\(120\) must not exceed 100/);
+    })).toThrow(/\(160\) must not exceed 150/);
+
+  });
+
+  test('throws with more than 100 conditions in a filter policy with filter policy scope set to MessageBody', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+      filterPolicy: {
+        a: { b: new sns.SubscriptionFilter([...Array.from(Array(10).keys())]) },
+        c: { d: new sns.SubscriptionFilter([...Array.from(Array(5).keys())]) },
+      },
+    })).toThrow(/\(200\) must not exceed 150/);
 
   });
 
