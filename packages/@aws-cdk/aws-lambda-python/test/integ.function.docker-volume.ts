@@ -26,7 +26,7 @@ class TestStack extends Stack {
     const entry = path.join(__dirname, 'lambda-handler-docker-volume');
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: entry,
-      bundling: { volumesFrom: containerName },
+      bundling: { volumesFrom: [containerName] },
       runtime: Runtime.PYTHON_3_8,
     });
     this.functionName = fn.functionName;

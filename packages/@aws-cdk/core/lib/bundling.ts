@@ -45,10 +45,10 @@ export interface BundlingOptions {
 
   /**
    * Where to mount the specified volumes from
-   * Docker [volumes-from option](https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from)
+   * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
    * @default - no containers are specified to mount volumes from
    */
-  readonly volumesFrom?: string;
+  readonly volumesFrom?: string[];
 
   /**
    * The environment variables to pass to the Docker container.
@@ -218,7 +218,7 @@ export class BundlingDockerImage {
         ? ['-u', options.user]
         : [],
       ...options.volumesFrom
-        ? ['--volumes-from', options.volumesFrom]
+        ? flatten(options.volumesFrom.map(v => ['--volumes-from', v]))
         : [],
       ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
@@ -453,10 +453,10 @@ export interface DockerRunOptions {
 
   /**
    * Where to mount the specified volumes from
-   * Docker [volumes-from option](https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from)
-   * @default - no volumes-from options
+   * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
+   * @default - no containers are specified to mount volumes from
    */
-  readonly volumesFrom?: string;
+  readonly volumesFrom?: string[];
 
   /**
    * The environment variables to pass to the container.

@@ -283,12 +283,12 @@ test('Bundling with custom volumes', () => {
   Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
-    volumesFrom: process.env.HOSTNAME,
+    volumesFrom: ['777f7dc92da7'],
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
     bundling: expect.objectContaining({
-      volumesFrom: process.env.HOSTNAME,
+      volumesFrom: ['777f7dc92da7'],
     }),
   }));
 });

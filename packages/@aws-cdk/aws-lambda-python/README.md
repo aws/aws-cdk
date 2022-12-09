@@ -145,7 +145,7 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
-You can also pass additional options to configure Docker for situations where the docker daemon is not running in the same system as you are bundling from.
+In situations where files are needed for bundling that are from a different container, you can specify the container ID from which additional volumes should be mounted.
 
  ```ts
 const entry = '/path/to/function';
@@ -153,7 +153,7 @@ const entry = '/path/to/function';
 new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
-  bundling: { volumesFrom: process.env.HOSTNAME },
+  bundling: { volumesFrom: ['777f7dc92da7'] },
 });
 ```
 

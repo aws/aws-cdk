@@ -37,10 +37,10 @@ export interface BundlingProps extends BundlingOptions {
 
   /**
    * Where to mount the specified volumes from
-   * Docker [volumes-from option](https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from)
-   * @default - no volumes-from options
+   * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
+   * @default - no containers are specified to mount volumes from
    */
-  readonly volumesFrom?: string;
+  readonly volumesFrom?: string[];
 
   /**
    * Whether or not the bundling process should be skipped
@@ -66,7 +66,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly image: DockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
-  public readonly volumesFrom?: string;
+  public readonly volumesFrom?: string[];
 
   constructor(props: BundlingProps) {
     const {
