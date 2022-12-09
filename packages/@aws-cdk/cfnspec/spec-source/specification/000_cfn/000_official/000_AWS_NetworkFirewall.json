@@ -1,5 +1,5 @@
 {
-  "$version": "100.0.0",
+  "$version": "101.0.0",
   "PropertyTypes": {
     "AWS::NetworkFirewall::Firewall.SubnetMapping": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-firewall-subnetmapping.html",
@@ -214,6 +214,7 @@
       "Properties": {
         "LogDestinationConfigs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-networkfirewall-loggingconfiguration-loggingconfiguration.html#cfn-networkfirewall-loggingconfiguration-loggingconfiguration-logdestinationconfigs",
+          "DuplicatesAllowed": true,
           "ItemType": "LogDestinationConfig",
           "Required": true,
           "Type": "List",

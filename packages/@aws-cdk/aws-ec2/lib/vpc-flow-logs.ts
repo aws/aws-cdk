@@ -676,7 +676,7 @@ export class FlowLog extends FlowLogBase {
     }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
-      destinationOptions: destinationConfig.destinationOptions,
+      destinationOptions: renderDestinationOptions(destinationConfig.destinationOptions),
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
       logDestinationType: destinationConfig.logDestinationType,
       logGroupName: this.logGroup ? this.logGroup.logGroupName : undefined,
@@ -693,4 +693,14 @@ export class FlowLog extends FlowLogBase {
     this.flowLogId = flowLog.ref;
     this.node.defaultChild = flowLog;
   }
+}
+
+function renderDestinationOptions(opts: DestinationOptions | undefined): CfnFlowLog.DestinationOptionsProperty | undefined {
+  if (opts === undefined) { return undefined; }
+
+  return {
+    fileFormat: opts.fileFormat ?? 'plain-text',
+    hiveCompatiblePartitions: opts.hiveCompatiblePartitions ?? false,
+    perHourPartition: opts.perHourPartition ?? false,
+  };
 }
