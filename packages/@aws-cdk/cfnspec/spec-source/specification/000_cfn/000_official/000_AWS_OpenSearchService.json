@@ -1,5 +1,5 @@
 {
-  "$version": "100.0.0",
+  "$version": "101.0.0",
   "PropertyTypes": {
     "AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-advancedsecurityoptionsinput.html",
@@ -256,6 +256,59 @@
         }
       }
     },
+    "AWS::OpenSearchService::Domain.ServiceSoftwareOptions": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html",
+      "Properties": {
+        "AutomatedUpdateDate": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-automatedupdatedate",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Cancellable": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-cancellable",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "CurrentVersion": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-currentversion",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "Description": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-description",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "NewVersion": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-newversion",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "OptionalDeployment": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-optionaldeployment",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "UpdateAvailable": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-updateavailable",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "UpdateStatus": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-servicesoftwareoptions.html#cfn-opensearchservice-domain-servicesoftwareoptions-updatestatus",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::OpenSearchService::Domain.SnapshotOptions": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-snapshotoptions.html",
       "Properties": {
@@ -312,7 +365,38 @@
         "DomainEndpoint": {
           "PrimitiveType": "String"
         },
+        "DomainEndpoints": {
+          "PrimitiveItemType": "String",
+          "Type": "Map"
+        },
         "Id": {
+          "PrimitiveType": "String"
+        },
+        "ServiceSoftwareOptions": {
+          "Type": "ServiceSoftwareOptions"
+        },
+        "ServiceSoftwareOptions.AutomatedUpdateDate": {
+          "PrimitiveType": "String"
+        },
+        "ServiceSoftwareOptions.Cancellable": {
+          "PrimitiveType": "Boolean"
+        },
+        "ServiceSoftwareOptions.CurrentVersion": {
+          "PrimitiveType": "String"
+        },
+        "ServiceSoftwareOptions.Description": {
+          "PrimitiveType": "String"
+        },
+        "ServiceSoftwareOptions.NewVersion": {
+          "PrimitiveType": "String"
+        },
+        "ServiceSoftwareOptions.OptionalDeployment": {
+          "PrimitiveType": "Boolean"
+        },
+        "ServiceSoftwareOptions.UpdateAvailable": {
+          "PrimitiveType": "Boolean"
+        },
+        "ServiceSoftwareOptions.UpdateStatus": {
           "PrimitiveType": "String"
         }
       },
