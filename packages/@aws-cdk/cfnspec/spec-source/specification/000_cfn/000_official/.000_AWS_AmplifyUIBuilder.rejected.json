@@ -863,7 +863,7 @@
       }
     }
   },
-  "ResourceSpecificationVersion": "98.0.0",
+  "ResourceSpecificationVersion": "100.0.0",
   "ResourceTypes": {
     "AWS::AmplifyUIBuilder::Component": {
       "Attributes": {
