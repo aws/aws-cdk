@@ -93,4 +93,10 @@ export interface BundlingOptions {
    * @default - no containers are specified to mount volumes from
    */
   readonly volumesFrom?: string[];
+
+  /**
+   * Additional commands executed in the bundling container after running dependency installation
+   * @default - no additional custom commands are executed
+   */
+  readonly customCommands?: string[]
 }

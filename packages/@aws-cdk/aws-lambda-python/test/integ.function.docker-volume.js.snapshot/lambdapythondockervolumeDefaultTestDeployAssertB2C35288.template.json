@@ -11,14 +11,14 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"200\"}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"\\\"test-data\\\"\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::ImportValue": "cdk-integ-lambda-docker-volume:ExportsOutputRefmyhandlerD202FA8E369E8804"
      }
     },
     "flattenResponse": "false",
-    "salt": "1667977522302"
+    "salt": "1670593251796"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -36,13 +36,6 @@ export interface BundlingProps extends BundlingOptions {
   readonly architecture?: Architecture;
 
   /**
-   * Where to mount the specified volumes from
-   * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
-   * @default - no containers are specified to mount volumes from
-   */
-  readonly volumesFrom?: string[];
-
-  /**
    * Whether or not the bundling process should be skipped
    *
    * @default - Does not skip bundling
@@ -76,6 +69,7 @@ export class Bundling implements CdkBundlingOptions {
       outputPathSuffix = '',
       image,
       poetryIncludeHashes,
+      customCommands,
     } = props;
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -85,6 +79,7 @@ export class Bundling implements CdkBundlingOptions {
       inputDir: AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: outputPath,
       poetryIncludeHashes,
+      customCommands: customCommands,
     });
 
     this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
@@ -108,6 +103,9 @@ export class Bundling implements CdkBundlingOptions {
     if (packaging.dependenciesFile) {
       bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
     }
+    if (options.customCommands) {
+      bundlingCommands.push(...options.customCommands);
+    }
     return bundlingCommands;
   }
 }
@@ -117,6 +115,7 @@ interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
   readonly poetryIncludeHashes?: boolean;
+  readonly customCommands?: string[]
 }
 
 /**

@@ -97,7 +97,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "28a2c50569ec5fea6e965a17ac8a91e3dc12731e1a6db9ca469b54254b20257b.zip"
+                      "s3Key": "95d39f5dbdbf17059e25a75cb64ed078f0b9234a627442ced4475fdfe4474197.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -135,7 +135,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.140"
+              "version": "10.1.154"
             }
           },
           "BootstrapVersion": {
@@ -173,7 +173,7 @@
                 "path": "lambda-python-docker-volume/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.154"
                 }
               },
               "DeployAssert": {
@@ -193,7 +193,7 @@
                             "path": "lambda-python-docker-volume/DefaultTest/DeployAssert/LambdaInvoke431773224924ebf10c8a31d363a6bf16/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.140"
+                              "version": "10.1.154"
                             }
                           }
                         },
@@ -273,7 +273,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.1.154"
                     }
                   },
                   "BootstrapVersion": {
@@ -315,7 +315,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.154"
         }
       }
     },
