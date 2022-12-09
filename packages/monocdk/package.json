@@ -105,7 +105,7 @@
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
-    "ignore": "^5.2.0",
+    "ignore": "^5.2.1",
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.1.1",
