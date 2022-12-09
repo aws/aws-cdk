@@ -589,25 +589,14 @@ describe('cluster resource provider', () => {
             resourcesVpcConfig: undefined,
           }));
 
-          const resp = await handler.onEvent();
-          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
-          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
-            name: 'physical-resource-id',
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
-                },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-          });
-          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error.message).toEqual('Cannot update logging and access at the same time');
         });
       });
     });
