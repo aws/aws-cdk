@@ -234,6 +234,17 @@
                     "description": "Platform to build for. _Requires Docker Buildx_. (Default - current machine platform)",
                     "type": "string"
                 },
+                "outputs": {
+                    "description": "Build args to pass to the `docker build` command (Default no build args are passed)",
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "minItems": 1,
+                    "maxItems": 1
+                },
                 "id": {
                     "description": "Logical identifier for the asset",
                     "type": "string"
