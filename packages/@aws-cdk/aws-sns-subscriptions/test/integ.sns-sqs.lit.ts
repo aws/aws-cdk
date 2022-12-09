@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as subs from '../lib';
 
-const restrictSqsDescryption = { [cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true };
+const restrictSqsDecryption = { [cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true };
 
 class SnsToSqs extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -25,7 +25,7 @@ class SnsToSqs extends cdk.Stack {
 }
 
 const app = new cdk.App({
-  context: restrictSqsDescryption,
+  context: restrictSqsDecryption,
 });
 
 new SnsToSqs(app, 'aws-cdk-sns-sqs');

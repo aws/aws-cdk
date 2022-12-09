@@ -8,7 +8,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as subs from '../lib';
 
 /* eslint-disable quote-props */
-const restrictSqsDescryption = { [cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true };
+const restrictSqsDecryption = { [cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true };
 let stack: Stack;
 let topic: sns.Topic;
 
@@ -1116,7 +1116,7 @@ describe('Restrict sqs decryption feature flag', () => {
   test('Restrict decryption of sqs to sns topic', () => {
     const stackUnderTest = new Stack(
       new App({
-        context: restrictSqsDescryption,
+        context: restrictSqsDecryption,
       }),
     );
     const topicUnderTest = new sns.Topic(stackUnderTest, 'MyTopic', {

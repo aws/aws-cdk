@@ -32,7 +32,7 @@ Flags come in three types:
 | [@aws-cdk/core:validateSnapshotRemovalPolicy](#aws-cdkcorevalidatesnapshotremovalpolicy) | Error on snapshot removal policies on resources that do not support it. | 2.28.0 | (default) |
 | [@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName](#aws-cdkaws-codepipelinecrossaccountkeyaliasstacksaferesourcename) | Generate key aliases that include the stack name | 2.29.0 | (fix) |
 | [@aws-cdk/aws-s3:createDefaultLoggingPolicy](#aws-cdkaws-s3createdefaultloggingpolicy) | Enable this feature flag to create an S3 bucket policy by default in cases where an AWS service would automatically create the Policy if one does not exist. | 2.31.0 | (fix) |
-| [@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption](#aws-cdkaws-sns-subscriptionsrestrictsqsdescryption) | Restrict KMS key policy for encrypted Queues a bit more | 2.32.0 | (fix) |
+| [@aws-cdk/aws-sns-subscriptions:restrictSqsDecryption](#aws-cdkaws-sns-subscriptionsrestrictsqsdecryption) | Restrict KMS key policy for encrypted Queues a bit more | 2.32.0 | (fix) |
 | [@aws-cdk/aws-ecs:arnFormatIncludesClusterName](#aws-cdkaws-ecsarnformatincludesclustername) | ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID. | 2.35.0 | (fix) |
 | [@aws-cdk/aws-apigateway:disableCloudWatchRole](#aws-cdkaws-apigatewaydisablecloudwatchrole) | Make default CloudWatch Role behavior safe for multiple API Gateways in one environment | 2.38.0 | (fix) |
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | (fix) |
@@ -63,7 +63,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
     "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
-    "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
+    "@aws-cdk/aws-sns-subscriptions:restrictSqsDecryption": true,
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
@@ -556,7 +556,7 @@ remain in control of it.
 | 2.31.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-sns-subscriptions:restrictSqsDescryption
+### @aws-cdk/aws-sns-subscriptions:restrictSqsDecryption
 
 *Restrict KMS key policy for encrypted Queues a bit more* (fix)
 
