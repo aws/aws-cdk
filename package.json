@@ -36,7 +36,8 @@
   "resolutions": {
     "colors": "1.4.0",
     "markdown-it": "^12.3.2",
-    "string-width": "^4.2.3"
+    "string-width": "^4.2.3",
+    "@types/babel__traverse": "7.18.2"
   },
   "repository": {
     "type": "git",
