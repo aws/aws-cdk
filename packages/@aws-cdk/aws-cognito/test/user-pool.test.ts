@@ -5,7 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -1921,6 +1921,41 @@ test('deletion protection', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
     DeletionProtection: 'ACTIVE',
+  });
+});
+
+test.each(
+  [
+    [AdvancedSecurityMode.ENFORCED, 'ENFORCED'],
+    [AdvancedSecurityMode.AUDIT, 'AUDIT'],
+    [AdvancedSecurityMode.OFF, 'OFF'],
+  ])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    advancedSecurityMode: advancedSecurityMode,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolAddOns: {
+      AdvancedSecurityMode: compareString,
+    },
+  });
+});
+
+test('advanced security is not present if option is not provided', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {});
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolAddOns: Match.absent(),
   });
 });
 

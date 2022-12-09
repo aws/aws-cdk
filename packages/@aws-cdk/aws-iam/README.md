@@ -11,6 +11,21 @@
 
 <!--END STABILITY BANNER-->
 
+## Security and Safety Dev Guide
+
+For a detailed guide on CDK security and safety please see the [CDK Security And
+Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
+
+The guide will cover topics like:
+
+* What permissions to extend to CDK deployments
+* How to control the permissions of CDK deployments via IAM identities and policies
+* How to use CDK to configure the IAM identities and policies of deployed applications
+* Using Permissions Boundaries with CDK
+
+## Overview
+
+
 Define a role and add permissions to it. This will automatically create and
 attach an IAM policy to the role:
 
@@ -45,7 +60,7 @@ declare const table: dynamodb.Table;
 table.grant(fn, 'dynamodb:PutItem');
 ```
 
-The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principlal resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
+The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principal resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
 
 You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
@@ -230,6 +245,9 @@ iam.Role.customizeRoles(stack, {
 });
 ```
 
+For more information on configuring permissions see the [Security And Safety Dev
+Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
+
 #### Generating a permissions report
 
 It is also possible to generate the report _without_ preventing the role/policy creation.
@@ -407,7 +425,7 @@ const newPolicy = new iam.Policy(this, 'MyNewPolicy', {
 
 [Permissions
 Boundaries](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
-can be used as a mechanism to prevent privilege esclation by creating new
+can be used as a mechanism to prevent privilege escalation by creating new
 `Role`s. Permissions Boundaries are a Managed Policy, attached to Roles or
 Users, that represent the *maximum* set of permissions they can have. The
 effective set of permissions of a Role (or User) will be the intersection of
@@ -415,6 +433,99 @@ the Identity Policy and the Permissions Boundary attached to the Role (or
 User). Permissions Boundaries are typically created by account
 Administrators, and their use on newly created `Role`s will be enforced by
 IAM policies.
+
+### Bootstrap Permissions Boundary
+
+If a permissions boundary has been enforced as part of CDK bootstrap, all IAM
+Roles and Users that are created as part of the CDK application must be created
+with the permissions boundary attached. The most common scenario will be to
+apply the enforced permissions boundary to the entire CDK app. This can be done
+either by adding the value to `cdk.json` or directly in the `App` constructor.
+
+For example if your organization has created and is enforcing a permissions
+boundary with the name
+`cdk-${Qualifier}-PermissionsBoundary`
+
+```json
+{
+  "context": {
+     "@aws-cdk/core:permissionsBoundary": {
+	   "name": "cdk-${Qualifier}-PermissionsBoundary"
+	 }
+  }
+}
+```
+
+OR
+
+```ts
+new App({
+  context: {
+    [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
+      name: 'cdk-${Qualifier}-PermissionsBoundary',
+    },
+  },
+});
+```
+
+Another scenario might be if your organization enforces different permissions
+boundaries for different environments. For example your CDK application may have
+
+* `DevStage` that deploys to a personal dev environment where you have elevated
+privileges
+* `BetaStage` that deploys to a beta environment which and has a relaxed
+	permissions boundary
+* `GammaStage` that deploys to a gamma environment which has the prod
+	permissions boundary
+* `ProdStage` that deploys to the prod environment and has the prod permissions
+	boundary
+
+```ts
+declare const app: App;
+
+new Stage(app, 'DevStage');
+
+new Stage(app, 'BetaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('beta-permissions-boundary'),
+});
+
+new Stage(app, 'GammaStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
+});
+
+new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('prod-permissions-boundary'),
+});
+```
+
+The provided name can include placeholders for the partition, region, qualifier, and account
+These placeholders will be replaced with the actual values if available. This requires
+that the Stack has the environment specified, it does not work with environment.
+
+* '${AWS::Partition}'
+* '${AWS::Region}'
+* '${AWS::AccountId}'
+* '${Qualifier}'
+
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+});
+
+new Stack(prodStage, 'ProdStack', {
+  synthesizer: new DefaultStackSynthesizer({
+    qualifier: 'custom',
+  });
+});
+```
+
+For more information on configuring permissions see the [Security And Safety Dev
+Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
+
+### Custom Permissions Boundary
 
 It is possible to attach Permissions Boundaries to all Roles created in a construct
 tree all at once:

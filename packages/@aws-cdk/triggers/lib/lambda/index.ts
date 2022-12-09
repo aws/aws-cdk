@@ -5,11 +5,35 @@ import * as AWS from 'aws-sdk';
 
 export type InvokeFunction = (functionName: string) => Promise<AWS.Lambda.InvocationResponse>;
 
-export const invoke: InvokeFunction = async functionName => {
+export const invoke: InvokeFunction = async (functionName) => {
   const lambda = new AWS.Lambda();
   const invokeRequest = { FunctionName: functionName };
   console.log({ invokeRequest });
-  const invokeResponse = await lambda.invoke(invokeRequest).promise();
+
+  // IAM policy changes can take some time to fully propagate
+  // Therefore, retry for up to one minute
+
+  let retryCount = 0;
+  const delay = 5000;
+
+  let invokeResponse;
+  while (true) {
+    try {
+      invokeResponse = await lambda.invoke(invokeRequest).promise();
+      break;
+    } catch (error) {
+      if (error instanceof Error && (error as AWS.AWSError).code === 'AccessDeniedException' && retryCount < 12) {
+        retryCount++;
+        await new Promise((resolve) => {
+          setTimeout(resolve, delay);
+        });
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
   console.log({ invokeResponse });
   return invokeResponse;
 };
@@ -37,7 +61,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   if (invokeResponse.FunctionError) {
     throw new Error(parseError(invokeResponse.Payload?.toString()));
   }
-};
+}
 
 /**
  * Parse the error message from the lambda function.
