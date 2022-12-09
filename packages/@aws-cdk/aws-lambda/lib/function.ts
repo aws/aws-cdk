@@ -656,6 +656,9 @@ export class Function extends FunctionBase {
 
   private _architecture?: Architecture;
 
+  private _logRetentionRole?: iam.IRole;
+  private _logRetentionRetryOptions?: LogRetentionRetryOptions;
+
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
       physicalName: props.functionName,
@@ -836,6 +839,8 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
+      this._logRetentionRole = props.logRetentionRole
+      this._logRetentionRetryOptions = props.logRetentionRetryOptions
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
@@ -1035,6 +1040,8 @@ export class Function extends FunctionBase {
     if (!this._logGroup) {
       const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
+        role: this._logRetentionRole,
+        retryOptions: this._logRetentionRetryOptions,
         retention: logs.RetentionDays.INFINITE,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
