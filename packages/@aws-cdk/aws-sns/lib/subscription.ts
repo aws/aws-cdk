@@ -36,7 +36,7 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicy?: { [attribute: string]: SubscriptionFilter };
+  readonly filterPolicy?: SubscriptionFilterPolicy;
 
   /**
    * The filter policy scope.
@@ -110,18 +110,7 @@ export class Subscription extends Resource {
       if (Object.keys(props.filterPolicy).length > 5) {
         throw new Error('A filter policy can have a maximum of 5 attribute names.');
       }
-
-      this.filterPolicy = Object.entries(props.filterPolicy)
-        .reduce(
-          (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
-          {},
-        );
-
-      let total = 1;
-      Object.values(this.filterPolicy).forEach(filter => { total *= filter.length; });
-      if (total > 100) {
-        throw new Error(`The total combination of values (${total}) must not exceed 100.`);
-      }
+      this.filterPolicy = this.buildFilterPolicy(props.filterPolicy);
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
@@ -129,7 +118,6 @@ export class Subscription extends Resource {
     }
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
-
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
@@ -143,6 +131,47 @@ export class Subscription extends Resource {
     });
 
   }
+
+  // FIRST OPTION DFS
+  private buildFilterPolicy(filterPolicy: any, depth = 1, totalCombinationValues = [1]) {
+    Object.entries(filterPolicy).forEach(([key, value]) => {
+      if (value instanceof SubscriptionFilter) {
+        filterPolicy[key] = value.conditions;
+        totalCombinationValues[0] *= value.conditions.length * depth;
+      } else {
+        return { ...filterPolicy, ...this.buildFilterPolicy(value, depth + 1, totalCombinationValues) };
+      }
+    });
+    if (totalCombinationValues[0] > 100) {
+      throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 100.`);
+    }
+    return filterPolicy;
+  };
+
+  // SECOND OPTION BFS
+  // private buildFilterPolicy(policyFilter: SubscriptionFilterPolicy) {
+  //   const queue: any = [policyFilter];
+  //   let totalCombinationValues = 1;
+  //   let depth = 1;
+  //   while (queue.length > 0) {
+  //     const current = queue.shift();
+  //     let levelSize = queue.length;
+  //     while (levelSize > 0) {
+
+  //       if (val instanceof SubscriptionFilter) {
+  //         totalCombinationValues *= val.conditions.length * depth;
+  //         current[key] = val.conditions;
+  //       } else {
+  //         queue.push(val);
+  //       }
+  //     }
+  //     depth++;
+  //   }
+  //   if (totalCombinationValues > 100) {
+  //     throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 100.`);
+  //   }
+  //   return policyFilter;
+  // }
 
   private buildDeadLetterQueue(props: SubscriptionProps) {
     if (!props.deadLetterQueue) {
@@ -222,6 +251,13 @@ export enum SubscriptionProtocol {
    * Notifications put records into a firehose delivery stream.
    */
   FIREHOSE = 'firehose'
+}
+
+/**
+ * The filter policy that allows for nested subscription filter policies. This is accomplished via recursive types.
+ */
+export interface SubscriptionFilterPolicy {
+  [attribute: string]: SubscriptionFilter | SubscriptionFilterPolicy;
 }
 
 /**

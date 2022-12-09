@@ -39,7 +39,7 @@ class SnsToLambda extends cdk.Stack {
           between: { start: 100, stop: 200 },
         }),
       },
-      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
+      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_ATTRIBUTES,
     }));
   }
 }
