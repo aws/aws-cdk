@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.182.0](https://github.com/aws/aws-cdk/compare/v1.181.1...v1.182.0) (2022-12-07)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v99.0.0 ([#23006](https://github.com/aws/aws-cdk/issues/23006)) ([c510416](https://github.com/aws/aws-cdk/commit/c510416b3bc0b0756adbcc4d10c51ca77dab1176))
+* **lambda-go:** allow configuration of GOPROXY ([#23257](https://github.com/aws/aws-cdk/issues/23257)) ([67103d9](https://github.com/aws/aws-cdk/commit/67103d9b82aa80f06aa5612d6ca067b1acfb8f24)), closes [#23171](https://github.com/aws/aws-cdk/issues/23171)
+
+
+### Bug Fixes
+
+* **cli:** typescript init templates fail with error in build step ([#23130](https://github.com/aws/aws-cdk/issues/23130)) ([b06cd20](https://github.com/aws/aws-cdk/commit/b06cd207ddc87fa3e73a1ce22f8632b54cc286ae))
+
 ## [1.181.1](https://github.com/aws/aws-cdk/compare/v1.181.0...v1.181.1) (2022-11-29)
 
 
