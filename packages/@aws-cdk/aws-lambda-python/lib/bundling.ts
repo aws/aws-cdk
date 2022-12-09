@@ -66,7 +66,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly image: DockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
-  public readonly volumesFrom?: string | undefined;
+  public readonly volumesFrom?: string;
 
   constructor(props: BundlingProps) {
     const {
