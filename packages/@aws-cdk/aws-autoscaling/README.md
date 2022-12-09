@@ -574,6 +574,28 @@ autoScalingGroup.addWarmPool({
 });
 ```
 
+### Default Instance Warming
+
+You can use the default instance warmup feature to improve the Amazon CloudWatch metrics used for dynamic scaling. When default instance warmup is not enabled, each instance starts contributing usage data to the aggregated metrics as soon as the instance reaches the InService state. However, if you enable default instance warmup, this lets your instances finish warming up before they contribute the usage data.
+
+To optimize the performance of scaling policies that scale continuously, such as target tracking and step scaling policies, we strongly recommend that you enable the default instance warmup, even if its value is set to 0 seconds. 
+
+To set up Default Instance Warming for an autoscaling group, simply pass it in as a prop
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  defaultInstanceWarmup: cdk.Duration.seconds(5),
+});
+```
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is

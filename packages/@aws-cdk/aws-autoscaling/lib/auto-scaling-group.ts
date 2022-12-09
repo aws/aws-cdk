@@ -345,7 +345,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html
    *
-   * @default Duration.seconds(0)
+   * @default None
    */
   readonly defaultInstanceWarmup?: Duration;
 }
