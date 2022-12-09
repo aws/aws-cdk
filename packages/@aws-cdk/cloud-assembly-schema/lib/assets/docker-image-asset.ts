@@ -80,6 +80,14 @@ export interface DockerImageSource {
    * @default - current machine platform
    */
   readonly platform?: string;
+
+  /**
+   * Outputs
+   *
+   * @default - No outputs
+   */
+  readonly dockerOutputs?: string[];
+
 }
 
 /**

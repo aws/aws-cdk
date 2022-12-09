@@ -145,6 +145,14 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default - current machine platform
    */
   readonly platform?: string;
+
+  /**
+   * Build args to pass to the `docker build` command
+   *
+   * @default no build args are passed
+   */
+  readonly outputs?: [string];
+
 }
 
 /**
