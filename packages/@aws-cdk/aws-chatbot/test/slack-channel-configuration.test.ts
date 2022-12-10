@@ -119,13 +119,12 @@ describe('SlackChannelConfiguration', () => {
   });
 
   test('allows adding a Topic to the existing SlackChannel', () => {
-    const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'RetrievedSlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'RetrievedSlackChannel', 'arn:aws:chatbot::123456789012:chat-configuration/slack-channel/my-slack');
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
     slackChannelFromArn.addNotificationTopic(topic);
 
-    Template.fromStack(stack).resourceCountIs('AWS::Chatbot::SlackChannelConfiguration', 0);
     Template.fromStack(stack).resourceCountIs('AWS::SNS::Topic', 1);
   });
 

@@ -40,7 +40,7 @@ slackChannel.addNotificationTopic(new sns.Topic(this, 'MyTopic'));
 Alternative SNS topic assignment from AWS Chatbot's ARN
 
 ```ts
-const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(this, 'SlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(this, 'SlackChannel', 'arn:aws:chatbot::123456789012:chat-configuration/slack-channel/my-slack');
 
 const topic = new sns.Topic(stack, 'MyTopic');
 
