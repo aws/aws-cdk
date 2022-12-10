@@ -149,6 +149,11 @@ export abstract class State extends Construct implements IChainable {
    */
   public abstract readonly endStates: INextable[];
 
+  /**
+   * Whether this state is a Distributed state
+   */
+  public isDistributedMapState = false;
+
   // This class has a superset of most of the features of the other states,
   // and the subclasses decide which part of the features to expose. Most
   // features are shared by a couple of states, and it becomes cumbersome to

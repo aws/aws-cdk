@@ -158,3 +158,22 @@ export interface CatchProps {
  * Special string value to discard state input, output or result
  */
 export const DISCARD = 'DISCARD';
+
+/**
+ * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-standard-vs-express.html
+ *
+ * @default STANDARD
+ */
+export enum StateMachineType {
+  /**
+   * Express Workflows are ideal for high-volume, event processing workloads.
+   */
+  EXPRESS = 'EXPRESS',
+
+  /**
+   * Standard Workflows are ideal for long-running, durable, and auditable workflows.
+   */
+  STANDARD = 'STANDARD'
+}

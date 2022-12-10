@@ -2,3 +2,7 @@ export function noEmptyObject<A>(o: Record<string, A>): Record<string, A> | unde
   if (Object.keys(o).length === 0) { return undefined; }
   return o;
 }
+
+export function isPathString(s: string): boolean {
+  return s.startsWith('$');
+}

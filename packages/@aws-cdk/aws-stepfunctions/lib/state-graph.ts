@@ -101,6 +101,19 @@ export class StateGraph {
   }
 
   /**
+   * Returns if any state in this graph is a Distributed Map state
+   */
+  public containsDistributedMap(): boolean {
+    const allGraphs = [this, ...this.allContainedStates.values()];
+    for (const graph of allGraphs) {
+      for (const state of graph.allStates) {
+        if (state.isDistributedMapState) { return true; }
+      }
+    }
+    return false;
+  }
+
+  /**
    * Return the Amazon States Language JSON for this graph
    */
   public toGraphJson(): object {

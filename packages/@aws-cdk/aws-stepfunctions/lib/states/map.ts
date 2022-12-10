@@ -3,14 +3,121 @@ import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, RetryProps, StateMachineType } from '../types';
+import { ItemReader, ResultWriter } from './distributed-map';
 import { StateType } from './private/state-type';
 import { renderJsonPath, State } from './state';
+
+/**
+ * The processing mode of the Map state
+ */
+export enum MapProcessorMode {
+  /**
+   * Inline mode
+   */
+  INLINE = 'INLINE',
+
+  /**
+   * Distributed mode
+   */
+  DISTRIBUTED = 'DISTRIBUTED'
+}
+
+/**
+ * Properties specified to process a group of items in a single child workflow execution
+ */
+export interface ItemBatcherOptions {
+  /**
+   * The maximum number of items that each child workflow execution processes
+   *
+   * @default - No maximum
+   */
+  readonly maxItemsPerBatch?: number;
+
+  /**
+   * Reference path to the maximum number of items per batch
+   *
+   * @default - No path
+   */
+  readonly maxItemsPerBatchPath?: string;
+
+  /**
+   * the maximum size of a batch in bytes, up to 256 KBs
+   *
+   * @default - No maximum, the interpreter processes as many items it can process up to 256 KB
+   * in each child workflow execution
+   */
+  readonly maxInputBytesPerBatch?: number;
+
+  /**
+   * Reference path to the maximum size of a batch in bytes
+   *
+   * @default - No path
+   */
+  readonly maxInputBytesPerBatchPath?: string;
+
+  /**
+   * A fixed JSON input to include in each batch passed to each child workflow execution
+   *
+   * @default - No input
+   */
+  readonly batchInput?: { [key: string]: any };
+}
+
+/**
+ * Options for defining a Distributed Map state
+ */
+export interface DistributatedMapOptions {
+  /**
+   * Execution type for the Map workflow
+   *
+   * @default StateMachineType.STANDARD
+   */
+  readonly executionType?: StateMachineType;
+
+  /**
+   * A string that uniquely identifies a Map state.
+   * For each Map Run, Step Functions adds the label to the Map Run ARN
+   *
+   * @default - Step Functions automatically generates a unique label
+   */
+  readonly label?: string;
+
+  /**
+   * Specifies to process the dataset items in batches.
+   * Each child workflow execution then receives a batch of these items as input.
+   *
+   * @default - No batcher
+   */
+  readonly itemBatcher?: ItemBatcherOptions;
+
+  /**
+   * Specifies a dataset and its location.
+   * The Map state receives its input data from the specified dataset.
+   *
+   * @default - No item reader
+   */
+  readonly itemReader?: ItemReader;
+
+  /**
+   * Specifies the location where Step Functions writes all child workflow execution results.
+   *
+   * @default - No result writer
+   */
+  readonly resultWriter?: ResultWriter;
+}
 
 /**
  * Properties for defining a Map state
  */
 export interface MapProps {
+  /**
+   * The mode of the Map state
+   *
+   * @default MapProcessorMode.INLINE
+   */
+  readonly mode?: MapProcessorMode;
+
   /**
    * An optional description for this state
    *
@@ -59,8 +166,16 @@ export interface MapProps {
    * The JSON that you want to override your default iteration input
    *
    * @default $
+   * @deprecated use `itemSelector` instead
    */
   readonly parameters?: { [key: string]: any };
+
+  /**
+   * The JSON that you want to override your default iteration input
+   *
+   * @default $
+   */
+  readonly itemSelector?: { [key: string]: any };
 
   /**
    * The JSON that will replace the state's raw result and become the effective
@@ -84,6 +199,13 @@ export interface MapProps {
    * @default - full concurrency
    */
   readonly maxConcurrency?: number;
+
+  /**
+   * Options for configuring a Distributed Map state
+   *
+   * @default - No options
+   */
+  readonly distributatedMapOptions?: DistributatedMapOptions;
 }
 
 /**
@@ -113,14 +235,25 @@ export const isPositiveInteger = (value: number) => {
 export class Map extends State implements INextable {
   public readonly endStates: INextable[];
 
+  private readonly mode?: MapProcessorMode;
   private readonly maxConcurrency: number | undefined;
   private readonly itemsPath?: string;
+  private readonly itemSelector?: object;
+  private readonly distributatedMapOptions?: DistributatedMapOptions;
 
   constructor(scope: Construct, id: string, props: MapProps = {}) {
     super(scope, id, props);
+    this.validateProps(props);
     this.endStates = [this];
+    this.mode = props.mode;
     this.maxConcurrency = props.maxConcurrency;
     this.itemsPath = props.itemsPath;
+    this.itemSelector = props.itemSelector;
+    this.distributatedMapOptions = props.distributatedMapOptions;
+
+    if (this.mode === MapProcessorMode.DISTRIBUTED) {
+      this.isDistributedMapState = true;
+    }
   }
 
   /**
@@ -175,9 +308,14 @@ export class Map extends State implements INextable {
       ...this.renderParameters(),
       ...this.renderResultSelector(),
       ...this.renderRetryCatch(),
-      ...this.renderIterator(),
+      ...this.renderItemProcessor(),
+      ...this.renderItemReader(),
       ...this.renderItemsPath(),
+      ...this.renderItemSelector(),
+      ...this.renderItemBatcher(),
+      ...this.renderResultWriter(),
       MaxConcurrency: this.maxConcurrency,
+      Label: this.distributatedMapOptions?.label,
     };
   }
 
@@ -198,10 +336,108 @@ export class Map extends State implements INextable {
     return errors;
   }
 
+  private validateProps(props: MapProps) {
+    if (props.itemSelector && props.parameters) {
+      throw new Error('Only one of itemSelector or parameters can be provided');
+    }
+    if (props.mode === MapProcessorMode.INLINE && props.distributatedMapOptions) {
+      throw new Error('distributatedMapOptions can only be used with DISTRIBUTED mode');
+    }
+    if (props.distributatedMapOptions?.label && props.distributatedMapOptions?.label.length > 40) {
+      throw new Error('Label can only be 40 characters long');
+    }
+    if (props.distributatedMapOptions?.itemBatcher) {
+      const itemBatcher = props.distributatedMapOptions?.itemBatcher;
+      if (itemBatcher.maxItemsPerBatch && itemBatcher.maxItemsPerBatchPath) {
+        throw new Error('Only one of maxItemsPerBatch or maxItemsPerBatchPath can be provided');
+      }
+      if (itemBatcher.maxInputBytesPerBatch && itemBatcher.maxInputBytesPerBatchPath) {
+        throw new Error('Only one of maxInputBytesPerBatch or maxInputBytesPerBatchPath can be provided');
+      }
+    }
+  }
+
   private renderItemsPath(): any {
     return {
       ItemsPath: renderJsonPath(this.itemsPath),
     };
+  }
+
+  private renderItemProcessor(): any {
+    if (!this.iteration) {
+      throw new Error('Iterator must not be undefined!');
+    }
+    return {
+      ItemProcessor: {
+        ...this.renderProcessorConfig(),
+        ...this.iteration.toGraphJson(),
+      },
+    };
+  }
+
+  private renderProcessorConfig(): any {
+    if (this.mode && this.mode === MapProcessorMode.DISTRIBUTED) {
+      return {
+        ProcessorConfig: {
+          Mode: this.mode,
+          ExecutionType: this.distributatedMapOptions?.executionType || StateMachineType.STANDARD,
+        },
+      };
+    }
+    return {};
+  }
+
+  private renderItemBatcher(): any {
+    const itemBatcher = this.distributatedMapOptions?.itemBatcher;
+    if (itemBatcher) {
+      return {
+        ItemBatcher: {
+          ...(itemBatcher.maxItemsPerBatch ? { MaxItemsPerBatch: itemBatcher.maxItemsPerBatch } : {}),
+          ...(itemBatcher.maxItemsPerBatchPath ? { MaxItemsPerBatchPath: itemBatcher.maxItemsPerBatchPath } : {}),
+          ...(itemBatcher.maxInputBytesPerBatch ? { MaxInputBytesPerBatch: itemBatcher.maxInputBytesPerBatch } : {}),
+          ...(itemBatcher.maxInputBytesPerBatchPath ? { MaxInputBytesPerBatchPath: itemBatcher.maxInputBytesPerBatchPath } : {}),
+          ...(itemBatcher.batchInput ? { BatchInput: FieldUtils.renderObject(itemBatcher.batchInput) } : {}),
+        },
+      };
+    }
+    return {};
+  }
+
+  private renderItemReader(): any {
+    const itemReader = this.distributatedMapOptions?.itemReader;
+    if (!itemReader) {
+      return {};
+    }
+
+    itemReader.providePolicyStatements().forEach((statement) => {
+      this.iteration?.registerPolicyStatement(statement);
+    });
+    return {
+      ItemReader: itemReader.render(),
+    };
+  }
+
+  private renderResultWriter(): any {
+    const resultWriter = this.distributatedMapOptions?.resultWriter;
+    if (!resultWriter) {
+      return {};
+    }
+
+    resultWriter.providePolicyStatements().forEach((statement) => {
+      this.iteration?.registerPolicyStatement(statement);
+    });
+    return {
+      ResultWriter: resultWriter.render(),
+    };
+  }
+
+  /**
+   * Render ItemSelector in ASL JSON format
+   */
+  private renderItemSelector(): any {
+    return FieldUtils.renderObject({
+      ItemSelector: this.itemSelector,
+    });
   }
 
   /**

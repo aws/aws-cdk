@@ -438,6 +438,48 @@ describe('State Machine', () => {
     });
   });
 
+  test('Create a State Machine containing a Distributed Map', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const distributedMap = new sfn.Map(stack, 'DistributedMap', {
+      mode: sfn.MapProcessorMode.DISTRIBUTED,
+    });
+    distributedMap.iterator(new sfn.Pass(stack, 'Pass'));
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: distributedMap,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
   describe('StateMachine.fromStateMachineArn()', () => {
     let stack: cdk.Stack;
 

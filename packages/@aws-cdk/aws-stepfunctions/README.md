@@ -454,6 +454,41 @@ const map = new sfn.Map(this, 'Map State', {
 map.iterator(new sfn.Pass(this, 'Pass State'));
 ```
 
+#### Distributed Map
+
+Step Functions provides a high-concurrency mode for the Map state known as Distributed mode. In this mode, the Map state can accept input from large-scale Amazon S3 data sources. For example, your input can be a JSON or CSV file stored in an Amazon S3 bucket, or a JSON array passed from a previous step in the workflow. 
+
+A `Map` state with `mode` set to Distributed is known as a Distributed Map state. To create a Distributed Map state, set the `mode` property to `MapProcessorMode.DISTRIBUTED`. 
+
+```ts
+const distributedMap = new sfn.Map(this, 'Distributed Map State', {
+  mode: sfn.MapProcessorMode.DISTRIBUTED,
+  maxConcurrency: 100,
+  itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
+});
+distributedMap.iterator(new sfn.Pass(this, 'Pass State'));
+```
+
+You can provide optional `itemReader` and `resultWriter` properties to control the behavior of the Distributed Map state. 
+
+```ts
+const distributedMap = new sfn.Map(this, 'Distributed Map State', {
+  mode: sfn.MapProcessorMode.DISTRIBUTED,
+  maxConcurrency: 100,
+  distributatedMapOptions: {
+    itemReader: new sfn.S3CSVReader({
+      bucket: 'my-bucket',
+      key: 'my-key.csv',
+    }),
+    resultWriter: new sfn.S3Writer({
+      bucket: 'my-bucket',
+      prefix: 'my-prefix',
+    }),
+  },
+});
+distributedMap.iterator(new sfn.Pass(this, 'Pass State'));
+```
+
 ### Custom State
 
 It's possible that the high-level constructs for the states or `stepfunctions-tasks` do not have
@@ -583,7 +618,6 @@ Tasks are executed using the State Machine's execution role. In some cases, e.g.
 This can be achieved by providing the optional `credentials` property which allows using a fixed role or a json expression to resolve the role at runtime from the task's inputs.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 
 declare const submitLambda: lambda.Function;

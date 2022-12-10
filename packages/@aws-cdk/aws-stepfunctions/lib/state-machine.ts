@@ -6,26 +6,7 @@ import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
-import { IChainable } from './types';
-
-/**
- * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
- *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-standard-vs-express.html
- *
- * @default STANDARD
- */
-export enum StateMachineType {
-  /**
-   * Express Workflows are ideal for high-volume, event processing workloads.
-   */
-  EXPRESS = 'EXPRESS',
-
-  /**
-   * Standard Workflows are ideal for long-running, durable, and auditable workflows.
-   */
-  STANDARD = 'STANDARD'
-}
+import { IChainable, StateMachineType } from './types';
 
 /**
  * Defines which category of execution history events are logged.
@@ -429,6 +410,10 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    if (graph.containsDistributedMap()) {
+      this.addDistributedMapStatePolicies();
+    }
   }
 
   /**
@@ -499,6 +484,22 @@ export class StateMachine extends StateMachineBase {
     return {
       enabled: true,
     };
+  }
+
+  private addDistributedMapStatePolicies() {
+    // TODO: narrow down to the state machine we're calling, currently it creates a circular dependency
+    this.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['states:StartExecution'],
+        resources: ['*'],
+      }),
+    );
+    this.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['states:DescribeExecution', 'states:StopExecution'],
+        resources: ['*'],
+      }),
+    );
   }
 }
 
