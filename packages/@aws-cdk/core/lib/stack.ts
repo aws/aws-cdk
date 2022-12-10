@@ -587,10 +587,8 @@ export class Stack extends Construct implements ITaggable {
    * This can be used to define dependencies between any two stacks within an
    * app, and also supports nested stacks.
    */
-  //@ts-ignore: reason is declared but never read
   public addDependency(target: Stack, reason?: string) {
-    // Ignoring the no-longer-used diagnostic arg, reason
-    addDependency(this, target);
+    addDependency(this, target, reason);
   }
 
   /**
@@ -873,11 +871,17 @@ export class Stack extends Construct implements ITaggable {
     if (!reason.target) {
       reason.target = target;
     }
+    if (!reason.description) {
+      reason.description = 'no description provided';
+    }
 
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
+      const cycleDescription = cycle.map((cycleReason) => {
+        return cycleReason.description;
+      }).join(', ');
       // eslint-disable-next-line max-len
-      throw new Error(`'${target.node.path}' depends on '${this.node.path}'. Adding this dependency would create a cyclic reference.`);
+      throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`);
     }
 
     let dep = this._stackDependencies[Names.uniqueId(target)];
@@ -1641,6 +1645,7 @@ function generateExportName(stackExports: Construct, id: string) {
 interface StackDependencyReason {
   source?: Element;
   target?: Element;
+  description?: string;
 }
 
 interface StackDependency {

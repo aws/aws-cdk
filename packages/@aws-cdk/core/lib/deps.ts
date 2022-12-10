@@ -22,8 +22,8 @@ export type Element = CfnResource | Stack;
  * @param source The source resource/stack (the dependent)
  * @param target The target resource/stack (the dependency)
  */
-export function addDependency(source: Element, target: Element) {
-  operateOnDependency(DependencyOperation.ADD, source, target);
+export function addDependency(source: Element, target: Element, reason?: string) {
+  operateOnDependency(DependencyOperation.ADD, source, target, reason);
 }
 
 /**
@@ -59,7 +59,7 @@ enum DependencyOperation {
  *
  * @internal
  */
-function operateOnDependency(operation: DependencyOperation, source: Element, target: Element) {
+function operateOnDependency(operation: DependencyOperation, source: Element, target: Element, description?: string) {
   if (source === target) {
     return;
   }
@@ -84,7 +84,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   if (!commonStack) {
     const topLevelSource = sourcePath[0]; // first path element is the top-level stack
     const topLevelTarget = targetPath[0];
-    const reason = { source: source, target: target };
+    const reason = { source, target, description };
     switch (operation) {
       case DependencyOperation.ADD: {
         topLevelSource._addAssemblyDependency(topLevelTarget, reason);
