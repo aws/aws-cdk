@@ -1,9 +1,9 @@
-/// !cdk-integ * pragma:enable-lookups
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IVpc, SubnetType } from '@aws-cdk/aws-ec2';
 import { App, Stack, StackProps, RemovalPolicy, CfnResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as opensearch from '../lib';
+import * as integ from '@aws-cdk/integ-tests';
 
 const appWithVpc = new App();
 const stack = new Stack(appWithVpc, 'StackWithVpc', {
@@ -61,5 +61,8 @@ const env = {
   account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
 };
-new TestStack(app, 'cdk-integ-opensearch-vpc', { env });
+const testCase = new TestStack(app, 'cdk-integ-opensearch-vpc', { env });
+new integ.IntegTest(app, 'cdk-integ-opensearch-vpc-test', {
+  testCases: [testCase],
+});
 app.synth();

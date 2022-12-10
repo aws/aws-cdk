@@ -1235,7 +1235,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     let subnets: ec2.ISubnet[] | undefined;
 
-    let skipZoneAwarenessCheck:boolean = false;
+    let skipZoneAwarenessCheck: boolean = false;
     if (props.vpc) {
       const subnetSelections = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
       subnets = selectSubnets(props.vpc, subnetSelections);
