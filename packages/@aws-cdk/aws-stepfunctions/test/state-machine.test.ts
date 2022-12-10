@@ -480,6 +480,177 @@ describe('State Machine', () => {
     });
   });
 
+  test('Create a State Machine containing a Distributed Map with provided physical name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const distributedMap = new sfn.Map(stack, 'DistributedMap', {
+      mode: sfn.MapProcessorMode.DISTRIBUTED,
+    });
+    distributedMap.iterator(new sfn.Pass(stack, 'Pass'));
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: distributedMap,
+      stateMachineName: 'MyStateMachineName',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':stateMachine:MyStateMachineName',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':stateMachine:MyStateMachineName/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
+  test('Create a State Machine containing a Distributed Map with s3 bucket references', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    const distributedMap = new sfn.Map(stack, 'DistributedMap', {
+      mode: sfn.MapProcessorMode.DISTRIBUTED,
+      distributatedMapOptions: {
+        itemReader: new sfn.S3CSVReader({
+          bucket: bucket.bucketName,
+          key: 'my-key.csv',
+        }),
+        resultWriter: new sfn.S3Writer({
+          bucket: bucket.bucketName,
+          prefix: 'my-prefix',
+        }),
+      },
+    });
+    distributedMap.iterator(new sfn.Pass(stack, 'Pass'));
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definition: distributedMap,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:GetObject',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:s3:::',
+                  {
+                    Ref: 'Bucket83908E77',
+                  },
+                  '/my-key.csv',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              's3:PutObject',
+              's3:GetObject',
+              's3:ListMultipartUploadParts',
+              's3:AbortMultipartUpload',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:s3:::',
+                  {
+                    Ref: 'Bucket83908E77',
+                  },
+                  '/my-prefix/*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:StopExecution',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
   describe('StateMachine.fromStateMachineArn()', () => {
     let stack: cdk.Stack;
 

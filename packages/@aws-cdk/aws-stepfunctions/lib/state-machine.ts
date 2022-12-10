@@ -403,6 +403,10 @@ export class StateMachine extends StateMachineBase {
       this.addToRolePolicy(statement);
     }
 
+    if (graph.containsDistributedMap()) {
+      this.addDistributedMapStatePolicies(props.stateMachineName);
+    }
+
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
@@ -410,10 +414,6 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-
-    if (graph.containsDistributedMap()) {
-      this.addDistributedMapStatePolicies();
-    }
   }
 
   /**
@@ -486,18 +486,24 @@ export class StateMachine extends StateMachineBase {
     };
   }
 
-  private addDistributedMapStatePolicies() {
-    // TODO: narrow down to the state machine we're calling, currently it creates a circular dependency
+  private addDistributedMapStatePolicies(stateMachineName?: string) {
+    // TODO: narrow down to this state machine, currently it creates a circular dependency
+    const stateMachineArn = Stack.of(this).formatArn({
+      service: 'states',
+      resource: 'stateMachine',
+      resourceName: stateMachineName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
     this.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: ['*'],
+        resources: [stateMachineName ? stateMachineArn : '*'],
       }),
     );
     this.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['states:DescribeExecution', 'states:StopExecution'],
-        resources: ['*'],
+        resources: [stateMachineName ? `${stateMachineArn}/*` : '*'],
       }),
     );
   }

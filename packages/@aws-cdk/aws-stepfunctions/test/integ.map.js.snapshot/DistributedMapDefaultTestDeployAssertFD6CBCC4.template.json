@@ -18,7 +18,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1670683189452"
+    "salt": "1670701957411"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -57,6 +57,33 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:DescribeExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -83,6 +110,84 @@
      ]
     }
    }
+  },
+  "AwsApiCallS3putObject": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::ImportValue": "aws-stepfunctions-map-integ:ExportsOutputRefBucket83908E7781C90AC0"
+     },
+     "Key": "my-key.csv",
+     "Body": "a,b,c\n1,2,3\n4,5,6"
+    },
+    "flattenResponse": "false",
+    "salt": "1670701957411"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsstartExecution": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "startExecution",
+    "parameters": {
+     "stateMachineArn": {
+      "Fn::ImportValue": "aws-stepfunctions-map-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+     }
+    },
+    "flattenResponse": "true",
+    "salt": "1670701957411"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObject"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallStepFunctionsdescribeExecution": {
+   "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "StepFunctions",
+    "api": "describeExecution",
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
+    "parameters": {
+     "executionArn": {
+      "Fn::GetAtt": [
+       "AwsApiCallStepFunctionsstartExecution",
+       "apiCallResponse.executionArn"
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1670701957411"
+   },
+   "DependsOn": [
+    "AwsApiCallStepFunctionsstartExecution"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -90,6 +195,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallStepFunctionsdescribeStateMachine",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallStepFunctionsdescribeExecution",
      "assertion"
     ]
    }

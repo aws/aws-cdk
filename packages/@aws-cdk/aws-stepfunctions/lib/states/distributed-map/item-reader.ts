@@ -210,7 +210,7 @@ export class S3ObjectsReader extends S3Reader {
   }
 
   public providePolicyStatements(): iam.PolicyStatement[] {
-    const resource = isPathString(this.bucket)? '*' : `arn:aws:s3:::${this.bucket}`;
+    const resource = isPathString(this.bucket) ? '*' : `arn:aws:s3:::${this.bucket}`;
 
     return [
       new iam.PolicyStatement({
