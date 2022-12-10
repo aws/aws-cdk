@@ -15,6 +15,10 @@ export class NestedStackSynthesizer extends StackSynthesizer {
     super();
   }
 
+  public get bootstrapQualifier(): string | undefined {
+    return this.parentDeployment.bootstrapQualifier;
+  }
+
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     // Forward to parent deployment. By the magic of cross-stack references any parameter
     // returned and used will magically be forwarded to the nested stack.

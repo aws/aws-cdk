@@ -56,7 +56,7 @@ HTTP code (ELB or backend), the metric name itself comes from an ENUM.
   public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
 ```
 
-NetworkLoadBalancer: get rid of underscores and recapitalize abbrevations
+NetworkLoadBalancer: get rid of underscores and recapitalize abbreviations
 
 ```js
 metricTcpClientResetCount => 'TCP_Client_Reset_Count'

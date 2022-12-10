@@ -11,7 +11,7 @@
 
 <!--END STABILITY BANNER-->
 
-> Amazon Elasticsearch Service has been renamed to Amazon OpenSearch Service; consequently, the [@aws-cdk/aws-opensearchservice](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-opensearchservice-readme.html) module should be used instead. See [Amazon OpenSearch Service FAQs](https://aws.amazon.com/opensearch-service/faqs/#Name_change) for details. See [Migrating to OpenSearch](#migrating-to-opensearch) for migration instructions.
+> Instead of this module, we recommend using the [@aws-cdk/aws-opensearchservice](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-opensearchservice-readme.html) module. See [Amazon OpenSearch Service FAQs](https://aws.amazon.com/opensearch-service/faqs/#Name_change) for details. See [Migrating to OpenSearch](#migrating-to-opensearch) for migration instructions.
 
 ## Quick start
 
@@ -62,7 +62,7 @@ logging the domain logs and slow search logs.
 
 Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/slr-es.html) Service-Linked Role.
 
-When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message simlar to:
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message similar to:
 
 ```console
 Before you can proceed, you must enable a service-linked role to give Amazon ES...
@@ -199,7 +199,7 @@ means anyone can access the domain using the configured master username and
 password.
 
 To enable unsigned basic auth access the domain is configured with an access
-policy that allows anyonmous requests, HTTPS required, node to node encryption,
+policy that allows anonymous requests, HTTPS required, node to node encryption,
 encryption at rest and fine grained access control.
 
 If the above settings are not set they will be configured as part of enabling

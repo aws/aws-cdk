@@ -42,7 +42,7 @@ export class ApplicationAssociator extends Construct {
     }
 
     const targetApplication = props.applications[0];
-    this.application = targetApplication.bind(this).application;
+    this.application = targetApplication.bind(scope).application;
     cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this));
   }
 
