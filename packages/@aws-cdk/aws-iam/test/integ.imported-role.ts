@@ -3,6 +3,7 @@ import {
   IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME,
 } from '@aws-cdk/cx-api';
 import { PolicyStatement, Role, ServicePrincipal } from '../lib';
+import * as integ from '@aws-cdk/integ-tests';
 
 const app = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
 
@@ -13,5 +14,9 @@ const role = new Role(stack, 'TestRole', {
 });
 
 role.addToPolicy(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
+
+new integ.IntegTest(app, 'ImportedRoleTest', {
+  testCases: [stack],
+});
 
 app.synth();
