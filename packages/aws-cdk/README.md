@@ -552,7 +552,7 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 ### `cdk bootstrap`
 
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket
-and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before
+and ECR repository that `cdk deploy` will use to store synthesized templates and the related assets, before
 triggering a CloudFormation stack update. The name of the deployed stack can be configured using the
 `--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using
 the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
@@ -588,7 +588,13 @@ Out of the box customization options are also available as arguments. To use a p
 - `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
 - `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
 
-A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as an example. Edit the content and reference the example policy if you're testing out the feature, turn it into a new policy for actual deployments (if one does not already exist). The concern here is drift as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as
+an example. Edit the content and reference the example policy if you're testing out the feature, turn
+it into a new policy for actual deployments (if one does not already exist). The concern here is drift
+as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+
+For more information on configuring permissions, including using permissions
+boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 ### `cdk doctor`
 
@@ -659,7 +665,7 @@ You can suppress warnings in a variety of ways:
   }
   ```
 
-- acknowleding individual notices via `cdk acknowledge` (see below).
+- acknowledging individual notices via `cdk acknowledge` (see below).
 
 ### `cdk acknowledge`
 

@@ -61,7 +61,7 @@ interface CommonHttpVirtualNodeListenerOptions extends VirtualNodeListenerCommon
 }
 
 /**
- * Represent the HTTP Node Listener prorperty
+ * Represent the HTTP Node Listener property
  */
 export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
 
@@ -74,7 +74,7 @@ export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeLis
 }
 
 /**
- * Represent the HTTP2 Node Listener prorperty
+ * Represent the HTTP2 Node Listener property
  */
 export interface Http2VirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
   /**
@@ -86,7 +86,7 @@ export interface Http2VirtualNodeListenerOptions extends CommonHttpVirtualNodeLi
 }
 
 /**
- * Represent the GRPC Node Listener prorperty
+ * Represent the GRPC Node Listener property
  */
 export interface GrpcVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**
@@ -105,7 +105,7 @@ export interface GrpcVirtualNodeListenerOptions extends VirtualNodeListenerCommo
 }
 
 /**
- * Represent the TCP Node Listener prorperty
+ * Represent the TCP Node Listener property
  */
 export interface TcpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**

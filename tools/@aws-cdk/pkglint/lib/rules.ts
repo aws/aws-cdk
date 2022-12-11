@@ -188,7 +188,7 @@ export class ThirdPartyAttributions extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
 
-    const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
+    const alwaysCheck = ['aws-cdk-lib'];
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
     }
@@ -664,15 +664,15 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
+      pkg.json.name !== 'aws-cdk-lib',
     );
   }
 }
 
-export class NoPeerDependenciesMonocdk extends ValidationRule {
-  public readonly name = 'monocdk/no-peer';
+export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
+  public readonly name = 'aws-cdk-lib/no-peer';
   private readonly allowedPeer = ['constructs'];
-  private readonly modules = ['monocdk', 'aws-cdk-lib'];
+  private readonly modules = ['aws-cdk-lib'];
 
   public validate(pkg: PackageJson): void {
     if (!this.modules.includes(pkg.packageName)) {
