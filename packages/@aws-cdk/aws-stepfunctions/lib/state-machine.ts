@@ -487,23 +487,22 @@ export class StateMachine extends StateMachineBase {
   }
 
   private addDistributedMapStatePolicies(stateMachineName?: string) {
-    // TODO: narrow down to this state machine, currently it creates a circular dependency
     const stateMachineArn = Stack.of(this).formatArn({
       service: 'states',
       resource: 'stateMachine',
-      resourceName: stateMachineName,
+      resourceName: stateMachineName || '*',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [stateMachineName ? stateMachineArn : '*'],
+        resources: [stateMachineArn],
       }),
     );
     this.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['states:DescribeExecution', 'states:StopExecution'],
-        resources: [stateMachineName ? `${stateMachineArn}/*` : '*'],
+        resources: [`${stateMachineArn}/*`],
       }),
     );
   }

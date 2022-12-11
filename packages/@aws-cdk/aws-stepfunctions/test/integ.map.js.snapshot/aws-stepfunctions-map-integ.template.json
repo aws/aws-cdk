@@ -219,7 +219,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":stateMachine:MyStateMachine"
+          ":stateMachine:*"
          ]
         ]
        }
@@ -246,7 +246,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":stateMachine:MyStateMachine/*"
+          ":stateMachine:*/*"
          ]
         ]
        }
@@ -286,8 +286,7 @@
        "\",\"Prefix\":\"my-prefix\"}}}}}"
       ]
      ]
-    },
-    "StateMachineName": "MyStateMachine"
+    }
    },
    "DependsOn": [
     "StateMachineRoleDefaultPolicyDF1E6607",

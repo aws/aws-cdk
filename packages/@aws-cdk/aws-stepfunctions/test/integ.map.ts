@@ -3,34 +3,43 @@ import * as cdk from '@aws-cdk/core';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
 import * as sfn from '../lib';
 
+const CSV_KEY = 'my-key.csv';
+
+class DistributedMapStack extends cdk.Stack {
+  readonly bucket: s3.Bucket;
+  readonly stateMachine: sfn.StateMachine;
+
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    this.bucket = new s3.Bucket(this, 'Bucket', {
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const distributedMap = new sfn.Map(this, 'DistributedMap', {
+      mode: sfn.MapProcessorMode.DISTRIBUTED,
+      distributatedMapOptions: {
+        itemReader: new sfn.S3CSVReader({
+          bucket: this.bucket.bucketName,
+          key: CSV_KEY,
+        }),
+        resultWriter: new sfn.S3Writer({
+          bucket: this.bucket.bucketName,
+          prefix: 'my-prefix',
+        }),
+      },
+    });
+    distributedMap.iterator(new sfn.Pass(this, 'Pass'));
+
+    this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+      definition: distributedMap,
+    });
+  }
+}
+
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-stepfunctions-map-integ');
-
-const bucket = new s3.Bucket(stack, 'Bucket', {
-  autoDeleteObjects: true,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-});
-const key = 'my-key.csv';
-
-const distributedMap = new sfn.Map(stack, 'DistributedMap', {
-  mode: sfn.MapProcessorMode.DISTRIBUTED,
-  distributatedMapOptions: {
-    itemReader: new sfn.S3CSVReader({
-      bucket: bucket.bucketName,
-      key,
-    }),
-    resultWriter: new sfn.S3Writer({
-      bucket: bucket.bucketName,
-      prefix: 'my-prefix',
-    }),
-  },
-});
-distributedMap.iterator(new sfn.Pass(stack, 'Pass'));
-
-const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  stateMachineName: 'MyStateMachine',
-  definition: distributedMap,
-});
+const stack = new DistributedMapStack(app, 'aws-stepfunctions-map-integ');
 
 const testCase = new IntegTest(app, 'DistributedMap', {
   testCases: [stack],
@@ -38,20 +47,20 @@ const testCase = new IntegTest(app, 'DistributedMap', {
 
 testCase.assertions
   .awsApiCall('StepFunctions', 'describeStateMachine', {
-    stateMachineArn: stateMachine.stateMachineArn,
+    stateMachineArn: stack.stateMachine.stateMachineArn,
   })
   .expect(ExpectedResult.objectLike({ status: 'ACTIVE' }));
 
 // Put an object in the bucket
 const putObject = testCase.assertions.awsApiCall('S3', 'putObject', {
-  Bucket: bucket.bucketName,
-  Key: key,
+  Bucket: stack.bucket.bucketName,
+  Key: CSV_KEY,
   Body: 'a,b,c\n1,2,3\n4,5,6',
 });
 
 // Start an execution
 const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', {
-  stateMachineArn: stateMachine.stateMachineArn,
+  stateMachineArn: stack.stateMachine.stateMachineArn,
 });
 putObject.next(start);
 

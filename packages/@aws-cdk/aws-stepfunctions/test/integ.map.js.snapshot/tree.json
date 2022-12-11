@@ -283,7 +283,7 @@
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
-                                        ":stateMachine:MyStateMachine"
+                                        ":stateMachine:*"
                                       ]
                                     ]
                                   }
@@ -310,7 +310,7 @@
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
-                                        ":stateMachine:MyStateMachine/*"
+                                        ":stateMachine:*/*"
                                       ]
                                     ]
                                   }
@@ -370,8 +370,7 @@
                           "\",\"Prefix\":\"my-prefix\"}}}}}"
                         ]
                       ]
-                    },
-                    "stateMachineName": "MyStateMachine"
+                    }
                   }
                 },
                 "constructInfo": {

@@ -458,49 +458,6 @@ describe('State Machine', () => {
           {
             Action: 'states:StartExecution',
             Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: [
-              'states:DescribeExecution',
-              'states:StopExecution',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
-      Roles: [
-        {
-          Ref: 'MyStateMachineRoleD59FFEBC',
-        },
-      ],
-    });
-  });
-
-  test('Create a State Machine containing a Distributed Map with provided physical name', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const distributedMap = new sfn.Map(stack, 'DistributedMap', {
-      mode: sfn.MapProcessorMode.DISTRIBUTED,
-    });
-    distributedMap.iterator(new sfn.Pass(stack, 'Pass'));
-    new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: distributedMap,
-      stateMachineName: 'MyStateMachineName',
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:StartExecution',
-            Effect: 'Allow',
             Resource: {
               'Fn::Join': [
                 '',
@@ -517,7 +474,7 @@ describe('State Machine', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':stateMachine:MyStateMachineName',
+                  ':stateMachine:*',
                 ],
               ],
             },
@@ -544,7 +501,7 @@ describe('State Machine', () => {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':stateMachine:MyStateMachineName/*',
+                  ':stateMachine:*/*',
                 ],
               ],
             },
@@ -629,7 +586,26 @@ describe('State Machine', () => {
           {
             Action: 'states:StartExecution',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':stateMachine:*',
+                ],
+              ],
+            },
           },
           {
             Action: [
@@ -637,7 +613,26 @@ describe('State Machine', () => {
               'states:StopExecution',
             ],
             Effect: 'Allow',
-            Resource: '*',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':stateMachine:*/*',
+                ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
