@@ -11,6 +11,21 @@
 
 <!--END STABILITY BANNER-->
 
+## Security and Safety Dev Guide
+
+For a detailed guide on CDK security and safety please see the [CDK Security And
+Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
+
+The guide will cover topics like:
+
+* What permissions to extend to CDK deployments
+* How to control the permissions of CDK deployments via IAM identities and policies
+* How to use CDK to configure the IAM identities and policies of deployed applications
+* Using Permissions Boundaries with CDK
+
+## Overview
+
+
 Define a role and add permissions to it. This will automatically create and
 attach an IAM policy to the role:
 
@@ -229,6 +244,9 @@ iam.Role.customizeRoles(stack, {
   }
 });
 ```
+
+For more information on configuring permissions see the [Security And Safety Dev
+Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 #### Generating a permissions report
 
@@ -503,6 +521,9 @@ new Stack(prodStage, 'ProdStack', {
   });
 });
 ```
+
+For more information on configuring permissions see the [Security And Safety Dev
+Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 ### Custom Permissions Boundary
 

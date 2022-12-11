@@ -107,6 +107,84 @@ describe('tests', () => {
     });
   });
 
+  describe('Desync mitigation mode', () => {
+    test('Defensive', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'defensive',
+          },
+        ],
+      });
+    });
+    test('Monitor', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.MONITOR,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'monitor',
+          },
+        ],
+      });
+    });
+    test('Strictest', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        desyncMitigationMode: elbv2.DesyncMitigationMode.STRICTEST,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'routing.http.desync_mitigation_mode',
+            Value: 'strictest',
+          },
+        ],
+      });
+    });
+  });
+
   test('Deletion protection false', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -501,7 +579,7 @@ describe('tests', () => {
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
-      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
+      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345678');
       expect(loadBalancer.env.region).toEqual('us-west-2');
     });
 

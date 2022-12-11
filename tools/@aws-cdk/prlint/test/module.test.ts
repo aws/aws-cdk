@@ -19,7 +19,6 @@ describe('findModulePath', () => {
   });
 
   test('multiple fuzzy matches', () => {
-    // also matches 'packages/@monocdk-experiment/assert'
     expect(relative(findModulePath('assert'))).toEqual('packages/@aws-cdk/assert');
 
     // also matches 'packages/aws-cdk' and 'tools/eslint-plugin-cdk'

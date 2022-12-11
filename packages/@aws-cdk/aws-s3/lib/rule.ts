@@ -24,6 +24,9 @@ export interface LifecycleRule {
    * When Amazon S3 aborts a multipart upload, it deletes all parts
    * associated with the multipart upload.
    *
+   * The underlying configuration is expressed in whole numbers of days. Providing a Duration that
+   * does not represent a whole number of days will result in a runtime or deployment error.
+   *
    * @default - Incomplete uploads are never aborted
    */
   readonly abortIncompleteMultipartUploadAfter?: Duration;
@@ -48,6 +51,9 @@ export interface LifecycleRule {
    * time unit for both properties (either in days or by date). The
    * expiration time must also be later than the transition time.
    *
+   * The underlying configuration is expressed in whole numbers of days. Providing a Duration that
+   * does not represent a whole number of days will result in a runtime or deployment error.
+   *
    * @default - No expiration timeout
    */
   readonly expiration?: Duration;
@@ -61,6 +67,9 @@ export interface LifecycleRule {
    * expire, Amazon S3 permanently deletes them. If you specify a transition
    * and expiration time, the expiration time must be later than the
    * transition time.
+   *
+   * The underlying configuration is expressed in whole numbers of days. Providing a Duration that
+   * does not represent a whole number of days will result in a runtime or deployment error.
    *
    * @default - No noncurrent version expiration
    */
