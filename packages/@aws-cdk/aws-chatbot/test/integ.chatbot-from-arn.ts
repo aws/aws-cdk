@@ -1,5 +1,6 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import * as chatbot from '../lib';
 
 class ChatbotFromArnInteg extends cdk.Stack {
@@ -15,15 +16,17 @@ class ChatbotFromArnInteg extends cdk.Stack {
 
     const slackChannelFromArn = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(this, 'RetrievedSlackChannel', slackChannel.slackChannelConfigurationArn);
 
-    const topic = new sns.Topic(this, 'MyTopic');
-
-    slackChannelFromArn.addNotificationTopic(topic);
+    slackChannelFromArn.addNotificationTopic(new sns.Topic(this, 'MyFirstTopic'));
+    slackChannelFromArn.addNotificationTopic(new sns.Topic(this, 'MySecondTopic'));
   }
 }
 
 const app = new cdk.App();
 
-new ChatbotFromArnInteg(app, 'ChatbotFromArnInteg');
+const stack = new ChatbotFromArnInteg(app, 'ChatbotFromArnInteg');
+new IntegTest(app, 'ChatbotFromArn', {
+  testCases: [stack],
+});
 
 app.synth();
 
