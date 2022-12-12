@@ -14,7 +14,7 @@ import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
-import { AttachedPolicies, UniqueStringSet } from './util';
+import { AttachedPolicies, UniqueStringSet } from './private/util';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
