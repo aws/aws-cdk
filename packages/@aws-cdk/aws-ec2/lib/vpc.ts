@@ -719,6 +719,15 @@ export interface VpcAttributes {
   readonly publicSubnetRouteTableIds?: string[];
 
   /**
+   * List of IPv4 CIDR blocks for the public subnets.
+   *
+   * Must be undefined or have an entry for every public subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any public subnet will fail
+   */
+  readonly publicSubnetIpv4CidrBlocks?: string[];
+
+  /**
    * List of private subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
@@ -740,6 +749,15 @@ export interface VpcAttributes {
   readonly privateSubnetRouteTableIds?: string[];
 
   /**
+   * List of IPv4 CIDR blocks for the private subnets.
+   *
+   * Must be undefined or have an entry for every private subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any private subnet will fail
+   */
+  readonly privateSubnetIpv4CidrBlocks?: string[];
+
+  /**
    * List of isolated subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
@@ -759,6 +777,15 @@ export interface VpcAttributes {
    * Must be undefined or have a name for every isolated subnet group.
    */
   readonly isolatedSubnetRouteTableIds?: string[];
+
+  /**
+   * List of IPv4 CIDR blocks for the isolated subnets.
+   *
+   * Must be undefined or have an entry for every isolated subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any isolated subnet will fail
+   */
+  readonly isolatedSubnetIpv4CidrBlocks?: string[];
 
   /**
    * VPN gateway's identifier
@@ -2084,9 +2111,9 @@ class ImportedVpc extends VpcBase {
     }
 
     /* eslint-disable max-len */
-    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
-    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, SubnetType.PRIVATE_WITH_EGRESS, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds');
-    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, SubnetType.PRIVATE_ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds');
+    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, props.publicSubnetIpv4CidrBlocks, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds', 'publicSubnetIpv4CidrBlocks');
+    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, props.privateSubnetIpv4CidrBlocks, SubnetType.PRIVATE_WITH_EGRESS, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds', 'privateSubnetIpv4CidrBlocks');
+    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, props.isolatedSubnetIpv4CidrBlocks, SubnetType.PRIVATE_ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds', 'isolatedSubnetIpv4CidrBlocks');
     /* eslint-enable max-len */
 
     this.publicSubnets = pub.import(this);
