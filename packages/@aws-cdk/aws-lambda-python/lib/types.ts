@@ -1,10 +1,10 @@
-import { AssetHashType, DockerImage } from '@aws-cdk/core';
+import { AssetHashType, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 
 /**
  * Options for bundling
  */
-export interface BundlingOptions {
+export interface BundlingOptions extends DockerRunOptions {
 
   /**
    * Whether to export Poetry dependencies with hashes. Note that this can cause builds to fail if not all dependencies
@@ -39,13 +39,6 @@ export interface BundlingOptions {
    * @default - No build arguments.
    */
   readonly buildArgs?: { [key: string]: string };
-
-  /**
-   * Environment variables defined when bundling runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly environment?: { [key: string]: string; };
 
   /**
    * Determines how asset hash is calculated. Assets will get rebuild and
