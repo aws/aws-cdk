@@ -29,11 +29,9 @@ class TestStack extends Stack {
       },
     });
 
-    /// !show
     const vpc: IVpc = ec2.Vpc.fromLookup(this, 'Vpc', {
       vpcName: 'my-vpc-name',
     });
-    /// !hide
 
     const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_EGRESS });
 
