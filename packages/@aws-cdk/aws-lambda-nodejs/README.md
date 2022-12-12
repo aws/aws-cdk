@@ -307,6 +307,20 @@ should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
+You can additionaly set a variety of Docker options to adjust for your own environment.
+
+ ```ts
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: { 
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
+});
+```
+
 ## Asset hash
 
 By default the asset hash will be calculated based on the bundled output (`AssetHashType.OUTPUT`).
