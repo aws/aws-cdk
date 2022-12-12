@@ -15,7 +15,7 @@ CDK Pipelines is an *opinionated construct library*. It is purpose-built to
 deploy one or more copies of your CDK applications using CloudFormation with a
 minimal amount of effort on your part. It is *not* intended to support arbitrary
 deployment pipelines, and very specifically it is not built to use CodeDeploy to
-applications to instances, or deploy your custom-built ECR images to an ECS
+deploy applications to instances, or deploy your custom-built ECR images to an ECS
 cluster directly: use CDK file assets with CloudFormation Init for instances, or
 CDK container assets for ECS clusters instead.
 

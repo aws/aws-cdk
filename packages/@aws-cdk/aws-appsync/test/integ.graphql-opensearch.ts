@@ -22,7 +22,7 @@ const domain = new opensearch.Domain(stack, 'Domain', {
 
 const api = new appsync.GraphqlApi(stack, 'api', {
   name: 'api',
-  schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
 });
 
 const ds = api.addOpenSearchDataSource('ds', domain);
