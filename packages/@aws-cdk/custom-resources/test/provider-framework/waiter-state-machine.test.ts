@@ -1,23 +1,22 @@
 import { Template } from '@aws-cdk/assertions';
 import { Code, Function as lambdaFn, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Node } from 'constructs';
 import { WaiterStateMachine } from '../../lib/provider-framework/waiter-state-machine';
 
 describe('state machine', () => {
   test('contains the needed resources', () => {
     // GIVEN
     const stack = new Stack();
-    Node.of(stack).setContext('@aws-cdk/core:target-partitions', ['aws', 'aws-cn']);
+    stack.node.setContext('@aws-cdk/core:target-partitions', ['aws', 'aws-cn']);
 
     const isCompleteHandler = new lambdaFn(stack, 'isComplete', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       handler: 'index.handler',
     });
     const timeoutHandler = new lambdaFn(stack, 'isTimeout', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       handler: 'index.handler',
     });
     const interval = Duration.hours(2);

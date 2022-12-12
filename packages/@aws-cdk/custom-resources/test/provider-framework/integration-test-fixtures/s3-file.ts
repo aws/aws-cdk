@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { CustomResource, Stack } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import * as cr from '../../../lib';
 import * as api from './s3-file-handler/api';
 
@@ -66,7 +66,7 @@ class S3FileProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     const stack = Stack.of(scope);
     const id = 'com.amazonaws.cdk.custom-resources.s3file-provider';
-    const x = Node.of(stack).tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
+    const x = stack.node.tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
     return x.provider.serviceToken;
   }
 
@@ -78,7 +78,7 @@ class S3FileProvider extends Construct {
     this.provider = new cr.Provider(this, 's3file-provider', {
       onEventHandler: new lambda.Function(this, 's3file-on-event', {
         code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_16_X,
         handler: 'index.onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
