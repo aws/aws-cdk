@@ -59,7 +59,6 @@ export class Bundling implements CdkBundlingOptions {
   public readonly image: DockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
-  public readonly volumesFrom?: string[];
 
   constructor(props: BundlingProps) {
     const {
@@ -89,7 +88,6 @@ export class Bundling implements CdkBundlingOptions {
     });
     this.command = ['bash', '-c', chain(bundlingCommands)];
     this.environment = props.environment;
-    this.volumesFrom = props.volumesFrom;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {

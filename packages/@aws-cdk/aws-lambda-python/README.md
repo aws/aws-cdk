@@ -145,18 +145,6 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
-In situations where files are needed for bundling that are from a different container, you can specify the container ID from which additional volumes should be mounted.
-
- ```ts
-const entry = '/path/to/function';
-
-new python.PythonFunction(this, 'function', {
-  entry,
-  runtime: Runtime.PYTHON_3_8,
-  bundling: { volumesFrom: ['777f7dc92da7'] },
-});
-```
-
 ## Custom Bundling with Code Artifact
 
 To use a Code Artifact PyPI repo, the `PIP_INDEX_URL` for bundling the function can be customized (requires AWS CLI in the build environment):

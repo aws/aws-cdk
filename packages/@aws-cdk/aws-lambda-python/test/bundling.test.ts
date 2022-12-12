@@ -278,20 +278,6 @@ test('Bundling with custom environment vars`', () => {
   }));
 });
 
-test('Bundling with custom volumes', () => {
-  const entry = path.join(__dirname, 'lambda-handler');
-  Bundling.bundle({
-    entry: entry,
-    runtime: Runtime.PYTHON_3_7,
-    volumesFrom: ['777f7dc92da7'],
-  });
-
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      volumesFrom: ['777f7dc92da7'],
-    }),
-  }));
-});
 
 test('Do not build docker image when skipping bundling', () => {
   const entry = path.join(__dirname, 'lambda-handler');
