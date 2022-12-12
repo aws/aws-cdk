@@ -148,3 +148,5 @@ incompatible-argument:@aws-cdk/aws-route53-targets.InterfaceVpcEndpointTarget.<i
 # to allow the CLI to skip validating the bootstrap stack when the stack is not needed
 changed-type:@aws-cdk/cx-api.AssetManifestArtifact.requiresBootstrapStackVersion
 
+# removed mistyped ec2 instance class
+removed:aws-cdk-lib.aws_ec2.InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH
