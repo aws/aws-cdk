@@ -1,11 +1,24 @@
 import { FlagInfo, FlagType } from './private/flag-modeling';
 
-// --------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////
+//
 // This file defines context keys that enable certain features that are
 // implemented behind a flag in order to preserve backwards compatibility for
 // existing apps. When a new app is initialized through `cdk init`, the CLI will
 // automatically add enable these features by adding them to the generated
 // `cdk.json` file.
+//
+////////////////////////////////////////////////////////////////////////
+//
+//  !!! IMPORTANT !!!
+//
+//  When you introduce a new flag, set its 'introducedIn.v2' value to the literal string
+// 'V2·NEXT', without the dot.
+//
+//  DO NOT USE A VARIABLE. DO NOT DEFINE A CONSTANT. The actual value will be string-replaced at
+//  version bump time.
+//
+////////////////////////////////////////////////////////////////////////
 //
 // There are three types of flags: ApiDefault, BugFix, and VisibleContext flags.
 //
