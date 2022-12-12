@@ -1,5 +1,5 @@
 {
-  "$version": "99.0.0",
+  "$version": "101.0.0",
   "PropertyTypes": {
     "AWS::Lex::Bot.AdvancedRecognitionSetting": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-advancedrecognitionsetting.html",
@@ -232,6 +232,7 @@
       "Properties": {
         "AudioLogSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-conversationlogsettings.html#cfn-lex-bot-conversationlogsettings-audiologsettings",
+          "DuplicatesAllowed": false,
           "ItemType": "AudioLogSetting",
           "Required": false,
           "Type": "List",
@@ -239,6 +240,7 @@
         },
         "TextLogSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-conversationlogsettings.html#cfn-lex-bot-conversationlogsettings-textlogsettings",
+          "DuplicatesAllowed": false,
           "ItemType": "TextLogSetting",
           "Required": false,
           "Type": "List",
@@ -262,6 +264,7 @@
       "Properties": {
         "CustomVocabularyItems": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-customvocabulary.html#cfn-lex-bot-customvocabulary-customvocabularyitems",
+          "DuplicatesAllowed": false,
           "ItemType": "CustomVocabularyItem",
           "Required": true,
           "Type": "List",
@@ -310,6 +313,17 @@
         "MaxLength": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-dtmfspecification.html#cfn-lex-bot-dtmfspecification-maxlength",
           "PrimitiveType": "Integer",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::Lex::Bot.DataPrivacy": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-dataprivacy.html",
+      "Properties": {
+        "ChildDirected": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-dataprivacy.html#cfn-lex-bot-dataprivacy-childdirected",
+          "PrimitiveType": "Boolean",
           "Required": true,
           "UpdateType": "Mutable"
         }
@@ -377,6 +391,7 @@
         },
         "MessageGroups": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-fulfillmentstartresponsespecification.html#cfn-lex-bot-fulfillmentstartresponsespecification-messagegroups",
+          "DuplicatesAllowed": true,
           "ItemType": "MessageGroup",
           "Required": true,
           "Type": "List",
@@ -401,6 +416,7 @@
         },
         "MessageGroups": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-fulfillmentupdateresponsespecification.html#cfn-lex-bot-fulfillmentupdateresponsespecification-messagegroups",
+          "DuplicatesAllowed": true,
           "ItemType": "MessageGroup",
           "Required": true,
           "Type": "List",
@@ -476,6 +492,7 @@
       "Properties": {
         "Buttons": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-imageresponsecard.html#cfn-lex-bot-imageresponsecard-buttons",
+          "DuplicatesAllowed": true,
           "ItemType": "Button",
           "Required": false,
           "Type": "List",
@@ -535,6 +552,7 @@
         },
         "InputContexts": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-intent.html#cfn-lex-bot-intent-inputcontexts",
+          "DuplicatesAllowed": true,
           "ItemType": "InputContext",
           "Required": false,
           "Type": "List",
@@ -566,6 +584,7 @@
         },
         "OutputContexts": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-intent.html#cfn-lex-bot-intent-outputcontexts",
+          "DuplicatesAllowed": true,
           "ItemType": "OutputContext",
           "Required": false,
           "Type": "List",
@@ -579,6 +598,7 @@
         },
         "SampleUtterances": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-intent.html#cfn-lex-bot-intent-sampleutterances",
+          "DuplicatesAllowed": true,
           "ItemType": "SampleUtterance",
           "Required": false,
           "Type": "List",
@@ -586,6 +606,7 @@
         },
         "SlotPriorities": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-intent.html#cfn-lex-bot-intent-slotpriorities",
+          "DuplicatesAllowed": true,
           "ItemType": "SlotPriority",
           "Required": false,
           "Type": "List",
@@ -721,6 +742,7 @@
         },
         "Variations": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-messagegroup.html#cfn-lex-bot-messagegroup-variations",
+          "DuplicatesAllowed": true,
           "ItemType": "Message",
           "Required": false,
           "Type": "List",
@@ -853,6 +875,7 @@
         },
         "MessageGroupsList": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-promptspecification.html#cfn-lex-bot-promptspecification-messagegroupslist",
+          "DuplicatesAllowed": true,
           "ItemType": "MessageGroup",
           "Required": true,
           "Type": "List",
@@ -884,6 +907,7 @@
         },
         "MessageGroupsList": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-responsespecification.html#cfn-lex-bot-responsespecification-messagegroupslist",
+          "DuplicatesAllowed": true,
           "ItemType": "MessageGroup",
           "Required": true,
           "Type": "List",
@@ -970,6 +994,17 @@
         }
       }
     },
+    "AWS::Lex::Bot.SentimentAnalysisSettings": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-sentimentanalysissettings.html",
+      "Properties": {
+        "DetectSentiment": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-sentimentanalysissettings.html#cfn-lex-bot-sentimentanalysissettings-detectsentiment",
+          "PrimitiveType": "Boolean",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::Lex::Bot.Slot": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-slot.html",
       "Properties": {
@@ -1027,6 +1062,7 @@
       "Properties": {
         "DefaultValueList": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-slotdefaultvaluespecification.html#cfn-lex-bot-slotdefaultvaluespecification-defaultvaluelist",
+          "DuplicatesAllowed": true,
           "ItemType": "SlotDefaultValue",
           "Required": true,
           "Type": "List",
@@ -1080,6 +1116,7 @@
         },
         "SlotTypeValues": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-slottype.html#cfn-lex-bot-slottype-slottypevalues",
+          "DuplicatesAllowed": true,
           "ItemType": "SlotTypeValue",
           "Required": false,
           "Type": "List",
@@ -1104,6 +1141,7 @@
         },
         "Synonyms": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-slottypevalue.html#cfn-lex-bot-slottypevalue-synonyms",
+          "DuplicatesAllowed": true,
           "ItemType": "SampleValue",
           "Required": false,
           "Type": "List",
@@ -1128,6 +1166,7 @@
         },
         "SampleUtterances": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-slotvalueelicitationsetting.html#cfn-lex-bot-slotvalueelicitationsetting-sampleutterances",
+          "DuplicatesAllowed": true,
           "ItemType": "SampleUtterance",
           "Required": false,
           "Type": "List",
@@ -1198,6 +1237,7 @@
         },
         "MessageGroupsList": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-stillwaitingresponsespecification.html#cfn-lex-bot-stillwaitingresponsespecification-messagegroupslist",
+          "DuplicatesAllowed": true,
           "ItemType": "MessageGroup",
           "Required": true,
           "Type": "List",
@@ -1216,6 +1256,7 @@
       "Properties": {
         "BotAliasLocaleSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-testbotaliassettings.html#cfn-lex-bot-testbotaliassettings-botaliaslocalesettings",
+          "DuplicatesAllowed": false,
           "ItemType": "BotAliasLocaleSettingsItem",
           "Required": false,
           "Type": "List",
@@ -1235,8 +1276,8 @@
         },
         "SentimentAnalysisSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-testbotaliassettings.html#cfn-lex-bot-testbotaliassettings-sentimentanalysissettings",
-          "PrimitiveType": "Json",
           "Required": false,
+          "Type": "SentimentAnalysisSettings",
           "UpdateType": "Mutable"
         }
       }
@@ -1421,6 +1462,7 @@
       "Properties": {
         "AudioLogSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-botalias-conversationlogsettings.html#cfn-lex-botalias-conversationlogsettings-audiologsettings",
+          "DuplicatesAllowed": false,
           "ItemType": "AudioLogSetting",
           "Required": false,
           "Type": "List",
@@ -1428,6 +1470,7 @@
         },
         "TextLogSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-botalias-conversationlogsettings.html#cfn-lex-botalias-conversationlogsettings-textlogsettings",
+          "DuplicatesAllowed": false,
           "ItemType": "TextLogSetting",
           "Required": false,
           "Type": "List",
@@ -1470,6 +1513,17 @@
         "S3BucketArn": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-botalias-s3bucketlogdestination.html#cfn-lex-botalias-s3bucketlogdestination-s3bucketarn",
           "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::Lex::BotAlias.SentimentAnalysisSettings": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-botalias-sentimentanalysissettings.html",
+      "Properties": {
+        "DetectSentiment": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-botalias-sentimentanalysissettings.html#cfn-lex-botalias-sentimentanalysissettings-detectsentiment",
+          "PrimitiveType": "Boolean",
           "Required": true,
           "UpdateType": "Mutable"
         }
@@ -1530,12 +1584,6 @@
           "UpdateType": "Mutable"
         }
       }
-    },
-    "AWS::Lex::ResourcePolicy.Policy": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-resourcepolicy-policy.html",
-      "PrimitiveType": "Json",
-      "Required": false,
-      "UpdateType": "Mutable"
     }
   },
   "ResourceTypes": {
@@ -1580,8 +1628,8 @@
         },
         "DataPrivacy": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lex-bot.html#cfn-lex-bot-dataprivacy",
-          "PrimitiveType": "Json",
           "Required": true,
+          "Type": "DataPrivacy",
           "UpdateType": "Mutable"
         },
         "Description": {
@@ -1686,8 +1734,8 @@
         },
         "SentimentAnalysisSettings": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lex-botalias.html#cfn-lex-botalias-sentimentanalysissettings",
-          "PrimitiveType": "Json",
           "Required": false,
+          "Type": "SentimentAnalysisSettings",
           "UpdateType": "Mutable"
         }
       }
@@ -1708,6 +1756,7 @@
         },
         "BotVersionLocaleSpecification": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lex-botversion.html#cfn-lex-botversion-botversionlocalespecification",
+          "DuplicatesAllowed": true,
           "ItemType": "BotVersionLocaleSpecification",
           "Required": true,
           "Type": "List",
@@ -1734,8 +1783,8 @@
       "Properties": {
         "Policy": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lex-resourcepolicy.html#cfn-lex-resourcepolicy-policy",
+          "PrimitiveType": "Json",
           "Required": true,
-          "Type": "Policy",
           "UpdateType": "Mutable"
         },
         "ResourceArn": {

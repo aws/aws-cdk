@@ -25,7 +25,9 @@ export const AWS_CDK_METADATA = new Set([
   'eu-north-1',
   'eu-south-1',
   'me-south-1',
+  // 'me-central-1',
   'sa-east-1',
+  // 'ap-south-2',
 ]);
 
 /**
@@ -40,6 +42,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'ap-northeast-2': 'Z3W03O7B5YMIYP',
   'ap-northeast-3': 'Z2YQB5RD63NC85',
   'ap-south-1': 'Z11RGJOFQNVJUP',
+  'ap-south-2': 'Z02976202B4EZMXIPMXF7',
   'ap-southeast-1': 'Z3O0J2DXBE1FTB',
   'ap-southeast-2': 'Z1WCIGYICN2BYD',
   'ap-southeast-3': 'Z01613992JD795ZI93075',
@@ -52,6 +55,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'eu-west-2': 'Z3GKZC51ZF0DB4',
   'eu-west-3': 'Z3R1K369G5AVDG',
   'me-south-1': 'Z1MPMWCPA7YB62',
+  'me-central-1': 'Z06143092I8HRXZRUZROF',
   'sa-east-1': 'Z7KQH4QJS55SO',
   'us-east-1': 'Z3AQBSTGFYJSTF',
   'us-east-2': 'Z2O1EMRO9K5GLX',
@@ -104,6 +108,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
+// Any not listed regions use the service principal "logdelivery.elasticloadbalancing.amazonaws.com"
 export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'af-south-1': '098369216593',
   'ap-east-1': '754344448648',

@@ -13,7 +13,7 @@ beforeEach(() => {
   api = new appsync.GraphqlApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {},
   });
 });
@@ -100,7 +100,7 @@ test('when xray is enabled should not throw an Error', () => {
   new appsync.GraphqlApi(stack, 'api-x-ray', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     xrayEnabled: true,
   });
 
@@ -123,7 +123,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
   new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
     authorizationConfig: {},
     name: 'apiWithCustomRole',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {
       role: cloudWatchLogRole,
     },
@@ -169,7 +169,7 @@ test('appsync GraphqlApi should be configured with custom domain when specified'
   new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
     authorizationConfig: {},
     name: 'apiWithCustomRole',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     domainName: {
       domainName,
       certificate,
@@ -201,7 +201,7 @@ test('log retention should be configured with given retention time when specifie
   new appsync.GraphqlApi(stack, 'log-retention', {
     authorizationConfig: {},
     name: 'log-retention',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {
       retention: retentionTime,
     },
@@ -232,7 +232,7 @@ test('log retention should not appear when no retention time is specified', () =
   new appsync.GraphqlApi(stack, 'no-log-retention', {
     authorizationConfig: {},
     name: 'no-log-retention',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 
   // THEN

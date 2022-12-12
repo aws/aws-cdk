@@ -58,11 +58,12 @@ export class DeployAssert extends Construct implements IDeployAssert {
     Object.defineProperty(this, DEPLOY_ASSERT_SYMBOL, { value: true });
   }
 
-  public awsApiCall(service: string, api: string, parameters?: any): IApiCall {
+  public awsApiCall(service: string, api: string, parameters?: any, outputPaths?: string[]): IApiCall {
     return new AwsApiCall(this.scope, `AwsApiCall${service}${api}`, {
       api,
       service,
       parameters,
+      outputPaths,
     });
   }
 
