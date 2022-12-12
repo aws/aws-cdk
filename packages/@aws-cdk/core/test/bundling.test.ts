@@ -454,7 +454,7 @@ describe('bundling', () => {
     try {
       image.run({
         command: ['cool', 'command'],
-        volumesFrom: ['foo'],
+        volumesFrom: ['foo', 'bar'],
         volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
         workingDirectory: '/working-directory',
         user: 'user:group',
@@ -468,6 +468,7 @@ describe('bundling', () => {
       'run', '--rm',
       '-u', 'user:group',
       '--volumes-from', 'foo',
+      '--volumes-from', 'bar',
       '-v', '/host-path:/container-path:delegated',
       '-w', '/working-directory',
       'alpine',
