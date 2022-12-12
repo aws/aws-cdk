@@ -78,6 +78,13 @@ export class Bundling implements cdk.BundlingOptions {
         command: bundling.command,
         environment: bundling.environment,
         local: bundling.local,
+        entrypoint: bundling.entrypoint,
+        volumes: bundling.volumes,
+        volumesFrom: bundling.volumesFrom,
+        workingDirectory: bundling.workingDirectory,
+        user: bundling.user,
+        securityOpt: bundling.securityOpt,
+        network: bundling.network,
       },
     });
   }

@@ -147,7 +147,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.environment = props.environment;
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
     // and we want to force npx to use the globally installed esbuild.
-    this.workingDirectory = '/';
+    this.workingDirectory = props.workingDirectory ?? '/';
     this.entrypoint = props.entrypoint;
     this.volumes = props.volumes;
     this.volumesFrom = props.volumesFrom;
