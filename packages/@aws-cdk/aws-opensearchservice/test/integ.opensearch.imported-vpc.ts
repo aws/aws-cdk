@@ -5,17 +5,16 @@ import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as opensearch from '../lib';
 
-const appWithVpc = new App();
-const stack = new Stack(appWithVpc, 'StackWithVpc', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
-new ec2.Vpc(stack, 'MyVpc', {
-  vpcName: 'my-vpc-name',
-  maxAzs: 2,
-});
+class VpcStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    new ec2.Vpc(this, 'MyVpc', {
+      vpcName: 'my-vpc-name',
+      maxAzs: 2,
+    });
+  }
+}
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -59,7 +58,9 @@ const env = {
   account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
 };
+const StackWithVpc = new VpcStack(app, 'stack-with-vpc', { env });
 const testCase = new TestStack(app, 'cdk-integ-opensearch-vpc', { env });
+testCase.addDependency(StackWithVpc);
 new integ.IntegTest(app, 'cdk-integ-opensearch-vpc-test', {
   testCases: [testCase],
 });
