@@ -5,6 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import { NamespaceType } from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -1022,6 +1023,20 @@ describe('cluster', () => {
 
     // THEN
     expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+  });
+
+  test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      name: 'http://foo.com',
+      type: NamespaceType.HTTP,
+    });
+    // THEN
+    expect(namespace.namespaceName).toBe('http://foo.com');
   });
 
   /*
