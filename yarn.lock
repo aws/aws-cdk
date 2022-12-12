@@ -2034,11 +2034,6 @@
   resolved "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
   integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
 
-"@types/which-pm-runs@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@types/which-pm-runs/-/which-pm-runs-1.0.0.tgz#b5325ef24cc9830da9c733814de11f1ef97689a6"
-  integrity sha512-BXfdlYLWvRhngJbih4N57DjO+63Z7AxiFiip8yq3rD46U7V4I2W538gngPvBsZiMehhD8sfGf4xLI6k7TgXvNw==
-
 "@types/workerpool@^6.1.0":
   version "6.1.0"
   resolved "https://registry.npmjs.org/@types/workerpool/-/workerpool-6.1.0.tgz#16c3b9d3c62a8f6e6ad2e4d6212a68130f0cd3b1"
