@@ -278,7 +278,6 @@ test('Bundling with custom environment vars`', () => {
   }));
 });
 
-
 test('Do not build docker image when skipping bundling', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
