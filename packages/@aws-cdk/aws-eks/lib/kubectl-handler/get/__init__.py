@@ -3,6 +3,7 @@ import logging
 import os
 import subprocess
 import time
+import shlex
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -37,13 +38,23 @@ def get_handler(event, context):
     object_type         = props['ObjectType']
     object_name         = props['ObjectName']
     object_namespace    = props['ObjectNamespace']
-    json_path           = props['JsonPath']
+    json_path           = props.get('JsonPath', None)
+    go_template         = props.get('GoTemplate', None)
     timeout_seconds     = props['TimeoutSeconds']
 
-    # json path should be surrouded with '{}'
-    path = '{{{0}}}'.format(json_path)
+    # `get` command format from https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#get
+    # There will be exactly one of json_path or go_template
+    if json_path is not None:
+        # json path should be surrouded with '{}'
+        output_arg = "-o=jsonpath={0}".format(shlex.quote("{{{0}}}".format(json_path)))
+    else if go_template is not None:
+        # go-template string provides its own braces
+        output_arg = "-o=go-template={0}".format(shlex.quote(go_template))
+    else:
+        raise Exception("must provide JsonPath or GoTemplate")
+
     if request_type == 'Create' or request_type == 'Update':
-        output = wait_for_output(['get', '-n', object_namespace, object_type, object_name, "-o=jsonpath='{{{0}}}'".format(json_path)], int(timeout_seconds))
+        output = wait_for_output(['get', '-n', object_namespace, object_type, object_name, output_arg], int(timeout_seconds))
         return {'Data': {'Value': output}}
     elif request_type == 'Delete':
         pass

@@ -1376,6 +1376,7 @@ new eks.KubernetesPatch(this, 'hello-kub-deployment-label', {
 
 The `KubernetesObjectValue` construct can be used to query for information about kubernetes objects,
 and use that as part of your CDK application.
+Queries can be written using Kubernetes' [`jsonPath`](https://kubernetes.io/docs/reference/kubectl/jsonpath/) or [`goTemplate`](https://pkg.go.dev/text/template#pkg-overview) expressions.
 
 For example, you can fetch the address of a [`LoadBalancer`](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) type service:
 

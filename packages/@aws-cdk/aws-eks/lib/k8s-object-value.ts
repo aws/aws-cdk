@@ -34,9 +34,20 @@ export interface KubernetesObjectValueProps {
   /**
    * JSONPath to the specific value.
    *
+   * @default - Exactly one of `jsonPath` or `goTemplate` must be specified.
+   *
    * @see https://kubernetes.io/docs/reference/kubectl/jsonpath/
    */
-  readonly jsonPath: string;
+  readonly jsonPath?: string;
+
+  /**
+   * Go template to the specific value.
+   *
+   * @default - Exactly one of `jsonPath` or `goTemplate` must be specified.
+   *
+   * @see https://pkg.go.dev/text/template#pkg-overview
+   */
+  readonly goTemplate?: string;
 
   /**
    * Timeout for waiting on a value.
@@ -62,6 +73,10 @@ export class KubernetesObjectValue extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesObjectValueProps) {
     super(scope, id);
 
+    if ((props.jsonPath === undefined) === (props.goTemplate === undefined)) {
+      throw new Error('Exactly one of \'jsonPath\' or \'goTemplate\' must be specified.');
+    }
+
     const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     this._resource = new CustomResource(this, 'Resource', {
@@ -74,6 +89,7 @@ export class KubernetesObjectValue extends Construct {
         ObjectName: props.objectName,
         ObjectNamespace: props.objectNamespace ?? 'default',
         JsonPath: props.jsonPath,
+        GoTemplate: props.goTemplate,
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
       },
     });
