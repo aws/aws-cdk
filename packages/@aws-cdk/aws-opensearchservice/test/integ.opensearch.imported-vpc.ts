@@ -1,9 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { IVpc, SubnetType } from '@aws-cdk/aws-ec2';
 import { App, Stack, StackProps, RemovalPolicy, CfnResource } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as opensearch from '../lib';
-import * as integ from '@aws-cdk/integ-tests';
 
 const appWithVpc = new App();
 const stack = new Stack(appWithVpc, 'StackWithVpc', {
