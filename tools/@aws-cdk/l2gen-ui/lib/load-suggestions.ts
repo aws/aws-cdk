@@ -1,16 +1,19 @@
-import { Suggestions, SchemaParser } from '@aws-cdk/l2gen';
+import { Suggestions, CfnSchema } from '@aws-cdk/l2gen';
+import { AppState } from './app-state';
+import { TypeMapper } from '@aws-cdk/l2gen/lib/mapping/type-mappings';
 
-export async function loadSuggestions(directory: string) {
+export async function loadInitialAppState(directory: string): Promise<AppState> {
   const files = (await Neutralino.filesystem.readDirectory(directory));
 
   const schemaFiles = files.filter(name => name.entry.endsWith('.schema.json'));
 
-  const promises = schemaFiles.map(async (file) => {
+  const schemas = await Promise.all(schemaFiles.map(async (file) => {
     const contents = await Neutralino.filesystem.readFile(`${directory}/${file.entry}`);
-    const parser = new SchemaParser(JSON.parse(contents));
-    const suggestions = new Suggestions(parser);
-    return suggestions.findTypeMappings();
-  });
+    return new CfnSchema(JSON.parse(contents));
+  }));
 
-  return (await Promise.all(promises)).flatMap(x => x);
+  return {
+    typeMapper: new TypeMapper(schemas),
+    mappings: new Suggestions(...schemas).findTypeMappings(),
+  };
 }

@@ -23,6 +23,7 @@ build({
     'crypto': './lib/throwing-proxy',
   },
   watch: process.argv.includes('--watch'),
+  sourcemap: 'linked',
 }).catch(() => {
   // Messages have already been printed
   process.exitCode = 1;

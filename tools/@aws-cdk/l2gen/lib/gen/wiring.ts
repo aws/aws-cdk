@@ -1,5 +1,5 @@
-import { ValueTransform, ifDefined } from "./well-known-values";
-import { IRenderable } from "./cm2";
+import { ValueTransform, ifDefined } from "../well-known-values";
+import { IRenderable } from "../cm2";
 
 export interface WireableProps {
   readonly required?: boolean;

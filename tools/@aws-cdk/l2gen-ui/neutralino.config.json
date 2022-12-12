@@ -32,10 +32,10 @@
   },
   "modes": {
     "window": {
-      "title": "aws-cdk L2 Customization",
-      "width": 1024,
+      "title": "aws-cdk L2 Studio",
+      "width": 1600,
       "height": 800,
-      "minWidth": 800,
+      "minWidth": 1024,
       "minHeight": 400,
       "fullScreen": false,
       "alwaysOnTop": false,
@@ -75,7 +75,7 @@
     "binaryName": "myapp",
     "resourcesPath": "/resources/",
     "extensionsPath": "/extensions/",
-    "clientLibrary": "/resources/build/neutralino.js",
+    "clientLibrary": "/resources/js/neutralino.js",
     "binaryVersion": "4.9.0",
     "clientVersion": "3.8.0"
   }

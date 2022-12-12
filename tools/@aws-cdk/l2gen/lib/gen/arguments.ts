@@ -1,5 +1,5 @@
-import { IRenderable, CM2, CodePart, interleave } from './cm2';
-import { IType } from './type';
+import { IRenderable, CM2, CodePart, interleave } from '../cm2';
+import { IType } from '../type';
 
 export class Arguments implements IRenderable {
   public readonly args = new Array<Argument>();

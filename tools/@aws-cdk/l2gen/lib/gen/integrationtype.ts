@@ -1,14 +1,14 @@
-import { IType, standardTypeRender, VOID } from './type';
-import { IGeneratable, fileFor } from './generatable';
-import { CM2, IRenderable, renderable } from './cm2';
-import { Diagnostic } from './diagnostic';
-import { SourceFile } from './source-module';
-import { InterfaceField, InterfaceTypeDefinition } from './private/interfacetype';
-import { CONSTRUCT } from './well-known-types';
+import { IType, standardTypeRender, VOID } from '../type';
+import { IGeneratable, fileFor } from '../generatable';
+import { CM2, IRenderable, renderable } from '../cm2';
+import { Diagnostic } from '../diagnostic';
+import { SourceFile } from '../source-module';
+import { InterfaceField, InterfaceTypeDefinition } from '../private/interfacetype';
+import { CONSTRUCT } from '../well-known-types';
 import { ArgumentOptions, Arguments } from './arguments';
-import { IValue, ObjectLiteral, litVal } from './value';
-import { toPascalCase } from './private/camel';
-import { GenerationRoot } from './root';
+import { IValue, ObjectLiteral, litVal } from '../value';
+import { toPascalCase } from '../private/camel';
+import { GenerationRoot } from '../root';
 
 export class IntegrationType implements IGeneratable, IType {
   public readonly typeRefName: string;

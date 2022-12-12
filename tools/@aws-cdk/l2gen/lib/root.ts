@@ -1,25 +1,10 @@
 import { IGeneratable, fileFor } from './generatable';
 import { fmtDiagnostic } from './diagnostic';
 import { CM2 } from './cm2';
-import { SchemaParser } from './schema-parser';
-import { printHint } from './private/hints/print-hint';
-import { enumHint } from './private/hints/enum-hints';
 
 export class GenerationRoot {
   private readonly generatables = new Set<IGeneratable>();
   private readonly skipRefs = new Array<string>();
-
-  public generateHintsFrom(parser: SchemaParser) {
-    const coveredRefs = new Set([
-      ...Array.from(this.generatables).flatMap(x => x.schemaRefs ?? []),
-      ...this.skipRefs,
-    ]);
-
-    for (const enumDef of parser.findEnums()) {
-      if (coveredRefs.has(enumDef.schemaLocation)) { continue; }
-        printHint(enumHint(enumDef));
-    }
-  }
 
   public skip(skipRef: string) {
     this.skipRefs.push(skipRef);

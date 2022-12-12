@@ -1,4 +1,4 @@
-import { EnumDefinition } from '../../schema-parser';
+import { EnumDefinition } from '../../mapping/schema-parser';
 import { CM2 } from '../../cm2';
 import { toCamelCase } from '../camel';
 import { objLit } from '../../value';

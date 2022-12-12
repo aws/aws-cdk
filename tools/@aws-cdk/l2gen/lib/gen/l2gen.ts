@@ -1,20 +1,20 @@
-import { IGeneratable, fileFor } from './generatable';
-import { toPascalCase } from './private/camel';
-import { CM2, IRenderable, renderable } from './cm2';
-import { RESOURCE, CONSTRUCT, factoryFunction, LAZY, IRESOURCE, STACK } from './well-known-types';
-import { ObjectLiteral, litVal, IValue } from './value';
-import { SourceFile } from './source-module';
-import { l1PropertyName, genTypeForProperty, l1ResourceType, resourceProperties, genTypeForPropertyType } from './private/cfn2ts-conventions';
-import { Diagnostic } from './diagnostic';
-import { InterfaceTypeDefinition, InterfaceField } from './private/interfacetype';
+import { IGeneratable, fileFor } from '../generatable';
+import { toPascalCase } from '../private/camel';
+import { CM2, IRenderable, renderable } from '../cm2';
+import { RESOURCE, CONSTRUCT, factoryFunction, LAZY, IRESOURCE, STACK } from '../well-known-types';
+import { ObjectLiteral, litVal, IValue } from '../value';
+import { SourceFile, ISourceModule } from '../source-module';
+import { l1PropertyName, genTypeForProperty, l1ResourceType, resourceProperties, genTypeForPropertyType } from '../private/cfn2ts-conventions';
+import { Diagnostic } from '../diagnostic';
+import { InterfaceTypeDefinition, InterfaceField } from '../private/interfacetype';
 import { Arguments } from './arguments';
-import { IType, existingType, STRING } from './type';
-import { analyzeArnFormat, formatArnExpression, splitArnExpression } from './private/arns';
-import { splitSelect } from './well-known-values';
+import { IType, existingType, STRING, standardTypeRender } from '../type';
+import { analyzeArnFormat, formatArnExpression, splitArnExpression } from '../private/arns';
+import { splitSelect, jsVal } from '../well-known-values';
 import { WireableProps, maybeWire } from './wiring';
-import { GenerationRoot } from './root';
+import { GenerationRoot } from '../root';
 
-export class L2Gen implements IGeneratable {
+export class L2Gen implements IGeneratable, IType {
   /**
    * Return a reference to the L1 type for the given property
    */
@@ -25,6 +25,9 @@ export class L2Gen implements IGeneratable {
   public static genTypeForPropertyType(typeName: string, propertyTypeName: string): IType {
     return genTypeForPropertyType(typeName, propertyTypeName);
   }
+
+  public readonly typeRefName: string;
+  public readonly definingModule: ISourceModule | undefined;
 
   private readonly props: InterfaceTypeDefinition;
   private readonly baseProps: InterfaceTypeDefinition;
@@ -44,6 +47,8 @@ export class L2Gen implements IGeneratable {
 
     this.genClassName = `${this.baseClassName}Gen`;
     this.sourceFile = new SourceFile(fileFor(this.genClassName, 'private'));
+    this.typeRefName = this.genClassName;
+    this.definingModule = this.sourceFile;
 
     this.baseProps = new InterfaceTypeDefinition(`${this.genClassName}PropsBase`, this.sourceFile);
     this.props = new InterfaceTypeDefinition(`${this.genClassName}Props`, this.sourceFile, { baseInterface: this.baseProps });
@@ -51,6 +56,18 @@ export class L2Gen implements IGeneratable {
       baseType: IRESOURCE,
     });
     this.attributesType = new InterfaceTypeDefinition(`${this.baseClassName}Attributes`, new SourceFile(fileFor(`I${this.baseClassName}Attributes`, 'public')));
+  }
+
+  public toString(): string {
+    return this.typeRefName;
+  }
+
+  public exampleValue(name: string): IRenderable {
+    return renderable(['new ', this, '(this, ', jsVal(toPascalCase(name)), ', ', this.props.exampleValue(), ')']);
+  }
+
+  public render(code: CM2): void {
+    return standardTypeRender(this, code);
   }
 
   public addProperty(prop: PropertyProps): IValue {

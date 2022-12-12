@@ -1,8 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { L2Gen, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, BOOLEAN, TRUE, FALSE, jsVal, EnumClass, ANY, litVal, NUMBER, ifDefinedAny, definedOrElse, IntegrationType, arrayOf, stackToJsonString, mapOf, transformMap, GenerationRoot, SchemaParser } from '@aws-cdk/l2gen';
+import { L2Gen, Enum, STRING, DURATION, objLit, renderDuration, ifDefined, BOOLEAN, TRUE, FALSE, jsVal, EnumClass, ANY, litVal, NUMBER, ifDefinedAny, definedOrElse, IntegrationType, arrayOf, stackToJsonString, mapOf, transformMap, GenerationRoot } from '@aws-cdk/l2gen';
 
 const root = new GenerationRoot();
-const parser = SchemaParser.fromFile('webacl.schema.json');
 
 //////////////////////////////////////////////////////////////////////
 
@@ -338,11 +337,4 @@ new L2Gen(root, 'AWS::WAFv2::WebACL').define(res => {
 
 //////////////////////////////////////////////////////////////////////
 
-parser.deriveEnumClass(root, 'TextTransformation', {
-  positionalArgs: ['Priority'],
-});
-
-//////////////////////////////////////////////////////////////////////
-
-root.generateHintsFrom(parser);
 root.generate();

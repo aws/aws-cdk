@@ -1,12 +1,12 @@
-import { IGeneratable, fileFor } from './generatable';
-import { IType, standardTypeRender, STRING } from './type';
-import { CM2, SymbolImport, IRenderable, renderable } from './cm2';
-import { IValue } from './value';
-import { SourceFile } from './source-module';
-import { Diagnostic } from './diagnostic';
-import { toCamelCase } from './private/camel';
-import { jsVal } from './well-known-values';
-import { GenerationRoot } from './root';
+import { IGeneratable, fileFor } from '../generatable';
+import { IType, standardTypeRender, STRING } from '../type';
+import { CM2, SymbolImport, IRenderable, renderable } from '../cm2';
+import { IValue } from '../value';
+import { SourceFile } from '../source-module';
+import { Diagnostic } from '../diagnostic';
+import { toCamelCase } from '../private/camel';
+import { jsVal } from '../well-known-values';
+import { GenerationRoot } from '../root';
 
 export class Enum implements IGeneratable, IType {
   public readonly typeRefName: string;

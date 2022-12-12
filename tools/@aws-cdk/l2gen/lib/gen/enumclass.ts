@@ -1,14 +1,14 @@
-import { IType, standardTypeRender, ANY } from './type';
-import { IGeneratable, fileFor } from './generatable';
-import { CM2, IRenderable, renderable } from './cm2';
-import { Diagnostic } from './diagnostic';
-import { SourceFile } from './source-module';
-import { InterfaceField, InterfaceTypeDefinition } from './private/interfacetype';
+import { IType, standardTypeRender, ANY } from '../type';
+import { IGeneratable, fileFor } from '../generatable';
+import { CM2, IRenderable, renderable } from '../cm2';
+import { Diagnostic } from '../diagnostic';
+import { SourceFile } from '../source-module';
+import { InterfaceField, InterfaceTypeDefinition } from '../private/interfacetype';
 import { ArgumentOptions, Arguments } from './arguments';
-import { IValue, ObjectLiteral, litVal } from './value';
-import { toPascalCase } from './private/camel';
+import { IValue, ObjectLiteral, litVal } from '../value';
+import { toPascalCase } from '../private/camel';
 import { WireableProps, maybeWire } from './wiring';
-import { GenerationRoot } from './root';
+import { GenerationRoot } from '../root';
 
 export interface EnumClassProps {
   readonly declaredReturnType?: IType;
