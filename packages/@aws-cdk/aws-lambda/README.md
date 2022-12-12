@@ -764,6 +764,40 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
 
+## Lambda with AWS Distro for OpenTelemetry layer
+
+To have automatic integration with XRay without having to add dependencies or change your code, you can use the
+[AWS Distro for OpenTelemetry Lambda (ADOT) layer](https://aws-otel.github.io/docs/getting-started/lambda).
+Consuming the latest ADOT layer can be done with the following snippet:
+
+```ts
+import {
+  AdotLambdaExecWrapper,
+  AdotLambdaLayerJavaScriptSdkVersion,
+} from 'aws-cdk-lib/aws-lambda';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  adotInstrumentationConfig: {
+    layerVersion: AdotLambdaLayerJavaScriptSdkVersion.V1_7_0,
+    execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
+  }
+});
+```
+
+To use a different layer version or one that supports another use cases or languages, use one of
+the following classes:
+
+* `AdotLambdaLayerJavaScriptSdkVersion`
+* `AdotLambdaLayerJavaPythonSdkVersion`
+* `AdotLambdaLayerJavaSdkVersion`
+* `AdotLambdaLayerJavaAutoInstrumentationVersion`
+* `AdotLambdaLayerGenericVersion`
+
+For more examples, see our [the integration test](test/integ.lambda-adot.ts).
+
 ## Lambda with Profiling
 
 The following code configures the lambda function with CodeGuru profiling. By default, this creates a new CodeGuru
