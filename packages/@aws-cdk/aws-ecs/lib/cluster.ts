@@ -288,8 +288,6 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Add an AWS Cloud Map DNS namespace for this cluster.
-   * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
-   * Map service.
    */
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
@@ -300,14 +298,24 @@ export class Cluster extends Resource implements ICluster {
       ? options.type
       : cloudmap.NamespaceType.DNS_PRIVATE;
 
-    const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
-      new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-        name: options.name,
-        vpc: this.vpc,
-      }) :
-      new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-        name: options.name,
-      });
+    let sdNamespace;
+    switch (namespaceType) {
+      case cloudmap.NamespaceType.DNS_PRIVATE:
+        sdNamespace = new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+          vpc: this.vpc,
+        });
+        break;
+      case cloudmap.NamespaceType.DNS_PUBLIC:
+        sdNamespace = new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+        break;
+      case cloudmap.NamespaceType.HTTP:
+        sdNamespace = new cloudmap.HttpNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+    }
 
     this._defaultCloudMapNamespace = sdNamespace;
     if (options.useForServiceConnect) {
