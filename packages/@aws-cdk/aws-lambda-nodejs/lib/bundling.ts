@@ -73,9 +73,15 @@ export class Bundling implements cdk.BundlingOptions {
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
+  public readonly entrypoint?: string[]
   public readonly command: string[];
+  public readonly volumes?: cdk.DockerVolume[];
+  public readonly volumesFrom?: string[];
   public readonly environment?: { [key: string]: string };
   public readonly workingDirectory: string;
+  public readonly user?: string;
+  public readonly securityOpt?: string;
+  public readonly network?: string;
   public readonly local?: cdk.ILocalBundling;
 
   private readonly projectRoot: string;
@@ -142,6 +148,12 @@ export class Bundling implements cdk.BundlingOptions {
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
     // and we want to force npx to use the globally installed esbuild.
     this.workingDirectory = '/';
+    this.entrypoint = props.entrypoint;
+    this.volumes = props.volumes;
+    this.volumesFrom = props.volumesFrom;
+    this.user = props.user;
+    this.securityOpt = props.securityOpt;
+    this.network = props.network;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced

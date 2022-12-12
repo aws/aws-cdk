@@ -93,6 +93,13 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
   public readonly local?: cdk.ILocalBundling;
+  public readonly entrypoint?: string[]
+  public readonly volumes?: cdk.DockerVolume[];
+  public readonly volumesFrom?: string[];
+  public readonly workingDirectory?: string;
+  public readonly user?: string;
+  public readonly securityOpt?: string;
+  public readonly network?: string;
 
   private readonly relativeEntryPath: string;
 
@@ -133,6 +140,13 @@ export class Bundling implements cdk.BundlingOptions {
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
     this.command = ['bash', '-c', bundlingCommand];
     this.environment = environment;
+    this.entrypoint = props.entrypoint;
+    this.volumes = props.volumes;
+    this.volumesFrom = props.volumesFrom;
+    this.workingDirectory = props.workingDirectory;
+    this.user = props.user;
+    this.securityOpt = props.securityOpt;
+    this.network = props.network;
 
     // Local bundling
     if (!props.forcedDockerBundling) { // only if Docker is not forced
