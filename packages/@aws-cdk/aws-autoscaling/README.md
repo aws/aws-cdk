@@ -295,7 +295,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType,
   machineImage,
-  blockDevices: [{
+  blockDevices: [
     {
         deviceName: 'gp3-volume',
         volume: autoscaling.BlockDeviceVolume.ebs(15, {
@@ -303,7 +303,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
           throughput: 125,
         }),
       },
-  }],
+  ],
   // ...
 });
 ```
