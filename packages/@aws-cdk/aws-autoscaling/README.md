@@ -599,7 +599,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 
   // ...
 
-  defaultInstanceWarmup: cdk.Duration.seconds(5),
+  defaultInstanceWarmup: Duration.seconds(5),
 });
 ```
 
