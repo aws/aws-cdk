@@ -287,18 +287,3 @@ test('nested assemblies share assets: default synth edition', () => {
 function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
   return x instanceof cxapi.CloudFormationStackArtifact;
 }
-
-test('docker outputs directory exists ', () => {
-  const app = new App();
-  const stack = new Stack(app);
-  const image = new DockerImageAsset(stack, 'MyAsset', {
-    directory: path.join(__dirname, 'demo-image'),
-    outputs: ['type=local,dest=out'],
-  });
-
-  const session = app.synth();
-
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBe(true);
-  expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'out'))).toBe(true);
-
-});
