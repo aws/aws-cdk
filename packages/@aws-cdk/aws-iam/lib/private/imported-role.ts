@@ -23,7 +23,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   public readonly roleArn: string;
   public readonly roleName: string;
   private readonly attachedPolicies = new AttachedPolicies();
-  private readonly defaultPolicyName: string;
+  private readonly defaultPolicyName?: string;
   private defaultPolicy?: Policy;
 
   constructor(scope: Construct, id: string, props: ImportedRoleProps) {
@@ -35,10 +35,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.roleName = props.roleName;
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
-    const defaultDefaultPolicyName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME)
-      ? `Policy${Names.uniqueId(this)}`
-      : 'Policy';
-    this.defaultPolicyName = props.defaultPolicyName ?? defaultDefaultPolicyName;
+    this.defaultPolicyName = props.defaultPolicyName;
     this.principalAccount = props.account;
   }
 
@@ -48,7 +45,11 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
-      this.defaultPolicy = new Policy(this, this.defaultPolicyName);
+      const defaultDefaultPolicyName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME)
+        ? `Policy${Names.uniqueId(this)}`
+        : 'Policy';
+      const policyName = this.defaultPolicyName ?? defaultDefaultPolicyName;
+      this.defaultPolicy = new Policy(this, policyName);
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
