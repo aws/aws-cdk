@@ -1,4 +1,4 @@
-import { IType, standardTypeRender, VOID } from '../type';
+import { IType, standardTypeRender, VOID, RecursionBreaker } from '../type';
 import { IGeneratable, fileFor } from '../generatable';
 import { CM2, IRenderable, renderable } from '../cm2';
 import { Diagnostic } from '../diagnostic';
@@ -91,7 +91,8 @@ export class IntegrationType implements IGeneratable, IType {
 
   public exampleValue(): IRenderable {
     if (this.integrations.length > 0) {
-      return this.integrations[0].exampleUsage();
+      return RecursionBreaker.doRenderable(this, () =>
+        this.integrations[0].exampleUsage());
     }
     return renderable(['<NONE>']);
   }

@@ -2,18 +2,19 @@ import { IType } from "../type";
 import { GenerationRoot } from "../root";
 import { TypeMapper } from "./type-mappings";
 
-export interface ITypeMappingFactory<O extends string> {
+export interface ITypeMappingFactory {
+  readonly schemaLocation: string;
   readonly mapperId: string;
   readonly description: string;
-  readonly configuration: Record<O, MappingParameter>;
+  readonly configuration: Record<string, MappingParameter>;
 
   validateConfiguration(): void;
   lockInConfiguration(): ITypeMapping;
 }
 
 export interface ITypeMapping {
+  readonly factory: ITypeMappingFactory;
   readonly description: string;
-  readonly id: string;
   readonly coveredSchemaLocations: string[];
 
   generate(root: GenerationRoot, mapper: TypeMapper): IType;
@@ -26,11 +27,12 @@ export type MappingParameter =
 
 export class SingleSelect implements Extract<MappingParameter, { type: 'select' }> {
   public readonly type = 'select';
-
+  public readonly options: string[];
   public value: string;
 
-  constructor(public readonly options: string[]) {
+  constructor(options: string[]) {
     this.value = options[0];
+    this.options = [...options];
   }
 
   public set(x: string): void {
@@ -49,11 +51,13 @@ export class SingleSelect implements Extract<MappingParameter, { type: 'select' 
 
 export class MultiSelect implements Extract<MappingParameter, { type: 'multiselect' }> {
   public readonly type = 'multiselect';
+  public readonly options: string[];
 
   public value: string[];
 
-  constructor(public readonly options: string[]) {
+  constructor(options: string[]) {
     this.value = [];
+    this.options = [...options];
   }
 
   public set(xs: string[]): void {

@@ -1,23 +1,23 @@
 import { ITypeMappingFactory, ITypeMapping } from "./mappings";
 import { CfnSchema, ResolvedType, SchemaObject } from "./schema-parser";
-import { L2Gen } from "../gen";
 import { GenerationRoot } from "../root";
 import { IType } from "../type";
 import { toCamelCase } from "../private/camel";
 import { TypeMapper } from "./type-mappings";
+import { StructType } from "../gen/struct-type";
 
-export class L2GenMappingFactory implements ITypeMappingFactory {
-  public static try(schema: CfnSchema, type: ResolvedType): L2GenMappingFactory[] {
+export class StructMappingFactory implements ITypeMappingFactory {
+  public static try(schema: CfnSchema, type: ResolvedType): StructMappingFactory[] {
     const objType = schema.parseSchemaObject(type);
     if (!objType) { return []; }
-    if (!(type as any).typeName) { return []; } // Root type
+    if ((type as any).typeName) { return []; } // Root type
 
-    return [new L2GenMappingFactory(type, objType)];
+    return [new StructMappingFactory(type, objType)];
   }
 
-  public readonly mapperId = `${this.type.schemaLocation}.L2Gen`;
+  public readonly mapperId = `${this.type.schemaLocation}.Struct`;
   public readonly schemaLocation = this.type.schemaLocation;
-  public readonly description: string = `Generated L2`;
+  public readonly description: string = `Struct`;
   public readonly configuration = {};
 
   constructor(private readonly type: ResolvedType, private readonly enumType: SchemaObject) {
@@ -27,25 +27,24 @@ export class L2GenMappingFactory implements ITypeMappingFactory {
   }
 
   public lockInConfiguration(): ITypeMapping {
-    return new L2GenMapping(this, this.type, this.enumType);
+    return new StructMapping(this, this.type, this.enumType);
   }
 }
 
-export class L2GenMapping implements ITypeMapping {
-  public readonly description: string = `Generated L2`;
-  public readonly id: string = `${this.type.schemaLocation}.L2Gen`;
+export class StructMapping implements ITypeMapping {
+  public readonly description: string = `Struct`;
+  public readonly id: string = `${this.type.schemaLocation}.Struct`;
   public readonly coveredSchemaLocations: string[] = [this.type.schemaLocation];
 
-  constructor(public readonly factory: L2GenMappingFactory, private readonly type: ResolvedType, private readonly objType: SchemaObject) {
+  constructor(public readonly factory: StructMappingFactory, private readonly type: ResolvedType, private readonly objType: SchemaObject) {
   }
 
   public generate(root: GenerationRoot, mapper: TypeMapper): IType {
-    const l2 = new L2Gen(root, this.objType.schemaLocation);
+    const l2 = new StructType(root, CfnSchema.nameFromType(this.objType));
 
     for (const [name, prop] of Object.entries(this.objType.properties)) {
-      l2.addProperty({
+      l2.addInputProperty({
         name: toCamelCase(name),
-        wire: name,
         required: prop.required ?? false,
         summary: '',
         type: mapper.mapType(prop.type),

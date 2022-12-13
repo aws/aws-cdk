@@ -1,6 +1,6 @@
 import { IGeneratable, fileFor } from '../generatable';
 import { IType, standardTypeRender, STRING } from '../type';
-import { CM2, SymbolImport, IRenderable, renderable } from '../cm2';
+import { CM2, SymbolImport, IRenderable, renderable, interleave } from '../cm2';
 import { IValue } from '../value';
 import { SourceFile } from '../source-module';
 import { Diagnostic } from '../diagnostic';
@@ -27,9 +27,10 @@ export class Enum implements IGeneratable, IType {
     return `${this.typeRefName}`;
   }
 
-  public exampleValue(): IRenderable {
+  public exampleValue(_: string, multiple: boolean): IRenderable {
     if (this.members.length > 0) {
-      return renderable([this.typeRefName, '.', this.members[0].name]);
+      const members = multiple ? this.members : [this.members[0]];
+      return renderable(interleave('\n', members.map(mem => [this.typeRefName, '.', mem.name])));
     }
     return renderable(['<NONE>']);
   }

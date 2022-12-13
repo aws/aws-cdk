@@ -4,7 +4,7 @@ import { SchemaEnum, CfnSchema, ResolvedType } from './schema-parser';
 import { Enum } from '../gen';
 import { IType } from '../type';
 
-export class EnumMappingFactory implements ITypeMappingFactory<never> {
+export class EnumMappingFactory implements ITypeMappingFactory {
   public static try(schema: CfnSchema, type: ResolvedType): EnumMappingFactory[] {
     const enumType = schema.parseSchemaEnum(type);
     if (!enumType) { return []; }
@@ -13,8 +13,10 @@ export class EnumMappingFactory implements ITypeMappingFactory<never> {
   }
 
   public readonly mapperId = `${this.type.schemaLocation}.EnumType`;
+  public readonly schemaLocation = this.type.schemaLocation;
   public readonly description: string = `Enum type`;
   public readonly configuration = {};
+  public readonly coveredSchemaLocations: string[] = [this.type.schemaLocation];
 
   constructor(private readonly type: ResolvedType, private readonly enumType: SchemaEnum) {
   }
@@ -23,7 +25,7 @@ export class EnumMappingFactory implements ITypeMappingFactory<never> {
   }
 
   public lockInConfiguration(): ITypeMapping {
-    return new EnumMapping(this.type, this.enumType);
+    return new EnumMapping(this, this.enumType);
   }
 }
 
@@ -32,10 +34,9 @@ export class EnumMappingFactory implements ITypeMappingFactory<never> {
  */
 export class EnumMapping implements ITypeMapping {
   public readonly description: string = `Enum type`;
-  public readonly id: string = `${this.type.schemaLocation}.Enum`;
-  public readonly coveredSchemaLocations: string[] = [this.type.schemaLocation];
+  public readonly coveredSchemaLocations = [this.enumType.schemaLocation];
 
-  constructor(private readonly type: ResolvedType, private readonly enumType: SchemaEnum) {
+  constructor(public readonly factory: EnumMappingFactory, private readonly enumType: SchemaEnum) {
   }
 
   public generate(root: GenerationRoot): IType {

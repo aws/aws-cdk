@@ -1,6 +1,6 @@
-import { IType, standardTypeRender, ANY } from '../type';
+import { IType, standardTypeRender, ANY, RecursionBreaker } from '../type';
 import { IGeneratable, fileFor } from '../generatable';
-import { CM2, IRenderable, renderable } from '../cm2';
+import { CM2, IRenderable, renderable, interleave } from '../cm2';
 import { Diagnostic } from '../diagnostic';
 import { SourceFile } from '../source-module';
 import { InterfaceField, InterfaceTypeDefinition } from '../private/interfacetype';
@@ -46,9 +46,11 @@ export class EnumClass implements IGeneratable, IType {
     }
   }
 
-  public exampleValue(): IRenderable {
+  public exampleValue(_: string, multiple: boolean): IRenderable {
     if (this.alternatives.length > 0) {
-      return this.alternatives[0].exampleUsage();
+      const alts = multiple ? this.alternatives : [this.alternatives[0]];
+      return RecursionBreaker.doRenderable(this, () =>
+        renderable(interleave('\n', alts.map(x => x.exampleUsage()))));
     }
     return renderable(['<NONE>']);
   }

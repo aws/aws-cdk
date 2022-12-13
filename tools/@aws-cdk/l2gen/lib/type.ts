@@ -8,7 +8,7 @@ export interface IType extends IRenderable {
   readonly typeRefName: string;
   readonly definingModule: ISourceModule | undefined;
   toString(): string;
-  exampleValue(name: string): IRenderable;
+  exampleValue(name: string, multiple?: boolean): IRenderable;
 }
 
 export function existingType(typeRefName: string, definingModule: ISourceModule, ex: ExampleProducer): StandardType {
@@ -30,7 +30,8 @@ export function arrayOf(type: IType): IType {
       return this.typeRefName;
     },
     exampleValue(name: string) {
-      return renderable(['[', type.exampleValue(name), ']']);
+      return RecursionBreaker.doRenderable(this, () =>
+        renderable(['[', type.exampleValue(name), ']']));
     }
   };
 }
@@ -46,11 +47,34 @@ export function mapOf(type: IType): IType {
       return this.typeRefName;
     },
     exampleValue(name: string) {
-      return renderable(code => renderObjectLiteral(code, Object.entries({
-        key: type.exampleValue(name),
-      })));
+      return RecursionBreaker.doRenderable(this, () =>
+        renderable(code => renderObjectLiteral(code, Object.entries({
+          key: type.exampleValue(name),
+        }))));
     }
   };
+}
+
+export class RecursionBreaker {
+  public static ELLIPSIS = renderable(['(...recursion...)']);
+  private static recSet = new Set<any>();
+
+  public static doRenderable(ctx: any, block: () => IRenderable): IRenderable {
+    return RecursionBreaker.do(ctx, block, RecursionBreaker.ELLIPSIS);
+  }
+
+  public static do<A>(ctx: any, block: () => A, brk: A): A {
+    if (RecursionBreaker.recSet.has(ctx)) {
+      return brk;
+    }
+
+    RecursionBreaker.recSet.add(ctx);
+    try {
+      return block();
+    } finally {
+      RecursionBreaker.recSet.delete(ctx);
+    }
+  }
 }
 
 export class StandardType implements IType {

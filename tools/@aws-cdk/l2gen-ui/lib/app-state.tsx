@@ -11,13 +11,14 @@ export interface AppState {
   readonly typeMapper: TypeMapper;
   readonly mappings: MappableType[];
   readonly selectedType?: MappableType;
-  readonly selectedMapping?: ITypeMappingFactory<any>;
+  readonly selectedMapping?: ITypeMappingFactory;
 }
 
 export type StateAction =
   | { action: 'selectType'; id: string }
   | { action: 'selectMapping'; id: string }
-  | { action: 'setParameter'; factory: ITypeMappingFactory<any>, parameter: MappingParameter; value: unknown }
+  | { action: 'setParameter'; factory: ITypeMappingFactory, parameter: MappingParameter; value: unknown }
+  | { action: 'lockIn'; factory: ITypeMappingFactory }
   ;
 
 function reducer(state: AppState, action: StateAction): AppState {
@@ -34,6 +35,9 @@ function reducer(state: AppState, action: StateAction): AppState {
     case 'setParameter':
       action.parameter.set(action.value as any);
       action.factory.validateConfiguration();
+      return { ...state };
+    case 'lockIn':
+      state.typeMapper.lockIn(action.factory.schemaLocation, action.factory.lockInConfiguration());
       return { ...state };
     default:
       return state;

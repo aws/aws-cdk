@@ -5,8 +5,15 @@ import { IRenderable, renderable } from '../cm2';
 
 export class CfnSchema {
   public static resourceNameFromSchemaLocation(x: string) {
-    const [cfnName] = x.split('#');
-    return cfnName;
+    if (x.includes('#')) {
+      return x.split('#')[0];
+    } else {
+      return x.split('/')[0];
+    }
+  }
+
+  public static nameFromType(x: { readonly schemaLocation: string }) {
+    return x.schemaLocation.split('/').slice(-1)[0];
   }
 
   public static fromFile(fileName: string) {
@@ -19,15 +26,6 @@ export class CfnSchema {
 
   public get cfnResourceName(): string {
     return this.schema.typeName;
-  }
-
-  public definitions(): ResolvedType[] {
-    return [
-      this.root(),
-      ...Object.keys(this.schema.definitions ?? {}).map(name => {
-        return this.definition(name);
-      })
-    ];
   }
 
   public root(): ResolvedType {
@@ -48,11 +46,41 @@ export class CfnSchema {
     };
   }
 
+  public allTypes(): ResolvedType[] {
+    const ret: Record<string, ResolvedType> = {};
+    const recurse = (x: UnresolvedType) => {
+      const resolved = this.resolveType(x);
+      if (ret[resolved.schemaLocation]) { return; }
+
+      ret[resolved.schemaLocation] = resolved;
+
+      const resolvedAny = resolved as any;
+
+      for (const [key, type] of Object.entries((resolvedAny.properties ?? {}) as Record<string, SchemaType>)) {
+        recurse({ schemaLocation: `${x.schemaLocation}/properties/${key}`, ...type });
+      }
+      if (typeof resolvedAny.additionalProperties === 'object') {
+        recurse({ schemaLocation: `${x.schemaLocation}/additionalProperties`, ...resolvedAny.additionalProperties });
+      }
+      if (typeof resolvedAny.patternProperties === 'object') {
+        for (const [patK, patType] of Object.entries(resolvedAny.patternProperties as Record<string, any>)) {
+          recurse({ schemaLocation: `${x.schemaLocation}/patternProperties/${patK}`, ...patType });
+        }
+      }
+      if (typeof resolvedAny.items === 'object') {
+        recurse({ schemaLocation: `${x.schemaLocation}/items`, ...resolvedAny.items });
+      }
+    }
+
+    recurse({ schemaLocation: `${this.cfnResourceName}#`, ...this.schema });
+    return Object.values(ret);
+  }
+
   public parseSchemaEnum(x: ResolvedType): SchemaEnum | undefined {
     if (x.enum && x.type === 'string') {
       return {
         schemaLocation: x.schemaLocation,
-        name: this.nameFromType(x),
+        name: CfnSchema.nameFromType(x),
         description: x.description ?? '',
         members: x.enum as string[],
       };
@@ -62,11 +90,15 @@ export class CfnSchema {
   }
 
   public parseSchemaObject(x: ResolvedType): SchemaObject | undefined {
-    if (x.type !== 'object') { return undefined; }
+    // Top-level objects have a 'typeName' field iso 'type == "object"'
+    if (x.type !== 'object' && !(x as any).typeName) { return undefined; }
     if (!x.properties || x.additionalProperties) { return undefined; } // That's a map, not an object
     const required = new Set(x.required as string[] ?? []);
 
+    const readonlyProps = new Set(((x as any).readOnlyProperties ?? []).map((x: string) => x.split('/')[2]));
+
     const properties = Object.fromEntries(Object.entries(x.properties as Record<string, SchemaType>)
+      .filter(([name, _]) => !readonlyProps.has(name))
       .map(([name, type]): [string, SchemaObjectProperty] =>
         [name, {
           schemaLocation: `${x.schemaLocation}/properties/${name}`,
@@ -82,10 +114,6 @@ export class CfnSchema {
       description: x.description,
       properties,
     };
-  }
-
-  public nameFromType(x: ResolvedType) {
-    return x.schemaLocation.split('/').slice(-1)[0];
   }
 
   public propertyTypesAt(parent: ResolvedType | UnresolvedType) {

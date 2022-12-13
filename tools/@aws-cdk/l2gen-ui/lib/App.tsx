@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tree, TreeNodeInfo, Button, Card, Elevation, Colors, FormGroup, HTMLSelect, Checkbox } from '@blueprintjs/core';
-import { useAppState } from './app-state';
+import { useAppState, StateAction } from './app-state';
 import { ITypeMappingFactory, MappingParameter } from '@aws-cdk/l2gen/lib/mapping/mappings';
 
 
@@ -37,12 +37,15 @@ export function TypesList() {
   const [appState, dispatch] = useAppState();
 
   const treeContents = appState.mappings.map((tpMap): TreeNodeInfo => {
+    const isLockedIn = appState.typeMapper.hasLockIn(tpMap.id);
+
     return {
       id: tpMap.id,
       label: tpMap.id,
       isSelected: appState.selectedType?.id === tpMap.id,
-      icon: 'waves',
       disabled: tpMap.possibleMappings.length === 0,
+      icon: isLockedIn ? 'tick' : 'waves',
+      className: isLockedIn ? 'text-green' : undefined,
     };
   });
 
@@ -55,14 +58,17 @@ export function TypesList() {
 export function MappingList() {
   const [appState, dispatch] = useAppState();
 
-  const suggestions = appState.selectedType?.possibleMappings ?? [];
+  const factories = appState.selectedType?.possibleMappings ?? [];
 
-  const treeContents = suggestions.map((sugg): TreeNodeInfo => {
+  const treeContents = factories.map((fac): TreeNodeInfo => {
+    const isLockedIn = appState.typeMapper.isLockedIn(fac);
+
     return {
-      id: sugg.mapperId,
-      label: sugg.description,
-      isSelected: appState.selectedMapping === sugg,
-      icon: 'wrench',
+      id: fac.mapperId,
+      label: fac.description,
+      isSelected: appState.selectedMapping === fac,
+      icon: isLockedIn ? 'tick' : 'wrench',
+      className: isLockedIn ? 'text-green' : undefined,
     };
   });
 
@@ -73,24 +79,32 @@ export function MappingList() {
 }
 
 interface MappingPropertiesProps {
-  readonly mappingFactory: ITypeMappingFactory<any>;
+  readonly mappingFactory: ITypeMappingFactory;
 }
 
 function MappingProperties(props: MappingPropertiesProps) {
+  const [appState, dispatch] = useAppState();
+
+  const isLockedIn = appState.typeMapper.isLockedIn(props.mappingFactory);
+
   return <div>
     {Object.entries(props.mappingFactory.configuration).map(([name, prop]) => <FormGroup
       key={name}
       label={name}
       labelFor={`${name}-input`}>
-      {ParameterControl(props.mappingFactory, name, prop)}
+      <ParameterControl factory={props.mappingFactory} name={name} parameter={prop} />
     </FormGroup>)}
-    <Button>Lock in</Button>
+    <Button
+      onClick={() => dispatch({ action: 'lockIn', factory: props.mappingFactory })}
+      className={isLockedIn ? 'text-green' : undefined}
+      icon={isLockedIn ? 'tick' : undefined}
+      >Lock in</Button>
   </div>;
 }
 
-function ParameterControl(factory: ITypeMappingFactory<any>, name: string, parameter: MappingParameter) {
+function ParameterControl(props: { factory: ITypeMappingFactory, name: string, parameter: MappingParameter }) {
   const [, dispatch] = useAppState();
-  console.log('rendering prop', name);
+  const { factory, name, parameter } = props;
 
   switch (parameter.type) {
     case 'select': return <HTMLSelect
@@ -99,27 +113,28 @@ function ParameterControl(factory: ITypeMappingFactory<any>, name: string, param
         options={parameter.options}
       />;
 //      {prop.options.map(option => <option selected={option==prop.value}>{option}</option>)}
-    case 'multiselect': return parameter.options.map((option, i) => <Checkbox
+    case 'multiselect': return <div>{parameter.options.map((option, i) => <Checkbox
       id={`${name}-input-${i}`}
       key={`${name}-input-${i}`}
       checked={parameter.value.includes(option)}
       onChange={e => {
-        if (e.currentTarget.checked) {
-          if (!parameter.value.includes(option)) {
-            console.log('check event');
-            parameter.set([...parameter.value, option]);
-          }
-        } else {
-          console.log('uncheck event');
-          parameter.set(parameter.value.filter(p => p !== option));
-        }
+        let newValue = e.currentTarget.checked && !parameter.value.includes(option)
+          ? [...parameter.value, option]
+          : !e.currentTarget.checked ? parameter.value.filter(p => p !== option) : parameter.value;
+
+        dispatch({
+          action: 'setParameter',
+          factory,
+          parameter,
+          value: newValue,
+        });
       }}
-      >{option}</Checkbox>);
+      >{option}</Checkbox>)}</div>;
   }
 }
 
 export function TypePreview() {
-  const [appState] = useAppState();
+  const [appState, dispatch] = useAppState();
 
   const factory = appState.selectedMapping;
   if (!factory) { return null; }
@@ -128,8 +143,15 @@ export function TypePreview() {
   const example = appState.typeMapper.generateExample(generatedType);
   const alsoLocksIn = generatedType.coveredSchemaLocations.filter(x => x !== appState.selectedType?.id);
 
+  const exampleRefs = splitReferences(example);
+
   return <div>
-    <pre>{example}</pre>
+    <pre style={{ lineHeight: '1.8em' }}>{exampleRefs.map((ref, i) => {
+      switch (ref.type) {
+        case 'literal': return <span key={`k${i}`}>{ref.literal}</span>;
+        case 'reference': return ClickableReference(`k${i}`, ref.reference, dispatch);
+      }
+    })}</pre>
     { alsoLocksIn.length > 0 ? <div>
       <span style={{color: 'red'}}>Also locks in</span>
       {alsoLocksIn.map(x => <div key={x} style={{color: 'red'}}>{x}</div>)}
@@ -137,3 +159,39 @@ export function TypePreview() {
     : undefined}
   </div>;
 }
+
+export function ClickableReference(key: string, schemaLocation: string, dispatch: React.Dispatch<StateAction>) {
+  return <span
+    key={key}
+    style={{ color: 'red', cursor: 'pointer', padding: '3px 5px', background: Colors.LIGHT_GRAY4, borderStyle: 'solid', borderColor: Colors.LIGHT_GRAY1, borderWidth: 1 }}
+    onClick={() => dispatch({ action: 'selectType', id: schemaLocation })}
+    >{schemaLocation}</span>;
+}
+
+function splitReferences(x: string): SplitPart[] {
+  const re  = /<UNMAPPED:([^>]+)>/g;
+
+  const ret = new Array<SplitPart>();
+  let lastIndex = re.lastIndex;
+  let m = re.exec(x);
+  while (m) {
+    if (m.index > lastIndex) {
+      ret.push({ type: 'literal', literal: x.slice(lastIndex, m.index) });
+    }
+
+    ret.push({ type: 'reference', reference: m[1] });
+
+    lastIndex = re.lastIndex;
+    m = re.exec(x);
+  }
+  if (x.length > lastIndex) {
+    ret.push({ type: 'literal', literal: x.slice(lastIndex, x.length) });
+  }
+
+  return ret;
+}
+
+type SplitPart =
+  | { readonly type: 'literal'; readonly literal: string }
+  | { readonly type: 'reference'; readonly reference: string }
+  ;

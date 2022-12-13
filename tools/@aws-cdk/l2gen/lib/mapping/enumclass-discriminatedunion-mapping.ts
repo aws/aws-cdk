@@ -9,14 +9,14 @@ import { ITypeMapping, ITypeMappingFactory, SingleSelect, MultiSelect } from './
 import { TypeMapper } from './type-mappings';
 
 
-export interface EnumClassMappingFactoryProps {
+export interface EnumClassDiscriminatedUnionMappingFactoryProps {
   readonly objType: SchemaObject;
   readonly discriminators: string[];
   readonly positionals: string[];
 }
 
-export class EnumClassMappingFactory implements ITypeMappingFactory<'discriminator'|'positionals'> {
-  public static try(schema: CfnSchema, type: ResolvedType): EnumClassMappingFactory[] {
+export class EnumClassDiscriminatedUnionMappingFactory implements ITypeMappingFactory {
+  public static try(schema: CfnSchema, type: ResolvedType): EnumClassDiscriminatedUnionMappingFactory[] {
     // The field must be required, and must be an enum
     const objType = schema.parseSchemaObject(type);
     if (!objType) { return []; }
@@ -28,17 +28,19 @@ export class EnumClassMappingFactory implements ITypeMappingFactory<'discriminat
     if (discriminators.length === 0) { return []; }
 
     const positionals = Object.keys(objType.properties);
-    return [new EnumClassMappingFactory(schema, type, { objType, discriminators, positionals })];
+    return [new EnumClassDiscriminatedUnionMappingFactory(schema, type, { objType, discriminators, positionals })];
   }
 
   public readonly mapperId = `${this.type.schemaLocation}.EnumClass`;
-  public readonly description: string = `Enum-like class`;
+  public readonly schemaLocation = this.type.schemaLocation;
+
+  public readonly description: string = `Discriminated enum class`;
   public readonly configuration = {
     discriminator: new SingleSelect(this.props.discriminators),
     positionals: new MultiSelect(this.props.positionals),
   };
 
-  constructor(private readonly schema: CfnSchema, private readonly type: ResolvedType, private props: EnumClassMappingFactoryProps) {
+  constructor(private readonly schema: CfnSchema, private readonly type: ResolvedType, private props: EnumClassDiscriminatedUnionMappingFactoryProps) {
     this.validateConfiguration();
   }
 
@@ -50,7 +52,7 @@ export class EnumClassMappingFactory implements ITypeMappingFactory<'discriminat
   }
 
   public lockInConfiguration(): ITypeMapping {
-    return new EnumClassMapping(this.schema, this.type, {
+    return new EnumClassDiscriminatedUnionMapping(this, this.schema, this.type, {
       objType: this.props.objType,
       typeDiscriminatorField: this.configuration.discriminator.value,
       positionalArgs: this.configuration.positionals.value,
@@ -58,7 +60,7 @@ export class EnumClassMappingFactory implements ITypeMappingFactory<'discriminat
   }
 }
 
-export interface EnumClassMappingProps {
+export interface EnumClassDiscriminatedUnionMappingProps {
   readonly objType: SchemaObject;
   readonly typeDiscriminatorField: string;
   readonly positionalArgs: string[];
@@ -67,13 +69,13 @@ export interface EnumClassMappingProps {
 /**
  * Turn a property bag with one enum in it into an enumclass
  */
-export class EnumClassMapping implements ITypeMapping {
-  public readonly description = `Enum-like class (discriminated by ${this.props.typeDiscriminatorField})`;
+export class EnumClassDiscriminatedUnionMapping implements ITypeMapping {
+  public readonly description = `Discriminated enum class`;
   public readonly id = `${this.type.schemaLocation}.EnumClass`;
   public readonly coveredSchemaLocations: string[];
   private readonly enumProp: SchemaEnum;
 
-  constructor(private readonly schema: CfnSchema, private readonly type: ResolvedType, private readonly props: EnumClassMappingProps) {
+  constructor(public readonly factory: EnumClassDiscriminatedUnionMappingFactory, private readonly schema: CfnSchema, private readonly type: ResolvedType, private readonly props: EnumClassDiscriminatedUnionMappingProps) {
     const enumProp = this.schema.parseSchemaEnum(this.schema.resolveType(this.props.objType.properties[this.props.typeDiscriminatorField].type));
     if (enumProp === undefined) {
       throw new Error(`${name}: ${this.props.typeDiscriminatorField} is not an enum after all`);
@@ -99,7 +101,7 @@ export class EnumClassMapping implements ITypeMapping {
     const positionalNames = new Set(this.props.positionalArgs ?? []);
 
     // Let's go with that enum
-    const enumClass = new EnumClass(root, name, {
+    const enumClass = new EnumClass(root, CfnSchema.nameFromType(this.type), {
       typeCheckedReturnType: genTypeForPropertyType(this.schema.cfnResourceName, name),
     });
 

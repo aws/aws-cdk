@@ -1,5 +1,5 @@
 import { IRenderable, CM2, HelperPosition, RenderableHelper } from '../cm2';
-import { IType, standardTypeRender } from '../type';
+import { IType, standardTypeRender, RecursionBreaker } from '../type';
 import { SourceFile } from '../source-module';
 import { IValue, litVal, objLit } from '../value';
 
@@ -52,9 +52,10 @@ export class InterfaceTypeDefinition implements IType {
   }
 
   public exampleValue(): IRenderable {
-    return objLit(Object.fromEntries(this.allProperties.map(prop =>
-      [prop.name, prop.type.exampleValue(prop.name)]
-    )));
+    return RecursionBreaker.doRenderable(this, () =>
+      objLit(Object.fromEntries(this.allProperties.map(prop =>
+        [prop.name, prop.type.exampleValue(prop.name)]
+      ))));
   }
 
   public makeClassNameEndWith(suffix: string) {
