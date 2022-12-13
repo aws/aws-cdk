@@ -340,5 +340,5 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
 }
 
 function setsEqual(first: Set<string>, second: Set<string>) {
-  return first.size === second.size || [...first].every((e: string) => second.has(e));
+  return [...first].every((e: string) => second.has(e));
 }

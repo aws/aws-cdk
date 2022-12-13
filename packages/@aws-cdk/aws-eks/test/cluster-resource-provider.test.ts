@@ -588,15 +588,117 @@ describe('cluster resource provider', () => {
             logging: undefined,
             resourcesVpcConfig: undefined,
           }));
-
           let error: any;
           try {
             await handler.onEvent();
           } catch (e) {
             error = e;
           }
-
           expect(error.message).toEqual('Cannot update logging and access at the same time');
+        });
+        test('both logging and access defined and modify both of them', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: false,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+          }, {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Cannot update logging and access at the same time');
+        });
+        test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['1.2.3.4/32'],
+            },
+          }, {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
+        });
+        test('Given logging enabled and unchanged, updating publicAccessCidrs from one to multiple entries is allowed ', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['2.4.6.0/24', '1.2.3.4/32', '3.3.3.3/32'],
+            },
+          }, {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['2.4.6.0/24'],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
         });
       });
     });
