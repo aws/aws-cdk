@@ -235,7 +235,7 @@
                     "type": "string"
                 },
                 "outputs": {
-                    "description": "Build args to pass to the `docker build` command (Default no build args are passed)",
+                    "description": "Outputs to pass to the `docker build` command (Default no outputs are passed)",
                     "type": "array",
                     "items": {
                         "type": "string"

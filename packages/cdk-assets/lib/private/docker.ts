@@ -59,7 +59,7 @@ export class Docker {
       ...options.file ? ['--file', options.file] : [],
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
-      ...options.outputs ? options.outputs.map(output => [`--output ${output}`]) : [],
+      ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });

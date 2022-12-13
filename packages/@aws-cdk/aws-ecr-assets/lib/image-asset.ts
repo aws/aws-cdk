@@ -206,7 +206,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
   readonly invalidation?: DockerImageAssetInvalidationOptions;
 
   /**
-   *Outputs to pass to the `docker build` command.
+   * Outputs to pass to the `docker build` command.
    *
    * @default - no outputs are passed
    */
@@ -422,7 +422,6 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;
-
   }
 
 }
