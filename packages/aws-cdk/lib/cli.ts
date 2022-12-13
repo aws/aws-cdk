@@ -26,6 +26,7 @@ import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
 import { enableTracing } from './util/tracing';
 import { checkForPlatformWarnings } from './platform-warnings';
+import { HotswapType } from './api/hotswap/common';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -144,6 +145,13 @@ async function parseCommandLineArguments() {
         desc: "Attempts to perform a 'hotswap' deployment, " +
           'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
+          'Do not use this in production environments',
+      })
+      .option('hotswap-only', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
           'Do not use this in production environments',
       })
       .option('watch', {
@@ -493,6 +501,13 @@ async function initCommandLine() {
           throw new Error('Can not supply both --[no-]execute and --method at the same time');
         }
 
+        if (args.hotswap !== undefined && args.hotswapOnly !== undefined) {
+          throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
+        }
+
+        let hotswapType: HotswapType | boolean = false;
+        hotswapType = args.hotswapOnly ? HotswapType.HOTSWAP_ONLY : HotswapType.HOTSWAP;
+
         let deploymentMethod: DeploymentMethod | undefined;
         switch (args.method) {
           case 'direct':
@@ -529,7 +544,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: hotswapType,
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,

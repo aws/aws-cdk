@@ -67,6 +67,7 @@ import { RequireApproval } from '../lib/diff';
 import { flatten } from '../lib/util';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact, withMocked } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
+import { HotswapType } from '../lib/api/hotswap/common';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
@@ -415,12 +416,12 @@ describe('deploy', () => {
       await cdkToolkit.deploy({
         selector: { patterns: ['Test-Stack-A-Display-Name'] },
         requireApproval: RequireApproval.Never,
-        hotswap: true,
+        hotswap: HotswapType.HOTSWAP,
       });
 
       // THEN
       expect(mockCfnDeployments.deployStack).toHaveBeenCalledWith(expect.objectContaining({
-        hotswap: true,
+        hotswap: HotswapType.HOTSWAP,
       }));
     });
   });

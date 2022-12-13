@@ -15,6 +15,7 @@ import { buildAssets, publishAssets } from '../../lib/util/asset-publishing';
 import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import { HotswapType } from '../../lib/api/hotswap/common';
 
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;
@@ -99,12 +100,12 @@ test('passes through hotswap=true to deployStack()', async () => {
     stack: testStack({
       stackName: 'boop',
     }),
-    hotswap: true,
+    hotswap: HotswapType.HOTSWAP,
   });
 
   // THEN
   expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    hotswap: true,
+    hotswap: HotswapType.HOTSWAP,
   }));
 });
 

@@ -41,6 +41,11 @@ export enum ChangeHotswapImpact {
 
 export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;
 
+export enum HotswapType {
+  HOTSWAP = 'hotswap',
+  HOTSWAP_ONLY = 'hotswap-only',
+}
+
 /**
  * Represents a change that can be hotswapped.
  */

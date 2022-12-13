@@ -13,7 +13,7 @@ import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { tryHotswapDeployment } from './hotswap-deployments';
-import { ICON } from './hotswap/common';
+import { HotswapType, ICON } from './hotswap/common';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
@@ -175,9 +175,9 @@ export interface DeployStackOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, true for 'watch' deployments
+   * @default - false for regular deployments, `HotswapType.HOTSWAP` for 'watch' deployments
    */
-  readonly hotswap?: boolean;
+  readonly hotswap?: HotswapType | false;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -298,7 +298,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     parallel: options.assetParallelism,
   });
 
-  if (options.hotswap) {
+  if (options.hotswap === HotswapType.HOTSWAP) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
@@ -314,6 +314,19 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
     print('Falling back to doing a full deployment');
     options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+  } else if (options.hotswap === HotswapType.HOTSWAP_ONLY) {
+    try {
+      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      if (hotswapDeploymentResult) {
+        return hotswapDeploymentResult;
+      }
+      print('Could not perform a hotswap-deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
+    } catch (e) {
+      if (!(e instanceof CfnEvaluationException)) {
+        throw e;
+      }
+      print('Could not perform a hotswap-only deployment, because the CloudFormation template could not be resolved: %s', e.message);
+    }
   }
 
   // could not short-circuit the deployment, perform a full CFN deploy instead
