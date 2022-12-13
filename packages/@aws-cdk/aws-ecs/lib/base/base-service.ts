@@ -5,7 +5,6 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { NamespaceType } from '@aws-cdk/aws-servicediscovery';
 import {
   Annotations,
   Duration,
@@ -974,7 +973,7 @@ export abstract class BaseService extends Resource
       throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
     }
 
-    if (sdNamespace.type === NamespaceType.HTTP) {
+    if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
       throw new Error('Cannot enable service discovery for HTTP Cloudmap Namespace.');
     }
 

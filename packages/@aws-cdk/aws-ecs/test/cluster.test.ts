@@ -5,7 +5,6 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { NamespaceType } from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -1033,7 +1032,7 @@ describe('cluster', () => {
     // WHEN
     const namespace = cluster.addDefaultCloudMapNamespace({
       name: 'http://foo.com',
-      type: NamespaceType.HTTP,
+      type: cloudmap.NamespaceType.HTTP,
     });
     // THEN
     expect(namespace.namespaceName).toBe('http://foo.com');
