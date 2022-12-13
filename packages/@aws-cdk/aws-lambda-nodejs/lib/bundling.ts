@@ -143,7 +143,7 @@ export class Bundling implements cdk.BundlingOptions {
       tscRunner: 'tsc', // tsc is installed globally in the docker image
       osPlatform: 'linux', // linux docker image
     });
-    this.command = ['bash', '-c', bundlingCommand];
+    this.command = props.command ?? ['bash', '-c', bundlingCommand];
     this.environment = props.environment;
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
     // and we want to force npx to use the globally installed esbuild.

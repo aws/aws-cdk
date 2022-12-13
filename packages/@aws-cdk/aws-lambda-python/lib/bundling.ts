@@ -93,7 +93,7 @@ export class Bundling implements CdkBundlingOptions {
       },
       platform: architecture.dockerPlatform,
     });
-    this.command = ['bash', '-c', chain(bundlingCommands)];
+    this.command = props.command ?? ['bash', '-c', chain(bundlingCommands)];
     this.entrypoint = props.entrypoint;
     this.volumes = props.volumes;
     this.volumesFrom = props.volumesFrom;
