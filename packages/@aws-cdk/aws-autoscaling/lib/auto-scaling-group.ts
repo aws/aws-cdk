@@ -343,6 +343,11 @@ export interface CommonAutoScalingGroupProps {
    * resulting in more reliable usage data. Set this value equal to the amount of time that it takes for resource
    * consumption to become stable after an instance reaches the InService state.
    *
+   * To optimize the performance of scaling policies that scale continuously, such as target tracking and
+   * step scaling policies, we strongly recommend that you enable the default instance warmup, even if its value is set to 0 seconds
+   *
+   * Default instance warmup will not be added if no value is specified
+   *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html
    *
    * @default None
