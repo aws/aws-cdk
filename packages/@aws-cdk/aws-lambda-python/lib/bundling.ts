@@ -102,7 +102,6 @@ export class Bundling implements CdkBundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
-
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {

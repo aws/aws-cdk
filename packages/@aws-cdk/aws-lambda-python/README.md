@@ -145,16 +145,15 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
-You can additionaly set a variety of Docker options to adjust for your own environment.
+You can set additional Docker options to configure the build environment:
 
  ```ts
 const entry = '/path/to/function';
-const image = DockerImage.fromBuild(entry);
 
 new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
-  bundling: { 
+  bundling: {
       network: 'host',
       securityOpt: 'no-new-privileges',
       user: 'user:group',

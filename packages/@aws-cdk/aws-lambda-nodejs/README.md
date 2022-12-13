@@ -307,11 +307,11 @@ should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
-You can additionaly set a variety of Docker options to adjust for your own environment.
+You can set additional Docker options to configure the build environment:
 
  ```ts
 new nodejs.NodejsFunction(this, 'my-handler', {
-  bundling: { 
+  bundling: {
       network: 'host',
       securityOpt: 'no-new-privileges',
       user: 'user:group',

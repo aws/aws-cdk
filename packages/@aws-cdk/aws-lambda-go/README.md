@@ -183,12 +183,12 @@ new go.GoFunction(this, 'GoFunction', {
 });
 ```
 
-You can additionaly set a variety of Docker options to adjust for your own environment.
+You can set additional Docker options to configure the build environment:
 
  ```ts
 new go.GoFunction(this, 'GoFunction', {
   entry: 'app/cmd/api',
-  bundling: { 
+  bundling: {
       network: 'host',
       securityOpt: 'no-new-privileges',
       user: 'user:group',
