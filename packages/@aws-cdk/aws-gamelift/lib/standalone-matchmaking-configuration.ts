@@ -22,17 +22,17 @@ export interface StandaloneMatchmakingConfigurationProps extends MatchmakingConf
 export class StandaloneMatchmakingConfiguration extends MatchmakingConfigurationBase {
 
   /**
-     * Import an existing matchmaking configuration from its identifier.
+     * Import an existing matchmaking configuration from its name.
      */
-  static fromQueuedMatchmakingConfigurationId(scope: Construct, id: string, matchmakingConfigurationName: string): IMatchmakingConfiguration {
-    return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationName: matchmakingConfigurationName });
+  static fromStandaloneMatchmakingConfigurationName(scope: Construct, id: string, matchmakingConfigurationName: string): IMatchmakingConfiguration {
+    return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationName });
   }
 
   /**
      * Import an existing matchmaking configuration from its ARN.
      */
-  static fromQueuedMatchmakingConfigurationArn(scope: Construct, id: string, matchmakingConfigurationArn: string): IMatchmakingConfiguration {
-    return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationArn: matchmakingConfigurationArn });
+  static fromStandaloneMatchmakingConfigurationArn(scope: Construct, id: string, matchmakingConfigurationArn: string): IMatchmakingConfiguration {
+    return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationArn });
   }
 
   /**

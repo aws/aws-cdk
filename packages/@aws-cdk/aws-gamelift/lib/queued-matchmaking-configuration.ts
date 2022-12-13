@@ -69,9 +69,9 @@ export interface QueuedMatchmakingConfigurationProps extends MatchmakingConfigur
 export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase {
 
   /**
-   * Import an existing matchmaking configuration from its identifier.
+   * Import an existing matchmaking configuration from its name.
    */
-  static fromQueuedMatchmakingConfigurationId(scope: Construct, id: string, matchmakingConfigurationName: string): IMatchmakingConfiguration {
+  static fromQueuedMatchmakingConfigurationName(scope: Construct, id: string, matchmakingConfigurationName: string): IMatchmakingConfiguration {
     return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationName: matchmakingConfigurationName });
   }
 
@@ -83,7 +83,7 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
   }
 
   /**
-     * The Identifier of the matchmaking configuration.
+     * The name of the matchmaking configuration.
      */
   public readonly matchmakingConfigurationName: string;
   /**

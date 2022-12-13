@@ -133,14 +133,8 @@ export interface MatchmakingConfigurationProps {
   /**
      * A unique identifier for the matchmaking configuration.
      * This name is used to identify the configuration associated with a matchmaking request or ticket.
-     *
-     * If you don't specify a name, AWS CloudFormation generates a unique
-     * physical ID and uses that ID for the topic name. For more information,
-     * see Name Type.
-     *
-     * @default Generated name
      */
-  readonly matchmakingConfigurationName?: string;
+  readonly matchmakingConfigurationName: string;
 
   /**
    * A human-readable description of the matchmaking configuration.
@@ -207,13 +201,13 @@ export abstract class MatchmakingConfigurationBase extends cdk.Resource implemen
    */
   static fromMatchmakingConfigurationAttributes(scope: Construct, id: string, attrs: MatchmakingConfigurationAttributes): IMatchmakingConfiguration {
     if (!attrs.matchmakingConfigurationName && !attrs.matchmakingConfigurationArn) {
-      throw new Error('Either matchmakingconfigurationId or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes');
+      throw new Error('Either matchmakingConfigurationName or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes');
     }
     const matchmakingConfigurationName = attrs.matchmakingConfigurationName ??
      cdk.Stack.of(scope).splitArn(attrs.matchmakingConfigurationArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!matchmakingConfigurationName) {
-      throw new Error(`No matchmaking configuration identifier found in ARN: '${attrs.matchmakingConfigurationArn}'`);
+      throw new Error(`No matchmaking configuration name found in ARN: '${attrs.matchmakingConfigurationArn}'`);
     }
 
     const matchmakingConfigurationArn = attrs.matchmakingConfigurationArn ?? cdk.Stack.of(scope).formatArn({
@@ -255,7 +249,7 @@ export abstract class MatchmakingConfigurationBase extends cdk.Resource implemen
       namespace: 'AWS/GameLift',
       metricName: metricName,
       dimensionsMap: {
-        MatchmakingConfigurationArn: this.matchmakingConfigurationArn,
+        MatchmakingConfigurationName: this.matchmakingConfigurationName,
       },
       ...props,
     }).attachTo(this);

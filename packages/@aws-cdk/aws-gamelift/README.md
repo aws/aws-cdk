@@ -69,7 +69,8 @@ Through a game session queue system to let FlexMatch forms matches and uses the 
 declare const queue: gamelift.GameSessionQueue;
 declare const ruleSet: gamelift.MatchmakingRuleSet;
 
-new gamelift.QueuedMatchmakingConfiguration(this, 'QueuedMatchmaking', {
+new gamelift.QueuedMatchmakingConfiguration(this, 'QueuedMatchmakingConfiguration', {
+  matchmakingConfigurationName: 'test-queued-config-name',
   gameSessionQueues: [queue],
   ruleSet: ruleSet,
 });
@@ -81,6 +82,7 @@ Or through a standalone version to let FlexMatch forms matches and returns match
 declare const ruleSet: gamelift.MatchmakingRuleSet;
 
 new gamelift.StandaloneMatchmakingConfiguration(this, 'StandaloneMatchmaking', {
+  matchmakingConfigurationName: 'test-standalone-config-name',
   ruleSet: ruleSet,
 });
 ```
