@@ -237,13 +237,9 @@
                 "outputs": {
                     "description": "Build args to pass to the `docker build` command (Default no build args are passed)",
                     "type": "array",
-                    "items": [
-                        {
-                            "type": "string"
-                        }
-                    ],
-                    "minItems": 1,
-                    "maxItems": 1
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "description": "Logical identifier for the asset",

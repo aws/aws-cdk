@@ -21,7 +21,7 @@ const asset3 = new assets.DockerImageAsset(stack, 'DockerImage3', {
 
 const asset4 = new assets.DockerImageAsset(stack, 'DockerImage4', {
   directory: path.join(__dirname, 'demo-image'),
-  outputs: ['type=local,dest=out'],
+  outputs: ['type=docker'],
 });
 
 const user = new iam.User(stack, 'MyUser');
