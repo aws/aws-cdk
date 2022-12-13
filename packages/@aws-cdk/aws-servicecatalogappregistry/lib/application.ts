@@ -138,22 +138,15 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    */
   public associateApplicationWithStack(stack: cdk.Stack): void {
     if (!this.associatedResources.has(stack.node.addr)) {
-      const stackCondition = stack.nestedStackResource?.cfnOptions.condition;
-      const association = new CfnResourceAssociation(stack, 'AppRegistryAssociation', {
+      new CfnResourceAssociation(stack, 'AppRegistryAssociation', {
         application: stack === cdk.Stack.of(this) ? this.applicationId : this.applicationName ?? this.applicationId,
         resource: stack.stackId,
         resourceType: 'CFN_STACK',
       });
 
-      if (stackCondition) {
-        association.addOverride('Condition', stackCondition.logicalId);
-      }
-
-      if (!stack.nested) {
-        this.associatedResources.add(stack.node.addr);
-        if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack)) {
-          stack.addDependency(cdk.Stack.of(this));
-        }
+      this.associatedResources.add(stack.node.addr);
+      if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack) && !stack.nested) {
+        stack.addDependency(cdk.Stack.of(this));
       }
     }
   }

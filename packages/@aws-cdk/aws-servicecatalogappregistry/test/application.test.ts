@@ -471,7 +471,6 @@ describe('Conditional nested stack Associations with Application within Same Acc
         Resource: { Ref: 'AWS::StackId' },
         ResourceType: 'CFN_STACK',
       },
-      Condition: 'ShouldCreateStackCondition',
     });
     Template.fromStack(stack.nestedStack).hasCondition('ShouldCreateStackCondition', {
       'Fn::Equals': ['us-east-1'],
