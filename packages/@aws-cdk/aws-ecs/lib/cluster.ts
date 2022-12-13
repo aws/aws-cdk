@@ -288,6 +288,8 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Add an AWS Cloud Map DNS namespace for this cluster.
+   * NOTE: HttpNamespaces are supported only for use cases involving Service Connect. For use cases involving both Service-
+   * Discovery and Service Connect, customers should manage the HttpNamespace outside of the cluster.
    */
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
