@@ -133,7 +133,7 @@ export class Trigger extends Construct implements ITrigger {
       properties: {
         HandlerArn: handlerArn,
         InvocationType: props.invocationType ?? 'RequestResponse',
-        Timeout: props.timeout?.toMilliseconds() ?? Duration.minutes(2),
+        Timeout: props.timeout?.toMilliseconds() ?? Duration.minutes(2).toMilliseconds(),
       },
     });
 
