@@ -45,11 +45,12 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
-      const defaultDefaultPolicyName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME)
+      const useUniqueName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME);
+      const defaultDefaultPolicyName = useUniqueName
         ? `Policy${Names.uniqueId(this)}`
         : 'Policy';
       const policyName = this.defaultPolicyName ?? defaultDefaultPolicyName;
-      this.defaultPolicy = new Policy(this, policyName);
+      this.defaultPolicy = new Policy(this, policyName, useUniqueName ? { policyName } : undefined);
       this.attachInlinePolicy(this.defaultPolicy);
     }
     this.defaultPolicy.addStatements(statement);
