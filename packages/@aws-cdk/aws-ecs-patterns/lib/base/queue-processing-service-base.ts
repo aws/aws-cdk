@@ -221,6 +221,20 @@ export interface QueueProcessingServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * Whether CPU based scaling of container should be enabled should be enabled.
+   *
+   * @default - false
+   */
+  readonly enableCpuBasedScaling?: boolean;
+
+  /**
+   * CPU based scaling target utilization value
+   *
+   * @default 50
+   */
+  readonly cpuBasedScalingTargetUtilization?: number;
 }
 
 /**
@@ -279,6 +293,17 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * The AwsLogDriver to use for logging if logging is enabled.
    */
   public readonly logDriver?: LogDriver;
+
+  /**
+   * Enable CPU based scaling property.
+   */
+  public readonly enableCpuBasedScaling: boolean;
+
+  /**
+   * CPU based scaling policy target utilization
+   */
+
+  public readonly cpuBasedScalingTargetUtilization: number;
 
   /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
@@ -342,6 +367,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
       }
     }
 
+    this.enableCpuBasedScaling = props.enableCpuBasedScaling ?? false;
+    this.cpuBasedScalingTargetUtilization = props.cpuBasedScalingTargetUtilization ?? 50;
+
     if (!this.desiredCount && !this.maxCapacity) {
       throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
     }
@@ -357,6 +385,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
    */
   protected configureAutoscalingForService(service: BaseService) {
     const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
+
+    if (this.enableCpuBasedScaling) {
+      scalingTarget.scaleOnCpuUtilization('CpuScaling', {
+        targetUtilizationPercent: this.cpuBasedScalingTargetUtilization,
+      });
+    }
 
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
