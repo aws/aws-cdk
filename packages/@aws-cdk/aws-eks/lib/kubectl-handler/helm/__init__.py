@@ -67,10 +67,6 @@ def helm_handler(event, context):
             f.write(json.dumps(values, indent=2))
 
     if request_type == 'Create' or request_type == 'Update':
-        # Ensure chart or chart_asset_url are set
-        if chart == None and chart_asset_url == None:
-            raise RuntimeError(f'chart or chartAsset must be specified')
-
         if chart_asset_url != None:
             assert(chart==None)
             assert(repository==None)
@@ -84,6 +80,10 @@ def helm_handler(event, context):
             tmpdir = tempfile.TemporaryDirectory()
             chart_dir = get_chart_from_oci(tmpdir.name, release, repository, version)
             chart = chart_dir
+
+        # Ensure chart or chart_asset_url are set
+        if chart == None and chart_asset_url == None:
+            raise RuntimeError(f'chart or chartAsset must be specified')
 
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
     elif request_type == "Delete":

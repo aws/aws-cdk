@@ -115,7 +115,9 @@ export class HelmChart extends Construct {
       throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
     }
 
-    if (!props.chart && !props.chartAsset) {
+    const isOCIRepository = props.repository?.startsWith('oci://');
+
+    if (!props.chart && !props.chartAsset && !isOCIRepository) {
       throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
     }
 

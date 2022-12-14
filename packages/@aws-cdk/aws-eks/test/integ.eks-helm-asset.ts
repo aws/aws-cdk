@@ -52,7 +52,6 @@ class EksClusterStack extends Stack {
     });
 
     this.cluster.addHelmChart('test-oci-chart', {
-      chart: 's3-chart',
       release: 's3-chart',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
       version: 'v0.1.0',

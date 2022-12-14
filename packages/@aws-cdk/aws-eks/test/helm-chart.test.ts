@@ -66,6 +66,22 @@ describe('helm chart', () => {
       expect(t).toThrowError();
     });
 
+    test('shouldn\'t throw when chart and chartAsset not specified but repository is OCI type', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', {
+        cluster,
+        repository: 'oci://123456789012.dkr.ecr.us-east-1.amazonaws.com/d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, {
+        Repository: 'oci://123456789012.dkr.ecr.us-east-1.amazonaws.com/d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf',
+      });
+    });
+
     test('should throw when chartAsset and version specified', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
