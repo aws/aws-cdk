@@ -225,6 +225,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
     if (hotswapType === HotswapType.HOTSWAP) {
       // WHEN
+      setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
 
       // THEN
@@ -232,19 +233,13 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
     } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
       // WHEN
+      setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
       expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
-        definition: JSON.stringify({
-          StartAt: 'SuccessState',
-          States: {
-            SuccessState: {
-              Type: 'Succeed',
-            },
-          },
-        }, null, 2),
+        definition: '{ "Prop" : "new-value" }',
         stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
       });
     }

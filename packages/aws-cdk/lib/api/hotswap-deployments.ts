@@ -108,7 +108,7 @@ async function findAllHotswappableChanges(
       // run isHotswappable* functions lazily to prevent unhandled rejections
       promises.push(() => [
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-        isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),

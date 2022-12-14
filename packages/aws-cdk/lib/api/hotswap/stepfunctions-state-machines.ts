@@ -1,11 +1,11 @@
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, HotswapType } from './common';
 
 export async function isHotswappableStateMachineChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapType: HotswapType,
 ): Promise<ChangeHotswapResult> {
-  const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate);
+  const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate, hotswapType);
   if (stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT ||
       stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT) {
     return stateMachineDefinitionChange;
@@ -29,7 +29,7 @@ export async function isHotswappableStateMachineChange(
 }
 
 async function isStateMachineDefinitionOnlyChange(
-  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapType: HotswapType,
 ): Promise<string | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
@@ -43,7 +43,7 @@ async function isStateMachineDefinitionOnlyChange(
 
   for (const updatedPropName in propertyUpdates) {
     // ensure that only changes to the definition string result in a hotswap
-    if (updatedPropName !== 'DefinitionString') {
+    if (updatedPropName !== 'DefinitionString' && hotswapType === HotswapType.HOTSWAP) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
   }
