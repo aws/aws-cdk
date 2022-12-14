@@ -215,6 +215,9 @@ new python.PythonFunction(this, 'function', {
       beforeBundling(inputDir: string): string[] {
         return ['pytest'];
       },
+      afterBundling(inputDir: string): string[] {
+        return ['pylint'];
+      },
       // ...
     },
   },
