@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "23.0.0",
   "files": {
-    "129ed50df2725896720f8593072e2ac18c7c116a97374bea1f973ba8871c68e5": {
+    "8fec9a4f90e122913ce423ddc6ec9683e8785b8fec789096161d8a0f4c23f3d5": {
       "source": {
         "path": "integ-assets-docker.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "129ed50df2725896720f8593072e2ac18c7c116a97374bea1f973ba8871c68e5.json",
+          "objectKey": "8fec9a4f90e122913ce423ddc6ec9683e8785b8fec789096161d8a0f4c23f3d5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -37,6 +37,21 @@
         "current_account-current_region": {
           "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
           "imageTag": "394b24fcdc153a83b1fc400bf2e812ee67e3a5ffafdf977d531cfe2187d95f38",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "600ab433dc112602ca7ba940e2720696dd6bfdb7abe79a608c701e522d0afcd9": {
+      "source": {
+        "directory": "asset.600ab433dc112602ca7ba940e2720696dd6bfdb7abe79a608c701e522d0afcd9",
+        "dockerBuildSecrets": {
+          "mysecret": "/Users/danielwiltshire/repos/aws-cdk/packages/@aws-cdk/aws-ecr-assets/test/demo-image-secret/secret.txt"
+        }
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "600ab433dc112602ca7ba940e2720696dd6bfdb7abe79a608c701e522d0afcd9",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
