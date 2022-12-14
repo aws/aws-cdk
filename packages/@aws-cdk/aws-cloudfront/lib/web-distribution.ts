@@ -891,7 +891,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
     if (defaultBehaviors.length !== 1) {
-      throw new Error('There can only be one default behavior across all sources. [ One default behavior per distribution ].');
+      throw new Error(`There must be exactly one default behavior across all sources: ${defaultBehaviors.length} provided. [ One default behavior per distribution ].`);
     }
 
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
