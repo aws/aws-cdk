@@ -86,4 +86,45 @@ export interface BundlingOptions {
    * @default - Based on `assetHashType`
    */
   readonly assetHash?: string;
+
+  /**
+   * Command hooks
+   *
+   * @default - do not run additional commands
+   */
+  readonly commandHooks?: ICommandHooks;
+}
+
+/**
+ * Command hooks
+ *
+ * These commands will run in the environment in which bundling occurs: inside
+ * the container for Docker bundling or on the host OS for local bundling.
+ *
+ * Commands are chained with `&&`.
+ *
+ * ```text
+ * {
+ *   // Run tests prior to bundling
+ *   beforeBundling(inputDir: string, outputDir: string): string[] {
+ *     return [`pytest`];
+ *   }
+ *   // ...
+ * }
+ * ```
+ */
+export interface ICommandHooks {
+  /**
+   * Returns commands to run before bundling.
+   *
+   * Commands are chained with `&&`.
+   */
+  beforeBundling(inputDir: string, outputDir: string): string[];
+
+  /**
+   * Returns commands to run after bundling.
+   *
+   * Commands are chained with `&&`.
+   */
+  afterBundling(inputDir: string, outputDir: string): string[];
 }

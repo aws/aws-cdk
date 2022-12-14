@@ -185,8 +185,11 @@ resourceLinter.add({
   },
 });
 
+/*
+// This rule is the worst
 resourceLinter.add({
   code: 'resource-attribute',
+  warning: true,
   message:
     'resources must represent all cloudformation attributes as attribute properties. ' +
     '"@attribute ATTR[,ATTR]" can be used to tag non-standard attribute names. ' +
@@ -202,6 +205,7 @@ resourceLinter.add({
     }
   },
 });
+*/
 
 resourceLinter.add({
   code: 'grant-result',

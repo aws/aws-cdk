@@ -162,6 +162,29 @@ test('file system is created correctly with bursting throughput mode', () => {
   });
 });
 
+test('file system is created correctly with elastic throughput mode', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    throughputMode: ThroughputMode.ELASTIC,
+    performanceMode: PerformanceMode.GENERAL_PURPOSE,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    ThroughputMode: 'elastic',
+  });
+});
+
+test('Exception when throughput mode is set to ELASTIC, performance mode cannot be MaxIO', () => {
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      throughputMode: ThroughputMode.ELASTIC,
+      performanceMode: PerformanceMode.MAX_IO,
+    });
+  }).toThrowError(/ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO/);
+});
+
 test('Exception when throughput mode is set to PROVISIONED, but provisioned throughput is not set', () => {
   expect(() => {
     new FileSystem(stack, 'EfsFileSystem', {
