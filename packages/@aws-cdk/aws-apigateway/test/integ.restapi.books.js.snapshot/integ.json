@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "restapi-books/DefaultTest": {
+      "stacks": [
+        "restapi-books-example"
+      ],
+      "assertionStack": "restapi-books/DefaultTest/DeployAssert"
+    }
+  }
+}

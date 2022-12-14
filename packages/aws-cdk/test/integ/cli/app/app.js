@@ -92,7 +92,7 @@ class StackUsingContext extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, 'Output', {
-      value: this.availabilityZones,
+      value: this.availabilityZones[0],
     });
   }
 }
@@ -369,7 +369,11 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
+  },
+});
 
 const defaultEnv = {
   account: process.env.CDK_DEFAULT_ACCOUNT,

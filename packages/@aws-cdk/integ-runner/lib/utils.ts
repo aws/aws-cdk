@@ -41,6 +41,14 @@ export function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
 }
 
+/**
+ * Split command to chunks by space
+ */
+export function chunks(command: string): string[] {
+  const result = command.match(/(?:[^\s"]+|"[^"]*")+/g);
+  return result ?? [];
+}
+
 
 /**
  * A class holding a set of items which are being crossed off in time
@@ -67,6 +75,7 @@ export class WorkList<A> {
 
   public done() {
     this.remaining.clear();
+    this.stopTimer();
   }
 
   private stopTimer() {

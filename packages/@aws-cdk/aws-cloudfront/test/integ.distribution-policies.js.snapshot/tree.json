@@ -1,0 +1,225 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-distribution-policies": {
+        "id": "integ-distribution-policies",
+        "path": "integ-distribution-policies",
+        "children": {
+          "CachePolicy": {
+            "id": "CachePolicy",
+            "path": "integ-distribution-policies/CachePolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-policies/CachePolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::CachePolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "cachePolicyConfig": {
+                      "name": "ACustomCachePolicy",
+                      "minTtl": 0,
+                      "maxTtl": 31536000,
+                      "defaultTtl": 86400,
+                      "parametersInCacheKeyAndForwardedToOrigin": {
+                        "cookiesConfig": {
+                          "cookieBehavior": "none"
+                        },
+                        "headersConfig": {
+                          "headerBehavior": "none"
+                        },
+                        "enableAcceptEncodingGzip": false,
+                        "enableAcceptEncodingBrotli": false,
+                        "queryStringsConfig": {
+                          "queryStringBehavior": "none"
+                        }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnCachePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.CachePolicy",
+              "version": "0.0.0"
+            }
+          },
+          "OriginRequestPolicy": {
+            "id": "OriginRequestPolicy",
+            "path": "integ-distribution-policies/OriginRequestPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-policies/OriginRequestPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::OriginRequestPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "originRequestPolicyConfig": {
+                      "name": "ACustomOriginRequestPolicy",
+                      "cookiesConfig": {
+                        "cookieBehavior": "none"
+                      },
+                      "headersConfig": {
+                        "headerBehavior": "allViewerAndWhitelistCloudFront",
+                        "headers": [
+                          "CloudFront-Forwarded-Proto"
+                        ]
+                      },
+                      "queryStringsConfig": {
+                        "queryStringBehavior": "none"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnOriginRequestPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.OriginRequestPolicy",
+              "version": "0.0.0"
+            }
+          },
+          "ResponseHeadersPolicy": {
+            "id": "ResponseHeadersPolicy",
+            "path": "integ-distribution-policies/ResponseHeadersPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-policies/ResponseHeadersPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::ResponseHeadersPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "responseHeadersPolicyConfig": {
+                      "name": "ACustomResponseHeadersPolicy",
+                      "corsConfig": {
+                        "accessControlAllowCredentials": false,
+                        "accessControlAllowHeaders": {
+                          "items": [
+                            "X-Custom-Header-1",
+                            "X-Custom-Header-2"
+                          ]
+                        },
+                        "accessControlAllowMethods": {
+                          "items": [
+                            "GET",
+                            "POST"
+                          ]
+                        },
+                        "accessControlAllowOrigins": {
+                          "items": [
+                            "*"
+                          ]
+                        },
+                        "accessControlExposeHeaders": {
+                          "items": [
+                            "X-Custom-Header-1",
+                            "X-Custom-Header-2"
+                          ]
+                        },
+                        "accessControlMaxAgeSec": 600,
+                        "originOverride": true
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnResponseHeadersPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.ResponseHeadersPolicy",
+              "version": "0.0.0"
+            }
+          },
+          "Dist": {
+            "id": "Dist",
+            "path": "integ-distribution-policies/Dist",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-distribution-policies/Dist/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-policies/Dist/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example.com",
+                          "id": "integdistributionpoliciesDistOrigin17849EF2C",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integdistributionpoliciesDistOrigin17849EF2C",
+                        "cachePolicyId": {
+                          "Ref": "CachePolicy26D8A535"
+                        },
+                        "compress": true,
+                        "originRequestPolicyId": {
+                          "Ref": "OriginRequestPolicy3EFDB4FA"
+                        },
+                        "responseHeadersPolicyId": {
+                          "Ref": "ResponseHeadersPolicy13DBF9E0"
+                        },
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

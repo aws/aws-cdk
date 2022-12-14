@@ -1,13 +1,12 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
-import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
+import { AppProtocol } from '../lib';
 
 describe('container definition', () => {
   describe('When creating a Task Definition', () => {
@@ -33,8 +32,91 @@ describe('container definition', () => {
           },
         ],
       });
+    });
 
+    test('port mapping throws an error when appProtocol is set without name', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
+      const container = new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+        portMappings: [
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+        ],
+      });
+
+      // THEN
+      const expected = [
+        {
+          containerPort: 80,
+          hostPort: 0,
+          name: 'api',
+        },
+      ];
+      expect(container.portMappings).toEqual(expected);
+
+      expect(() => {
+        container.addPortMappings(
+          {
+            containerPort: 443,
+            appProtocol: AppProtocol.grpc,
+          },
+        );
+      }).toThrow(/Service connect-related port mapping field 'appProtocol' cannot be set without 'name'/);
+    });
+
+    test('multiple port mappings of the same name error out', () =>{
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      const container = new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+      });
+
+      // THEN
+      expect(() => {
+        container.addPortMappings(
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+          {
+            containerPort: 443,
+            name: 'api',
+          },
+        );
+      }).toThrow(/Port mapping name 'api' already exists on this container/);
+    });
+
+    test('empty string port mapping name throws', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      const container = new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+      });
+
+      // THEN
+      expect(() => {
+        container.addPortMappings(
+          {
+            containerPort: 80,
+            name: '',
+          },
+        );
+      }).toThrow();
     });
 
     test('add a container using all props', () => {
@@ -236,8 +318,6 @@ describe('container definition', () => {
           },
         ],
       });
-
-
     });
 
     test('throws when MemoryLimit is less than MemoryReservationLimit', () => {
@@ -254,8 +334,6 @@ describe('container definition', () => {
           memoryReservationMiB: 1024,
         });
       }).toThrow(/MemoryLimitMiB should not be less than MemoryReservationMiB./);
-
-
     });
 
     describe('With network mode AwsVpc', () => {
@@ -278,8 +356,6 @@ describe('container definition', () => {
             hostPort: 8081,
           });
         }).toThrow();
-
-
       });
 
       test('Host port is the same as container port', () => {
@@ -300,7 +376,6 @@ describe('container definition', () => {
         });
 
         // THEN no exception raised
-
       });
 
       test('Host port can be empty ', () => {
@@ -321,7 +396,6 @@ describe('container definition', () => {
         });
 
         // THEN no exception raised
-
       });
     });
 
@@ -345,8 +419,6 @@ describe('container definition', () => {
             hostPort: 8081,
           });
         }).toThrow();
-
-
       });
 
       test('when host port is the same as container port', () => {
@@ -367,7 +439,6 @@ describe('container definition', () => {
         });
 
         // THEN no exception raised
-
       });
 
       test('Host port can be empty ', () => {
@@ -388,7 +459,6 @@ describe('container definition', () => {
         });
 
         // THEN no exception raised
-
       });
 
       test('errors when adding links', () => {
@@ -412,8 +482,28 @@ describe('container definition', () => {
         expect(() => {
           container.addLink(logger);
         }).toThrow();
+      });
 
+      test('service connect fields are not allowed', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.HOST,
+        });
 
+        // THEN
+        expect(() => {
+          taskDefinition.addContainer('Container', {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+            memoryLimitMiB: 2048,
+            portMappings: [
+              {
+                name: 'api',
+                containerPort: 80,
+              },
+            ],
+          });
+        }).toThrow('Service connect related port mapping fields \'name\' and \'appProtocol\' are not supported for network mode host');
       });
     });
 
@@ -435,7 +525,6 @@ describe('container definition', () => {
         });
 
         // THEN no exception raises
-
       });
 
       test('when Host port is not empty ', () => {
@@ -456,7 +545,6 @@ describe('container definition', () => {
         });
 
         // THEN no exception raises
-
       });
 
       test('allows adding links', () => {
@@ -478,8 +566,6 @@ describe('container definition', () => {
 
         // THEN
         container.addLink(logger);
-
-
       });
     });
 
@@ -528,7 +614,6 @@ describe('container definition', () => {
       // THEN
       const expected = 8080;
       expect(actual).toEqual(expected);
-
     });
 
     test('throws when calling containerPort with no PortMappings', () => {
@@ -548,9 +633,7 @@ describe('container definition', () => {
         const actual = container.containerPort;
         const expected = 8080;
         expect(actual).toEqual(expected);
-      }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
-
-
+      }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
     });
   });
 
@@ -577,7 +660,6 @@ describe('container definition', () => {
         // THEN
         const expected = 8080;
         expect(actual).toEqual(expected);
-
       });
 
       test('throws when calling ingressPort with no PortMappings', () => {
@@ -597,9 +679,7 @@ describe('container definition', () => {
           const actual = container.ingressPort;
           const expected = 8080;
           expect(actual).toEqual(expected);
-        }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
-
-
+        }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings\(\)./);
       });
     });
 
@@ -625,7 +705,6 @@ describe('container definition', () => {
         // THEN
         const expected = 8080;
         expect(actual).toEqual( expected);
-
       });
     });
 
@@ -652,7 +731,6 @@ describe('container definition', () => {
         // THEN
         const expected = 8081;
         expect(actual).toEqual( expected);
-
       });
 
       test('Ingress port should be 0 if not supplied', () => {
@@ -676,7 +754,6 @@ describe('container definition', () => {
         // THEN
         const expected = 0;
         expect(actual).toEqual(expected);
-
       });
     });
   });
@@ -888,8 +965,8 @@ describe('container definition', () => {
             }),
           ],
         });
-
       });
+
       test('can add s3 bucket environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
@@ -1258,7 +1335,7 @@ describe('container definition', () => {
     });
 
     // WHEN
-    taskDefinition.addContainer('cont', {
+    const container = taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       secrets: {
@@ -1268,6 +1345,7 @@ describe('container definition', () => {
         SECRET_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }),
       },
     });
+    container.addSecret('LATER_SECRET', ecs.Secret.fromSecretsManager(secret, 'field'));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1327,6 +1405,20 @@ describe('container definition', () => {
                       Ref: 'SecretA720EF05',
                     },
                     '::version-stage:',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'LATER_SECRET',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':field::',
                   ],
                 ],
               },
@@ -1597,8 +1689,6 @@ describe('container definition', () => {
         ],
       });
     }).toThrow(/At least one argument must be supplied for health check command./);
-
-
   });
 
   test('can specify Health Check values in shell form', () => {
@@ -1780,12 +1870,20 @@ describe('container definition', () => {
 
       // THEN
       expect(taskDefinition.defaultContainer).toEqual( undefined);
-
-
     });
   });
 
   describe('Can specify linux parameters', () => {
+    test('validation throws with out of range params', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const swappinessValues = [-1, 30.5, 101];
+      swappinessValues.forEach(swappiness => expect(() =>
+        new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness }))
+        .toThrowError(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
+    });
+
     test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1821,6 +1919,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       linuxParameters.addCapabilities(ecs.Capability.ALL);
@@ -1844,7 +1944,9 @@ describe('container definition', () => {
                 Drop: ['KILL'],
               },
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],
@@ -1859,6 +1961,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       linuxParameters.addCapabilities(ecs.Capability.ALL);
@@ -1884,7 +1988,9 @@ describe('container definition', () => {
                 Drop: ['SETUID'],
               },
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],
@@ -1899,6 +2005,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       // WHEN
@@ -1924,7 +2032,9 @@ describe('container definition', () => {
                 },
               ],
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],
@@ -1939,6 +2049,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: cdk.Size.gibibytes(5),
+        swappiness: 90,
       });
 
       // WHEN
@@ -1966,132 +2078,13 @@ describe('container definition', () => {
                 },
               ],
               InitProcessEnabled: true,
+              MaxSwap: 5 * 1024,
               SharedMemorySize: 1024,
+              Swappiness: 90,
             },
           }),
         ],
       });
-    });
-  });
-
-  class MyApp extends cdk.App {
-    constructor() {
-      super({
-        context: {
-          [cxapi.DOCKER_IGNORE_SUPPORT]: true,
-        },
-      });
-    }
-  }
-
-  testLegacyBehavior('can use a DockerImageAsset directly for a container image', MyApp, (app) => {
-    // GIVEN
-    const stack = new cdk.Stack(app, 'Stack');
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
-    const asset = new ecr_assets.DockerImageAsset(stack, 'MyDockerImage', {
-      directory: path.join(__dirname, 'demo-image'),
-    });
-
-    // WHEN
-    taskDefinition.addContainer('default', {
-      image: ecs.ContainerImage.fromDockerImageAsset(asset),
-      memoryLimitMiB: 1024,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          Essential: true,
-          Image: {
-            'Fn::Join': [
-              '',
-              [
-                { Ref: 'AWS::AccountId' },
-                '.dkr.ecr.',
-                { Ref: 'AWS::Region' },
-                '.',
-                { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-              ],
-            ],
-          },
-          Memory: 1024,
-          Name: 'default',
-        },
-      ],
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                ['arn:', { Ref: 'AWS::Partition' }, ':ecr:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':repository/aws-cdk/assets'],
-              ],
-            },
-          },
-          {
-            Action: 'ecr:GetAuthorizationToken',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-    });
-
-  });
-
-  testLegacyBehavior('docker image asset options can be used when using container image', MyApp, (app) => {
-    // GIVEN
-    const stack = new cdk.Stack(app, 'MyStack');
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
-
-    // WHEN
-    taskDefinition.addContainer('default', {
-      memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'demo-image'), {
-        file: 'index.py', // just because it's there already
-        target: 'build-target',
-      }),
-    });
-
-    // THEN
-    const asm = app.synth();
-    expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
-      repositoryName: 'aws-cdk/assets',
-      imageTag: '8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
-      id: '8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
-      packaging: 'container-image',
-      path: 'asset.8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
-      sourceHash: '8b0801d3f897d960240bf5bf3d5a3e367e50a17e04101717320bfd52ebc9d64a',
-      target: 'build-target',
-      file: 'index.py',
-    });
-
-  });
-
-  testLegacyBehavior('exposes image name', cdk.App, (app) => {
-    // GIVEN
-    const stack = new cdk.Stack(app, 'MyStack');
-    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
-
-    // WHEN
-    const container = taskDefinition.addContainer('cont', {
-      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'demo-image')),
-    });
-
-    // THEN
-    expect(stack.resolve(container.imageName)).toEqual({
-      'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:aba53d5f05c76afcd7e420dc8cd283ddc31657866bb4ba4ce221e13d8128d92c',
     });
   });
 });

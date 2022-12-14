@@ -33,7 +33,7 @@ import { addAlias } from './util';
 export enum Tracing {
   /**
    * Lambda will respect any tracing header it receives from an upstream service.
-   * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
+   * If no tracing header is received, Lambda will sample the request based on a fixed rate. Please see the [Using AWS Lambda with AWS X-Ray](https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html) documentation for details on this sampling behavior.
    */
   ACTIVE = 'Active',
   /**
@@ -858,6 +858,9 @@ export class Function extends FunctionBase {
     }
 
     this.currentVersionOptions = props.currentVersionOptions;
+    if (props.currentVersionOptions) {
+      this.currentVersion;
+    }
 
     if (props.filesystem) {
       if (!props.vpc) {
@@ -898,6 +901,30 @@ export class Function extends FunctionBase {
    * @param options Environment variable options.
    */
   public addEnvironment(key: string, value: string, options?: EnvironmentOptions): this {
+    // Reserved environment variables will fail during cloudformation deploy if they're set.
+    // This check is just to allow CDK to fail faster when these are specified.
+    const reservedEnvironmentVariables = [
+      '_HANDLER',
+      '_X_AMZN_TRACE_ID',
+      'AWS_REGION',
+      'AWS_EXECUTION_ENV',
+      'AWS_LAMBDA_FUNCTION_NAME',
+      'AWS_LAMBDA_FUNCTION_MEMORY_SIZE',
+      'AWS_LAMBDA_FUNCTION_VERSION',
+      'AWS_LAMBDA_INITIALIZATION_TYPE',
+      'AWS_LAMBDA_LOG_GROUP_NAME',
+      'AWS_LAMBDA_LOG_STREAM_NAME',
+      'AWS_ACCESS_KEY',
+      'AWS_ACCESS_KEY_ID',
+      'AWS_SECRET_ACCESS_KEY',
+      'AWS_SESSION_TOKEN',
+      'AWS_LAMBDA_RUNTIME_API',
+      'LAMBDA_TASK_ROOT',
+      'LAMBDA_RUNTIME_DIR',
+    ];
+    if (reservedEnvironmentVariables.includes(key)) {
+      throw new Error(`${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`);
+    }
     this.environment[key] = { value, ...options };
     return this;
   }

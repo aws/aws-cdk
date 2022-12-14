@@ -445,6 +445,44 @@ describe('bundling', () => {
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
+  test('adding user provided docker volume options', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 1,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const image = DockerImage.fromRegistry('alpine');
+
+    try {
+      image.run({
+        command: ['cool', 'command'],
+        volumesFrom: ['foo', 'bar'],
+        volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+        workingDirectory: '/working-directory',
+        user: 'user:group',
+      });
+    } catch (e) {
+      // We expect this to fail as the test environment will not have the required docker setup for the command to exit successfully
+      // nevertheless what we want to check here is that the command was built correctly and triggered
+    };
+
+    expect(spawnSyncStub.calledWith('docker', [
+      'run', '--rm',
+      '-u', 'user:group',
+      '--volumes-from', 'foo',
+      '--volumes-from', 'bar',
+      '-v', '/host-path:/container-path:delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
   test('ensure selinux docker mount', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('linux');

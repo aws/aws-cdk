@@ -1,10 +1,9 @@
-/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack, StackProps } from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as apigw from '../lib';
-import { IntegTest } from '@aws-cdk/integ-tests';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

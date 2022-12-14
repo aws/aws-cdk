@@ -15,6 +15,8 @@ import { Stage } from './stage';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
+const ASSET_SALT_CONTEXT_KEY = '@aws-cdk/core:assetHashSalt';
+
 /**
  * A previously staged asset
  */
@@ -160,8 +162,13 @@ export class AssetStaging extends Construct {
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
+    const salt = this.node.tryGetContext(ASSET_SALT_CONTEXT_KEY);
+
     this.sourcePath = path.resolve(props.sourcePath);
-    this.fingerprintOptions = props;
+    this.fingerprintOptions = {
+      ...props,
+      extraHash: props.extraHash || salt ? `${props.extraHash ?? ''}${salt ?? ''}` : undefined,
+    };
 
     if (!fs.existsSync(this.sourcePath)) {
       throw new Error(`Cannot find asset at ${this.sourcePath}`);
@@ -329,6 +336,7 @@ export class AssetStaging extends Construct {
 
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
+
     const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
 
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
@@ -461,6 +469,7 @@ export class AssetStaging extends Construct {
           entrypoint: options.entrypoint,
           workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
           securityOpt: options.securityOpt ?? '',
+          volumesFrom: options.volumesFrom,
         });
       }
     } catch (err) {

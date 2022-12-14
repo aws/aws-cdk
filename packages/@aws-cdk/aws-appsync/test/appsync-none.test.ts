@@ -10,7 +10,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 });
 
@@ -37,6 +37,20 @@ describe('None Data Source configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'NONE',
       Name: 'custom',
+    });
+  });
+
+  test('appsync configures name correctly for token', () => {
+    // WHEN
+    const produceCustom = cdk.Lazy.string({ produce(): string { return 'Produce'; } });
+    api.addNoneDataSource('ds', {
+      name: `${produceCustom}Custom`,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'NONE',
+      Name: 'ProduceCustom',
     });
   });
 

@@ -15,6 +15,7 @@ import { TagManager } from './tag-manager';
 import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
+import { ResolutionTypeHint } from './type-hints';
 
 export interface CfnResourceProps {
   /**
@@ -172,8 +173,8 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string): Reference {
-    return CfnReference.for(this, attributeName);
+  public getAtt(attributeName: string, typeHint?: ResolutionTypeHint): Reference {
+    return CfnReference.for(this, attributeName, undefined, typeHint);
   }
 
   /**
@@ -605,6 +606,35 @@ function deepMerge(target: any, ...sources: any[]) {
            */
         } else if (Object.keys(target[key]).length === 1) {
           if (MERGE_EXCLUDE_KEYS.includes(Object.keys(target[key])[0])) {
+            target[key] = {};
+          }
+        }
+
+        /**
+         * There might also be the case where the source is an intrinsic
+         *
+         *    target: {
+         *      Type: 'MyResourceType',
+         *      Properties: {
+         *        prop1: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
+         *      }
+         *    }
+         *    sources: [ {
+         *      Properties: {
+         *        prop1: { subprop: { 'Fn::If': ['SomeCondition', {...}, {...}] }}
+         *      }
+         *    } ]
+         *
+         * We end up in a place that is the reverse of the above check, the source
+         * becomes an intrinsic before the target
+         *
+         *   target: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
+         *   sources: [{
+         *     'Fn::If': [ 'MyCondition', {...}, {...} ]
+         *   }]
+         */
+        if (Object.keys(value).length === 1) {
+          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(value)[0])) {
             target[key] = {};
           }
         }

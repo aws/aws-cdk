@@ -30,6 +30,11 @@ export class GlueVersion {
   public static readonly V3_0 = new GlueVersion('3.0');
 
   /**
+   * Glue version using Spark 3.3.0 and Python 3.10
+   */
+  public static readonly V4_0 = new GlueVersion('4.0');
+
+  /**
    * Custom Glue version
    * @param version custom version
    */
@@ -75,6 +80,11 @@ export enum PythonVersion {
    * Python 3 (the exact version depends on GlueVersion and JobCommand used)
    */
   THREE = '3',
+
+  /**
+   * Python 3.9 (the exact version depends on GlueVersion and JobCommand used)
+   */
+  THREE_NINE = '3.9',
 }
 
 /**
@@ -287,7 +297,7 @@ export class JobExecutable {
       if (config.language !== JobLanguage.PYTHON) {
         throw new Error('Python shell requires the language to be set to Python');
       }
-      if ([GlueVersion.V0_9, GlueVersion.V2_0, GlueVersion.V3_0].includes(config.glueVersion)) {
+      if ([GlueVersion.V0_9, GlueVersion.V2_0, GlueVersion.V3_0, GlueVersion.V4_0].includes(config.glueVersion)) {
         throw new Error(`Specified GlueVersion ${config.glueVersion.name} does not support Python Shell`);
       }
     }
@@ -299,6 +309,9 @@ export class JobExecutable {
     }
     if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
       throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
+    }
+    if (config.pythonVersion === PythonVersion.THREE_NINE && config.type !== JobType.PYTHON_SHELL) {
+      throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell');
     }
     this.config = config;
   }

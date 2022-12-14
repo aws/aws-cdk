@@ -1,0 +1,94 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "integ-sfn-start-execution.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-sfn-start-execution.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-sfn-start-execution": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-sfn-start-execution.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b4f1ae62ce73b9521608269b8ff08207bd8f63845d471eaab7e71f60059c6e7b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-sfn-start-execution.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-sfn-start-execution.assets"
+      ],
+      "metadata": {
+        "/integ-sfn-start-execution/Child/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildRole1E3E0EF5"
+          }
+        ],
+        "/integ-sfn-start-execution/Child/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChildDAB30558"
+          }
+        ],
+        "/integ-sfn-start-execution/Parent/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRole5F0C366C"
+          }
+        ],
+        "/integ-sfn-start-execution/Parent/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentRoleDefaultPolicy9BDC56DC"
+          }
+        ],
+        "/integ-sfn-start-execution/Parent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Parent8B210403"
+          }
+        ],
+        "/integ-sfn-start-execution/StateMachineARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineARN"
+          }
+        ],
+        "/integ-sfn-start-execution/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-sfn-start-execution/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-sfn-start-execution"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

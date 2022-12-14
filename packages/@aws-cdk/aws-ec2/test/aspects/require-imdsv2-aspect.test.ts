@@ -1,7 +1,5 @@
 import { Annotations, Template, Match } from '@aws-cdk/assertions';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import {
   CfnLaunchTemplate,
@@ -122,8 +120,9 @@ describe('RequireImdsv2Aspect', () => {
       Annotations.fromStack(stack).hasNoWarning('/Stack/Instance', 'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.');
     });
 
-    testFutureBehavior('launch template name is unique with feature flag', { [cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true }, cdk.App, (app2) => {
+    test('launch template name is unique with feature flag', () => {
       // GIVEN
+      const app2 = new cdk.App();
       const otherStack = new cdk.Stack(app2, 'OtherStack');
       const otherVpc = new Vpc(otherStack, 'OtherVpc');
       const otherInstance = new Instance(otherStack, 'OtherInstance', {
@@ -151,26 +150,6 @@ describe('RequireImdsv2Aspect', () => {
       expect(launchTemplate).toBeDefined();
       expect(otherLaunchTemplate).toBeDefined();
       expect(launchTemplate.launchTemplateName !== otherLaunchTemplate.launchTemplateName);
-    });
-
-    testLegacyBehavior('launch template name uses legacy id without feature flag', cdk.App, (app2) => {
-      // GIVEN
-      const imdsv2Stack = new cdk.Stack(app2, 'RequireImdsv2Stack');
-      const imdsv2Vpc = new Vpc(imdsv2Stack, 'Vpc');
-      const instance = new Instance(imdsv2Stack, 'Instance', {
-        vpc: imdsv2Vpc,
-        instanceType: new InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      });
-      const aspect = new InstanceRequireImdsv2Aspect();
-
-      // WHEN
-      cdk.Aspects.of(imdsv2Stack).add(aspect);
-      app2.synth();
-
-      // THEN
-      const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
-      expect(launchTemplate.launchTemplateName).toEqual(`${instance.node.id}LaunchTemplate`);
     });
   });
 

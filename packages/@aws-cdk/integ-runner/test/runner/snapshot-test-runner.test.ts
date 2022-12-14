@@ -1,38 +1,34 @@
 import * as child_process from 'child_process';
+import * as builtinFs from 'fs';
 import * as path from 'path';
-import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegSnapshotRunner, IntegTest } from '../../lib/runner';
 import { DiagnosticReason } from '../../lib/workers/common';
 import { MockCdkProvider } from '../helpers';
 
 let cdkMock: MockCdkProvider;
-let synthMock: (options: SynthOptions) => void;
-let synthFastMock: (options: SynthFastOptions) => void;
-let deployMock: (options: DeployOptions) => void;
-let listMock: (options: ListOptions) => string;
-let destroyMock: (options: DestroyOptions) => void;
+
+const currentCwd = process.cwd();
+beforeAll(() => {
+  process.chdir(path.join(__dirname, '../..'));
+});
+afterAll(() => {
+  process.chdir(currentCwd);
+});
+
 beforeEach(() => {
   cdkMock = new MockCdkProvider({ directory: 'test/test-data' });
-  listMock = jest.fn().mockImplementation(() => {
-    return 'stackabc';
-  });
-  synthMock = jest.fn().mockImplementation();
-  deployMock = jest.fn().mockImplementation();
-  destroyMock = jest.fn().mockImplementation();
-  synthFastMock = jest.fn().mockImplementation();
-  cdkMock.mockSynth(synthMock);
-  cdkMock.mockList(listMock);
-  cdkMock.mockDeploy(deployMock);
-  cdkMock.mockSynthFast(synthFastMock);
-  cdkMock.mockDestroy(destroyMock);
+  cdkMock.mockAll().list.mockImplementation(() => 'stackabc');
+
   jest.spyOn(child_process, 'spawnSync').mockImplementation();
   jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
   jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
+
+  // fs-extra delegates to the built-in one, this also catches calls done directly
+  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => { return true; });
+  jest.spyOn(builtinFs, 'rmdirSync').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {
@@ -44,84 +40,35 @@ afterEach(() => {
 describe('IntegTest runSnapshotTests', () => {
   test('with defaults no diff', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
-        discoveryRoot: 'test/test-data',
-      }),
-      integOutDir: 'test/test-data/test-with-snapshot.integ.snapshot',
-    });
-    const results = integTest.testSnapshot();
+    const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot.js', 'xxxxx.test-with-snapshot.js.snapshot');
 
     // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
-      output: 'test-with-snapshot.integ.snapshot',
-    });
     expect(results.diagnostics).toEqual([]);
   });
 
   test('new stack in actual', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
-        discoveryRoot: 'test/test-data',
-      }),
-    });
-    const results = integTest.testSnapshot();
+    const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot.js');
 
     // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
-      output: 'cdk-integ.out.test-with-snapshot',
-    });
     expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: integTest.testName,
+      testName: 'xxxxx.test-with-snapshot',
       message: 'new-test-stack does not exist in snapshot, but does in actual',
     })]));
   });
 
   test('with defaults and diff', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
-        discoveryRoot: 'test/test-data',
-      }),
-      integOutDir: 'test/test-data/test-with-snapshot-diff.integ.snapshot',
-    });
-    const results = integTest.testSnapshot();
+    const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot.js', 'xxxxx.test-with-snapshot-diff.js.snapshot');
 
     // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'xxxxx.test-with-snapshot.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: 'test-with-snapshot-diff.integ.snapshot',
-    });
     expect(results.diagnostics).toEqual(expect.arrayContaining([
       expect.objectContaining({
         reason: DiagnosticReason.SNAPSHOT_FAILED,
-        testName: integTest.testName,
+        testName: 'xxxxx.test-with-snapshot',
         message: expect.stringContaining('foobar'),
+        config: { diffAssets: true },
       }),
     ]));
     expect(results.destructiveChanges).not.toEqual([{
@@ -138,152 +85,136 @@ describe('IntegTest runSnapshotTests', () => {
 
   test('dont diff new asset hashes', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets-diff.js'),
-        discoveryRoot: 'test/test-data',
-      }),
-      integOutDir: 'test/test-data/cdk-integ.out.test-with-new-assets',
-    });
-    const results = integTest.testSnapshot();
-    expect(results.diagnostics).toEqual([]);
+    const results = cdkMock.snapshotTest('xxxxx.test-with-new-assets-diff.js', 'cdk-integ.out.xxxxx.test-with-new-assets.js.snapshot');
 
     // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'xxxxx.test-with-new-assets-diff.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: 'cdk-integ.out.test-with-new-assets',
-    });
+    expect(results.diagnostics).toEqual([]);
   });
 
   test('diff new asset hashes', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-new-assets.js'),
-        discoveryRoot: 'test/test-data',
-      }),
-      integOutDir: 'test/test-data/cdk-integ.out.test-with-new-assets-diff',
-    });
-    const results = integTest.testSnapshot();
+    const results = cdkMock.snapshotTest('xxxxx.test-with-new-assets.js', 'cdk-integ.out.xxxxx.test-with-new-assets-diff.js.snapshot');
 
     // THEN
     expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: integTest.testName,
+      testName: 'xxxxx.test-with-new-assets',
       message: expect.stringContaining('S3Key'),
-    })]));
-  });
-
-  test('dont diff asset hashes', () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-snapshot-assets-diff.js'),
-        discoveryRoot: 'test/test-data',
-      }),
-      integOutDir: 'test/test-data/test-with-snapshot-assets.integ.snapshot',
-    });
-    const results = integTest.testSnapshot();
-    expect(results.diagnostics).toEqual([]);
-
-    // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'xxxxx.test-with-snapshot-assets-diff.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: 'test-with-snapshot-assets.integ.snapshot',
-    });
-  });
-
-  test('determine test stack via pragma', () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: 'test/test-data/xxxxx.integ-test1.js',
-        discoveryRoot: 'test',
-      }),
-      integOutDir: 'does/not/exist',
-    });
-
-    // THEN
-    expect(integTest.actualTests()).toEqual(expect.objectContaining({
-      'xxxxx.integ-test1': {
-        diffAssets: false,
-        stackUpdateWorkflow: true,
-        stacks: ['stack1'],
-      },
-    }));
-    expect(listMock).toHaveBeenCalledTimes(0);
-  });
-
-  test('get stacks from list, no pragma', async () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: 'test/test-data/xxxxx.integ-test2.js',
-        discoveryRoot: 'test',
-      }),
-      integOutDir: 'does/not/exist',
-    });
-
-    // THEN
-    expect(integTest.actualTests()).toEqual(expect.objectContaining({
-      'xxxxx.integ-test2': {
-        diffAssets: false,
-        stackUpdateWorkflow: true,
-        stacks: ['stackabc'],
-      },
-    }));
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'xxxxx.integ-test2.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: '../../does/not/exist',
-    });
-  });
-
-  test('diff asset hashes', () => {
-    // WHEN
-    const integTest = new IntegSnapshotRunner({
-      cdk: cdkMock.cdk,
-      test: new IntegTest({
-        fileName: path.join(__dirname, '../test-data/xxxxx.test-with-snapshot-assets.js'),
-        discoveryRoot: 'test/test-data',
-      }),
-      integOutDir: 'test/test-data/test-with-snapshot-assets-diff.integ.snapshot',
-    });
-    const results = integTest.testSnapshot();
-
-    // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
-    expect(synthFastMock).toHaveBeenCalledWith({
-      execCmd: ['node', 'xxxxx.test-with-snapshot-assets.js'],
-      env: expect.objectContaining({
-        CDK_INTEG_ACCOUNT: '12345678',
-        CDK_INTEG_REGION: 'test-region',
-      }),
-      output: 'test-with-snapshot-assets-diff.integ.snapshot',
-    });
-    expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+      config: { diffAssets: true },
+    }),
+    expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: integTest.testName,
-      message: expect.stringContaining('Parameters'),
+      testName: 'xxxxx.test-with-new-assets',
+      message: expect.stringContaining('TemplateURL'),
+      config: { diffAssets: true },
     })]));
+  });
+
+  describe('Nested Stacks', () => {
+    test('it will compare snapshots for nested stacks', () => {
+      // WHEN
+      const results = cdkMock.snapshotTest('xxxxx.test-with-nested-stack.js', 'xxxxx.test-with-nested-stack-changed.js.snapshot');
+
+      // THEN
+      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+        reason: DiagnosticReason.SNAPSHOT_FAILED,
+        testName: 'xxxxx.test-with-nested-stack',
+        stackName: expect.stringContaining('teststacknested'),
+        message: expect.stringContaining('AWS::SNS::Topic'),
+        config: { diffAssets: false },
+      })]));
+    });
+
+    test('it will diff assets for nested stacks', () => {
+      // WHEN
+      const results = cdkMock.snapshotTest('xxxxx.test-with-nested-stack.js', 'xxxxx.test-with-asset-in-nested-stack.js.snapshot');
+
+      // THEN
+      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+        reason: DiagnosticReason.SNAPSHOT_FAILED,
+        testName: 'xxxxx.test-with-nested-stack',
+        stackName: expect.stringContaining('teststacknested'),
+        message: expect.stringContaining('S3Key'),
+        config: { diffAssets: true },
+      })]));
+    });
+  });
+
+  describe('Legacy parameter based assets ', () => {
+    test('diff asset hashes', () => {
+      // WHEN
+      const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot-assets.js', 'xxxxx.test-with-snapshot-assets-diff.js.snapshot');
+
+      // THEN
+      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+        reason: DiagnosticReason.SNAPSHOT_FAILED,
+        testName: 'xxxxx.test-with-snapshot-assets',
+        message: expect.stringContaining('Parameters'),
+        config: { diffAssets: true },
+      })]));
+    });
+
+    test('dont diff asset hashes', () => {
+      // WHEN
+      const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot-assets-diff.js', 'xxxxx.test-with-snapshot-assets.js.snapshot');
+
+      // THEN
+      expect(results.diagnostics).toEqual([]);
+    });
+  });
+
+  describe('Legacy Integ Tests', () => {
+    test('determine test stack via pragma', () => {
+      // WHEN
+      const integTest = new IntegSnapshotRunner({
+        cdk: cdkMock.cdk,
+        test: new IntegTest({
+          fileName: 'test/test-data/xxxxx.integ-test1.js',
+          discoveryRoot: 'test',
+        }),
+        integOutDir: 'does/not/exist',
+      });
+
+      // THEN
+      expect(integTest.actualTests()).toEqual(expect.objectContaining({
+        'xxxxx.integ-test1': {
+          diffAssets: false,
+          stackUpdateWorkflow: true,
+          stacks: ['stack1'],
+        },
+      }));
+      expect(cdkMock.mocks.list).toHaveBeenCalledTimes(0);
+    });
+
+    test('get stacks from list, no pragma', async () => {
+      // WHEN
+      const integTest = new IntegSnapshotRunner({
+        cdk: cdkMock.cdk,
+        test: new IntegTest({
+          fileName: 'test/test-data/xxxxx.integ-test2.js',
+          discoveryRoot: 'test',
+        }),
+        integOutDir: 'does/not/exist',
+      });
+
+      // THEN
+      expect(integTest.actualTests()).toEqual(expect.objectContaining({
+        'xxxxx.integ-test2': {
+          diffAssets: false,
+          stackUpdateWorkflow: true,
+          stacks: ['stackabc'],
+        },
+      }));
+      expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
+      expect(cdkMock.mocks.synthFast).toHaveBeenCalledWith({
+        execCmd: ['node', 'xxxxx.integ-test2.js'],
+        env: expect.objectContaining({
+          CDK_INTEG_ACCOUNT: '12345678',
+          CDK_INTEG_REGION: 'test-region',
+        }),
+        output: '../../does/not/exist',
+      });
+    });
+
   });
 });

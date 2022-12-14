@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "fargateAssetImageTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-fargate-image"
+      ],
+      "assertionStack": "fargateAssetImageTest/DefaultTest/DeployAssert"
+    }
+  }
+}

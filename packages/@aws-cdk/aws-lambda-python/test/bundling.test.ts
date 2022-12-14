@@ -37,7 +37,7 @@ test('Bundling a function without dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rT /asset-input/ /asset-output',
+        'cp -rTL /asset-input/ /asset-output && cd /asset-output',
       ],
     }),
   }));
@@ -66,7 +66,7 @@ test('Bundling a function with requirements.txt', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output && cp -rT /asset-input/ /asset-output',
+        'cp -rTL /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
       ],
     }),
   }));
@@ -89,7 +89,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output && cp -rT /asset-input/ /asset-output',
+        'cp -rTL /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
       ],
     }),
   }));
@@ -109,7 +109,7 @@ test('Bundling a layer with dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -129,7 +129,7 @@ test('Bundling a python code layer', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python',
       ],
     }),
   }));
@@ -149,7 +149,7 @@ test('Bundling a function with pipenv dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -176,7 +176,35 @@ test('Bundling a function with poetry dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
+      ],
+    }),
+  }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('pyproject.toml');
+  expect(files).toContain('poetry.lock');
+  // Contains hidden files.
+  expect(files).toContain('.ignorefile');
+});
+
+test('Bundling a function with poetry dependencies, with hashes', () => {
+  const entry = path.join(__dirname, 'lambda-handler-poetry');
+
+  const assetCode = Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_9,
+    architecture: Architecture.X86_64,
+    outputPathSuffix: 'python',
+    poetryIncludeHashes: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -206,7 +234,7 @@ test('Bundling a function with custom bundling image', () => {
       image,
       command: [
         'bash', '-c',
-        'python -m pip install -r requirements.txt -t /asset-output/python && cp -rT /asset-input/ /asset-output/python',
+        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -270,4 +298,33 @@ test('Build docker image when bundling is not skipped', () => {
   });
 
   expect(DockerImage.fromBuild).toHaveBeenCalled();
+});
+
+test('with command hooks', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    skip: false,
+    commandHooks: {
+      beforeBundling(inputDir: string, outputDir: string): string[] {
+        return [
+          `echo hello > ${inputDir}/a.txt`,
+          `cp ${inputDir}/a.txt ${outputDir}`,
+        ];
+      },
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
+      },
+    },
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+      ],
+    }),
+  }));
 });

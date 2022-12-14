@@ -53,6 +53,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [App Clients](#app-clients)
   - [Resource Servers](#resource-servers)
   - [Domains](#domains)
+  - [Deletion protection](#deletion-protection)
 
 ## User Pools
 
@@ -66,8 +67,14 @@ the `userPoolName` to give your own identifier to the user pool. If not, CloudFo
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
+  signInCaseSensitive: false, // case insensitive is preferred in most situations
 });
 ```
+
+By default, usernames and email addresses in user pools are case sensitive, which means `user@example.com` and `User@example.com`
+are considered different. In most situations it is preferred to have usernames and email addresses be case insensitive so that
+capitalization differences are ignored. As shown above, you can make a user pool case insensitive by setting `signInCaseSensitive`
+to `false`. The case sensitivity cannot be changed once a user pool is created.
 
 The default set up for the user pool is configured such that only administrators will be allowed
 to create users. Features such as Multi-factor authentication (MFAs) and Lambda Triggers are not
@@ -349,6 +356,16 @@ new cognito.UserPool(this, 'UserPool', {
 The default for account recovery is by phone if available and by email otherwise.
 A user will not be allowed to reset their password via phone if they are also using it for MFA.
 
+#### Advanced Security Mode
+
+User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
+});
+```
 
 ### Emails
 
@@ -528,6 +545,7 @@ The following third-party identity providers are currently supported in the CDK 
 - [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
 - [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-oidc-idp.html)
+- [SAML](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-saml-idp.html)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
@@ -862,3 +880,16 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
+
+### Deletion protection
+
+Deletion protection can be enabled on a user pool to prevent accidental deletion:
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool', {
+  // ...
+  deletionProtection: true,
+});
+```
+
+By default deletion protection is disabled.

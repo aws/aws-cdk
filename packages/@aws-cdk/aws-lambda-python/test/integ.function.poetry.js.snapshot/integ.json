@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "poetry/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-poetry"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "poetry/DefaultTest/DeployAssert",
+      "assertionStackName": "poetryDefaultTestDeployAssertE9C9CB8F"
+    }
+  }
+}

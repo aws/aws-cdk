@@ -1,0 +1,151 @@
+{
+ "Resources": {
+  "TestProduct7606930B": {
+   "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+   "Properties": {
+    "Name": "testProduct",
+    "Owner": "testOwner",
+    "ProvisioningArtifactParameters": [
+     {
+      "DisableTemplateValidation": true,
+      "Info": {
+       "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
+       }
+      },
+      "Name": "v1"
+     }
+    ]
+   }
+  },
+  "TestProductTagOptionAssociation0d813eebb333DA3E2F21": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions5f31c54ba705F110F743"
+    }
+   }
+  },
+  "TestProductTagOptionAssociation5d93a5c977b4B664DD87": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptions8d263919cebb6764AC10"
+    }
+   }
+  },
+  "TestProductTagOptionAssociationcfaf40b186a3E5FDECDC": {
+   "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+   "Properties": {
+    "ResourceId": {
+     "Ref": "TestProduct7606930B"
+    },
+    "TagOptionId": {
+     "Ref": "TagOptionsa260cbbd99c416C40F73"
+    }
+   }
+  },
+  "TagOptions5f31c54ba705F110F743": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key1",
+    "Value": "value1",
+    "Active": true
+   }
+  },
+  "TagOptions8d263919cebb6764AC10": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key1",
+    "Value": "value2",
+    "Active": true
+   }
+  },
+  "TagOptionsa260cbbd99c416C40F73": {
+   "Type": "AWS::ServiceCatalog::TagOption",
+   "Properties": {
+    "Key": "key2",
+    "Value": "value1",
+    "Active": true
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

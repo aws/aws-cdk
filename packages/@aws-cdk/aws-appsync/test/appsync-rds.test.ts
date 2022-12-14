@@ -12,7 +12,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
-    schema: new appsync.Schema({
+    schema: new appsync.SchemaFile({
       filePath: path.join(__dirname, 'appsync.test.graphql'),
     }),
   });
@@ -36,7 +36,7 @@ describe('Rds Data Source configuration', () => {
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
@@ -235,7 +235,7 @@ describe('adding rds data source from imported api', () => {
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });

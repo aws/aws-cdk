@@ -1,0 +1,202 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-rds-read-replica.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-rds-read-replica.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-rds-read-replica": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-rds-read-replica.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b0d34a4272167325bce2a0b6989d5db5d7f74bd914b09244fee0159f1b84a390.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-rds-read-replica.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-rds-read-replica.assets"
+      ],
+      "metadata": {
+        "/cdk-rds-read-replica/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/cdk-rds-read-replica/Vpc/isolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcisolatedSubnet1SubnetE62B1B9B"
+          }
+        ],
+        "/cdk-rds-read-replica/Vpc/isolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcisolatedSubnet1RouteTableE442650B"
+          }
+        ],
+        "/cdk-rds-read-replica/Vpc/isolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcisolatedSubnet1RouteTableAssociationD259E31A"
+          }
+        ],
+        "/cdk-rds-read-replica/Vpc/isolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcisolatedSubnet2Subnet39217055"
+          }
+        ],
+        "/cdk-rds-read-replica/Vpc/isolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcisolatedSubnet2RouteTable334F9764"
+          }
+        ],
+        "/cdk-rds-read-replica/Vpc/isolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcisolatedSubnet2RouteTableAssociation25A4716F"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresSource/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresSourceSubnetGroupBEEB1740"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresSource/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresSourceSecurityGroup69289E68"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresSource/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresSourceSecret0A09A7AD"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresSource/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresSourceSecretAttachmentE3C3B705"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresSourceEB66BFC9"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresReplica/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresReplicaSubnetGroup301B59DA"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresReplica/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresReplicaSecurityGroup5385C4C2"
+          }
+        ],
+        "/cdk-rds-read-replica/PostgresReplica/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PostgresReplica23A3C738"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlSource/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlSourceSubnetGroup213E979B"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlSource/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlSourceSecurityGroupC691E169"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlSource/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlSourceSecretB727C3F2"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlSource/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlSourceSecretAttachment5E4EDF73"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlSource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlSource9A10350C"
+          }
+        ],
+        "/cdk-rds-read-replica/ReplicaParameterGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaParameterGroup4BE5EE70"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlReplica/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlReplicaSubnetGroup79E1F72A"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlReplica/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlReplicaSecurityGroup169FAFAA"
+          }
+        ],
+        "/cdk-rds-read-replica/MysqlReplica/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MysqlReplica87D29F78"
+          }
+        ],
+        "/cdk-rds-read-replica/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-rds-read-replica/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-rds-read-replica"
+    }
+  }
+}

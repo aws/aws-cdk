@@ -26,9 +26,7 @@ runs a service on it:
 declare const vpc: ec2.Vpc;
 
 // Create an ECS cluster
-const cluster = new ecs.Cluster(this, 'Cluster', {
-  vpc,
-});
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
 // Add capacity to it
 cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
@@ -52,10 +50,9 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 
 For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
 
-## Launch Types: AWS Fargate vs Amazon EC2
+## Launch Types: AWS Fargate vs Amazon EC2 vs AWS ECS Anywhere
 
-There are two sets of constructs in this library; one to run tasks on Amazon EC2 and
-one to run tasks on AWS Fargate.
+There are three sets of constructs in this library:
 
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
 - Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
@@ -74,7 +71,9 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
-- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Bridge, Host and None networking modes are supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
+- **AWS ECS Anywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure
+  owned by the customer. Bridge, Host and None networking modes are supported. Does not
+  support autoscaling, load balancing, cloudmap or attachment of volumes.
 
 For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
@@ -170,6 +169,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
   instanceType: new ec2.InstanceType('t3.medium'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
@@ -330,7 +330,7 @@ const container = fargateTaskDefinition.addContainer("WebContainer", {
 });
 ```
 
-For a `Ec2TaskDefinition`:
+For an `Ec2TaskDefinition`:
 
 ```ts
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
@@ -423,7 +423,7 @@ To grant a principal permission to run your `TaskDefinition`, you can use the `T
 
 ```ts
 declare const role: iam.IGrantable;
-const taskDef = new ecs.TaskDefinition(stack, 'TaskDef', {
+const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
   cpu: '512',
   memoryMiB: '512',
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
@@ -479,11 +479,32 @@ const newContainer = taskDefinition.addContainer('container', {
   },
 });
 newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
+newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
+newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
 files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
+
+### Linux parameters
+
+To apply additional linux-specific options related to init process and memory management to the container, use the `linuxParameters` property:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  linuxParameters: new ecs.LinuxParameters(this, 'LinuxParameters', {
+    initProcessEnabled: true,
+    sharedMemorySize: 1024,
+    maxSwap: Size.mebibytes(5000),
+    swappiness: 90,
+  }),
+});
+```
 
 ### System controls
 
@@ -868,7 +889,7 @@ taskDefinition.addContainer('TheContainer', {
 ### splunk Log Driver
 
 ```ts
-declare const secret: secretsmanager.Secret;
+declare const secret: ecs.Secret;
 
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
@@ -1209,6 +1230,82 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
       s3KeyPrefix: 'exec-command-output',
     },
     logging: ecs.ExecuteCommandLogging.OVERRIDE,
+  },
+});
+```
+
+## Amazon ECS Service Connect
+
+Service Connect is a managed AWS mesh network offering. It simplifies DNS queries and inter-service communication for 
+ECS Services by allowing customers to set up simple DNS aliases for their services, which are accessible to all
+services that have enabled Service Connect.
+
+To enable Service Connect, you must have created a CloudMap namespace. The CDK can infer your cluster's default CloudMap namespace, 
+or you can specify a custom namespace. You must also have created a named port mapping on at least one container in your Task Definition.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const container: ecs.ContainerDefinition;
+
+container.addPortMappings({
+  name: 'api',
+  containerPort: 8080,
+});
+
+taskDefinition.addContainer(container);
+
+cluster.addDefaultCloudMapNamespace({
+  name: 'local',
+});
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+        dnsName: 'http-api',
+        port: 80,
+      },
+    ],
+  },
+});
+```
+
+Service Connect-enabled services may now reach this service at `http-api:80`. Traffic to this endpoint will 
+be routed to the container's port 8080.
+
+To opt a service into using service connect without advertising a port, simply call the 'enableServiceConnect' method on an initialized service.
+
+```ts
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition
+)
+service.enableServiceConnect();
+```
+
+Service Connect also allows custom logging, Service Discovery name, and configuration of the port where service connect traffic is received.
+
+```ts
+const customService = new ecs.FargateService(this, 'CustomizedService', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    logDriver: ecs.LogDrivers.awslogs({
+      streamPrefix: 'sc-traffic',
+    }),
+    services: [
+      {
+        portMappingName: 'api',
+        dnsName: 'customized-api',
+        port: 80,
+        ingressPortOverride: 20040,
+        discoveryName: 'custom',
+      },
+    ],
   },
 });
 ```

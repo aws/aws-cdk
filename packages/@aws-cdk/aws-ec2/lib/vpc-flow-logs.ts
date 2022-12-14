@@ -384,6 +384,159 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 }
 
 /**
+ * The maximum interval of time during which a flow of packets
+ * is captured and aggregated into a flow log record.
+ *
+ */
+export enum FlowLogMaxAggregationInterval {
+  /**
+   * 1 minute (60 seconds)
+   */
+  ONE_MINUTE = 60,
+
+  /**
+   * 10 minutes (600 seconds)
+   */
+  TEN_MINUTES = 600,
+
+}
+
+/**
+ * The following table describes all of the available fields for a flow log record.
+ */
+export class LogFormat {
+  /**
+   * The VPC Flow Logs version.
+   */
+  public static readonly VERSION = new LogFormat('${version}');
+
+  /**
+   * The AWS account ID of the owner of the source network interface for which traffic is recorded.
+   */
+  public static readonly ACCOUNT_ID = new LogFormat('${account-id}');
+
+  /**
+   * The ID of the network interface for which the traffic is recorded.
+   */
+  public static readonly INTERFACE_ID = new LogFormat('${interface-id');
+
+  /**
+   * The source address for incoming traffic, or the IPv4 or IPv6 address of the network interface
+   * for outgoing traffic on the network interface.
+   */
+  public static readonly SRC_ADDR = new LogFormat('${srcaddr}');
+
+  /**
+   * The destination address for outgoing traffic, or the IPv4 or IPv6 address of the network interface
+   * for incoming traffic on the network interface.
+   */
+  public static readonly DST_ADDR = new LogFormat('${dstaddr}');
+
+  /**
+   * The source port of the traffic.
+   */
+  public static readonly SRC_PORT = new LogFormat('${srcport}');
+
+  /**
+   * The destination port of the traffic.
+   */
+  public static readonly DST_PORT = new LogFormat('${dstport}');
+
+  /**
+   * The IANA protocol number of the traffic.
+   */
+  public static readonly PROTOCOL = new LogFormat('${protocol}');
+
+  /**
+   * The number of packets transferred during the flow.
+   */
+  public static readonly PACKETS = new LogFormat('${packets}');
+
+  /**
+   * The number of bytes transferred during the flow.
+   */
+  public static readonly BYTES = new LogFormat('${bytes}');
+
+  /**
+   * The packet-level (original) source IP address of the traffic.
+   */
+  public static readonly PKT_SRC_ADDR = new LogFormat('${pkt-srcaddr}');
+
+  /**
+   * The packet-level (original) destination IP address for the traffic.
+   */
+  public static readonly PKT_DST_ADDR = new LogFormat('${pkt-dstaddr}');
+
+  /**
+   * The Region that contains the network interface for which traffic is recorded.
+   */
+  public static readonly REGION = new LogFormat('${region}');
+
+  /**
+   * The ID of the Availability Zone that contains the network interface for which traffic is recorded.
+   */
+  public static readonly AZ_ID = new LogFormat('${az-id}');
+
+  /**
+   * The type of sublocation that's returned in the sublocation-id field.
+   */
+  public static readonly SUBLOCATION_TYPE = new LogFormat('${sublocation-type}');
+
+  /**
+   * The ID of the sublocation that contains the network interface for which traffic is recorded.
+   */
+  public static readonly SUBLOCATION_ID = new LogFormat('${sublocation-id}');
+
+  /**
+   * The name of the subset of IP address ranges for the pkt-srcaddr field,
+   * if the source IP address is for an AWS service.
+   */
+  public static readonly PKT_SRC_AWS_SERVICE = new LogFormat('${pkt-src-aws-service}');
+
+  /**
+   * The name of the subset of IP address ranges for the pkt-dstaddr field,
+   * if the destination IP address is for an AWS service.
+   */
+  public static readonly PKT_DST_AWS_SERVICE = new LogFormat('${pkt-dst-aws-service}');
+
+  /**
+   * The direction of the flow with respect to the interface where traffic is captured.
+   */
+  public static readonly FLOW_DIRECTION = new LogFormat('${flow-direction}');
+
+  /**
+   * The path that egress traffic takes to the destination.
+   */
+  public static readonly TRAFFIC_PATH = new LogFormat('${traffic-path}');
+
+  /**
+   * The default format.
+   */
+  public static readonly ALL_DEFAULT_FIELDS = new LogFormat('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}');
+
+  /**
+   * A custom format string.
+   *
+   * Gives full control over the format string fragment.
+   */
+  public static custom(formatString: string): LogFormat {
+    return new LogFormat(formatString);
+  }
+
+  /**
+   * A custom field name.
+   *
+   * If there is no ready-made constant for a new field yet, you can use this.
+   * The field name will automatically be wrapped in `${ ... }`.
+   */
+  public static field(field: string): LogFormat {
+    return new LogFormat(`\${${field}}`);
+  }
+
+  protected constructor(public readonly value: string) {}
+}
+
+/**
  * Options to add a flow log to a VPC
  */
 export interface FlowLogOptions {
@@ -401,6 +554,26 @@ export interface FlowLogOptions {
    * @default FlowLogDestinationType.toCloudWatchLogs()
    */
   readonly destination?: FlowLogDestination;
+
+  /**
+   * The fields to include in the flow log record, in the order in which they should appear.
+   *
+   * If multiple fields are specified, they will be separated by spaces. For full control over the literal log format
+   * string, pass a single field constructed with `LogFormat.custom()`.
+   *
+   * See https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records
+   *
+   * @default - default log format is used.
+   */
+  readonly logFormat?: LogFormat[];
+
+  /**
+   * The maximum interval of time during which a flow of packets is captured
+   * and aggregated into a flow log record.
+   *
+   * @default FlowLogMaxAggregationInterval.TEN_MINUTES
+   */
+  readonly maxAggregationInterval?: FlowLogMaxAggregationInterval;
 }
 
 /**
@@ -495,21 +668,39 @@ export class FlowLog extends FlowLogBase {
     if (this.bucket) {
       logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
     }
+    let customLogFormat: string | undefined = undefined;
+    if (props.logFormat) {
+      customLogFormat = props.logFormat.map(elm => {
+        return elm.value;
+      }).join(' ');
+    }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
-      destinationOptions: destinationConfig.destinationOptions,
+      destinationOptions: renderDestinationOptions(destinationConfig.destinationOptions),
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
       logDestinationType: destinationConfig.logDestinationType,
       logGroupName: this.logGroup ? this.logGroup.logGroupName : undefined,
+      maxAggregationInterval: props.maxAggregationInterval,
       resourceId: props.resourceType.resourceId,
       resourceType: props.resourceType.resourceType,
       trafficType: props.trafficType
         ? props.trafficType
         : FlowLogTrafficType.ALL,
+      logFormat: customLogFormat,
       logDestination,
     });
 
     this.flowLogId = flowLog.ref;
     this.node.defaultChild = flowLog;
   }
+}
+
+function renderDestinationOptions(opts: DestinationOptions | undefined): CfnFlowLog.DestinationOptionsProperty | undefined {
+  if (opts === undefined) { return undefined; }
+
+  return {
+    fileFormat: opts.fileFormat ?? 'plain-text',
+    hiveCompatiblePartitions: opts.hiveCompatiblePartitions ?? false,
+    perHourPartition: opts.perHourPartition ?? false,
+  };
 }

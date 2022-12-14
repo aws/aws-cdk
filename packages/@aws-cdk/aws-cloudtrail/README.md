@@ -190,10 +190,24 @@ trail.addLambdaEventSelector([ amazingFunction ]);
 ## Organization Trail
 
 It is possible to create a trail that will be applied to all accounts in an organization if the current account manages an organization.
-To enable this, the property `isOrganizationTrail` must be set. If this property is set and the current account does not manage an organization, the created trail will be created only for the account.
+To enable this, the property `isOrganizationTrail` must be set. If this property is set and the current account does not manage an organization, the stack will fail to deploy.
 
 ```ts
 new cloudtrail.Trail(this, 'OrganizationTrail', {
   isOrganizationTrail: true,
+});
+```
+
+## CloudTrail Insights
+
+Set `InsightSelector` to enable Insight.
+Insights selector values can be `ApiCallRateInsight`, `ApiErrorRateInsight`, or both.
+
+```ts
+new Trail(stack, 'Insights', {
+    insightTypes: [
+      InsightType.API_CALL_RATE,
+      InsightType.API_ERROR_RATE,
+    ],
 });
 ```

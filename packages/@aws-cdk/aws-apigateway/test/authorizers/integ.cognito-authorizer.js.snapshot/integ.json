@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "cognito-authorizer/DefaultTest": {
+      "stacks": [
+        "CognitoUserPoolsAuthorizerInteg"
+      ],
+      "assertionStack": "cognito-authorizer/DefaultTest/DeployAssert"
+    }
+  }
+}

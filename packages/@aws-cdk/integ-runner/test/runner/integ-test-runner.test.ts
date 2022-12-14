@@ -1,34 +1,20 @@
 import * as child_process from 'child_process';
+import * as builtinFs from 'fs';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '@aws-cdk/cx-api';
-import { SynthFastOptions, DestroyOptions, ListOptions, SynthOptions, DeployOptions } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
 import { IntegTestRunner, IntegTest } from '../../lib/runner';
 import { MockCdkProvider } from '../helpers';
 
 let cdkMock: MockCdkProvider;
-let synthMock: (options: SynthOptions) => void;
-let synthFastMock: (options: SynthFastOptions) => void;
-let deployMock: (options: DeployOptions) => void;
-let listMock: (options: ListOptions) => string;
-let destroyMock: (options: DestroyOptions) => void;
 let spawnSyncMock: jest.SpyInstance;
 let removeSyncMock: jest.SpyInstance;
+
 beforeEach(() => {
   cdkMock = new MockCdkProvider({ directory: 'test/test-data' });
-  listMock = jest.fn().mockImplementation(() => {
-    return 'stackabc';
-  });
+  cdkMock.mockAll().list.mockImplementation(() => 'stackabc');
   jest.spyOn(Manifest, 'saveIntegManifest').mockImplementation();
-  synthMock = jest.fn().mockImplementation();
-  deployMock = jest.fn().mockImplementation();
-  destroyMock = jest.fn().mockImplementation();
-  synthFastMock = jest.fn().mockImplementation();
-  cdkMock.mockSynth(synthMock);
-  cdkMock.mockList(listMock);
-  cdkMock.mockDeploy(deployMock);
-  cdkMock.mockSynthFast(synthFastMock);
-  cdkMock.mockDestroy(destroyMock);
+
   spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
@@ -39,7 +25,9 @@ beforeEach(() => {
   });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   removeSyncMock = jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+
+  // fs-extra delegates to the built-in one, this also catches calls done directly
+  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {
@@ -63,43 +51,55 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(2);
-    expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(deployMock).toHaveBeenCalledWith({
-      app: 'test-with-snapshot.integ.snapshot',
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(2);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith({
+      app: 'xxxxx.test-with-snapshot.js.snapshot',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       profile: undefined,
       versionReporting: false,
       lookups: false,
       stacks: ['test-stack'],
     });
-    expect(deployMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith({
       app: 'node xxxxx.test-with-snapshot.js',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      output: 'cdk-integ.out.test-with-snapshot',
+      output: 'cdk-integ.out.xxxxx.test-with-snapshot.js.snapshot',
       profile: undefined,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       versionReporting: false,
       lookups: false,
       rollback: false,
       stacks: ['test-stack', 'new-test-stack'],
     });
-    expect(destroyMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledWith({
       app: 'node xxxxx.test-with-snapshot.js',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       versionReporting: false,
       profile: undefined,
       force: true,
       all: true,
-      output: 'cdk-integ.out.test-with-snapshot',
+      output: 'cdk-integ.out.xxxxx.test-with-snapshot.js.snapshot',
     });
   });
 
@@ -117,10 +117,10 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(1);
-    expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(deployMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith({
       app: 'node xxxxx.integ-test1.js',
       requireApproval: 'never',
       pathMetadata: false,
@@ -133,9 +133,9 @@ describe('IntegTest runIntegTests', () => {
       rollback: false,
       lookups: false,
       stacks: ['stack1'],
-      output: 'cdk-integ.out.integ-test1',
+      output: 'cdk-integ.out.xxxxx.integ-test1.js.snapshot',
     });
-    expect(destroyMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledWith({
       app: 'node xxxxx.integ-test1.js',
       pathMetadata: false,
       assetMetadata: false,
@@ -143,7 +143,7 @@ describe('IntegTest runIntegTests', () => {
       context: expect.any(Object),
       force: true,
       all: true,
-      output: 'cdk-integ.out.integ-test1',
+      output: 'cdk-integ.out.xxxxx.integ-test1.js.snapshot',
     });
   });
 
@@ -161,15 +161,15 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(1);
-    expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
-    expect(deployMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(2);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith({
       app: 'node xxxxx.test-with-snapshot-assets-diff.js',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
+      context: expect.not.objectContaining({
         'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
           vpcId: 'vpc-60900905',
         }),
@@ -178,23 +178,23 @@ describe('IntegTest runIntegTests', () => {
       lookups: true,
       rollback: false,
       stacks: ['test-stack'],
-      output: 'cdk-integ.out.test-with-snapshot-assets-diff',
+      output: 'cdk-integ.out.xxxxx.test-with-snapshot-assets-diff.js.snapshot',
       profile: undefined,
     });
-    expect(synthFastMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledWith({
       execCmd: ['node', 'xxxxx.test-with-snapshot-assets-diff.js'],
       env: expect.objectContaining({
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
-        CDK_CONTEXT_JSON: expect.anything(),
+        CDK_CONTEXT_JSON: expect.stringContaining('"vpcId":"vpc-60900905"'),
       }),
-      output: 'test-with-snapshot-assets-diff.integ.snapshot',
+      output: 'xxxxx.test-with-snapshot-assets-diff.js.snapshot',
     });
-    expect(destroyMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledWith({
       app: 'node xxxxx.test-with-snapshot-assets-diff.js',
       pathMetadata: false,
       assetMetadata: false,
-      context: expect.objectContaining({
+      context: expect.not.objectContaining({
         'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
           vpcId: 'vpc-60900905',
         }),
@@ -202,7 +202,7 @@ describe('IntegTest runIntegTests', () => {
       versionReporting: false,
       force: true,
       all: true,
-      output: 'cdk-integ.out.test-with-snapshot-assets-diff',
+      output: 'cdk-integ.out.xxxxx.test-with-snapshot-assets-diff.js.snapshot',
     });
   });
 
@@ -221,9 +221,9 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(1);
-    expect(destroyMock).toHaveBeenCalledTimes(0);
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(0);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
   });
 
   test('dryrun', () => {
@@ -241,9 +241,9 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(0);
-    expect(destroyMock).toHaveBeenCalledTimes(0);
-    expect(synthFastMock).toHaveBeenCalledTimes(2);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(0);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(0);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(2);
   });
 
   test('generate snapshot', () => {
@@ -257,10 +257,10 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledWith({
       execCmd: ['node', 'xxxxx.integ-test1.js'],
-      output: 'cdk-integ.out.integ-test1',
+      output: 'cdk-integ.out.xxxxx.integ-test1.js.snapshot',
       env: expect.objectContaining({
         CDK_INTEG_ACCOUNT: '12345678',
         CDK_INTEG_REGION: 'test-region',
@@ -283,32 +283,40 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledTimes(1);
-    expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(synthFastMock).toHaveBeenCalledTimes(1);
-    expect(deployMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith({
       app: 'node xxxxx.integ-test1.js',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       profile: 'test-profile',
       rollback: false,
       lookups: false,
       stacks: ['stack1'],
-      output: 'cdk-integ.out.integ-test1',
+      output: 'cdk-integ.out.xxxxx.integ-test1.js.snapshot',
     });
-    expect(destroyMock).toHaveBeenCalledWith({
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledWith({
       app: 'node xxxxx.integ-test1.js',
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
-      context: expect.any(Object),
+      context: expect.not.objectContaining({
+        'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': expect.objectContaining({
+          vpcId: 'vpc-60900905',
+        }),
+      }),
       profile: 'test-profile',
       force: true,
       all: true,
-      output: 'cdk-integ.out.integ-test1',
+      output: 'cdk-integ.out.xxxxx.integ-test1.js.snapshot',
     });
   });
 
@@ -327,16 +335,22 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(spawnSyncMock.mock.calls).toEqual(expect.arrayContaining([
       expect.arrayContaining([
-        'echo "preDeploy"',
+        'echo', ['"preDeploy hook"'],
       ]),
       expect.arrayContaining([
-        'echo "postDeploy"',
+        'echo', ['"postDeploy hook"'],
       ]),
       expect.arrayContaining([
-        'echo "preDestroy"',
+        'echo', ['"preDestroy hook"'],
       ]),
       expect.arrayContaining([
-        'echo "postDestroy"',
+        'echo', ['"postDestroy hook"'],
+      ]),
+      expect.arrayContaining([
+        'ls', [],
+      ]),
+      expect.arrayContaining([
+        'echo', ['-n', '"No new line"'],
       ]),
     ]));
   });
@@ -380,7 +394,7 @@ describe('IntegTest runIntegTests', () => {
         'git', ['merge-base', 'HEAD', 'main'],
       ]),
       expect.arrayContaining([
-        'git', ['checkout', 'abc', '--', 'test-with-snapshot.integ.snapshot'],
+        'git', ['checkout', 'abc', '--', 'xxxxx.test-with-snapshot.js.snapshot'],
       ]),
     ]));
   });
@@ -469,11 +483,11 @@ describe('IntegTest runIntegTests', () => {
     });
 
     expect(removeSyncMock.mock.calls).toEqual([
-      ['test/test-data/test-with-snapshot-assets.integ.snapshot'],
+      ['test/test-data/xxxxx.test-with-snapshot-assets.js.snapshot'],
       [
-        'test/test-data/test-with-snapshot-assets.integ.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
+        'test/test-data/xxxxx.test-with-snapshot-assets.js.snapshot/asset.be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824',
       ],
-      ['test/test-data/cdk-integ.out.test-with-snapshot-assets'],
+      ['test/test-data/cdk-integ.out.xxxxx.test-with-snapshot-assets.js.snapshot'],
     ]);
   });
 
@@ -490,9 +504,9 @@ describe('IntegTest runIntegTests', () => {
     });
 
     expect(removeSyncMock.mock.calls).toEqual([
-      ['test/test-data/test-with-snapshot-assets-diff.integ.snapshot'],
+      ['test/test-data/xxxxx.test-with-snapshot-assets-diff.js.snapshot'],
       [
-        'test/test-data/test-with-snapshot-assets-diff.integ.snapshot/asset.fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509',
+        'test/test-data/xxxxx.test-with-snapshot-assets-diff.js.snapshot/asset.fec1c56a3f23d9d27f58815e0c34c810cc02f431ac63a078f9b5d2aa44cc3509',
       ],
     ]);
   });
@@ -520,17 +534,46 @@ describe('IntegTest runIntegTests', () => {
     });
 
     // THEN
-    expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith(expect.objectContaining({
       verbose,
       debug,
     }));
-    expect(deployMock).toHaveBeenCalledWith(expect.objectContaining({
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith(expect.objectContaining({
       verbose,
       debug,
     }));
-    expect(destroyMock).toHaveBeenCalledWith(expect.objectContaining({
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledWith(expect.objectContaining({
       verbose,
       debug,
+    }));
+  });
+
+  test('with custom app run command for JavaScript', () => {
+    // WHEN
+    const integTest = new IntegTestRunner({
+      cdk: cdkMock.cdk,
+      test: new IntegTest({
+        fileName: 'test/test-data/xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+        appCommand: 'node --no-warnings {filePath}',
+      }),
+    });
+    integTest.runIntegTestCase({
+      testCaseName: 'xxxxx.test-with-snapshot',
+    });
+
+    // THEN
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledTimes(2);
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
+    expect(cdkMock.mocks.deploy).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'node --no-warnings xxxxx.test-with-snapshot.js',
+    }));
+    expect(cdkMock.mocks.synthFast).toHaveBeenCalledWith(expect.objectContaining({
+      execCmd: ['node', '--no-warnings', 'xxxxx.test-with-snapshot.js'],
+    }));
+    expect(cdkMock.mocks.destroy).toHaveBeenCalledWith(expect.objectContaining({
+      app: 'node --no-warnings xxxxx.test-with-snapshot.js',
     }));
   });
 });

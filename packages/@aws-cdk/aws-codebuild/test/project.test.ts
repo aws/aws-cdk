@@ -795,6 +795,7 @@ describe('Environment', () => {
   test.each([
     ['Standard 6.0', codebuild.LinuxBuildImage.STANDARD_6_0, 'aws/codebuild/standard:6.0'],
     ['Amazon Linux 4.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_4, 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'],
+    ['Windows Server Core 2019 2.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0, 'aws/codebuild/windows-base:2019-2.0'],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1813,6 +1814,34 @@ describe('Maximum concurrency', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       ConcurrentBuildLimit: 1,
     });
+  });
+});
+
+test('can automatically add ssm permissions', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new codebuild.Project(stack, 'Project', {
+    source: codebuild.Source.s3({
+      bucket: new s3.Bucket(stack, 'Bucket'),
+      path: 'path',
+    }),
+    ssmSessionPermissions: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: Match.arrayWith([
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+          ]),
+        }),
+      ]),
+    },
   });
 });
 

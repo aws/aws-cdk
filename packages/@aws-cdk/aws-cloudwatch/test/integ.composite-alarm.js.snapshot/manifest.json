@@ -1,0 +1,94 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CompositeAlarmIntegrationTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CompositeAlarmIntegrationTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CompositeAlarmIntegrationTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CompositeAlarmIntegrationTest.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ad8a5012407e26a8fc0b1b169b0ab2373b8466d955070ee91a90193c5c70d1a4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CompositeAlarmIntegrationTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CompositeAlarmIntegrationTest.assets"
+      ],
+      "metadata": {
+        "/CompositeAlarmIntegrationTest/Alarm1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm1F9009D71"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm2A7122E13"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm32341D8D9"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm4671832C8"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm548383B2F"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/CompositeAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CompositeAlarmF4C3D082"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CompositeAlarmIntegrationTest"
+    }
+  }
+}

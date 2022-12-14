@@ -5,7 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -484,6 +484,32 @@ describe('User Pool', () => {
         Principal: 'cognito-idp.amazonaws.com',
         SourceArn: stack.resolve(pool.userPoolArn),
       });
+    });
+  });
+
+  test('can use same lambda as trigger for multiple user pools', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = fooFunction(stack, 'preSignUp');
+
+    // WHEN
+    new UserPool(stack, 'Pool1', {
+      lambdaTriggers: { preSignUp: fn },
+    });
+    new UserPool(stack, 'Pool2', {
+      lambdaTriggers: { preSignUp: fn },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::GetAtt': ['Pool1E3396DF1', 'Arn'],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::GetAtt': ['Pool28D850567', 'Arn'],
+      },
     });
   });
 
@@ -1881,6 +1907,56 @@ test('grant', () => {
     ],
   });
 
+});
+
+test('deletion protection', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    deletionProtection: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    DeletionProtection: 'ACTIVE',
+  });
+});
+
+test.each(
+  [
+    [AdvancedSecurityMode.ENFORCED, 'ENFORCED'],
+    [AdvancedSecurityMode.AUDIT, 'AUDIT'],
+    [AdvancedSecurityMode.OFF, 'OFF'],
+  ])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    advancedSecurityMode: advancedSecurityMode,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolAddOns: {
+      AdvancedSecurityMode: compareString,
+    },
+  });
+});
+
+test('advanced security is not present if option is not provided', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {});
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolAddOns: Match.absent(),
+  });
 });
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {

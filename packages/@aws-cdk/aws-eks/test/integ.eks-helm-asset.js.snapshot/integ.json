@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "aws-cdk-eks-helm/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-helm-test"
+      ],
+      "assertionStack": "aws-cdk-eks-helm/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkekshelmDefaultTestDeployAssert044A589A"
+    }
+  }
+}

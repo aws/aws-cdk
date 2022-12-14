@@ -133,7 +133,7 @@ export class Docker {
 
     const pathToCdkAssets = path.resolve(__dirname, '..', '..', 'bin');
     try {
-      await shell(['docker', ...configArgs, ...args], {
+      await shell([getDockerCmd(), ...configArgs, ...args], {
         logger: this.logger,
         ...options,
         env: {
@@ -208,6 +208,10 @@ export class DockerFactory {
       this.loggedInDestinations.add(repositoryDomain);
     });
   }
+}
+
+function getDockerCmd(): string {
+  return process.env.CDK_DOCKER ?? 'docker';
 }
 
 function flatten(x: string[][]) {

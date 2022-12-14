@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "lambda-python-function/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-function"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-function/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonfunctionDefaultTestDeployAssertC9C6EE6F"
+    }
+  }
+}

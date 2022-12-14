@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "8f4f8db3ea3ad2d5f5678275c75dce7d9b67b46d8df7d92c62913bdc5a03cd3f": {
+      "source": {
+        "path": "FlowLogsFeatureFlag.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8f4f8db3ea3ad2d5f5678275c75dce7d9b67b46d8df7d92c62913bdc5a03cd3f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

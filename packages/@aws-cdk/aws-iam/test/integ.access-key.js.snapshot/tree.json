@@ -1,0 +1,87 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-iam-access-key-1": {
+        "id": "integ-iam-access-key-1",
+        "path": "integ-iam-access-key-1",
+        "children": {
+          "TestUser": {
+            "id": "TestUser",
+            "path": "integ-iam-access-key-1/TestUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-access-key-1/TestUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "TestAccessKey": {
+            "id": "TestAccessKey",
+            "path": "integ-iam-access-key-1/TestAccessKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-iam-access-key-1/TestAccessKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::AccessKey",
+                  "aws:cdk:cloudformation:props": {
+                    "userName": {
+                      "Ref": "TestUser6A619381"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnAccessKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.AccessKey",
+              "version": "0.0.0"
+            }
+          },
+          "AccessKeyId": {
+            "id": "AccessKeyId",
+            "path": "integ-iam-access-key-1/AccessKeyId",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

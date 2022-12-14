@@ -1,12 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { Fn } from '../cfn-fn';
-import { CfnParameter } from '../cfn-parameter';
-import { CfnRule } from '../cfn-rule';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { AssetManifestBuilder } from './_asset-manifest-builder';
-import { assertBound, StringSpecializer, stackTemplateFileAsset } from './_shared';
+import { assertBound, StringSpecializer } from './_shared';
+import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession } from './types';
 
@@ -290,7 +287,6 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
    */
   public static readonly DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER = '/cdk-bootstrap/${Qualifier}/version';
 
-  private _stack?: Stack;
   private bucketName?: string;
   private repositoryName?: string;
   private _deployRoleArn?: string;
@@ -303,7 +299,6 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private bucketPrefix?: string;
   private dockerTagPrefix?: string;
   private bootstrapStackVersionSsmParameter?: string;
-
   private assetManifest = new AssetManifestBuilder();
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
@@ -319,7 +314,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     function validateNoToken<A extends keyof DefaultStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new Error(`DefaultSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+        throw new Error(`DefaultStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
           '${Qualifier}',
           cxapi.EnvironmentPlaceholders.CURRENT_REGION,
           cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
@@ -329,12 +324,15 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     }
   }
 
-  public bind(stack: Stack): void {
-    if (this._stack !== undefined) {
-      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
-    }
+  /**
+   * The qualifier used to bootstrap this stack
+   */
+  public get bootstrapQualifier(): string | undefined {
+    return this.qualifier;
+  }
 
-    this._stack = stack;
+  public bind(stack: Stack): void {
+    super.bind(stack);
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
     this.qualifier = qualifier;
@@ -356,36 +354,53 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    assertBound(this.stack);
     assertBound(this.bucketName);
-    assertBound(this.bucketPrefix);
 
-    return this.assetManifest.addFileAssetDefault(asset, this.stack, this.bucketName, this.bucketPrefix, {
-      assumeRoleArn: this.fileAssetPublishingRoleArn,
-      assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+    const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
+      bucketName: this.bucketName,
+      bucketPrefix: this.bucketPrefix,
+      role: this.fileAssetPublishingRoleArn ? {
+        assumeRoleArn: this.fileAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+      } : undefined,
     });
+    return this.cloudFormationLocationFromFileAsset(location);
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    assertBound(this.stack);
     assertBound(this.repositoryName);
-    assertBound(this.dockerTagPrefix);
 
-    return this.assetManifest.addDockerImageAssetDefault(asset, this.stack, this.repositoryName, this.dockerTagPrefix, {
-      assumeRoleArn: this.imageAssetPublishingRoleArn,
-      assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+    const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
+      repositoryName: this.repositoryName,
+      dockerTagPrefix: this.dockerTagPrefix,
+      role: this.imageAssetPublishingRoleArn ? {
+        assumeRoleArn: this.imageAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+      } : undefined,
     });
+    return this.cloudFormationLocationFromDockerImageAsset(location);
   }
 
+  /**
+   * Synthesize the stack template to the given session, passing the configured lookup role ARN
+   */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
     stack._synthesizeTemplate(session, this.lookupRoleArn);
+  }
+
+  /**
+   * Return the currently bound stack
+   *
+   * @deprecated Use `boundStack` instead.
+   */
+  protected get stack(): Stack | undefined {
+    return this.boundStack;
   }
 
   /**
    * Synthesize the associated stack to the session
    */
   public synthesize(session: ISynthesisSession): void {
-    assertBound(this.stack);
     assertBound(this.qualifier);
 
     // Must be done here -- if it's done in bind() (called in the Stack's constructor)
@@ -394,19 +409,18 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, <string> this.bootstrapStackVersionSsmParameter);
+      this.addBootstrapVersionRule(MIN_BOOTSTRAP_STACK_VERSION, this.bootstrapStackVersionSsmParameter!);
     }
 
-    this.synthesizeStackTemplate(this.stack, session);
+    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
+    const templateAsset = this.addFileAsset(templateAssetSource);
 
-    const templateAsset = this.addFileAsset(stackTemplateFileAsset(this.stack, session));
-
-    const assetManifestId = this.assetManifest.writeManifest(this.stack, session, {
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
     });
 
-    this.emitStackArtifact(this.stack, session, {
+    this.emitArtifact(session, {
       assumeRoleExternalId: this.props.deployRoleExternalId,
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
@@ -442,48 +456,4 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     }
     return this._cloudFormationExecutionRoleArn;
   }
-
-  protected get stack(): Stack | undefined {
-    return this._stack;
-  }
-}
-
-/**
- * Add a CfnRule to the Stack which checks the current version of the bootstrap stack this template is targeting
- *
- * The CLI normally checks this, but in a pipeline the CLI is not involved
- * so we encode this rule into the template in a way that CloudFormation will check it.
- */
-function addBootstrapVersionRule(stack: Stack, requiredVersion: number, bootstrapStackVersionSsmParameter: string) {
-  // Because of https://github.com/aws/aws-cdk/blob/main/packages/assert-internal/lib/synth-utils.ts#L74
-  // synthesize() may be called more than once on a stack in unit tests, and the below would break
-  // if we execute it a second time. Guard against the constructs already existing.
-  if (stack.node.tryFindChild('BootstrapVersion')) { return; }
-
-  const param = new CfnParameter(stack, 'BootstrapVersion', {
-    type: 'AWS::SSM::Parameter::Value<String>',
-    description: `Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. ${cxapi.SSMPARAM_NO_INVALIDATE}`,
-    default: bootstrapStackVersionSsmParameter,
-  });
-
-  // There is no >= check in CloudFormation, so we have to check the number
-  // is NOT in [1, 2, 3, ... <required> - 1]
-  const oldVersions = range(1, requiredVersion).map(n => `${n}`);
-
-  new CfnRule(stack, 'CheckBootstrapVersion', {
-    assertions: [
-      {
-        assert: Fn.conditionNot(Fn.conditionContains(oldVersions, param.valueAsString)),
-        assertDescription: `CDK bootstrap stack version ${requiredVersion} required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.`,
-      },
-    ],
-  });
-}
-
-function range(startIncl: number, endExcl: number) {
-  const ret = new Array<number>();
-  for (let i = startIncl; i < endExcl; i++) {
-    ret.push(i);
-  }
-  return ret;
 }

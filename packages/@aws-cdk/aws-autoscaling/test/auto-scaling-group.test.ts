@@ -286,6 +286,25 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('can specify only defaultInstanceWarmup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      defaultInstanceWarmup: cdk.Duration.seconds(5),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      DefaultInstanceWarmup: 5,
+    });
+  });
+
   test('addToRolePolicy can be used to add statements to the role policy', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -665,7 +684,7 @@ describe('auto scaling group', () => {
     expect(asg.node.defaultChild instanceof autoscaling.CfnAutoScalingGroup).toEqual(true);
   });
 
-  test('can set blockDeviceMappings', () => {
+  testDeprecated('can set blockDeviceMappings', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -699,6 +718,12 @@ describe('auto scaling group', () => {
       }, {
         deviceName: 'none',
         volume: autoscaling.BlockDeviceVolume.noDevice(),
+      }, {
+        deviceName: 'gp3-with-throughput',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+          throughput: 350,
+        }),
       }],
     });
 
@@ -738,6 +763,14 @@ describe('auto scaling group', () => {
         {
           DeviceName: 'none',
           NoDevice: true,
+        },
+        {
+          DeviceName: 'gp3-with-throughput',
+          Ebs: {
+            VolumeSize: 15,
+            VolumeType: 'gp3',
+            Throughput: 350,
+          },
         },
       ],
     });
@@ -807,6 +840,71 @@ describe('auto scaling group', () => {
         maxInstanceLifetime: cdk.Duration.days(366),
       });
     }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
+  });
+
+  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        machineImage: new ec2.AmazonLinuxImage(),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        vpc,
+        maxInstanceLifetime: cdk.Duration.days(0),
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+            throughput,
+          }),
+        }],
+      });
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+  });
+
+  test.each([
+    ...Object.values(autoscaling.EbsDeviceVolumeType).filter((v) => v !== 'gp3'),
+  ])('throws if throughput is set on any volume type other than GP3', (volumeType) => {
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        machineImage: new ec2.AmazonLinuxImage(),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        vpc,
+        maxInstanceLifetime: cdk.Duration.days(0),
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            volumeType: volumeType,
+            throughput: 150,
+          }),
+        }],
+      });
+    }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);
+  });
+
+  test('throws if throughput / iops ratio is greater than 0.25', () => {
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        machineImage: new ec2.AmazonLinuxImage(),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        vpc,
+        maxInstanceLifetime: cdk.Duration.days(0),
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+            throughput: 751,
+            iops: 3000,
+          }),
+        }],
+      });
+    }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
 
   test('can configure instance monitoring', () => {
@@ -1825,7 +1923,7 @@ test('can use Vpc imported from unparseable list tokens', () => {
     vpc,
     allowAllOutbound: false,
     associatePublicIpAddress: false,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   });
 
   // THEN
@@ -1835,6 +1933,47 @@ test('can use Vpc imported from unparseable list tokens', () => {
     },
   });
 });
+
+test('add price-capacity-optimized', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    mixedInstancesPolicy: {
+      launchTemplate: lt,
+      launchTemplateOverrides: [{
+        instanceType: new InstanceType('t4g.micro'),
+        launchTemplate: lt,
+        weightedCapacity: 9,
+      }],
+      instancesDistribution: {
+        onDemandAllocationStrategy: OnDemandAllocationStrategy.PRIORITIZED,
+        onDemandBaseCapacity: 1,
+        onDemandPercentageAboveBaseCapacity: 2,
+        spotAllocationStrategy: SpotAllocationStrategy.PRICE_CAPACITY_OPTIMIZED,
+        spotInstancePools: 3,
+        spotMaxPrice: '4',
+      },
+    },
+    vpc: mockVpc(stack),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    MixedInstancesPolicy: {
+      InstancesDistribution: {
+        SpotAllocationStrategy: 'price-capacity-optimized',
+      },
+    },
+  });
+});
+
 
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');

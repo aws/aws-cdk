@@ -157,7 +157,7 @@ export abstract class ScheduledTaskBase extends Construct {
       throw new Error('You must specify a desiredTaskCount greater than 0');
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
-    this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_NAT };
+    this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_EGRESS };
     this._securityGroups = props.securityGroups;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)

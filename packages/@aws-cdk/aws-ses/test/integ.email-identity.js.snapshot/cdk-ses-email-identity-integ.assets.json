@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "3461fb122e984a82b0e44e4b1b516ea2f581c705cce4e8f99d2001a9407cd2fa": {
+      "source": {
+        "path": "cdk-ses-email-identity-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3461fb122e984a82b0e44e4b1b516ea2f581c705cce4e8f99d2001a9407cd2fa.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

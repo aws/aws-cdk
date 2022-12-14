@@ -1,9 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Duration, Lazy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
+import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
@@ -485,13 +485,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 /**
  * Properties to reference an existing listener
  */
-export interface IApplicationListener extends IResource, ec2.IConnectable {
-  /**
-   * ARN of the listener
-   * @attribute
-   */
-  readonly listenerArn: string;
-
+export interface IApplicationListener extends IListener, ec2.IConnectable {
   /**
    * Add one or more certificates to this listener.
    * @deprecated use `addCertificates()`
@@ -557,16 +551,9 @@ export interface ApplicationListenerAttributes {
   readonly listenerArn: string;
 
   /**
-   * Security group ID of the load balancer this listener is associated with
-   *
-   * @deprecated use `securityGroup` instead
-   */
-  readonly securityGroupId?: string;
-
-  /**
    * Security group of the load balancer this listener is associated with
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup: ec2.ISecurityGroup;
 
   /**
    * The default port on which this listener is listening
@@ -709,19 +696,8 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     this.listenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
-    let securityGroup: ec2.ISecurityGroup;
-    if (props.securityGroup) {
-      securityGroup = props.securityGroup;
-    } else if (props.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound,
-      });
-    } else {
-      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
-    }
-
     this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
+      securityGroups: [props.securityGroup],
       defaultPort,
     });
   }
