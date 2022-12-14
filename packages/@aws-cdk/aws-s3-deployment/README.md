@@ -61,6 +61,20 @@ new ConstructThatReadsFromTheBucket(this, 'Consumer', {
 });
 ```
 
+It is also possible to add additional sources using the `addSource` method.
+
+```ts
+declare const websiteBucket: s3.IBucket;
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: websiteBucket,
+  destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
+});
+
+deployment.addSource(s3deploy.Source.asset('./another-asset'));
+```
+
 ## Supported sources
 
 The following source types are supported for bucket deployments:

@@ -1235,8 +1235,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     let subnets: ec2.ISubnet[] | undefined;
 
+    let skipZoneAwarenessCheck: boolean = false;
     if (props.vpc) {
-      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]);
+      const subnetSelections = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
+      subnets = selectSubnets(props.vpc, subnetSelections);
+      skipZoneAwarenessCheck = zoneAwarenessCheckShouldBeSkipped(props.vpc, subnetSelections);
       securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: `Security group for domain ${this.node.id}`,
@@ -1248,8 +1251,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
-    // If VPC options are supplied ensure that the number of subnets matches the number AZ
-    if (subnets && zoneAwarenessEnabled && new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount) {
+    // If VPC options are supplied ensure that the number of subnets matches the number AZ (only if the vpc is not imported from another stack)
+    if (subnets &&
+      zoneAwarenessEnabled &&
+      !skipZoneAwarenessCheck &&
+      new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount
+    ) {
       throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     }
 
@@ -1774,6 +1781,22 @@ function selectSubnets(vpc: ec2.IVpc, vpcSubnets: ec2.SubnetSelection[]): ec2.IS
     selected.push(...vpc.selectSubnets(selection).subnets);
   }
   return selected;
+}
+
+/**
+ * Check if any of the subnets are pending lookups. If so, the zone awareness check should be skipped, otherwise it will always throw an error
+ *
+ * @param vpc The vpc to which the subnets apply
+ * @param vpcSubnets The vpc subnets that should be checked
+ * @returns true if there are pending lookups for the subnets
+ */
+function zoneAwarenessCheckShouldBeSkipped(vpc: ec2.IVpc, vpcSubnets: ec2.SubnetSelection[]): boolean {
+  for (const selection of vpcSubnets) {
+    if (vpc.selectSubnets(selection).isPendingLookup) {
+      return true;
+    };
+  }
+  return false;
 }
 
 /**

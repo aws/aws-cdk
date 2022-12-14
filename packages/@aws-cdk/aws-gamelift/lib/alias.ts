@@ -1,12 +1,13 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IFleet } from './fleet-base';
+import { IGameSessionQueueDestination } from './game-session-queue';
 import { CfnAlias } from './gamelift.generated';
 
 /**
  * Represents a Gamelift Alias for a Gamelift fleet destination.
  */
-export interface IAlias extends cdk.IResource {
+export interface IAlias extends cdk.IResource, IGameSessionQueueDestination {
 
   /**
      * The Identifier of the alias.
@@ -106,6 +107,12 @@ export abstract class AliasBase extends cdk.Resource implements IAlias {
    * The ARN of the alias
    */
   public abstract readonly aliasArn: string;
+  /**
+   * The ARN to put into the destination field of a game session queue
+   */
+  public get resourceArnForDestination() {
+    return this.aliasArn;
+  }
 }
 
 /**

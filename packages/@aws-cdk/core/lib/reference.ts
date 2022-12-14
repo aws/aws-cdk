@@ -1,5 +1,6 @@
 import { IConstruct } from 'constructs';
 import { Intrinsic } from './private/intrinsic';
+import { ResolutionTypeHint } from './type-hints';
 
 const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.Reference');
 
@@ -19,8 +20,8 @@ export abstract class Reference extends Intrinsic {
   public readonly target: IConstruct;
   public readonly displayName: string;
 
-  constructor(value: any, target: IConstruct, displayName?: string) {
-    super(value);
+  constructor(value: any, target: IConstruct, displayName?: string, typeHint?: ResolutionTypeHint) {
+    super(value, { typeHint });
     Object.defineProperty(this, REFERENCE_SYMBOL, { value: true });
     this.target = target;
     this.displayName = displayName || 'Reference';

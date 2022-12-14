@@ -104,6 +104,13 @@ describe('output', () => {
     }).toThrow(/Add an exportName to the CfnOutput/);
   });
 
+  test('throw if Output is passed a string list', () => {
+    // WHEN
+    expect(() => {
+      new CfnOutput(stack, 'SomeOutput', { value: ['listValue'] as any });
+    }).toThrow(/CloudFormation output was given a string list instead of a string/);
+  });
+
   test('Verify maximum length of export name', () => {
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'x'.repeat(260) });
     const errors = output.node.validate();

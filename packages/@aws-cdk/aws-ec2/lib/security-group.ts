@@ -432,7 +432,7 @@ export class SecurityGroup extends SecurityGroupBase {
         vpcId: options.vpc?.vpcId,
       },
       dummyValue: {
-        securityGroupId: 'sg-12345',
+        securityGroupId: 'sg-12345678',
         allowAllOutbound: true,
       } as cxapi.SecurityGroupContextResponse,
     }).value;

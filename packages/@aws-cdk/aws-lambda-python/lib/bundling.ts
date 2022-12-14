@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetStaging, BundlingOptions as CdkBundlingOptions, DockerImage } from '@aws-cdk/core';
 import { Packaging, DependenciesFile } from './packaging';
-import { BundlingOptions } from './types';
+import { BundlingOptions, ICommandHooks } from './types';
 
 /**
  * Dependency files to exclude from the asset hash.
@@ -68,6 +68,7 @@ export class Bundling implements CdkBundlingOptions {
       outputPathSuffix = '',
       image,
       poetryIncludeHashes,
+      commandHooks,
     } = props;
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -77,6 +78,7 @@ export class Bundling implements CdkBundlingOptions {
       inputDir: AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: outputPath,
       poetryIncludeHashes,
+      commandHooks,
     });
 
     this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
@@ -93,12 +95,14 @@ export class Bundling implements CdkBundlingOptions {
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
     const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes);
     let bundlingCommands: string[] = [];
+    bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
     bundlingCommands.push(`cp -rTL ${options.inputDir}/ ${options.outputDir}`);
     bundlingCommands.push(`cd ${options.outputDir}`);
     bundlingCommands.push(packaging.exportCommand ?? '');
     if (packaging.dependenciesFile) {
       bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
     }
+    bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
     return bundlingCommands;
   }
 }
@@ -108,6 +112,7 @@ interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
   readonly poetryIncludeHashes?: boolean;
+  readonly commandHooks?: ICommandHooks
 }
 
 /**

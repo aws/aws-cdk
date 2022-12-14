@@ -7,7 +7,7 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
-import { AttachedPolicies, undefinedIfEmpty } from './util';
+import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 
 /**
  * Represents an IAM user

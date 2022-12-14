@@ -1,6 +1,6 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
+import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import {
   AclCidr,
   AclTraffic,
@@ -27,6 +27,7 @@ import {
   TrafficDirection,
   Vpc,
   IpAddresses,
+  InterfaceVpcEndpointAwsService,
 } from '../lib';
 
 describe('vpc', () => {
@@ -2113,6 +2114,66 @@ describe('vpc', () => {
         const subnetOfTemplateWithUsedReservedAz = subnetsOfTemplateWithUsedReservedAz[logicalId];
         expect(subnetOfTemplateWithUsedReservedAz).toEqual(subnetOfTemplateWithReservedAz);
       }
+    });
+  });
+
+  describe('can reference vpcEndpointDnsEntries across stacks', () => {
+    test('can reference an actual string list across stacks', () => {
+      const app = new App();
+      const stack1 = new Stack(app, 'Stack1');
+      const vpc = new Vpc(stack1, 'Vpc');
+      const endpoint = new InterfaceVpcEndpoint(stack1, 'interfaceVpcEndpoint', {
+        vpc,
+        service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      });
+
+      const stack2 = new Stack(app, 'Stack2');
+      new CfnOutput(stack2, 'endpoint', {
+        value: Fn.select(0, endpoint.vpcEndpointDnsEntries),
+      });
+
+      const assembly = app.synth();
+      const template1 = assembly.getStackByName(stack1.stackName).template;
+      const template2 = assembly.getStackByName(stack2.stackName).template;
+
+      // THEN
+      expect(template1).toMatchObject({
+        Outputs: {
+          ExportsOutputFnGetAttinterfaceVpcEndpoint89C99945DnsEntriesB1872F7A: {
+            Value: {
+              'Fn::Join': [
+                '||', {
+                  'Fn::GetAtt': [
+                    'interfaceVpcEndpoint89C99945',
+                    'DnsEntries',
+                  ],
+                },
+              ],
+            },
+            Export: { Name: 'Stack1:ExportsOutputFnGetAttinterfaceVpcEndpoint89C99945DnsEntriesB1872F7A' },
+          },
+        },
+      });
+
+      expect(template2).toMatchObject({
+        Outputs: {
+          endpoint: {
+            Value: {
+              'Fn::Select': [
+                0,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttinterfaceVpcEndpoint89C99945DnsEntriesB1872F7A',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      });
     });
   });
 });

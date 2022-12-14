@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-cdk-asg-integ": {
         "id": "aws-cdk-asg-integ",
         "path": "aws-cdk-asg-integ",
@@ -856,6 +848,51 @@
               "version": "0.0.0"
             }
           },
+          "AsgWithDefaultInstanceWarmup": {
+            "id": "AsgWithDefaultInstanceWarmup",
+            "path": "aws-cdk-asg-integ/AsgWithDefaultInstanceWarmup",
+            "children": {
+              "ASG": {
+                "id": "ASG",
+                "path": "aws-cdk-asg-integ/AsgWithDefaultInstanceWarmup/ASG",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "maxSize": "1",
+                    "minSize": "1",
+                    "defaultInstanceWarmup": 5,
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "MainLT4FC09097"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "MainLT4FC09097",
+                          "LatestVersionNumber"
+                        ]
+                      }
+                    },
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+                      },
+                      {
+                        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-autoscaling.CfnAutoScalingGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-autoscaling.AutoScalingGroup",
+              "version": "0.0.0"
+            }
+          },
           "AsgFromMip": {
             "id": "AsgFromMip",
             "path": "aws-cdk-asg-integ/AsgFromMip",
@@ -1049,6 +1086,14 @@
                 "id": "InstanceRole",
                 "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole",
                 "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-asg-integ/AsgWithGp3Blockdevice/InstanceRole/Resource",
@@ -1202,11 +1247,35 @@
               "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-asg-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-asg-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
         }
       }
     },

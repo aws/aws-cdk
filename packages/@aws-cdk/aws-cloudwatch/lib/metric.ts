@@ -589,7 +589,7 @@ export class MathExpression implements IMetric {
 
     const warnings = [];
 
-    if (missingIdentifiers.length > 0) {
+    if (!this.expression.toUpperCase().match('\\s*SELECT\\s.*') && missingIdentifiers.length > 0) {
       warnings.push(`Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`);
     }
 

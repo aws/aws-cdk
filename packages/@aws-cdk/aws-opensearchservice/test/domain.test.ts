@@ -2,7 +2,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
+import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup, SubnetType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1404,6 +1404,27 @@ describe('custom error responses', () => {
       },
       vpc,
     })).toThrow(/you need to provide a subnet for each AZ you are using/);
+  });
+
+  test('Imported VPC with subnets that are still pending lookup won\'t throw Az count mismatch', () => {
+    const vpc = Vpc.fromLookup(stack, 'ExampleVpc', {
+      vpcId: 'vpc-123',
+    });
+    let subnets = vpc.selectSubnets({
+      subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    });
+
+    new Domain(stack, 'Domain1', {
+      version: defaultVersion,
+      vpc,
+      vpcSubnets: [subnets],
+      zoneAwareness: {
+        enabled: true,
+        availabilityZoneCount: 3,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::OpenSearchService::Domain', 1);
   });
 
   test('error when master, data or Ultra Warm instance types do not end with .search', () => {

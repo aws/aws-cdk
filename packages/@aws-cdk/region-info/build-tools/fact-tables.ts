@@ -27,6 +27,7 @@ export const AWS_CDK_METADATA = new Set([
   'me-south-1',
   // 'me-central-1',
   'sa-east-1',
+  // 'ap-south-2',
 ]);
 
 /**
@@ -41,6 +42,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'ap-northeast-2': 'Z3W03O7B5YMIYP',
   'ap-northeast-3': 'Z2YQB5RD63NC85',
   'ap-south-1': 'Z11RGJOFQNVJUP',
+  'ap-south-2': 'Z02976202B4EZMXIPMXF7',
   'ap-southeast-1': 'Z3O0J2DXBE1FTB',
   'ap-southeast-2': 'Z1WCIGYICN2BYD',
   'ap-southeast-3': 'Z01613992JD795ZI93075',

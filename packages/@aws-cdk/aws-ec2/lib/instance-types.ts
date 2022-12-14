@@ -421,7 +421,7 @@ export enum InstanceClass {
   /**
    * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
    */
-  COMPUTE7_GRAVITON3 = 'compute7_graviton3',
+  COMPUTE7_GRAVITON3 = 'compute7-graviton3',
 
   /**
    * Compute optimized instances for high performance computing, 7th generation with Graviton3 processors
@@ -439,12 +439,6 @@ export enum InstanceClass {
    * and local NVME drive
    */
   C6GD = 'c6gd',
-
-  /**
-   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
-   * and high network bandwidth capabilities
-   */
-  COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH = 'compute6-graviton2-high-network-banwidth',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
@@ -1135,11 +1129,10 @@ export class InstanceType {
       [InstanceClass.C6G]: 'c6g',
       [InstanceClass.COMPUTE6_GRAVITON2_NVME_DRIVE]: 'c6gd',
       [InstanceClass.C6GD]: 'c6gd',
-      [InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWIDTH]: 'c6gdb',
-      [InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH]: 'c6gdb',
+      [InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWIDTH]: 'c6gn',
+      [InstanceClass.C6GN]: 'c6gn',
       [InstanceClass.COMPUTE7_GRAVITON3]: 'c7g',
       [InstanceClass.C7G]: 'c7g',
-      [InstanceClass.C6GN]: 'c6gn',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',

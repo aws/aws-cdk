@@ -13,7 +13,7 @@ beforeEach(() => {
   api = new appsync.GraphqlApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {},
   });
 });
@@ -21,13 +21,13 @@ beforeEach(() => {
 test('appsync should configure pipeline when pipelineConfig has contents', () => {
   // WHEN
   const ds = api.addNoneDataSource('none');
-  const test1 = ds.createFunction({
+  const test1 = ds.createFunction('Test1Function', {
     name: 'test1',
   });
-  const test2 = ds.createFunction({
+  const test2 = ds.createFunction('Test2Function', {
     name: 'test2',
   });
-  api.createResolver({
+  api.createResolver('TestTest2', {
     typeName: 'test',
     fieldName: 'test2',
     pipelineConfig: [test1, test2],
@@ -38,8 +38,8 @@ test('appsync should configure pipeline when pipelineConfig has contents', () =>
     Kind: 'PIPELINE',
     PipelineConfig: {
       Functions: [
-        { 'Fn::GetAtt': ['apinonetest1FunctionEF63046F', 'FunctionId'] },
-        { 'Fn::GetAtt': ['apinonetest2Function615111D0', 'FunctionId'] },
+        { 'Fn::GetAtt': ['apiTest1Function793605E9', 'FunctionId'] },
+        { 'Fn::GetAtt': ['apiTest2FunctionB704A7AD', 'FunctionId'] },
       ],
     },
   });
@@ -48,16 +48,17 @@ test('appsync should configure pipeline when pipelineConfig has contents', () =>
 test('appsync should error when creating pipeline resolver with data source', () => {
   // WHEN
   const ds = api.addNoneDataSource('none');
-  const test1 = ds.createFunction({
+  const test1 = ds.createFunction('Test1Function', {
     name: 'test1',
   });
-  const test2 = ds.createFunction({
+  const test2 = ds.createFunction('Test2Function', {
     name: 'test2',
   });
 
   // THEN
   expect(() => {
-    ds.createResolver({
+    api.createResolver('TestTest2', {
+      dataSource: ds,
       typeName: 'test',
       fieldName: 'test2',
       pipelineConfig: [test1, test2],
@@ -83,7 +84,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty', (
 
 test('appsync should configure resolver as unit when pipelineConfig is empty array', () => {
   // WHEN
-  api.createResolver({
+  api.createResolver('TestTest2', {
     typeName: 'test',
     fieldName: 'test2',
     pipelineConfig: [],
@@ -100,7 +101,7 @@ test('when xray is enabled should not throw an Error', () => {
   new appsync.GraphqlApi(stack, 'api-x-ray', {
     authorizationConfig: {},
     name: 'api',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     xrayEnabled: true,
   });
 
@@ -123,7 +124,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
   new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
     authorizationConfig: {},
     name: 'apiWithCustomRole',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {
       role: cloudWatchLogRole,
     },
@@ -169,7 +170,7 @@ test('appsync GraphqlApi should be configured with custom domain when specified'
   new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
     authorizationConfig: {},
     name: 'apiWithCustomRole',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     domainName: {
       domainName,
       certificate,
@@ -201,7 +202,7 @@ test('log retention should be configured with given retention time when specifie
   new appsync.GraphqlApi(stack, 'log-retention', {
     authorizationConfig: {},
     name: 'log-retention',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {
       retention: retentionTime,
     },
@@ -232,7 +233,7 @@ test('log retention should not appear when no retention time is specified', () =
   new appsync.GraphqlApi(stack, 'no-log-retention', {
     authorizationConfig: {},
     name: 'no-log-retention',
-    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
 
   // THEN

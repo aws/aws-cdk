@@ -997,14 +997,15 @@ test('given a source with markers and extract is false, BucketDeployment throws 
       },
     },
   });
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [file],
+    destinationBucket: bucket,
+    extract: false,
+  });
 
   // THEN
   expect(() => {
-    new s3deploy.BucketDeployment(stack, 'Deploy', {
-      sources: [file],
-      destinationBucket: bucket,
-      extract: false,
-    });
+    Template.fromStack(stack);
   }).toThrow('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
 });
 
@@ -1356,6 +1357,29 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
       { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
+    ],
+  });
+});
+
+test('can add sources with addSource', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
+    destinationBucket: bucket,
+  });
+  deployment.addSource(s3deploy.Source.data('my/other/path.txt', 'hello world'));
+
+  const result = app.synth();
+  const content = readDataFile(result, 'my/path.txt');
+  const content2 = readDataFile(result, 'my/other/path.txt');
+  expect(content).toStrictEqual('helloWorld');
+  expect(content2).toStrictEqual('hello world');
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      {},
+      {},
     ],
   });
 });

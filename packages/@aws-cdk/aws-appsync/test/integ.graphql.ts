@@ -8,7 +8,7 @@ import {
   KeyCondition,
   MappingTemplate,
   PrimaryKey,
-  Schema,
+  SchemaFile,
   Values,
 } from '../lib';
 
@@ -35,7 +35,7 @@ const userPool = new UserPool(stack, 'Pool', {
 
 const api = new GraphqlApi(stack, 'Api', {
   name: 'demoapi',
-  schema: Schema.fromAsset(join(__dirname, 'integ.graphql.graphql')),
+  schema: SchemaFile.fromAsset(join(__dirname, 'integ.graphql.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,
@@ -53,7 +53,7 @@ const api = new GraphqlApi(stack, 'Api', {
 
 const noneDS = api.addNoneDataSource('none', { name: 'None' });
 
-noneDS.createResolver({
+noneDS.createResolver('QuerygetServiceVersion', {
   typeName: 'Query',
   fieldName: 'getServiceVersion',
   requestMappingTemplate: MappingTemplate.fromString(JSON.stringify({
@@ -111,55 +111,55 @@ const customerDS = api.addDynamoDbDataSource('customerDs', customerTable, { name
 const orderDS = api.addDynamoDbDataSource('orderDs', orderTable, { name: 'Order' });
 const paymentDS = api.addDynamoDbDataSource('paymentDs', paymentTable, { name: 'Payment' });
 
-customerDS.createResolver({
+customerDS.createResolver('QueryGetCustomers', {
   typeName: 'Query',
   fieldName: 'getCustomers',
   requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
-customerDS.createResolver({
+customerDS.createResolver('QueryGetCustomer', {
   typeName: 'Query',
   fieldName: 'getCustomer',
   requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-customerDS.createResolver({
+customerDS.createResolver('QueryGetCusomtersNotConsistent', {
   typeName: 'Query',
   fieldName: 'getCustomersNotConsistent',
   requestMappingTemplate: MappingTemplate.dynamoDbScanTable(false),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
-customerDS.createResolver({
+customerDS.createResolver('QueryGetCustomerNotConsistent', {
   typeName: 'Query',
   fieldName: 'getCustomerNotConsistent',
   requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id', false),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-customerDS.createResolver({
+customerDS.createResolver('QueryGetCustomersConsistent', {
   typeName: 'Query',
   fieldName: 'getCustomersConsistent',
   requestMappingTemplate: MappingTemplate.dynamoDbScanTable(true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
-customerDS.createResolver({
+customerDS.createResolver('QueryGetCustomerConsistent', {
   typeName: 'Query',
   fieldName: 'getCustomerConsistent',
   requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id', true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-customerDS.createResolver({
+customerDS.createResolver('MutationAddCustomer', {
   typeName: 'Mutation',
   fieldName: 'addCustomer',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('customer')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-customerDS.createResolver({
+customerDS.createResolver('MutationSaveCustomer', {
   typeName: 'Mutation',
   fieldName: 'saveCustomer',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').is('id'), Values.projecting('customer')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-customerDS.createResolver({
+customerDS.createResolver('MutationSaveCustomerWithFirstOrder', {
   typeName: 'Mutation',
   fieldName: 'saveCustomerWithFirstOrder',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(
@@ -171,7 +171,7 @@ customerDS.createResolver({
       .attribute('referral').is('referral')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-customerDS.createResolver({
+customerDS.createResolver('MutationRemoveCustomer', {
   typeName: 'Mutation',
   fieldName: 'removeCustomer',
   requestMappingTemplate: MappingTemplate.dynamoDbDeleteItem('id', 'id'),
@@ -186,13 +186,13 @@ const ops = [
   { suffix: 'Ge', op: KeyCondition.ge },
 ];
 for (const { suffix, op } of ops) {
-  orderDS.createResolver({
+  orderDS.createResolver(`QueryGetCustomerOrders${suffix}`, {
     typeName: 'Query',
     fieldName: 'getCustomerOrders' + suffix,
     requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('customer', 'customer')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
   });
-  orderDS.createResolver({
+  orderDS.createResolver(`QueryGetOrderCustomers${suffix}`, {
     typeName: 'Query',
     fieldName: 'getOrderCustomers' + suffix,
     requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('order', 'order'), 'orderIndex'),
@@ -200,13 +200,13 @@ for (const { suffix, op } of ops) {
   });
 }
 for (const { suffix, op } of ops) {
-  orderDS.createResolver({
+  orderDS.createResolver(`QueryGetCustomerOrdersNotConsistent${suffix}`, {
     typeName: 'Query',
     fieldName: 'getCustomerOrdersNotConsistent' + suffix,
     requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('customer', 'customer'), undefined, false),
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
   });
-  orderDS.createResolver({
+  orderDS.createResolver(`QueryGetOrderCustomersNotConsistent${suffix}`, {
     typeName: 'Query',
     fieldName: 'getOrderCustomersNotConsistent' + suffix,
     requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('order', 'order'), 'orderIndex', false),
@@ -214,41 +214,41 @@ for (const { suffix, op } of ops) {
   });
 }
 for (const { suffix, op } of ops) {
-  orderDS.createResolver({
+  orderDS.createResolver(`QueryGetCustomerOrdersConsistent${suffix}`, {
     typeName: 'Query',
     fieldName: 'getCustomerOrdersConsistent' + suffix,
     requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('customer', 'customer'), undefined, true),
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
   });
-  orderDS.createResolver({
+  orderDS.createResolver(`QueryGetOrderCustomersConsistent${suffix}`, {
     typeName: 'Query',
     fieldName: 'getOrderCustomersConsistent' + suffix,
     requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('order', 'order'), 'orderIndex', true),
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
   });
 }
-orderDS.createResolver({
+orderDS.createResolver('QueryGetCustomerOrdersFilter', {
   typeName: 'Query',
   fieldName: 'getCustomerOrdersFilter',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
     KeyCondition.eq('customer', 'customer').and(KeyCondition.beginsWith('order', 'order'))),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
-orderDS.createResolver({
+orderDS.createResolver('QueryGetCustomerOrdersBetween', {
   typeName: 'Query',
   fieldName: 'getCustomerOrdersBetween',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
     KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2'))),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
-orderDS.createResolver({
+orderDS.createResolver('QueryGetOrderCustomersFilter', {
   typeName: 'Query',
   fieldName: 'getOrderCustomersFilter',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
     KeyCondition.eq('order', 'order').and(KeyCondition.beginsWith('customer', 'customer'))),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
-orderDS.createResolver({
+orderDS.createResolver('QueryGetOrderCustomersBetween', {
   typeName: 'Query',
   fieldName: 'getOrderCustomersBetween',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
@@ -256,19 +256,19 @@ orderDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
-paymentDS.createResolver({
+paymentDS.createResolver('QueryGetPayment', {
   typeName: 'Query',
   fieldName: 'getPayment',
   requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-paymentDS.createResolver({
+paymentDS.createResolver('QueryGetPaymentConsistent', {
   typeName: 'Query',
   fieldName: 'getPaymentConsistent',
   requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id', true),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-paymentDS.createResolver({
+paymentDS.createResolver('MutationSavePayment', {
   typeName: 'Mutation',
   fieldName: 'savePayment',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('payment')),
@@ -277,7 +277,7 @@ paymentDS.createResolver({
 
 const httpDS = api.addHttpDataSource('ds', 'https://aws.amazon.com/', { name: 'http' });
 
-httpDS.createResolver({
+httpDS.createResolver('MutationDoPostOnAws', {
   typeName: 'Mutation',
   fieldName: 'doPostOnAws',
   requestMappingTemplate: MappingTemplate.fromString(`{
