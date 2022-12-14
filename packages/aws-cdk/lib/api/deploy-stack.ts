@@ -313,10 +313,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       }
       print('Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s', e.message);
     }
-    if (hotswapType === HotswapType.HOTSWAP) {
-      print('Falling back to doing a full deployment');
-      options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
-    }
+    print('Falling back to doing a full deployment');
+    options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
   }
 
   // could not short-circuit the deployment, perform a full CFN deploy instead

@@ -136,6 +136,8 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
           Properties: {
             ServiceToken: 'a-lambda-arn',
             SourceObjectKeys: ['src-key-old'],
+            SourceBucketNames: ['src-bucket'],
+            DestinationBucketName: 'dest-bucket',
           },
         },
         Policy: {
@@ -169,6 +171,8 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
             Properties: {
               ServiceToken: 'a-lambda-arn',
               SourceObjectKeys: ['src-key-new'],
+              SourceBucketNames: ['src-bucket'],
+              DestinationBucketName: 'dest-bucket',
             },
           },
           Policy: {
@@ -205,8 +209,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
-      expect(deployStackResult?.noOp).toEqual(true);
-      expect(mockLambdaInvoke).not.toHaveBeenCalled();
+      expect(mockLambdaInvoke).toHaveBeenCalledWith({
+        FunctionName: 'a-lambda-arn',
+        Payload: JSON.stringify({
+          ...payloadWithoutCustomResProps,
+          ResourceProperties: {
+            SourceObjectKeys: ['src-key-new'],
+            SourceBucketNames: ['src-bucket'],
+            DestinationBucketName: 'dest-bucket',
+          },
+        }),
+      });
     }
   });
 
@@ -496,12 +509,31 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      if (hotswapType === HotswapType.HOTSWAP) {
+        // WHEN
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
 
-      // THEN
-      expect(deployStackResult).toBeUndefined();
-      expect(mockLambdaInvoke).not.toHaveBeenCalled();
+        // THEN
+        expect(deployStackResult).toBeUndefined();
+        expect(mockLambdaInvoke).not.toHaveBeenCalled();
+      } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+        // WHEN
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+
+        // THEN
+        expect(deployStackResult).not.toBeUndefined();
+        expect(mockLambdaInvoke).toHaveBeenCalledWith({
+          FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
+          Payload: JSON.stringify({
+            ...payloadWithoutCustomResProps,
+            ResourceProperties: {
+              SourceBucketNames: ['src-bucket-new'],
+              SourceObjectKeys: ['src-key-new'],
+              DestinationBucketName: 'WebsiteBucketNew',
+            },
+          }),
+        });
+      }
     });
 
     test('does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment', async () => { //different
@@ -552,12 +584,31 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      if (hotswapType === HotswapType.HOTSWAP) {
+        // WHEN
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
 
-      // THEN
-      expect(deployStackResult).toBeUndefined();
-      expect(mockLambdaInvoke).not.toHaveBeenCalled();
+        // THEN
+        expect(deployStackResult).toBeUndefined();
+        expect(mockLambdaInvoke).not.toHaveBeenCalled();
+      } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+        // WHEN
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+
+        // THEN
+        expect(deployStackResult).not.toBeUndefined();
+        expect(mockLambdaInvoke).toHaveBeenCalledWith({
+          FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
+          Payload: JSON.stringify({
+            ...payloadWithoutCustomResProps,
+            ResourceProperties: {
+              SourceBucketNames: ['src-bucket-new'],
+              SourceObjectKeys: ['src-key-new'],
+              DestinationBucketName: 'WebsiteBucketNew',
+            },
+          }),
+        });
+      }
     });
 
     test('calls the lambdaInvoke() API when it receives an asset difference in two S3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
@@ -717,8 +768,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
         // THEN
         expect(deployStackResult).not.toBeUndefined();
-        expect(deployStackResult?.noOp).toEqual(true);
-        expect(mockLambdaInvoke).not.toHaveBeenCalled();
+        expect(mockLambdaInvoke).toHaveBeenCalledWith({
+          FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
+          Payload: JSON.stringify({
+            ...payloadWithoutCustomResProps,
+            ResourceProperties: {
+              SourceBucketNames: ['src-bucket-new'],
+              SourceObjectKeys: ['src-key-new'],
+              DestinationBucketName: 'WebsiteBucketNew',
+            },
+          }),
+        });
       }
     });
 
@@ -773,8 +833,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
         // THEN
         expect(deployStackResult).not.toBeUndefined();
-        expect(deployStackResult?.noOp).toEqual(true); // TODO: this should definitely pass
-        expect(mockLambdaInvoke).not.toHaveBeenCalled();
+        expect(mockLambdaInvoke).toHaveBeenCalledWith({
+          FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
+          Payload: JSON.stringify({
+            ...payloadWithoutCustomResProps,
+            ResourceProperties: {
+              SourceBucketNames: ['src-bucket-new'],
+              SourceObjectKeys: ['src-key-new'],
+              DestinationBucketName: 'WebsiteBucketNew',
+            },
+          }),
+        });
       }
     });
   });
