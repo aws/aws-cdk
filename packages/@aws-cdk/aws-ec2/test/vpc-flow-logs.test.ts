@@ -74,6 +74,7 @@ describe('vpc flow logs', () => {
     });
 
   });
+
   test('with s3 as the destination, allows use of key prefix', () => {
     const stack = getTestStack();
 

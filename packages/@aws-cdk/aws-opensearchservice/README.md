@@ -22,8 +22,6 @@ Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stab
 
 <!--END STABILITY BANNER-->
 
-Amazon OpenSearch Service is the successor to Amazon Elasticsearch Service.
-
 See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `@aws-cdk/aws-elasticsearch` to this module, `@aws-cdk/aws-opensearchservice`.
 
 ## Quick start
