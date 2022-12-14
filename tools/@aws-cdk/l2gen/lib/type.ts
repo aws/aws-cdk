@@ -21,8 +21,8 @@ export function builtinType(typeRefName: string, ex: ExampleProducer): StandardT
 
 export function arrayOf(type: IType): IType {
   return {
-    definingModule: type.definingModule,
-    typeRefName: `Array<${type.typeRefName}>`,
+    get definingModule() { return type.definingModule },
+    get typeRefName() { return `Array<${type.typeRefName}>` },
     render(code: CM2) {
       code.add('Array<', type, '>');
     },
@@ -38,8 +38,8 @@ export function arrayOf(type: IType): IType {
 
 export function mapOf(type: IType): IType {
   return {
-    definingModule: type.definingModule,
-    typeRefName: `Record<string, ${type.typeRefName}>`,
+    get definingModule() { return type.definingModule },
+    get typeRefName() { return `Record<string, ${type.typeRefName}>` },
     render(code: CM2) {
       code.add('Record<string, ', type, '>');
     },
