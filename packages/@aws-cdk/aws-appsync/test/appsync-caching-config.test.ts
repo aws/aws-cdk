@@ -33,7 +33,7 @@ describe('Lambda caching config', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('QueryAllPosts', {
       typeName: 'Query',
       fieldName: 'allPosts',
     });
@@ -50,7 +50,7 @@ describe('Lambda caching config', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
-    lambdaDS.createResolver({
+    lambdaDS.createResolver('QueryAllPosts', {
       typeName: 'Query',
       fieldName: 'allPosts',
       cachingConfig: {
@@ -77,7 +77,7 @@ describe('Lambda caching config', () => {
 
     // THEN
     expect(() => {
-      lambdaDS.createResolver({
+      lambdaDS.createResolver('QueryAllPosts', {
         typeName: 'Query',
         fieldName: 'allPosts',
         cachingConfig: {
@@ -95,7 +95,7 @@ describe('Lambda caching config', () => {
 
     // THEN
     expect(() => {
-      lambdaDS.createResolver({
+      lambdaDS.createResolver('QueryAllPosts', {
         typeName: 'Query',
         fieldName: 'allPosts',
         cachingConfig: {
@@ -113,7 +113,7 @@ describe('Lambda caching config', () => {
 
     // THEN
     expect(() => {
-      lambdaDS.createResolver({
+      lambdaDS.createResolver('QueryAllPosts', {
         typeName: 'Query',
         fieldName: 'allPosts',
         cachingConfig: {

@@ -46,14 +46,14 @@ const testTable = new Table(stack, 'TestTable', {
 
 const testDS = api.addDynamoDbDataSource('testDataSource', testTable);
 
-testDS.createResolver({
+testDS.createResolver('QueryGetTests', {
   typeName: 'Query',
   fieldName: 'getTests',
   requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
-testDS.createResolver({
+testDS.createResolver('MutationAddTest', {
   typeName: 'Mutation',
   fieldName: 'addTest',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('test')),
