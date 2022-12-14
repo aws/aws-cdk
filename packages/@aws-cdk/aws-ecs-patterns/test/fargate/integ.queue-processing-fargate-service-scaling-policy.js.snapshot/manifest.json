@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5eccf4603461efefff07bb70d3c72c4c21ce7a98101f6c0c8725428b2cf310ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4301288618f0c0e58c2d85f3b425cdea3170e158f07acec7d8591fdaa85a008.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -259,6 +259,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetA9D54444"
+          }
+        ],
+        "/aws-ecs-patterns-queue-scaling-policy/QueueProcessingService/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling330150E9"
           }
         ],
         "/aws-ecs-patterns-queue-scaling-policy/QueueProcessingService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy/Resource": [

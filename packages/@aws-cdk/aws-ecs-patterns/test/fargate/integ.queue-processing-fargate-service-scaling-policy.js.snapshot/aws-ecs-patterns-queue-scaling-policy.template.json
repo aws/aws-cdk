@@ -704,6 +704,22 @@
     "ServiceNamespace": "ecs"
    }
   },
+  "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling330150E9": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "awsecspatternsqueuescalingpolicyQueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling7479FA46",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetA9D54444"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+     },
+     "TargetValue": 30
+    }
+   }
+  },
   "QueueProcessingServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy332E2644": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
    "Properties": {
