@@ -316,45 +316,45 @@
                       "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
-                  },
-                  "QuerygetTestsResolver": {
-                    "id": "QuerygetTestsResolver",
-                    "path": "appsync-elasticsearch/api/ds/QuerygetTestsResolver",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "appsync-elasticsearch/api/ds/QuerygetTestsResolver/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
-                          "aws:cdk:cloudformation:props": {
-                            "apiId": {
-                              "Fn::GetAtt": [
-                                "apiC8550315",
-                                "ApiId"
-                              ]
-                            },
-                            "fieldName": "getTests",
-                            "typeName": "Query",
-                            "dataSourceName": "ds",
-                            "kind": "UNIT",
-                            "requestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
-                            "responseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}"
-                          }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.ElasticsearchDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "QueryGetTests": {
+                "id": "QueryGetTests",
+                "path": "appsync-elasticsearch/api/QueryGetTests",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "appsync-elasticsearch/api/QueryGetTests/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "apiC8550315",
+                            "ApiId"
+                          ]
                         },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/aws-appsync.CfnResolver",
-                          "version": "0.0.0"
-                        }
+                        "fieldName": "getTests",
+                        "typeName": "Query",
+                        "dataSourceName": "ds",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
+                        "responseMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50,\"query\":{\"term\":{\"author\":\"$util.toJson($context.arguments.author)\"}}}}}"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-appsync.Resolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-appsync.ElasticsearchDataSource",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               }
@@ -391,7 +391,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.161"
+          "version": "10.1.182"
         }
       }
     },

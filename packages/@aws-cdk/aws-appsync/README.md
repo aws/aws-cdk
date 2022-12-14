@@ -79,7 +79,7 @@ const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 // Resolver for the Query "getDemos" that scans the DynamoDb table and returns the entire list.
 // Resolver Mapping Template Reference:
 // https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html
-demoDS.createResolver({
+demoDS.createResolver('QueryGetDemosResolver', {
   typeName: 'Query',
   fieldName: 'getDemos',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
@@ -87,7 +87,7 @@ demoDS.createResolver({
 });
 
 // Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
-demoDS.createResolver({
+demoDS.createResolver('MutationAddDemoResolver', {
   typeName: 'Mutation',
   fieldName: 'addDemo',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
@@ -98,7 +98,7 @@ demoDS.createResolver({
 });
 
 //To enable DynamoDB read consistency with the `MappingTemplate`:
-demoDS.createResolver({
+demoDS.createResolver('QueryGetDemosConsistentResolver', {
   typeName: 'Query',
   fieldName: 'getDemosConsistent',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(true),
@@ -137,7 +137,7 @@ declare const api: appsync.GraphqlApi;
 const rdsDS = api.addRdsDataSource('rds', cluster, secret, 'demos');
 
 // Set up a resolver for an RDS query.
-rdsDS.createResolver({
+rdsDS.createResolver('QueryGetDemosRdsResolver', {
   typeName: 'Query',
   fieldName: 'getDemosRds',
   requestMappingTemplate: appsync.MappingTemplate.fromString(`
@@ -154,7 +154,7 @@ rdsDS.createResolver({
 });
 
 // Set up a resolver for an RDS mutation.
-rdsDS.createResolver({
+rdsDS.createResolver('MutationAddDemoRdsResolver', {
   typeName: 'Mutation',
   fieldName: 'addDemoRds',
   requestMappingTemplate: appsync.MappingTemplate.fromString(`
@@ -244,7 +244,7 @@ const httpDs = api.addHttpDataSource(
   }
 );
 
-httpDs.createResolver({
+httpDs.createResolver('MutationCallStepFunctionResolver', {
   typeName: 'Mutation',
   fieldName: 'callStepFunction',
   requestMappingTemplate: appsync.MappingTemplate.fromFile('request.vtl'),
@@ -275,7 +275,7 @@ const domain = new opensearch.Domain(this, 'Domain', {
 declare const api: appsync.GraphqlApi;
 const ds = api.addOpenSearchDataSource('ds', domain);
 
-ds.createResolver({
+ds.createResolver('QueryGetTestsResolver', {
   typeName: 'Query',
   fieldName: 'getTests',
   requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({

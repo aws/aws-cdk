@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
     "appsync-elasticsearch.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08fe8252ae99e2f46d03e04321cb848d70ee9c2656baeb387f3baae1575b1d87.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcad6b907b2ee72d05b9e3af0a8d220115fb800f1839d979919a8e80e5c933e5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -81,10 +81,10 @@
             "data": "apids4328272F"
           }
         ],
-        "/appsync-elasticsearch/api/ds/QuerygetTestsResolver/Resource": [
+        "/appsync-elasticsearch/api/QueryGetTests/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apidsQuerygetTestsResolver5C6FBB59"
+            "data": "apiQueryGetTests5F79F353"
           }
         ],
         "/appsync-elasticsearch/BootstrapVersion": [
@@ -97,6 +97,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "apidsQuerygetTestsResolver5C6FBB59": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsQuerygetTestsResolver5C6FBB59",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

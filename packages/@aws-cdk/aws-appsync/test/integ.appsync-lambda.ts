@@ -47,35 +47,35 @@ const requestPayload = (field: string, { withArgs = false, withSource = false })
 };
 const responseMappingTemplate = appsync.MappingTemplate.lambdaResult();
 
-lambdaDS.createResolver({
+lambdaDS.createResolver('QueryGetPost', {
   typeName: 'Query',
   fieldName: 'getPost',
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('getPost', { withArgs: true })),
   responseMappingTemplate,
 });
 
-lambdaDS.createResolver({
+lambdaDS.createResolver('QueryAllPosts', {
   typeName: 'Query',
   fieldName: 'allPosts',
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('allPosts', {})),
   responseMappingTemplate,
 });
 
-lambdaDS.createResolver({
+lambdaDS.createResolver('MutationAddPost', {
   typeName: 'Mutation',
   fieldName: 'addPost',
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('addPost', { withArgs: true })),
   responseMappingTemplate,
 });
 
-lambdaDS.createResolver({
+lambdaDS.createResolver('PostRelatedPosts', {
   typeName: 'Post',
   fieldName: 'relatedPosts',
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('relatedPosts', { withSource: true }), 'BatchInvoke'),
   responseMappingTemplate,
 });
 
-lambdaDS.createResolver({
+lambdaDS.createResolver('PostRelatedPostsMaxBatchSize', {
   typeName: 'Post',
   fieldName: 'relatedPostsMaxBatchSize',
   requestMappingTemplate: appsync.MappingTemplate.lambdaRequest(requestPayload('relatedPostsMaxBatchSize', { withSource: true }), 'BatchInvoke'),

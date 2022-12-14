@@ -27,7 +27,7 @@ const api = new appsync.GraphqlApi(stack, 'api', {
 
 const ds = api.addElasticsearchDataSource('ds', domain);
 
-ds.createResolver({
+ds.createResolver('QueryGetTests', {
   typeName: 'Query',
   fieldName: 'getTests',
   requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
