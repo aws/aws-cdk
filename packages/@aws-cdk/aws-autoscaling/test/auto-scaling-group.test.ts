@@ -286,6 +286,25 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('can specify only defaultInstanceWarmup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      defaultInstanceWarmup: cdk.Duration.seconds(5),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      DefaultInstanceWarmup: 5,
+    });
+  });
+
   test('addToRolePolicy can be used to add statements to the role policy', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);

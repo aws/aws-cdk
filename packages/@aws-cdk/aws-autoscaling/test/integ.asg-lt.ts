@@ -34,6 +34,12 @@ new autoscaling.AutoScalingGroup(stack, 'AsgFromLT', {
   desiredCapacity: 5,
 });
 
+new autoscaling.AutoScalingGroup(stack, 'AsgWithDefaultInstanceWarmup', {
+  vpc,
+  launchTemplate: lt,
+  defaultInstanceWarmup: cdk.Duration.seconds(5),
+});
+
 new autoscaling.AutoScalingGroup(stack, 'AsgFromMip', {
   vpc,
   mixedInstancesPolicy: {
