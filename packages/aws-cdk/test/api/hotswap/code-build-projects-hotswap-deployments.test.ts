@@ -1,4 +1,4 @@
-import { CodeBuild } from 'aws-sdk';
+/*import { CodeBuild } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -612,3 +612,4 @@ test('does not call the updateProject() API when a resource with type that is no
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateProject).not.toHaveBeenCalled();
 });
+*/

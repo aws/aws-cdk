@@ -1,4 +1,4 @@
-import { AppSync } from 'aws-sdk';
+/*import { AppSync } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -365,3 +365,4 @@ test('does not call the updateFunction() API when a resource with type that is n
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateFunction).not.toHaveBeenCalled();
 });
+*/

@@ -298,10 +298,11 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     parallel: options.assetParallelism,
   });
 
-  if (options.hotswap === HotswapType.HOTSWAP) {
+  const hotswapType = options.hotswap;
+  if (hotswapType) {
     // attempt to short-circuit the deployment if possible
     try {
-      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact, hotswapType);
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }
@@ -312,20 +313,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       }
       print('Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s', e.message);
     }
-    print('Falling back to doing a full deployment');
-    options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
-  } else if (options.hotswap === HotswapType.HOTSWAP_ONLY) {
-    try {
-      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
-      if (hotswapDeploymentResult) {
-        return hotswapDeploymentResult;
-      }
-      print('Could not perform a hotswap-deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
-    } catch (e) {
-      if (!(e instanceof CfnEvaluationException)) {
-        throw e;
-      }
-      print('Could not perform a hotswap-only deployment, because the CloudFormation template could not be resolved: %s', e.message);
+    if (hotswapType === HotswapType.HOTSWAP) {
+      print('Falling back to doing a full deployment');
+      options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
     }
   }
 
