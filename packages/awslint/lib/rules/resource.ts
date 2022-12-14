@@ -185,6 +185,8 @@ resourceLinter.add({
   },
 });
 
+/*
+// This rule is the worst
 resourceLinter.add({
   code: 'resource-attribute',
   warning: true,
@@ -203,6 +205,7 @@ resourceLinter.add({
     }
   },
 });
+*/
 
 resourceLinter.add({
   code: 'grant-result',
