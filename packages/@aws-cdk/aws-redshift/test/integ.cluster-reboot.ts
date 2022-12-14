@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
+import { Match } from '@aws-cdk/integ-tests';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
@@ -10,8 +11,7 @@ import * as redshift from '../lib';
  * 1. Creates a stack with a Redshift cluster.
  * 2. Creates a second stack with the same name to update the parameter group and cause the custom resource to run.
  *
- * The diff assets flag and assertions have been commented out due to some current issues with integ-tests.
- * This test was manually verified by manually checking the sync status and reboot history of the redshift cluster.
+ * The diff assets flag (used when testing custom resources) has been commented out due to snapshots not properly verifying in CodeBuild.
  */
 
 const app = new cdk.App();
@@ -76,41 +76,26 @@ stacks.forEach(s => {
   });
 });
 
-new integ.IntegTest(app, 'aws-cdk-redshift-reboot-test', {
+const test = new integ.IntegTest(app, 'aws-cdk-redshift-reboot-test', {
   testCases: stacks,
-  stackUpdateWorkflow: true,
+  stackUpdateWorkflow: false,
   // diffAssets: true,
 });
 
-// https://github.com/aws/aws-cdk/issues/22059
-// const describeCluster = test.assertions.awsApiCall('Redshift', 'describeClusters', {
-//   ClusterIdentifier: updateStack.cluster.clusterName,
-// });
+const describeClusters = test.assertions.awsApiCall('Redshift', 'describeClusters', { ClusterIdentifier: updateStack.cluster.clusterName });
+describeClusters.assertAtPath('Clusters.0.ClusterParameterGroups.0.ParameterGroupName', integ.ExpectedResult.stringLikeRegexp(updateStack.parameterGroup.clusterParameterGroupName));
+describeClusters.assertAtPath('Clusters.0.ClusterParameterGroups.0.ParameterApplyStatus', integ.ExpectedResult.stringLikeRegexp('in-sync'));
 
-// describeCluster.expect(integ.ExpectedResult.objectLike(
-//   {
-//     ParameterGroupName: updateStack.parameterGroup.clusterParameterGroupName,
-//     ParameterApplyStatus: 'in-sync',
-//   },
-// ));
-
-// const describeParams = test.assertions.awsApiCall('Redshift', 'describeClusterParameters', {
-//   ParameterGroupName: updateStack.parameterGroup.clusterParameterGroupName,
-// });
-
-// describeParams.expect(integ.ExpectedResult.arrayWith([
-//   integ.ExpectedResult.objectLike(
-//     {
-//       ParameterName: 'enable_user_activity_logging',
-//       ParameterValue: 'false',
-//     },
-//   ),
-//   integ.ExpectedResult.objectLike(
-//     {
-//       ParameterName: 'use_fips_ssl',
-//       ParameterValue: 'true',
-//     },
-//   ),
-// ]));
-
+const describeParams = test.assertions.awsApiCall('Redshift', 'describeClusterParameters',
+  {
+    ParameterGroupName: updateStack.parameterGroup.clusterParameterGroupName,
+    Source: 'user',
+  },
+);
+describeParams.expect(integ.ExpectedResult.objectLike({
+  Parameters: Match.arrayWith([
+    Match.objectLike({ ParameterName: 'enable_user_activity_logging', ParameterValue: 'false' }),
+    Match.objectLike({ ParameterName: 'use_fips_ssl', ParameterValue: 'true' }),
+  ]),
+}));
 app.synth();
