@@ -153,7 +153,7 @@
     }
    }
   },
-  "ApidsQuerygetTestResolverCCED7EC2": {
+  "ApiQueryGetTest0BEAD0F2": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {
@@ -174,7 +174,7 @@
     "ApiSchema510EECD7"
    ]
   },
-  "ApidsQuerygetTestsResolver952F49EE": {
+  "ApiQueryGetTestsF8C40170": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {
@@ -195,7 +195,7 @@
     "ApiSchema510EECD7"
    ]
   },
-  "ApidsMutationaddTestResolverBCF0400B": {
+  "ApiMutationAddTestBF148084": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {
