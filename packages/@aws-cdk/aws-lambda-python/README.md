@@ -205,7 +205,6 @@ It is  possible to run additional commands by specifying the `commandHooks` prop
 
 ```ts
 const entry = '/path/to/function';
-const image = DockerImage.fromBuild(entry);
 new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
