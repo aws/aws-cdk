@@ -74,8 +74,8 @@ describe('IAM Role.fromRoleArn', () => {
           Template.fromStack(roleStack2).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack2PolicyNameCapture });
 
           expect(stack1PolicyNameCapture.asString()).not.toBe(stack2PolicyNameCapture.asString());
-          expect(stack1PolicyNameCapture.asString()).toMatch(/ImportedRolePolicyRoleStack1ImportedRole.*/);
-          expect(stack2PolicyNameCapture.asString()).toMatch(/ImportedRolePolicyRoleStack2ImportedRole.*/);
+          expect(stack1PolicyNameCapture.asString()).toMatch(/PolicyRoleStack1ImportedRole.*/);
+          expect(stack2PolicyNameCapture.asString()).toMatch(/PolicyRoleStack2ImportedRole.*/);
         });
 
         test('the same role imported in different stacks has the same default policy name without flag', () => {
