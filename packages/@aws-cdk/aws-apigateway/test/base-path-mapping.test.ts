@@ -8,7 +8,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -33,7 +33,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -57,7 +57,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -77,11 +77,11 @@ describe('BasePathMapping', () => {
     });
   });
 
-  test('throw error for invalid character basePath property', () => {
+  test('throws when basePath contains an invalid character', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -89,7 +89,7 @@ describe('BasePathMapping', () => {
     });
 
     // WHEN
-    const invalidBasePath = 'invalid-base-path?';
+    const invalidBasePath = 'invalid-/base-path?';
 
     // THEN
     expect(() => {
@@ -105,7 +105,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -129,7 +129,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -153,7 +153,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -177,7 +177,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -207,7 +207,7 @@ describe('BasePathMapping', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'MyApi');
-    api.root.addMethod('GET'); // api must have atleast one method.
+    api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
