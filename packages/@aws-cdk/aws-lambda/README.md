@@ -780,7 +780,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-  adotInstrumentationConfig: {
+  adotInstrumentation: {
     layerVersion: AdotLambdaLayerJavaScriptSdkVersion.V1_7_0,
     execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
   }

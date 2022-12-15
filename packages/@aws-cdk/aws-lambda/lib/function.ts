@@ -257,7 +257,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No ADOT instrumentation
    */
-  readonly adotInstrumentationConfig?: AdotInstrumentationConfig;
+  readonly adotInstrumentation?: AdotInstrumentationConfig;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -815,7 +815,7 @@ export class Function extends FunctionBase {
       architectures: this._architecture ? [this._architecture.name] : undefined,
     });
 
-    if ((props.tracing !== undefined) || (props.adotInstrumentationConfig !== undefined)) {
+    if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
       resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
     }
 
@@ -1100,7 +1100,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    */
   private configureAdotInstrumentation(props: FunctionProps): void {
 
-    if (props.adotInstrumentationConfig === undefined) {
+    if (props.adotInstrumentation === undefined) {
       return;
     }
 
@@ -1114,8 +1114,8 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Runtime go1.x is not supported by the ADOT Lambda Go SDK');
     }
 
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentationConfig.layerConfig._bind(this).arn));
-    this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentationConfig.execWrapper);
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerConfig._bind(this).arn));
+    this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
   }
 
   private renderLayers() {

@@ -30,7 +30,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline(`exports.handler = ${handler.toString()}`),
       architecture: props.architecture,
-      adotInstrumentationConfig: {
+      adotInstrumentation: {
         layerConfig: AdotLambdaLayerJavaScriptSdkVersion.LATEST,
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
@@ -40,7 +40,7 @@ class StackUnderTest extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
-      adotInstrumentationConfig: {
+      adotInstrumentation: {
         layerConfig: AdotLambdaLayerPythonSdkVersion.LATEST,
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
@@ -50,7 +50,7 @@ class StackUnderTest extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
-      adotInstrumentationConfig: {
+      adotInstrumentation: {
         layerConfig: AdotLambdaLayerJavaSdkVersion.LATEST,
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
@@ -60,7 +60,7 @@ class StackUnderTest extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
-      adotInstrumentationConfig: {
+      adotInstrumentation: {
         layerConfig: AdotLambdaLayerJavaAutoInstrumentationVersion.LATEST,
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
@@ -70,7 +70,7 @@ class StackUnderTest extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
-      adotInstrumentationConfig: {
+      adotInstrumentation: {
         layerConfig: AdotLambdaLayerGenericVersion.LATEST,
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },

@@ -3083,7 +3083,7 @@ describe('function', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
-      adotInstrumentationConfig: {
+      adotInstrumentation: {
         layerConfig: lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0,
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
@@ -3112,7 +3112,7 @@ describe('function', () => {
       () =>
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
-          adotInstrumentationConfig: {
+          adotInstrumentation: {
             layerConfig: lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0,
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
