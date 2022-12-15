@@ -201,7 +201,7 @@
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::BasePathMapping",
                   "aws:cdk:cloudformation:props": {
                     "domainName": "domainName",
-                    "basePath": "path",
+                    "basePath": "api/v1/multi-level-path",
                     "restApiId": {
                       "Ref": "ApiF70053CD"
                     }
