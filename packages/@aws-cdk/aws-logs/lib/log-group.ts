@@ -178,7 +178,13 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Give permissions to read and filter events from this log group
    */
   public grantRead(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'logs:FilterLogEvents', 'logs:GetLogEvents');
+    return this.grant(grantee,
+      'logs:FilterLogEvents',
+      'logs:GetLogEvents',
+      'logs:GetLogGroupFields',
+      'logs:DescribeLogGroups',
+      'logs:DescribeLogStreams',
+    );
   }
 
   /**

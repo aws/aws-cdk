@@ -40,7 +40,7 @@
                           "Fn::Join": [
                             "",
                             [
-                              "{\"Statement\":[{\"Action\":[\"logs:FilterLogEvents\",\"logs:GetLogEvents\",\"logs:GetLogRecord\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":\"",
+                              "{\"Statement\":[{\"Action\":[\"logs:FilterLogEvents\",\"logs:GetLogEvents\",\"logs:GetLogGroupFields\",\"logs:DescribeLogGroups\",\"logs:DescribeLogStreams\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":\"",
                               {
                                 "Fn::GetAtt": [
                                   "LogGroupF5B46931",

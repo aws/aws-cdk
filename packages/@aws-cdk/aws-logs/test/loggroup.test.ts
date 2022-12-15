@@ -348,7 +348,7 @@ describe('log group', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogRecord'],
+            Action: ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogGroupFields', 'logs:DescribeLogGroups', 'logs:DescribeLogStreams'],
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
           },
