@@ -65,7 +65,7 @@
    "Type": "AWS::ApiGateway::BasePathMapping",
    "Properties": {
     "DomainName": "domainName",
-    "BasePath": "api/v1/multi-level-path",
+    "BasePath": "path",
     "RestApiId": {
      "Ref": "ApiF70053CD"
     }
