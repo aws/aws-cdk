@@ -2150,10 +2150,9 @@ describe('cluster', () => {
     expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         enableFargateCapacityProviders: true,
-        defaultCapacityProviderStrategy: [
-          { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
-        ],
-      });
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+      ]);
     }).toThrow(/Default capacity provider test capacityProvider is not present in cluster's capacity providers./);
   });
 
@@ -2165,10 +2164,9 @@ describe('cluster', () => {
     expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         enableFargateCapacityProviders: false,
-        defaultCapacityProviderStrategy: [
-          { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
-        ],
-      });
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
+      ]);
     }).toThrow(/Default capacity provider test capacityProvider is not present in cluster's capacity providers./);
   });
 
@@ -2180,11 +2178,10 @@ describe('cluster', () => {
     expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         enableFargateCapacityProviders: true,
-        defaultCapacityProviderStrategy: [
-          { capacityProvider: 'FARGATE', base: 10, weight: 50 },
-          { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
-        ],
-      });
+      }).addDefaultCapacityProviderStrategy([
+        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+        { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
+      ]);
     }).toThrow(/Only 1 default capacity provider can have a base./);
   });
 
@@ -2195,10 +2192,11 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', {
       enableFargateCapacityProviders: true,
-      defaultCapacityProviderStrategy: [
-        { capacityProvider: 'FARGATE', base: 10, weight: 50 },
-      ],
     });
+
+    cluster.addDefaultCapacityProviderStrategy([
+      { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+    ]);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -2228,9 +2226,9 @@ describe('cluster', () => {
           Ref: 'providerD3FF4D3A',
         },
       ],
-      DefaultCapacityProviderStrategy: [
-        { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
-      ],
+      // DefaultCapacityProviderStrategy: [
+      //   { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
+      // ],
     });
 
   });

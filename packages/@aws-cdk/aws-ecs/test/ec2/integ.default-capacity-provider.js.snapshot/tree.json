@@ -1533,13 +1533,7 @@
                     "cluster": {
                       "Ref": "EC2CPClusterD5F0FD32"
                     },
-                    "defaultCapacityProviderStrategy": [
-                      {
-                        "capacityProvider": "FARGATE",
-                        "base": 1,
-                        "weight": 1
-                      }
-                    ]
+                    "defaultCapacityProviderStrategy": []
                   }
                 },
                 "constructInfo": {

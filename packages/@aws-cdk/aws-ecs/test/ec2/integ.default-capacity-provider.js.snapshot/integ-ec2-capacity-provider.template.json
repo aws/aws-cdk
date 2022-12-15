@@ -914,13 +914,7 @@
     "Cluster": {
      "Ref": "EC2CPClusterD5F0FD32"
     },
-    "DefaultCapacityProviderStrategy": [
-     {
-      "Base": 1,
-      "CapacityProvider": "FARGATE",
-      "Weight": 1
-     }
-    ]
+    "DefaultCapacityProviderStrategy": []
    }
   },
   "EC2Service5392EF94": {

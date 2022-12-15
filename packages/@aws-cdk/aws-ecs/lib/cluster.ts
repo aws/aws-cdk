@@ -55,22 +55,6 @@ export interface ClusterProps {
   readonly capacityProviders?: string[];
 
   /**
-   * The cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
-   *
-   * For example
-   * [
-   *   {
-   *     capacityProvider: 'FARGATE',
-   *     base: 10,
-   *     weight: 50
-   *   }
-   * ]
-   *
-   * @default null
-   */
-  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
-
-  /**
    * Whether to enable Fargate Capacity Providers
    *
    * @default false
@@ -178,6 +162,11 @@ export class Cluster extends Resource implements ICluster {
   private _capacityProviderNames: string[] = [];
 
   /**
+   * The cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
+   */
+  private _defaultCapacityProviderStrategy: CapacityProviderStrategy[] = [];
+
+  /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -225,19 +214,6 @@ export class Cluster extends Resource implements ICluster {
       this.enableFargateCapacityProviders();
     }
 
-    if (props.defaultCapacityProviderStrategy) {
-      props.defaultCapacityProviderStrategy.forEach(dcp => {
-        if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
-          throw new Error(`Default capacity provider ${dcp.capacityProvider} is not present in cluster's capacity providers.`);
-        }
-      });
-
-      const defaultCapacityProvidersWithBase = props.defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
-      if (defaultCapacityProvidersWithBase.length > 1) {
-        throw new Error('Only 1 default capacity provider can have a base.');
-      }
-    }
-
     if (props.executeCommandConfiguration) {
       if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
         (props.executeCommandConfiguration.logConfiguration !== undefined)) {
@@ -274,7 +250,7 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames, props.defaultCapacityProviderStrategy));
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames, this._defaultCapacityProviderStrategy));
   }
 
   /**
@@ -286,6 +262,34 @@ export class Cluster extends Resource implements ICluster {
         this._capacityProviderNames.push(provider);
       }
     }
+  }
+
+  /**
+   * Add default capacity provider strategy for this cluster.
+   *
+   * @param defaultCapacityProviderStrategy cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
+   *
+   * For example
+   * [
+   *   {
+   *     capacityProvider: 'FARGATE',
+   *     base: 10,
+   *     weight: 50
+   *   }
+   * ]
+   */
+  public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
+    defaultCapacityProviderStrategy.forEach(dcp => {
+      if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
+        throw new Error(`Default capacity provider ${dcp.capacityProvider} is not present in cluster's capacity providers.`);
+      }
+    });
+
+    const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
+    if (defaultCapacityProvidersWithBase.length > 1) {
+      throw new Error('Only 1 default capacity provider can have a base.');
+    }
+    this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
 
   private renderExecuteCommandConfiguration() : CfnCluster.ClusterConfigurationProperty {
@@ -1204,10 +1208,10 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
   private id: string;
   private capacityProviders: string[];
   private resource?: CfnClusterCapacityProviderAssociations;
-  private defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
+  private defaultCapacityProviderStrategy: CapacityProviderStrategy[];
 
 
-  constructor(scope: Construct, id: string, capacityProviders: string[], defaultCapacityProviderStrategy?: CapacityProviderStrategy[]) {
+  constructor(scope: Construct, id: string, capacityProviders: string[], defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
     this.scope = scope;
     this.id = id;
     this.capacityProviders = capacityProviders;
@@ -1216,10 +1220,10 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
 
   public visit(node: IConstruct): void {
     if (node instanceof Cluster) {
-      if (this.capacityProviders.length > 0 && !this.resource) {
+      if ((this.defaultCapacityProviderStrategy.length > 0 || this.capacityProviders.length > 0) && !this.resource) {
         const resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
-          defaultCapacityProviderStrategy: this.defaultCapacityProviderStrategy || [],
+          defaultCapacityProviderStrategy: this.defaultCapacityProviderStrategy,
           capacityProviders: Lazy.list({ produce: () => this.capacityProviders }),
         });
         this.resource = resource;
