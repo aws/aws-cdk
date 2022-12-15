@@ -134,7 +134,7 @@ export interface IGraphqlApi extends IResource {
   /**
    * creates a new resolver for this datasource and API using the given properties
    */
-  createResolver(props: ExtendedResolverProps): Resolver;
+  createResolver(id: string, props: ExtendedResolverProps): Resolver;
 
   /**
    * Add schema dependency if not imported
@@ -285,8 +285,8 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   /**
    * creates a new resolver for this datasource and API using the given properties
    */
-  public createResolver(props: ExtendedResolverProps): Resolver {
-    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+  public createResolver(id: string, props: ExtendedResolverProps): Resolver {
+    return new Resolver(this, id, {
       api: this,
       ...props,
     });
