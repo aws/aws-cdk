@@ -92,6 +92,12 @@ class TestAssetProductStack extends servicecatalog.ProductStack {
       code: lambda.Code.fromAsset('./assets'),
       handler: 'index.handler',
     });
+
+    new lambda.Function(this, 'HelloHandler2', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset('./assetsv2'),
+      handler: 'index.handler',
+    });
   }
 }
 

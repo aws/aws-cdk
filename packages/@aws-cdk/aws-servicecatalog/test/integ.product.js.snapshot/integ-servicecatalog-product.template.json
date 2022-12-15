@@ -28,6 +28,10 @@
      {
       "Key": "aws-cdk:auto-delete-objects",
       "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:3caa27f4",
+      "Value": "true"
      }
     ]
    },
@@ -160,71 +164,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "TestProduct7606930B": {
-   "Type": "AWS::ServiceCatalog::CloudFormationProduct",
-   "Properties": {
-    "Name": "testProduct",
-    "Owner": "testOwner",
-    "ProvisioningArtifactParameters": [
-     {
-      "DisableTemplateValidation": true,
-      "Info": {
-       "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
-      }
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
-       }
-      }
-     },
-     {
-      "DisableTemplateValidation": true,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/e67e4a20283cee8bcc0e52733149d8f8ce3cb0065d28786f548d8fb382aaea36.json"
-       }
-      },
-      "Name": "testAssetProduct"
-     },
-     {
-      "DisableTemplateValidation": false,
-      "Info": {
-       "LoadTemplateFromURL": {
-        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
-       }
-      },
-      "Name": "v1"
-     }
-    ]
-   }
-  },
   "AssetsBucketDeploymentAwsCliLayer9BCEE17F": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
@@ -245,10 +184,12 @@
      ]
     },
     "SourceBucketNames": [
+     "cdk-hnb659fds-assets-12345678-test-region",
      "cdk-hnb659fds-assets-12345678-test-region"
     ],
     "SourceObjectKeys": [
-     "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip"
+     "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
+     "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
     ],
     "DestinationBucketName": {
      "Ref": "TestAssetBucket9434EFAE"
@@ -382,7 +323,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
+     "S3Key": "2bc265c5e0569aeb24a6349c15bd54e76e845892376515e036627ab0cc70bb64.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -398,6 +339,75 @@
     ],
     "Runtime": "python3.9",
     "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+   ]
+  },
+  "TestProduct7606930B": {
+   "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+   "Properties": {
+    "Name": "testProduct",
+    "Owner": "testOwner",
+    "ProvisioningArtifactParameters": [
+     {
+      "DisableTemplateValidation": true,
+      "Info": {
+       "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
+       }
+      }
+     },
+     {
+      "DisableTemplateValidation": true,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/c6a724b9f87d5f730d400d518f32edba51cf14c851d05c5eea07a9170b9e510a.json"
+       }
+      },
+      "Name": "testAssetProduct"
+     },
+     {
+      "DisableTemplateValidation": false,
+      "Info": {
+       "LoadTemplateFromURL": {
+        "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/dd2d087eeb6ede1d2a9166639ccbde7bd1b10eef9ba2b4cb3d9855faa4fe8c1f.json"
+       }
+      },
+      "Name": "v1"
+     }
+    ]
    }
   }
  },

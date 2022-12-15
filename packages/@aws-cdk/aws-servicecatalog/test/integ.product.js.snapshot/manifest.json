@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
     "integ-servicecatalog-product.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/13ee75438bb5ffa930a5b8c2727ee72937bb2e5fd2d829305c3ac792d4ada57d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/c95fa05010797b14fc061c131be6c6bca0e55544e0c60aecea5aec4d41cc838b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -75,22 +75,13 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/integ-servicecatalog-product/TestProduct/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestProduct7606930B"
-          }
-        ],
-        "/integ-servicecatalog-product/PortfolioId": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PortfolioId"
-          }
-        ],
         "/integ-servicecatalog-product/AssetsBucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F"
+            "data": "AssetsBucketDeploymentAwsCliLayer9BCEE17F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-servicecatalog-product/AssetsBucketDeployment/CustomResource/Default": [
@@ -115,6 +106,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/integ-servicecatalog-product/TestProduct/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProduct7606930B"
+          }
+        ],
+        "/integ-servicecatalog-product/PortfolioId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PortfolioId"
           }
         ],
         "/integ-servicecatalog-product/BootstrapVersion": [

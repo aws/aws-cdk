@@ -21,7 +21,9 @@ describe('ProductStack', () => {
 
   test('Used defined Asset bucket in product stack with assets', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App(
+      { outdir: 'cdk.out' },
+    );
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',
@@ -32,7 +34,7 @@ describe('ProductStack', () => {
 
     // WHEN
     new s3_assets.Asset(productStack, 'testAsset', {
-      path: path.join(__dirname, 'product1.template.json'),
+      path: path.join(__dirname, 'assets'),
     });
 
     // THEN
@@ -41,7 +43,9 @@ describe('ProductStack', () => {
 
   test('fails if bucketName is not specified in product stack with assets', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App(
+      { outdir: 'cdk.out' },
+    );
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
     });
@@ -52,7 +56,7 @@ describe('ProductStack', () => {
     // THEN
     expect(() => {
       new s3_assets.Asset(productStack, 'testAsset', {
-        path: path.join(__dirname, 'product1.template.json'),
+        path: path.join(__dirname, 'assets'),
       });
     }).toThrow('A bucketName must be provided to use Assets');
   });
@@ -66,7 +70,7 @@ describe('ProductStack', () => {
     // THEN
     expect(() => {
       new s3_assets.Asset(productStack, 'testAsset', {
-        path: path.join(__dirname, 'product1.template.json'),
+        path: path.join(__dirname, 'assets'),
       });
     }).toThrow('An Asset Bucket must be provided to use Assets');
   });
