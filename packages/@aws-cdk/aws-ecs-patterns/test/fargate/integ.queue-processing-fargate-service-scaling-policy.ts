@@ -17,7 +17,6 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   minScalingCapacity: 0,
   scalingSteps: [{ upper: 0, change: -1 }, { lower: 5, change: +1 }, { lower: 10, change: +5 }],
-  enableCpuBasedScaling: true,
   cpuBasedScalingTargetUtilization: 30,
 });
 

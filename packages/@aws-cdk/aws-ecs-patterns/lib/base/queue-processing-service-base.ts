@@ -223,14 +223,12 @@ export interface QueueProcessingServiceBaseProps {
   readonly enableExecuteCommand?: boolean;
 
   /**
-   * Whether CPU based scaling of container should be enabled should be enabled.
+   * CPU based scaling target utilization value.
    *
-   * @default - false
-   */
-  readonly enableCpuBasedScaling?: boolean;
-
-  /**
-   * CPU based scaling target utilization value
+   * The cpu based scaling will be implicitly enabled and set to 50% of cpu capacity,
+   * use this property to change the target cpu utilization for scaling to start
+   *
+   * CPU based scaling can be disabled by setting this to -1.
    *
    * @default 50
    */
@@ -293,11 +291,6 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * The AwsLogDriver to use for logging if logging is enabled.
    */
   public readonly logDriver?: LogDriver;
-
-  /**
-   * Enable CPU based scaling property.
-   */
-  public readonly enableCpuBasedScaling: boolean;
 
   /**
    * CPU based scaling policy target utilization
@@ -367,7 +360,6 @@ export abstract class QueueProcessingServiceBase extends Construct {
       }
     }
 
-    this.enableCpuBasedScaling = props.enableCpuBasedScaling ?? false;
     this.cpuBasedScalingTargetUtilization = props.cpuBasedScalingTargetUtilization ?? 50;
 
     if (!this.desiredCount && !this.maxCapacity) {
@@ -386,10 +378,14 @@ export abstract class QueueProcessingServiceBase extends Construct {
   protected configureAutoscalingForService(service: BaseService) {
     const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
 
-    if (this.enableCpuBasedScaling) {
-      scalingTarget.scaleOnCpuUtilization('CpuScaling', {
-        targetUtilizationPercent: this.cpuBasedScalingTargetUtilization,
-      });
+    if (this.cpuBasedScalingTargetUtilization > -1) {
+      if (this.cpuBasedScalingTargetUtilization >= 0 && this.cpuBasedScalingTargetUtilization <= 100) {
+        scalingTarget.scaleOnCpuUtilization('CpuScaling', {
+          targetUtilizationPercent: this.cpuBasedScalingTargetUtilization,
+        });
+      } else {
+        throw new Error('cpuBasedScalingTargetUtilization if set must be a number between 0 and 100 both included.');
+      }
     }
 
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {

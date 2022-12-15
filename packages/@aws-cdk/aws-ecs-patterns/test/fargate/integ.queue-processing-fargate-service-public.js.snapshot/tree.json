@@ -1254,6 +1254,40 @@
                               "version": "0.0.0"
                             }
                           },
+                          "CpuScaling": {
+                            "id": "CpuScaling",
+                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/CpuScaling",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyName": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScalingF36D44B7",
+                                    "policyType": "TargetTrackingScaling",
+                                    "scalingTargetId": {
+                                      "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118"
+                                    },
+                                    "targetTrackingScalingPolicyConfiguration": {
+                                      "predefinedMetricSpecification": {
+                                        "predefinedMetricType": "ECSServiceAverageCPUUtilization"
+                                      },
+                                      "targetValue": 50
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
+                              "version": "0.0.0"
+                            }
+                          },
                           "QueueMessagesVisibleScaling": {
                             "id": "QueueMessagesVisibleScaling",
                             "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling",

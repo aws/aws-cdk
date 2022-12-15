@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
     "aws-ecs-patterns-queue-isolated.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a369432da182cb84bccf54bb6c4b9b23f82edf43fef4d351a63f1cb8f67e1834.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc05f4add0027a554e1004cd43559c02f03d4e8566d9a60b0f579b8c29c947ac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -279,6 +279,12 @@
             "data": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetB06FD17D"
           }
         ],
+        "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling2B518D9D"
+          }
+        ],
         "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -319,15 +325,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling2B518D9D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsolatedQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScaling2B518D9D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

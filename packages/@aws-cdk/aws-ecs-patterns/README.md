@@ -511,6 +511,44 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
+### Set Custom Cpu utilization scaling factor on QueueProcessingService
+
+```ts
+declare const cluster: ecs.Cluster;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  command: ["-c", "4", "amazon.com"],
+  enableLogging: false,
+  desiredTaskCount: 2,
+  environment: {},
+  maxScalingCapacity: 5,
+  maxHealthyPercent: 200,
+  minHealthyPercent: 66,
+  cpuBasedScalingTargetUtilization: 90
+});
+```
+
+### Disable Cpu utilization based scaling policy on QueueProcessingService
+
+```ts
+declare const cluster: ecs.Cluster;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  command: ["-c", "4", "amazon.com"],
+  enableLogging: false,
+  desiredTaskCount: 2,
+  environment: {},
+  maxScalingCapacity: 5,
+  maxHealthyPercent: 200,
+  minHealthyPercent: 66,
+  cpuBasedScalingTargetUtilization: -1
+});
+```
+
 ### Set taskSubnets and securityGroups for QueueProcessingFargateService
 
 ```ts
