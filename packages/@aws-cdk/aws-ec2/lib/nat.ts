@@ -272,7 +272,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     super();
 
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
-      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'allowAllTraffic\'; prefer \'defaultAllowedTraffic\'');
     }
   }
 
