@@ -1423,6 +1423,16 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
 });
 ```
 
+A cluster can be imported, but create a kubectlProvider which can then be reused between stacks.
+
+```ts
+this.cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  clusterName: 'my-cluster-name',
+  createKubectlProvider: true,
+  kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+});
+```
+
 Then, you can use `addManifest` or `addHelmChart` to define resources inside
 your Kubernetes cluster. For example:
 
