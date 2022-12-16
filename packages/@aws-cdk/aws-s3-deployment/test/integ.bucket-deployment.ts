@@ -3,10 +3,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
+import { Match } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as s3deploy from '../lib';
 
 class TestBucketDeployment extends cdk.Stack {
+  public readonly bucket5: s3.IBucket;
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -78,16 +80,25 @@ class TestBucketDeployment extends cdk.Stack {
       autoDeleteObjects: true, // needed for integration test cleanup
     });
 
-    const noExtractBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
+    new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket: bucket4,
       extract: false,
       retainOnDelete: false,
     });
 
-    new cdk.CfnOutput(this, 'ObjectKey0', {
-      value: cdk.Fn.select(0, noExtractBucketDeployment.objectKeys),
+    this.bucket5 = new s3.Bucket(this, 'Destination5', {
+      publicReadAccess: false,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
     });
+
+    const deploy5 = new s3deploy.BucketDeployment(this, 'DeployMe5', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website-second'))],
+      destinationBucket: this.bucket5,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+    });
+    deploy5.addSource(s3deploy.Source.data('some-key', 'helloworld'));
   }
 }
 
@@ -95,13 +106,11 @@ const app = new cdk.App();
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployments-2');
 
 // Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
-const bucket4 = testCase.node.findChild('Destination4') as s3.Bucket;
 const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
 });
 const listObjectsCall = integTest.assertions.awsApiCall('S3', 'listObjects', {
-  Bucket: bucket4.bucketName,
-  MaxKeys: 1,
+  Bucket: testCase.bucket5.bucketName,
 });
 listObjectsCall.provider.addToRolePolicy({
   Effect: 'Allow',
@@ -109,11 +118,16 @@ listObjectsCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 listObjectsCall.expect(integ.ExpectedResult.objectLike({
-  Contents: [
-    {
-      Key: 'fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip',
-    },
-  ],
+  Contents: Match.arrayWith(
+    [
+      Match.objectLike({
+        Key: '403.html',
+      }),
+      Match.objectLike({
+        Key: 'some-key',
+      }),
+    ],
+  ),
 }));
 
 app.synth();
