@@ -33,11 +33,12 @@ const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {
   enableFargateCapacityProviders: true,
 });
 
+cluster.addAsgCapacityProvider(cp);
 cluster.addDefaultCapacityProviderStrategy([
   { capacityProvider: 'FARGATE', base: 1, weight: 1 },
+  { capacityProvider: cp.capacityProviderName },
 ]);
 
-cluster.addAsgCapacityProvider(cp);
 
 new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,
