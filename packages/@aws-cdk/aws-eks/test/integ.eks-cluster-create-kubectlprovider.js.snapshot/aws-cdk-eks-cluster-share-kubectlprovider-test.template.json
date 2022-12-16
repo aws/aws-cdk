@@ -1,0 +1,52 @@
+{
+ "Resources": {
+  "TestManifest25C84AF4": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::ImportValue": "aws-cdk-eks-cluster-imported-cluster-create-kubectlprovider-test:erKubectlProviderNestedStackKubectlProviderNestedStackResource3CCE8594OutputsawscdkeksclusterimportedclustercreatekubectlprovidertestClusterKubectlProviderframeworkonEvent043EE449Arn6CC3637A"
+    },
+    "Manifest": "[{}]",
+    "ClusterName": "cluster",
+    "RoleArn": "arn:aws:iam::123456789012:role/kubectl-role",
+    "PruneLabel": "aws.cdk.eks/prune-c867406a3f7dbadc392edbb1995120087430b647f9"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

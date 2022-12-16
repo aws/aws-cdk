@@ -1,0 +1,20 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-create-kubectlprovider/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-imported-cluster-create-kubectlprovider-test",
+        "aws-cdk-eks-cluster-share-kubectlprovider-test"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-create-kubectlprovider/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclustercreatekubectlproviderDefaultTestDeployAssertEEC28816"
+    }
+  }
+}

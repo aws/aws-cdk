@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "127b31f3be262d9795aa93575f93dfd6c2076ed6616d7f7cbe0d3b700bb29ae6": {
+      "source": {
+        "path": "aws-cdk-eks-cluster-share-kubectlprovider-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "127b31f3be262d9795aa93575f93dfd6c2076ed6616d7f7cbe0d3b700bb29ae6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

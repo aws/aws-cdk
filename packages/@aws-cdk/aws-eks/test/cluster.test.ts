@@ -950,6 +950,17 @@ describe('cluster', () => {
     expect(cluster.kubectlProvider).toEqual(kubectlProvider);
   });
 
+  test('import cluster can create a kubectlProvider', () => {
+    const { stack } = testFixture();
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      createKubectlProvider: true,
+    });
+
+    expect(cluster.kubectlProvider).toBeDefined();
+  });
+
   describe('import cluster with existing kubectl provider function should work as expected with resources relying on kubectl getOrCreate', () => {
     test('creates helm chart', () => {
       const { stack } = testFixture();

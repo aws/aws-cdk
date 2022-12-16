@@ -373,6 +373,14 @@ export interface ClusterAttributes {
   readonly kubectlProvider?: IKubectlProvider;
 
   /**
+   * Create the kubectlProvider in this stack.  Allows Cluster kubectlProvider to be shared between stacks.
+   * Ignore if kubectlProvider is supplied.
+   *
+   * @default - a kubectlProvider is not initially created.
+   */
+  readonly createKubectlProvider?: boolean;
+
+  /**
    * Amount of memory to allocate to the provider's lambda function.
    *
    * @default Size.gibibytes(1)
@@ -2138,9 +2146,14 @@ class ImportedCluster extends ClusterBase {
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
-    this.kubectlProvider = props.kubectlProvider;
     this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
+
+    if (props.kubectlProvider) {
+      this.kubectlProvider = props.kubectlProvider;
+    } else if (props.createKubectlProvider) {
+      this.kubectlProvider = new KubectlProvider(this, 'KubectlProvider', { cluster: this });
+    }
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
