@@ -249,3 +249,29 @@ test('test fargate queue worker service construct - with cpu scaling diasbled', 
   Template.fromStack(stack).resourceCountIs('AWS::ApplicationAutoScaling::ScalingPolicy', 2);
 
 });
+
+test('test fargate queue worker service construct - with cpu scaling diasbled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      maxReceiveCount: 42,
+      retentionPeriod: cdk.Duration.days(7),
+      visibilityTimeout: cdk.Duration.minutes(5),
+      cpuBasedScalingTargetUtilization: -1,
+    });
+  }).toThrow(new Error('custom cpuBasedScalingTargetUtilization when set must be a number between 1 and 100 both included.'));
+});

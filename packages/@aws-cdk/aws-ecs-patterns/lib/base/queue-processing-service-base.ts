@@ -378,13 +378,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
   protected configureAutoscalingForService(service: BaseService) {
     const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
 
-    if (this.cpuBasedScalingTargetUtilization > -1) {
-      if (this.cpuBasedScalingTargetUtilization >= 0 && this.cpuBasedScalingTargetUtilization <= 100) {
+    if (this.cpuBasedScalingTargetUtilization != -1) {
+      if (this.cpuBasedScalingTargetUtilization >= 1 && this.cpuBasedScalingTargetUtilization <= 100) {
         scalingTarget.scaleOnCpuUtilization('CpuScaling', {
           targetUtilizationPercent: this.cpuBasedScalingTargetUtilization,
         });
       } else {
-        throw new Error('cpuBasedScalingTargetUtilization if set must be a number between 0 and 100 both included.');
+        throw new Error('custom cpuBasedScalingTargetUtilization when set must be a number between 1 and 100 both included.');
       }
     }
 
