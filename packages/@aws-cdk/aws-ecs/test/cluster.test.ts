@@ -2182,7 +2182,7 @@ describe('cluster', () => {
         { capacityProvider: 'FARGATE', base: 10, weight: 50 },
         { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
       ]);
-    }).toThrow(/Only 1 default capacity provider can have a base./);
+    }).toThrow(/Only 1 default capacity provider can have a nonzero base./);
   });
 
   test('can add ASG capacity via Capacity Provider with default capacity provider', () => {

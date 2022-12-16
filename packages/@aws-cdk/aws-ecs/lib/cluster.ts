@@ -287,7 +287,7 @@ export class Cluster extends Resource implements ICluster {
 
     const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
     if (defaultCapacityProvidersWithBase.length > 1) {
-      throw new Error('Only 1 default capacity provider can have a base.');
+      throw new Error('Only 1 default capacity provider can have a nonzero base.');
     }
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
