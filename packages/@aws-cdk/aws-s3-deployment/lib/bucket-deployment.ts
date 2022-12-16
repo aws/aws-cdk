@@ -369,6 +369,10 @@ export class BucketDeployment extends Construct {
             return this.sources.reduce((acc, source) => {
               if (source.markers) {
                 acc.push(source.markers);
+                // if there are more than 1 source, then all sources
+                // require markers (custom resource will throw an error otherwise)
+              } else if (this.sources.length > 1) {
+                acc.push({});
               }
               return acc;
             }, [] as Array<Record<string, any>>);
