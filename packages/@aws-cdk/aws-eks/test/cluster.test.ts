@@ -956,6 +956,7 @@ describe('cluster', () => {
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
       createKubectlProvider: true,
+      kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
     });
 
     expect(cluster.kubectlProvider).toBeDefined();
