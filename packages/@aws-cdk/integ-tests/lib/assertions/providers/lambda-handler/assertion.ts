@@ -60,6 +60,7 @@ class MatchCreator {
    *   Messages: [{
    *     Body: Match.objectLike({
    *       Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *       Payload: Match.serializedJson({ key: 'value' }),
    *     }),
    *   }],
    * });
@@ -73,6 +74,9 @@ class MatchCreator {
    *           Elements: {
    *             $ArrayWith: [{ Asdf: 3 }],
    *           },
+   *           Payload: {
+   *             $SerializedJson: { key: 'value' }
+   *           }
    *         },
    *       },
    *     }],
@@ -89,6 +93,9 @@ class MatchCreator {
    *       Elements: {
    *         $ArrayWith: [{ Asdf: 3 }],
    *       },
+   *       Payload: {
+   *         $SerializedJson: { key: 'value' }
+   *       }
    *     },
    *   },
    * }
@@ -97,6 +104,7 @@ class MatchCreator {
    * {
    *   Body: Match.objectLike({
    *     Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *     Payload: Match.serializedJson({ key: 'value' }),
    *   }),
    * }
    */
@@ -111,6 +119,8 @@ class MatchCreator {
             return Match.objectLike(v[nested]);
           case '$StringLike':
             return Match.stringLikeRegexp(v[nested]);
+          case '$SerializedJson':
+            return Match.serializedJson(v[nested]);
           default:
             return v;
         }
