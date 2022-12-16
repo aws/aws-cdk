@@ -166,17 +166,7 @@ class SESEmail extends UserPoolEmail {
 
     let from = encodeAndTest(this.options.fromEmail);
     if (this.options.fromName) {
-      let fromName = this.options.fromName;
-      // see RFC 5322 Section 3.4 for details
-      if (/[^\u0020-\u007E]/u.test(fromName)) {
-        // mime encoding for non US-ASCII characters (RFC 2047)
-        fromName = `=?UTF-8?B?${Buffer.from(fromName, 'utf-8').toString('base64')}?=`;
-      } else if (/^(?:"(?:[^\\"]|\\.)+"|[\w !#$%&'*+-\/=?^_`{|}~]+)$/.test(fromName)) {
-        // atom or quoted-string
-      } else {
-        // make quoted-string
-        fromName = `"${fromName.replace(/["\\]/g, '\\$&')}"`;
-      }
+      const fromName = formatFromName(this.options.fromName);
       from = `${fromName} <${from}>`;
     }
 
@@ -212,4 +202,60 @@ function encodeAndTest(input: string | undefined): string | undefined {
   } else {
     return undefined;
   }
+}
+
+/**
+ * Formats `fromName` to comply RFC 5322
+ *
+ * @see https://www.rfc-editor.org/rfc/rfc5322#section-3.4
+ */
+function formatFromName(fromName: string): string {
+  // mime encode for non US-ASCII characters
+  // see RFC 2047 for details https://www.rfc-editor.org/rfc/rfc2047
+  if (!isAscii(fromName)) {
+    const base64Name = Buffer.from(fromName, 'utf-8').toString('base64');
+    return `=?UTF-8?B?${base64Name}?=`;
+  }
+
+  // makes a quoted-string unless fromName is a phrase (only atext and space)
+  // or a quoted-string already
+  if (!(isSimplePhrase(fromName) || isQuotedString(fromName))) {
+    // in quoted-string, `\` and `"` should be escaped by `\`
+    // e.g. `"foo \"bar\" \\baz"`
+    const quotedName = fromName.replace(/[\\"]/g, (ch) => `\\${ch}`);
+    return `"${quotedName}"`;
+  }
+
+  // otherwise, returns as is
+  return fromName;
+}
+
+/**
+ * Returns whether the input is a printable US-ASCII string
+ */
+function isAscii(input: string): boolean {
+  // U+0020 (space) - U+007E (`~`)
+  return /^[\u0020-\u007E]+$/u.test(input);
+}
+
+/**
+ * Returns whether the input is a phrase excluding quoted-string
+ *
+ * @see https://www.rfc-editor.org/rfc/rfc5322#section-3.2
+ */
+function isSimplePhrase(input: string): boolean {
+  return /^[\w !#$%&'*+-\/=?^_`{|}~]+$/.test(input);
+}
+
+/**
+ * Returns whether the input is already a quoted-string
+ *
+ * @see https://www.rfc-editor.org/rfc/rfc5322#section-3.2.4
+ */
+function isQuotedString(input: string): boolean {
+  // in quoted-string, `\` and `"` should be esacaped by `\`
+  //
+  // match: `"foo.bar"` / `"foo \"bar\""` / `"foo \\ bar"`
+  // not match: `"bare " dquote"` / `"unclosed escape \"` / `"unclosed dquote`
+  return /^"(?:[^\\"]|\\.)*"$/.test(input);
 }
