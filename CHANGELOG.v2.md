@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.55.1](https://github.com/aws/aws-cdk/compare/v2.55.0...v2.55.1) (2022-12-16)
+
+
+### Bug Fixes
+
+* **s3-deployment:** source markers missing when there are multiple sources ([0bb0181](https://github.com/aws/aws-cdk/commit/0bb01815b2fa7708ded6a72e220916e2388993cf)), closes [#23321](https://github.com/aws/aws-cdk/issues/23321) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L64](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L64) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L137](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L137)
+
 ## [2.55.0](https://github.com/aws/aws-cdk/compare/v2.54.0...v2.55.0) (2022-12-14)
 
 
