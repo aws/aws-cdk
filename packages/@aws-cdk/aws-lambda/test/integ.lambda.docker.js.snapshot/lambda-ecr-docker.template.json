@@ -52,6 +52,16 @@
    ]
   }
  },
+ "Outputs": {
+  "ExportsOutputRefMyLambdaCCE802FBB974561C": {
+   "Value": {
+    "Ref": "MyLambdaCCE802FB"
+   },
+   "Export": {
+    "Name": "lambda-ecr-docker:ExportsOutputRefMyLambdaCCE802FBB974561C"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
