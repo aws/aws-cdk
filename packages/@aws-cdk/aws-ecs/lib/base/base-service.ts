@@ -974,7 +974,7 @@ export abstract class BaseService extends Resource
     }
 
     if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
-      throw new Error('Cannot enable service discovery for HTTP Cloudmap Namespace.');
+      throw new Error('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.');
     }
 
     // Determine DNS type based on network mode
