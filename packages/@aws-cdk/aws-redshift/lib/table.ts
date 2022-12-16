@@ -57,7 +57,7 @@ export interface Column {
   /**
    * The unique name/identifier of the column.
    *
-   * **NB**. After deploying this column, you cannot change its name. Doing so will cause the column to be dropped and recreated.
+   * **NOTE**. After deploying this column, you cannot change its name. Doing so will cause the column to be dropped and recreated.
    */
   readonly name: string;
 

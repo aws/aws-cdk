@@ -225,6 +225,20 @@ describe('update', () => {
     }));
   });
 
+  test('does not replace if table columns removed', async () => {
+    const newResourceProperties = {
+      ...resourceProperties,
+      tableColumns: [],
+    };
+
+    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `ALTER TABLE ${physicalResourceId} DROP COLUMN col1`,
+    }));
+  });
+
   test('does not replace if table columns added', async () => {
     const newTableColumnName = 'col2';
     const newTableColumnDataType = 'varchar(1)';
@@ -239,20 +253,6 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
-    }));
-  });
-
-  test('does not replace if table columns removed', async () => {
-    const newResourceProperties = {
-      ...resourceProperties,
-      tableColumns: [],
-    };
-
-    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
-      PhysicalResourceId: physicalResourceId,
-    });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${physicalResourceId} DROP COLUMN col1`,
     }));
   });
 
