@@ -34,7 +34,6 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.roleArn = props.roleArn;
     this.roleName = props.roleName;
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
-
     this.defaultPolicyName = props.defaultPolicyName;
     this.principalAccount = props.account;
   }
