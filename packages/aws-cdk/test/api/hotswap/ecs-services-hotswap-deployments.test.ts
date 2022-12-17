@@ -177,6 +177,99 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         containerDefinitions: [
           { image: 'image2' },
         ],
+        cpu: '256', // this uses the old value because a new value could cause a service replacement
+        //TODO: make a new unit test and run it against the original version of this code,
+        // which verifies that unchanged properties (eg, cpu) are actually passed through to the SDK call,
+        // even though they haven't been changed
+      });
+      expect(mockUpdateService).toBeCalledWith({
+        service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
+        cluster: 'my-cluster',
+        taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+        deploymentConfiguration: {
+          minimumHealthyPercent: 0,
+        },
+        forceNewDeployment: true,
+      });
+    }
+  });
+
+  test('deleting any other TaskDefinition property besides ContainerDefinition cannot be hotswapped', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        TaskDef: {
+          Type: 'AWS::ECS::TaskDefinition',
+          Properties: {
+            Family: 'my-task-def',
+            ContainerDefinitions: [
+              { Image: 'image1' },
+            ],
+            Cpu: '256',
+          },
+        },
+        Service: {
+          Type: 'AWS::ECS::Service',
+          Properties: {
+            TaskDefinition: { Ref: 'TaskDef' },
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf('Service', 'AWS::ECS::Service',
+        'arn:aws:ecs:region:account:service/my-cluster/my-service'),
+    );
+    mockRegisterTaskDef.mockReturnValue({
+      taskDefinition: {
+        taskDefinitionArn: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          TaskDef: {
+            Type: 'AWS::ECS::TaskDefinition',
+            Properties: {
+              Family: 'my-task-def',
+              ContainerDefinitions: [
+                { Image: 'image2' },
+              ],
+            },
+          },
+          Service: {
+            Type: 'AWS::ECS::Service',
+            Properties: {
+              TaskDefinition: { Ref: 'TaskDef' },
+            },
+          },
+        },
+      },
+    });
+
+    if (hotswapType === HotswapType.HOTSWAP) {
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+
+      // THEN
+      expect(deployStackResult).toBeUndefined();
+      expect(mockRegisterTaskDef).not.toHaveBeenCalled();
+      expect(mockUpdateService).not.toHaveBeenCalled();
+    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+
+      // THEN
+      expect(deployStackResult).not.toBeUndefined();
+      expect(mockRegisterTaskDef).toBeCalledWith({
+        family: 'my-task-def',
+        containerDefinitions: [
+          { image: 'image2' },
+        ],
+        cpu: '256', // this uses the old value because a new value could cause a service replacement
+        //TODO: make a new unit test and run it against the original version of this code,
+        // which verifies that unchanged properties (eg, cpu) are actually passed through to the SDK call,
+        // even though they haven't been changed
       });
       expect(mockUpdateService).toBeCalledWith({
         service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
@@ -316,7 +409,6 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
-      expect(deployStackResult?.noOp).toEqual(true);
       expect(mockRegisterTaskDef).not.toHaveBeenCalled();
       expect(mockUpdateService).not.toHaveBeenCalled();
     }

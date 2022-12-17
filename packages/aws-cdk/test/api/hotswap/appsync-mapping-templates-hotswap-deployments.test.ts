@@ -383,8 +383,15 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
-      expect(deployStackResult?.noOp).toEqual(true);
-      expect(mockUpdateFunction).not.toHaveBeenCalled();
+      expect(mockUpdateFunction).toHaveBeenCalledWith({
+        apiId: 'apiId',
+        dataSourceName: 'my-datasource',
+        functionId: 'functionId',
+        functionVersion: '2018-05-29',
+        name: 'my-function',
+        requestMappingTemplate: '## original request template',
+        responseMappingTemplate: '## new response template',
+      });
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     }
   });

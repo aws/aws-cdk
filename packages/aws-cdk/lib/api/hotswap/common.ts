@@ -6,20 +6,22 @@ export const ICON = '✨';
 /**
  * An interface that represents a change that can be deployed in a short-circuit manner.
  */
-export interface HotswapOperation {
+//export interface IHotswapOperation {
   /**
    * The name of the service being hotswapped.
    * Used to set a custom User-Agent for SDK calls.
    */
-  readonly service: string;
+ // readonly service: string;
 
   /**
    * The names of the resources being hotswapped.
    */
-  readonly resourceNames: string[];
+  //readonly resourceNames: string[];
 
-  apply(sdk: ISDK): Promise<any>;
-}
+ // apply(sdk: ISDK): Promise<any>;
+//}
+
+export type Applier = (sdk: ISDK) => Promise<void>;
 
 /**
  * An enum that represents the result of detection whether a given change can be hotswapped.
@@ -39,7 +41,32 @@ export enum ChangeHotswapImpact {
   IRRELEVANT = 'irrelevant',
 }
 
-export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;
+export interface HotswappableChange {
+  readonly hotswappable: true;
+  readonly resourceType: string; // Potentially logicalID or something else
+  readonly propsChanged: Array<string>;
+  /**
+   * The name of the service being hotswapped.
+   * Used to set a custom User-Agent for SDK calls.
+   */
+  readonly service: string;
+
+  /**
+   * The names of the resources being hotswapped.
+   */
+  readonly resourceNames: string[];
+
+  readonly applier: Applier;
+}
+
+export interface NonHotswappableChange {
+  readonly hotswappable: false;
+  readonly resourceType: string;
+  readonly rejectedChanges: Array<string>;
+  readonly reason: string;
+}
+
+export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChange>;
 
 export enum HotswapType {
   HOTSWAP = 'hotswap',
@@ -51,6 +78,12 @@ export enum HotswapType {
  */
 export class HotswappableChangeCandidate {
   /**
+   * The value the resource is being updated from.
+   * Used only with `HotswapType.HOTSWAP_ONLY`.
+   * If used with `HotswapType.HOTSWAP`, it is a bug.
+   */
+  public readonly oldValue: cfn_diff.Resource;
+  /**
    * The value the resource is being updated to.
    */
   public readonly newValue: cfn_diff.Resource;
@@ -60,7 +93,8 @@ export class HotswappableChangeCandidate {
    */
   public readonly propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
 
-  public constructor(newValue: cfn_diff.Resource, propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> }) {
+  public constructor(oldValue: cfn_diff.Resource, newValue: cfn_diff.Resource, propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> }) {
+    this.oldValue = oldValue;
     this.newValue = newValue;
     this.propertyUpdates = propertyUpdates;
   }

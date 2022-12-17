@@ -6,12 +6,12 @@ import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
-import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, HotswapType } from './hotswap/common';
-import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
-import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
-import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
-import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
+//import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
+import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswappableChangeCandidate, HotswapType, HotswappableChange, NonHotswappableChange } from './hotswap/common';
+//import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
+// import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
+// import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
+// import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { loadCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
 
@@ -69,7 +69,7 @@ async function findAllHotswappableChanges(
   sdk: ISDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackNames },
   hotswapType: HotswapType,
-): Promise<HotswapOperation[] | undefined> {
+): Promise<HotswappableChange[] | undefined> {
   // Skip hotswap if there is any change on stack outputs
   if (stackChanges.outputs.differenceCount > 0 && hotswapType === HotswapType.HOTSWAP) {
     return undefined;
@@ -79,7 +79,7 @@ async function findAllHotswappableChanges(
 
   let foundNonHotswappableChange = false;
   const promises: Array<() => Array<Promise<ChangeHotswapResult>>> = [];
-  const hotswappableResources = new Array<HotswapOperation>();
+  const hotswappableResources = new Array<HotswappableChange>();
 
   // gather the results of the detector functions
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
@@ -107,11 +107,11 @@ async function findAllHotswappableChanges(
     } else {
       // run isHotswappable* functions lazily to prevent unhandled rejections
       promises.push(() => [
-        isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-        isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
-        isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-        isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-        isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        //isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
+        //isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
+        //isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
+        //isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        //isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableAppSyncChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }
@@ -124,35 +124,30 @@ async function findAllHotswappableChanges(
     changesDetectionResults.push(hotswapDetectionResults);
   }
 
-  for (const hotswapDetectionResults of changesDetectionResults) {
-    const perChangeHotswappableResources = new Array<HotswapOperation>();
+  // we have a set of Resource detection results
+  // that result is an array of length two; it has HotswappableProperties and NonHotswappableProperties
+  // if there are any nonhotswappable properties && we have HOTSWAP, we should return undefined
+  // otherwise there are only hotswappable properties && we have HOTSWAP, we should return HoswapOperation
+  // if there are any hotswappable properties && we have HOTSWAP_ONLY, we should hotswap them
+  // if there are no hotswappable properties and we have HOTSWAP_ONLY, we should return noOp
 
-    for (const result of hotswapDetectionResults) {
-      if (typeof result !== 'string') {
-        perChangeHotswappableResources.push(result);
+  for (const resourceDetectionResults of changesDetectionResults) {
+    const perChangeHotswappableResources = new Array<HotswappableChange>();
+    const perChangeNonHotswappableResources = new Array<NonHotswappableChange>();
+
+    for (const result of resourceDetectionResults) {
+      for (const propertyResult of result) {
+        if (propertyResult.hotswappable) {
+          perChangeHotswappableResources.push(propertyResult);
+        } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+          perChangeNonHotswappableResources.push(propertyResult);
+        } else if (hotswapType === HotswapType.HOTSWAP) {
+          return undefined;
+        }
       }
     }
-
-    // if we found any hotswappable changes, return now
-    if (perChangeHotswappableResources.length > 0) {
-      hotswappableResources.push(...perChangeHotswappableResources);
-      continue;
-    }
-
-    // no hotswappable changes found, so at least one IRRELEVANT means we can ignore this change;
-    // otherwise, all answers are REQUIRES_FULL_DEPLOYMENT, so this means we can't hotswap this change,
-    // and have to do a full deployment instead
-    if (!hotswapDetectionResults.some(hdr => hdr === ChangeHotswapImpact.IRRELEVANT)) {
-      foundNonHotswappableChange = true;
-    }
   }
-
-  // TODO: yes, this is bad, but it's simple and easy
-  if (hotswapType === HotswapType.HOTSWAP_ONLY) {
-    foundNonHotswappableChange = false;
-  }
-
-  return foundNonHotswappableChange ? undefined : hotswappableResources;
+  return hotswappableResources;
 }
 
 /**
@@ -209,7 +204,7 @@ async function findNestedHotswappableChanges(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
   hotswapType: HotswapType,
-): Promise<HotswapOperation[] | undefined> {
+): Promise<HotswappableChange[] | undefined> {
   const nestedStackName = nestedStackNames[logicalId].nestedStackPhysicalName;
   // the stack name could not be found in CFN, so this is a newly created nested stack
   if (!nestedStackName) {
@@ -245,11 +240,11 @@ function makeRenameDifference(
     addChange.newValue,
     {
       resourceType: {
-        oldType: remChange.oldResourceType,
+       oldType: remChange.oldResourceType,
         newType: addChange.newResourceType,
       },
       propertyDiffs: (addChange as any).propertyDiffs,
-      otherDiffs: (addChange as any).otherDiffs,
+     otherDiffs: (addChange as any).otherDiffs,
     },
   );
 }
@@ -275,19 +270,20 @@ function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): Hotswap
   }
 
   return {
+   oldValue: change.oldValue,
     newValue: change.newValue,
     propertyUpdates: change.propertyUpdates,
   };
 }
 
-async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: HotswapOperation[]): Promise<void[]> {
+async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: HotswappableChange[]): Promise<void[]> {
   print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
     return applyHotswappableChange(sdk, hotswapOperation);
   }));
 }
 
-async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation): Promise<any> {
+async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswappableChange): Promise<any> {
   // note the type of service that was successfully hotswapped in the User-Agent
   const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
   sdk.appendCustomUserAgent(customUserAgent);
