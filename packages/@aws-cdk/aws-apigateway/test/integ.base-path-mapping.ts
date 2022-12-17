@@ -27,6 +27,13 @@ export class TestStack extends cdk.Stack {
       basePath: 'path',
       attachToStage: false,
     });
+
+    new apigateway.BasePathMapping(this, 'MappingThree', {
+      domainName,
+      restApi,
+      basePath: 'api/v1/multi-level-path',
+      attachToStage: false,
+    });
   }
 }
 
