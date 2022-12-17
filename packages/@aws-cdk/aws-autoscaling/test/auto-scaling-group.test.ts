@@ -1866,7 +1866,7 @@ describe('auto scaling group', () => {
 
   });
 
-  test('Should validate multiple target groups i conjunction with `setScaleOnRequest()`', () => {
+  test('Should validate multiple target groups i conjunction with `scaleOnRequestCount()`', () => {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
     const alb = new ApplicationLoadBalancer(stack, 'alb', {
@@ -1896,7 +1896,7 @@ describe('auto scaling group', () => {
 
     asg.scaleOnRequestCount('requests-per-minute', { targetRequestsPerMinute: 60 });
 
-    expect(asg.node.validate()).toContainEqual('Cannon use multiple target groups if `setScaleOnRequest()` is being used.');
+    expect(asg.node.validate()).toContainEqual('Cannon use multiple target groups if `scaleOnRequestCount()` is being used.');
   });
 });
 

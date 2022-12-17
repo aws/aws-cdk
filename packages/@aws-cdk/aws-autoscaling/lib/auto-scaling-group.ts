@@ -985,7 +985,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
-  protected hasSetScaleOnRequest: boolean = false;
+  protected hasCalledScaleOnRequestCount: boolean = false;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
@@ -1089,7 +1089,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
     });
 
     policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
-    this.hasSetScaleOnRequest = true;
+    this.hasCalledScaleOnRequestCount = true;
     return policy;
   }
 
@@ -1769,8 +1769,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   private validateTargetGroup(): string[] {
     const errors = new Array<string>();
-    if (this.hasSetScaleOnRequest && this.targetGroupArns.length > 1) {
-      errors.push('Cannon use multiple target groups if `setScaleOnRequest()` is being used.');
+    if (this.hasCalledScaleOnRequestCount && this.targetGroupArns.length > 1) {
+      errors.push('Cannon use multiple target groups if `scaleOnRequestCount()` is being used.');
     }
 
     return errors;
