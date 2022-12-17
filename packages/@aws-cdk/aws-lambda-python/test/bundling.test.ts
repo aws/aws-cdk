@@ -278,6 +278,102 @@ test('Bundling with custom environment vars`', () => {
   }));
 });
 
+test('Bundling with volumes from other container', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    volumesFrom: ['777f7dc92da7'],
+
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      volumesFrom: ['777f7dc92da7'],
+    }),
+  }));
+});
+
+test('Bundling with custom volume paths', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+    }),
+  }));
+});
+
+test('Bundling with custom working directory', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    workingDirectory: '/my-dir',
+
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      workingDirectory: '/my-dir',
+    }),
+  }));
+});
+
+test('Bundling with custom user', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    user: 'user:group',
+
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      user: 'user:group',
+    }),
+  }));
+});
+
+test('Bundling with custom securityOpt', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    securityOpt: 'no-new-privileges',
+
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      securityOpt: 'no-new-privileges',
+    }),
+  }));
+});
+
+test('Bundling with custom network', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    network: 'host',
+
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      network: 'host',
+    }),
+  }));
+});
+
 test('Do not build docker image when skipping bundling', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
@@ -298,4 +394,33 @@ test('Build docker image when bundling is not skipped', () => {
   });
 
   expect(DockerImage.fromBuild).toHaveBeenCalled();
+});
+
+test('with command hooks', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    skip: false,
+    commandHooks: {
+      beforeBundling(inputDir: string, outputDir: string): string[] {
+        return [
+          `echo hello > ${inputDir}/a.txt`,
+          `cp ${inputDir}/a.txt ${outputDir}`,
+        ];
+      },
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
+      },
+    },
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+      ],
+    }),
+  }));
 });

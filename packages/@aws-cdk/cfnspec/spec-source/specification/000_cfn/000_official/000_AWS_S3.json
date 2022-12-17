@@ -1,6 +1,17 @@
 {
-  "$version": "100.0.0",
+  "$version": "102.0.0",
   "PropertyTypes": {
+    "AWS::S3::AccessPoint.PolicyStatus": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-accesspoint-policystatus.html",
+      "Properties": {
+        "IsPublic": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-accesspoint-policystatus.html#cfn-s3-accesspoint-policystatus-ispublic",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::S3::AccessPoint.PublicAccessBlockConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-accesspoint-publicaccessblockconfiguration.html",
       "Properties": {
@@ -1319,6 +1330,17 @@
         }
       }
     },
+    "AWS::S3::MultiRegionAccessPointPolicy.PolicyStatus": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-multiregionaccesspointpolicy-policystatus.html",
+      "Properties": {
+        "IsPublic": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-multiregionaccesspointpolicy-policystatus.html#cfn-s3-multiregionaccesspointpolicy-policystatus-ispublic",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::S3::StorageLens.AccountLevel": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-accountlevel.html",
       "Properties": {
@@ -1711,8 +1733,8 @@
         },
         "PolicyStatus": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-accesspoint.html#cfn-s3-accesspoint-policystatus",
-          "PrimitiveType": "Json",
           "Required": false,
+          "Type": "PolicyStatus",
           "UpdateType": "Mutable"
         },
         "PublicAccessBlockConfiguration": {
@@ -1932,6 +1954,14 @@
       }
     },
     "AWS::S3::MultiRegionAccessPointPolicy": {
+      "Attributes": {
+        "PolicyStatus": {
+          "Type": "PolicyStatus"
+        },
+        "PolicyStatus.IsPublic": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-multiregionaccesspointpolicy.html",
       "Properties": {
         "MrapName": {

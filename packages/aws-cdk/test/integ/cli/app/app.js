@@ -92,7 +92,7 @@ class StackUsingContext extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, 'Output', {
-      value: this.availabilityZones,
+      value: this.availabilityZones[0],
     });
   }
 }

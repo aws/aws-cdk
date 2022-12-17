@@ -116,7 +116,7 @@ describe('Lambda Data Source configuration', () => {
       description: 'custom description',
     });
 
-    ds.createResolver({
+    ds.createResolver('TestField', {
       typeName: 'test',
       fieldName: 'field',
     });
