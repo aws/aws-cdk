@@ -158,6 +158,8 @@ export class DefaultTokenResolver implements ITokenResolver {
       // The token might have returned more values that need resolving, recurse
       resolved = context.resolve(resolved);
       resolved = postProcessor.postProcess(resolved, context);
+      // The token might have returned more values that need resolving, recurse
+      resolved = context.resolve(resolved);
       return resolved;
     } catch (e) {
       let message = `Resolution error: ${e.message}.`;

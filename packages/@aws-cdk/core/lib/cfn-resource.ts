@@ -8,14 +8,15 @@ import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-res
 import { Construct, IConstruct, Node } from 'constructs';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
-import { CLOUDFORMATION_TOKEN_RESOLVER } from './private/cloudformation-lang';
+// import { CLOUDFORMATION_TOKEN_RESOLVER } from './private/cloudformation-lang';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
-import { Tokenization } from './token';
+// import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
+import { Intrinsic } from './private/intrinsic';
 
 export interface CfnResourceProps {
   /**
@@ -371,14 +372,15 @@ export class CfnResource extends CfnRefElement {
               const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
               resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
             }
-            const resolvedRawOverrides = Tokenization.resolve(this.rawOverrides, {
-              scope: this,
-              resolver: CLOUDFORMATION_TOKEN_RESOLVER,
-              // we need to preserve the empty elements here,
-              // as that's how removing overrides are represented as
-              removeEmpty: false,
-            });
-            return deepMerge(resourceDef, resolvedRawOverrides);
+            // const resolvedRawOverrides = Tokenization.resolve(this.rawOverrides, {
+            //   scope: this,
+            //   resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+            //   // preparing: true,
+            //   // we need to preserve the empty elements here,
+            //   // as that's how removing overrides are represented as
+            //   removeEmpty: false,
+            // });
+            return deepMerge(resourceDef, this.rawOverrides);
           }),
         },
       };
@@ -577,7 +579,7 @@ function deepMerge(target: any, ...sources: any[]) {
 
     for (const key of Object.keys(source)) {
       const value = source[key];
-      if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
+      if (typeof(value) === 'object' && value != null && !Array.isArray(value) && !(value instanceof Intrinsic)) {
         // if the value at the target is not an object, override it with an
         // object so we can continue the recursion
         if (typeof(target[key]) !== 'object') {
