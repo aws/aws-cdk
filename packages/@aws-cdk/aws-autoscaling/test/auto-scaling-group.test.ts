@@ -2,7 +2,7 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceType, LaunchTemplate } from '@aws-cdk/aws-ec2';
-import { ApplicationLoadBalancer, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -1866,38 +1866,60 @@ describe('auto scaling group', () => {
 
   });
 
-  test('Should validate multiple target groups i conjunction with `scaleOnRequestCount()`', () => {
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
-    const vpc = mockVpc(stack);
-    const alb = new ApplicationLoadBalancer(stack, 'alb', {
-      vpc,
-      internetFacing: true,
+  describe('multiple target groups', () => {
+    let asg: autoscaling.AutoScalingGroup;
+    let stack: cdk.Stack;
+    let vpc: ec2.IVpc;
+    let alb: ApplicationLoadBalancer;
+    let listener: ApplicationListener;
+
+    beforeEach(() => {
+      stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+      vpc = mockVpc(stack);
+      alb = new ApplicationLoadBalancer(stack, 'alb', {
+        vpc,
+        internetFacing: true,
+      });
+
+      listener = alb.addListener('Listener', {
+        port: 80,
+        open: true,
+      });
+
+      asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+      });
     });
 
-    const listener = alb.addListener('Listener', {
-      port: 80,
-      open: true,
+    test('Adding two application target groups should succeed validation', () => {
+      const atg1 = new ApplicationTargetGroup(stack, 'ATG1', { port: 443 });
+      const atg2 = new ApplicationTargetGroup(stack, 'ATG2', { port: 443 });
+
+      listener.addTargetGroups('tgs', { targetGroups: [atg1, atg2] });
+
+      asg.attachToApplicationTargetGroup(atg1);
+      asg.attachToApplicationTargetGroup(atg2);
+
+      expect(asg.node.validate()).toEqual([]);
     });
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-      vpc,
+
+    test('Adding two application target groups should fail validation validate if `scaleOnRequestCount()` has been called', () => {
+      const atg1 = new ApplicationTargetGroup(stack, 'ATG1', { port: 443 });
+      const atg2 = new ApplicationTargetGroup(stack, 'ATG2', { port: 443 });
+
+      listener.addTargetGroups('tgs', { targetGroups: [atg1, atg2] });
+
+      asg.attachToApplicationTargetGroup(atg1);
+      asg.attachToApplicationTargetGroup(atg2);
+
+      asg.scaleOnRequestCount('requests-per-minute', { targetRequestsPerMinute: 60 });
+
+      expect(asg.node.validate()).toContainEqual('Cannon use multiple target groups if `scaleOnRequestCount()` is being used.');
     });
-
-    const atg1 = new ApplicationTargetGroup(stack, 'ATG1', { port: 443 });
-    const atg2 = new ApplicationTargetGroup(stack, 'ATG2', { port: 443 });
-
-    listener.addTargetGroups('tgs', { targetGroups: [atg1, atg2] });
-
-    asg.attachToApplicationTargetGroup(atg1);
-    asg.attachToApplicationTargetGroup(atg2);
-
-    expect(asg.node.validate()).toEqual([]);
-
-    asg.scaleOnRequestCount('requests-per-minute', { targetRequestsPerMinute: 60 });
-
-    expect(asg.node.validate()).toContainEqual('Cannon use multiple target groups if `scaleOnRequestCount()` is being used.');
   });
+
 });
 
 function mockVpc(stack: cdk.Stack) {
