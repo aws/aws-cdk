@@ -8,11 +8,9 @@ import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-res
 import { Construct, IConstruct, Node } from 'constructs';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
-// import { CLOUDFORMATION_TOKEN_RESOLVER } from './private/cloudformation-lang';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
-// import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
@@ -372,14 +370,6 @@ export class CfnResource extends CfnRefElement {
               const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
               resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
             }
-            // const resolvedRawOverrides = Tokenization.resolve(this.rawOverrides, {
-            //   scope: this,
-            //   resolver: CLOUDFORMATION_TOKEN_RESOLVER,
-            //   // preparing: true,
-            //   // we need to preserve the empty elements here,
-            //   // as that's how removing overrides are represented as
-            //   removeEmpty: false,
-            // });
             return deepMerge(resourceDef, this.rawOverrides);
           }),
         },
@@ -541,33 +531,6 @@ export interface ICfnResourceOptions {
 }
 
 /**
- * Object keys that deepMerge should not consider. Currently these include
- * CloudFormation intrinsics
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
- */
-
-const MERGE_EXCLUDE_KEYS: string[] = [
-  'Ref',
-  'Fn::Base64',
-  'Fn::Cidr',
-  'Fn::FindInMap',
-  'Fn::GetAtt',
-  'Fn::GetAZs',
-  'Fn::ImportValue',
-  'Fn::Join',
-  'Fn::Select',
-  'Fn::Split',
-  'Fn::Sub',
-  'Fn::Transform',
-  'Fn::And',
-  'Fn::Equals',
-  'Fn::If',
-  'Fn::Not',
-  'Fn::Or',
-];
-
-/**
  * Merges `source` into `target`, overriding any existing values.
  * `null`s will cause a value to be deleted.
  */
@@ -584,61 +547,6 @@ function deepMerge(target: any, ...sources: any[]) {
         // object so we can continue the recursion
         if (typeof(target[key]) !== 'object') {
           target[key] = {};
-
-          /**
-           * If we have something that looks like:
-           *
-           *   target: { Type: 'MyResourceType', Properties: { prop1: { Ref: 'Param' } } }
-           *   sources: [ { Properties: { prop1: [ 'Fn::Join': ['-', 'hello', 'world'] ] } } ]
-           *
-           * Eventually we will get to the point where we have
-           *
-           *   target: { prop1: { Ref: 'Param' } }
-           *   sources: [ { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } } ]
-           *
-           * We need to recurse 1 more time, but if we do we will end up with
-           *   { prop1: { Ref: 'Param', 'Fn::Join': ['-', 'hello', 'world'] } }
-           * which is not what we want.
-           *
-           * Instead we check to see whether the `target` value (i.e. target.prop1)
-           * is an object that contains a key that we don't want to recurse on. If it does
-           * then we essentially drop it and end up with:
-           *
-           *   { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } }
-           */
-        } else if (Object.keys(target[key]).length === 1) {
-          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(target[key])[0])) {
-            target[key] = {};
-          }
-        }
-
-        /**
-         * There might also be the case where the source is an intrinsic
-         *
-         *    target: {
-         *      Type: 'MyResourceType',
-         *      Properties: {
-         *        prop1: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
-         *      }
-         *    }
-         *    sources: [ {
-         *      Properties: {
-         *        prop1: { subprop: { 'Fn::If': ['SomeCondition', {...}, {...}] }}
-         *      }
-         *    } ]
-         *
-         * We end up in a place that is the reverse of the above check, the source
-         * becomes an intrinsic before the target
-         *
-         *   target: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
-         *   sources: [{
-         *     'Fn::If': [ 'MyCondition', {...}, {...} ]
-         *   }]
-         */
-        if (Object.keys(value).length === 1) {
-          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(value)[0])) {
-            target[key] = {};
-          }
         }
 
         deepMerge(target[key], value);
