@@ -5,8 +5,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
+import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
+import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration, validateName } from '../utils';
 import { IEcsApplication, EcsApplication } from './application';
 import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
 
@@ -182,9 +183,11 @@ export interface EcsDeploymentGroupProps {
  * A CodeDeploy deployment group that orchestrates ECS blue-green deployments.
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
-export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGroup {
+export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeploymentGroup {
   /**
-   * Import an ECS Deployment Group defined outside the CDK app.
+   * Reference an ECS Deployment Group defined outside the CDK app.
+   *
+   * Account and region for the DeploymentGroup are taken from the application.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -199,27 +202,18 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
   }
 
   public readonly application: IEcsApplication;
-  public readonly deploymentGroupName: string;
-  public readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IEcsDeploymentConfig;
-  /**
-   * The service Role of this Deployment Group.
-   */
-  public readonly role: iam.IRole;
 
   private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: Construct, id: string, props: EcsDeploymentGroupProps) {
     super(scope, id, {
-      physicalName: props.deploymentGroupName,
+      deploymentGroupName: props.deploymentGroupName,
+      role: props.role,
     });
 
     this.application = props.application || new EcsApplication(this, 'Application');
     this.alarms = props.alarms || [];
-
-    this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-    });
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
     this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
@@ -261,21 +255,13 @@ export class EcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGr
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
-    this.deploymentGroupArn = this.getResourceArnAttribute(arnForDeploymentGroup(this.application.applicationName, resource.ref), {
-      service: 'codedeploy',
-      resource: 'deploymentgroup',
-      resourceName: `${this.application.applicationName}/${this.physicalName}`,
-      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.setNameAndArn(resource, this.application);
 
     // If the deployment config is a construct, add a dependency to ensure the deployment config
     // is created before the deployment group is.
     if (Construct.isConstruct(this.deploymentConfig)) {
       this.node.addDependency(this.deploymentConfig);
     }
-
-    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
   }
 
   /**
@@ -355,17 +341,17 @@ export interface EcsDeploymentGroupAttributes {
   readonly deploymentConfig?: IEcsDeploymentConfig;
 }
 
-class ImportedEcsDeploymentGroup extends cdk.Resource implements IEcsDeploymentGroup {
+class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements IEcsDeploymentGroup {
   public readonly application: IEcsApplication;
-  public readonly deploymentGroupName: string;
-  public readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IEcsDeploymentConfig;
 
-  constructor(scope:Construct, id: string, props: EcsDeploymentGroupAttributes) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: EcsDeploymentGroupAttributes) {
+    super(scope, id, {
+      application: props.application,
+      deploymentGroupName: props.deploymentGroupName,
+    });
+
     this.application = props.application;
-    this.deploymentGroupName = props.deploymentGroupName;
-    this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
     this.deploymentConfig = props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE;
   }
 }

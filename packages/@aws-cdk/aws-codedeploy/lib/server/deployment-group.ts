@@ -4,11 +4,11 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
+import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
+import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration, validateName } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
@@ -55,43 +55,20 @@ export interface ServerDeploymentGroupAttributes {
   readonly deploymentConfig?: IServerDeploymentConfig;
 }
 
-/**
- * Represents a reference to a CodeDeploy EC2/on-premise Deployment Group.
- *
- * If you're managing the Deployment Group alongside the rest of your CDK resources,
- * use the {@link ServerDeploymentGroup} class.
- *
- * If you want to reference an already existing Deployment Group,
- * or one defined in a different CDK Stack,
- * use the {@link #import} method.
- */
-abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServerDeploymentGroup {
-  public abstract readonly application: IServerApplication;
-  public abstract readonly role?: iam.IRole;
-  public abstract readonly deploymentGroupName: string;
-  public abstract readonly deploymentGroupArn: string;
-  public readonly deploymentConfig: IServerDeploymentConfig;
-  public abstract readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
-
-  constructor(scope: Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
-    super(scope, id, props);
-    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
-  }
-}
-
-class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
+class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implements IServerDeploymentGroup {
   public readonly application: IServerApplication;
   public readonly role?: iam.Role = undefined;
-  public readonly deploymentGroupName: string;
-  public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
+  public readonly deploymentConfig: IServerDeploymentConfig;
 
   constructor(scope: Construct, id: string, props: ServerDeploymentGroupAttributes) {
-    super(scope, id, props.deploymentConfig);
+    super(scope, id, {
+      application: props.application,
+      deploymentGroupName: props.deploymentGroupName,
+    });
 
     this.application = props.application;
-    this.deploymentGroupName = props.deploymentGroupName;
-    this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
+    this.deploymentConfig = props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
   }
 }
 
@@ -238,7 +215,7 @@ export interface ServerDeploymentGroupProps {
  * A CodeDeploy Deployment Group that deploys to EC2/on-premise instances.
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
-export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
+export class ServerDeploymentGroup extends DeploymentGroupBase implements IServerDeploymentGroup {
   /**
    * Import an EC2/on-premise Deployment Group defined either outside the CDK app,
    * or in a different region.
@@ -256,9 +233,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   public readonly application: IServerApplication;
-  public readonly role?: iam.IRole;
-  public readonly deploymentGroupArn: string;
-  public readonly deploymentGroupName: string;
+  public readonly deploymentConfig: IServerDeploymentConfig;
 
   private readonly _autoScalingGroups: autoscaling.IAutoScalingGroup[];
   private readonly installAgent: boolean;
@@ -266,19 +241,17 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: Construct, id: string, props: ServerDeploymentGroupProps = {}) {
-    super(scope, id, props.deploymentConfig, {
-      physicalName: props.deploymentGroupName,
+    super(scope, id, {
+      deploymentGroupName: props.deploymentGroupName,
+      role: props.role,
     });
 
     this.application = props.application || new ServerApplication(this, 'Application', {
       applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
     });
+    this.deploymentConfig = props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
 
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')],
-    });
-
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
@@ -307,15 +280,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
-    this.deploymentGroupArn = this.getResourceArnAttribute(arnForDeploymentGroup(this.application.applicationName, resource.ref), {
-      service: 'codedeploy',
-      resource: 'deploymentgroup',
-      resourceName: `${this.application.applicationName}/${this.physicalName}`,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-
-    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
+    this.setNameAndArn(resource, this.application);
   }
 
   /**
