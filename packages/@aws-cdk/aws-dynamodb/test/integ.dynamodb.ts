@@ -137,7 +137,7 @@ const tableWithCMK = new Table(stack, TABLE_WITH_CMK, {
   partitionKey: TABLE_PARTITION_KEY,
   removalPolicy: RemovalPolicy.DESTROY,
   stream: StreamViewType.NEW_AND_OLD_IMAGES,
-  encryptionKey,
+  encryptionKey: encryptionKey,
 });
 
 const role = new iam.Role(stack, 'Role', {
