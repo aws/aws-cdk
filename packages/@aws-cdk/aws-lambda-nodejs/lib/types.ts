@@ -1,9 +1,9 @@
-import { DockerImage } from '@aws-cdk/core';
+import { DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 /**
  * Bundling options
  */
-export interface BundlingOptions {
+export interface BundlingOptions extends DockerRunOptions {
   /**
    * Whether to minify files when bundling.
    *
@@ -160,13 +160,6 @@ export interface BundlingOptions {
    * @default Charset.ASCII
    */
   readonly charset?: Charset;
-
-  /**
-   * Environment variables defined when bundling runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly environment?: { [key: string]: string; };
 
   /**
    * Replace global identifiers with constant expressions.

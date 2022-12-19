@@ -142,7 +142,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
     this.functionId = this.function.attrFunctionId;
     this.dataSource = props.dataSource;
 
-    this.function.addDependsOn(this.dataSource.ds);
+    this.function.addDependency(this.dataSource.ds);
     props.api.addSchemaDependency(this.function);
   }
 }
