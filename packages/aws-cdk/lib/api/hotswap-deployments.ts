@@ -8,7 +8,7 @@ import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evalua
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
 import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswappableChangeCandidate, HotswapMode, HotswappableChange, NonHotswappableChange } from './hotswap/common';
-//import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
+import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 // import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 // import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 // import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
@@ -108,10 +108,10 @@ async function findAllHotswappableChanges(
     } else {
       // run isHotswappable* functions lazily to prevent unhandled rejections
       promises.push(() => [
-        //isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
-        //isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
-        //isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
+        //isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        //isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         //isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableAppSyncChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
