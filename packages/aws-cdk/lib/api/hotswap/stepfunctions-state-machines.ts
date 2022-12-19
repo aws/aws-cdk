@@ -1,74 +1,85 @@
-// import { ISDK } from '../aws-auth';
-// import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-// import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, HotswapType } from './common';
+import { ISDK } from '../aws-auth';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate } from './common';
 
-// export async function isHotswappableStateMachineChange(
-  // logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapType: HotswapType,
-// ): Promise<ChangeHotswapResult> {
-  // const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate, hotswapType);
-  // if (stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT ||
-      // stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT) {
-    // return stateMachineDefinitionChange;
-  // }
+export async function isHotswappableStateMachineChange(
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<ChangeHotswapResult> {
+  if (change.newValue.Type !== 'AWS::StepFunctions::StateMachine') {
+    return [];
+  }
+  /*const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate, hotswapType);
+  if (stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT ||
+      stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT) {
+    return stateMachineDefinitionChange;
+  }
+  */
+  const { yes, no } = classifyChanges(change, ['DefinitionString']);
+  const ret: ChangeHotswapResult = [];
 
-  // const stateMachineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
-  // const stateMachineArn = stateMachineNameInCfnTemplate
-    // ? await evaluateCfnTemplate.evaluateCfnExpression({
-      // 'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + stateMachineNameInCfnTemplate,
-    // })
-    // : await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
+  const noKeys = Object.keys(no);
+  if (noKeys.length > 0) {
+    ret.push({
+      hotswappable: false,
+      reason: 'WTF IS THIS',
+      rejectedChanges: noKeys,
+      resourceType: change.newValue.Type,
+    });
+  }
 
-  // if (!stateMachineArn) {
-    // return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  // }
+  const namesOfHotswappableChanges = Object.keys(yes);
+  if (namesOfHotswappableChanges.length > 0) {
+    ret.push({
+      hotswappable: true,
+      resourceType: change.newValue.Type,
+      propsChanged: namesOfHotswappableChanges,
+      service: 'ecs-service',
+      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      apply: async (sdk: ISDK) => {
+        const stateMachineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
+        const stateMachineArn = stateMachineNameInCfnTemplate
+          ? await evaluateCfnTemplate.evaluateCfnExpression({
+            'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + stateMachineNameInCfnTemplate,
+          })
+          : await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 
-  // return new StateMachineHotswapOperation({
-    // definition: stateMachineDefinitionChange,
-    // stateMachineArn: stateMachineArn,
-  // });
-// }
+        if (!stateMachineArn) {
+          return;
+        }
 
-// async function isStateMachineDefinitionOnlyChange(
-  // change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapType: HotswapType,
-// ): Promise<string | ChangeHotswapImpact> {
-  // const newResourceType = change.newValue.Type;
-  // if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
-    // return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  // }
+        // not passing the optional properties leaves them unchanged
+        await sdk.stepFunctions().updateStateMachine({
+          stateMachineArn,
+          definition: await evaluateCfnTemplate.evaluateCfnExpression(change.propertyUpdates.DefinitionString.newValue),
+        }).promise();
+      },
+    });
+  }
 
-  // const propertyUpdates = change.propertyUpdates;
-  // if (Object.keys(propertyUpdates).length === 0) {
-    // return ChangeHotswapImpact.IRRELEVANT;
-  // }
+  return ret;
+}
 
-  // for (const updatedPropName in propertyUpdates) {
-    // // ensure that only changes to the definition string result in a hotswap
-    // if (updatedPropName !== 'DefinitionString' && hotswapType === HotswapType.HOTSWAP) {
-      // return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    // }
-  // }
+/*async function isStateMachineDefinitionOnlyChange(
+  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapType: HotswapType,
+): Promise<string | ChangeHotswapImpact> {
+  const newResourceType = change.newValue.Type;
+  if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
 
-  // return evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString.newValue);
-// }
+  const propertyUpdates = change.propertyUpdates;
+  if (Object.keys(propertyUpdates).length === 0) {
+    return ChangeHotswapImpact.IRRELEVANT;
+  }
 
-// interface StateMachineResource {
-  // readonly stateMachineArn: string;
-  // readonly definition: string;
-// }
+  for (const updatedPropName in propertyUpdates) {
+    // ensure that only changes to the definition string result in a hotswap
+    if (updatedPropName !== 'DefinitionString' && hotswapType === HotswapType.HOTSWAP) {
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    }
+  }
 
-// class StateMachineHotswapOperation implements HotswapOperation {
-  // public readonly service = 'stepfunctions-state-machine';
-  // public readonly resourceNames: string[];
+  return evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString.newValue);
+}
+*/
 
-  // constructor(private readonly stepFunctionResource: StateMachineResource) {
-    // this.resourceNames = [`StateMachine '${this.stepFunctionResource.stateMachineArn.split(':')[6]}'`];
-  // }
-
-  // public async apply(sdk: ISDK): Promise<any> {
-    // // not passing the optional properties leaves them unchanged
-    // return sdk.stepFunctions().updateStateMachine({
-      // stateMachineArn: this.stepFunctionResource.stateMachineArn,
-      // definition: this.stepFunctionResource.definition,
-    // }).promise();
-  // }
-// }

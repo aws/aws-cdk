@@ -223,9 +223,9 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
+    setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
     if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
@@ -233,7 +233,6 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
@@ -704,11 +703,21 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    if (hotswapMode === HotswapMode.HOTSWAP) {
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-    // THEN
-    expect(deployStackResult).not.toBeUndefined();
-    expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+      // THEN
+      expect(deployStackResult).toBeUndefined();
+      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+      // THEN
+      expect(deployStackResult).not.toBeUndefined();
+      expect(deployStackResult?.noOp).toEqual(true);
+      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+    }
   });
 });

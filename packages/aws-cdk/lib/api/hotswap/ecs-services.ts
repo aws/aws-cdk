@@ -6,7 +6,7 @@ import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowe
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
-  // the only resource change can evaluate here is an ECS TaskDefinition
+  // the only resource change we can evaluate here is an ECS TaskDefinition
   if (change.newValue.Type !== 'AWS::ECS::TaskDefinition') {
     return [];
   }

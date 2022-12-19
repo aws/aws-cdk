@@ -11,7 +11,7 @@ import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswappableChangeCandi
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 // import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 // import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
-// import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
+import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { loadCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
 
@@ -109,8 +109,8 @@ async function findAllHotswappableChanges(
       // run isHotswappable* functions lazily to prevent unhandled rejections
       promises.push(() => [
         //isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-        //isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         //isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableAppSyncChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
