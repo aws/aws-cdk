@@ -27,20 +27,6 @@ export async function isHotswappableEcsServiceChange(
       resourceType: change.newValue.Type,
     });
   }
-/*  for (const updatedPropName in change.propertyUpdates) {
-    // We only allow a change in the ContainerDefinitions of the TaskDefinition for now -
-    // it contains the image and environment variables, so seems like a safe bet for now.
-    // We might revisit this decision in the future though!
-    if (updatedPropName !== 'ContainerDefinitions') {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    } else if (updatedPropName === 'ContainerDefinitions') {
-      const containerDefinitionsDifference = (change.propertyUpdates)[updatedPropName];
-      if (containerDefinitionsDifference.newValue === undefined) {
-        return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-      }
-    }
-  }*/
-  // at this point, we know the TaskDefinition can be hotswapped
 
   // find all ECS Services that reference the TaskDefinition that changed
   const resourcesReferencingTaskDef = evaluateCfnTemplate.findReferencesTo(logicalId);
