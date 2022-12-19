@@ -2623,7 +2623,7 @@ describe('ec2 service', () => {
 
     });
 
-    test('throws if cloudmap namespace is HTTP when enabling Service Discovery', () => {
+    test('fails to enable Service Discovery with HTTP defaultCloudmapNamespace', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});

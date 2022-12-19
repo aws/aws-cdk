@@ -1031,11 +1031,11 @@ describe('cluster', () => {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     // WHEN
     const namespace = cluster.addDefaultCloudMapNamespace({
-      name: 'http://foo.com',
+      name: 'foo',
       type: cloudmap.NamespaceType.HTTP,
     });
     // THEN
-    expect(namespace.namespaceName).toBe('http://foo.com');
+    expect(namespace.namespaceName).toBe('foo');
   });
 
   /*
