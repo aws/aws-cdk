@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "sqs-bucket-notifications.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8c78d320c89f08a4f37938acc709dabdceea75fe1529f82b9859d6103fb0ea20.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a02ffa02e0eb3cddd1052b3914c6a93854a8a287abcc3f753db1cb229cd101c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -87,10 +81,34 @@
             "data": "Bucket25524B414"
           }
         ],
+        "/sqs-bucket-notifications/Bucket2/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket2Policy945B22E3"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket2/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket2AutoDeleteObjectsCustomResourceF4462BA8"
+          }
+        ],
         "/sqs-bucket-notifications/Bucket2/Notifications/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket2NotificationsD9BA2A77"
+          }
+        ],
+        "/sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
         "/sqs-bucket-notifications/EncryptedQueue/Key/Resource": [
@@ -111,6 +129,18 @@
             "data": "EncryptedQueuePolicy8AEB1708"
           }
         ],
+        "/sqs-bucket-notifications/Exports/Output{\"Ref\":\"MyQueueE6CA6235\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyQueueE6CA623512A57419"
+          }
+        ],
+        "/sqs-bucket-notifications/Exports/Output{\"Ref\":\"Bucket25524B414\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefBucket25524B414E77B0447"
+          }
+        ],
         "/sqs-bucket-notifications/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -125,6 +155,96 @@
         ]
       },
       "displayName": "sqs-bucket-notifications"
+    },
+    "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7cc78f8c6bc32beeb66e815b2c296332a773fb978275a2d9c432d156d56604d3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "sqs-bucket-notifications",
+        "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E.assets"
+      ],
+      "metadata": {
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSpurgeQueue"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3putObject"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessage"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSQSreceiveMessage"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SQSBucketNotificationsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SQSBucketNotificationsTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

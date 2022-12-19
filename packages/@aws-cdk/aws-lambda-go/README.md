@@ -170,6 +170,34 @@ new go.GoFunction(this, 'handler', {
 });
 ```
 
+By default this construct doesn't use any Go module proxies. This is contrary to
+a standard Go installation, which would use the Google proxy by default. To
+recreate that behavior, do the following:
+
+```ts
+new go.GoFunction(this, 'GoFunction', {
+  entry: 'app/cmd/api',
+  bundling: {
+    goProxies: [go.GoFunction.GOOGLE_GOPROXY, 'direct'],
+  },
+});
+```
+
+You can set additional Docker options to configure the build environment:
+
+ ```ts
+new go.GoFunction(this, 'GoFunction', {
+  entry: 'app/cmd/api',
+  bundling: {
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
+});
+```
+
 ## Command hooks
 
 It is  possible to run additional commands by specifying the `commandHooks` prop:

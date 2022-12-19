@@ -1,9 +1,9 @@
-import { DockerImage } from '@aws-cdk/core';
+import { DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 /**
  * Bundling options
  */
-export interface BundlingOptions {
+export interface BundlingOptions extends DockerRunOptions {
   /**
    * Whether to minify files when bundling.
    *
@@ -162,13 +162,6 @@ export interface BundlingOptions {
   readonly charset?: Charset;
 
   /**
-   * Environment variables defined when bundling runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly environment?: { [key: string]: string; };
-
-  /**
    * Replace global identifiers with constant expressions.
    *
    * For example, `{ 'process.env.DEBUG': 'true' }`.
@@ -183,7 +176,7 @@ export interface BundlingOptions {
    * A list of modules that should be considered as externals (already available
    * in the runtime).
    *
-   * @default ['aws-sdk']
+   * @default - ['aws-sdk'] if the runtime is < Node.js 18.x, ['@aws-sdk/*'] otherwise.
    */
   readonly externalModules?: string[];
 

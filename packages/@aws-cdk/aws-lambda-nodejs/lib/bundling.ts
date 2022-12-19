@@ -73,9 +73,15 @@ export class Bundling implements cdk.BundlingOptions {
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
+  public readonly entrypoint?: string[]
   public readonly command: string[];
+  public readonly volumes?: cdk.DockerVolume[];
+  public readonly volumesFrom?: string[];
   public readonly environment?: { [key: string]: string };
   public readonly workingDirectory: string;
+  public readonly user?: string;
+  public readonly securityOpt?: string;
+  public readonly network?: string;
   public readonly local?: cdk.ILocalBundling;
 
   private readonly projectRoot: string;
@@ -113,7 +119,7 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     this.externals = [
-      ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
+      ...props.externalModules ?? (isSdkV2Runtime(props.runtime) ? ['aws-sdk'] : ['@aws-sdk/*']), // Mark aws-sdk as external by default (available in the runtime)
       ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
     ];
 
@@ -137,11 +143,17 @@ export class Bundling implements cdk.BundlingOptions {
       tscRunner: 'tsc', // tsc is installed globally in the docker image
       osPlatform: 'linux', // linux docker image
     });
-    this.command = ['bash', '-c', bundlingCommand];
+    this.command = props.command ?? ['bash', '-c', bundlingCommand];
     this.environment = props.environment;
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
     // and we want to force npx to use the globally installed esbuild.
-    this.workingDirectory = '/';
+    this.workingDirectory = props.workingDirectory ?? '/';
+    this.entrypoint = props.entrypoint;
+    this.volumes = props.volumes;
+    this.volumesFrom = props.volumesFrom;
+    this.user = props.user;
+    this.securityOpt = props.securityOpt;
+    this.network = props.network;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
@@ -366,4 +378,18 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   }
 
   return args.join(' ');
+}
+
+function isSdkV2Runtime(runtime: Runtime): boolean {
+  const sdkV2RuntimeList = [
+    Runtime.NODEJS,
+    Runtime.NODEJS_4_3,
+    Runtime.NODEJS_6_10,
+    Runtime.NODEJS_8_10,
+    Runtime.NODEJS_10_X,
+    Runtime.NODEJS_12_X,
+    Runtime.NODEJS_14_X,
+    Runtime.NODEJS_16_X,
+  ];
+  return sdkV2RuntimeList.includes(runtime);
 }

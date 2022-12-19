@@ -3,6 +3,7 @@ import { CfnElement } from './cfn-element';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
+import { ResolutionTypeHint } from './type-hints';
 
 export interface CfnParameterProps {
   /**
@@ -108,6 +109,7 @@ export class CfnParameter extends CfnElement {
   private _minLength?: number;
   private _minValue?: number;
   private _noEcho?: boolean;
+  private typeHint: ResolutionTypeHint;
 
   /**
    * Creates a parameter construct.
@@ -131,6 +133,7 @@ export class CfnParameter extends CfnElement {
     this._minLength = props.minLength;
     this._minValue = props.minValue;
     this._noEcho = props.noEcho;
+    this.typeHint = typeToTypeHint(this._type);
   }
 
   /**
@@ -144,6 +147,7 @@ export class CfnParameter extends CfnElement {
 
   public set type(type: string) {
     this._type = type;
+    this.typeHint = typeToTypeHint(this._type);
   }
 
   /**
@@ -282,7 +286,7 @@ export class CfnParameter extends CfnElement {
    * The parameter value as a Token
    */
   public get value(): IResolvable {
-    return CfnReference.for(this, 'Ref');
+    return CfnReference.for(this, 'Ref', undefined, this.typeHint);
   }
 
   /**
@@ -362,4 +366,14 @@ function isNumberType(type: string) {
  */
 function isStringType(type: string) {
   return !isListType(type) && !isNumberType(type);
+}
+
+function typeToTypeHint(type: string): ResolutionTypeHint {
+  if (isListType(type)) {
+    return ResolutionTypeHint.STRING_LIST;
+  } else if (isNumberType(type)) {
+    return ResolutionTypeHint.NUMBER;
+  }
+
+  return ResolutionTypeHint.STRING;
 }

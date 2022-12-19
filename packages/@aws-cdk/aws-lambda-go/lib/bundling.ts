@@ -78,6 +78,13 @@ export class Bundling implements cdk.BundlingOptions {
         command: bundling.command,
         environment: bundling.environment,
         local: bundling.local,
+        entrypoint: bundling.entrypoint,
+        volumes: bundling.volumes,
+        volumesFrom: bundling.volumesFrom,
+        workingDirectory: bundling.workingDirectory,
+        user: bundling.user,
+        securityOpt: bundling.securityOpt,
+        network: bundling.network,
       },
     });
   }
@@ -93,6 +100,13 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
   public readonly local?: cdk.ILocalBundling;
+  public readonly entrypoint?: string[]
+  public readonly volumes?: cdk.DockerVolume[];
+  public readonly volumesFrom?: string[];
+  public readonly workingDirectory?: string;
+  public readonly user?: string;
+  public readonly securityOpt?: string;
+  public readonly network?: string;
 
   private readonly relativeEntryPath: string;
 
@@ -106,13 +120,17 @@ export class Bundling implements cdk.BundlingOptions {
 
     const cgoEnabled = props.cgoEnabled ? '1' : '0';
 
-    const environment = {
+    const environment: Record<string, string> = {
       CGO_ENABLED: cgoEnabled,
       GO111MODULE: 'on',
       GOARCH: props.architecture.dockerPlatform.split('/')[1],
       GOOS: 'linux',
       ...props.environment,
     };
+
+    if (props.goProxies) {
+      environment.GOPROXY = props.goProxies.join(',');
+    }
 
     // Docker bundling
     const shouldBuildImage = props.forcedDockerBundling || !Bundling.runsLocally;
@@ -127,8 +145,15 @@ export class Bundling implements cdk.BundlingOptions {
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
-    this.command = ['bash', '-c', bundlingCommand];
+    this.command = props.command ?? ['bash', '-c', bundlingCommand];
     this.environment = environment;
+    this.entrypoint = props.entrypoint;
+    this.volumes = props.volumes;
+    this.volumesFrom = props.volumesFrom;
+    this.workingDirectory = props.workingDirectory;
+    this.user = props.user;
+    this.securityOpt = props.securityOpt;
+    this.network = props.network;
 
     // Local bundling
     if (!props.forcedDockerBundling) { // only if Docker is not forced

@@ -1,10 +1,11 @@
 import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import * as triggers from '../lib';
+import { InvocationType } from '../lib';
 
-test('minimal', () => {
+test('minimal trigger function', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -64,4 +65,76 @@ test('before/after', () => {
   dependsOn(triggerId, topic2Id);
   dependsOn(topic3Id, triggerId);
   dependsOn(topic4Id, triggerId);
+});
+
+test('multiple functions', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new triggers.TriggerFunction(stack, 'MyTrigger', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  new triggers.TriggerFunction(stack, 'MySecondTrigger', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('bar'),
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  const roles = template.findResources('AWS::IAM::Role');
+  const triggerIamRole = roles.AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A;
+  expect(triggerIamRole.Properties.Policies[0].PolicyDocument.Statement.length).toBe(2);
+});
+
+test('minimal trigger', () => {
+  // GIVEN
+  const stack = new Stack();
+  const func = new lambda.Function(stack, 'MyFunction', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  // WHEN
+  new triggers.Trigger(stack, 'MyTrigger', {
+    handler: func,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Lambda::Function', {});
+  template.hasResourceProperties('Custom::Trigger', {
+    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF2e4e06d52af2bb609d8c23243d665966' },
+  });
+});
+
+test('trigger with optional properties', () => {
+  // GIVEN
+  const stack = new Stack();
+  const func = new lambda.Function(stack, 'MyFunction', {
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  // WHEN
+  new triggers.Trigger(stack, 'MyTrigger', {
+    handler: func,
+    timeout: Duration.minutes(10),
+    invocationType: InvocationType.EVENT,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Lambda::Function', {});
+  template.hasResourceProperties('Custom::Trigger', {
+    HandlerArn: { Ref: 'MyFunctionCurrentVersion197490AF2e4e06d52af2bb609d8c23243d665966' },
+    Timeout: 600000,
+    InvocationType: 'Event',
+  });
 });

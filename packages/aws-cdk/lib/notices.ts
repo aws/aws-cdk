@@ -63,7 +63,7 @@ function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
 
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
   return [
-    '\nNOTICES',
+    '\nNOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)',
     ...individualMessages,
     `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${exampleNumber}".`,
   ].join('\n\n');

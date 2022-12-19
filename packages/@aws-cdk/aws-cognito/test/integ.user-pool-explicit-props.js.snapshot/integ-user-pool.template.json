@@ -905,6 +905,9 @@
       "phone_number"
      ]
     },
+    "UserPoolAddOns": {
+     "AdvancedSecurityMode": "ENFORCED"
+    },
     "UserPoolName": "MyUserPool",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",

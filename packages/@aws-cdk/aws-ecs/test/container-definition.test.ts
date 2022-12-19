@@ -6,6 +6,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
+import { AppProtocol } from '../lib';
 
 describe('container definition', () => {
   describe('When creating a Task Definition', () => {
@@ -31,6 +32,91 @@ describe('container definition', () => {
           },
         ],
       });
+    });
+
+    test('port mapping throws an error when appProtocol is set without name', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const container = new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+        portMappings: [
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+        ],
+      });
+
+      // THEN
+      const expected = [
+        {
+          containerPort: 80,
+          hostPort: 0,
+          name: 'api',
+        },
+      ];
+      expect(container.portMappings).toEqual(expected);
+
+      expect(() => {
+        container.addPortMappings(
+          {
+            containerPort: 443,
+            appProtocol: AppProtocol.grpc,
+          },
+        );
+      }).toThrow(/Service connect-related port mapping field 'appProtocol' cannot be set without 'name'/);
+    });
+
+    test('multiple port mappings of the same name error out', () =>{
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      const container = new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+      });
+
+      // THEN
+      expect(() => {
+        container.addPortMappings(
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+          {
+            containerPort: 443,
+            name: 'api',
+          },
+        );
+      }).toThrow(/Port mapping name 'api' already exists on this container/);
+    });
+
+    test('empty string port mapping name throws', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      const container = new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+      });
+
+      // THEN
+      expect(() => {
+        container.addPortMappings(
+          {
+            containerPort: 80,
+            name: '',
+          },
+        );
+      }).toThrow();
     });
 
     test('add a container using all props', () => {
@@ -396,6 +482,28 @@ describe('container definition', () => {
         expect(() => {
           container.addLink(logger);
         }).toThrow();
+      });
+
+      test('service connect fields are not allowed', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.HOST,
+        });
+
+        // THEN
+        expect(() => {
+          taskDefinition.addContainer('Container', {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+            memoryLimitMiB: 2048,
+            portMappings: [
+              {
+                name: 'api',
+                containerPort: 80,
+              },
+            ],
+          });
+        }).toThrow('Service connect related port mapping fields \'name\' and \'appProtocol\' are not supported for network mode host');
       });
     });
 

@@ -729,7 +729,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       name: this.physicalName,
       tier: props.tier,
       type: ParameterType.STRING_LIST,
-      value: props.stringListValue.join(','),
+      value: Fn.join(',', props.stringListValue),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
