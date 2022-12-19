@@ -336,6 +336,23 @@ export interface CommonAutoScalingGroupProps {
    * @default - `TerminationPolicy.DEFAULT`
    */
   readonly terminationPolicies?: TerminationPolicy[];
+
+  /**
+   * The amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics.
+   * This delay lets an instance finish initializing before Amazon EC2 Auto Scaling aggregates instance metrics,
+   * resulting in more reliable usage data. Set this value equal to the amount of time that it takes for resource
+   * consumption to become stable after an instance reaches the InService state.
+   *
+   * To optimize the performance of scaling policies that scale continuously, such as target tracking and
+   * step scaling policies, we strongly recommend that you enable the default instance warmup, even if its value is set to 0 seconds
+   *
+   * Default instance warmup will not be added if no value is specified
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html
+   *
+   * @default None
+   */
+  readonly defaultInstanceWarmup?: Duration;
 }
 
 /**
@@ -408,6 +425,13 @@ export enum SpotAllocationStrategy {
    * honors the instance type priorities on a best-effort basis but optimizes for capacity first.
    */
   CAPACITY_OPTIMIZED_PRIORITIZED = 'capacity-optimized-prioritized',
+
+  /**
+   * The price and capacity optimized allocation strategy looks at both price and
+   * capacity to select the Spot Instance pools that are the least likely to be
+   * interrupted and have the lowest possible price.
+   */
+  PRICE_CAPACITY_OPTIMIZED = 'price-capacity-optimized',
 }
 
 /**
@@ -1337,6 +1361,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
       terminationPolicies: props.terminationPolicies,
+      defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       ...this.getLaunchSettings(launchConfig, props.launchTemplate, props.mixedInstancesPolicy),
     };
 
