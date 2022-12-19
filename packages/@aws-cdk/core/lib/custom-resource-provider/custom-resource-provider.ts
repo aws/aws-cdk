@@ -305,7 +305,7 @@ export class CustomResourceProvider extends Construct {
     });
 
     if (this._role) {
-      handler.addDependsOn(this._role);
+      handler.addDependency(this._role);
     }
 
     if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {

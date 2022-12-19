@@ -1,0 +1,13 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "DependsOnTest/DefaultTest": {
+      "stacks": [
+        "replace-depends-on-test",
+        "nested-stack-depends-test"
+      ],
+      "assertionStack": "DependsOnTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DependsOnTestDefaultTestDeployAssert3B3B50E2"
+    }
+  }
+}
