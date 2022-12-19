@@ -138,3 +138,20 @@ export function transformObjectKeys(val: any, transform: (str: string) => string
 export function lowerCaseFirstCharacter(str: string): string {
   return str.length > 0 ? `${str[0].toLowerCase()}${str.slice(1)}` : str;
 }
+
+export type PropDiffs = Record<string, cfn_diff.PropertyDifference<any>>;
+
+export function classifyChanges(xs: HotswappableChangeCandidate, hotswappableProps: string[]): {yes: PropDiffs, no: PropDiffs} {
+  const yes: PropDiffs = {};
+  const no: PropDiffs = {};
+
+  for (const [name, propDiff] of Object.entries(xs.propertyUpdates)) {
+    if (hotswappableProps.includes(name)) {
+      yes[name] = propDiff;
+    } else {
+      no[name] = propDiff;
+    }
+  }
+
+  return { yes, no };
+}

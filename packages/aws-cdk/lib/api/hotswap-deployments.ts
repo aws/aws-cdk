@@ -6,7 +6,7 @@ import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
-//import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
+import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
 import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswappableChangeCandidate, HotswapMode, HotswappableChange, NonHotswappableChange } from './hotswap/common';
 //import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 // import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
@@ -112,7 +112,7 @@ async function findAllHotswappableChanges(
         //isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
         //isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
         //isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-        //isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableAppSyncChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }

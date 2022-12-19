@@ -1,8 +1,7 @@
-import { PropertyDifference } from '@aws-cdk/cloudformation-diff';
 //import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { /*ChangeHotswapImpact,*/ ChangeHotswapResult, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 
 export async function isHotswappableAppSyncChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -60,9 +59,13 @@ export async function isHotswappableAppSyncChange(
         }
 
         const sdkProperties: { [name: string]: any } = {
+          // TODO: add strict SDK typing to this, so we don't have to do the stupid "oldProperties" thing;
+          // instead, supply only the required props for the call.
+          // see codebuild for example
+        //const sdkProperties: AWS.AppSync.UpdateFunctionRequest | AWS.AppSync.UpdateResolverRequest = {
           ...change.oldValue.Properties,
-          RequestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
-          ResponseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
+          requestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
+          responseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
         };
         const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
@@ -90,21 +93,4 @@ export async function isHotswappableAppSyncChange(
   }
 
   return ret;
-}
-
-type PropDiffs = Record<string, PropertyDifference<any>>;
-
-function classifyChanges(xs: HotswappableChangeCandidate, hotswappableProps: string[]): {yes: PropDiffs, no: PropDiffs} {
-  const yes: PropDiffs = {};
-  const no: PropDiffs = {};
-
-  for (const [name, propDiff] of Object.entries(xs.propertyUpdates)) {
-    if (hotswappableProps.includes(name)) {
-      yes[name] = propDiff;
-    } else {
-      no[name] = propDiff;
-    }
-  }
-
-  return { yes, no };
 }

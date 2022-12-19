@@ -591,6 +591,62 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
+  test('does not call the updateProject() API when it receives a change that is not Source, SourceVersion, or Environment difference in a CodeBuild project alongside a hotswappable change', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        CodeBuildProject: {
+          Type: 'AWS::CodeBuild::Project',
+          Properties: {
+            Source: {
+              BuildSpec: 'current-spec',
+              Type: 'NO_SOURCE',
+            },
+            ConcurrentBuildLimit: 1,
+          },
+        },
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          CodeBuildProject: {
+            Type: 'AWS::CodeBuild::Project',
+            Properties: {
+              Source: {
+                BuildSpec: 'new-spec',
+                Type: 'NO_SOURCE',
+              },
+              ConcurrentBuildLimit: 2,
+            },
+          },
+        },
+      },
+    });
+
+    setup.pushStackResourceSummaries(setup.stackSummaryOf('CodeBuildProject', 'AWS::CodeBuild::Project', 'mock-project-resource-id'));
+    if (hotswapMode === HotswapMode.HOTSWAP) {
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+      // THEN
+      expect(deployStackResult).toBeUndefined();
+      expect(mockUpdateProject).not.toHaveBeenCalled();
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+      // THEN
+      expect(deployStackResult).not.toBeUndefined();
+      expect(mockUpdateProject).toHaveBeenCalledWith({
+        name: 'mock-project-resource-id',
+        source: {
+          type: 'NO_SOURCE',
+          buildspec: 'new-spec',
+        },
+      });
+    }
+  });
   test('does not call the updateProject() API when a resource with type that is not AWS::CodeBuild::Project but has the same properties is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
