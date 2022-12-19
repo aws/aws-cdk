@@ -222,3 +222,49 @@ test('prints "Failed Resources:" list, when at least one deployment fails', () =
   expect(output[2].trim()).toStrictEqual('Failed resources:');
   expect(output[3].trim()).toStrictEqual(`stack-name | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1'))}`);
 });
+
+test('print failed resources because of hook failures', () => {
+  const historyActivityPrinter = new HistoryActivityPrinter({
+    resourceTypeColumnWidth: 23,
+    resourcesTotal: 1,
+    stream: process.stderr,
+  });
+
+  const output = stderr.inspectSync(() => {
+    historyActivityPrinter.addActivity({
+      event: {
+        LogicalResourceId: 'stack1',
+        ResourceStatus: 'IN_PROGRESS',
+        Timestamp: new Date(TIMESTAMP),
+        ResourceType: 'AWS::CloudFormation::Stack',
+        StackId: '',
+        EventId: '',
+        StackName: 'stack-name',
+        HookStatus: 'HOOK_COMPLETE_FAILED',
+        HookType: 'hook1',
+        HookStatusReason: "hook1 failed"
+        
+      },
+    });
+    historyActivityPrinter.addActivity({
+      event: {
+        LogicalResourceId: 'stack1',
+        ResourceStatus: 'UPDATE_FAILED',
+        Timestamp: new Date(TIMESTAMP),
+        ResourceType: 'AWS::CloudFormation::Stack',
+        StackId: '',
+        EventId: '',
+        StackName: 'stack-name',
+        ResourceStatusReason: "resource failed"
+      },
+    });
+    historyActivityPrinter.stop();
+  });
+
+  expect(output.length).toStrictEqual(4);
+  expect(output[0].trim()).toStrictEqual(`stack-name | 0/2 | ${HUMAN_TIME} | ${reset('IN_PROGRESS         ')} | AWS::CloudFormation::Stack | ${reset(bold('stack1'))}`);
+  expect(output[1].trim()).toStrictEqual(`stack-name | 0/2 | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1'))}${red(bold('resource failed : hook1 failed'))}`);
+  expect(output[2].trim()).toStrictEqual('Failed resources:');
+  expect(output[3].trim()).toStrictEqual(`stack-name | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1'))}${red(bold('resource failed : hook1 failed'))}`);
+});
+

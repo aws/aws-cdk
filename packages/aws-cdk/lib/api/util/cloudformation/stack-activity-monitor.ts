@@ -398,7 +398,8 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   protected readonly failures = new Array<StackActivity>();
 
-  protected hookFailureMap = new Map<string, string>();;
+
+  protected hookFailureMap = new Map<string, Map<string, string>>();
 
   protected readonly stream: NodeJS.WriteStream;
 
@@ -413,9 +414,24 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
     this.stream = props.stream;
   }
 
+  public failureReason(activity: StackActivity) {
+    const resourceStatusReason = activity.event.ResourceStatusReason ?? '';
+    const logicalResourceId = activity.event.LogicalResourceId ?? '';
+    
+    const hookFailureReasonMap = this.hookFailureMap.get(logicalResourceId);
+    if (hookFailureReasonMap !== undefined){
+      for(const hookType of hookFailureReasonMap.keys())
+        if (resourceStatusReason.includes(hookType)){
+          return resourceStatusReason + ' : ' + hookFailureReasonMap.get(hookType);
+        }
+    }
+    return resourceStatusReason; 
+  }
+
   public addActivity(activity: StackActivity) {
     const status = activity.event.ResourceStatus;
     const hookStatus = activity.event.HookStatus;
+    const hookType = activity.event.HookType;
     if (!status || !activity.event.LogicalResourceId) { return; }
 
     if (status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS') {
@@ -459,8 +475,13 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       this.resourcesPrevCompleteState[activity.event.LogicalResourceId] = status;
     }
 
-    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId != undefined) {
-      this.hookFailureMap.set(activity.event.LogicalResourceId, activity.event.HookStatusReason ?? '');
+    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId != undefined && hookType != undefined) {
+      
+      if (this.hookFailureMap.has(activity.event.LogicalResourceId)){
+        this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
+      }else{
+        this.hookFailureMap.set(activity.event.LogicalResourceId, new Map<string, string>());
+      }
     }
   }
 
@@ -483,7 +504,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
  */
 export class HistoryActivityPrinter extends ActivityPrinterBase {
   /**
-   * Last time we printed something to the console.
+   * Last time we printed somethingf to the console.
    *
    * Used to measure timeout for progress reporting.
    */
@@ -539,6 +560,8 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
       stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
       reasonColor = chalk.red;
+
+      e.ResourceStatusReason = e.ResourceStatusReason ? this.failureReason(activity) : '';
     }
 
     const resourceName = md ? md.constructPath : (e.LogicalResourceId || '');
@@ -708,12 +731,6 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     return '[' + color(fullChars + partialChar) + filler + `] (${this.resourcesDone}/${this.resourcesTotal})`;
   }
 
-  private failureReason(activity: StackActivity) {
-    const resourceStatusReason = activity.event.ResourceStatusReason ?? '';
-    const logicalResourceId = activity.event.LogicalResourceId ?? '';
-    return resourceStatusReason.includes('The following hook(s) failed')? resourceStatusReason + ' : ' + this.hookFailureMap.get(logicalResourceId) ?? '' : resourceStatusReason;
-  }
-
   private failureReasonOnNextLine(activity: StackActivity) {
     return hasErrorMessage(activity.event.ResourceStatus ?? '')
       ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(this.failureReason(activity) ?? '')}`
@@ -781,4 +798,5 @@ function shorten(maxWidth: number, p: string) {
 
 const TIMESTAMP_WIDTH = 12;
 const STATUS_WIDTH = 20;
+
 
