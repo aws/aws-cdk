@@ -504,7 +504,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
  */
 export class HistoryActivityPrinter extends ActivityPrinterBase {
   /**
-   * Last time we printed somethingf to the console.
+   * Last time we printed something to the console.
    *
    * Used to measure timeout for progress reporting.
    */
