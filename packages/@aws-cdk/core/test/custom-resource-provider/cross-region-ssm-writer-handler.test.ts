@@ -177,6 +177,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
       expect(mockPutParameter).toHaveBeenCalledTimes(1);
       expect(mocklistTagsForResource).toHaveBeenCalledTimes(1);
+      expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
     });
 
     test('removed exports are deleted', async () => {
