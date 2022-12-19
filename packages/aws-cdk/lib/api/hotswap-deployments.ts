@@ -7,7 +7,7 @@ import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 //import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswappableChangeCandidate, HotswapType, HotswappableChange, NonHotswappableChange } from './hotswap/common';
+import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswappableChangeCandidate, HotswapMode, HotswappableChange, NonHotswappableChange } from './hotswap/common';
 //import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 // import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 // import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
@@ -25,7 +25,7 @@ import { CloudFormationStack } from './util/cloudformation';
 export async function tryHotswapDeployment(
   sdkProvider: SdkProvider, assetParams: { [key: string]: string },
   cloudFormationStack: CloudFormationStack, stackArtifact: cxapi.CloudFormationStackArtifact,
-  hotswapType: HotswapType,
+  hotswapMode: HotswapMode,
 ): Promise<DeployStackResult | undefined> {
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
@@ -49,10 +49,10 @@ export async function tryHotswapDeployment(
   const currentTemplate = await loadCurrentTemplateWithNestedStacks(stackArtifact, sdk);
   const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);
   const hotswappableChanges = await findAllHotswappableChanges(
-    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames, hotswapType,
+    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames, hotswapMode,
   );
 
-  if (!hotswappableChanges) {
+  if (!hotswappableChanges || (hotswappableChanges.length === 0 && hotswapMode === HotswapMode.HOTSWAP)) {
     // this means there were changes to the template that cannot be short-circuited
     return undefined;
   }
@@ -68,16 +68,15 @@ async function findAllHotswappableChanges(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackNames },
-  hotswapType: HotswapType,
+  hotswapMode: HotswapMode,
 ): Promise<HotswappableChange[] | undefined> {
   // Skip hotswap if there is any change on stack outputs
-  if (stackChanges.outputs.differenceCount > 0 && hotswapType === HotswapType.HOTSWAP) {
+  if (stackChanges.outputs.differenceCount > 0 && hotswapMode === HotswapMode.HOTSWAP) {
     return undefined;
   }
 
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
-  let foundNonHotswappableChange = false;
   const promises: Array<() => Array<Promise<ChangeHotswapResult>>> = [];
   const hotswappableResources = new Array<HotswappableChange>();
 
@@ -85,9 +84,9 @@ async function findAllHotswappableChanges(
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       const nestedHotswappableResources = await findNestedHotswappableChanges(
-        logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk, hotswapType,
+        logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk, hotswapMode,
       );
-      if (!nestedHotswappableResources && hotswapType === HotswapType.HOTSWAP_ONLY) {
+      if (!nestedHotswappableResources && hotswapMode === HotswapMode.HOTSWAP_ONLY) {
         // this nested stack was either newly created or contained no hotswappable resources
         // continue, so that other nested stacks and any hotswappable changes in this stack can be hotswapped
         continue;
@@ -98,18 +97,20 @@ async function findAllHotswappableChanges(
       continue;
     }
 
-    const resourceHotswapEvaluation = isCandidateForHotswapping(change);
+    const resourceHotswapEvaluation = isCandidateForHotswapping(change); // TODO
 
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-      foundNonHotswappableChange = true;
+      if (hotswapMode === HotswapMode.HOTSWAP) {
+        return undefined;
+      }
     } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
       // run isHotswappable* functions lazily to prevent unhandled rejections
       promises.push(() => [
-        //isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
-        //isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
-        //isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapType),
+        //isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
+        //isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
+        //isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate, hotswapMode),
         //isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         //isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableAppSyncChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
@@ -132,16 +133,16 @@ async function findAllHotswappableChanges(
   // if there are no hotswappable properties and we have HOTSWAP_ONLY, we should return noOp
 
   for (const resourceDetectionResults of changesDetectionResults) {
-    const perChangeHotswappableResources = new Array<HotswappableChange>();
+    //const perChangeHotswappableResources = new Array<HotswappableChange>();
     const perChangeNonHotswappableResources = new Array<NonHotswappableChange>();
 
     for (const result of resourceDetectionResults) {
       for (const propertyResult of result) {
         if (propertyResult.hotswappable) {
-          perChangeHotswappableResources.push(propertyResult);
-        } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+          hotswappableResources.push(propertyResult);
+        } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
           perChangeNonHotswappableResources.push(propertyResult);
-        } else if (hotswapType === HotswapType.HOTSWAP) {
+        } else if (hotswapMode === HotswapMode.HOTSWAP) {
           return undefined;
         }
       }
@@ -203,7 +204,7 @@ async function findNestedHotswappableChanges(
   nestedStackNames: { [nestedStackName: string]: NestedStackNames },
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
-  hotswapType: HotswapType,
+  hotswapMode: HotswapMode,
 ): Promise<HotswappableChange[] | undefined> {
   const nestedStackName = nestedStackNames[logicalId].nestedStackPhysicalName;
   // the stack name could not be found in CFN, so this is a newly created nested stack
@@ -220,7 +221,7 @@ async function findNestedHotswappableChanges(
     change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate,
   );
 
-  return findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].nestedChildStackNames, hotswapType);
+  return findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].nestedChildStackNames, hotswapMode);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */
@@ -270,7 +271,7 @@ function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): Hotswap
   }
 
   return {
-   oldValue: change.oldValue,
+    oldValue: change.oldValue,
     newValue: change.newValue,
     propertyUpdates: change.propertyUpdates,
   };

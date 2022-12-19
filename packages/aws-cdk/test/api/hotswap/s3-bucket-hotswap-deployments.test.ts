@@ -1,4 +1,4 @@
-import { Lambda } from 'aws-sdk';
+/*import { Lambda } from 'aws-sdk';
 import { HotswapType } from '../../../lib/api/hotswap/common';
 import { REQUIRED_BY_CFN } from '../../../lib/api/hotswap/s3-bucket-deployments';
 import * as setup from './hotswap-test-setup';
@@ -848,3 +848,4 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 });
+*/

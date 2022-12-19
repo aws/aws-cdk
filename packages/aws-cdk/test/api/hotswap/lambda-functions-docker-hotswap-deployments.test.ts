@@ -1,5 +1,5 @@
 import { Lambda } from 'aws-sdk';
-import { HotswapType } from '../../../lib/api/hotswap/common';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
@@ -29,7 +29,7 @@ beforeEach(() => {
   });
 });
 
-describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotswapType) => {
+describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -68,7 +68,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -116,7 +116,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });

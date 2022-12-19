@@ -56,7 +56,7 @@ export interface HotswappableChange {
    */
   readonly resourceNames: string[];
 
-  readonly applier: Applier;
+  readonly apply: Applier;
 }
 
 export interface NonHotswappableChange {
@@ -68,7 +68,7 @@ export interface NonHotswappableChange {
 
 export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChange>;
 
-export enum HotswapType {
+export enum HotswapMode {
   HOTSWAP = 'hotswap',
   HOTSWAP_ONLY = 'hotswap-only',
 }
@@ -79,8 +79,8 @@ export enum HotswapType {
 export class HotswappableChangeCandidate {
   /**
    * The value the resource is being updated from.
-   * Used only with `HotswapType.HOTSWAP_ONLY`.
-   * If used with `HotswapType.HOTSWAP`, it is a bug.
+   * Used ony with `yHotswapMode.HOTSWAP_ONLY`.
+   * If usedwith `yHotswapMode.HOTSWAP`, it is a bug.
    */
   public readonly oldValue: cfn_diff.Resource;
   /**

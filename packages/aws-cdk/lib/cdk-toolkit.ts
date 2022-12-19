@@ -12,6 +12,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
@@ -24,7 +25,6 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
-import { HotswapType } from './api/hotswap/common';
 
 export interface CdkToolkitProps {
 
@@ -768,7 +768,7 @@ export class CdkToolkit {
 
   private async invokeDeployFromWatch(options: WatchOptions, cloudWatchLogMonitor?: CloudWatchLogEventMonitor): Promise<void> {
     // 'watch' has different defaults than regular 'deploy'
-    const hotswap = options.hotswap === undefined ? HotswapType.HOTSWAP : options.hotswap;
+    const hotswap = options.hotswap === undefined ? HotswapMode.HOTSWAP : options.hotswap;
     const deployOptions: DeployOptions = {
       ...options,
       requireApproval: RequireApproval.Never,
@@ -953,9 +953,9 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, `HotswapType.HOTSWAP` for 'watch' deployments
+   * @default - false for regular deployments, `HotswapMode.HOTSWAP` for 'watch' deployments
    */
-  readonly hotswap?: HotswapType | false;
+  readonly hotswap?: HotswapMode | false;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.

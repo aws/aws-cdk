@@ -1,5 +1,5 @@
 import { AppSync } from 'aws-sdk';
-import { HotswapType } from '../../../lib/api/hotswap/common';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -13,8 +13,9 @@ beforeEach(() => {
   hotswapMockSdkProvider.stubAppSync({ updateResolver: mockUpdateResolver, updateFunction: mockUpdateFunction });
 });
 
-describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotswapType) => {
-  test('returns undefined when a new Resolver is added to the Stack', async () => {
+describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+  test(`A new Resolver being added to the Stack returns undefined in HOTSWAP mode and
+        returns a noOp in HOTSWAP_ONLY mode`, async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
@@ -26,17 +27,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -97,7 +98,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -157,17 +158,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -177,15 +178,19 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('does not call the updateResolver() API when it receives a change that is not a mapping template difference in a Resolver', async () => {
+  test(`when it receives a change that is not a mapping template difference in a Resolver, it does not call the updateResolver() API in HOTSWAP mode
+        but does call the updateResolver() API in HOTSWAP_ONLY mode`, async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
         AppSyncResolver: {
           Type: 'AWS::AppSync::Resolver',
           Properties: {
-            RequestMappingTemplate: '## original template',
+            ResponseMappingTemplate: '## original response template',
+            RequestMappingTemplate: '## original request template',
             FieldName: 'oldField',
+            ApiId: 'apiId',
+            TypeName: 'Query',
           },
           Metadata: {
             'aws:asset:path': 'old-path',
@@ -193,37 +198,52 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       },
     });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf(
+        'AppSyncResolver',
+        'AWS::AppSync::Resolver',
+        'arn:aws:appsync:us-east-1:111111111111:apis/apiId/types/Query/resolvers/myField',
+      ),
+    );
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
           AppSyncResolver: {
             Type: 'AWS::AppSync::Resolver',
             Properties: {
-              RequestMappingTemplate: '## new template',
+              ResponseMappingTemplate: '## original response template',
+              RequestMappingTemplate: '## new request template',
               FieldName: 'newField',
+              ApiId: 'apiId',
+              TypeName: 'Query',
             },
           },
         },
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
-      expect(deployStackResult?.noOp).toEqual(true);
       expect(mockUpdateFunction).not.toHaveBeenCalled();
-      expect(mockUpdateResolver).not.toHaveBeenCalled();
+      expect(mockUpdateResolver).toHaveBeenCalledWith({
+        apiId: 'apiId',
+        typeName: 'Query',
+        fieldName: 'oldField',
+        requestMappingTemplate: '## new request template',
+        responseMappingTemplate: '## original response template',
+      });
     }
   });
 
@@ -257,17 +277,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -322,7 +342,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -339,13 +359,18 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
   test('does not call the updateFunction() API when it receives a change that is not a mapping template difference in a Function', async () => {
     // GIVEN
+    const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
+    hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
+
     setup.setCurrentCfnStackTemplate({
       Resources: {
         AppSyncFunction: {
           Type: 'AWS::AppSync::FunctionConfiguration',
           Properties: {
-            RequestMappingTemplate: '## original template',
+            RequestMappingTemplate: '## original request template',
+            ResponseMappingTemplate: '## original response template',
             Name: 'my-function',
+            ApiId: 'apiId',
             DataSourceName: 'my-datasource',
           },
           Metadata: {
@@ -360,7 +385,9 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
           AppSyncFunction: {
             Type: 'AWS::AppSync::FunctionConfiguration',
             Properties: {
-              RequestMappingTemplate: '## new template',
+              RequestMappingTemplate: '## new request template',
+              ResponseMappingTemplate: '## original response template',
+              ApiId: 'apiId',
               Name: 'my-function',
               DataSourceName: 'new-datasource',
             },
@@ -369,17 +396,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -387,10 +414,9 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         apiId: 'apiId',
         dataSourceName: 'my-datasource',
         functionId: 'functionId',
-        functionVersion: '2018-05-29',
         name: 'my-function',
-        requestMappingTemplate: '## original request template',
-        responseMappingTemplate: '## new response template',
+        requestMappingTemplate: '## new request template',
+        responseMappingTemplate: '## original response template',
       });
       expect(mockUpdateResolver).not.toHaveBeenCalled();
     }
@@ -428,17 +454,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateFunction).not.toHaveBeenCalled();
       expect(mockUpdateResolver).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();

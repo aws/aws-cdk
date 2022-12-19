@@ -1,5 +1,5 @@
 import { Lambda } from 'aws-sdk';
-import { HotswapType } from '../../../lib/api/hotswap/common';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
@@ -19,7 +19,7 @@ beforeEach(() => {
   });
 });
 
-describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapType) => {
+describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapMode) => {
   test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Node.js code)', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -55,7 +55,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -99,7 +99,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -143,7 +143,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
     });
 
     // WHEN
-    const tryHotswap = hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const tryHotswap = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     await expect(tryHotswap).rejects.toThrow('runtime ruby2.7 is unsupported, only node.js and python runtimes are currently supported.');

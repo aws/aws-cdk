@@ -13,7 +13,7 @@ import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { tryHotswapDeployment } from './hotswap-deployments';
-import { HotswapType, ICON } from './hotswap/common';
+import { HotswapMode, ICON } from './hotswap/common';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
@@ -175,9 +175,9 @@ export interface DeployStackOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, `HotswapType.HOTSWAP` for 'watch' deployments
+   * @default - false for regular deployments, `HotswapMode.HOTSWAP` for 'watch' deployments
    */
-  readonly hotswap?: HotswapType | false;
+  readonly hotswap?: HotswapMode | false;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -298,11 +298,11 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     parallel: options.assetParallelism,
   });
 
-  const hotswapType = options.hotswap;
-  if (hotswapType) {
+  const hotswapMode = options.hotswap;
+  if (hotswapMode) {
     // attempt to short-circuit the deployment if possible
     try {
-      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact, hotswapType);
+      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact, hotswapMode);
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }

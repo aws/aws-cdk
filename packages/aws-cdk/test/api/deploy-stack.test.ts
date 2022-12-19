@@ -1,6 +1,6 @@
 import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
-import { HotswapType } from '../../lib/api/hotswap/common';
+import { HotswapMode } from '../../lib/api/hotswap/common';
 import { setCI } from '../../lib/logging';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
@@ -84,11 +84,11 @@ function standardDeployStackArguments(): DeployStackOptions {
   };
 }
 
-test("calls tryHotswapDeployment() if 'hotswap' is `HotswapType.HOTSWAP`", async () => {
+test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP`", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: HotswapType.HOTSWAP,
+    hotswap: HotswapMode.HOTSWAP,
     extraUserAgent: 'extra-user-agent',
   });
 
@@ -140,7 +140,7 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: HotswapType.HOTSWAP,
+    hotswap: HotswapMode.HOTSWAP,
     rollback: undefined,
   });
 

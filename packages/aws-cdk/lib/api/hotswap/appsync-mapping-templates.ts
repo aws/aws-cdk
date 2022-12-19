@@ -1,5 +1,5 @@
 import { PropertyDifference } from '@aws-cdk/cloudformation-diff';
-import * as AWS from 'aws-sdk';
+//import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 import { /*ChangeHotswapImpact,*/ ChangeHotswapResult, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
@@ -49,7 +49,8 @@ export async function isHotswappableAppSyncChange(
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'appsync',
-      applier: async (sdk: ISDK) => {
+      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      apply: async (sdk: ISDK) => {
         const resourcePhysicalName = await evaluateCfnTemplate.establishResourcePhysicalName(
           logicalId,
           isFunction ? resourceProperties?.Name : undefined,
@@ -58,15 +59,20 @@ export async function isHotswappableAppSyncChange(
           return;
         }
 
-        const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(resourceProperties);
+        const sdkProperties: { [name: string]: any } = {
+          ...change.oldValue.Properties,
+          RequestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
+          ResponseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
+        };
+        const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
 
         if (isResolver) {
           // Resolver physical name is the ARN in the format:
           // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>/types/<type>/resolvers/<field>.
           // We'll use `<type>.<field>` as the resolver name.
-          const arnParts = resourcePhysicalName.split('/');
-          const resolverName = `${arnParts[3]}.${arnParts[5]}`;
+          //const arnParts = resourcePhysicalName.split('/');
+          //const resolverName = `${arnParts[3]}.${arnParts[5]}`; // TODO: resolver name
 
           // THIS CAN NEVER WORK
           await sdk.appsync().updateResolver(sdkRequestObject).promise();

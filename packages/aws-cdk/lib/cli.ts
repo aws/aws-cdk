@@ -26,7 +26,7 @@ import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
 import { enableTracing } from './util/tracing';
 import { checkForPlatformWarnings } from './platform-warnings';
-import { HotswapType } from './api/hotswap/common';
+import { HotswapMode } from './api/hotswap/common';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -505,8 +505,8 @@ async function initCommandLine() {
           throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
         }
 
-        let hotswapType: HotswapType | boolean = false;
-        hotswapType = args.hotswapOnly ? HotswapType.HOTSWAP_ONLY : HotswapType.HOTSWAP;
+        let hotswapMode: HotswapMode | boolean = false;
+        hotswapMode = args.hotswapOnly ? HotswapMode.HOTSWAP_ONLY : HotswapMode.HOTSWAP;
 
         let deploymentMethod: DeploymentMethod | undefined;
         switch (args.method) {
@@ -544,7 +544,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: hotswapType,
+          hotswap: hotswapMode,
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,

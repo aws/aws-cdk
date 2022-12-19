@@ -5,7 +5,7 @@ import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
 import * as deployments from '../../../lib/api/hotswap-deployments';
-import { HotswapType } from '../../../lib/api/hotswap/common';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
@@ -172,10 +172,10 @@ export class HotswapMockSdkProvider {
   }
 
   public tryHotswapDeployment(
-    hotswapType: HotswapType,
+    hotswapMode: HotswapMode,
     stackArtifact: cxapi.CloudFormationStackArtifact,
     assetParams: { [key: string]: string } = {},
   ): Promise<DeployStackResult | undefined> {
-    return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact, hotswapType);
+    return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact, hotswapMode);
   }
 }

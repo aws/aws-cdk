@@ -1,5 +1,5 @@
 import { StepFunctions } from 'aws-sdk';
-import { HotswapType } from '../../../lib/api/hotswap/common';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
@@ -11,7 +11,7 @@ beforeEach(() => {
   hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
 });
 
-describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotswapType) => {
+describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('returns undefined when a new StateMachine is added to the Stack', async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
@@ -24,16 +24,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -70,7 +70,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -138,7 +138,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -182,7 +182,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
     // WHEN
     setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -223,18 +223,18 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
       setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
       setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -270,16 +270,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -319,7 +319,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
     // WHEN
     setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact, { AssetParam2: 'asset-param-2' });
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, { AssetParam2: 'asset-param-2' });
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -389,7 +389,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'),
       setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
     );
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -453,7 +453,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
     // THEN
     await expect(() =>
-      hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact),
+      hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact),
     ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
   });
 
@@ -516,7 +516,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
     // THEN
     await expect(() =>
-      hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact),
+      hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact),
     ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
   });
 
@@ -583,7 +583,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // THEN
-    const result = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const result = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     expect(result).not.toBeUndefined();
     expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
@@ -663,7 +663,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // THEN
-    const result = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const result = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     expect(result).not.toBeUndefined();
     expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
@@ -705,7 +705,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();

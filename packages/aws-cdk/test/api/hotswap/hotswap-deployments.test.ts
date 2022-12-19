@@ -1,6 +1,6 @@
 import { Lambda, StepFunctions } from 'aws-sdk';
 import { CfnEvaluationException } from '../../../lib/api/evaluate-cloudformation-template';
-import { HotswapType } from '../../../lib/api/hotswap/common';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as setup from './hotswap-test-setup';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -20,10 +20,10 @@ beforeEach(() => {
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
 });
 
-describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapType) => {
+describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapMode) => {
   test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, setup.cdkStackArtifactOf());
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, setup.cdkStackArtifactOf());
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -57,7 +57,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -124,7 +124,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -189,7 +189,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -285,7 +285,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
     });
 
     // WHEN
-    const deployStackResult = hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     await expect(deployStackResult).rejects.toThrowError(CfnEvaluationException);
@@ -294,7 +294,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests do n
   });
 });
 
-describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests depend on the hotswap type', (hotswapType) => {
+describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('these tests depend on the hotswap type', (hotswapMode) => {
   test('A change to only a non-hotswappable resource results in a full deployment for HOTSWAP or a noOp for HOTSWAP_ONLY', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -320,17 +320,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests depe
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
       expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -391,17 +391,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests depe
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
       expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -425,17 +425,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests depe
     });
     const cdkStackArtifact = setup.cdkStackArtifactOf();
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
       expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -487,17 +487,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests depe
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
       expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -540,17 +540,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests depe
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
       expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -609,17 +609,17 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('these tests depe
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
       expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
