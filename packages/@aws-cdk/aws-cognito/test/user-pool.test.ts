@@ -1708,7 +1708,158 @@ describe('User Pool', () => {
         },
       },
     });
+  });
 
+  test('email withSES with name as quoted-string', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-1',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: UserPoolEmail.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: '"My Custom Email"',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: '"My Custom Email" <mycustomemail@example.com>',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
+  });
+
+  test('email withSES with name with non atom characters', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-1',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: UserPoolEmail.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'mycustomname@example.com',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: '"mycustomname@example.com" <mycustomemail@example.com>',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
+  });
+
+  test('email withSES with name with quotes', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-1',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: UserPoolEmail.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'Foo "Bar" \\Baz',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: '"Foo \\"Bar\\" \\\\Baz" <mycustomemail@example.com>',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
+  });
+
+  test('email withSES with name with non US-ASCII characters', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-1',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: UserPoolEmail.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'あいう',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: '=?UTF-8?B?44GC44GE44GG?= <mycustomemail@example.com>',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
   });
 
   test('email withSES with valid region', () => {
