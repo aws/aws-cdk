@@ -3,7 +3,8 @@ import { IConstruct } from 'constructs';
 import { Stack } from '../../core/lib/stack';
 import { Token } from '../../core/lib/token';
 import { FactName } from '../../region-info/lib/fact';
-import { Function } from './function';
+import { Architecture } from './architecture';
+import { IFunction } from './function-base';
 
 /**
  * The type of ADOT Lambda layer
@@ -85,7 +86,7 @@ export interface AdotInstrumentationConfig {
   /**
    * The ADOT Lambda layer.
    */
-  readonly layerConfig: AdotLambdaLayerConfig;
+  readonly layerVersion: AdotLayerVersion;
 
   /**
    * The startup script to run, see ADOT documentation to pick the right script for your use case: https://aws-otel.github.io/docs/getting-started/lambda
@@ -94,14 +95,72 @@ export interface AdotInstrumentationConfig {
 }
 
 /**
- * The configuration interface of a ADOT Lambda layer
+ * An ADOT Lambda layer version that's specific to a lambda layer type and an architecture.
  */
-export abstract class AdotLambdaLayerConfig {
+export abstract class AdotLayerVersion {
   /**
-   * Returns the arn of the ADOT Lambda layer based on the given configurations
+   * The ADOT Lambda layer for Java SDK
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromJavaSdkLayerVersion(version: AdotLambdaLayerJavaSdkVersion): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The ADOT Lambda layer for Java auto instrumentation
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromJavaAutoInstrumentationLayerVersion(
+    version: AdotLambdaLayerJavaAutoInstrumentationVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The ADOT Lambda layer for JavaScript SDK
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromJavaScriptSdkLayerVersion(version: AdotLambdaLayerJavaScriptSdkVersion): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The ADOT Lambda layer for Python SDK
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromPythonSdkLayerVersion(version: AdotLambdaLayerPythonSdkVersion): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The ADOT Lambda layer for generic use cases
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromGenericLayerVersion(version: AdotLambdaLayerGenericVersion): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  private static fromAdotVersion(adotVersion: AdotLambdaLayerVersion): AdotLayerVersion {
+    return new (class extends AdotLayerVersion {
+      _bind(_function: IFunction): AdotLambdaLayerBindConfig {
+        return {
+          arn: adotVersion.layerArn(_function.stack, _function.architecture),
+        };
+      }
+    })();
+  }
+
+  /**
+   * Produce a `AdotLambdaLayerBindConfig` instance from this `AdotLayerVersion` instance.
+   *
    * @internal
    */
-  abstract _bind(fn: Function): AdotLambdaLayerBindConfig;
+  public abstract _bind(_function: IFunction): AdotLambdaLayerBindConfig;
 }
 
 /**
@@ -127,26 +186,17 @@ export enum AdotLambdaExecWrapper {
   STREAM_HANDLER = '/opt/otel-stream-handler',
 }
 
-/**
- * A version of the ADOT Lambda Layer
- */
-abstract class AdotLambdaLayerVersion extends AdotLambdaLayerConfig {
-  /**
-   * @param version either "LATEST" or the version string of the layer version (such as "1.19.0")The version of the ADOT Lambda layer
-   */
-  protected constructor(private readonly type: AdotLambdaLayerType, private readonly version: string) {
-    super();
-  }
+abstract class AdotLambdaLayerVersion {
+  protected constructor(protected readonly type: AdotLambdaLayerType, protected readonly version: string) {}
 
   /**
-   * Returns the arn of the ADOT Lambda layer based on the given configurations (ADOT type,
-   * version, and the Lambda function's architecture).
-   * @internal
+   * The ARN of the Lambda layer
+   *
+   * @param scope The binding scope. Usually this is the stack where the Lambda layer is bound to
+   * @param architecture The architecture of the Lambda layer (either X86_64 or ARM_64)
    */
-  public _bind(fn: Function): AdotLambdaLayerBindConfig {
-    return {
-      arn: getLayerArn(fn.stack, this.type, this.version, fn.architecture.name),
-    };
+  public layerArn(scope: IConstruct, architecture: Architecture): string {
+    return getLayerArn(scope, this.type, this.version, architecture.name);
   }
 }
 
@@ -165,8 +215,8 @@ export class AdotLambdaLayerJavaSdkVersion extends AdotLambdaLayerVersion {
    */
   public static readonly V1_19_0 = new AdotLambdaLayerJavaSdkVersion('1.19.0');
 
-  private constructor(version: string) {
-    super(AdotLambdaLayerType.JAVA_SDK, version);
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.JAVA_SDK, layerVersion);
   }
 }
 
@@ -185,8 +235,8 @@ export class AdotLambdaLayerJavaAutoInstrumentationVersion extends AdotLambdaLay
    */
   public static readonly V1_19_2 = new AdotLambdaLayerJavaAutoInstrumentationVersion('1.19.2');
 
-  private constructor(version: string) {
-    super(AdotLambdaLayerType.JAVA_AUTO_INSTRUMENTATION, version);
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.JAVA_AUTO_INSTRUMENTATION, layerVersion);
   }
 }
 
@@ -205,8 +255,8 @@ export class AdotLambdaLayerPythonSdkVersion extends AdotLambdaLayerVersion {
    */
   public static readonly V1_13_0 = new AdotLambdaLayerPythonSdkVersion('1.13.0');
 
-  private constructor(version: string) {
-    super(AdotLambdaLayerType.PYTHON_SDK, version);
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.PYTHON_SDK, layerVersion);
   }
 }
 
@@ -225,8 +275,8 @@ export class AdotLambdaLayerJavaScriptSdkVersion extends AdotLambdaLayerVersion 
    */
   public static readonly V1_7_0 = new AdotLambdaLayerJavaScriptSdkVersion('1.7.0');
 
-  private constructor(version: string) {
-    super(AdotLambdaLayerType.JAVASCRIPT_SDK, version);
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.JAVASCRIPT_SDK, layerVersion);
   }
 }
 
@@ -245,7 +295,7 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
    */
   public static readonly V0_62_1 = new AdotLambdaLayerGenericVersion('0.62.1');
 
-  private constructor(version: string) {
-    super(AdotLambdaLayerType.GENERIC, version);
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.GENERIC, layerVersion);
   }
 }

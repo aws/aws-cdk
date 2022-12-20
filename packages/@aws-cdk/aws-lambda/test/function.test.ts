@@ -17,6 +17,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
 import { calculateFunctionHash } from '../lib/function-hash';
 
 describe('function', () => {
@@ -3084,7 +3085,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       adotInstrumentation: {
-        layerConfig: lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0,
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
@@ -3113,7 +3114,7 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
           adotInstrumentation: {
-            layerConfig: lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0,
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),

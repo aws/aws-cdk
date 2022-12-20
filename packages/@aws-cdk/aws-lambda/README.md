@@ -773,6 +773,7 @@ Consuming the latest ADOT layer can be done with the following snippet:
 ```ts
 import {
   AdotLambdaExecWrapper,
+  AdotLayerVersion,
   AdotLambdaLayerJavaScriptSdkVersion,
 } from 'aws-cdk-lib/aws-lambda';
 
@@ -781,22 +782,36 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
   adotInstrumentation: {
-    layerVersion: AdotLambdaLayerJavaScriptSdkVersion.V1_7_0,
+    layerVersion: AdotLayerVersion.fromJavaScriptSdkLayerVersion(AdotLambdaLayerJavaScriptSdkVersion.LATEST),
     execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
-  }
+  },
 });
 ```
 
-To use a different layer version or one that supports another use cases or languages, use one of
-the following classes:
+To use a different layer version, use one of the following helper functions for the `layerVersion` prop:
+
+* `AdotLayerVersion.fromJavaScriptSdkLayerVersion`
+* `AdotLayerVersion.fromPythonSdkLayerVersion`
+* `AdotLayerVersion.fromJavaSdkLayerVersion`
+* `AdotLayerVersion.fromJavaAutoInstrumentationSdkLayerVersion`
+* `AdotLayerVersion.fromGenericSdkLayerVersion`
+
+Each helper function expects a version value from a corresponding enum-like class as below:
 
 * `AdotLambdaLayerJavaScriptSdkVersion`
-* `AdotLambdaLayerJavaPythonSdkVersion`
+* `AdotLambdaLayerPythonSdkVersion`
 * `AdotLambdaLayerJavaSdkVersion`
-* `AdotLambdaLayerJavaAutoInstrumentationVersion`
-* `AdotLambdaLayerGenericVersion`
+* `AdotLambdaLayerJavaAutoInstrumentationSdkVersion`
+* `AdotLambdaLayerGenericSdkVersion`
 
 For more examples, see our [the integration test](test/integ.lambda-adot.ts).
+
+If you want to retrieve the ARN of the ADOT Lambda layer without enabling ADOT in a Lambda function:
+
+```
+declare const fn: lambda.Function;
+const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack, fn.architecture);
+```
 
 ## Lambda with Profiling
 

@@ -1,4 +1,3 @@
-import * as assert from 'assert';
 import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -7,7 +6,9 @@ import * as lambda from '../lib';
 describe('ADOT Lambda Layer', () => {
 
   describe('when the stack region is specified and supported', () => {
+
     let fn: lambda.Function;
+
     beforeEach(() => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-west-2' } });
@@ -20,13 +21,19 @@ describe('ADOT Lambda Layer', () => {
     });
 
     test('is added properly when the region information is available at synthesis time', () => {
-      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0._bind(fn).arn;
-      assert(layerArn === 'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1');
+      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack, fn.architecture);
+
+      expect(layerArn).toEqual(
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1',
+      );
     });
 
     test('is added properly when using "LATEST" version', () => {
-      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.LATEST._bind(fn).arn;
-      assert(layerArn === 'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1');
+      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
+
+      expect(layerArn).toEqual(
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1',
+      );
     });
   });
 
@@ -42,7 +49,9 @@ describe('ADOT Lambda Layer', () => {
       });
 
       expect(() => {
-        lambda.AdotLambdaLayerJavaSdkVersion.LATEST._bind(fn);
+        lambda.AdotLayerVersion.fromJavaSdkLayerVersion(
+          lambda.AdotLambdaLayerJavaSdkVersion.LATEST,
+        )._bind(fn).arn;
       }).toThrow(/Could not find the ARN information for the ADOT Lambda Layer/);
     });
   });
@@ -58,7 +67,7 @@ describe('ADOT Lambda Layer', () => {
         architecture: lambda.Architecture.ARM_64,
       });
 
-      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.LATEST._bind(fn).arn;
+      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.LATEST.layerArn(stack, fn.architecture);
       fn.stack.exportValue(layerArn, {
         name: 'LayerArn',
       });

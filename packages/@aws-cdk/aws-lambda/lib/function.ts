@@ -1114,7 +1114,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new Error('Runtime go1.x is not supported by the ADOT Lambda Go SDK');
     }
 
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerConfig._bind(this).arn));
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
     this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
   }
 

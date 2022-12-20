@@ -13,6 +13,7 @@ import {
   Architecture,
   Function,
   Runtime,
+  AdotLayerVersion,
 } from '../lib';
 
 const app = new cdk.App();
@@ -31,7 +32,7 @@ class StackUnderTest extends Stack {
       code: Code.fromInline(`exports.handler = ${handler.toString()}`),
       architecture: props.architecture,
       adotInstrumentation: {
-        layerConfig: AdotLambdaLayerJavaScriptSdkVersion.LATEST,
+        layerVersion: AdotLayerVersion.fromJavaScriptSdkLayerVersion(AdotLambdaLayerJavaScriptSdkVersion.LATEST),
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
@@ -41,7 +42,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerConfig: AdotLambdaLayerPythonSdkVersion.LATEST,
+        layerVersion: AdotLayerVersion.fromPythonSdkLayerVersion(AdotLambdaLayerPythonSdkVersion.LATEST),
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
@@ -51,7 +52,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerConfig: AdotLambdaLayerJavaSdkVersion.LATEST,
+        layerVersion: AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.LATEST),
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
@@ -61,7 +62,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerConfig: AdotLambdaLayerJavaAutoInstrumentationVersion.LATEST,
+        layerVersion: AdotLayerVersion.fromJavaAutoInstrumentationLayerVersion(AdotLambdaLayerJavaAutoInstrumentationVersion.LATEST),
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
@@ -71,7 +72,7 @@ class StackUnderTest extends Stack {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
       adotInstrumentation: {
-        layerConfig: AdotLambdaLayerGenericVersion.LATEST,
+        layerVersion: AdotLayerVersion.fromGenericLayerVersion(AdotLambdaLayerGenericVersion.LATEST),
         execWrapper: AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
