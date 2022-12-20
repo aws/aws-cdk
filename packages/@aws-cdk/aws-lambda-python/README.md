@@ -145,6 +145,24 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
+You can set additional Docker options to configure the build environment:
+
+ ```ts
+const entry = '/path/to/function';
+
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
+});
+```
+
 ## Custom Bundling with Code Artifact
 
 To use a Code Artifact PyPI repo, the `PIP_INDEX_URL` for bundling the function can be customized (requires AWS CLI in the build environment):
@@ -198,3 +216,39 @@ new python.PythonFunction(this, 'function', {
   },
 });
 ```
+
+## Command hooks
+
+It is  possible to run additional commands by specifying the `commandHooks` prop:
+
+```ts
+const entry = '/path/to/function';
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    commandHooks: {
+      // run tests
+      beforeBundling(inputDir: string): string[] {
+        return ['pytest'];
+      },
+      afterBundling(inputDir: string): string[] {
+        return ['pylint'];
+      },
+      // ...
+    },
+  },
+});
+```
+
+The following hooks are available:
+
+- `beforeBundling`: runs before all bundling commands
+- `afterBundling`: runs after all bundling commands
+
+They all receive the directory containing the dependencies file (`inputDir`) and the
+directory where the bundled asset will be output (`outputDir`). They must return
+an array of commands to run. Commands are chained with `&&`.
+
+The commands will run in the environment in which bundling occurs: inside the
+container for Docker bundling or on the host OS for local bundling.
