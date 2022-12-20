@@ -431,6 +431,18 @@ new cognito.UserPool(this, 'myuserpool', {
 });
 ```
 
+If `fromName` does not comply RFC 5322 atom or quoted-string, it will be quoted or mime-encoded.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'myname@mycompany.com',
+  }),
+});
+// => From: "myname@mycompany.com" <noreply@myawesomeapp.com>
+```
+
 ### Device Tracking
 
 User pools can be configured to track devices that users have logged in to.
