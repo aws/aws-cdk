@@ -188,6 +188,56 @@ describe('AssertionHandler', () => {
     });
   });
 
+  describe('serializedJson', () => {
+    test('pass', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: {
+          Payload: JSON.stringify({
+            Key: 'value',
+            Elements: [{ Asdf: 3 }, { Asdf: 4 }],
+          }),
+        },
+        expected: ExpectedResult.objectLike({
+          Payload: Match.serializedJson({
+            Key: 'value',
+            Elements: Match.arrayWith([{ Asdf: 3 }]),
+          }),
+        }).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(response.assertion).toEqual('{"status":"success"}');
+    });
+
+    test('fail', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: {
+          Payload: JSON.stringify({ stringParam: 'foo' }),
+        },
+        expected: ExpectedResult.objectLike({
+          Payload: Match.serializedJson({ stringParam: 'bar' }),
+        }).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(JSON.parse(response.assertion)).toEqual({
+        status: 'fail',
+        message: 'Expected bar but received foo at /Payload(serializedJson)/stringParam (using serializedJson matcher)\n' +
+          '{\n  \"Payload\": \"{\\\"stringParam\\\":\\\"foo\\\"}\"\n}',
+      });
+    });
+  });
+
   describe('not using Match', () => {
     test('pass', async () => {
       // GIVEN
