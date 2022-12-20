@@ -808,7 +808,7 @@ For more examples, see our [the integration test](test/integ.lambda-adot.ts).
 
 If you want to retrieve the ARN of the ADOT Lambda layer without enabling ADOT in a Lambda function:
 
-```
+```ts
 declare const fn: lambda.Function;
 const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack, fn.architecture);
 ```
