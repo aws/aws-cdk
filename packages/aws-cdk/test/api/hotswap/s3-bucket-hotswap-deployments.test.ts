@@ -1,5 +1,5 @@
-/*import { Lambda } from 'aws-sdk';
-import { HotswapType } from '../../../lib/api/hotswap/common';
+import { Lambda } from 'aws-sdk';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { REQUIRED_BY_CFN } from '../../../lib/api/hotswap/s3-bucket-deployments';
 import * as setup from './hotswap-test-setup';
 
@@ -21,7 +21,7 @@ beforeEach(() => {
   hotswapMockSdkProvider.setInvokeLambdaMock(mockLambdaInvoke);
 });
 
-describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotswapType) => {
+describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('calls the lambdaInvoke() API when it receives only an asset difference in an S3 bucket deployment and evaluates CFN expressions in S3 Deployment Properties', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -61,7 +61,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -80,7 +80,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 
-  test('does not call the invoke() API when a resource with type that is not Custom::CDKBucketDeployment but has the same properties is changed', async () => { //different
+  test('does not call the invoke() API when a resource with type that is not Custom::CDKBucketDeployment but has the same properties is changed', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -105,16 +105,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockLambdaInvoke).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -123,7 +123,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('does not call the invokeLambda() api if the updated Policy has no Roles', async () => {//different
+  test('does not call the invokeLambda() api if the updated Policy has no Roles', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -196,16 +196,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapType === HotswapType.HOTSWAP) {
+    if (hotswapMode === HotswapMode.HOTSWAP) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockLambdaInvoke).not.toHaveBeenCalled();
-    } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -260,7 +260,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
 
     // WHEN
     await expect(() =>
-      hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact),
+      hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact),
     ).rejects.toThrow(/Parameter or resource 'BadLamba' could not be found for evaluation/);
 
     expect(mockLambdaInvoke).not.toHaveBeenCalled();
@@ -447,7 +447,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       });
 
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact, { WebsiteBucketParamOld: 'WebsiteBucketOld', WebsiteBucketParamNew: 'WebsiteBucketNew' });
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, { WebsiteBucketParamOld: 'WebsiteBucketOld', WebsiteBucketParamNew: 'WebsiteBucketNew' });
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -464,7 +464,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       });
     });
 
-    test('does not call the lambdaInvoke() API when the difference in the S3 deployment is referred to in one IAM policy change but not another', async () => { //different
+    test('does not call the lambdaInvoke() API when the difference in the S3 deployment is referred to in one IAM policy change but not another', async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -509,16 +509,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapType === HotswapType.HOTSWAP) {
+      if (hotswapMode === HotswapMode.HOTSWAP) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).toBeUndefined();
         expect(mockLambdaInvoke).not.toHaveBeenCalled();
-      } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+      } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).not.toBeUndefined();
@@ -536,7 +536,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       }
     });
 
-    test('does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment', async () => { //different
+    test('does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment', async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -584,16 +584,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapType === HotswapType.HOTSWAP) {
+      if (hotswapMode === HotswapMode.HOTSWAP) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).toBeUndefined();
         expect(mockLambdaInvoke).not.toHaveBeenCalled();
-      } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+      } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).not.toBeUndefined();
@@ -678,7 +678,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         setup.stackSummaryOf('ServiceRole2', 'AWS::IAM::Role', 'my-service-role-2'),
       );
 
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact, {
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
         WebsiteBucketParamOld: 'WebsiteBucketOld',
         WebsiteBucketParamNew: 'WebsiteBucketNew',
         DifferentBucketParamNew: 'WebsiteBucketNew',
@@ -711,7 +711,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       });
     });
 
-    test('does not call the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment that references two different policies', async () => { //different
+    test('does not call the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment that references two different policies', async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -755,16 +755,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapType === HotswapType.HOTSWAP) {
+      if (hotswapMode === HotswapMode.HOTSWAP) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).toBeUndefined();
         expect(mockLambdaInvoke).not.toHaveBeenCalled();
-      } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+      } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).not.toBeUndefined();
@@ -782,7 +782,7 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
       }
     });
 
-    test('does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an S3 deployment', async () => { //different
+    test('does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an S3 deployment', async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -820,16 +820,16 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapType === HotswapType.HOTSWAP) {
+      if (hotswapMode === HotswapMode.HOTSWAP) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).toBeUndefined();
         expect(mockLambdaInvoke).not.toHaveBeenCalled();
-      } else if (hotswapType === HotswapType.HOTSWAP_ONLY) {
+      } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
         // WHEN
-        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapType, cdkStackArtifact);
+        const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
         // THEN
         expect(deployStackResult).not.toBeUndefined();
@@ -848,4 +848,3 @@ describe.each([HotswapType.HOTSWAP, HotswapType.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 });
-*/
