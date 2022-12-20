@@ -720,6 +720,17 @@ const client = pool.addClient('app-client', {
 client.node.addDependency(provider);
 ```
 
+The property `authSessionValidity` is the session token for each API request in the authentication flow.
+Valid duration is from 3 to 15 minutes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  authSessionValidity: Duration.minutes(15),
+});
+```
+
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
 More information is available at [Using Tokens with User Pools](https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
 The expiration time for these tokens can be configured as shown below.
