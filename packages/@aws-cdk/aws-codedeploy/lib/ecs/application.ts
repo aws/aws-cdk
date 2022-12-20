@@ -71,7 +71,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
     return new class extends Resource implements IEcsApplication {
       public applicationArn = ecsApplicationArn;
       public applicationName = Arn.split(ecsApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
-    }(scope, id, { environmentFromArn: ecsApplicationArn });
+    } (scope, id, { environmentFromArn: ecsApplicationArn });
   }
 
   public readonly applicationArn: string;

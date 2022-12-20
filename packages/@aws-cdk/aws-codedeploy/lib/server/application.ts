@@ -74,7 +74,6 @@ export class ServerApplication extends Resource implements IServerApplication {
     }(scope, id, { environmentFromArn: arn });
   }
 
-
   public readonly applicationArn: string;
   public readonly applicationName: string;
 

@@ -24,7 +24,7 @@ export interface ImportedDeploymentGroupBaseProps {
    * The physical, human-readable name of the CodeDeploy Deployment Group
    * that we are referencing.
    *
-   * @default - Either deploymentGroupName or deploymentGroupArn is required
+   * @default Either deploymentGroupName or deploymentGroupArn is required
    */
   readonly deploymentGroupName: string;
 }
@@ -65,7 +65,7 @@ export interface DeploymentGroupBaseProps {
   /**
    * The service Role of this Deployment Group.
    *
-   * @default - A new Role will be created.
+   * @default A new Role will be created.
    */
   readonly role?: iam.IRole;
 }
