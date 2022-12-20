@@ -1,0 +1,157 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-log-group-integ": {
+        "id": "aws-cdk-log-group-integ",
+        "path": "aws-cdk-log-group-integ",
+        "children": {
+          "LogGroupLambda": {
+            "id": "LogGroupLambda",
+            "path": "aws-cdk-log-group-integ/LogGroupLambda",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-log-group-integ/LogGroupLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "dataProtectionPolicy": {
+                      "Name": "data-protection-policy",
+                      "Description": "test description",
+                      "Version": "2021-06-01",
+                      "Statement": [
+                        {
+                          "Sid": "audit-policy test",
+                          "DataIdentifier": [
+                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
+                            "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
+                          ],
+                          "Operation": {
+                            "Audit": {
+                              "FindingsDestination": {}
+                            }
+                          }
+                        },
+                        {
+                          "Sid": "redact-policy",
+                          "DataIdentifier": [
+                            "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
+                            "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
+                          ],
+                          "Operation": {
+                            "Deidentify": {
+                              "MaskConfig": {}
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "logGroupName": "cdkIntegLogGroup",
+                    "retentionInDays": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-log-group-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-log-group-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LogGroupInteg": {
+        "id": "LogGroupInteg",
+        "path": "LogGroupInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LogGroupInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LogGroupInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.182"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LogGroupInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LogGroupInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LogGroupInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.182"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -363,6 +363,13 @@ export interface LogGroupProps {
   readonly logGroupName?: string;
 
   /**
+   * Data Protection Policy.
+   *
+   * @default null
+   */
+  readonly dataProtectionPolicy?: object;
+
+  /**
    * How long, in days, the log contents will be retained.
    *
    * To retain all logs, set this value to RetentionDays.INFINITE.
@@ -450,6 +457,7 @@ export class LogGroup extends LogGroupBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
       retentionInDays,
+      dataProtectionPolicy: props.dataProtectionPolicy,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);

@@ -430,6 +430,52 @@ describe('log group', () => {
       LogGroupName: 'my-log-group',
     });
   });
+
+  test('set data protection policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    let policy:object = {
+      Name: 'data-protection-policy',
+      Description: 'test description',
+      Version: '2021-06-01',
+      Statement: [{
+        Sid: 'audit-policy test',
+        DataIdentifier: [
+          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+          'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
+        ],
+        Operation: {
+          Audit: {
+            FindingsDestination: {},
+          },
+        },
+      },
+      {
+        Sid: 'redact-policy',
+        DataIdentifier: [
+          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+          'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
+        ],
+        Operation: {
+          Deidentify: {
+            MaskConfig: {},
+          },
+        },
+      }],
+    };
+
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      dataProtectionPolicy: policy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      DataProtectionPolicy: policy,
+    });
+  });
 });
 
 function dataDrivenTests(cases: string[], body: (suffix: string) => void): void {

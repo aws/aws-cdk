@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "LogGroupInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-log-group-integ"
+      ],
+      "assertionStack": "LogGroupInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupIntegDefaultTestDeployAssertA9999A13"
+    }
+  }
+}

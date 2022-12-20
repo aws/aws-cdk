@@ -328,6 +328,51 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
 });
 ```
 
+## Data Protection Policy
+
+Creates a data protection policy and assigns it to the log group. A data protection policy can help safeguard sensitive data that's ingested by the log group by auditing and masking the sensitive log data. When a user who does not have permission to view masked data views a log event that includes masked data, the sensitive data is replaced by asterisks.
+
+For more information, including a list of types of data that can be audited and masked, see [Protect sensitive log data with masking](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html).
+
+Example:
+
+```ts
+new LogGroup(this, 'LogGroupLambda', {
+  logGroupName: 'cdkIntegLogGroup',
+  retention: RetentionDays.ONE_DAY,
+  dataProtectionPolicy:
+    {
+      Name: 'data-protection-policy',
+      Description: 'test description',
+      Version: '2021-06-01',
+      Statement: [{
+        Sid: 'audit-policy test',
+        DataIdentifier: [
+          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+          'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
+        ],
+        Operation: {
+          Audit: {
+            FindingsDestination: {},
+          },
+        },
+      },
+      {
+        Sid: 'redact-policy',
+        DataIdentifier: [
+          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+          'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
+        ],
+        Operation: {
+          Deidentify: {
+            MaskConfig: {},
+          },
+        },
+      }],
+    },
+});
+```
+
 ## Notes
 
 Be aware that Log Group ARNs will always have the string `:*` appended to

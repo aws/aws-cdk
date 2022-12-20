@@ -1,0 +1,78 @@
+{
+ "Resources": {
+  "LogGroupLambdaAC756C5B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "DataProtectionPolicy": {
+     "Name": "data-protection-policy",
+     "Description": "test description",
+     "Version": "2021-06-01",
+     "Statement": [
+      {
+       "Sid": "audit-policy test",
+       "DataIdentifier": [
+        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
+        "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
+       ],
+       "Operation": {
+        "Audit": {
+         "FindingsDestination": {}
+        }
+       }
+      },
+      {
+       "Sid": "redact-policy",
+       "DataIdentifier": [
+        "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
+        "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {}
+        }
+       }
+      }
+     ]
+    },
+    "LogGroupName": "cdkIntegLogGroup",
+    "RetentionInDays": 1
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
