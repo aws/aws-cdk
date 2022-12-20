@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table, TableEncryption } from '../lib';
 
@@ -7,6 +8,7 @@ const STACK_NAME = 'aws-cdk-dynamodb';
 
 // DynamoDB table parameters
 const TABLE = 'Table';
+const TABLE_WITH_CMK = 'TableWithCustomerManagedKey';
 const TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX = 'TableWithGlobalAndLocalSecondaryIndex';
 const TABLE_WITH_GLOBAL_SECONDARY_INDEX = 'TableWithGlobalSecondaryIndex';
 const TABLE_WITH_LOCAL_SECONDARY_INDEX = 'TableWithLocalSecondaryIndex';
@@ -126,6 +128,22 @@ tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
   sortKey: LSI_SORT_KEY,
 });
+
+const encryptionKey = new kms.Key(stack, 'Key', {
+  enableKeyRotation: true,
+});
+
+const tableWithCMK = new Table(stack, TABLE_WITH_CMK, {
+  partitionKey: TABLE_PARTITION_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
+  stream: StreamViewType.NEW_AND_OLD_IMAGES,
+  encryptionKey: encryptionKey,
+});
+
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('sqs.amazonaws.com'),
+});
+tableWithCMK.grantStreamRead(role);
 
 const user = new iam.User(stack, 'User');
 table.grantReadData(user);
