@@ -99,7 +99,7 @@ def get_oci_cmd(repository, version):
     private_ecr_pattern = '\d+.dkr.ecr.[a-z]+-[a-z]+-\d.amazonaws.com'
     public_ecr = 'public.ecr.aws'
 
-    registry = repository.rsplit('/', 1)[0].replace('oci://', '')
+    registry = repository.replace("oci://", "").split("/", 1)
 
     if re.fullmatch(private_ecr_pattern, registry) is not None:
         logger.info("Found AWS private repository")
