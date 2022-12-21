@@ -183,6 +183,21 @@ new go.GoFunction(this, 'GoFunction', {
 });
 ```
 
+You can set additional Docker options to configure the build environment:
+
+ ```ts
+new go.GoFunction(this, 'GoFunction', {
+  entry: 'app/cmd/api',
+  bundling: {
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
+});
+```
+
 ## Command hooks
 
 It is  possible to run additional commands by specifying the `commandHooks` prop:

@@ -1,7 +1,7 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "files": {
-    "077f5b1d65ef54f982550efd635d477a7884189645881cd41c11646212797905": {
+    "2c20f3551f9569b05a50288a76ab830f85c7d1482016211bf1ff4df621c7a215": {
       "source": {
         "path": "lambda-ecr-docker.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "077f5b1d65ef54f982550efd635d477a7884189645881cd41c11646212797905.json",
+          "objectKey": "2c20f3551f9569b05a50288a76ab830f85c7d1482016211bf1ff4df621c7a215.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

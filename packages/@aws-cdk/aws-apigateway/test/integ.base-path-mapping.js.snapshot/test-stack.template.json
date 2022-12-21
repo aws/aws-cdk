@@ -70,6 +70,16 @@
      "Ref": "ApiF70053CD"
     }
    }
+  },
+  "MappingThree36BBA1B6": {
+   "Type": "AWS::ApiGateway::BasePathMapping",
+   "Properties": {
+    "DomainName": "domainName",
+    "BasePath": "api/v1/multi-level-path",
+    "RestApiId": {
+     "Ref": "ApiF70053CD"
+    }
+   }
   }
  },
  "Outputs": {

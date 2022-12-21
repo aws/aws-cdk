@@ -145,6 +145,24 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
+You can set additional Docker options to configure the build environment:
+
+ ```ts
+const entry = '/path/to/function';
+
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+      network: 'host',
+      securityOpt: 'no-new-privileges',
+      user: 'user:group',
+      volumesFrom: ['777f7dc92da7'],
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+   },
+});
+```
+
 ## Custom Bundling with Code Artifact
 
 To use a Code Artifact PyPI repo, the `PIP_INDEX_URL` for bundling the function can be customized (requires AWS CLI in the build environment):

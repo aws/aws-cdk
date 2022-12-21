@@ -1,3 +1,106 @@
+# CloudFormation Resource Specification v102.0.0
+
+## New Resource Types
+
+* AWS::DocDBElastic::Cluster
+* AWS::IoTTwinMaker::SyncJob
+
+## Attribute Changes
+
+* AWS::CodePipeline::CustomActionType Id (__added__)
+* AWS::ElasticBeanstalk::ConfigurationTemplate TemplateName (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup TargetGroupArn (__added__)
+* AWS::Route53Resolver::ResolverEndpoint OutpostArn (__added__)
+* AWS::Route53Resolver::ResolverEndpoint PreferredInstanceType (__added__)
+* AWS::WAFv2::RuleGroup AvailableLabels (__deleted__)
+* AWS::WAFv2::RuleGroup ConsumedLabels (__deleted__)
+
+## Property Changes
+
+* AWS::EKS::Addon ConfigurationValues (__added__)
+* AWS::EMRServerless::Application Architecture (__added__)
+* AWS::M2::Application KmsKeyId (__added__)
+* AWS::M2::Environment KmsKeyId (__added__)
+* AWS::RDS::DBCluster DBSystemId (__added__)
+* AWS::RDS::DBInstance DBClusterSnapshotIdentifier (__added__)
+* AWS::RDS::DBInstance RestoreTime (__added__)
+* AWS::RDS::DBInstance SourceDBInstanceAutomatedBackupsArn (__added__)
+* AWS::RDS::DBInstance SourceDbiResourceId (__added__)
+* AWS::RDS::DBInstance UseLatestRestorableTime (__added__)
+* AWS::Route53Resolver::ResolverEndpoint OutpostArn (__added__)
+* AWS::Route53Resolver::ResolverEndpoint PreferredInstanceType (__added__)
+* AWS::SSMIncidents::ReplicationSet Tags (__added__)
+* AWS::WAFv2::RuleGroup AvailableLabels (__added__)
+* AWS::WAFv2::RuleGroup ConsumedLabels (__added__)
+* AWS::WAFv2::WebACL ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL TokenDomains (__added__)
+
+## Property Type Changes
+
+* AWS::ECS::Service.DeploymentAlarms (__added__)
+* AWS::WAFv2::RuleGroup.Challenge (__added__)
+* AWS::WAFv2::RuleGroup.ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL.AWSManagedRulesBotControlRuleSet (__added__)
+* AWS::WAFv2::WebACL.ChallengeAction (__added__)
+* AWS::WAFv2::WebACL.ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL.RuleActionOverride (__added__)
+* AWS::CodePipeline::CustomActionType.ArtifactDetails MaximumCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ArtifactDetails MinimumCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Key.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Queryable.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Required.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Secret.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings EntityUrlTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings ExecutionUrlTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings RevisionUrlTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings ThirdPartyConfigurationUrl.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ECS::Service.DeploymentConfiguration Alarms (__added__)
+* AWS::ECS::TaskDefinition.PortMapping ContainerPortRange (__added__)
+* AWS::ElasticBeanstalk::ConfigurationTemplate.SourceConfiguration ApplicationName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ElasticBeanstalk::ConfigurationTemplate.SourceConfiguration TemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBCluster.ScalingConfiguration SecondsBeforeTimeout (__added__)
+* AWS::WAFv2::RuleGroup.Rule ChallengeConfig (__added__)
+* AWS::WAFv2::RuleGroup.RuleAction Challenge (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupConfig AWSManagedRulesBotControlRuleSet (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement RuleActionOverrides (__added__)
+* AWS::WAFv2::WebACL.Rule ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL.RuleAction Challenge (__added__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement RuleActionOverrides (__added__)
+
+
 # CloudFormation Resource Specification v101.0.0
 
 ## New Resource Types

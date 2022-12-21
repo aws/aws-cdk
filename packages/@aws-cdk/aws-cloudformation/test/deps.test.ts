@@ -15,7 +15,7 @@ describe('resource dependencies', () => {
     const r2 = new CfnResource(stack, 'r2', { type: 'r2' });
 
     // WHEN
-    r1.addDependsOn(r2);
+    r1.addDependency(r2);
 
     // THEN
     expect(app.synth().getStackArtifact(stack.artifactId).template?.Resources).toEqual({
@@ -304,7 +304,7 @@ describe('stack dependencies', () => {
  * Given a test function which sets the stage and verifies a dependency scenario
  * between two CloudFormation resources, returns two tests which exercise both
  * "construct dependency" (i.e. node.addDependency) and "resource dependency"
- * (i.e. resource.addDependsOn).
+ * (i.e. resource.addDependency).
  *
  * @param testFunction The test function
  */
@@ -314,7 +314,7 @@ function matrixForResourceDependencyTest(testFunction: (addDep: (source: CfnReso
       testFunction((source, target) => source.node.addDependency(target));
     });
     test('resource dependency', () => {
-      testFunction((source, target) => source.addDependsOn(target));
+      testFunction((source, target) => source.addDependency(target));
     });
   };
 }

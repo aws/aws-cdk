@@ -217,6 +217,34 @@
               "fqn": "@aws-cdk/aws-apigateway.BasePathMapping",
               "version": "0.0.0"
             }
+          },
+          "MappingThree": {
+            "id": "MappingThree",
+            "path": "test-stack/MappingThree",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-stack/MappingThree/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::BasePathMapping",
+                  "aws:cdk:cloudformation:props": {
+                    "domainName": "domainName",
+                    "basePath": "path",
+                    "restApiId": {
+                      "Ref": "ApiF70053CD"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigateway.CfnBasePathMapping",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigateway.BasePathMapping",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
