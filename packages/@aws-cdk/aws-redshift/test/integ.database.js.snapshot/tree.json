@@ -1166,7 +1166,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                                  "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1228,7 +1228,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.162"
+                  "version": "10.1.182"
                 }
               },
               "TablePrivileges": {
@@ -1408,7 +1408,7 @@
                                       "s3Bucket": {
                                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                       },
-                                      "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                                      "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                                     },
                                     "role": {
                                       "Fn::GetAtt": [
@@ -1470,13 +1470,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.162"
+                      "version": "10.1.182"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.162"
+                  "version": "10.1.182"
                 }
               }
             },
@@ -1840,7 +1840,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "7215c88dd3e638d28329d4538b36cdbfb54233a4d972181795814f8b904d1037.zip"
+                                  "s3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
                                 },
                                 "role": {
                                   "Fn::GetAtt": [
@@ -1902,7 +1902,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.162"
+                  "version": "10.1.182"
                 }
               }
             },
@@ -1946,7 +1946,7 @@
                 "path": "redshift-cluster-database-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.162"
+                  "version": "10.1.182"
                 }
               },
               "DeployAssert": {
@@ -1992,7 +1992,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.162"
+          "version": "10.1.182"
         }
       }
     },
