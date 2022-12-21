@@ -1,0 +1,29 @@
+{
+  "ResourceTypes": {
+    "AWS::Timestream::Table": {
+      "patch": {
+        "description": "These types were once typed as Json, and adding types now is a breaking change. Keep them as Json forever.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/MagneticStoreWriteProperties/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/MagneticStoreWriteProperties/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/RetentionProperties/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/RetentionProperties/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}
