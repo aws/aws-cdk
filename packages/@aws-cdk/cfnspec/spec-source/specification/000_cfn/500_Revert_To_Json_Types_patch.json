@@ -1,0 +1,63 @@
+{
+  "ResourceTypes": {
+    "AWS::Backup::ReportPlan": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ReportDeliveryChannel/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ReportDeliveryChannel/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/ReportSetting/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ReportSetting/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  },
+  "PropertyTypes": {
+    "AWS::Backup::BackupSelection.BackupSelectionResourceType": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Conditions/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Conditions/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Backup::Framework.FrameworkControl": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ControlScope/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ControlScope/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}
