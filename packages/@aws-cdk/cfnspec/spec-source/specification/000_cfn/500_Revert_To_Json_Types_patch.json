@@ -40,6 +40,22 @@
           }
         ]
       }
+    },
+    "AWS::CodeGuruProfiler::ProfilingGroup": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AgentPermissions/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AgentPermissions/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
