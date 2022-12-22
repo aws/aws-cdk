@@ -56,6 +56,22 @@
           }
         ]
       }
+    },
+    "AWS::Config::ConformancePack": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/TemplateSSMDocumentDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/TemplateSSMDocumentDetails/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
