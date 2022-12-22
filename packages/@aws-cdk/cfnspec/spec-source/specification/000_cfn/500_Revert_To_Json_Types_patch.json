@@ -88,6 +88,86 @@
           }
         ]
       }
+    },
+    "AWS::EC2::FlowLog": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DestinationOptions/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DestinationOptions/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::Subnet": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/PrivateDnsNameOptionsOnLaunch/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/PrivateDnsNameOptionsOnLaunch/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::TransitGatewayAttachment": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Options/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Options/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::TransitGatewayMulticastDomain": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Options/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Options/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::TransitGatewayVpcAttachment": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Options/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Options/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
