@@ -519,6 +519,22 @@
           }
         ]
       }
+    },
+    "AWS::WAFv2::LoggingConfiguration": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/LoggingFilter/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/LoggingFilter/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
@@ -818,6 +834,124 @@
           {
             "op": "add",
             "path": "/Properties/TagStepDetails/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::LoggingConfiguration.FieldToMatch": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/JsonBody/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/JsonBody/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/SingleHeader/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleHeader/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::RuleGroup.FieldToMatch": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SingleQueryArgument/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleQueryArgument/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/SingleHeader/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleHeader/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::RuleGroup.RuleAction": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Allow/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Allow/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Block/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Block/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Captcha/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Captcha/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Count/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Count/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::WebACL.FieldToMatch": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SingleQueryArgument/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleQueryArgument/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/SingleHeader/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleHeader/PrimitiveType",
             "value": "Json"
           }
         ]
