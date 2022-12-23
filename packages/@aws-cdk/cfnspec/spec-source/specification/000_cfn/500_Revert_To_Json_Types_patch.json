@@ -391,6 +391,70 @@
           }
         ]
       }
+    },
+    "AWS::IoTTwinMaker::ComponentType.DataConnector": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/RelationshipValue/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/RelationshipValue/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTTwinMaker::Entity.DataValue": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/RelationshipValue/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/RelationshipValue/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTTwinMaker::Entity.Property": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Definition/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Definition/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTTwinMaker::Entity.Status": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Error/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Error/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   }
 }
