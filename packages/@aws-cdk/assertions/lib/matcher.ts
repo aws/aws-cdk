@@ -196,6 +196,11 @@ export class MatchResult {
     recurse(this);
     return moveMarkersToFront(parts.join('').trimEnd());
 
+    // Implementation starts here.
+    // Yes this is a lot of code in one place. That's a bit unfortunate, but this is
+    // the simplest way to access private state of the MatchResult, that we definitely
+    // do NOT want to make part of the public API.
+
     function emit(x: string): void {
       if (x === undefined) {
         debugger;
