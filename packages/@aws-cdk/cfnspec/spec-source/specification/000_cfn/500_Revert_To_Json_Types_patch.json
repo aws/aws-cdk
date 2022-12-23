@@ -348,6 +348,31 @@
           }
         ]
       }
+    },
+    "AWS::LookoutEquipment::InferenceScheduler": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DataInputConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataInputConfiguration/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/DataOutputConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataOutputConfiguration/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
