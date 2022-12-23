@@ -68,6 +68,14 @@ export interface DeploymentGroupBaseProps {
    * @default A new Role will be created.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Id of the role construct, if created by this construct
+   *
+   * Exists because when we factored this out, there was a difference between the
+   * 3 deployment groups.
+   */
+  readonly roleConstructId: string;
 }
 
 /**
@@ -99,7 +107,7 @@ export class DeploymentGroupBase extends Resource {
       physicalName: props.deploymentGroupName,
     });
 
-    this._role = props.role || new iam.Role(this, 'ServiceRole', {
+    this._role = props.role || new iam.Role(this, props.roleConstructId, {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
     });
 

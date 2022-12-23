@@ -214,6 +214,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     super(scope, id, {
       deploymentGroupName: props.deploymentGroupName,
       role: props.role,
+      roleConstructId: 'ServiceRole',
     });
     this.role = this._role;
 

@@ -154,6 +154,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
     super(scope, id, {
       deploymentGroupName: props.deploymentGroupName,
       role: props.role,
+      roleConstructId: 'ServiceRole',
     });
     this.role = this._role;
 

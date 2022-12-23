@@ -248,6 +248,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     super(scope, id, {
       deploymentGroupName: props.deploymentGroupName,
       role: props.role,
+      roleConstructId: 'Role',
     });
     this.role = this._role;
 
