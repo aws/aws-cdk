@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -25,9 +26,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // lib/assertions/providers/lambda-handler/index.ts
 var lambda_handler_exports = {};
 __export(lambda_handler_exports, {
-  handler: () => handler,
-  isComplete: () => isComplete,
-  onTimeout: () => onTimeout
+  handler: () => handler
 });
 module.exports = __toCommonJS(lambda_handler_exports);
 
@@ -387,7 +386,6 @@ var StringLikeRegexpMatch = class extends Matcher {
 // lib/assertions/providers/lambda-handler/base.ts
 var https = __toESM(require("https"));
 var url = __toESM(require("url"));
-var AWS = __toESM(require("aws-sdk"));
 var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
@@ -406,40 +404,20 @@ var CustomResourceHandler = class {
   }
   async handle() {
     try {
-      if ("stateMachineArn" in this.event.ResourceProperties) {
-        const req = {
-          stateMachineArn: this.event.ResourceProperties.stateMachineArn,
-          name: this.event.RequestId,
-          input: JSON.stringify(this.event)
-        };
-        await this.startExecution(req);
-        return;
-      } else {
-        const response = await this.processEvent(this.event.ResourceProperties);
-        return response;
-      }
+      console.log(`Event: ${JSON.stringify({ ...this.event, ResponseURL: "..." })}`);
+      const response = await this.processEvent(this.event.ResourceProperties);
+      console.log(`Event output : ${JSON.stringify(response)}`);
+      await this.respond({
+        status: "SUCCESS",
+        reason: "OK",
+        data: response
+      });
     } catch (e) {
       console.log(e);
-      throw e;
-    } finally {
-      clearTimeout(this.timeout);
-    }
-  }
-  async handleIsComplete() {
-    try {
-      const result = await this.processEvent(this.event.ResourceProperties);
-      return result;
-    } catch (e) {
-      console.log(e);
-      return;
-    } finally {
-      clearTimeout(this.timeout);
-    }
-  }
-  async startExecution(req) {
-    try {
-      const sfn = new AWS.StepFunctions();
-      await sfn.startExecution(req).promise();
+      await this.respond({
+        status: "FAILED",
+        reason: e.message ?? "Internal Error"
+      });
     } finally {
       clearTimeout(this.timeout);
     }
@@ -475,8 +453,6 @@ var CustomResourceHandler = class {
         request2.end();
       } catch (e) {
         reject(e);
-      } finally {
-        clearTimeout(this.timeout);
       }
     });
   }
@@ -503,8 +479,7 @@ var AssertionHandler = class extends CustomResourceHandler {
     matchResult.finished();
     if (matchResult.hasFailed()) {
       result = {
-        failed: true,
-        assertion: JSON.stringify({
+        data: JSON.stringify({
           status: "fail",
           message: [
             ...matchResult.toHumanStrings(),
@@ -513,11 +488,11 @@ var AssertionHandler = class extends CustomResourceHandler {
         })
       };
       if (request2.failDeployment) {
-        throw new Error(result.assertion);
+        throw new Error(result.data);
       }
     } else {
       result = {
-        assertion: JSON.stringify({
+        data: JSON.stringify({
           status: "success"
         })
       };
@@ -587,10 +562,7 @@ function flatten(object) {
     {},
     ...function _flatten(child, path = []) {
       return [].concat(...Object.keys(child).map((key) => {
-        let childKey = Buffer.isBuffer(child[key]) ? child[key].toString("utf8") : child[key];
-        if (typeof childKey === "string") {
-          childKey = isJsonString(childKey);
-        }
+        const childKey = Buffer.isBuffer(child[key]) ? child[key].toString("utf8") : child[key];
         return typeof childKey === "object" && childKey !== null ? _flatten(childKey, path.concat([key])) : { [path.concat([key]).join(".")]: childKey };
       }));
     }(object)
@@ -598,12 +570,9 @@ function flatten(object) {
 }
 var AwsApiCallHandler = class extends CustomResourceHandler {
   async processEvent(request2) {
-    const AWS2 = require("aws-sdk");
-    console.log(`AWS SDK VERSION: ${AWS2.VERSION}`);
-    if (!Object.prototype.hasOwnProperty.call(AWS2, request2.service)) {
-      throw Error(`Service ${request2.service} does not exist in AWS SDK version ${AWS2.VERSION}.`);
-    }
-    const service = new AWS2[request2.service]();
+    const AWS = require("aws-sdk");
+    console.log(`AWS SDK VERSION: ${AWS.VERSION}`);
+    const service = new AWS[request2.service]();
     const response = await service[request2.api](request2.parameters && decode(request2.parameters)).promise();
     console.log(`SDK response received ${JSON.stringify(response)}`);
     delete response.ResponseMetadata;
@@ -613,18 +582,9 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const flatData = {
       ...flatten(respond)
     };
-    const resp = request2.flattenResponse === "true" ? flatData : respond;
-    console.log(`Returning result ${JSON.stringify(resp)}`);
-    return resp;
+    return request2.flattenResponse === "true" ? flatData : respond;
   }
 };
-function isJsonString(value) {
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
-}
 
 // lib/assertions/providers/lambda-handler/types.ts
 var ASSERT_RESOURCE_TYPE = "Custom::DeployAssert@AssertEquals";
@@ -632,136 +592,21 @@ var SDK_RESOURCE_TYPE_PREFIX = "Custom::DeployAssert@SdkCall";
 
 // lib/assertions/providers/lambda-handler/index.ts
 async function handler(event, context) {
-  console.log(`Event: ${JSON.stringify({ ...event, ResponseURL: "..." })}`);
   const provider = createResourceHandler(event, context);
-  try {
-    if (event.RequestType === "Delete") {
-      await provider.respond({
-        status: "SUCCESS",
-        reason: "OK"
-      });
-      return;
-    }
-    const result = await provider.handle();
-    if ("stateMachineArn" in event.ResourceProperties) {
-      console.info('Found "stateMachineArn", waiter statemachine started');
-      return;
-    } else if ("expected" in event.ResourceProperties) {
-      console.info('Found "expected", testing assertions');
-      const actualPath = event.ResourceProperties.actualPath;
-      const actual = actualPath ? result[`apiCallResponse.${actualPath}`] : result.apiCallResponse;
-      const assertion = new AssertionHandler({
-        ...event,
-        ResourceProperties: {
-          ServiceToken: event.ServiceToken,
-          actual,
-          expected: event.ResourceProperties.expected
-        }
-      }, context);
-      try {
-        const assertionResult = await assertion.handle();
-        await provider.respond({
-          status: "SUCCESS",
-          reason: "OK",
-          data: {
-            ...assertionResult,
-            ...result
-          }
-        });
-        return;
-      } catch (e) {
-        await provider.respond({
-          status: "FAILED",
-          reason: e.message ?? "Internal Error"
-        });
-        return;
-      }
-    }
-    await provider.respond({
-      status: "SUCCESS",
-      reason: "OK",
-      data: result
-    });
-  } catch (e) {
-    await provider.respond({
-      status: "FAILED",
-      reason: e.message ?? "Internal Error"
-    });
-    return;
-  }
-  return;
-}
-async function onTimeout(timeoutEvent) {
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
-  const provider = createResourceHandler(isCompleteRequest, standardContext);
-  await provider.respond({
-    status: "FAILED",
-    reason: "Operation timed out: " + JSON.stringify(isCompleteRequest)
-  });
-}
-async function isComplete(event, context) {
-  console.log(`Event: ${JSON.stringify({ ...event, ResponseURL: "..." })}`);
-  const provider = createResourceHandler(event, context);
-  try {
-    const result = await provider.handleIsComplete();
-    const actualPath = event.ResourceProperties.actualPath;
-    if (result) {
-      const actual = actualPath ? result[`apiCallResponse.${actualPath}`] : result.apiCallResponse;
-      if ("expected" in event.ResourceProperties) {
-        const assertion = new AssertionHandler({
-          ...event,
-          ResourceProperties: {
-            ServiceToken: event.ServiceToken,
-            actual,
-            expected: event.ResourceProperties.expected
-          }
-        }, context);
-        const assertionResult = await assertion.handleIsComplete();
-        if (!(assertionResult == null ? void 0 : assertionResult.failed)) {
-          await provider.respond({
-            status: "SUCCESS",
-            reason: "OK",
-            data: {
-              ...assertionResult,
-              ...result
-            }
-          });
-          return;
-        } else {
-          console.log(`Assertion Failed: ${JSON.stringify(assertionResult)}`);
-          throw new Error(JSON.stringify(event));
-        }
-      }
-      await provider.respond({
-        status: "SUCCESS",
-        reason: "OK",
-        data: result
-      });
-    } else {
-      console.log("No result");
-      throw new Error(JSON.stringify(event));
-    }
-    return;
-  } catch (e) {
-    console.log(e);
-    throw new Error(JSON.stringify(event));
-  }
+  await provider.handle();
 }
 function createResourceHandler(event, context) {
   if (event.ResourceType.startsWith(SDK_RESOURCE_TYPE_PREFIX)) {
     return new AwsApiCallHandler(event, context);
-  } else if (event.ResourceType.startsWith(ASSERT_RESOURCE_TYPE)) {
-    return new AssertionHandler(event, context);
-  } else {
-    throw new Error(`Unsupported resource type "${event.ResourceType}`);
+  }
+  switch (event.ResourceType) {
+    case ASSERT_RESOURCE_TYPE:
+      return new AssertionHandler(event, context);
+    default:
+      throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }
 }
-var standardContext = {
-  getRemainingTimeInMillis: () => 9e4
-};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  handler,
-  isComplete,
-  onTimeout
+  handler
 });

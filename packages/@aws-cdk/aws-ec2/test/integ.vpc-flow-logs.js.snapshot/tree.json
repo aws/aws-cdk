@@ -4,6 +4,14 @@
     "id": "App",
     "path": "",
     "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.123"
+        }
+      },
       "FlowLogsFeatureFlag": {
         "id": "FlowLogsFeatureFlag",
         "path": "FlowLogsFeatureFlag",
@@ -819,6 +827,7 @@
                           "Ref": "VPCB9E5F0B4"
                         },
                         "resourceType": "VPC",
+                        "trafficType": "ALL",
                         "logDestination": {
                           "Fn::GetAtt": [
                             "VPCFlowLogsS3BucketFB7DC2BE",
@@ -831,8 +840,7 @@
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC"
                           }
-                        ],
-                        "trafficType": "ALL"
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1020,10 +1028,11 @@
                           "Ref": "VPCB9E5F0B4"
                         },
                         "resourceType": "VPC",
+                        "trafficType": "ALL",
                         "destinationOptions": {
                           "fileFormat": "plain-text",
-                          "hiveCompatiblePartitions": true,
-                          "perHourPartition": false
+                          "perHourPartition": false,
+                          "hiveCompatiblePartitions": true
                         },
                         "logDestination": {
                           "Fn::GetAtt": [
@@ -1037,8 +1046,7 @@
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC"
                           }
-                        ],
-                        "trafficType": "ALL"
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1081,7 +1089,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.161"
+              "version": "10.1.123"
             }
           },
           "FlowLogsInstance": {
@@ -1132,14 +1140,6 @@
                 "id": "InstanceRole",
                 "path": "FlowLogsFeatureFlag/FlowLogsInstance/InstanceRole",
                 "children": {
-                  "ImportInstanceRole": {
-                    "id": "ImportInstanceRole",
-                    "path": "FlowLogsFeatureFlag/FlowLogsInstance/InstanceRole/ImportInstanceRole",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "FlowLogsFeatureFlag/FlowLogsInstance/InstanceRole/Resource",
@@ -1262,22 +1262,6 @@
             "path": "FlowLogsFeatureFlag/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "FlowLogsFeatureFlag/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "FlowLogsFeatureFlag/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
@@ -2102,6 +2086,7 @@
                           "Ref": "VPCB9E5F0B4"
                         },
                         "resourceType": "VPC",
+                        "trafficType": "ALL",
                         "logDestination": {
                           "Fn::GetAtt": [
                             "VPCFlowLogsS3BucketFB7DC2BE",
@@ -2114,8 +2099,7 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC"
                           }
-                        ],
-                        "trafficType": "ALL"
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -2143,6 +2127,7 @@
                           "Ref": "VPCB9E5F0B4"
                         },
                         "resourceType": "VPC",
+                        "trafficType": "ALL",
                         "logDestination": {
                           "Fn::Join": [
                             "",
@@ -2163,8 +2148,7 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC"
                           }
-                        ],
-                        "trafficType": "ALL"
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -2192,14 +2176,6 @@
                 "id": "IAMRole",
                 "path": "FlowLogsTestStack/FlowLogsCW/IAMRole",
                 "children": {
-                  "ImportIAMRole": {
-                    "id": "ImportIAMRole",
-                    "path": "FlowLogsTestStack/FlowLogsCW/IAMRole/ImportIAMRole",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "FlowLogsTestStack/FlowLogsCW/IAMRole/Resource",
@@ -2323,6 +2299,7 @@
                       "Ref": "VPCB9E5F0B4"
                     },
                     "resourceType": "VPC",
+                    "trafficType": "ALL",
                     "deliverLogsPermissionArn": {
                       "Fn::GetAtt": [
                         "FlowLogsCWIAMRole017AD736",
@@ -2332,8 +2309,7 @@
                     "logDestinationType": "cloud-watch-logs",
                     "logGroupName": {
                       "Ref": "FlowLogsCWLogGroup0398E8F8"
-                    },
-                    "trafficType": "ALL"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -2616,22 +2592,6 @@
               "fqn": "@aws-cdk/core.CustomResourceProvider",
               "version": "0.0.0"
             }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "FlowLogsTestStack/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "FlowLogsTestStack/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
-            }
           }
         },
         "constructInfo": {
@@ -2652,7 +2612,7 @@
                 "path": "FlowLogs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.161"
+                  "version": "10.1.123"
                 }
               },
               "DeployAssert": {
@@ -2672,7 +2632,7 @@
                             "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.161"
+                              "version": "10.1.123"
                             }
                           }
                         },
@@ -2744,23 +2704,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.161"
-                    }
-                  },
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "FlowLogs/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "FlowLogs/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "version": "10.1.123"
                     }
                   }
                 },
@@ -2779,14 +2723,6 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
-        }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.161"
         }
       }
     },
