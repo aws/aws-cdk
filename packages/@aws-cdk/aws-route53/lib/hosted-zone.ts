@@ -349,20 +349,24 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
    * Grant permissions to add delegation records to this zone
    */
   public grantDelegation(grantee: iam.IGrantable) {
-    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+    const g1 = iam.Grant.addToPrincipal({
+      grantee,
       actions: ['route53:ChangeResourceRecordSets'],
-      resources: [this.hostedZoneArn],
+      resourceArns: [this.hostedZoneArn],
       conditions: {
         'ForAllValues:StringEquals': {
           'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
           'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
         },
       },
-    }));
-    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+    });
+    const g2 = iam.Grant.addToPrincipal({
+      grantee,
       actions: ['route53:ListHostedZonesByName'],
-      resources: ['*'],
-    }));
+      resourceArns: ['*'],
+    });
+
+    return g1.combine(g2);
   }
 }
 
