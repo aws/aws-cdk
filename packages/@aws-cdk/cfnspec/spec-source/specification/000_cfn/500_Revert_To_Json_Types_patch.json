@@ -503,6 +503,22 @@
           }
         ]
       }
+    },
+    "AWS::Transfer::Connector": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/As2Config/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/As2Config/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
@@ -759,6 +775,49 @@
           {
             "op": "add",
             "path": "/Properties/ModelInput/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Transfer::Workflow.WorkflowStep": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/CopyStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/CopyStepDetails/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/CustomStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/CustomStepDetails/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/DeleteStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DeleteStepDetails/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/TagStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/TagStepDetails/PrimitiveType",
             "value": "Json"
           }
         ]
