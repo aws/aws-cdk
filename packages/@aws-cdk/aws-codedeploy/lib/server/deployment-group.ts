@@ -280,7 +280,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.setNameAndArn(resource, this.application);
+    this._setNameAndArn(resource, this.application);
   }
 
   /**

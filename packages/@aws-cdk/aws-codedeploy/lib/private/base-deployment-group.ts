@@ -97,8 +97,10 @@ export class DeploymentGroupBase extends Resource {
    * Set name and ARN properties.
    *
    * Must be called in the child constructor.
+   *
+   * @internal
    */
-  protected setNameAndArn(resource: CfnDeploymentGroup, application: IApplicationLike) {
+  protected _setNameAndArn(resource: CfnDeploymentGroup, application: IApplicationLike) {
     (this as any).deploymentGroupName = this.getResourceNameAttribute(resource.ref);
     (this as any).deploymentGroupArn = this.getResourceArnAttribute(this.stack.formatArn({
       service: 'codedeploy',

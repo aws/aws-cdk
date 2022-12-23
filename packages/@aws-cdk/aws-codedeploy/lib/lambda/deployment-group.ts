@@ -171,7 +171,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.setNameAndArn(resource, this.application);
+    this._setNameAndArn(resource, this.application);
 
     if (props.preHook) {
       this.addPreHook(props.preHook);

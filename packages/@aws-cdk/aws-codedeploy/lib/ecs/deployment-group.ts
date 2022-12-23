@@ -255,7 +255,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.setNameAndArn(resource, this.application);
+    this._setNameAndArn(resource, this.application);
 
     // If the deployment config is a construct, add a dependency to ensure the deployment config
     // is created before the deployment group is.
