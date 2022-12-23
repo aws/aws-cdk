@@ -1,5 +1,5 @@
 {
-  "$version": "102.0.0",
+  "$version": "103.0.0",
   "PropertyTypes": {
     "AWS::RedshiftServerless::Namespace.Namespace": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html",
@@ -265,9 +265,6 @@
   "ResourceTypes": {
     "AWS::RedshiftServerless::Namespace": {
       "Attributes": {
-        "Namespace": {
-          "Type": "Namespace"
-        },
         "Namespace.AdminUsername": {
           "PrimitiveType": "String"
         },
@@ -364,6 +361,12 @@
           "Type": "List",
           "UpdateType": "Mutable"
         },
+        "Namespace": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-namespace",
+          "Required": false,
+          "Type": "Namespace",
+          "UpdateType": "Mutable"
+        },
         "NamespaceName": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-namespacename",
           "PrimitiveType": "String",
@@ -382,31 +385,17 @@
     },
     "AWS::RedshiftServerless::Workgroup": {
       "Attributes": {
-        "Workgroup": {
-          "Type": "Workgroup"
-        },
         "Workgroup.BaseCapacity": {
           "PrimitiveType": "Integer"
         },
-        "Workgroup.ConfigParameters": {
-          "ItemType": "ConfigParameter",
-          "Type": "List"
-        },
         "Workgroup.CreationDate": {
           "PrimitiveType": "String"
-        },
-        "Workgroup.Endpoint": {
-          "Type": "Endpoint"
         },
         "Workgroup.Endpoint.Address": {
           "PrimitiveType": "String"
         },
         "Workgroup.Endpoint.Port": {
           "PrimitiveType": "Integer"
-        },
-        "Workgroup.Endpoint.VpcEndpoints": {
-          "ItemType": "VpcEndpoint",
-          "Type": "List"
         },
         "Workgroup.EnhancedVpcRouting": {
           "PrimitiveType": "Boolean"
@@ -494,6 +483,12 @@
           "ItemType": "Tag",
           "Required": false,
           "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "Workgroup": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-workgroup",
+          "Required": false,
+          "Type": "Workgroup",
           "UpdateType": "Mutable"
         },
         "WorkgroupName": {
