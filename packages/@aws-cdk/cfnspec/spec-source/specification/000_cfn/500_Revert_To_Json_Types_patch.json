@@ -437,6 +437,72 @@
           }
         ]
       }
+    },
+    "AWS::SageMaker::FeatureGroup": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/OfflineStoreConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/OfflineStoreConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/OnlineStoreConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/OnlineStoreConfig/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::SageMaker::Pipeline": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ParallelismConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ParallelismConfiguration/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/PipelineDefinition/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/PipelineDefinition/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::SageMaker::Project": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ServiceCatalogProvisioningDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ServiceCatalogProvisioningDetails/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
@@ -677,6 +743,22 @@
           {
             "op": "add",
             "path": "/Properties/Filter/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelPackageContainerDefinition": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ModelInput/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ModelInput/PrimitiveType",
             "value": "Json"
           }
         ]
