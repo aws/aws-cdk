@@ -27,9 +27,9 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
   if (Object.keys(matching).length > 0) {
     return { match: true, matches: matching, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   } else {
-    // Sort by failcount, use logicalId as a tie breaker. Take the 3 closest
+    // Sort by cost, use logicalId as a tie breaker. Take the 3 closest
     // matches (helps debugging in case we get the top pick wrong).
-    failures.sort(sortKeyComparator(([logicalId, result]) => [result.failCount, logicalId]));
+    failures.sort(sortKeyComparator(([logicalId, result]) => [result.failCost, logicalId]));
     const closestResults = Object.fromEntries(failures.slice(0, 3));
     return { match: false, closestResults, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   }

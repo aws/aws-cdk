@@ -288,7 +288,7 @@ describe('Template', () => {
 
       expect(() => inspect.hasResource('Foo::Bar', {
         Properties: { baz: Match.arrayWith(['waldo']) },
-      })).toThrow(/Missing element \[waldo\] at pattern index 0/);
+      })).toThrow(/Could not match arrayWith pattern 0/);
     });
 
     test('arrayWith - multiple resources', async () => {

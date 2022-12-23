@@ -48,6 +48,13 @@ export interface MatchFailure {
    * Failure message
    */
   readonly message: string;
+
+  /**
+   * The cost of this particular mismatch
+   *
+   * @default 1
+   */
+  readonly cost?: number;
 }
 
 /**
@@ -78,6 +85,7 @@ export class MatchResult {
   private readonly innerMatchFailures = new Map<string, MatchResult>();
   private _hasFailed = false;
   private _failCount = 0;
+  private _cost = 0;
 
   constructor(target: any) {
     this.target = target;
@@ -103,9 +111,15 @@ export class MatchResult {
     }
 
     this._failCount += 1;
+    this._cost += failure.cost ?? 1;
     list.push(failure);
     this._hasFailed = true;
     return this;
+  }
+
+  /** Whether the match is a success */
+  public get isSuccess(): boolean {
+    return !this._hasFailed;
   }
 
   /** Does the result contain any failures. If not, the result is a success */
@@ -118,6 +132,11 @@ export class MatchResult {
     return this._failCount;
   }
 
+  /** The cost of the failures so far */
+  public get failCost(): number {
+    return this._cost;
+  }
+
   /**
    * Compose the results of a previous match as a subtree.
    * @param id the id of the parent tree.
@@ -127,6 +146,7 @@ export class MatchResult {
     if (inner.hasFailed()) {
       this._hasFailed = true;
       this._failCount += inner.failCount;
+      this._cost += inner._cost;
       this.innerMatchFailures.set(id, inner);
     }
 
@@ -281,6 +301,9 @@ export class MatchResult {
       emit(jsonify(r.target));
 
       function emitRemaining(): void {
+        if (remainingFailures.size > 0) {
+          emit('\n');
+        }
         for (const key of remainingFailures) {
           emitFailures(r, key);
         }

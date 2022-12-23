@@ -24,7 +24,7 @@ describe('Matchers', () => {
     test('arrays', () => {
       matcher = Match.exact([4]);
       expectPass(matcher, [4]);
-      expectFailure(matcher, [4, 5], [/Expected array of length 1 but received 2/]);
+      expectFailure(matcher, [4, 5], [/Too many elements in array/]);
       expectFailure(matcher, 'foo', [/Expected type array but received string/]);
 
       matcher = Match.exact(['foo', 3]);
@@ -34,7 +34,7 @@ describe('Matchers', () => {
 
       matcher = Match.exact([{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
       expectPass(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
-      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }], [/Expected array of length 2 but received 1/]);
+      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }], [/Not enough elements in array/]);
       expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'flob', wobble: 'fred' }], [
         'Expected fred but received flob at /1/waldo',
         'Expected flob but received fred at /1/wobble',
@@ -93,18 +93,18 @@ describe('Matchers', () => {
       expectPass(matcher, [3]);
       expectPass(matcher, [3, 5]);
       expectPass(matcher, [1, 3, 5]);
-      expectFailure(matcher, [5], [/Missing element \[3\] at pattern index 0/]);
+      expectFailure(matcher, [5], [/Could not match arrayWith pattern 0/]);
 
       matcher = Match.arrayWith([5, false]);
       expectPass(matcher, [5, false, 'foo']);
       expectPass(matcher, [5, 'foo', false]);
-      expectFailure(matcher, [5, 'foo'], [/Missing element \[false\] at pattern index 1/]);
+      expectFailure(matcher, [5, 'foo'], [/Could not match arrayWith pattern 1/]);
 
       matcher = Match.arrayWith([{ foo: 'bar' }]);
       expectPass(matcher, [{ fred: 'waldo' }, { foo: 'bar' }, { baz: 'qux' }]);
       expectPass(matcher, [{ foo: 'bar' }]);
-      expectFailure(matcher, [{ foo: 'baz' }], [/Missing element at pattern index 0/]);
-      expectFailure(matcher, [{ baz: 'qux' }], [/Missing element at pattern index 0/]);
+      expectFailure(matcher, [{ foo: 'baz' }], [/Could not match arrayWith pattern 0/]);
+      expectFailure(matcher, [{ baz: 'qux' }], [/Could not match arrayWith pattern 0/]);
     });
 
     test('not array', () => {
@@ -115,14 +115,14 @@ describe('Matchers', () => {
 
     test('out of order', () => {
       matcher = Match.arrayWith([3, 5]);
-      expectFailure(matcher, [5, 3], [/Missing element \[5\] at pattern index 1/]);
+      expectFailure(matcher, [5, 3], [/Could not match arrayWith pattern 1/]);
     });
 
     test('nested with ObjectLike', () => {
       matcher = Match.arrayWith([Match.objectLike({ foo: 'bar' })]);
       expectPass(matcher, [{ baz: 'qux' }, { foo: 'bar' }]);
       expectPass(matcher, [{ baz: 'qux' }, { foo: 'bar', fred: 'waldo' }]);
-      expectFailure(matcher, [{ foo: 'baz', fred: 'waldo' }], [/Missing element at pattern index 0/]);
+      expectFailure(matcher, [{ foo: 'baz', fred: 'waldo' }], [/Could not match arrayWith pattern 0/]);
     });
 
     test('incompatible with absent', () => {
@@ -142,7 +142,7 @@ describe('Matchers', () => {
     test('exact match', () => {
       matcher = Match.arrayEquals([5, false]);
       expectPass(matcher, [5, false]);
-      expectFailure(matcher, [5, 'foo', false], [/Expected array of length 2 but received 3/]);
+      expectFailure(matcher, [5, 'foo', false], [/Too many elements in array/]);
       expectFailure(matcher, [5, 'foo'], [/Expected type boolean but received string at \/1/]);
     });
   });
@@ -181,7 +181,7 @@ describe('Matchers', () => {
         foo: Match.arrayWith(['bar']),
       });
       expectPass(matcher, { foo: ['bar', 'baz'], fred: 'waldo' });
-      expectFailure(matcher, { foo: ['baz'], fred: 'waldo' }, [/Missing element \[bar\] at pattern index 0 at \/foo/]);
+      expectFailure(matcher, { foo: ['baz'], fred: 'waldo' }, [/Could not match arrayWith pattern 0/]);
     });
 
     test('Partiality is maintained throughout arrays', () => {
@@ -372,7 +372,7 @@ describe('Matchers', () => {
       expectPass(matcher, '{ "Foo": ["Bar", "Baz"] }');
       expectPass(matcher, '{ "Foo": ["Bar", "Baz"], "Fred": "Waldo" }');
 
-      expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Missing element [Bar] at pattern index 0 at /Foo']);
+      expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Could not match arrayWith pattern 0']);
       expectFailure(matcher, '{ "Bar": ["Baz"] }', [/Missing key.*at \/Foo/]);
     });
 

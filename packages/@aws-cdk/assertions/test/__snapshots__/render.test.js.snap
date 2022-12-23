@@ -18,6 +18,55 @@ exports[`Abridged rendering of uninteresting keys (showing Other) 1`] = `
 }"
 `;
 
+exports[`ArrayWith matcher 1`] = `
+"Most entries should be collapsed but at least one should for a deep comparison
+{
+  \\"List\\": [
+!!   Could not match arrayWith pattern 0. This is the closest match
+    {
+      \\"MakeItBig\\": true,
+!!     Expected 5 but received 1
+      \\"Value\\": \\"1\\"
+    },
+    { ... },
+    { ... },
+    { ... }
+  ]
+}"
+`;
+
+exports[`ArrayWith out-of-order match 1`] = `
+"
+[
+  5,
+!! arrayWith pattern 0 matched here
+  3
+!! Could not match arrayWith pattern 1. No more elements to try
+  
+]"
+`;
+
+exports[`ArrayWith partial match 1`] = `
+"Most entries should be collapsed but at least one should for a deep comparison, and should show a place for previous matches
+{
+  \\"List\\": [
+    { ... },
+!!   arrayWith pattern 0 matched here
+    {
+      \\"MakeItBig\\": true,
+      \\"Value\\": \\"2\\"
+    },
+!!   Could not match arrayWith pattern 1. This is the closest match
+    {
+      \\"MakeItBig\\": true,
+!!     Expected 5 but received 3
+      \\"Value\\": \\"3\\"
+    },
+    { ... }
+  ]
+}"
+`;
+
 exports[`Deep Match.objectLike with mismatched string value 1`] = `
 "
 {

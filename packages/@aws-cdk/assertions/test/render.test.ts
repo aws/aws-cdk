@@ -104,6 +104,49 @@ const CASES: Case[] = [
       }),
     }),
   },
+  //////////////////////////////////////////////////////////////////////
+  {
+    name: 'ArrayWith matcher',
+    note: 'Most entries should be collapsed but at least one should for a deep comparison',
+    target: {
+      List: [
+        { Value: '1', MakeItBig: true },
+        { Value: '2', MakeItBig: true },
+        { Value: '3', MakeItBig: true },
+        { Value: '4', MakeItBig: true },
+      ],
+    },
+    matcher: Match.objectLike({
+      List: Match.arrayWith([
+        Match.objectLike({ Value: '5' }),
+      ]),
+    }),
+  },
+  //////////////////////////////////////////////////////////////////////
+  {
+    name: 'ArrayWith partial match',
+    note: 'Most entries should be collapsed but at least one should for a deep comparison, and should show a place for previous matches',
+    target: {
+      List: [
+        { Value: '1', MakeItBig: true },
+        { Value: '2', MakeItBig: true },
+        { Value: '3', MakeItBig: true },
+        { Value: '4', MakeItBig: true },
+      ],
+    },
+    matcher: Match.objectLike({
+      List: Match.arrayWith([
+        Match.objectLike({ Value: '2' }),
+        Match.objectLike({ Value: '5' }),
+      ]),
+    }),
+  },
+  //////////////////////////////////////////////////////////////////////
+  {
+    name: 'ArrayWith out-of-order match',
+    target: [5, 3],
+    matcher: Match.arrayWith([3, 5]),
+  },
 ];
 
 CASES.forEach(c => {
