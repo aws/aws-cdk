@@ -93,9 +93,9 @@ describe('vpc flow logs', () => {
       TrafficType: 'ALL',
       ResourceId: 'eni-123456',
       DestinationOptions: {
-        HiveCompatiblePartitions: true,
-        FileFormat: 'plain-text',
-        PerHourPartition: false,
+        hiveCompatiblePartitions: true,
+        fileFormat: 'plain-text',
+        perHourPartition: false,
       },
       LogDestination: {
         'Fn::GetAtt': [
