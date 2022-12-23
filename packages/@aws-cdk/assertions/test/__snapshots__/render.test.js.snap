@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Abridged rendering of uninteresting keys (hiding Other) 1`] = `
+"
+{
+  \\"Other\\": { ... },
+!! Expected Balue but received Value
+  \\"Value\\": \\"Value\\"
+}"
+`;
+
+exports[`Abridged rendering of uninteresting keys (showing Other) 1`] = `
+"
+{
+  \\"Other\\": { \\"OneKey\\": \\"Visible\\" },
+!! Expected Balue but received Value
+  \\"Value\\": \\"Value\\"
+}"
+`;
+
+exports[`Deep Match.objectLike with mismatched string value 1`] = `
+"
+{
+  \\"Deep\\": {
+    \\"Other\\": \\"Other\\",
+!!   Expected Value but received Balue
+    \\"Value\\": \\"Balue\\"
+  }
+}"
+`;
+
+exports[`Encodedjson matcher 1`] = `
+"
+{
+!! Encoded JSON value does not match
+  \\"Json\\": \\"{\\\\\\"Value\\\\\\":\\\\\\"Value\\\\\\"}\\" <*> {
+!!   Expected Balue but received Value
+    \\"Value\\": \\"Value\\"
+  }
+}"
+`;
+
+exports[`Match.objectEquals with missing key 1`] = `
+"
+{
+!! Missing key 'Value'
+  \\"Value\\": undefined
+}"
+`;
+
+exports[`Match.objectEquals with unexpected key 1`] = `
+"
+{
+!! Unexpected key Other
+  \\"Other\\": \\"Other\\",
+  \\"Value\\": \\"Value\\"
+}"
+`;
+
+exports[`Match.objectLike looking for absent key 1`] = `
+"
+{
+!! Received Value, but key should be absent
+  \\"Value\\": \\"Value\\"
+}"
+`;
+
+exports[`Match.objectLike with mismatched string value 1`] = `
+"
+{
+  \\"Other\\": \\"Other\\",
+!! Expected Value but received Balue
+  \\"Value\\": \\"Balue\\"
+}"
+`;

@@ -224,7 +224,7 @@ class ArrayMatch extends Matcher {
       const innerResult = matcher.test(actual[actualIdx]);
 
       if (!this.subsequence || !innerResult.hasFailed()) {
-        result.compose(`[${actualIdx}]`, innerResult);
+        result.compose(`${actualIdx}`, innerResult);
         patternIdx++;
         actualIdx++;
       } else {
@@ -288,8 +288,8 @@ class ObjectMatch extends Matcher {
         if (!(a in this.pattern)) {
           result.recordFailure({
             matcher: this,
-            path: [`/${a}`],
-            message: 'Unexpected key',
+            path: [a],
+            message: `Unexpected key ${a}`,
           });
         }
       }
@@ -299,8 +299,8 @@ class ObjectMatch extends Matcher {
       if (!(patternKey in actual) && !(patternVal instanceof AbsentMatch)) {
         result.recordFailure({
           matcher: this,
-          path: [`/${patternKey}`],
-          message: `Missing key '${patternKey}' among {${Object.keys(actual).join(',')}}`,
+          path: [patternKey],
+          message: `Missing key '${patternKey}'`,
         });
         continue;
       }
@@ -308,7 +308,7 @@ class ObjectMatch extends Matcher {
         patternVal :
         new LiteralMatch(this.name, patternVal, { partialObjects: this.partial });
       const inner = matcher.test(actual[patternKey]);
-      result.compose(`/${patternKey}`, inner);
+      result.compose(patternKey, inner);
     }
 
     return result;
@@ -324,26 +324,23 @@ class SerializedJson extends Matcher {
   };
 
   public test(actual: any): MatchResult {
-    const result = new MatchResult(actual);
     if (getType(actual) !== 'string') {
-      result.recordFailure({
+      return new MatchResult(actual).recordFailure({
         matcher: this,
         path: [],
         message: `Expected JSON as a string but found ${getType(actual)}`,
       });
-      return result;
     }
     let parsed;
     try {
       parsed = JSON.parse(actual);
     } catch (err) {
       if (err instanceof SyntaxError) {
-        result.recordFailure({
+        return new MatchResult(actual).recordFailure({
           matcher: this,
           path: [],
           message: `Invalid JSON string: ${actual}`,
         });
-        return result;
       } else {
         throw err;
       }
@@ -351,8 +348,14 @@ class SerializedJson extends Matcher {
 
     const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);
-    result.compose(`(${this.name})`, innerResult);
-    return result;
+    if (innerResult.hasFailed()) {
+      innerResult.recordFailure({
+        matcher: this,
+        path: [],
+        message: 'Encoded JSON value does not match',
+      });
+    }
+    return innerResult;
   }
 }
 
