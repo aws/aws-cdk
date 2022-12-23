@@ -152,16 +152,23 @@ new route53.ARecord(this, 'ARecord', {
 
 ### Cross Account Zone Delegation
 
-To add a NS record to a HostedZone in different account you can do the following:
+If you want to have your root domain hosted zone in one account and your subdomain hosted
+zone in a diferent one, you can use `CrossAccountZoneDelegationRecord` to set up delegation
+between them.
 
 In the account containing the parent hosted zone:
 
 ```ts
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'someexample.com',
-  crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('12345678901'),
-  crossAccountZoneDelegationRoleName: 'MyDelegationRole',
 });
+const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
+  // The role name must be predictable
+  roleName: 'MyDelegationRole',
+  // The other account
+  assumedBy: new iam.AccountPrincipal('12345678901'),
+});
+parentZone.grantDelegation(crossAccountRole);
 ```
 
 In the account containing the child zone to be delegated:

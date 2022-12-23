@@ -61,7 +61,7 @@ export class RegionInfo {
     return new RegionInfo(name);
   }
 
-  private constructor(public readonly name: string) { }
+  private constructor(public readonly name: string) {}
 
   /**
    * Whether the `AWS::CDK::Metadata` CloudFormation Resource is available in this region or not.
@@ -106,8 +106,8 @@ export class RegionInfo {
   }
 
   /**
-  * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
-  */
+   * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
+   */
   public get ebsEnvEndpointHostedZoneId(): string | undefined {
     return Fact.find(this.name, FactName.EBS_ENV_ENDPOINT_HOSTED_ZONE_ID);
   }
@@ -166,5 +166,16 @@ export class RegionInfo {
    */
   public get firehoseCidrBlock(): string | undefined {
     return Fact.find(this.name, FactName.FIREHOSE_CIDR_BLOCK);
+  }
+
+  /**
+   * The ARN of the ADOT Lambda layer, for the given layer type, version and architecture.
+   *
+   * @param type the type of the ADOT lambda layer
+   * @param version the layer version.
+   * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
+   */
+  public adotLambdaLayerArn(type: string, version: string, architecture: string): string | undefined {
+    return Fact.find(this.name, FactName.adotLambdaLayer(type, version, architecture));
   }
 }
