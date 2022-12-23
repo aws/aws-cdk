@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.184.1](https://github.com/aws/aws-cdk/compare/v1.184.0...v1.184.1) (2022-12-23)
+
+### Bug Fixes
+
+* **cfnspec:** v101.0.0 introduced specific types on several types that previously were typed as json
+
 ## [1.184.0](https://github.com/aws/aws-cdk/compare/v1.183.0...v1.184.0) (2022-12-21)
 
 
