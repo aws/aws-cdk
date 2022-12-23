@@ -146,7 +146,16 @@ async function changeIsForS3DeployCustomResourcePolicy(
     }
   }
 
-  return [];
+  // this doesn't block the hotswap, but it also isn't a hotswappable change by itself. Return
+  // an empty change to signify this.
+  return [{
+    hotswappable: true,
+    resourceType: 'AWS::IAM::Policy',
+    resourceNames: [],
+    propsChanged: [],
+    service: 'iam',
+    apply: async (_sdk: ISDK) => {},
+  }];
 }
 
 function stringifyObject(obj: any): any {

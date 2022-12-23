@@ -6,8 +6,6 @@ let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => La
 let mockUpdateLambdaConfiguration: (
   params: Lambda.Types.UpdateFunctionConfigurationRequest
 ) => Lambda.Types.FunctionConfiguration;
-let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
-let mockUntagResource: (params: Lambda.Types.UntagResourceRequest) => {};
 let mockMakeRequest: (operation: string, params: any) => AWS.Request<any, AWS.AWSError>;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
@@ -15,8 +13,6 @@ beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   mockUpdateLambdaConfiguration = jest.fn().mockReturnValue({});
-  mockTagResource = jest.fn();
-  mockUntagResource = jest.fn();
   mockMakeRequest = jest.fn().mockReturnValue({
     promise: () => Promise.resolve({}),
     response: {},
@@ -25,8 +21,6 @@ beforeEach(() => {
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
     updateFunctionConfiguration: mockUpdateLambdaConfiguration,
-    tagResource: mockTagResource,
-    untagResource: mockUntagResource,
   }, {
     makeRequest: mockMakeRequest,
   });
@@ -111,89 +105,6 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       S3Bucket: 'current-bucket',
       S3Key: 'new-key',
     });
-  });
-
-  test('calls the tagResource() API when it receives only a tag difference in a Lambda function', async () => { //delete
-    // GIVEN
-    const currentTemplate = {
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 'current-bucket',
-              S3Key: 'current-key',
-            },
-            FunctionName: 'my-function',
-            Tags: [
-              {
-                Key: 'to-be-deleted',
-                Value: 'a-value',
-              },
-              {
-                Key: 'to-be-changed',
-                Value: 'current-tag-value',
-              },
-            ],
-          },
-          Metadata: {
-            'aws:asset:path': 'old-path',
-          },
-        },
-      },
-    };
-
-    setup.setCurrentCfnStackTemplate(currentTemplate);
-    const cdkStackArtifact = setup.cdkStackArtifactOf({
-      template: {
-        Resources: {
-          Func: {
-            Type: 'AWS::Lambda::Function',
-            Properties: {
-              Code: {
-                S3Bucket: 'current-bucket',
-                S3Key: 'current-key',
-              },
-              FunctionName: 'my-function',
-              Tags: [
-                {
-                  Key: 'to-be-changed',
-                  Value: 'new-tag-value',
-                },
-                {
-                  Key: 'to-be-added',
-                  Value: 'added-tag-value',
-                },
-              ],
-            },
-            Metadata: {
-              'aws:asset:path': 'old-path',
-            },
-          },
-        },
-      },
-    });
-
-    // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-    // THEN
-    expect(deployStackResult).not.toBeUndefined();
-
-    expect(mockUntagResource).toHaveBeenCalledWith({
-      Resource: 'arn:aws:lambda:here:123456789012:function:my-function',
-      TagKeys: ['to-be-deleted'],
-    });
-
-    expect(mockTagResource).toHaveBeenCalledWith({
-      Resource: 'arn:aws:lambda:here:123456789012:function:my-function',
-      Tags: {
-        'to-be-changed': 'new-tag-value',
-        'to-be-added': 'added-tag-value',
-      },
-    });
-
-    expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
   });
 
   test("correctly evaluates the function's name when it references a different resource from the template", async () => {
@@ -530,57 +441,6 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('does not call the updateLambdaCode() API when it receives a code difference that is not hotswappable in a Lambda function', async () => {
-    // GIVEN
-    setup.setCurrentCfnStackTemplate({
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 'current-bucket',
-              S3Key: 'current-key',
-              S3ObjectVersion: 'current-obj',
-            },
-          },
-        },
-      },
-    });
-    const cdkStackArtifact = setup.cdkStackArtifactOf({
-      template: {
-        Resources: {
-          Func: {
-            Type: 'AWS::Lambda::Function',
-            Properties: {
-              Code: {
-                S3Bucket: 'current-bucket',
-                S3Key: 'new-key',
-                S3ObjectVersion: 'new-obj',
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (hotswapMode === HotswapMode.HOTSWAP) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
-      expect(deployStackResult).toBeUndefined();
-      expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
-      expect(deployStackResult).not.toBeUndefined();
-      expect(deployStackResult?.noOp).toEqual(true);
-      expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-    }
-  });
-
   test('does not call the updateLambdaCode() API when it receives a non-hotswappable change that includes a code difference in a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -753,8 +613,6 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
     hotswapMockSdkProvider.stubLambda({
       updateFunctionCode: mockUpdateLambdaCode,
-      tagResource: mockTagResource,
-      untagResource: mockUntagResource,
     });
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -814,8 +672,6 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
     hotswapMockSdkProvider.stubLambda({
       updateFunctionCode: mockUpdateLambdaCode,
-      tagResource: mockTagResource,
-      untagResource: mockUntagResource,
     });
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -1044,7 +900,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 
-  test('Lambda hotswap works properly with changes of environment variables, description, tags with tokens', async () => {
+  test('Lambda hotswap works properly with changes of environment variables and description with tokens', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -1074,16 +930,6 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
                 { 'Fn::GetAtt': ['EventBus', 'Arn'] },
               ]],
             },
-            Tags: [
-              {
-                Key: 'token',
-                Value: { 'Fn::GetAtt': ['EventBus', 'Arn'] },
-              },
-              {
-                Key: 'literal',
-                Value: 'oldValue',
-              },
-            ],
           },
           Metadata: {
             'aws:asset:path': 'asset-path',
@@ -1125,16 +971,6 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
                   { 'Fn::GetAtt': ['EventBus', 'Arn'] },
                 ]],
               },
-              Tags: [
-                {
-                  Key: 'token',
-                  Value: { 'Fn::GetAtt': ['EventBus', 'Arn'] },
-                },
-                {
-                  Key: 'literal',
-                  Value: 'newValue',
-                },
-              ],
             },
             Metadata: {
               'aws:asset:path': 'asset-path',
@@ -1159,12 +995,50 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
       Description: 'newValuearn:aws:events:here:123456789012:event-bus/my-event-bus',
     });
-    expect(mockTagResource).toHaveBeenCalledWith({
-      Resource: 'arn:aws:lambda:here:123456789012:function:my-function',
-      Tags: {
-        token: 'arn:aws:events:here:123456789012:event-bus/my-event-bus',
-        literal: 'newValue',
+  });
+
+  test('S3ObjectVersion is hotswappable', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Key: 'current-key',
+              S3ObjectVersion: 'current-obj',
+            },
+            FunctionName: 'my-function',
+          },
+        },
       },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                S3Key: 'new-key',
+                S3ObjectVersion: 'new-obj',
+              },
+              FunctionName: 'my-function',
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+      FunctionName: 'my-function',
+      S3Key: 'new-key',
+      S3ObjectVersion: 'new-obj',
     });
   });
 });

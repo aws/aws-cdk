@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs } from './common';
 
 // namespace object imports won't work in the bundle for function exports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -23,7 +23,14 @@ export async function isHotswappableLambdaFunctionChange(
   // we will publish a new version when we get to hotswapping the actual Function this Version points to, below
   // (Versions can't be changed in CloudFormation anyway, they're immutable)
   if (change.newValue.Type === 'AWS::Lambda::Version') {
-    return [];
+    return [{
+      hotswappable: true,
+      resourceType: 'AWS::Lambda::Version',
+      resourceNames: [],
+      propsChanged: [],
+      service: 'lambda',
+      apply: async (_sdk: ISDK) => {},
+    }];
   }
 
   // we handle Aliases specially too
@@ -36,7 +43,6 @@ export async function isHotswappableLambdaFunctionChange(
   }
 
   const ret: ChangeHotswapResult = [];
-  // TODO: make classifyChanges() check second level; Zip, S3Key, etc
   const { yes, no } = classifyChanges(change, ['Code', 'Environment', 'Description']);
 
   const noKeys = Object.keys(no);
@@ -58,7 +64,7 @@ export async function isHotswappableLambdaFunctionChange(
       service: 'lambda',
       resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
       apply: async (sdk: ISDK) => {
-        const lambdaCodeChange = await evaluateLambdaFunctionProps(change, evaluateCfnTemplate);
+        const lambdaCodeChange = await evaluateLambdaFunctionProps(yes, change.newValue.Properties?.Runtime, evaluateCfnTemplate);
         if (lambdaCodeChange === undefined) {
           return;
         }
@@ -67,10 +73,6 @@ export async function isHotswappableLambdaFunctionChange(
         if (!functionName) {
           return;
         }
-
-        const functionArn = await evaluateCfnTemplate.evaluateCfnExpression({
-          'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:' + functionName,
-        });
 
         // find all Lambda Versions that reference this Function
         const versionsReferencingFunction = evaluateCfnTemplate.findReferencesTo(logicalId)
@@ -81,17 +83,68 @@ export async function isHotswappableLambdaFunctionChange(
         const aliasesNames = await Promise.all(aliasesReferencingVersions.map(a =>
           evaluateCfnTemplate.evaluateCfnExpression(a.Properties?.Name)));
 
+
+        const lambda = sdk.lambda();
+        const operations: Promise<any>[] = [];
+
+        if (lambdaCodeChange.code !== undefined || lambdaCodeChange.configurations !== undefined) {
+          if (lambdaCodeChange.code !== undefined) {
+            const updateFunctionCodeResponse = await lambda.updateFunctionCode({
+              FunctionName: functionName,
+              S3Bucket: lambdaCodeChange.code.s3Bucket,
+              S3Key: lambdaCodeChange.code.s3Key,
+              ImageUri: lambdaCodeChange.code.imageUri,
+              ZipFile: lambdaCodeChange.code.functionCodeZip,
+              S3ObjectVersion: lambdaCodeChange.code.s3ObjectVersion,
+            }).promise();
+
+            await waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda, functionName);
+          }
+
+          if (lambdaCodeChange.configurations !== undefined) {
+            const updateRequest: AWS.Lambda.UpdateFunctionConfigurationRequest = {
+              FunctionName: functionName,
+            };
+            if (lambdaCodeChange.configurations.description !== undefined) {
+              updateRequest.Description = lambdaCodeChange.configurations.description;
+            }
+            if (lambdaCodeChange.configurations.environment !== undefined) {
+              updateRequest.Environment = lambdaCodeChange.configurations.environment;
+            }
+            const updateFunctionCodeResponse = await lambda.updateFunctionConfiguration(updateRequest).promise();
+            await waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda, functionName);
+          }
+
+          // only if the code changed is there any point in publishing a new Version
+          if (versionsReferencingFunction.length > 0) {
+            const publishVersionPromise = lambda.publishVersion({
+              FunctionName: functionName,
+            }).promise();
+
+            if (aliasesNames.length > 0) {
+              // we need to wait for the Version to finish publishing
+              const versionUpdate = await publishVersionPromise;
+
+              for (const alias of aliasesNames) {
+                operations.push(lambda.updateAlias({
+                  FunctionName: functionName,
+                  Name: alias,
+                  FunctionVersion: versionUpdate.Version,
+                }).promise());
+              }
+            } else {
+              operations.push(publishVersionPromise);
+            }
+          }
+        }
+
+        // run all of our updates in parallel
+        await Promise.all(operations);
       },
     });
   }
 
-  return new LambdaFunctionHotswapOperation({
-    physicalName: functionName,
-    functionArn: functionArn,
-    resource: lambdaCodeChange,
-    publishVersion: versionsReferencingFunction.length > 0,
-    aliasesNames,
-  });
+  return ret;
 }
 
 /**
@@ -112,16 +165,18 @@ function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): Ch
     });
   }
 
-  return Object.keys(yes).length > 0 ? [] : ret;
-
-  /*
-  for (const updatedPropName in change.propertyUpdates) {
-    if (updatedPropName !== 'FunctionVersion') {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }
+  if (Object.keys(yes).length > 0) {
+    ret.push({
+      hotswappable: true,
+      resourceType: change.newValue.Type,
+      propsChanged: [],
+      service: 'lambda',
+      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      apply: async (_sdk: ISDK) => {},
+    });
   }
-  return ChangeHotswapImpact.IRRELEVANT;
-  */
+
+  return ret;
 }
 
 /**
@@ -134,7 +189,7 @@ function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): Ch
  * and only affects its Code property.
  */
 async function evaluateLambdaFunctionProps(
-  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  change: PropDiffs, runtime: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<LambdaFunctionChange | undefined> {
   /*
    * At first glance, we would want to initialize these using the "previous" values (change.oldValue),
@@ -147,17 +202,16 @@ async function evaluateLambdaFunctionProps(
    * even if only one of them was actually changed,
    * which means we don't need the "old" values at all, and we can safely initialize these with just `''`.
    */
-  const propertyUpdates = change.propertyUpdates;
   let code: LambdaFunctionCode | undefined = undefined;
   let description: string | undefined = undefined;
   let environment: { [key: string]: string } | undefined = undefined;
 
-  for (const updatedPropName in propertyUpdates) {
-    const updatedProp = propertyUpdates[updatedPropName];
+  for (const updatedPropName in change) {
+    const updatedProp = change[updatedPropName];
 
     switch (updatedPropName) {
       case 'Code':
-        let s3Bucket, s3Key, imageUri, functionCodeZip;
+        let s3Bucket, s3Key, s3ObjectVersion, imageUri, functionCodeZip;
 
         for (const newPropName in updatedProp.newValue) {
           switch (newPropName) {
@@ -167,13 +221,16 @@ async function evaluateLambdaFunctionProps(
             case 'S3Key':
               s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               break;
+            case 'S3ObjectVersion':
+              s3ObjectVersion = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              break;
             case 'ImageUri':
               imageUri = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               break;
             case 'ZipFile':
               // We must create a zip package containing a file with the inline code
               const functionCode = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
-              const functionRuntime = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.Runtime);
+              const functionRuntime = await evaluateCfnTemplate.evaluateCfnExpression(runtime);
               if (!functionRuntime) {
                 return undefined;
               }
@@ -181,13 +238,12 @@ async function evaluateLambdaFunctionProps(
               const codeFileExt = determineCodeFileExtFromRuntime(functionRuntime);
               functionCodeZip = await zipString(`index.${codeFileExt}`, functionCode);
               break;
-            default:
-              return undefined;
           }
         }
         code = {
           s3Bucket,
           s3Key,
+          s3ObjectVersion,
           imageUri,
           functionCodeZip,
         };
@@ -199,8 +255,8 @@ async function evaluateLambdaFunctionProps(
         environment = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue);
         break;
       default:
-        // we will never get here, but just in case we do throw an error?
-        return undefined;
+        // we will never get here, but just in case we do throw an error
+        throw new Error ('while apply()ing, found a property that cannot be hotswapped. Please report this at github.com/aws/aws-cdk/issues/new/choose');
     }
   }
 
@@ -211,6 +267,7 @@ async function evaluateLambdaFunctionProps(
 interface LambdaFunctionCode {
   readonly s3Bucket?: string;
   readonly s3Key?: string;
+  readonly s3ObjectVersion?: string;
   readonly imageUri?: string;
   readonly functionCodeZip?: Buffer;
 }
@@ -223,164 +280,6 @@ interface LambdaFunctionConfigurations {
 interface LambdaFunctionChange {
   readonly code?: LambdaFunctionCode;
   readonly configurations?: LambdaFunctionConfigurations;
-}
-
-interface LambdaFunctionResource {
-  readonly physicalName: string;
-  readonly functionArn: string;
-  readonly resource: LambdaFunctionChange;
-  readonly publishVersion: boolean;
-  readonly aliasesNames: string[];
-}
-
-class LambdaFunctionHotswapOperation implements HotswapOperation {
-  public readonly service = 'lambda-function';
-  public readonly resourceNames: string[];
-
-  constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
-    this.resourceNames = [
-      `Lambda Function '${lambdaFunctionResource.physicalName}'`,
-      // add Version here if we're publishing a new one
-      ...(lambdaFunctionResource.publishVersion ? [`Lambda Version for Function '${lambdaFunctionResource.physicalName}'`] : []),
-      // add any Aliases that we are hotswapping here
-      ...lambdaFunctionResource.aliasesNames.map(alias => `Lambda Alias '${alias}' for Function '${lambdaFunctionResource.physicalName}'`),
-    ];
-  }
-
-  public async apply(sdk: ISDK): Promise<any> {
-    const lambda = sdk.lambda();
-    const resource = this.lambdaFunctionResource.resource;
-    const operations: Promise<any>[] = [];
-
-    if (resource.code !== undefined || resource.configurations !== undefined) {
-      if (resource.code !== undefined) {
-        const updateFunctionCodeResponse = await lambda.updateFunctionCode({
-          FunctionName: this.lambdaFunctionResource.physicalName,
-          S3Bucket: resource.code.s3Bucket,
-          S3Key: resource.code.s3Key,
-          ImageUri: resource.code.imageUri,
-          ZipFile: resource.code.functionCodeZip,
-        }).promise();
-
-        await this.waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda);
-      }
-
-      if (resource.configurations !== undefined) {
-        const updateRequest: AWS.Lambda.UpdateFunctionConfigurationRequest = {
-          FunctionName: this.lambdaFunctionResource.physicalName,
-        };
-        if (resource.configurations.description !== undefined) {
-          updateRequest.Description = resource.configurations.description;
-        }
-        if (resource.configurations.environment !== undefined) {
-          updateRequest.Environment = resource.configurations.environment;
-        }
-        const updateFunctionCodeResponse = await lambda.updateFunctionConfiguration(updateRequest).promise();
-        await this.waitForLambdasPropertiesUpdateToFinish(updateFunctionCodeResponse, lambda);
-      }
-
-      // only if the code changed is there any point in publishing a new Version
-      if (this.lambdaFunctionResource.publishVersion) {
-        const publishVersionPromise = lambda.publishVersion({
-          FunctionName: this.lambdaFunctionResource.physicalName,
-        }).promise();
-
-        if (this.lambdaFunctionResource.aliasesNames.length > 0) {
-          // we need to wait for the Version to finish publishing
-          const versionUpdate = await publishVersionPromise;
-
-          for (const alias of this.lambdaFunctionResource.aliasesNames) {
-            operations.push(lambda.updateAlias({
-              FunctionName: this.lambdaFunctionResource.physicalName,
-              Name: alias,
-              FunctionVersion: versionUpdate.Version,
-            }).promise());
-          }
-        } else {
-          operations.push(publishVersionPromise);
-        }
-      }
-    }
-
-    if (resource.tags !== undefined) {
-      const tagsToDelete: string[] = Object.entries(resource.tags.tagUpdates)
-        .filter(([_key, val]) => val === TagDeletion.DELETE)
-        .map(([key, _val]) => key);
-
-      const tagsToSet: { [tag: string]: string } = {};
-      Object.entries(resource.tags!.tagUpdates)
-        .filter(([_key, val]) => val !== TagDeletion.DELETE)
-        .forEach(([tagName, tagValue]) => {
-          tagsToSet[tagName] = tagValue as string;
-        });
-
-      if (tagsToDelete.length > 0) {
-        operations.push(lambda.untagResource({
-          Resource: this.lambdaFunctionResource.functionArn,
-          TagKeys: tagsToDelete,
-        }).promise());
-      }
-
-      if (Object.keys(tagsToSet).length > 0) {
-        operations.push(lambda.tagResource({
-          Resource: this.lambdaFunctionResource.functionArn,
-          Tags: tagsToSet,
-        }).promise());
-      }
-    }
-
-    // run all of our updates in parallel
-    return Promise.all(operations);
-  }
-
-  /**
-   * After a Lambda Function is updated, it cannot be updated again until the
-   * `State=Active` and the `LastUpdateStatus=Successful`.
-   *
-   * Depending on the configuration of the Lambda Function this could happen relatively quickly
-   * or very slowly. For example, Zip based functions _not_ in a VPC can take ~1 second whereas VPC
-   * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
-   */
-  private async waitForLambdasPropertiesUpdateToFinish(
-    currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda,
-  ): Promise<void> {
-    const functionIsInVpcOrUsesDockerForCode = currentFunctionConfiguration.VpcConfig?.VpcId ||
-        currentFunctionConfiguration.PackageType === 'Image';
-
-    // if the function is deployed in a VPC or if it is a container image function
-    // then the update will take much longer and we can wait longer between checks
-    // otherwise, the update will be quick, so a 1-second delay is fine
-    const delaySeconds = functionIsInVpcOrUsesDockerForCode ? 5 : 1;
-
-    // configure a custom waiter to wait for the function update to complete
-    (lambda as any).api.waiters.updateFunctionPropertiesToFinish = {
-      name: 'UpdateFunctionPropertiesToFinish',
-      operation: 'getFunction',
-      // equates to 1 minute for zip function not in a VPC and
-      // 5 minutes for container functions or function in a VPC
-      maxAttempts: 60,
-      delay: delaySeconds,
-      acceptors: [
-        {
-          matcher: 'path',
-          argument: "Configuration.LastUpdateStatus == 'Successful' && Configuration.State == 'Active'",
-          expected: true,
-          state: 'success',
-        },
-        {
-          matcher: 'path',
-          argument: 'Configuration.LastUpdateStatus',
-          expected: 'Failed',
-          state: 'failure',
-        },
-      ],
-    };
-
-    const updateFunctionPropertiesWaiter = new (AWS as any).ResourceWaiter(lambda, 'updateFunctionPropertiesToFinish');
-    await updateFunctionPropertiesWaiter.wait({
-      FunctionName: this.lambdaFunctionResource.physicalName,
-    }).promise();
-  }
 }
 
 /**
@@ -417,6 +316,55 @@ function zipString(fileName: string, rawString: string): Promise<Buffer> {
 
     void archive.finalize();
   });
+}
+
+/**
+  * After a Lambda Function is updated, it cannot be updated again until the
+  * `State=Active` and the `LastUpdateStatus=Successful`.
+  *
+  * Depending on the configuration of the Lambda Function this could happen relatively quickly
+  * or very slowly. For example, Zip based functions _not_ in a VPC can take ~1 second whereas VPC
+  * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
+  */
+async function waitForLambdasPropertiesUpdateToFinish(
+  currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda, functionName: string,
+): Promise<void> {
+  const functionIsInVpcOrUsesDockerForCode = currentFunctionConfiguration.VpcConfig?.VpcId ||
+      currentFunctionConfiguration.PackageType === 'Image';
+
+  // if the function is deployed in a VPC or if it is a container image function
+  // then the update will take much longer and we can wait longer between checks
+  // otherwise, the update will be quick, so a 1-second delay is fine
+  const delaySeconds = functionIsInVpcOrUsesDockerForCode ? 5 : 1;
+
+  // configure a custom waiter to wait for the function update to complete
+  (lambda as any).api.waiters.updateFunctionPropertiesToFinish = {
+    name: 'UpdateFunctionPropertiesToFinish',
+    operation: 'getFunction',
+    // equates to 1 minute for zip function not in a VPC and
+    // 5 minutes for container functions or function in a VPC
+    maxAttempts: 60,
+    delay: delaySeconds,
+    acceptors: [
+      {
+        matcher: 'path',
+        argument: "Configuration.LastUpdateStatus == 'Successful' && Configuration.State == 'Active'",
+        expected: true,
+        state: 'success',
+      },
+      {
+        matcher: 'path',
+        argument: 'Configuration.LastUpdateStatus',
+        expected: 'Failed',
+        state: 'failure',
+      },
+    ],
+  };
+
+  const updateFunctionPropertiesWaiter = new (AWS as any).ResourceWaiter(lambda, 'updateFunctionPropertiesToFinish');
+  await updateFunctionPropertiesWaiter.wait({
+    FunctionName: functionName,
+  }).promise();
 }
 
 /**
