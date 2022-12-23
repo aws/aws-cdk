@@ -141,6 +141,10 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
 
   public readonly application: ILambdaApplication;
   public readonly deploymentConfig: ILambdaDeploymentConfig;
+  /**
+   * The service Role of this Deployment Group.
+   */
+  public readonly role: iam.IRole;
 
   private readonly alarms: cloudwatch.IAlarm[];
   private preHook?: lambda.IFunction;
@@ -151,6 +155,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       deploymentGroupName: props.deploymentGroupName,
       role: props.role,
     });
+    this.role = this._role;
 
     this.application = props.application || new LambdaApplication(this, 'Application');
     this.alarms = props.alarms || [];

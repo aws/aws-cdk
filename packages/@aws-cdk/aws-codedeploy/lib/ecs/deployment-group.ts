@@ -203,6 +203,10 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
 
   public readonly application: IEcsApplication;
   public readonly deploymentConfig: IEcsDeploymentConfig;
+  /**
+   * The service Role of this Deployment Group.
+   */
+  public readonly role: iam.IRole;
 
   private readonly alarms: cloudwatch.IAlarm[];
 
@@ -211,6 +215,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       deploymentGroupName: props.deploymentGroupName,
       role: props.role,
     });
+    this.role = this._role;
 
     this.application = props.application || new EcsApplication(this, 'Application');
     this.alarms = props.alarms || [];

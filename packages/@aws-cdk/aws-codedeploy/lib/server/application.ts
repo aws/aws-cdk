@@ -64,14 +64,14 @@ export class ServerApplication extends Resource implements IServerApplication {
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param arn the ARN of the application to import
+   * @param serverApplicationArn the ARN of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static fromServerApplicationArn(scope: Construct, id: string, arn: string): IServerApplication {
+  public static fromServerApplicationArn(scope: Construct, id: string, serverApplicationArn: string): IServerApplication {
     return new class extends Resource implements IServerApplication {
-      public applicationArn = arn;
-      public applicationName = Arn.split(arn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
-    }(scope, id, { environmentFromArn: arn });
+      public applicationArn = serverApplicationArn;
+      public applicationName = Arn.split(serverApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
+    }(scope, id, { environmentFromArn: serverApplicationArn });
   }
 
   public readonly applicationArn: string;

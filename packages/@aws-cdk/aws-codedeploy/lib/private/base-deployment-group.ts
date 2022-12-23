@@ -74,19 +74,32 @@ export interface DeploymentGroupBaseProps {
  * @internal
  */
 export class DeploymentGroupBase extends Resource {
+  /**
+   * The name of the Deployment Group.
+   */
   public readonly deploymentGroupName!: string;
+
+  /**
+   * The ARN of the Deployment Group.
+   */
   public readonly deploymentGroupArn!: string;
+
   /**
    * The service Role of this Deployment Group.
+   *
+   * (Can't make `role` properly public here, as it's typed as optional in one
+   * interface and typing it here as definitely set interferes with that.)
+   *
+   * @internal
    */
-  public readonly role: iam.IRole;
+  public readonly _role: iam.IRole;
 
   constructor(scope: Construct, id: string, props: DeploymentGroupBaseProps) {
     super(scope, id, {
       physicalName: props.deploymentGroupName,
     });
 
-    this.role = props.role || new iam.Role(this, 'ServiceRole', {
+    this._role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
     });
 

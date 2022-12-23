@@ -64,14 +64,14 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param arn the ARN of the application to import
+   * @param lambdaApplicationArn the ARN of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static fromLambdaApplicationArn(scope: Construct, id: string, arn: string): ILambdaApplication {
+  public static fromLambdaApplicationArn(scope: Construct, id: string, lambdaApplicationArn: string): ILambdaApplication {
     return new class extends Resource implements ILambdaApplication {
-      public applicationArn = arn;
-      public applicationName = Arn.split(arn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
-    }(scope, id, { environmentFromArn: arn });
+      public applicationArn = lambdaApplicationArn;
+      public applicationName = Arn.split(lambdaApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
+    }(scope, id, { environmentFromArn: lambdaApplicationArn });
   }
 
   public readonly applicationArn: string;

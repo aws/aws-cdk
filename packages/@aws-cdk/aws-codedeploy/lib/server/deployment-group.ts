@@ -234,6 +234,10 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
 
   public readonly application: IServerApplication;
   public readonly deploymentConfig: IServerDeploymentConfig;
+  /**
+   * The service Role of this Deployment Group.
+   */
+  public readonly role?: iam.IRole;
 
   private readonly _autoScalingGroups: autoscaling.IAutoScalingGroup[];
   private readonly installAgent: boolean;
@@ -245,6 +249,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       deploymentGroupName: props.deploymentGroupName,
       role: props.role,
     });
+    this.role = this._role;
 
     this.application = props.application || new ServerApplication(this, 'Application', {
       applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
