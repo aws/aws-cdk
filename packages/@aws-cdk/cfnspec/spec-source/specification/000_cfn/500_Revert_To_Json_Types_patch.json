@@ -560,6 +560,47 @@
           }
         ]
       }
+    },
+    "AWS::Personalize::Dataset.DatasetImportJob": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DataSource/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataSource/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Personalize::Solution.SolutionConfig": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AutoMLConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AutoMLConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/HpoConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/HpoConfig/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   }
 }
