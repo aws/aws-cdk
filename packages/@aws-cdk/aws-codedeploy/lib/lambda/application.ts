@@ -64,7 +64,7 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param ecsApplicationArn the ARN of the application to import
+   * @param arn the ARN of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
   public static fromLambdaApplicationArn(scope: Construct, id: string, arn: string): ILambdaApplication {
