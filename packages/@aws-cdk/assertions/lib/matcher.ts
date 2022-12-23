@@ -176,7 +176,9 @@ export class MatchResult {
   /**
    * Render the failed match in a presentable way
    *
-   * @deprecated Prefer using `renderMismatch`
+   * Prefer using `renderMismatch` over this method. It is left for backwards
+   * compatibility for test suites that expect it, but `renderMismatch()` will
+   * produce better output.
    */
   public toHumanStrings(): string[] {
     const failures = new Array<MatchFailure>();
