@@ -665,6 +665,22 @@
           }
         ]
       }
+    },
+    "AWS::S3Outposts::Bucket.Rule": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Filter/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Filter/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   }
 }
