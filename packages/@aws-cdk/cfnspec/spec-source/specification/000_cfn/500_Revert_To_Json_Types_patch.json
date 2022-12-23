@@ -225,6 +225,49 @@
           }
         ]
       }
+    },
+    "AWS::IoT::JobTemplate": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AbortConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AbortConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/JobExecutionsRolloutConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/JobExecutionsRolloutConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/PresignedUrlConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/PresignedUrlConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/TimeoutConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/TimeoutConfig/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
