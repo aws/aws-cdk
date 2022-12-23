@@ -316,6 +316,38 @@
           }
         ]
       }
+    },
+    "AWS::Lex::Bot": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DataPrivacy/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataPrivacy/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Lex::BotAlias": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SentimentAnalysisSettings/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SentimentAnalysisSettings/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
     }
   },
   "PropertyTypes": {
@@ -467,6 +499,22 @@
           {
             "op": "add",
             "path": "/Properties/Error/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Lex::Bot.TestBotAliasSettings": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SentimentAnalysisSettings/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SentimentAnalysisSettings/PrimitiveType",
             "value": "Json"
           }
         ]
