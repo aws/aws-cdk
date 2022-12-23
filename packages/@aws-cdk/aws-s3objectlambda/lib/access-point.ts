@@ -232,9 +232,9 @@ export class AccessPoint extends AccessPointBase {
           {
             actions: ['GetObject'],
             contentTransformation: {
-              awsLambda: {
-                functionArn: props.handler.functionArn,
-                functionPayload: props.payload ? JSON.stringify(props.payload) : undefined,
+              AwsLambda: {
+                FunctionArn: props.handler.functionArn,
+                FunctionPayload: props.payload ? JSON.stringify(props.payload) : undefined,
               },
             },
           },
