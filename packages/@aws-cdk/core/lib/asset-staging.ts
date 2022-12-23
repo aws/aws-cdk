@@ -468,9 +468,29 @@ export class AssetStaging extends Construct {
         dockerExec(['volume', 'create', inputVolumeName]);
         dockerExec(['volume', 'create', outputVolumeName]);
 
-        dockerExec(['run', '--name', copyContainerName, '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`, '-v', `${outputVolumeName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`, 'alpine', 'sh', '-c', `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`]);
+        dockerExec([
+          'run',
+          '--name', copyContainerName,
+          '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+          '-v', `${outputVolumeName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`,
+          'alpine',
+          'sh',
+          '-c',
+          `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+        ]);
+        // copy files over
         dockerExec(['cp', `${this.sourcePath}/`, `${copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}/`]);
-        // this always copies to a subfolder, wildcard does not work. not sure how to solve, as name of folder is not known
+        // but docker cp does not behave like normal cp, so we need to move them again
+        dockerExec([
+          'run',
+          '--rm',
+          '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+          'ubuntu',
+          'bash',
+          '-c',
+          `tmpfolder=$(ls -d ${AssetStaging.BUNDLING_INPUT_DIR}/\*) mv $tmpfolder/\* ${AssetStaging.BUNDLING_INPUT_DIR}/ && rmdir $tmpfolder`,
+        ]);
+        // this seems not work always
 
 
         options.image.run({
