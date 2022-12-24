@@ -23,12 +23,23 @@ export async function isHotswappableS3BucketDeploymentChange(
   }
 
   // no classification to be done here; all the properties of this custom resource thing are hotswappable
+  let _customResourceProperties: any | undefined = undefined;
+  const customResourcePropertiesLazy = async () => {
+    if (!_customResourceProperties) {
+      _customResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression({
+        ...change.newValue.Properties,
+        ServiceToken: undefined,
+      });
+    }
+    return _customResourceProperties;
+  };
+
   ret.push({
     hotswappable: true,
     resourceType: change.newValue.Type,
     propsChanged: ['*'],
     service: 'custom-s3-deployment',
-    resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+    resourceNames: [`Contents of S3 Bucket '${(await customResourcePropertiesLazy()).DestinationBucketName}'`],
     apply: async (sdk: ISDK) => {
       // note that this gives the ARN of the lambda, not the name. This is fine though, the invoke() sdk call will take either
       const functionName = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.ServiceToken);
@@ -36,10 +47,6 @@ export async function isHotswappableS3BucketDeploymentChange(
         return;
       }
 
-      const customResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression({
-        ...change.newValue.Properties,
-        ServiceToken: undefined,
-      });
       await sdk.lambda().invoke({
         FunctionName: functionName,
         // Lambda refuses to take a direct JSON object and requires it to be stringify()'d
@@ -50,7 +57,7 @@ export async function isHotswappableS3BucketDeploymentChange(
           StackId: REQUIRED_BY_CFN,
           RequestId: REQUIRED_BY_CFN,
           LogicalResourceId: REQUIRED_BY_CFN,
-          ResourceProperties: stringifyObject(customResourceProperties), // JSON.stringify() doesn't turn the actual objects to strings, but the lambda expects strings
+          ResourceProperties: stringifyObject(await customResourcePropertiesLazy()), // JSON.stringify() doesn't turn the actual objects to strings, but the lambda expects strings
         }),
       }).promise();
     },

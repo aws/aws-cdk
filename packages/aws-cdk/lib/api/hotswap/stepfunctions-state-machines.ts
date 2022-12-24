@@ -29,20 +29,26 @@ export async function isHotswappableStateMachineChange(
 
   const namesOfHotswappableChanges = Object.keys(yes);
   if (namesOfHotswappableChanges.length > 0) {
+    let _stateMachineArn: string | undefined = undefined;
+    const stateMachineArnLazy = async () => {
+      if (!_stateMachineArn) {
+        const stateMachineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
+        _stateMachineArn = stateMachineNameInCfnTemplate
+          ? await evaluateCfnTemplate.evaluateCfnExpression({
+            'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + stateMachineNameInCfnTemplate,
+          })
+          : await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
+      }
+      return _stateMachineArn;
+    };
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'ecs-service',
-      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      resourceNames: [`${change.newValue.Type} '${(await stateMachineArnLazy())?.split(':')[6]}'`],
       apply: async (sdk: ISDK) => {
-        const stateMachineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
-        const stateMachineArn = stateMachineNameInCfnTemplate
-          ? await evaluateCfnTemplate.evaluateCfnExpression({
-            'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + stateMachineNameInCfnTemplate,
-          })
-          : await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
-
+        const stateMachineArn = await stateMachineArnLazy();
         if (!stateMachineArn) {
           return;
         }

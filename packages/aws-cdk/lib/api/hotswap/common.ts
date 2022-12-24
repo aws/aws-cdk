@@ -4,26 +4,6 @@ import { ISDK } from '../aws-auth';
 export const ICON = '✨';
 
 /**
- * An interface that represents a change that can be deployed in a short-circuit manner.
- */
-//export interface IHotswapOperation {
-  /**
-   * The name of the service being hotswapped.
-   * Used to set a custom User-Agent for SDK calls.
-   */
- // readonly service: string;
-
-  /**
-   * The names of the resources being hotswapped.
-   */
-  //readonly resourceNames: string[];
-
- // apply(sdk: ISDK): Promise<any>;
-//}
-
-export type Applier = (sdk: ISDK) => Promise<void>;
-
-/**
  * An enum that represents the result of detection whether a given change can be hotswapped.
  */
 export enum ChangeHotswapImpact {
@@ -56,7 +36,7 @@ export interface HotswappableChange {
    */
   readonly resourceNames: string[];
 
-  readonly apply: Applier;
+  readonly apply: (sdk: ISDK) => Promise<void>;
 }
 
 export interface NonHotswappableChange {

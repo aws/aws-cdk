@@ -67,7 +67,7 @@ export async function isHotswappableEcsServiceChange(
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'ecs-service',
-      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      resourceNames: ecsServicesReferencingTaskDef.map(ecsService => `ECS Service '${ecsService.serviceArn.split('/')[2]}'`),
       apply: async (sdk: ISDK) => {
         const taskDefinitionResource = await prepareTaskDefinitionChange(evaluateCfnTemplate, logicalId, change);
         // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision

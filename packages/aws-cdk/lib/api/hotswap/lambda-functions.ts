@@ -56,34 +56,39 @@ export async function isHotswappableLambdaFunctionChange(
   }
 
   const namesOfHotswappableChanges = Object.keys(yes);
+  let _functionName: string | undefined = undefined;
+  const functionNameLazy = async () => {
+    if (!_functionName) {
+      _functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
+    }
+    return _functionName;
+  };
   if (namesOfHotswappableChanges.length > 0) {
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'lambda',
-      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      resourceNames: [
+        // TODO: this is dumb
+        `Lambda Function '${await functionNameLazy()}'`,
+        // add Version here if we're publishing a new one
+        ...((await versionsAndAliases(logicalId, evaluateCfnTemplate)).versionsReferencingFunction.length > 0 ? [`Lambda Version for Function '${await functionNameLazy()}'`] : []),
+        // add any Aliases that we are hotswapping here
+        ...await Promise.all((await versionsAndAliases(logicalId, evaluateCfnTemplate)).aliasesNames.map(async (alias) => `Lambda Alias '${alias}' for Function '${await functionNameLazy()}'`)),
+      ],
       apply: async (sdk: ISDK) => {
         const lambdaCodeChange = await evaluateLambdaFunctionProps(yes, change.newValue.Properties?.Runtime, evaluateCfnTemplate);
         if (lambdaCodeChange === undefined) {
           return;
         }
 
-        const functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
+        const functionName = await functionNameLazy();
         if (!functionName) {
           return;
         }
 
-        // find all Lambda Versions that reference this Function
-        const versionsReferencingFunction = evaluateCfnTemplate.findReferencesTo(logicalId)
-          .filter(r => r.Type === 'AWS::Lambda::Version');
-        // find all Lambda Aliases that reference the above Versions
-        const aliasesReferencingVersions = flatMap(versionsReferencingFunction, v =>
-          evaluateCfnTemplate.findReferencesTo(v.LogicalId));
-        const aliasesNames = await Promise.all(aliasesReferencingVersions.map(a =>
-          evaluateCfnTemplate.evaluateCfnExpression(a.Properties?.Name)));
-
-
+        const { versionsReferencingFunction, aliasesNames } = await versionsAndAliases(logicalId, evaluateCfnTemplate);
         const lambda = sdk.lambda();
         const operations: Promise<any>[] = [];
 
@@ -171,7 +176,7 @@ function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): Ch
       resourceType: change.newValue.Type,
       propsChanged: [],
       service: 'lambda',
-      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      resourceNames: [],
       apply: async (_sdk: ISDK) => {},
     });
   }
@@ -381,4 +386,17 @@ function determineCodeFileExtFromRuntime(runtime: string): string {
   // Currently inline code only supports Node.js and Python, ignoring other runtimes.
   // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#aws-properties-lambda-function-code-properties
   throw new CfnEvaluationException(`runtime ${runtime} is unsupported, only node.js and python runtimes are currently supported.`);
+}
+
+async function versionsAndAliases(logicalId: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate) {
+  // find all Lambda Versions that reference this Function
+  const versionsReferencingFunction = evaluateCfnTemplate.findReferencesTo(logicalId)
+    .filter(r => r.Type === 'AWS::Lambda::Version');
+  // find all Lambda Aliases that reference the above Versions
+  const aliasesReferencingVersions = flatMap(versionsReferencingFunction, v =>
+    evaluateCfnTemplate.findReferencesTo(v.LogicalId));
+  const aliasesNames = await Promise.all(aliasesReferencingVersions.map(a =>
+    evaluateCfnTemplate.evaluateCfnExpression(a.Properties?.Name)));
+
+  return { versionsReferencingFunction, aliasesNames };
 }

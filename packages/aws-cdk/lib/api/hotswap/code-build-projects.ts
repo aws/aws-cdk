@@ -29,14 +29,21 @@ export async function isHotswappableCodeBuildProjectChange(
   };
   const namesOfHotswappableChanges = Object.keys(yes);
   if (namesOfHotswappableChanges.length > 0) {
+    let _projectName: string | undefined = undefined;
+    const projectNameLazy = async () => {
+      if (!_projectName) {
+        _projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
+      }
+      return _projectName;
+    };
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'codebuild',
-      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      resourceNames: [`CodeBuild Project '${await projectNameLazy()}'`],
       apply: async (sdk: ISDK) => {
-        const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
+        const projectName = await projectNameLazy();
         if (!projectName) {
           return;
         }

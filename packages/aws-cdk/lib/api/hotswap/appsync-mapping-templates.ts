@@ -14,8 +14,7 @@ export async function isHotswappableAppSyncChange(
     return [];
   }
 
-  const resourceProperties = change.newValue.Properties;
-  if (isResolver && resourceProperties?.Kind === 'PIPELINE') {
+  if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
     // Pipeline resolvers can't be hotswapped as they reference
     // the FunctionId of the underlying functions, which can't be resolved.
     return [{
@@ -43,18 +42,22 @@ export async function isHotswappableAppSyncChange(
   // Was there anything left we CAN actually do?
   const namesOfHotswappableChanges = Object.keys(yes);
   if (namesOfHotswappableChanges.length > 0) {
+    let _physicalName: string | undefined = undefined;
+    const physicalNameLazy = async () => {
+      if (!_physicalName) {
+        _physicalName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? change.newValue.Properties?.Name : undefined);
+      }
+      return _physicalName;
+    };
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'appsync',
-      resourceNames: ['blah'], //TODO: this will probably have to be resovled during `apply()` somehow
+      resourceNames: [`${change.newValue.Type} '${await physicalNameLazy()}'`],
       apply: async (sdk: ISDK) => {
-        const resourcePhysicalName = await evaluateCfnTemplate.establishResourcePhysicalName(
-          logicalId,
-          isFunction ? resourceProperties?.Name : undefined,
-        );
-        if (!resourcePhysicalName) {
+        const physicalName = await physicalNameLazy();
+        if (!physicalName) {
           return;
         }
 
@@ -82,7 +85,7 @@ export async function isHotswappableAppSyncChange(
         } else {
           // THIS IS WEIRD, DO WE EXPECT API-ID TO BE SET??
           const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
-          const { functionId } = functions?.find(fn => fn.name === resourcePhysicalName) ?? {};
+          const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
           await sdk.appsync().updateFunction({
             ...sdkRequestObject,
             functionId: functionId!,
