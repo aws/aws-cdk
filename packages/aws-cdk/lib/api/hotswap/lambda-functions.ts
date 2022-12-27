@@ -9,12 +9,6 @@ import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, Prop
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const archiver = require('archiver');
 
-/**
- * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
- * `ChangeHotswapImpact.IRRELEVANT` if the change is irrelevant from a short-circuit perspective
- * (like a change to CDKMetadata),
- * or a LambdaFunctionResource if the change can be short-circuited.
- */
 export async function isHotswappableLambdaFunctionChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
@@ -43,9 +37,9 @@ export async function isHotswappableLambdaFunctionChange(
   }
 
   const ret: ChangeHotswapResult = [];
-  const { yes, no } = classifyChanges(change, ['Code', 'Environment', 'Description']);
+  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['Code', 'Environment', 'Description']);
 
-  const noKeys = Object.keys(no);
+  const noKeys = Object.keys(nonHotswappableProps);
   if (noKeys.length > 0) {
     ret.push({
       hotswappable: false,
@@ -55,7 +49,7 @@ export async function isHotswappableLambdaFunctionChange(
     });
   }
 
-  const namesOfHotswappableChanges = Object.keys(yes);
+  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   let _functionName: string | undefined = undefined;
   const functionNameLazy = async () => {
     if (!_functionName) {
@@ -70,15 +64,14 @@ export async function isHotswappableLambdaFunctionChange(
       propsChanged: namesOfHotswappableChanges,
       service: 'lambda',
       resourceNames: [
-        // TODO: this is dumb
         `Lambda Function '${await functionNameLazy()}'`,
         // add Version here if we're publishing a new one
-        ...((await versionsAndAliases(logicalId, evaluateCfnTemplate)).versionsReferencingFunction.length > 0 ? [`Lambda Version for Function '${await functionNameLazy()}'`] : []),
+        ...await renderVersions(logicalId, evaluateCfnTemplate, [`Lambda Version for Function '${await functionNameLazy()}'`]),
         // add any Aliases that we are hotswapping here
-        ...await Promise.all((await versionsAndAliases(logicalId, evaluateCfnTemplate)).aliasesNames.map(async (alias) => `Lambda Alias '${alias}' for Function '${await functionNameLazy()}'`)),
+        ...await renderAliases(logicalId, evaluateCfnTemplate, async (alias) => `Lambda Alias '${alias}' for Function '${await functionNameLazy()}'`),
       ],
       apply: async (sdk: ISDK) => {
-        const lambdaCodeChange = await evaluateLambdaFunctionProps(yes, change.newValue.Properties?.Runtime, evaluateCfnTemplate);
+        const lambdaCodeChange = await evaluateLambdaFunctionProps(hotswappableProps, change.newValue.Properties?.Runtime, evaluateCfnTemplate);
         if (lambdaCodeChange === undefined) {
           return;
         }
@@ -157,10 +150,10 @@ export async function isHotswappableLambdaFunctionChange(
  * and `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` is the change is for any other property.
  */
 function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): ChangeHotswapResult {
-  const { yes, no } = classifyChanges(change, ['FunctionVersion']);
+  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['FunctionVersion']);
   const ret: ChangeHotswapResult = [];
 
-  const noKeys = Object.keys(no);
+  const noKeys = Object.keys(nonHotswappableProps);
   if (noKeys.length > 0) {
     ret.push({
       hotswappable: false,
@@ -170,7 +163,7 @@ function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): Ch
     });
   }
 
-  if (Object.keys(yes).length > 0) {
+  if (Object.keys(hotswappableProps).length > 0) {
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
@@ -399,4 +392,20 @@ async function versionsAndAliases(logicalId: string, evaluateCfnTemplate: Evalua
     evaluateCfnTemplate.evaluateCfnExpression(a.Properties?.Name)));
 
   return { versionsReferencingFunction, aliasesNames };
+}
+
+async function renderAliases(
+  logicalId: string,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  callbackfn: (value: any, index: number, array: any[]) => Promise<string>,
+): Promise<string[]> {
+  const aliasesNames = (await versionsAndAliases(logicalId, evaluateCfnTemplate)).aliasesNames;
+
+  return Promise.all(aliasesNames.map(callbackfn));
+}
+
+async function renderVersions(logicalId: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate, versionString: string[]): Promise<string[]> {
+  const versions = (await versionsAndAliases(logicalId, evaluateCfnTemplate)).versionsReferencingFunction;
+
+  return versions.length > 0 ? versionString : [];
 }

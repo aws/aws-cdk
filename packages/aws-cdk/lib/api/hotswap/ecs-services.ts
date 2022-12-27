@@ -16,9 +16,9 @@ export async function isHotswappableEcsServiceChange(
   // We only allow a change in the ContainerDefinitions of the TaskDefinition for now -
   // it contains the image and environment variables, so seems like a safe bet for now.
   // We might revisit this decision in the future though!
-  const { yes, no } = classifyChanges(change, ['ContainerDefinitions']);
+  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['ContainerDefinitions']);
 
-  const noKeys = Object.keys(no);
+  const noKeys = Object.keys(nonHotswappableProps);
   if (noKeys.length > 0) {
     ret.push({
       hotswappable: false,
@@ -60,7 +60,7 @@ export async function isHotswappableEcsServiceChange(
     });
   }
 
-  const namesOfHotswappableChanges = Object.keys(yes);
+  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     ret.push({
       hotswappable: true,

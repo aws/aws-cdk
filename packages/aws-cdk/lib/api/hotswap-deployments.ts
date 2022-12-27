@@ -88,12 +88,12 @@ async function findAllHotswappableChanges(
       const nestedHotswappableResources = await findNestedHotswappableChanges(
         logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk, hotswapMode,
       );
-      if (!nestedHotswappableResources && hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-        // this nested stack was either newly created or contained no hotswappable resources
-        // continue, so that other nested stacks and any hotswappable changes in this stack can be hotswapped
-        continue;
-      } else if (!nestedHotswappableResources) {
+      if (!nestedHotswappableResources && hotswapMode === HotswapMode.HOTSWAP) {
         return undefined;
+      } else if (!nestedHotswappableResources) {
+        // this nested stack was either newly created or contained no hotswappable resources
+        // continue, so that other nested stacks and any hotswappable changes in the parent stack can be hotswapped
+        continue;
       }
       hotswappableResources.push(...nestedHotswappableResources);
       continue;
@@ -115,8 +115,12 @@ async function findAllHotswappableChanges(
       continue;
     }
 
-    // run isHotswappable* functions lazily to prevent unhandled rejections
+    // run detector functions lazily to prevent unhandled promise rejections
     promises.push(() => [
+      // each detector function returns an array of HotswappableChanges and NonHotswappableChanges.
+      // if the array is empty, then that detector function had no opinion on that change.
+      // For example, a change to an AWS::Lambda::Function will result in every detector function
+      // except for `isHotswappableLambdaFunctionChange` returning `[]`.
       isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
@@ -147,17 +151,21 @@ async function findAllHotswappableChanges(
     }
   }
 
-  // The only change detected was to CDK::Metadata, so return [];
-  if (hotswappableResources.length === 0 && nonHotswappableResources.length === 0 && metadataChanged && hotswapMode === HotswapMode.HOTSWAP) {
-    return [];
+  // preserve classic hotswap behavior
+  if (hotswapMode === HotswapMode.HOTSWAP) {
+    // The only change detected was to CDK::Metadata, so return []; this will be treated as a noOp
+    if (hotswappableResources.length === 0 && nonHotswappableResources.length === 0 && metadataChanged) {
+      return [];
+    }
+
+    // the number of hotswappable resources is less than the number of changes
+    // this means that at least one change was deemed not hotswappable by every detector function,
+    // ie they all returned `[]`
+    if (hotswappableResources.length < Object.keys(resourceDifferences).length) {
+      return undefined;
+    }
   }
 
-  // the number of hotswappable resources is less than the number of changes that we examined
-  // this means that at least one change was deemed not hotswappable by every detector function
-  // ie they all returned `[]`.
-  if (hotswappableResources.length < Object.keys(resourceDifferences).length && hotswapMode === HotswapMode.HOTSWAP) {
-    return undefined;
-  }
   return hotswappableResources;
 }
 
@@ -251,18 +259,19 @@ function makeRenameDifference(
     addChange.newValue,
     {
       resourceType: {
-       oldType: remChange.oldResourceType,
+        oldType: remChange.oldResourceType,
         newType: addChange.newResourceType,
       },
       propertyDiffs: (addChange as any).propertyDiffs,
-     otherDiffs: (addChange as any).otherDiffs,
+      otherDiffs: (addChange as any).otherDiffs,
     },
   );
 }
 
 /**
- * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
- * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
+ * Returns a `HotswappableChangeCandidate` if the change is hotswappable
+ * Returns an empty `HotswappableChange` if the change is to CDK::Metadata
+ * Returns a `NonHotswappableChange` if the change is not hotswappable
  */
 function isCandidateForHotswapping(
   change: cfn_diff.ResourceDifference, logicalId: string,

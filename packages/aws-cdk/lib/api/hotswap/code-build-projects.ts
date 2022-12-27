@@ -12,9 +12,9 @@ export async function isHotswappableCodeBuildProjectChange(
 
   const ret: ChangeHotswapResult = [];
 
-  const { yes, no } = classifyChanges(change, ['Source', 'Environment', 'SourceVersion']);
+  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['Source', 'Environment', 'SourceVersion']);
 
-  const noKeys = Object.keys(no);
+  const noKeys = Object.keys(nonHotswappableProps);
   if (noKeys.length > 0) {
     ret.push({
       hotswappable: false,
@@ -27,7 +27,7 @@ export async function isHotswappableCodeBuildProjectChange(
   const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
     name: '',
   };
-  const namesOfHotswappableChanges = Object.keys(yes);
+  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     let _projectName: string | undefined = undefined;
     const projectNameLazy = async () => {

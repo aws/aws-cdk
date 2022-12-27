@@ -3,24 +3,6 @@ import { ISDK } from '../aws-auth';
 
 export const ICON = '✨';
 
-/**
- * An enum that represents the result of detection whether a given change can be hotswapped.
- */
-export enum ChangeHotswapImpact {
-  /**
-   * This result means that the given change cannot be hotswapped,
-   * and requires a full deployment.
-   */
-  REQUIRES_FULL_DEPLOYMENT = 'requires-full-deployment',
-
-  /**
-   * This result means that the given change can be safely be ignored when determining
-   * whether the given Stack can be hotswapped or not
-   * (for example, it's a change to the CDKMetadata resource).
-   */
-  IRRELEVANT = 'irrelevant',
-}
-
 export interface HotswappableChange {
   readonly hotswappable: true;
   readonly resourceType: string; // Potentially logicalID or something else
@@ -71,9 +53,9 @@ export class HotswappableChangeCandidate {
   /**
    * The changes made to the resource properties.
    */
-  public readonly propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
+  public readonly propertyUpdates: PropDiffs;
 
-  public constructor(oldValue: cfn_diff.Resource, newValue: cfn_diff.Resource, propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> }) {
+  public constructor(oldValue: cfn_diff.Resource, newValue: cfn_diff.Resource, propertyUpdates: PropDiffs) {
     this.oldValue = oldValue;
     this.newValue = newValue;
     this.propertyUpdates = propertyUpdates;
@@ -120,18 +102,19 @@ export function lowerCaseFirstCharacter(str: string): string {
 }
 
 export type PropDiffs = Record<string, cfn_diff.PropertyDifference<any>>;
+export type ClassifiedChanges = { hotswappableProps: PropDiffs, nonHotswappableProps: PropDiffs }
 
-export function classifyChanges(xs: HotswappableChangeCandidate, hotswappableProps: string[]): {yes: PropDiffs, no: PropDiffs} {
-  const yes: PropDiffs = {};
-  const no: PropDiffs = {};
+export function classifyChanges(xs: HotswappableChangeCandidate, hotswappablePropNames: string[]): ClassifiedChanges {
+  const hotswappableProps: PropDiffs = {};
+  const nonHotswappableProps: PropDiffs = {};
 
   for (const [name, propDiff] of Object.entries(xs.propertyUpdates)) {
-    if (hotswappableProps.includes(name)) {
-      yes[name] = propDiff;
+    if (hotswappablePropNames.includes(name)) {
+      hotswappableProps[name] = propDiff;
     } else {
-      no[name] = propDiff;
+      nonHotswappableProps[name] = propDiff;
     }
   }
 
-  return { yes, no };
+  return { hotswappableProps, nonHotswappableProps };
 }

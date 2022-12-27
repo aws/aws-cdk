@@ -27,9 +27,9 @@ export async function isHotswappableAppSyncChange(
 
   const ret: ChangeHotswapResult = [];
 
-  const { yes, no } = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate']);
+  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate']);
 
-  const noKeys = Object.keys(no);
+  const noKeys = Object.keys(nonHotswappableProps);
   if (noKeys.length > 0) {
     ret.push({
       hotswappable: false,
@@ -40,7 +40,7 @@ export async function isHotswappableAppSyncChange(
   }
 
   // Was there anything left we CAN actually do?
-  const namesOfHotswappableChanges = Object.keys(yes);
+  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     let _physicalName: string | undefined = undefined;
     const physicalNameLazy = async () => {

@@ -14,10 +14,10 @@ export async function isHotswappableStateMachineChange(
     return stateMachineDefinitionChange;
   }
   */
-  const { yes, no } = classifyChanges(change, ['DefinitionString']);
+  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['DefinitionString']);
   const ret: ChangeHotswapResult = [];
 
-  const noKeys = Object.keys(no);
+  const noKeys = Object.keys(nonHotswappableProps);
   if (noKeys.length > 0) {
     ret.push({
       hotswappable: false,
@@ -27,7 +27,7 @@ export async function isHotswappableStateMachineChange(
     });
   }
 
-  const namesOfHotswappableChanges = Object.keys(yes);
+  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     let _stateMachineArn: string | undefined = undefined;
     const stateMachineArnLazy = async () => {
