@@ -48,15 +48,14 @@ export async function tryHotswapDeployment(
 
   const currentTemplate = await loadCurrentTemplateWithNestedStacks(stackArtifact, sdk);
   const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);
-  const allChanges = await findAllHotswappableChanges(
+  const { hotswappableChanges, nonHotswappableChanges, metadataChanged } = await findAllHotswappableChanges(
     stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames,
   );
-  const hotswappableChanges = allChanges.hotswappableChanges;
 
   // preserve classic hotswap behavior
   if (hotswapMode === HotswapMode.HOTSWAP) {
     // The only change detected was to CDK::Metadata, so return noOp
-    if (hotswappableChanges.length === 0 && allChanges.nonHotswappableChanges.length === 0 && allChanges.metadataChanged) {
+    if (hotswappableChanges.length === 0 && nonHotswappableChanges.length === 0 && metadataChanged) {
       return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
     }
 
@@ -67,7 +66,7 @@ export async function tryHotswapDeployment(
       return undefined;
     }
 
-    if (allChanges.nonHotswappableChanges.length > 0) {
+    if (nonHotswappableChanges.length > 0) {
       return undefined;
     }
   }
