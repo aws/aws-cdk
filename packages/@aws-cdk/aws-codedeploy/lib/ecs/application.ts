@@ -1,7 +1,7 @@
-import { ArnFormat, IResource, Resource } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack, Arn } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApplication } from '../codedeploy.generated';
-import { arnForApplication, validateName } from '../utils';
+import { arnForApplication, validateName } from '../private/utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to Amazon ECS.
@@ -42,6 +42,9 @@ export class EcsApplication extends Resource implements IEcsApplication {
   /**
    * Import an Application defined either outside the CDK, or in a different CDK Stack.
    *
+   * The Application's account and region are assumed to be the same as the stack it is being imported
+   * into. If not, use `fromEcsApplicationArn`.
+   *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
    * @param ecsApplicationName the name of the application to import
@@ -49,11 +52,26 @@ export class EcsApplication extends Resource implements IEcsApplication {
    */
   public static fromEcsApplicationName(scope: Construct, id: string, ecsApplicationName: string): IEcsApplication {
     class Import extends Resource implements IEcsApplication {
-      public applicationArn = arnForApplication(ecsApplicationName);
+      public applicationArn = arnForApplication(Stack.of(scope), ecsApplicationName);
       public applicationName = ecsApplicationName;
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Import an Application defined either outside the CDK, or in a different CDK Stack, by ARN.
+   *
+   * @param scope the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param ecsApplicationArn the ARN of the application to import
+   * @returns a Construct representing a reference to an existing Application
+   */
+  public static fromEcsApplicationArn(scope: Construct, id: string, ecsApplicationArn: string): IEcsApplication {
+    return new class extends Resource implements IEcsApplication {
+      public applicationArn = ecsApplicationArn;
+      public applicationName = Arn.split(ecsApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
+    } (scope, id, { environmentFromArn: ecsApplicationArn });
   }
 
   public readonly applicationArn: string;
@@ -70,7 +88,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(arnForApplication(resource.ref), {
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(scope), resource.ref), {
       service: 'codedeploy',
       resource: 'application',
       resourceName: this.physicalName,

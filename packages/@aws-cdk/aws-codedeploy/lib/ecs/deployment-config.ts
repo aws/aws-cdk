@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
+import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
-import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of an ECS Deployment Group.
