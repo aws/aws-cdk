@@ -1055,7 +1055,7 @@ describe('When Network Load Balancer', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      EnableExecuteCommand: Match.absent(),
+      EnableExecuteCommand: false,
     });
   });
 
