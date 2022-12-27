@@ -8,21 +8,15 @@ export async function isHotswappableStateMachineChange(
   if (change.newValue.Type !== 'AWS::StepFunctions::StateMachine') {
     return [];
   }
-  /*const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate, hotswapType);
-  if (stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT ||
-      stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT) {
-    return stateMachineDefinitionChange;
-  }
-  */
   const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['DefinitionString']);
   const ret: ChangeHotswapResult = [];
 
-  const noKeys = Object.keys(nonHotswappableProps);
-  if (noKeys.length > 0) {
+  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
+  if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
       reason: 'WTF IS THIS',
-      rejectedChanges: noKeys,
+      rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
   }
@@ -64,28 +58,3 @@ export async function isHotswappableStateMachineChange(
 
   return ret;
 }
-
-/*async function isStateMachineDefinitionOnlyChange(
-  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswapType: HotswapType,
-): Promise<string | ChangeHotswapImpact> {
-  const newResourceType = change.newValue.Type;
-  if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
-
-  const propertyUpdates = change.propertyUpdates;
-  if (Object.keys(propertyUpdates).length === 0) {
-    return ChangeHotswapImpact.IRRELEVANT;
-  }
-
-  for (const updatedPropName in propertyUpdates) {
-    // ensure that only changes to the definition string result in a hotswap
-    if (updatedPropName !== 'DefinitionString' && hotswapType === HotswapType.HOTSWAP) {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }
-  }
-
-  return evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString.newValue);
-}
-*/
-

@@ -29,12 +29,12 @@ export async function isHotswappableAppSyncChange(
 
   const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate']);
 
-  const noKeys = Object.keys(nonHotswappableProps);
-  if (noKeys.length > 0) {
+  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
+  if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
       reason: 'WTF IS THIS',
-      rejectedChanges: noKeys,
+      rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
   }

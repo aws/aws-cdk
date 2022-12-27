@@ -29,7 +29,7 @@ export async function isHotswappableLambdaFunctionChange(
 
   // we handle Aliases specially too
   if (change.newValue.Type === 'AWS::Lambda::Alias') {
-    return checkAliasHasVersionOnlyChange(change);
+    return classifyAliasChanges(change);
   }
 
   if (change.newValue.Type !== 'AWS::Lambda::Function') {
@@ -39,12 +39,12 @@ export async function isHotswappableLambdaFunctionChange(
   const ret: ChangeHotswapResult = [];
   const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['Code', 'Environment', 'Description']);
 
-  const noKeys = Object.keys(nonHotswappableProps);
-  if (noKeys.length > 0) {
+  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
+  if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
       reason: 'WTF IS THIS',
-      rejectedChanges: noKeys,
+      rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
   }
@@ -146,19 +146,18 @@ export async function isHotswappableLambdaFunctionChange(
 }
 
 /**
- * Returns  is a given Alias change is only in the 'FunctionVersion' property,
- * and `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` is the change is for any other property.
+ * Determines which changes to this Alias are hotswappable or not
  */
-function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): ChangeHotswapResult {
+function classifyAliasChanges(change: HotswappableChangeCandidate): ChangeHotswapResult {
   const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['FunctionVersion']);
   const ret: ChangeHotswapResult = [];
 
-  const noKeys = Object.keys(nonHotswappableProps);
-  if (noKeys.length > 0) {
+  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
+  if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
       reason: 'WTF IS THIS',
-      rejectedChanges: noKeys,
+      rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
   }
@@ -178,16 +177,12 @@ function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): Ch
 }
 
 /**
- * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a AWS::Lambda::Function,
- * but doesn't prevent short-circuiting
- * (like a change to CDKMetadata resource),
- * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::Lambda::Function,
- * but not only to its Code property,
- * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
- * and only affects its Code property.
+ * Evaluates the hotswappable properties of an AWS::Lambda::Function and
+ * Returns a `LambdaFunctionChange` if the change is hotswappable.
+ * Returns `undefined` if the change is not hotswappable.
  */
 async function evaluateLambdaFunctionProps(
-  change: PropDiffs, runtime: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  hotswappablePropChanges: PropDiffs, runtime: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<LambdaFunctionChange | undefined> {
   /*
    * At first glance, we would want to initialize these using the "previous" values (change.oldValue),
@@ -204,8 +199,8 @@ async function evaluateLambdaFunctionProps(
   let description: string | undefined = undefined;
   let environment: { [key: string]: string } | undefined = undefined;
 
-  for (const updatedPropName in change) {
-    const updatedProp = change[updatedPropName];
+  for (const updatedPropName in hotswappablePropChanges) {
+    const updatedProp = hotswappablePropChanges[updatedPropName];
 
     switch (updatedPropName) {
       case 'Code':
@@ -381,6 +376,10 @@ function determineCodeFileExtFromRuntime(runtime: string): string {
   throw new CfnEvaluationException(`runtime ${runtime} is unsupported, only node.js and python runtimes are currently supported.`);
 }
 
+/**
+ * Finds all Versions that reference an AWS::Lambda::Function with logical ID `logicalId`
+ * and Aliases that reference those Versions.
+ */
 async function versionsAndAliases(logicalId: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate) {
   // find all Lambda Versions that reference this Function
   const versionsReferencingFunction = evaluateCfnTemplate.findReferencesTo(logicalId)
@@ -394,6 +393,9 @@ async function versionsAndAliases(logicalId: string, evaluateCfnTemplate: Evalua
   return { versionsReferencingFunction, aliasesNames };
 }
 
+/**
+ * Renders the string used in displaying Alias resource names that reference the specified Lambda Function
+ */
 async function renderAliases(
   logicalId: string,
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -404,6 +406,9 @@ async function renderAliases(
   return Promise.all(aliasesNames.map(callbackfn));
 }
 
+/**
+ * Renders the string used in displaying Version resource names that reference the specified Lambda Function
+ */
 async function renderVersions(logicalId: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate, versionString: string[]): Promise<string[]> {
   const versions = (await versionsAndAliases(logicalId, evaluateCfnTemplate)).versionsReferencingFunction;
 

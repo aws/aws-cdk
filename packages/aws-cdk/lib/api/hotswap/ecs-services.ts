@@ -18,12 +18,12 @@ export async function isHotswappableEcsServiceChange(
   // We might revisit this decision in the future though!
   const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['ContainerDefinitions']);
 
-  const noKeys = Object.keys(nonHotswappableProps);
-  if (noKeys.length > 0) {
+  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
+  if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
       reason: 'WTF IS THIS',
-      rejectedChanges: noKeys,
+      rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
   }
@@ -44,7 +44,7 @@ export async function isHotswappableEcsServiceChange(
     ret.push({
       hotswappable: false,
       reason: 'No ECS services reference the changed task definition',
-      rejectedChanges: noKeys,
+      rejectedChanges: Object.keys(hotswappableProps),
       resourceType: change.newValue.Type,
     });
 
@@ -55,7 +55,7 @@ export async function isHotswappableEcsServiceChange(
     ret.push({
       hotswappable: false,
       reason: 'Something besides an ECS Service was found referencing the changed TaskDefinition',
-      rejectedChanges: noKeys,
+      rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
   }
