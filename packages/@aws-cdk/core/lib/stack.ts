@@ -1168,7 +1168,7 @@ export class Stack extends Construct implements ITaggable {
    * remove the reference from the consuming stack. After that, you can remove
    * the resource and the manual export.
    *
-   * # See `exportValue` for an example of this process.
+   * See `exportValue` for an example of this process.
    */
   public exportStringListValue(exportedValue: any, options: ExportValueOptions = {}): string[] {
     if (options.name) {
