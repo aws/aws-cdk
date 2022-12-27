@@ -376,7 +376,7 @@ export interface ClusterAttributes {
    * Create the kubectlProvider in this stack.  Allows Cluster kubectlProvider to be shared between stacks.
    * Ignore if kubectlProvider is supplied.
    *
-   * @default - a kubectlProvider is not initially created.
+   * @default a kubectlProvider is not initially created.
    */
   readonly createKubectlProvider?: boolean;
 
