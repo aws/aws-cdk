@@ -350,7 +350,8 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
 
 function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[]): void {
   print(`\n${ICON} %s`, chalk.red('the following non-hotswappable changes were ignored:'));
+  // TODO: construct reason string from resourceType, rejectedChanges, and reason, where change.reason is an enum that tells us why the rejection happened. Eg "nonhotswappablePropertyUpdated", "codeBuidldReason", etc
   for (const change of nonHotswappableChanges) {
-    print(`${ICON} type: %s, rejected changed: %s, reason: %s`, chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason));
+    print(`${ICON} type: %s, rejected changes: %s, reason: %s`, chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason));
   }
 }
