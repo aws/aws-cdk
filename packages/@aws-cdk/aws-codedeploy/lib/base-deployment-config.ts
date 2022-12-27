@@ -2,8 +2,8 @@ import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from './codedeploy.generated';
 import { MinimumHealthyHosts } from './host-health-config';
+import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
-import { arnForDeploymentConfig, validateName } from './utils';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
