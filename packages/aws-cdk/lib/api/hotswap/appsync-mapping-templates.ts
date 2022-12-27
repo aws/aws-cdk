@@ -17,7 +17,7 @@ export async function isHotswappableAppSyncChange(
   if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
     return [{
       hotswappable: false,
-      reason: 'Pipeline resolved cannot be hotswapped since the reference the FunctionId of the underlying functions, which cannot be resolved',
+      reason: 'Pipeline resolver cannot be hotswapped since the reference the FunctionId of the underlying functions, which cannot be resolved',
       rejectedChanges: Object.keys(change.propertyUpdates),
       resourceType: change.newValue.Type,
     }];

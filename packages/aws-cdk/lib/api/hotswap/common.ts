@@ -30,6 +30,12 @@ export interface NonHotswappableChange {
 
 export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChange>;
 
+export interface AllChanges {
+  hotswappableChanges: HotswappableChange[];
+  nonHotswappableChanges: NonHotswappableChange[];
+  metadataChanged: boolean;
+}
+
 export enum HotswapMode {
   HOTSWAP = 'hotswap',
   HOTSWAP_ONLY = 'hotswap-only',

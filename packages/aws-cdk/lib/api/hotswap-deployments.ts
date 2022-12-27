@@ -7,7 +7,7 @@ import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate } from './hotswap/common';
+import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, AllChanges } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
@@ -48,13 +48,28 @@ export async function tryHotswapDeployment(
 
   const currentTemplate = await loadCurrentTemplateWithNestedStacks(stackArtifact, sdk);
   const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);
-  const hotswappableChanges = await findAllHotswappableChanges(
-    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames, hotswapMode,
+  const allChanges = await findAllHotswappableChanges(
+    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames,
   );
+  const hotswappableChanges = allChanges.hotswappableChanges;
 
-  if (!hotswappableChanges) {
-    // this means there were changes to the template that cannot be short-circuited
-    return undefined;
+  // preserve classic hotswap behavior
+  if (hotswapMode === HotswapMode.HOTSWAP) {
+    // The only change detected was to CDK::Metadata, so return noOp
+    if (hotswappableChanges.length === 0 && allChanges.nonHotswappableChanges.length === 0 && allChanges.metadataChanged) {
+      return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
+    }
+
+    // the number of hotswappable resources is less than the number of changes
+    // this means that at least one change was deemed not hotswappable by every detector function,
+    // ie they all returned { hotswappableChanges: [], ... }
+    if (hotswappableChanges.length < Object.keys(getStackResourceDifferences(stackChanges)).length) {
+      return undefined;
+    }
+
+    if (allChanges.nonHotswappableChanges.length > 0) {
+      return undefined;
+    }
   }
 
   // apply the short-circuitable changes
@@ -68,13 +83,7 @@ async function findAllHotswappableChanges(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
   nestedStackNames: { [nestedStackName: string]: NestedStackNames },
-  hotswapMode: HotswapMode,
-): Promise<HotswappableChange[] | undefined> {
-  // Skip hotswap if there is any change on stack outputs
-  if (stackChanges.outputs.differenceCount > 0 && hotswapMode === HotswapMode.HOTSWAP) {
-    return undefined;
-  }
-
+): Promise<AllChanges> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
   const promises: Array<() => Array<Promise<ChangeHotswapResult>>> = [];
@@ -82,30 +91,27 @@ async function findAllHotswappableChanges(
   const nonHotswappableResources = new Array<NonHotswappableChange>();
   let metadataChanged = false;
 
+  if (stackChanges.outputs.differenceCount > 0) {
+    nonHotswappableResources.push({
+      hotswappable: false,
+      reason: 'outputs were changed',
+      rejectedChanges: stackChanges.outputs.logicalIds,
+      resourceType: 'Stack Output',
+    });
+  }
+
   // gather the results of the detector functions
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
-      const nestedHotswappableResources = await findNestedHotswappableChanges(
-        logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk, hotswapMode,
-      );
-      if (!nestedHotswappableResources && hotswapMode === HotswapMode.HOTSWAP) {
-        return undefined;
-      } else if (!nestedHotswappableResources) {
-        // this nested stack was either newly created or contained no hotswappable resources
-        // continue, so that other nested stacks and any hotswappable changes in the parent stack can be hotswapped
-        continue;
-      }
-      hotswappableResources.push(...nestedHotswappableResources);
-      continue;
+      const nestedHotswappableResources = await findNestedHotswappableChanges(logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk);
+      hotswappableResources.push(...nestedHotswappableResources.hotswappableChanges);
+      nonHotswappableResources.push(...nestedHotswappableResources.nonHotswappableChanges);
     }
 
     const resourceHotswapEvaluation = isCandidateForHotswapping(change, logicalId);
     // we don't need to run this through the detector functions, we can already judge this
     if ('hotswappable' in resourceHotswapEvaluation) {
       if (!resourceHotswapEvaluation.hotswappable) {
-        if (hotswapMode === HotswapMode.HOTSWAP) {
-          return undefined;
-        }
         nonHotswappableResources.push(resourceHotswapEvaluation);
       } else {
         // the only hotswappable type `isCandidateForHotswapping` can return is Metadata
@@ -140,33 +146,19 @@ async function findAllHotswappableChanges(
   for (const resourceDetectionResults of changesDetectionResults) {
     for (const result of resourceDetectionResults) {
       for (const propertyResult of result) {
-        if (propertyResult.hotswappable) {
-          hotswappableResources.push(propertyResult);
-        } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
+        propertyResult.hotswappable ?
+          hotswappableResources.push(propertyResult) :
           nonHotswappableResources.push(propertyResult);
-        } else if (hotswapMode === HotswapMode.HOTSWAP) {
-          return undefined;
-        }
       }
     }
   }
 
-  // preserve classic hotswap behavior
-  if (hotswapMode === HotswapMode.HOTSWAP) {
-    // The only change detected was to CDK::Metadata, so return []; this will be treated as a noOp
-    if (hotswappableResources.length === 0 && nonHotswappableResources.length === 0 && metadataChanged) {
-      return [];
-    }
 
-    // the number of hotswappable resources is less than the number of changes
-    // this means that at least one change was deemed not hotswappable by every detector function,
-    // ie they all returned `[]`
-    if (hotswappableResources.length < Object.keys(resourceDifferences).length) {
-      return undefined;
-    }
-  }
-
-  return hotswappableResources;
+  return {
+    hotswappableChanges: hotswappableResources,
+    nonHotswappableChanges: nonHotswappableResources,
+    metadataChanged,
+  };
 }
 
 /**
@@ -222,12 +214,19 @@ async function findNestedHotswappableChanges(
   nestedStackNames: { [nestedStackName: string]: NestedStackNames },
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
-  hotswapMode: HotswapMode,
-): Promise<HotswappableChange[] | undefined> {
+): Promise<AllChanges> {
   const nestedStackName = nestedStackNames[logicalId].nestedStackPhysicalName;
-  // the stack name could not be found in CFN, so this is a newly created nested stack
   if (!nestedStackName) {
-    return undefined;
+    return {
+      hotswappableChanges: [],
+      nonHotswappableChanges: [{
+        hotswappable: false,
+        reason: 'stack physical name could not be found in CloudFormation, so this is a newly created nested stack and cannot be hotswapped',
+        rejectedChanges: [logicalId],
+        resourceType: 'AWS::CloudFormation::Stack',
+      }],
+      metadataChanged: false, // use false, since this won't deploy anyway
+    };
   }
 
   const nestedStackParameters = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue?.Properties?.Parameters);
@@ -239,7 +238,7 @@ async function findNestedHotswappableChanges(
     change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate,
   );
 
-  return findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].nestedChildStackNames, hotswapMode);
+  return findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].nestedChildStackNames);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */
