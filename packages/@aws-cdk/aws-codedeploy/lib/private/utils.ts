@@ -1,19 +1,33 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Aws, Token } from '@aws-cdk/core';
-import { IBaseDeploymentConfig } from './base-deployment-config';
-import { CfnDeploymentGroup } from './codedeploy.generated';
-import { AutoRollbackConfig } from './rollback-config';
+import { Token, Stack, ArnFormat, Arn, Fn, Aws } from '@aws-cdk/core';
+import { IBaseDeploymentConfig } from '../base-deployment-config';
+import { CfnDeploymentGroup } from '../codedeploy.generated';
+import { AutoRollbackConfig } from '../rollback-config';
 
-export function arnForApplication(applicationName: string): string {
-  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:application:${applicationName}`;
+export function arnForApplication(stack: Stack, applicationName: string): string {
+  return stack.formatArn({
+    service: 'codedeploy',
+    resource: 'application',
+    resourceName: applicationName,
+    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+  });
 }
 
-export function arnForDeploymentGroup(applicationName: string, deploymentGroupName: string): string {
-  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:deploymentgroup:${applicationName}/${deploymentGroupName}`;
+export function nameFromDeploymentGroupArn(deploymentGroupArn: string): string {
+  const components = Arn.split(deploymentGroupArn, ArnFormat.COLON_RESOURCE_NAME);
+  return Fn.select(1, Fn.split('/', components.resourceName ?? ''));
 }
 
 export function arnForDeploymentConfig(name: string): string {
-  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:deploymentconfig:${name}`;
+  return Arn.format({
+    partition: Aws.PARTITION,
+    account: Aws.ACCOUNT_ID,
+    region: Aws.REGION,
+    service: 'codedeploy',
+    resource: 'deploymentconfig',
+    resourceName: name,
+    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+  });
 }
 
 export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
