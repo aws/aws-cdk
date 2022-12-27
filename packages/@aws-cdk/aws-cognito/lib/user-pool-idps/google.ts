@@ -17,6 +17,7 @@ export interface UserPoolIdentityProviderGoogleProps extends UserPoolIdentityPro
    * The client secret to be accompanied with clientId for Google APIs to authenticate the client.
    * @see https://developers.google.com/identity/sign-in/web/sign-in
    * @default none
+   * @deprecated use clientSecretValue instead
    */
   readonly clientSecret?: string;
   /**
@@ -46,8 +47,9 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     const scopes = props.scopes ?? ['profile'];
 
     //at least one of the properties must be configured
-    if ((!props.clientSecret || !props.clientSecret.trim()) && !props.clientSecretValue) {
-      throw new Error('Client Secret or Client Secret Value must be configured.');
+    if ((!props.clientSecret && !props.clientSecretValue) ||
+      (props.clientSecret && props.clientSecretValue)) {
+      throw new Error('Exactly one of "clientSecret" or "clientSecretValue" must be configured.');
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
