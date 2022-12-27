@@ -701,6 +701,8 @@ export interface VpcAttributes {
    * List of public subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any public subnets
    */
   readonly publicSubnetIds?: string[];
 
@@ -708,13 +710,17 @@ export interface VpcAttributes {
    * List of names for the public subnets
    *
    * Must be undefined or have a name for every public subnet group.
+   *
+   * @default - All public subnets will have the name `Public`
    */
   readonly publicSubnetNames?: string[];
 
   /**
-   * List of IDs of routing tables for the public subnets.
+   * List of IDs of route tables for the public subnets.
    *
    * Must be undefined or have a name for every public subnet group.
+   *
+   * @default - Retrieving the route table ID of any public subnet will fail
    */
   readonly publicSubnetRouteTableIds?: string[];
 
@@ -731,6 +737,8 @@ export interface VpcAttributes {
    * List of private subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any private subnets
    */
   readonly privateSubnetIds?: string[];
 
@@ -738,13 +746,17 @@ export interface VpcAttributes {
    * List of names for the private subnets
    *
    * Must be undefined or have a name for every private subnet group.
+   *
+   * @default - All private subnets will have the name `Private`
    */
   readonly privateSubnetNames?: string[];
 
   /**
-   * List of IDs of routing tables for the private subnets.
+   * List of IDs of route tables for the private subnets.
    *
    * Must be undefined or have a name for every private subnet group.
+   *
+   * @default - Retrieving the route table ID of any private subnet will fail
    */
   readonly privateSubnetRouteTableIds?: string[];
 
@@ -761,6 +773,8 @@ export interface VpcAttributes {
    * List of isolated subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any isolated subnets
    */
   readonly isolatedSubnetIds?: string[];
 
@@ -768,13 +782,17 @@ export interface VpcAttributes {
    * List of names for the isolated subnets
    *
    * Must be undefined or have a name for every isolated subnet group.
+   *
+   * @default - All isolated subnets will have the name `Isolated`
    */
   readonly isolatedSubnetNames?: string[];
 
   /**
-   * List of IDs of routing tables for the isolated subnets.
+   * List of IDs of route tables for the isolated subnets.
    *
    * Must be undefined or have a name for every isolated subnet group.
+   *
+   * @default - Retrieving the route table ID of any isolated subnet will fail
    */
   readonly isolatedSubnetRouteTableIds?: string[];
 
