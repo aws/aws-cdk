@@ -73,6 +73,9 @@ export async function tryHotswapDeployment(
 
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
+  if (nonHotswappableChanges.length > 0) {
+    await logNonHotswappableChanges(nonHotswappableChanges);
+  }
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
 }
@@ -327,7 +330,7 @@ async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: Hotsw
   }));
 }
 
-async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswappableChange): Promise<any> {
+async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswappableChange): Promise<void> {
   // note the type of service that was successfully hotswapped in the User-Agent
   const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
   sdk.appendCustomUserAgent(customUserAgent);
@@ -336,11 +339,18 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
     for (const name of hotswapOperation.resourceNames) {
       print(`   ${ICON} %s`, chalk.bold(name));
     }
-    return await hotswapOperation.apply(sdk);
+    await hotswapOperation.apply(sdk);
   } finally {
     for (const name of hotswapOperation.resourceNames) {
       print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
     }
     sdk.removeCustomUserAgent(customUserAgent);
+  }
+}
+
+function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[]): void {
+  print(`\n${ICON} %s`, chalk.red('the following non-hotswappable changes were ignored:'));
+  for (const change of nonHotswappableChanges) {
+    print(`${ICON} type: %s, rejected changed: %s, reason: %s`, chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason));
   }
 }
