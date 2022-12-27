@@ -186,10 +186,10 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     // Function dependencies
     role.node.children.forEach((child) => {
       if (cdk.CfnResource.isCfnResource(child)) {
-        resource.addDependsOn(child);
+        resource.addDependency(child);
       }
       if (Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
-        resource.addDependsOn(child.node.defaultChild);
+        resource.addDependency(child.node.defaultChild);
       }
     });
   }
