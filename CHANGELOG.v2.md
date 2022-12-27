@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.56.1](https://github.com/aws/aws-cdk/compare/v2.56.0...v2.56.1) (2022-12-23)
+
+
+### Bug Fixes
+
+* **cfnspec:** v101.0.0 introduced specific types on several types that previously were typed as json ([#23448](https://github.com/aws/aws-cdk/issues/23448)) ([1b4e3a4](https://github.com/aws/aws-cdk/commit/1b4e3a4b503d5d08e976ccf245c20f4430bcba46))
+
+## [2.56.0](https://github.com/aws/aws-cdk/compare/v2.55.1...v2.56.0) (2022-12-21)
+
+
+### Features
+
+* **aws-cognito:** add AuthSessionValidity property on a UserPoolClient ([#23040](https://github.com/aws/aws-cdk/issues/23040)) ([8896fb9](https://github.com/aws/aws-cdk/commit/8896fb902ad9c8d91a5ddb63df64963186bd09e1)), closes [#22854](https://github.com/aws/aws-cdk/issues/22854)
+* **cfnspec:** cloudformation spec v102.0.0 ([#23372](https://github.com/aws/aws-cdk/issues/23372)) ([480b0a5](https://github.com/aws/aws-cdk/commit/480b0a5098e51248bbf36ebf2bcec57cc791c2b0))
+* **core:** CfnResource dependency methods ([#23383](https://github.com/aws/aws-cdk/issues/23383)) ([ecedb00](https://github.com/aws/aws-cdk/commit/ecedb00ee3a3cfcaa2564a679fa635aff38f32d8)), closes [#20419](https://github.com/aws/aws-cdk/issues/20419) [#20418](https://github.com/aws/aws-cdk/issues/20418)
+* **lambda:** expose all docker run options to container bundling of all lambda variants ([#23318](https://github.com/aws/aws-cdk/issues/23318)) ([02d0876](https://github.com/aws/aws-cdk/commit/02d0876bbb196e9fbeb32d977e7cf65229c8559d)), closes [#22829](https://github.com/aws/aws-cdk/issues/22829)
+* **trigger:** Allow trigger to work with Lambda functions with long timeouts ([#23062](https://github.com/aws/aws-cdk/issues/23062)) ([9fd3811](https://github.com/aws/aws-cdk/commit/9fd3811b3213a227b84d79348e635a520fc537c7)), closes [#23058](https://github.com/aws/aws-cdk/issues/23058)
+
+
+### Bug Fixes
+
+* **apigateway:** allow multi-level base path mapping ([#23362](https://github.com/aws/aws-cdk/issues/23362)) ([86b6c6f](https://github.com/aws/aws-cdk/commit/86b6c6f796cbd15b7c53a4c0482a2b189d45300f)), closes [#23347](https://github.com/aws/aws-cdk/issues/23347)
+* **autoscaling:** Allow adding AutoScalingGroup to multiple target groups ([#23044](https://github.com/aws/aws-cdk/issues/23044)) ([07acd18](https://github.com/aws/aws-cdk/commit/07acd180d778b7084d8519234cfc3570bb8846ba)), closes [/github.com/aws/aws-cdk/issues/5667#issuecomment-636657482](https://github.com/aws//github.com/aws/aws-cdk/issues/5667/issues/issuecomment-636657482) [#5667](https://github.com/aws/aws-cdk/issues/5667)
+* **aws-eks:** fail to update both logging and access at the same time ([#22957](https://github.com/aws/aws-cdk/issues/22957)) ([606837d](https://github.com/aws/aws-cdk/commit/606837d3de5d048e3fb1674c30a3048e918f680a))
+* **cognito:** quote or mime-encode `fromName` to comply RFC 5322 ([#23227](https://github.com/aws/aws-cdk/issues/23227)) ([78d474a](https://github.com/aws/aws-cdk/commit/78d474a12bce7805f88be96df926149c130bf513)), closes [#18903](https://github.com/aws/aws-cdk/issues/18903) [/www.rfc-editor.org/rfc/rfc5322#section-3](https://github.com/aws//www.rfc-editor.org/rfc/rfc5322/issues/section-3)
+* **core:** cross region ssm writer update ([#23356](https://github.com/aws/aws-cdk/issues/23356)) ([87bd42d](https://github.com/aws/aws-cdk/commit/87bd42d41f11667aef673d9087c28cecedb87f66))
+* **dynamodb:** add kms permissions to grantStreamRead ([#23400](https://github.com/aws/aws-cdk/issues/23400)) ([fcf1bfa](https://github.com/aws/aws-cdk/commit/fcf1bfaab173ee57bbf64d95be62bf10cbb1b851)), closes [40aws-cdk/aws-dynamodb/lib/table.ts#L1025-L1061](https://github.com/40aws-cdk/aws-dynamodb/lib/table.ts/issues/L1025-L1061)
+* **s3-deployment:** source markers missing when there are multiple sources ([#23364](https://github.com/aws/aws-cdk/issues/23364)) ([8a7ec37](https://github.com/aws/aws-cdk/commit/8a7ec37e0085e952b59bebab1ecc880167a0691f)), closes [#23321](https://github.com/aws/aws-cdk/issues/23321) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L64](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L64) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L137](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L137)
+* **timestream:** magneticStoreWriteProperties and retentionProperties  not working as Json ([#23425](https://github.com/aws/aws-cdk/issues/23425)) ([b705224](https://github.com/aws/aws-cdk/commit/b7052242fb699ba89603ae718ae2d6b0ab9efa6f)), closes [#23404](https://github.com/aws/aws-cdk/issues/23404)
+
+## [2.55.1](https://github.com/aws/aws-cdk/compare/v2.55.0...v2.55.1) (2022-12-16)
+
+
+### Bug Fixes
+
+* **s3-deployment:** source markers missing when there are multiple sources ([0bb0181](https://github.com/aws/aws-cdk/commit/0bb01815b2fa7708ded6a72e220916e2388993cf)), closes [#23321](https://github.com/aws/aws-cdk/issues/23321) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L64](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L64) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L137](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L137)
+
+## [2.55.0](https://github.com/aws/aws-cdk/compare/v2.54.0...v2.55.0) (2022-12-14)
+
+
+### Features
+
+* **autoscaling:** support default instance warmup for Auto Scaling groups ([#23285](https://github.com/aws/aws-cdk/issues/23285)) ([3f706e2](https://github.com/aws/aws-cdk/commit/3f706e2210fb1ffe2b70e27862a17594c3337800))
+* **cfnspec:** cloudformation spec v101.0.0 ([#23294](https://github.com/aws/aws-cdk/issues/23294)) ([3951f09](https://github.com/aws/aws-cdk/commit/3951f09fb370b74936f3fb45e7188ac6c7343b67))
+* **cognito:** add new AdvancedSecurityMode property ([#23261](https://github.com/aws/aws-cdk/issues/23261)) ([9cc9bd3](https://github.com/aws/aws-cdk/commit/9cc9bd34a9d67e7e072292e20aeb9e003e55f158))
+* **core:** add volumes-from option to docker run command for bundling ([#22829](https://github.com/aws/aws-cdk/issues/22829)) ([813c2f1](https://github.com/aws/aws-cdk/commit/813c2f17b6c0f1056ed43a8a93f4cffbe9ae9736)), closes [#8799](https://github.com/aws/aws-cdk/issues/8799) [#21660](https://github.com/aws/aws-cdk/issues/21660)
+* **s3:** update runtime of notifications-handler to python3.9  ([#23209](https://github.com/aws/aws-cdk/issues/23209)) ([b2d293d](https://github.com/aws/aws-cdk/commit/b2d293d3f8d36547d8cfd7ff3957428718c3827f))
+* **s3-deployment:** add additional sources with `addSource` ([#23321](https://github.com/aws/aws-cdk/issues/23321)) ([b34d0b7](https://github.com/aws/aws-cdk/commit/b34d0b7b0152dc5edb2f963054c6af273119006e)), closes [#22857](https://github.com/aws/aws-cdk/issues/22857)
+
+
+### Bug Fixes
+
+* **cloudwatch:** math expressions incorrectly warn about metricsinsights variable names ([#23316](https://github.com/aws/aws-cdk/issues/23316)) ([55108b9](https://github.com/aws/aws-cdk/commit/55108b969a94f671a492b4536d2ad9d13d11cf9d))
+* **core:** cross stack references to string lists break ([#22873](https://github.com/aws/aws-cdk/issues/22873)) ([3ddb8cf](https://github.com/aws/aws-cdk/commit/3ddb8cf44f1e7a285b767f4f4540924a728083c4)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html#aws-resource-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html/issues/aws-resource-ec2) [#21682](https://github.com/aws/aws-cdk/issues/21682)
+* **custom-resources:** inactive lambda functions fail on invoke ([#22612](https://github.com/aws/aws-cdk/issues/22612)) ([def2971](https://github.com/aws/aws-cdk/commit/def2971d91eedbd327d3acec201d902376129f25)), closes [#20123](https://github.com/aws/aws-cdk/issues/20123)
+* **ec2:** Invalid security group ID ([#22859](https://github.com/aws/aws-cdk/issues/22859)) ([c2043c8](https://github.com/aws/aws-cdk/commit/c2043c8dfaaa3189f625dd93c94ee9139e5505e6)), closes [aws-cdk/aws-ec2/lib/peer.ts#L224](https://github.com/aws-cdk/aws-ec2/lib/peer.ts/issues/L224)
+* **ecr:** grants for cross-account principals result in failed deployments ([#16376](https://github.com/aws/aws-cdk/issues/16376)) ([84e20f8](https://github.com/aws/aws-cdk/commit/84e20f8da37c22639c033f51c89ef608260e7578)), closes [#15070](https://github.com/aws/aws-cdk/issues/15070)
+* **opensearch:** Don't throw a Az count mismatch for imported VPCs ([#22654](https://github.com/aws/aws-cdk/issues/22654)) ([6a28b7f](https://github.com/aws/aws-cdk/commit/6a28b7f0aecf0bc9c5876bf4c7df87d69f0af836)), closes [#22651](https://github.com/aws/aws-cdk/issues/22651)
+
+
+### Reverts
+
+* "chore: save exclusion rules when bumping the CFN spec ([#22788](https://github.com/aws/aws-cdk/issues/22788))" ([#23282](https://github.com/aws/aws-cdk/issues/23282)) ([cc76cfb](https://github.com/aws/aws-cdk/commit/cc76cfb124a59131996d75d05a82b7985c787ae0))
+
 ## [2.54.0](https://github.com/aws/aws-cdk/compare/v2.53.0...v2.54.0) (2022-12-07)
 
 

@@ -1,5 +1,5 @@
 {
-  "$version": "101.0.0",
+  "$version": "103.0.0",
   "PropertyTypes": {
     "AWS::CloudFront::CachePolicy.CachePolicyConfig": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-cachepolicy-cachepolicyconfig.html",
@@ -2007,12 +2007,12 @@
         "FunctionCode": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-function.html#cfn-cloudfront-function-functioncode",
           "PrimitiveType": "String",
-          "Required": false,
+          "Required": true,
           "UpdateType": "Mutable"
         },
         "FunctionConfig": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-function.html#cfn-cloudfront-function-functionconfig",
-          "Required": false,
+          "Required": true,
           "Type": "FunctionConfig",
           "UpdateType": "Mutable"
         },
