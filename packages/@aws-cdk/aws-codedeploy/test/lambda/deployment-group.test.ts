@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -43,6 +43,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           'MyDGServiceRole5E94FD88',
           'Arn',
         ],
+      },
+      AlarmConfiguration: {
+        Enabled: false,
+        Alarms: Match.absent(),
       },
       AutoRollbackConfiguration: {
         Enabled: true,
