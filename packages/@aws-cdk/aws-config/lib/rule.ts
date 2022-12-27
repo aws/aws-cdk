@@ -618,6 +618,41 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED = 'AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED';
   /**
+   * Checks if a backup plan has a backup rule that satisfies the required frequency and retention period.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-plan-min-frequency-and-min-retention-check.html
+   */
+  public static readonly BACKUP_PLAN_MIN_FREQUENCY_AND_MIN_RETENTION_CHECK = 'BACKUP_PLAN_MIN_FREQUENCY_AND_MIN_RETENTION_CHECK';
+  /**
+   * Checks if a recovery point is encrypted.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-recovery-point-encrypted.html
+   */
+  public static readonly BACKUP_RECOVERY_POINT_ENCRYPTED = 'BACKUP_RECOVERY_POINT_ENCRYPTED';
+  /**
+   * Checks if a backup vault has an attached resource-based policy which prevents deletion of recovery points.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-recovery-point-manual-deletion-disabled.html
+   */
+  public static readonly BACKUP_RECOVERY_POINT_MANUAL_DELETION_DISABLED = 'BACKUP_RECOVERY_POINT_MANUAL_DELETION_DISABLED';
+  /**
+   * Checks if a recovery point expires no earlier than after the specified period.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-recovery-point-minimum-retention-check.html
+   */
+  public static readonly BACKUP_RECOVERY_POINT_MINIMUM_RETENTION_CHECK = 'BACKUP_RECOVERY_POINT_MINIMUM_RETENTION_CHECK';
+  /**
+   * Checks if an AWS Elastic Beanstalk environment is configured for enhanced health reporting.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/beanstalk-enhanced-health-reporting-enabled.html
+   */
+  public static readonly BEANSTALK_ENHANCED_HEALTH_REPORTING_ENABLED = 'BEANSTALK_ENHANCED_HEALTH_REPORTING_ENABLED';
+  /**
+   * Checks if Classic Load Balancers (CLB) are configured with a user defined Desync mitigation mode.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/clb-desync-mode-check.html
+   */
+  public static readonly CLB_DESYNC_MODE_CHECK = 'CLB_DESYNC_MODE_CHECK';
+  /**
+   * Checks if a Classic Load Balancer spans multiple Availability Zones (AZs).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/clb-multiple-az.html
+   */
+  public static readonly CLB_MULTIPLE_AZ = 'CLB_MULTIPLE_AZ';
+  /**
    * Checks whether an AWS CloudFormation stack's actual configuration differs, or has drifted,
    * from it's expected configuration.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudformation-stack-drift-detection-check.html
@@ -629,27 +664,62 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly CLOUDFORMATION_STACK_NOTIFICATION_CHECK = 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK';
   /**
+   * Checks if Amazon CloudFront distributions are configured to capture information from
+   * Amazon Simple Storage Service (Amazon S3) server access logs.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-accesslogs-enabled.html
+   */
+  public static readonly CLOUDFRONT_ACCESSLOGS_ENABLED = 'CLOUDFRONT_ACCESSLOGS_ENABLED';
+  /**
+   * Checks if Amazon CloudFront distributions are associated with either WAF or WAFv2 web access control lists (ACLs).
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-associated-with-waf.html
+   */
+  public static readonly CLOUDFRONT_ASSOCIATED_WITH_WAF = 'CLOUDFRONT_ASSOCIATED_WITH_WAF';
+  /**
+   * Checks if the certificate associated with an Amazon CloudFront distribution is the default Secure Sockets Layer (SSL) certificate.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-custom-ssl-certificate.html
+   */
+  public static readonly CLOUDFRONT_CUSTOM_SSL_CERTIFICATE = 'CLOUDFRONT_CUSTOM_SSL_CERTIFICATE';
+  /**
    * Checks if an Amazon CloudFront distribution is configured to return a specific object that is the default root object.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-default-root-object-configured.html
    */
   public static readonly CLOUDFRONT_DEFAULT_ROOT_OBJECT_CONFIGURED = 'CLOUDFRONT_DEFAULT_ROOT_OBJECT_CONFIGURED';
   /**
+   * Checks if CloudFront distributions are using deprecated SSL protocols for HTTPS communication between
+   * CloudFront edge locations and custom origins.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-no-deprecated-ssl-protocols.html
+   */
+  public static readonly CLOUDFRONT_NO_DEPRECATED_SSL_PROTOCOLS = 'CLOUDFRONT_NO_DEPRECATED_SSL_PROTOCOLS';
+  /**
    * Checks that Amazon CloudFront distribution with Amazon S3 Origin type has Origin Access Identity (OAI) configured.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-origin-access-identity-enabled.html
    */
   public static readonly CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED = 'CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED';
-  /** Checks whether an origin group is configured for the distribution of at least 2 origins in the
+  /** 
+   * Checks whether an origin group is configured for the distribution of at least 2 origins in the
    * origin group for Amazon CloudFront.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-origin-failover-enabled.html
    */
   public static readonly CLOUDFRONT_ORIGIN_FAILOVER_ENABLED = 'CLOUDFRONT_ORIGIN_FAILOVER_ENABLED';
+  /** 
+   * Checks if Amazon CloudFront distributions are using a minimum security policy and cipher suite of TLSv1.2 or
+   * greater for viewer connections.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-security-policy-check.html
+   */
+  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK'
   /**
    * Checks if Amazon CloudFront distributions are using a custom SSL certificate and are configured
    * to use SNI to serve HTTPS requests.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-sni-enabled.html
    */
   public static readonly CLOUDFRONT_SNI_ENABLED = 'CLOUDFRONT_SNI_ENABLED';
-  /** Checks whether your Amazon CloudFront distributions use HTTPS (directly or via a redirection).
+  /**
+   * Checks if Amazon CloudFront distributions are encrypting traffic to custom origins.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-traffic-to-origin-encrypted.html
+   */
+  public static readonly CLOUDFRONT_TRAFFIC_TO_ORIGIN_ENCRYPTED = 'CLOUDFRONT_TRAFFIC_TO_ORIGIN_ENCRYPTED';
+  /**
+   * Checks whether your Amazon CloudFront distributions use HTTPS (directly or via a redirection).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-viewer-policy-https.html
    */
   public static readonly CLOUDFRONT_VIEWER_POLICY_HTTPS = 'CLOUDFRONT_VIEWER_POLICY_HTTPS';
@@ -691,6 +761,11 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly CLOUDWATCH_ALARM_ACTION_CHECK = 'CLOUDWATCH_ALARM_ACTION_CHECK';
   /**
+   * Checks if Amazon CloudWatch alarms actions are in enabled state.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudwatch-alarm-action-enabled-check.html
+   */
+  public static readonly CLOUDWATCH_ALARM_ACTION_ENABLED_CHECK = 'CLOUDWATCH_ALARM_ACTION_ENABLED_CHECK';
+  /**
    * Checks whether the specified resource type has a CloudWatch alarm for the specified metric.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudwatch-alarm-resource-check.html
    */
@@ -713,16 +788,53 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly CMK_BACKING_KEY_ROTATION_ENABLED = 'CMK_BACKING_KEY_ROTATION_ENABLED';
   /**
+   * Checks if an AWS CodeBuild project has encryption enabled for all of its artifacts.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-artifact-encryption.html
+   */
+  public static readonly CODEBUILD_PROJECT_ARTIFACT_ENCRYPTION = 'CODEBUILD_PROJECT_ARTIFACT_ENCRYPTION';
+  /**
+   * Checks if an AWS CodeBuild project environment has privileged mode enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-environment-privileged-check.html
+   */
+  public static readonly CODEBUILD_PROJECT_ENVIRONMENT_PRIVILEGED_CHECK = 'CODEBUILD_PROJECT_ENVIRONMENT_PRIVILEGED_CHECK';
+  /**
    * Checks whether the project contains environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-envvar-awscred-check.html
    */
   public static readonly CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK = 'CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK';
+  /**
+   * Checks if an AWS CodeBuild project environment has at least one log option enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-logging-enabled.html
+   */
+  public static readonly CODEBUILD_PROJECT_LOGGING_ENABLED = 'CODEBUILD_PROJECT_LOGGING_ENABLED';
+  /**
+   * Checks if a AWS CodeBuild project configured with Amazon S3 Logs has encryption enabled for its logs.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-s3-logs-encrypted.html
+   */
+  public static readonly CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED = 'CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED';
   /**
    * Checks whether the GitHub or Bitbucket source repository URL contains either personal access tokens
    * or user name and password.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-source-repo-url-check.html
    */
   public static readonly CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK = 'CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK';
+  /**
+   * Checks if the deployment group is configured with automatic deployment rollback and
+   * deployment monitoring with alarms attached.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/codedeploy-auto-rollback-monitor-enabled.html
+   */
+  public static readonly CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED = 'CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED';
+  /**
+   * Checks if the deployment group for EC2/On-Premises Compute Platform is configured with 
+   * a minimum healthy hosts fleet percentage or host count greater than or equal to the input threshold. 
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/codedeploy-ec2-minimum-healthy-hosts-configured.html
+   */
+  public static readonly CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED = 'CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED';
+  /**
+   * Checks if the deployment group for Lambda Compute Platform is not using the default deployment configuration.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/codedeploy-lambda-allatonce-traffic-shift-disabled.html
+   */
+  public static readonly CODEDEPLOY_LAMBDA_ALLATONCE_TRAFFIC_SHIFT_DISABLED = 'CODEDEPLOY_LAMBDA_ALLATONCE_TRAFFIC_SHIFT_DISABLED';
   /**
    * Checks whether the first deployment stage of the AWS CodePipeline performs more than one deployment.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codepipeline-deployment-count-check.html
