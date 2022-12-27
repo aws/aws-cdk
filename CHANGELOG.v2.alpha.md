@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.56.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.56.0-alpha.0...v2.56.1-alpha.0) (2022-12-23)
+
+## [2.56.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.55.1-alpha.0...v2.56.0-alpha.0) (2022-12-21)
+
+
+### Features
+
+* **integ-tests:** add serializedJson on match utility ([#23218](https://github.com/aws/aws-cdk/issues/23218)) ([1a62dc4](https://github.com/aws/aws-cdk/commit/1a62dc4590d725d3c03861af434a24789eaa0a2e))
+* **servicecatalogappregistry:** Cross region warning and default application tag ([#23412](https://github.com/aws/aws-cdk/issues/23412)) ([8d359ae](https://github.com/aws/aws-cdk/commit/8d359ae35877ce066e419f7e2e7da2b0deb587e6))
+
+## [2.55.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.55.0-alpha.0...v2.55.1-alpha.0) (2022-12-16)
+
+## [2.55.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.54.0-alpha.0...v2.55.0-alpha.0) (2022-12-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appsync:** `DataSource.createResolver`,
+`DataSource.createFunction`, and `GraphQlApi.createResolver` now require
+2 arguments instead of 1.
+* **appsync:** Renames `Schema` to `SchemaFile` that implements `ISchema`. Removes all `addXxx` type methods from `GraphQlApi`.
+
+### Features
+
+* **aws-lambda-python:** add command hooks for bundling to allow for execution of custom commands in the build container ([#23330](https://github.com/aws/aws-cdk/issues/23330)) ([d3d071f](https://github.com/aws/aws-cdk/commit/d3d071f51fab61ae0e484f143e68e698bba48537))
+* **gamelift:** add GameSessionQueue L2 Construct for GameLift ([#23266](https://github.com/aws/aws-cdk/issues/23266)) ([1ded644](https://github.com/aws/aws-cdk/commit/1ded64430d8258f6666743e245ef5ac31ed4bf0b))
+
+
+### Bug Fixes
+
+* **appsync:** unexpected resolver replacement ([#23322](https://github.com/aws/aws-cdk/issues/23322)) ([6dc15d4](https://github.com/aws/aws-cdk/commit/6dc15d40764dc71fe6a3b70691f586e96cdcf730)), closes [#13269](https://github.com/aws/aws-cdk/issues/13269)
+* **servicecatalogappregistry:** synth error when associating a nested stack ([#23248](https://github.com/aws/aws-cdk/issues/23248)) ([30301d9](https://github.com/aws/aws-cdk/commit/30301d9e5ab4af86c5e48a5ad47013924acdfed7))
+
+
+### Miscellaneous Chores
+
+* **appsync:** removes codefirst schema generation ([#23250](https://github.com/aws/aws-cdk/issues/23250)) ([2bd1e41](https://github.com/aws/aws-cdk/commit/2bd1e4184aea054766f7872b300b960b2b83ef06))
+
 ## [2.54.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.53.0-alpha.0...v2.54.0-alpha.0) (2022-12-07)
 
 
