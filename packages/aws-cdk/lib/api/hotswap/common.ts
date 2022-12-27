@@ -118,3 +118,7 @@ export function classifyChanges(xs: HotswappableChangeCandidate, hotswappablePro
 
   return { hotswappableProps, nonHotswappableProps };
 }
+
+export function renderNonHotswappableProp(propNames: string[], resourceType: string): string {
+  return `the properties '${propNames} on type ${resourceType} are not hotswappable`;
+}

@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, renderNonHotswappableProp, transformObjectKeys } from './common';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -22,7 +22,7 @@ export async function isHotswappableEcsServiceChange(
   if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
-      reason: 'WTF IS THIS',
+      reason: renderNonHotswappableProp(nonHotswappablePropNames, change.newValue.Type),
       rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
@@ -52,12 +52,15 @@ export async function isHotswappableEcsServiceChange(
   } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
     // if something besides an ECS Service is referencing the TaskDefinition,
     // hotswap is not possible in HOTSWAP mode
-    ret.push({
-      hotswappable: false,
-      reason: 'Something besides an ECS Service was found referencing the changed TaskDefinition',
-      rejectedChanges: nonHotswappablePropNames,
-      resourceType: change.newValue.Type,
-    });
+    const nonEcsServiceTaskDefRefs = resourcesReferencingTaskDef.filter(r => r.Type !== 'AWS::ECS::Service');
+    for (const taskRef of nonEcsServiceTaskDefRefs) {
+      ret.push({
+        hotswappable: false,
+        reason: 'Something besides an ECS Service was found referencing the changed TaskDefinition',
+        rejectedChanges: [taskRef.LogicalId],
+        resourceType: taskRef.Type,
+      });
+    }
   }
 
   const namesOfHotswappableChanges = Object.keys(hotswappableProps);

@@ -1,7 +1,7 @@
 //import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, renderNonHotswappableProp, transformObjectKeys } from './common';
 
 export async function isHotswappableAppSyncChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -15,11 +15,9 @@ export async function isHotswappableAppSyncChange(
   }
 
   if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
-    // Pipeline resolvers can't be hotswapped as they reference
-    // the FunctionId of the underlying functions, which can't be resolved.
     return [{
       hotswappable: false,
-      reason: 'PIPELINE bad',
+      reason: 'Pipeline resolved cannot be hotswapped since the reference the FunctionId of the underlying functions, which cannot be resolved',
       rejectedChanges: Object.keys(change.propertyUpdates),
       resourceType: change.newValue.Type,
     }];
@@ -33,7 +31,7 @@ export async function isHotswappableAppSyncChange(
   if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
-      reason: 'WTF IS THIS',
+      reason: renderNonHotswappableProp(nonHotswappablePropNames, change.newValue.Type),
       rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
@@ -62,10 +60,6 @@ export async function isHotswappableAppSyncChange(
         }
 
         const sdkProperties: { [name: string]: any } = {
-          // TODO: add strict SDK typing to this, so we don't have to do the stupid "oldProperties" thing;
-          // instead, supply only the required props for the call.
-          // see codebuild for example
-        //const sdkProperties: AWS.AppSync.UpdateFunctionRequest | AWS.AppSync.UpdateResolverRequest = {
           ...change.oldValue.Properties,
           requestMappingTemplate: change.newValue.Properties?.RequestMappingTemplate,
           responseMappingTemplate: change.newValue.Properties?.ResponseMappingTemplate,
@@ -80,7 +74,6 @@ export async function isHotswappableAppSyncChange(
           //const arnParts = resourcePhysicalName.split('/');
           //const resolverName = `${arnParts[3]}.${arnParts[5]}`; // TODO: resolver name
 
-          // THIS CAN NEVER WORK
           await sdk.appsync().updateResolver(sdkRequestObject).promise();
         } else {
           // THIS IS WEIRD, DO WE EXPECT API-ID TO BE SET??

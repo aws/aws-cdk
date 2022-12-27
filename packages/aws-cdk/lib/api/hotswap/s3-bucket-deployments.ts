@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapResult, HotswappableChangeCandidate, renderNonHotswappableProp } from './common';
 
 /**
  * This means that the value is required to exist by CloudFormation's API (or our S3 Bucket Deployment Lambda)
@@ -99,7 +99,7 @@ async function changeIsForS3DeployCustomResourcePolicy(
   if (!roles) {
     return [{
       hotswappable: false,
-      reason: 'WTF IS THIS',
+      reason: renderNonHotswappableProp(['Roles'], change.newValue.Type),
       rejectedChanges: ['Roles'],
       resourceType: change.newValue.Type,
     }];

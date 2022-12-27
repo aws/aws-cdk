@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, renderNonHotswappableProp } from './common';
 
 export async function isHotswappableStateMachineChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -15,7 +15,7 @@ export async function isHotswappableStateMachineChange(
   if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
-      reason: 'WTF IS THIS',
+      reason: renderNonHotswappableProp(nonHotswappablePropNames, change.newValue.Type),
       rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });
