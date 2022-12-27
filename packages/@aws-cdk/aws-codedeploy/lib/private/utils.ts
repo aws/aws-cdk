@@ -7,7 +7,7 @@ import { AutoRollbackConfig } from '../rollback-config';
 export function arnForApplication(stack: Stack, applicationName: string): string {
   return stack.formatArn({
     service: 'codedeploy',
-    resource: 'applications',
+    resource: 'application',
     resourceName: applicationName,
     arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   });
