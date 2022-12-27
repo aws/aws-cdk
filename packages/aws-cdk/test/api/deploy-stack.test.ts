@@ -88,7 +88,7 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP`", async
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: HotswapMode.HOTSWAP,
+    hotswap: HotswapMode.CLASSIC,
     extraUserAgent: 'extra-user-agent',
   });
 
@@ -140,7 +140,7 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: HotswapMode.HOTSWAP,
+    hotswap: HotswapMode.CLASSIC,
     rollback: undefined,
   });
 

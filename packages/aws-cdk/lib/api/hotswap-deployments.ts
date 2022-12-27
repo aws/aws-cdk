@@ -53,7 +53,7 @@ export async function tryHotswapDeployment(
   );
 
   // preserve classic hotswap behavior
-  if (hotswapMode === HotswapMode.HOTSWAP) {
+  if (hotswapMode === HotswapMode.CLASSIC) {
     // The only change detected was to CDK::Metadata, so return noOp
     if (hotswappableChanges.length === 0 && nonHotswappableChanges.length === 0 && metadataChanged) {
       return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };

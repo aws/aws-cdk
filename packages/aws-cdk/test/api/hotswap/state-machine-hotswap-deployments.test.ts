@@ -11,7 +11,7 @@ beforeEach(() => {
   hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
 });
 
-describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('returns undefined when a new StateMachine is added to the Stack', async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
@@ -24,7 +24,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -224,7 +224,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -269,7 +269,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -703,7 +703,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 

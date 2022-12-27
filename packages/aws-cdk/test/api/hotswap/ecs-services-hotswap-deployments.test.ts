@@ -29,7 +29,7 @@ beforeEach(() => {
   });
 });
 
-describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('should call registerTaskDefinition and updateService for a difference only in the TaskDefinition with a Family property', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -158,7 +158,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -247,7 +247,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -395,7 +395,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -486,7 +486,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 

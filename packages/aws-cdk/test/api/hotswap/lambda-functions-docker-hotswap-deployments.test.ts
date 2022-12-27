@@ -29,7 +29,7 @@ beforeEach(() => {
   });
 });
 
-describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({

@@ -26,7 +26,7 @@ beforeEach(() => {
   });
 });
 
-describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('returns undefined when a new Lambda function is added to the Stack', async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
@@ -39,7 +39,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -423,7 +423,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -476,7 +476,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -534,7 +534,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 

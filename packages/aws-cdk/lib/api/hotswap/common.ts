@@ -37,7 +37,7 @@ export interface AllChanges {
 }
 
 export enum HotswapMode {
-  HOTSWAP = 'hotswap',
+  CLASSIC = 'hotswap',
   HOTSWAP_ONLY = 'hotswap-only',
 }
 

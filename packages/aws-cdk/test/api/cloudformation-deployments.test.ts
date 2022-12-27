@@ -100,12 +100,12 @@ test('passes through hotswap=true to deployStack()', async () => {
     stack: testStack({
       stackName: 'boop',
     }),
-    hotswap: HotswapMode.HOTSWAP,
+    hotswap: HotswapMode.CLASSIC,
   });
 
   // THEN
   expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    hotswap: HotswapMode.HOTSWAP,
+    hotswap: HotswapMode.CLASSIC,
   }));
 });
 

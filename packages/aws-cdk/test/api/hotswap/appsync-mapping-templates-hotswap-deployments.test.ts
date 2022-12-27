@@ -13,7 +13,7 @@ beforeEach(() => {
   hotswapMockSdkProvider.stubAppSync({ updateResolver: mockUpdateResolver, updateFunction: mockUpdateFunction });
 });
 
-describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test(`A new Resolver being added to the Stack returns undefined in HOTSWAP mode and
         returns a noOp in HOTSWAP_ONLY mode`, async () => {
     // GIVEN
@@ -27,7 +27,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -158,7 +158,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -222,7 +222,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -277,7 +277,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -396,7 +396,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -454,7 +454,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 

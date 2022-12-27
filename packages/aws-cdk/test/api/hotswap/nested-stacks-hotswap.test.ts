@@ -8,7 +8,7 @@ let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVe
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
 // TODO: more tests for parent vs child containing hotswappable changes
-describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('can hotswap a lambda function in a 1-level nested stack', async () => {
     // GIVEN
     hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('LambdaRoot');
@@ -338,7 +338,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
     const cdkStackArtifact = testStack({ stackName: 'NonHotswappableRoot', template: rootStack.template });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -430,7 +430,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     delete rootStack.template.Resources.NestedStack;
     const cdkStackArtifact = testStack({ stackName: 'NestedStackDeletionRoot', template: rootStack.template });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -494,7 +494,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     };
     const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: rootStack.template });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -572,7 +572,7 @@ describe.each([HotswapMode.HOTSWAP, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     };
     const cdkStackArtifact = testStack({ stackName: 'NestedStackTypeChangeRoot', template: rootStack.template });
 
-    if (hotswapMode === HotswapMode.HOTSWAP) {
+    if (hotswapMode === HotswapMode.CLASSIC) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 

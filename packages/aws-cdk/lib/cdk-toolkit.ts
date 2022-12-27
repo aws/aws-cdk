@@ -768,7 +768,7 @@ export class CdkToolkit {
 
   private async invokeDeployFromWatch(options: WatchOptions, cloudWatchLogMonitor?: CloudWatchLogEventMonitor): Promise<void> {
     // 'watch' has different defaults than regular 'deploy'
-    const hotswap = options.hotswap === undefined ? HotswapMode.HOTSWAP : options.hotswap;
+    const hotswap = options.hotswap === undefined ? HotswapMode.CLASSIC : options.hotswap;
     const deployOptions: DeployOptions = {
       ...options,
       requireApproval: RequireApproval.Never,

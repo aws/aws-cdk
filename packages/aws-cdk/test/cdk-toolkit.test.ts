@@ -416,12 +416,12 @@ describe('deploy', () => {
       await cdkToolkit.deploy({
         selector: { patterns: ['Test-Stack-A-Display-Name'] },
         requireApproval: RequireApproval.Never,
-        hotswap: HotswapMode.HOTSWAP,
+        hotswap: HotswapMode.CLASSIC,
       });
 
       // THEN
       expect(mockCfnDeployments.deployStack).toHaveBeenCalledWith(expect.objectContaining({
-        hotswap: HotswapMode.HOTSWAP,
+        hotswap: HotswapMode.CLASSIC,
       }));
     });
   });
