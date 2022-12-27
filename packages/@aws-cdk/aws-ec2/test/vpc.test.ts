@@ -1281,6 +1281,32 @@ describe('vpc', () => {
 
     });
 
+    test('throws on incorrect number of subnet names', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetNames: ['Public 1', 'Public 2'],
+        }),
+      ).toThrow(/publicSubnetNames must have an entry for every corresponding subnet group/);
+    });
+
+    test('throws on incorrect number of route table ids', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetRouteTableIds: ['rt-12345'],
+        }),
+      ).toThrow('Number of publicSubnetRouteTableIds (1) must be equal to the amount of publicSubnetIds (3).');
+    });
+
     test('throws on incorrect number of subnet IPv4 CIDR blocks', () => {
       const stack = new Stack();
 
