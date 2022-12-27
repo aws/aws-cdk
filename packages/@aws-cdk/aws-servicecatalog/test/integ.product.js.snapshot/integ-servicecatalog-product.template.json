@@ -191,6 +191,10 @@
      "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
      "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
     ],
+    "SourceMarkers": [
+     {},
+     {}
+    ],
     "DestinationBucketName": {
      "Ref": "TestAssetBucket9434EFAE"
     },

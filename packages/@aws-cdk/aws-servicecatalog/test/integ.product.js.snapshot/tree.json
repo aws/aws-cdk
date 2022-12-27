@@ -199,14 +199,14 @@
                     "id": "Default",
                     "path": "integ-servicecatalog-product/TestAssetBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -223,30 +223,30 @@
                 "id": "Staging",
                 "path": "integ-servicecatalog-product/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "integ-servicecatalog-product/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "integ-servicecatalog-product/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
             }
           },
           "SNSTopicProduct1": {
@@ -329,8 +329,8 @@
                         "id": "ImportServiceRole",
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.189"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "Resource": {
@@ -386,8 +386,8 @@
                         "id": "Stage",
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.189"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -447,8 +447,8 @@
                         "id": "ImportServiceRole",
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler2/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.189"
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "Resource": {
@@ -504,8 +504,8 @@
                         "id": "Stage",
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler2/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.189"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -575,8 +575,8 @@
                         "id": "Stage",
                         "path": "integ-servicecatalog-product/AssetsBucketDeployment/AwsCliLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.189"
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "AssetBucket": {
@@ -633,8 +633,8 @@
                     "id": "Stage",
                     "path": "integ-servicecatalog-product/AssetsBucketDeployment/Asset1/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -659,14 +659,14 @@
                     "id": "Default",
                     "path": "integ-servicecatalog-product/AssetsBucketDeployment/CustomResource/Default",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
                 }
               },
               "Asset2": {
@@ -677,8 +677,8 @@
                     "id": "Stage",
                     "path": "integ-servicecatalog-product/AssetsBucketDeployment/Asset2/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -713,8 +713,8 @@
                     "id": "ImportServiceRole",
                     "path": "integ-servicecatalog-product/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -875,8 +875,8 @@
                     "id": "Stage",
                     "path": "integ-servicecatalog-product/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -942,8 +942,8 @@
                     "id": "Stage",
                     "path": "integ-servicecatalog-product/TestProduct/Template1d7080eb134c/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -968,8 +968,8 @@
                     "id": "Stage",
                     "path": "integ-servicecatalog-product/TestProduct/Template346eefaaa30e/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
@@ -1069,30 +1069,30 @@
             "id": "PortfolioId",
             "path": "integ-servicecatalog-product/PortfolioId",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-servicecatalog-product/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "integ-servicecatalog-product/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.189"
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
         }
       },
       "integ-product": {
@@ -1119,22 +1119,22 @@
                     "id": "BootstrapVersion",
                     "path": "integ-product/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "integ-product/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.189"
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -1159,8 +1159,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.189"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
