@@ -88,8 +88,11 @@ async function updateTable(
   }
 
   const oldTableColumns = oldResourceProperties.tableColumns;
-  if (!oldTableColumns.every(oldColumn => tableColumns.some(column => column.name === oldColumn.name && column.dataType === oldColumn.dataType))) {
-    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+  const columnDeletions = oldTableColumns.filter(oldColumn => (
+    tableColumns.every(column => oldColumn.name !== column.name)
+  ));
+  if (columnDeletions.length > 0) {
+    alterationStatements.push(...columnDeletions.map(column => `ALTER TABLE ${tableName} DROP COLUMN ${column.name}`));
   }
 
   const columnAdditions = tableColumns.filter(column => {

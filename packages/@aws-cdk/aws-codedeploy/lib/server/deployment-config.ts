@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig } from '../base-deployment-config';
 import { MinimumHealthyHosts } from '../host-health-config';
-import { deploymentConfig } from '../utils';
+import { deploymentConfig } from '../private/utils';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
