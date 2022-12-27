@@ -13,29 +13,6 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
-        ProviderName: 'Google',
-        ProviderType: 'Google',
-        ProviderDetails: {
-          client_id: 'google-client-id',
-          client_secret: 'google-client-secret',
-          authorize_scopes: 'profile',
-        },
-      });
-    });
-
-    test('clientSecretValue', () => {
-      // GIVEN
-      const stack = new Stack();
-      const pool = new UserPool(stack, 'userpool');
-
-      // WHEN
-      new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
-        userPool: pool,
-        clientId: 'google-client-id',
         clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
       });
 
@@ -59,7 +36,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
         scopes: ['scope1', 'scope2'],
       });
 
@@ -83,7 +60,7 @@ describe('UserPoolIdentityProvider', () => {
       const provider = new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
       });
 
       // THEN
@@ -99,7 +76,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
         attributeMapping: {
           givenName: ProviderAttribute.GOOGLE_NAME,
           address: ProviderAttribute.other('google-address'),
