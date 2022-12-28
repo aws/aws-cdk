@@ -524,6 +524,7 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
+    "TrafficType": "ALL",
     "LogDestination": {
      "Fn::GetAtt": [
       "VPCFlowLogsS3BucketFB7DC2BE",
@@ -536,8 +537,7 @@
       "Key": "Name",
       "Value": "FlowLogsFeatureFlag/VPC"
      }
-    ],
-    "TrafficType": "ALL"
+    ]
    }
   },
   "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456": {
@@ -673,10 +673,11 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
+    "TrafficType": "ALL",
     "DestinationOptions": {
-     "FileFormat": "plain-text",
-     "HiveCompatiblePartitions": true,
-     "PerHourPartition": false
+     "fileFormat": "plain-text",
+     "perHourPartition": false,
+     "hiveCompatiblePartitions": true
     },
     "LogDestination": {
      "Fn::GetAtt": [
@@ -690,8 +691,7 @@
       "Key": "Name",
       "Value": "FlowLogsFeatureFlag/VPC"
      }
-    ],
-    "TrafficType": "ALL"
+    ]
    }
   },
   "FlowLogsInstanceInstanceSecurityGroupF61782E0": {
