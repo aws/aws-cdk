@@ -72,13 +72,8 @@ export async function isHotswappableAppSyncChange(
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
 
         if (isResolver) {
-          // We'll use `<type>.<field>` as the resolver name.
-          //const arnParts = resourcePhysicalName.split('/');
-          //const resolverName = `${arnParts[3]}.${arnParts[5]}`; // TODO: resolver name
-
           await sdk.appsync().updateResolver(sdkRequestObject).promise();
         } else {
-          // THIS IS WEIRD, DO WE EXPECT API-ID TO BE SET??
           const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
           const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
           await sdk.appsync().updateFunction({

@@ -29,7 +29,7 @@ export async function isHotswappableLambdaFunctionChange(
 
   // we handle Aliases specially too
   if (change.newValue.Type === 'AWS::Lambda::Alias') {
-    return classifyAliasChanges(change);
+    return classifyAliasChanges(change, logicalId);
   }
 
   if (change.newValue.Type !== 'AWS::Lambda::Function') {
@@ -148,7 +148,7 @@ export async function isHotswappableLambdaFunctionChange(
 /**
  * Determines which changes to this Alias are hotswappable or not
  */
-function classifyAliasChanges(change: HotswappableChangeCandidate): ChangeHotswapResult {
+function classifyAliasChanges(change: HotswappableChangeCandidate, logicalId: string): ChangeHotswapResult {
   const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['FunctionVersion']);
   const ret: ChangeHotswapResult = [];
 
@@ -158,7 +158,7 @@ function classifyAliasChanges(change: HotswappableChangeCandidate): ChangeHotswa
       hotswappable: false,
       rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
-      logicalId: 'todo',
+      logicalId,
     });
   }
 
