@@ -74,7 +74,7 @@ export async function tryHotswapDeployment(
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
   if (nonHotswappableChanges.length > 0) {
-    await logNonHotswappableChanges(nonHotswappableChanges);
+    logNonHotswappableChanges(nonHotswappableChanges);
   }
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
@@ -224,11 +224,11 @@ async function findNestedHotswappableChanges(
       nonHotswappableChanges: [{
         hotswappable: false,
         logicalId,
-        reason: 'stack physical name could not be found in CloudFormation, so this is a newly created nested stack and cannot be hotswapped',
+        reason: `physical name for AWS::CloudFormation::Stack '${logicalId}' could not be found in CloudFormation, so this is a newly created nested stack and cannot be hotswapped`,
         rejectedChanges: [],
         resourceType: 'AWS::CloudFormation::Stack',
       }],
-      metadataChanged: false, // use false, since this won't deploy anyway
+      metadataChanged: false, // false, since this won't deploy anyway
     };
   }
 
@@ -353,7 +353,7 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
 }
 
 function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[]): void {
-  print(`\n${ICON} %s`, chalk.red('the following non-hotswappable changes were ignored:'));
+  print(`\n${ICON} %s`, chalk.red('the following non-hotswappable changes were found:'));
   for (const change of nonHotswappableChanges) {
     let reason = change.reason;
     if (!reason) {
