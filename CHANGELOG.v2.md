@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.57.0](https://github.com/aws/aws-cdk/compare/v2.56.1...v2.57.0) (2022-12-27)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v103.0.0 ([#23452](https://github.com/aws/aws-cdk/issues/23452)) ([e49e57d](https://github.com/aws/aws-cdk/commit/e49e57d3106f62c5d64c428cba73b4107d664cba))
+* **lambda:** add support for auto-instrumentation with ADOT Lambda layer ([#23027](https://github.com/aws/aws-cdk/issues/23027)) ([fc70535](https://github.com/aws/aws-cdk/commit/fc70535fe699e72332d5ddb4543308e76a89594a))
+
+
+### Bug Fixes
+
+* **cfnspec:** v101.0.0 introduced specific types on several types that previously were typed as json ([#23448](https://github.com/aws/aws-cdk/issues/23448)) ([4fbc182](https://github.com/aws/aws-cdk/commit/4fbc1827b8978262da0b5b77b1ee9bc0ecfdcc3e))
+* **codedeploy:** referenced Applications are not environment-aware ([#23405](https://github.com/aws/aws-cdk/issues/23405)) ([96242d7](https://github.com/aws/aws-cdk/commit/96242d73c0ae853524a567aece86f8a8a514495c))
+* **s3:** buckets with SSE-KMS silently fail to receive logs ([#23385](https://github.com/aws/aws-cdk/issues/23385)) ([1b7a384](https://github.com/aws/aws-cdk/commit/1b7a384c330d168d64c0cd82118e5b5473d08a67))
+
+## [2.56.1](https://github.com/aws/aws-cdk/compare/v2.56.0...v2.56.1) (2022-12-23)
+
+
+### Bug Fixes
+
+* **cfnspec:** v101.0.0 introduced specific types on several types that previously were typed as json ([#23448](https://github.com/aws/aws-cdk/issues/23448)) ([1b4e3a4](https://github.com/aws/aws-cdk/commit/1b4e3a4b503d5d08e976ccf245c20f4430bcba46))
+
+## [2.56.0](https://github.com/aws/aws-cdk/compare/v2.55.1...v2.56.0) (2022-12-21)
+
+
+### Features
+
+* **aws-cognito:** add AuthSessionValidity property on a UserPoolClient ([#23040](https://github.com/aws/aws-cdk/issues/23040)) ([8896fb9](https://github.com/aws/aws-cdk/commit/8896fb902ad9c8d91a5ddb63df64963186bd09e1)), closes [#22854](https://github.com/aws/aws-cdk/issues/22854)
+* **cfnspec:** cloudformation spec v102.0.0 ([#23372](https://github.com/aws/aws-cdk/issues/23372)) ([480b0a5](https://github.com/aws/aws-cdk/commit/480b0a5098e51248bbf36ebf2bcec57cc791c2b0))
+* **core:** CfnResource dependency methods ([#23383](https://github.com/aws/aws-cdk/issues/23383)) ([ecedb00](https://github.com/aws/aws-cdk/commit/ecedb00ee3a3cfcaa2564a679fa635aff38f32d8)), closes [#20419](https://github.com/aws/aws-cdk/issues/20419) [#20418](https://github.com/aws/aws-cdk/issues/20418)
+* **lambda:** expose all docker run options to container bundling of all lambda variants ([#23318](https://github.com/aws/aws-cdk/issues/23318)) ([02d0876](https://github.com/aws/aws-cdk/commit/02d0876bbb196e9fbeb32d977e7cf65229c8559d)), closes [#22829](https://github.com/aws/aws-cdk/issues/22829)
+* **trigger:** Allow trigger to work with Lambda functions with long timeouts ([#23062](https://github.com/aws/aws-cdk/issues/23062)) ([9fd3811](https://github.com/aws/aws-cdk/commit/9fd3811b3213a227b84d79348e635a520fc537c7)), closes [#23058](https://github.com/aws/aws-cdk/issues/23058)
+
+
+### Bug Fixes
+
+* **apigateway:** allow multi-level base path mapping ([#23362](https://github.com/aws/aws-cdk/issues/23362)) ([86b6c6f](https://github.com/aws/aws-cdk/commit/86b6c6f796cbd15b7c53a4c0482a2b189d45300f)), closes [#23347](https://github.com/aws/aws-cdk/issues/23347)
+* **autoscaling:** Allow adding AutoScalingGroup to multiple target groups ([#23044](https://github.com/aws/aws-cdk/issues/23044)) ([07acd18](https://github.com/aws/aws-cdk/commit/07acd180d778b7084d8519234cfc3570bb8846ba)), closes [/github.com/aws/aws-cdk/issues/5667#issuecomment-636657482](https://github.com/aws//github.com/aws/aws-cdk/issues/5667/issues/issuecomment-636657482) [#5667](https://github.com/aws/aws-cdk/issues/5667)
+* **aws-eks:** fail to update both logging and access at the same time ([#22957](https://github.com/aws/aws-cdk/issues/22957)) ([606837d](https://github.com/aws/aws-cdk/commit/606837d3de5d048e3fb1674c30a3048e918f680a))
+* **cognito:** quote or mime-encode `fromName` to comply RFC 5322 ([#23227](https://github.com/aws/aws-cdk/issues/23227)) ([78d474a](https://github.com/aws/aws-cdk/commit/78d474a12bce7805f88be96df926149c130bf513)), closes [#18903](https://github.com/aws/aws-cdk/issues/18903) [/www.rfc-editor.org/rfc/rfc5322#section-3](https://github.com/aws//www.rfc-editor.org/rfc/rfc5322/issues/section-3)
+* **core:** cross region ssm writer update ([#23356](https://github.com/aws/aws-cdk/issues/23356)) ([87bd42d](https://github.com/aws/aws-cdk/commit/87bd42d41f11667aef673d9087c28cecedb87f66))
+* **dynamodb:** add kms permissions to grantStreamRead ([#23400](https://github.com/aws/aws-cdk/issues/23400)) ([fcf1bfa](https://github.com/aws/aws-cdk/commit/fcf1bfaab173ee57bbf64d95be62bf10cbb1b851)), closes [40aws-cdk/aws-dynamodb/lib/table.ts#L1025-L1061](https://github.com/40aws-cdk/aws-dynamodb/lib/table.ts/issues/L1025-L1061)
+* **s3-deployment:** source markers missing when there are multiple sources ([#23364](https://github.com/aws/aws-cdk/issues/23364)) ([8a7ec37](https://github.com/aws/aws-cdk/commit/8a7ec37e0085e952b59bebab1ecc880167a0691f)), closes [#23321](https://github.com/aws/aws-cdk/issues/23321) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L64](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L64) [40aws-cdk/aws-s3-deployment/lib/lambda/index.py#L137](https://github.com/40aws-cdk/aws-s3-deployment/lib/lambda/index.py/issues/L137)
+* **timestream:** magneticStoreWriteProperties and retentionProperties  not working as Json ([#23425](https://github.com/aws/aws-cdk/issues/23425)) ([b705224](https://github.com/aws/aws-cdk/commit/b7052242fb699ba89603ae718ae2d6b0ab9efa6f)), closes [#23404](https://github.com/aws/aws-cdk/issues/23404)
+
 ## [2.55.1](https://github.com/aws/aws-cdk/compare/v2.55.0...v2.55.1) (2022-12-16)
 
 

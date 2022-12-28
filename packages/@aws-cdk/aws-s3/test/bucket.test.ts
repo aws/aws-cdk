@@ -337,6 +337,28 @@ describe('bucket', () => {
 
   });
 
+  test('throws error if using KMS-Managed key and server access logging to self', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
+    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+  });
+  test('throws error if using KMS CMK and server access logging to self', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
+    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+  });
+  test('throws error if enabling server access logging to bucket with SSE-KMS', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    const targetBucket = new s3.Bucket(stack, 'TargetBucket', { encryptionKey: key } );
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: targetBucket });
+    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+  });
+
   test('bucket with versioning turned on', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {

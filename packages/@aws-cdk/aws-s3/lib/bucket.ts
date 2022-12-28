@@ -2046,6 +2046,17 @@ export class Bucket extends BucketBase {
     if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
+    if (
+      // The current bucket is being used and is configured for default SSE-KMS
+      !props.serverAccessLogsBucket && (
+        props.encryptionKey ||
+        props.encryption === BucketEncryption.KMS ||
+        props.encryption === BucketEncryption.KMS_MANAGED) ||
+      // Another bucket is being used that is configured for default SSE-KMS
+      props.serverAccessLogsBucket?.encryptionKey
+    ) {
+      throw new Error('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+    }
 
     return {
       destinationBucketName: props.serverAccessLogsBucket?.bucketName,
