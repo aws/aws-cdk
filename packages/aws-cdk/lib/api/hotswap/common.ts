@@ -5,7 +5,7 @@ export const ICON = '✨';
 
 export interface HotswappableChange {
   readonly hotswappable: true;
-  readonly resourceType: string; // Potentially logicalID or something else
+  readonly resourceType: string;
   readonly propsChanged: Array<string>;
   /**
    * The name of the service being hotswapped.
@@ -27,8 +27,8 @@ export interface NonHotswappableChange {
   readonly rejectedChanges: Array<string>;
   readonly logicalId: string;
   /**
-   * Tells the user exactly why this change was deemed non hotswappable and what it's logical ID in the template is.
-   * If not specified, reason will be autofilled to state that the properties listed in `rejectedChanges` are not hotswappable.
+   * Tells the user exactly why this change was deemed non-hotswappable and what its logical ID is.
+   * If not specified, `reason` will be autofilled to state that the properties listed in `rejectedChanges` are not hotswappable.
    */
   readonly reason?: string;
 }

@@ -38,13 +38,16 @@ export async function isHotswappableAppSyncChange(
     });
   }
 
-  // Was there anything left we CAN actually do?
   const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     let _physicalName: string | undefined = undefined;
     const physicalNameLazy = async () => {
-      if (!_physicalName) {
-        _physicalName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? change.newValue.Properties?.Name : undefined);
+      const arn = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? change.newValue.Properties?.Name : undefined);
+      if (isResolver) {
+        const arnParts = arn?.split('/');
+        _physicalName = arnParts ? `${arnParts[3]}.${arnParts[5]}` : undefined;
+      } else {
+        _physicalName = arn;
       }
       return _physicalName;
     };
@@ -69,8 +72,6 @@ export async function isHotswappableAppSyncChange(
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
 
         if (isResolver) {
-          // Resolver physical name is the ARN in the format:
-          // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>/types/<type>/resolvers/<field>.
           // We'll use `<type>.<field>` as the resolver name.
           //const arnParts = resourcePhysicalName.split('/');
           //const resolverName = `${arnParts[3]}.${arnParts[5]}`; // TODO: resolver name
