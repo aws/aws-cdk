@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.58.0](https://github.com/aws/aws-cdk/compare/v2.57.0...v2.58.0) (2022-12-28)
+
+
+### Features
+
+* **assertions:** improve printing of match failures ([#23453](https://github.com/aws/aws-cdk/issues/23453)) ([2676386](https://github.com/aws/aws-cdk/commit/267638674474c4cac9be5ca0d7f8b9a538ba2e39))
+
 ## [2.57.0](https://github.com/aws/aws-cdk/compare/v2.56.1...v2.57.0) (2022-12-27)
 
 
