@@ -59,8 +59,6 @@ export enum HotswapMode {
 export class HotswappableChangeCandidate {
   /**
    * The value the resource is being updated from.
-   * Used ony with `yHotswapMode.HOTSWAP_ONLY`.
-   * If usedwith `yHotswapMode.HOTSWAP`, it is a bug.
    */
   public readonly oldValue: cfn_diff.Resource;
   /**

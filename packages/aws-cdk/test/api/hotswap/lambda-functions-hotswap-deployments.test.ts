@@ -441,7 +441,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('when it receives a non-hotswappable change that includes a code difference in a Lambda function, it does not call the updateLambdaCode() API in CLASSIC mode but does in HOTSWAP_ONLY mode', async () => {
+  test(`when it receives a non-hotswappable change that includes a code difference in a Lambda function, it does not call the updateLambdaCode()
+        API in CLASSIC mode but does in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

@@ -592,8 +592,8 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
   });
 
   test(`when it receives a change that is not Source, SourceVersion, or Environment difference in a CodeBuild project alongside a hotswappable change,
-        it does not call the updateProject() API in CLASSIC mode,
-        but it does in HOTSWAP_ONLY mode`, async () => {
+        it does not call the updateProject() API in CLASSIC mode, but it does in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

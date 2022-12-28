@@ -15,7 +15,8 @@ beforeEach(() => {
 
 describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test(`A new Resolver being added to the Stack returns undefined in CLASSIC mode and
-        returns a noOp in HOTSWAP_ONLY mode`, async () => {
+        returns a noOp in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
@@ -179,7 +180,8 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
   });
 
   test(`when it receives a change that is not a mapping template difference in a Resolver, it does not call the updateResolver() API in CLASSIC mode
-        but does call the updateResolver() API in HOTSWAP_ONLY mode`, async () => {
+        but does call the updateResolver() API in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -358,7 +360,8 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
   });
 
   test(`when it receives a change that is not a mapping template difference in a Function, it does not call the updateFunction() API in CLASSIC mode
-        but does in HOTSWAP_ONLY mode`, async () => {
+        but does in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     const mockListFunctions = jest.fn().mockReturnValue({ functions: [{ name: 'my-function', functionId: 'functionId' }] });
     hotswapMockSdkProvider.stubAppSync({ listFunctions: mockListFunctions, updateFunction: mockUpdateFunction });
