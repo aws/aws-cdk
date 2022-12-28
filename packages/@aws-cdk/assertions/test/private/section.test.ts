@@ -38,8 +38,10 @@ describe('section', () => {
       expect(result.match).toEqual(false);
       const success = result as MatchFailure;
       expect(success.analyzedCount).toEqual(2);
-      expect(success.closestResult).toBeDefined();
-      expect(success.closestResult?.target).toEqual({ foo: 'qux' });
+
+      const ckeys = Object.keys(success.closestResults);
+      expect(ckeys).not.toEqual([]);
+      expect(success.closestResults[ckeys[0]].target).toEqual({ foo: 'qux' });
     });
   });
 });

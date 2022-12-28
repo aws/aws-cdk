@@ -1,4 +1,4 @@
-import { filterLogicalId, formatFailure, matchSection } from './section';
+import { filterLogicalId, matchSection, formatSectionMatchFailure } from './section';
 import { Template } from './template';
 
 export function findOutputs(template: Template, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
@@ -19,12 +19,5 @@ export function hasOutput(template: Template, logicalId: string, props: any): st
     return;
   }
 
-  if (result.closestResult === undefined) {
-    return `No outputs named ${logicalId} found in the template (found: ${Object.keys(section).join(', ')})`;
-  }
-
-  return [
-    `Template has ${result.analyzedCount} outputs named ${logicalId}, but none match as expected.`,
-    formatFailure(result.closestResult),
-  ].join('\n');
+  return formatSectionMatchFailure(`outputs named ${logicalId}`, result);
 }

@@ -24,22 +24,22 @@ describe('Matchers', () => {
     test('arrays', () => {
       matcher = Match.exact([4]);
       expectPass(matcher, [4]);
-      expectFailure(matcher, [4, 5], [/Expected array of length 1 but received 2/]);
+      expectFailure(matcher, [4, 5], [/Too many elements in array/]);
       expectFailure(matcher, 'foo', [/Expected type array but received string/]);
 
       matcher = Match.exact(['foo', 3]);
       expectPass(matcher, ['foo', 3]);
-      expectFailure(matcher, ['bar', 3], [/Expected foo but received bar at \[0\]/]);
-      expectFailure(matcher, ['foo', 5], [/Expected 3 but received 5 at \[1\]/]);
+      expectFailure(matcher, ['bar', 3], [/Expected foo but received bar at \/0/]);
+      expectFailure(matcher, ['foo', 5], [/Expected 3 but received 5 at \/1/]);
 
       matcher = Match.exact([{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
       expectPass(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
-      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }], [/Expected array of length 2 but received 1/]);
+      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }], [/Not enough elements in array/]);
       expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'flob', wobble: 'fred' }], [
-        'Expected fred but received flob at [1]/waldo',
-        'Expected flob but received fred at [1]/wobble',
+        'Expected fred but received flob at /1/waldo',
+        'Expected flob but received fred at /1/wobble',
       ]);
-      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred' }], [/Missing key.*at \[1\]\/wobble/]);
+      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred' }], [/Missing key.*at \/1\/wobble/]);
     });
 
     test('objects', () => {
@@ -48,13 +48,13 @@ describe('Matchers', () => {
       expectFailure(matcher, 5, [/Expected type object but received number/]);
       expectFailure(matcher, ['3', 5], [/Expected type object but received array/]);
       expectFailure(matcher, { baz: 'qux' }, [
-        'Unexpected key at /baz',
+        'Unexpected key baz at /baz',
         /Missing key.*at \/foo/,
       ]);
 
       matcher = Match.exact({ foo: 'bar', baz: 5 });
       expectFailure(matcher, { foo: 'bar', baz: '5' }, [/Expected type number but received string at \/baz/]);
-      expectFailure(matcher, { foo: 'bar', baz: 5, qux: 7 }, [/Unexpected key at \/qux/]);
+      expectFailure(matcher, { foo: 'bar', baz: 5, qux: 7 }, [/Unexpected key qux at \/qux/]);
 
       matcher = Match.exact({ foo: [2, 3], bar: 'baz' });
       expectPass(matcher, { foo: [2, 3], bar: 'baz' });
@@ -67,8 +67,8 @@ describe('Matchers', () => {
         'Expected type string but received array at /bar',
       ]);
       expectFailure(matcher, { foo: [3, 5], bar: 'baz' }, [
-        'Expected 2 but received 3 at /foo[0]',
-        'Expected 3 but received 5 at /foo[1]',
+        'Expected 2 but received 3 at /foo/0',
+        'Expected 3 but received 5 at /foo/1',
       ]);
     });
 
@@ -93,18 +93,18 @@ describe('Matchers', () => {
       expectPass(matcher, [3]);
       expectPass(matcher, [3, 5]);
       expectPass(matcher, [1, 3, 5]);
-      expectFailure(matcher, [5], [/Missing element \[3\] at pattern index 0/]);
+      expectFailure(matcher, [5], [/Could not match arrayWith pattern 0/]);
 
       matcher = Match.arrayWith([5, false]);
       expectPass(matcher, [5, false, 'foo']);
       expectPass(matcher, [5, 'foo', false]);
-      expectFailure(matcher, [5, 'foo'], [/Missing element \[false\] at pattern index 1/]);
+      expectFailure(matcher, [5, 'foo'], [/Could not match arrayWith pattern 1/]);
 
       matcher = Match.arrayWith([{ foo: 'bar' }]);
       expectPass(matcher, [{ fred: 'waldo' }, { foo: 'bar' }, { baz: 'qux' }]);
       expectPass(matcher, [{ foo: 'bar' }]);
-      expectFailure(matcher, [{ foo: 'baz' }], [/Missing element at pattern index 0/]);
-      expectFailure(matcher, [{ baz: 'qux' }], [/Missing element at pattern index 0/]);
+      expectFailure(matcher, [{ foo: 'baz' }], [/Could not match arrayWith pattern 0/]);
+      expectFailure(matcher, [{ baz: 'qux' }], [/Could not match arrayWith pattern 0/]);
     });
 
     test('not array', () => {
@@ -115,14 +115,14 @@ describe('Matchers', () => {
 
     test('out of order', () => {
       matcher = Match.arrayWith([3, 5]);
-      expectFailure(matcher, [5, 3], [/Missing element \[5\] at pattern index 1/]);
+      expectFailure(matcher, [5, 3], [/Could not match arrayWith pattern 1/]);
     });
 
     test('nested with ObjectLike', () => {
       matcher = Match.arrayWith([Match.objectLike({ foo: 'bar' })]);
       expectPass(matcher, [{ baz: 'qux' }, { foo: 'bar' }]);
       expectPass(matcher, [{ baz: 'qux' }, { foo: 'bar', fred: 'waldo' }]);
-      expectFailure(matcher, [{ foo: 'baz', fred: 'waldo' }], [/Missing element at pattern index 0/]);
+      expectFailure(matcher, [{ foo: 'baz', fred: 'waldo' }], [/Could not match arrayWith pattern 0/]);
     });
 
     test('incompatible with absent', () => {
@@ -142,8 +142,8 @@ describe('Matchers', () => {
     test('exact match', () => {
       matcher = Match.arrayEquals([5, false]);
       expectPass(matcher, [5, false]);
-      expectFailure(matcher, [5, 'foo', false], [/Expected array of length 2 but received 3/]);
-      expectFailure(matcher, [5, 'foo'], [/Expected type boolean but received string at \[1\]/]);
+      expectFailure(matcher, [5, 'foo', false], [/Too many elements in array/]);
+      expectFailure(matcher, [5, 'foo'], [/Expected type boolean but received string at \/1/]);
     });
   });
 
@@ -181,7 +181,7 @@ describe('Matchers', () => {
         foo: Match.arrayWith(['bar']),
       });
       expectPass(matcher, { foo: ['bar', 'baz'], fred: 'waldo' });
-      expectFailure(matcher, { foo: ['baz'], fred: 'waldo' }, [/Missing element \[bar\] at pattern index 0 at \/foo/]);
+      expectFailure(matcher, { foo: ['baz'], fred: 'waldo' }, [/Could not match arrayWith pattern 0/]);
     });
 
     test('Partiality is maintained throughout arrays', () => {
@@ -214,7 +214,7 @@ describe('Matchers', () => {
     test('exact match', () => {
       matcher = Match.objectEquals({ foo: 'bar' });
       expectPass(matcher, { foo: 'bar' });
-      expectFailure(matcher, { foo: 'bar', baz: 'qux' }, [/Unexpected key at \/baz/]);
+      expectFailure(matcher, { foo: 'bar', baz: 'qux' }, [/Unexpected key baz at \/baz/]);
     });
   });
 
@@ -329,7 +329,7 @@ describe('Matchers', () => {
       expectPass(matcher, ['foo', 'baz', 'bar']);
       expectPass(matcher, ['foo', 3, 'bar']);
 
-      expectFailure(matcher, ['foo', null, 'bar'], ['Expected a value but found none at [1]']);
+      expectFailure(matcher, ['foo', null, 'bar'], ['Expected a value but found none at /1']);
     });
 
     test('nested in object', () => {
@@ -354,11 +354,12 @@ describe('Matchers', () => {
       matcher = Match.serializedJson({ Foo: 'Bar' });
       expectPass(matcher, '{ "Foo": "Bar" }');
 
-      expectFailure(matcher, '{ "Foo": "Baz" }', ['Expected Bar but received Baz at (serializedJson)/Foo']);
-      expectFailure(matcher, '{ "Foo": 4 }', ['Expected type string but received number at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Foo": "Baz" }', [/Encoded JSON value does not match/, 'Expected Bar but received Baz at /Foo']);
+      expectFailure(matcher, '{ "Foo": 4 }', [/Encoded JSON value does not match/, 'Expected type string but received number at /Foo']);
       expectFailure(matcher, '{ "Bar": "Baz" }', [
-        'Unexpected key at (serializedJson)/Bar',
-        /Missing key.*at \(serializedJson\)\/Foo/,
+        /Encoded JSON value does not match/,
+        'Unexpected key Bar at /Bar',
+        /Missing key.*at \/Foo/,
       ]);
     });
 
@@ -371,8 +372,8 @@ describe('Matchers', () => {
       expectPass(matcher, '{ "Foo": ["Bar", "Baz"] }');
       expectPass(matcher, '{ "Foo": ["Bar", "Baz"], "Fred": "Waldo" }');
 
-      expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Missing element [Bar] at pattern index 0 at (serializedJson)/Foo']);
-      expectFailure(matcher, '{ "Bar": ["Baz"] }', [/Missing key.*at \(serializedJson\)\/Foo/]);
+      expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Could not match arrayWith pattern 0']);
+      expectFailure(matcher, '{ "Bar": ["Baz"] }', [/Missing key.*at \/Foo/]);
     });
 
     test('invalid json string', () => {
@@ -430,13 +431,12 @@ function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp
   const result = matcher.test(target);
   expect(result.failCount).toBeGreaterThan(0);
   const actual = result.toHumanStrings();
-  if (expected.length > 0 && actual.length !== expected.length) {
-    // only do this if the lengths are different, so as to display a nice failure message.
-    // otherwise need to use `toMatch()` to support RegExp
-    expect(actual).toEqual(expected);
-  }
-  for (let i = 0; i < expected.length; i++) {
-    const e = expected[i];
-    expect(actual[i]).toMatch(e);
+
+  const notFound = expected.filter(needle => !actual.some(haystack => {
+    return typeof needle === 'string' ? haystack.includes(needle) : haystack.match(needle);
+  }));
+
+  if (notFound.length > 0) {
+    throw new Error(`Patterns: ${notFound}\nMissing from error:\n${actual.join('\n')}`);
   }
 }

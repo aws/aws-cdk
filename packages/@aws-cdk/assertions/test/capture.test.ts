@@ -120,4 +120,34 @@ describe('Capture', () => {
 
     expect(() => capture.asObject()).toThrow(/No value captured/);
   });
+
+  test('capture in arraywith and objectlike', () => {
+    const capture = new Capture();
+    const matcher = Match.objectLike({
+      People: Match.arrayWith([{
+        Name: 'Alice',
+        Attributes: [
+          Match.objectLike({
+            Name: 'HairColor',
+            Value: capture,
+          }),
+        ],
+      }]),
+    });
+
+    const result = matcher.test({
+      People: [
+        {
+          Name: 'Alice',
+          Attributes: [
+            { Name: 'HairColor', Value: 'Black' },
+          ],
+        },
+      ],
+    });
+
+    expect(result.isSuccess).toEqual(true);
+    result.finished();
+    expect(capture.asString()).toEqual('Black');
+  });
 });

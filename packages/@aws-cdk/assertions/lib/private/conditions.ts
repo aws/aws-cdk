@@ -1,4 +1,4 @@
-import { filterLogicalId, formatFailure, matchSection } from './section';
+import { filterLogicalId, matchSection, formatSectionMatchFailure } from './section';
 import { Template } from './template';
 
 export function findConditions(template: Template, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
@@ -19,12 +19,5 @@ export function hasCondition(template: Template, logicalId: string, props: any):
     return;
   }
 
-  if (result.closestResult === undefined) {
-    return 'No conditions found in the template';
-  }
-
-  return [
-    `Template has ${result.analyzedCount} conditions, but none match as expected.`,
-    formatFailure(result.closestResult),
-  ].join('\n');
+  return formatSectionMatchFailure(`conditions with logicalId ${logicalId}`, result);
 }
