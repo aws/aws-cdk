@@ -289,7 +289,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * How to determine the entry point for modules.
    * Try ['module', 'main'] to default to ES module versions.
    *
-   * @default ['main', 'module']
+   * @default []
    */
   readonly mainFields?: string[];
 
