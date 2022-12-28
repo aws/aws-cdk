@@ -175,7 +175,7 @@ export interface DeployStackOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, `HotswapMode.HOTSWAP` for 'watch' deployments
+   * @default - false for regular deployments, `HotswapMode.CLASSIC` for 'watch' deployments
    */
   readonly hotswap?: HotswapMode | false;
 
