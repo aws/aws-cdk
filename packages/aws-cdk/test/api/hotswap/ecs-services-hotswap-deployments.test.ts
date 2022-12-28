@@ -104,7 +104,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 
-  test('any other TaskDefinition property change besides ContainerDefinition cannot be hotswapped', async () => {
+  test('any other TaskDefinition property change besides ContainerDefinition cannot be hotswapped in CLASSIC mode but does not block HOTSWAP_ONLY mode deployments', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -194,7 +194,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('deleting any other TaskDefinition property besides ContainerDefinition cannot be hotswapped', async () => {
+  test('deleting any other TaskDefinition property besides ContainerDefinition results in a full deployment in CLASSIC mode and a hotswap deployment in HOTSWAP_ONLY mode', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -414,7 +414,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('if anything besides an ECS Service references the changed TaskDefinition, hotswapping is not possible', async () => {
+  test('if anything besides an ECS Service references the changed TaskDefinition, hotswapping is not possible in CLASSIC mode but is possible in HOTSWAP_ONLY', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

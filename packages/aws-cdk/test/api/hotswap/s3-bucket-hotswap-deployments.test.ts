@@ -123,7 +123,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('does not call the invokeLambda() api if the updated Policy has no Roles', async () => {
+  test('does not call the invokeLambda() api if the updated Policy has no Roles in CLASSIC mode but does in HOTSWAP_ONLY mode', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Parameters: {
@@ -464,7 +464,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       });
     });
 
-    test('does not call the lambdaInvoke() API when the difference in the S3 deployment is referred to in one IAM policy change but not another', async () => {
+    test(`does not call the lambdaInvoke() API when the difference in the S3 deployment is referred to in one IAM policy change but not another
+          in CLASSIC mode but does in HOTSWAP_ONLY`,
+    async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -536,7 +538,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       }
     });
 
-    test('does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment', async () => {
+    test(`does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment
+          in CLASSIC mode but does in HOTSWAP_ONLY mode`,
+    async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -711,7 +715,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       });
     });
 
-    test('does not call the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment that references two different policies', async () => {
+    test(`does not call the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment that references two different policies
+          in CLASSIC mode but does in HOTSWAP_ONLY mode`,
+    async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {
@@ -782,7 +788,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       }
     });
 
-    test('does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an S3 deployment', async () => {
+    test(`does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an S3 deployment
+          in CLASSIC mode but does in HOTSWAP_ONLY mode`,
+    async () => {
       // GIVEN
       setup.setCurrentCfnStackTemplate({
         Resources: {

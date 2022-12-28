@@ -268,7 +268,8 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 
-  test('non-hotswappable changes in nested stacks result in a full deployment, even if their parent contains a hotswappable change', async () => {
+  test(`non-hotswappable changes in nested stacks result in a full deployment, even if their parent contains a hotswappable change in CLASSIC mode,
+        but perform a hotswap deployment in HOTSWAP_ONLY`, async () => {
     // GIVEN
     hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NonHotswappableRoot');
     mockUpdateLambdaCode = jest.fn().mockReturnValue({});
@@ -360,7 +361,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('deleting a nested stack results in a full deployment, even if their parent contains a hotswappable change', async () => {
+  test('deleting a nested stack results in a full deployment in CLASSIC mode, even if their parent contains a hotswappable change, but results in a hotswap deployment in HOTSWAP_ONLY mode', async () => {
     // GIVEN
     hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackDeletionRoot');
     mockUpdateLambdaCode = jest.fn().mockReturnValue({});
@@ -451,7 +452,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('creating a nested stack results in a full deployment, even if their parent contains a hotswappable change', async () => {
+  test(`creating a nested stack results in a full deployment in CLASSIC mode, even if their parent contains a hotswappable change,
+        but results in a hotswap deployment in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackCreationRoot');
     mockUpdateLambdaCode = jest.fn().mockReturnValue({});
@@ -516,7 +519,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     }
   });
 
-  test('attempting to hotswap a newly created nested stack with the same logical ID as a resource with a different type results in a full deployment', async () => {
+  test(`attempting to hotswap a newly created nested stack with the same logical ID as a resource with a different type results in a full deployment in CLASSIC mode
+        and a hotswap deployment in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackTypeChangeRoot');
     mockUpdateLambdaCode = jest.fn().mockReturnValue({});
@@ -924,7 +929,6 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       },
     }));
-
 
     setup.pushNestedStackResourceSummaries('LambdaRoot',
       setup.stackSummaryOf('ChildStack', 'AWS::CloudFormation::Stack',

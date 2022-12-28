@@ -192,7 +192,9 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 
-  test('does not call the updateStateMachine() API when it receives a change to a property that is not the definitionString in a state machine', async () => {
+  test(`does not call the updateStateMachine() API when it receives a change to a property that is not the definitionString in a state machine
+        alongside a hotswappable change in CLASSIC mode but does in HOTSWAP_ONLY mode`,
+  async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
