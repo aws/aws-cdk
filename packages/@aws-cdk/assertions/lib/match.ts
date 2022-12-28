@@ -263,6 +263,7 @@ class ArrayMatch extends Matcher {
 
       actualIdx++;
       if (innerResult.isSuccess) {
+        result.compose(`${actualIdx}`, innerResult); // Record any captures
         patternIdx++;
       }
     }
