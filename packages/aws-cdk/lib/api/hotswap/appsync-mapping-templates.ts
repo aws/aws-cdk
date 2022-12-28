@@ -1,7 +1,7 @@
 //import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, renderNonHotswappableProp, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 
 export async function isHotswappableAppSyncChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -17,7 +17,8 @@ export async function isHotswappableAppSyncChange(
   if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
     return [{
       hotswappable: false,
-      reason: 'Pipeline resolver cannot be hotswapped since the reference the FunctionId of the underlying functions, which cannot be resolved',
+      logicalId,
+      reason: 'Pipeline resolvers cannot be hotswapped since they reference the FunctionId of the underlying functions, which cannot be resolved',
       rejectedChanges: Object.keys(change.propertyUpdates),
       resourceType: change.newValue.Type,
     }];
@@ -31,7 +32,7 @@ export async function isHotswappableAppSyncChange(
   if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
-      reason: renderNonHotswappableProp(nonHotswappablePropNames, change.newValue.Type),
+      logicalId,
       rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
     });

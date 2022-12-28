@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs, renderNonHotswappableProp } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs } from './common';
 
 // namespace object imports won't work in the bundle for function exports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -43,9 +43,9 @@ export async function isHotswappableLambdaFunctionChange(
   if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
-      reason: renderNonHotswappableProp(nonHotswappablePropNames, change.newValue.Type),
       rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
+      logicalId,
     });
   }
 
@@ -156,9 +156,9 @@ function classifyAliasChanges(change: HotswappableChangeCandidate): ChangeHotswa
   if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
-      reason: renderNonHotswappableProp(nonHotswappablePropNames, change.newValue.Type),
       rejectedChanges: nonHotswappablePropNames,
       resourceType: change.newValue.Type,
+      logicalId: 'todo',
     });
   }
 

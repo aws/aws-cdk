@@ -25,7 +25,12 @@ export interface NonHotswappableChange {
   readonly hotswappable: false;
   readonly resourceType: string;
   readonly rejectedChanges: Array<string>;
-  readonly reason: string;
+  readonly logicalId: string;
+  /**
+   * Tells the user exactly why this change was deemed non hotswappable and what it's logical ID in the template is.
+   * If not specified, reason will be autofilled to state that the properties listed in `rejectedChanges` are not hotswappable.
+   */
+  readonly reason?: string;
 }
 
 export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChange>;
@@ -37,7 +42,14 @@ export interface AllChanges {
 }
 
 export enum HotswapMode {
-  CLASSIC = 'hotswap',
+  /**
+   * Will fall back to CloudFormation when a non-hotswappable change is detected
+   */
+  CLASSIC = 'classic',
+
+  /**
+   * Will not fall back to CloudFormation when a non-hotswappable change is detected
+   */
   HOTSWAP_ONLY = 'hotswap-only',
 }
 
@@ -123,8 +135,4 @@ export function classifyChanges(xs: HotswappableChangeCandidate, hotswappablePro
   }
 
   return { hotswappableProps, nonHotswappableProps };
-}
-
-export function renderNonHotswappableProp(propNames: string[], resourceType: string): string {
-  return `the properties '${propNames} on type ${resourceType} are not hotswappable`;
 }

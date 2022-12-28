@@ -93,15 +93,15 @@ async function findAllHotswappableChanges(
   const nonHotswappableResources = new Array<NonHotswappableChange>();
   let metadataChanged = false;
 
-  if (stackChanges.outputs.differenceCount > 0) {
+  for (const logicalId of Object.keys(stackChanges.outputs.changes)) {
     nonHotswappableResources.push({
       hotswappable: false,
-      reason: 'outputs were changed',
-      rejectedChanges: stackChanges.outputs.logicalIds,
+      reason: 'output was changed',
+      logicalId,
+      rejectedChanges: [],
       resourceType: 'Stack Output',
     });
   }
-
   // gather the results of the detector functions
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
@@ -223,8 +223,9 @@ async function findNestedHotswappableChanges(
       hotswappableChanges: [],
       nonHotswappableChanges: [{
         hotswappable: false,
+        logicalId,
         reason: 'stack physical name could not be found in CloudFormation, so this is a newly created nested stack and cannot be hotswapped',
-        rejectedChanges: [logicalId],
+        rejectedChanges: [],
         resourceType: 'AWS::CloudFormation::Stack',
       }],
       metadataChanged: false, // use false, since this won't deploy anyway
@@ -282,6 +283,7 @@ function isCandidateForHotswapping(
     return {
       hotswappable: false,
       resourceType: change.newValue!.Type,
+      logicalId,
       rejectedChanges: [],
       reason: `resource ${logicalId} was created`,
     };
@@ -289,8 +291,9 @@ function isCandidateForHotswapping(
     return {
       hotswappable: false,
       resourceType: change.oldValue!.Type,
+      logicalId,
       rejectedChanges: [],
-      reason: `resource ${logicalId} was destroyed`,
+      reason: `resource '${logicalId}' was destroyed`,
     };
   }
 
@@ -299,8 +302,9 @@ function isCandidateForHotswapping(
     return {
       hotswappable: false,
       resourceType: change.newValue?.Type,
+      logicalId,
       rejectedChanges: [],
-      reason: `resource ${logicalId} had its type changed from '${change.oldValue?.Type}' to '${change.newValue?.Type}'`,
+      reason: `resource '${logicalId}' had its type changed from '${change.oldValue?.Type}' to '${change.newValue?.Type}'`,
     };
   }
 
@@ -350,8 +354,13 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
 
 function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[]): void {
   print(`\n${ICON} %s`, chalk.red('the following non-hotswappable changes were ignored:'));
-  // TODO: construct reason string from resourceType, rejectedChanges, and reason, where change.reason is an enum that tells us why the rejection happened. Eg "nonhotswappablePropertyUpdated", "codeBuidldReason", etc
   for (const change of nonHotswappableChanges) {
-    print(`${ICON} type: %s, rejected changes: %s, reason: %s`, chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason));
+    let reason = change.reason;
+    if (!reason) {
+      reason = `resource properties '${change.rejectedChanges}' are not hotswappable on this resource type`;
+    }
+    change.rejectedChanges.length > 0 ?
+      print(`${ICON} logicalID: %s, type: %s, rejected changes: %s, reason: %s`, chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(reason)):
+      print(`${ICON} logicalID: %s, type: %s, reason: %s`, chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(reason));
   }
 }

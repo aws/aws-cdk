@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, renderNonHotswappableProp, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -22,8 +22,8 @@ export async function isHotswappableEcsServiceChange(
   if (nonHotswappablePropNames.length > 0) {
     ret.push({
       hotswappable: false,
-      reason: renderNonHotswappableProp(nonHotswappablePropNames, change.newValue.Type),
       rejectedChanges: nonHotswappablePropNames,
+      logicalId,
       resourceType: change.newValue.Type,
     });
   }
@@ -40,11 +40,12 @@ export async function isHotswappableEcsServiceChange(
   }
   if (ecsServicesReferencingTaskDef.length === 0) {
     // if there are no resources referencing the TaskDefinition,
-    // hotswap is not possible
+    // hotswap is not possible in either mode
     ret.push({
       hotswappable: false,
       reason: 'No ECS services reference the changed task definition',
       rejectedChanges: Object.keys(hotswappableProps),
+      logicalId,
       resourceType: change.newValue.Type,
     });
 
@@ -56,8 +57,9 @@ export async function isHotswappableEcsServiceChange(
     for (const taskRef of nonEcsServiceTaskDefRefs) {
       ret.push({
         hotswappable: false,
-        reason: 'Something besides an ECS Service was found referencing the changed TaskDefinition',
-        rejectedChanges: [taskRef.LogicalId],
+        reason: `A resource that is not an ECS Service was found referencing the changed TaskDefinition '${logicalId}'`,
+        rejectedChanges: [],
+        logicalId: taskRef.LogicalId,
         resourceType: taskRef.Type,
       });
     }
