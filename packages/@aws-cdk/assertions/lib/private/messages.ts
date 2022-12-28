@@ -1,6 +1,6 @@
 import { SynthesisMessage } from '@aws-cdk/cx-api';
 import { Messages } from './message';
-import { formatAllMatches, formatFailure, matchSection } from './section';
+import { formatAllMatches, matchSection, formatSectionMatchFailure } from './section';
 
 export function findMessage(messages: Messages, constructPath: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section: { [key: string]: SynthesisMessage } = messages;
@@ -16,20 +16,15 @@ export function findMessage(messages: Messages, constructPath: string, props: an
 export function hasMessage(messages: Messages, constructPath: string, props: any): string | void {
   const section: { [key: string]: SynthesisMessage } = messages;
   const result = matchSection(filterPath(section, constructPath), props);
-
   if (result.match) {
     return;
   }
 
-  if (result.closestResult === undefined) {
-    return 'No messages found in the stack';
+  for (const mr of Object.values(result.closestResults)) {
+    redactTraces(mr.target);
   }
 
-  handleTrace(result.closestResult.target);
-  return [
-    `Stack has ${result.analyzedCount} messages, but none match as expected.`,
-    formatFailure(result.closestResult),
-  ].join('\n');
+  return formatSectionMatchFailure(`messages at path ${constructPath}`, result, 'Stack');
 }
 
 export function hasNoMessage(messages: Messages, constructPath: string, props: any): string | void {
@@ -48,7 +43,7 @@ export function hasNoMessage(messages: Messages, constructPath: string, props: a
 
 // We redact the stack trace by default because it is unnecessarily long and unintelligible.
 // If there is a use case for rendering the trace, we can add it later.
-function handleTrace(match: any, redact: boolean = true): void {
+function redactTraces(match: any, redact: boolean = true): void {
   if (redact && match.entry?.trace !== undefined) {
     match.entry.trace = 'redacted';
   };
