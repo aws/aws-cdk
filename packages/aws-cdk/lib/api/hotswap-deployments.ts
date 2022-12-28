@@ -52,6 +52,10 @@ export async function tryHotswapDeployment(
     stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames,
   );
 
+  if (nonHotswappableChanges.length > 0) {
+    logNonHotswappableChanges(nonHotswappableChanges);
+  }
+
   // preserve classic hotswap behavior
   if (hotswapMode === HotswapMode.CLASSIC) {
     // The only change detected was to CDK::Metadata, so return noOp
@@ -73,9 +77,6 @@ export async function tryHotswapDeployment(
 
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
-  if (nonHotswappableChanges.length > 0) {
-    logNonHotswappableChanges(nonHotswappableChanges);
-  }
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
 }
