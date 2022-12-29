@@ -247,7 +247,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * A custom bundling Docker image.
    *
    * This image should have esbuild installed globally. If you plan to use `nodeModules`
-   * it should also have `npm` or `yarn` depending on the lock file you're using.
+   * it should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
    *
    * See https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
    * for the default image provided by @aws-cdk/aws-lambda-nodejs.
@@ -289,7 +289,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * How to determine the entry point for modules.
    * Try ['module', 'main'] to default to ES module versions.
    *
-   * @default ['main', 'module']
+   * @default []
    */
   readonly mainFields?: string[];
 

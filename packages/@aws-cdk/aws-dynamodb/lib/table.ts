@@ -1026,6 +1026,9 @@ abstract class TableBase extends Resource implements ITable {
     grantee: iam.IGrantable,
     opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
   ): iam.Grant {
+    if (this.encryptionKey && opts.keyActions) {
+      this.encryptionKey.grant(grantee, ...opts.keyActions);
+    }
     if (opts.tableActions) {
       const resources = [this.tableArn,
         Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
@@ -1039,9 +1042,6 @@ abstract class TableBase extends Resource implements ITable {
         resourceArns: resources,
         scope: this,
       });
-      if (this.encryptionKey && opts.keyActions) {
-        this.encryptionKey.grant(grantee, ...opts.keyActions);
-      }
       return ret;
     }
     if (opts.streamActions) {

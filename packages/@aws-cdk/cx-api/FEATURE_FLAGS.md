@@ -40,6 +40,7 @@ Flags come in three types:
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | V2NEXT | (fix) |
+| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -70,7 +71,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
-    "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true
+    "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true
   }
 }
 ```
@@ -706,6 +708,20 @@ to overwrite permissions given to the role at a different place where it was imp
 of a role using the same default policy name.
 
 This new implementation creates default policy names based on the constructs node path in their stack.
+
+
+### @aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy
+
+*Use S3 Bucket Policy instead of ACLs for Server Access Logging* (fix)
+
+Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+rather than using the canned `LogDeliveryWrite` ACL. ACLs do not work when Object Ownership is
+enabled on the bucket.
+
+This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
+practices for S3.
+
+@see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
 
 
 | Since | Default | Recommended |

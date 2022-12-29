@@ -2,11 +2,57 @@
  "Resources": {
   "MyAccessLogsBucketF7FE6635": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "AccessControl": "LogDeliveryWrite"
-   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "MyAccessLogsBucketPolicyEA9AB063": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MyAccessLogsBucketF7FE6635"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "MyBucketF68F3FF0",
+           "Arn"
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "MyAccessLogsBucketF7FE6635",
+            "Arn"
+           ]
+          },
+          "/example*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
   },
   "MyBucketF68F3FF0": {
    "Type": "AWS::S3::Bucket",
