@@ -615,6 +615,28 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       },
     });
   });
+
+  test('deploymentGroup from Arn knows its account and region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
+
+    // WHEN
+    const application = codedeploy.LambdaApplication.fromLambdaApplicationArn(stack, 'Application', 'arn:aws:codedeploy:theregion-1:222222222222:application:MyApplication');
+    const group = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGroupAttributes(stack, 'Group', {
+      application,
+      deploymentGroupName: 'DeploymentGroup',
+    });
+
+    // THEN
+    expect(application.env).toEqual(expect.objectContaining({
+      account: '222222222222',
+      region: 'theregion-1',
+    }));
+    expect(group.env).toEqual(expect.objectContaining({
+      account: '222222222222',
+      region: 'theregion-1',
+    }));
+  });
 });
 
 describe('imported with fromLambdaDeploymentGroupAttributes', () => {

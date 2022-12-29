@@ -35,7 +35,7 @@ describe('AssertionHandler', () => {
     } catch (e) {
       failed = e;
     }
-    expect(failed.message).toMatch(/String 'this is the actual results' did not match pattern 'abcd' (using stringLikeRegexp matcher)*/);
+    expect(failed.message).toMatch(/String 'this is the actual results' did not match pattern 'abcd'/);
   });
   describe('stringLike', () => {
     test('pass', async () => {
@@ -67,7 +67,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: expect.stringMatching(/String 'this is the actual results' did not match pattern 'abcd' (using stringLikeRegexp matcher)*/),
+        message: expect.stringMatching(/String 'this is the actual results' did not match pattern 'abcd'/),
       });
     });
   });
@@ -123,7 +123,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: expect.stringMatching(/Missing element at pattern index 0 (using arrayWith matcher)*/),
+        message: expect.stringMatching(/Could not match arrayWith pattern 0/),
       });
     });
   });
@@ -182,8 +182,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: 'Expected bar but received foo at /stringParam (using objectLike matcher)\n' +
-          '{\n  \"stringParam\": \"foo\",\n  \"numberParam\": 3,\n  \"booleanParam\": true\n}',
+        message: expect.stringMatching(/Expected bar but received foo/),
       });
     });
   });
@@ -232,8 +231,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: 'Expected bar but received foo at /Payload(serializedJson)/stringParam (using serializedJson matcher)\n' +
-          '{\n  \"Payload\": \"{\\\"stringParam\\\":\\\"foo\\\"}\"\n}',
+        message: expect.stringMatching(/Expected bar but received foo/),
       });
     });
   });
@@ -295,7 +293,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: 'Expected bar but received foo at /stringParam (using exact matcher)\n{\n  \"stringParam\": \"foo\"\n}',
+        message: expect.stringMatching(/Expected bar but received foo/),
       });
     });
   });
