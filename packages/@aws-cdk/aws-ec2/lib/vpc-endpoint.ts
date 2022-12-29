@@ -733,13 +733,10 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       return subnetSelection.subnetIds;
     }
 
-    // Some service names, such as AWS service name references, use Tokens to automatically fill in the region
-    // If it is an InterfaceVpcEndpointAwsService, then the reference will be resolvable since it only references the region
-    const isAwsService = Token.isUnresolved(props.service.name) && props.service instanceof InterfaceVpcEndpointAwsService;
-
-    // Determine what service name gets pass to the context provider
-    // If it is an AWS service it will have a REGION token
-    const lookupServiceName = isAwsService ? Stack.of(this).resolve(props.service.name) : props.service.name;
+    // Some service names, such as AWS service name references, use tokens to automatically fill in the region. Hence,
+    // if the service name is an unresolved token we will attempt to resolve it first. If for some reason can't be
+    // resolved it's ok, it will fail anyways later when doing the look up.
+    const lookupServiceName = Token.isUnresolved(props.service.name) ? Stack.of(this).resolve(props.service.name) : props.service.name;
 
     // Check that the lookup will work
     this.validateCanLookupSupportedAzs(subnets, lookupServiceName);
