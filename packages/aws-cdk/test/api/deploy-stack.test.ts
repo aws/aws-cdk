@@ -84,7 +84,7 @@ function standardDeployStackArguments(): DeployStackOptions {
   };
 }
 
-test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP`", async () => {
+test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.CLASSIC`", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
@@ -98,6 +98,22 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP`", async
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
   // check that the fallback has been called if hotswapping failed
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('cdk-hotswap/fallback');
+});
+
+test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: HotswapMode.HOTSWAP_ONLY,
+    extraUserAgent: 'extra-user-agent',
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalled();
+  // check that the extra User-Agent is honored
+  expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
+  // check that the fallback has not been called if hotswapping failed
+  expect(sdk.appendCustomUserAgent).not.toHaveBeenCalled();
 });
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {

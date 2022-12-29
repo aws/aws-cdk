@@ -313,13 +313,19 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       }
       print('Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s', e.message);
     }
-    print('Falling back to doing a full deployment');
-    options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+    if (hotswapMode === HotswapMode.CLASSIC) {
+      print('Falling back to doing a full deployment');
+      options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+    }
+
+    if (hotswapMode === HotswapMode.CLASSIC) {
+      // could not short-circuit the deployment, perform a full CFN deploy instead
+      const fullDeployment = new FullCloudFormationDeployment(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
+      return fullDeployment.performDeployment();
+    }
   }
 
-  // could not short-circuit the deployment, perform a full CFN deploy instead
-  const fullDeployment = new FullCloudFormationDeployment(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
-  return fullDeployment.performDeployment();
+  return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
 }
 
 
