@@ -113,7 +113,7 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", 
   // check that the extra User-Agent is honored
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
   // check that the fallback has not been called if hotswapping failed
-  expect(sdk.appendCustomUserAgent).not.toHaveBeenCalled();
+  expect(sdk.appendCustomUserAgent).not.toHaveBeenCalledWith('cdk-hotswap/fallback');
 });
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
