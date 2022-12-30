@@ -2046,12 +2046,12 @@ export class Bucket extends BucketBase {
     if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
+
     if (
       // The current bucket is being used and is configured for default SSE-KMS
-      !props.serverAccessLogsBucket && (
+      (!props.serverAccessLogsBucket && (
         props.encryptionKey ||
-        props.encryption === BucketEncryption.KMS ||
-        props.encryption === BucketEncryption.KMS_MANAGED) ||
+        props.encryption === BucketEncryption.KMS )) ||
       // Another bucket is being used that is configured for default SSE-KMS
       props.serverAccessLogsBucket?.encryptionKey
     ) {
