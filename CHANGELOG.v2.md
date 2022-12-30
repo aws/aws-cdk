@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.59.0](https://github.com/aws/aws-cdk/compare/v2.58.0...v2.59.0) (2022-12-30)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v105.0.0 ([#23501](https://github.com/aws/aws-cdk/issues/23501)) ([72bd3a0](https://github.com/aws/aws-cdk/commit/72bd3a0ce96c9fd98bbf2f3eb76db1336c8a3029))
+* **s3:** use Bucket Policy for Server Access Logging grant (under feature flag) ([#23386](https://github.com/aws/aws-cdk/issues/23386)) ([6975a7e](https://github.com/aws/aws-cdk/commit/6975a7ea06a5680bebd38ad5c26ab5bd566d33b1)), closes [#22183](https://github.com/aws/aws-cdk/issues/22183)
+* **servicecatalog:** Add Product Stack Asset Support ([#22857](https://github.com/aws/aws-cdk/issues/22857)) ([ceaac3a](https://github.com/aws/aws-cdk/commit/ceaac3ad49fcfdb89ec80c2784934589542e80b6)), closes [#20690](https://github.com/aws/aws-cdk/issues/20690)
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** unable to use `nodeModules` with pnpm ([#21911](https://github.com/aws/aws-cdk/issues/21911)) ([7c752db](https://github.com/aws/aws-cdk/commit/7c752db4aa83b242098483fc006c1100d1be11a9)), closes [#21910](https://github.com/aws/aws-cdk/issues/21910)
+
 ## [2.58.0](https://github.com/aws/aws-cdk/compare/v2.57.0...v2.58.0) (2022-12-28)
 
 
