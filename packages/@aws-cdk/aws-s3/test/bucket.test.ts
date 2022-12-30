@@ -389,7 +389,7 @@ describe('bucket', () => {
     }).not.toThrowError();
   });
 
-  test('logs to self, S3 encryption does not throw error', () => {
+  test('logs to separate bucket, S3 encryption does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
     expect(() => {
@@ -397,7 +397,7 @@ describe('bucket', () => {
     }).not.toThrowError();
   });
 
-  test('logs to self, KMS_MANAGED encryption does not throw error', () => {
+  test('logs to separate bucket, KMS_MANAGED encryption does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
     expect(() => {
@@ -405,7 +405,7 @@ describe('bucket', () => {
     }).not.toThrowError();
   });
 
-  test('logs to self, KMS encryption without key throws error', () => {
+  test('logs to separate bucket, KMS encryption without key throws error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS });
     expect(() => {
@@ -413,7 +413,7 @@ describe('bucket', () => {
     }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
 
-  test('logs to self, KMS encryption with key throws error', () => {
+  test('logs to separate bucket, KMS encryption with key throws error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
@@ -422,7 +422,7 @@ describe('bucket', () => {
     }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
 
-  test('logs to self, KMS key with no specific encryption specified throws error', () => {
+  test('logs to separate bucket, KMS key with no specific encryption specified throws error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key });
