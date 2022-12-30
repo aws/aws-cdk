@@ -317,6 +317,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     if (hotswapMode === HotswapMode.CLASSIC) {
       print('Falling back to doing a full deployment');
       options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+    } else {
+      return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
     }
   }
 

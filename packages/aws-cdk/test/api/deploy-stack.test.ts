@@ -100,15 +100,29 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.CLASSIC`", async
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('cdk-hotswap/fallback');
 });
 
-test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", async () => {
+test("foo foo calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", async () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  //const hotswapDeployments = require('../../lib/api/hotswap-deployments');
+  //jest.spyOn(hotswapDeployments, tryHotswapDeployment).mockReturnValue({blah: 'foo'});
+
+  /*
+  jest.mock('../../lib/api/hotswap-deployments', () => {
+    const original = jest.requireActual('../../lib/api/hotswap-deployments');
+    return {
+      ...original,
+      tryHotswapDeployment: jest.fn(() => { throw new Error('wow this is ugly to write...'); }),
+    };
+  });
+  */
   // WHEN
-  await deployStack({
+  const deployStackResult = await deployStack({
     ...standardDeployStackArguments(),
     hotswap: HotswapMode.HOTSWAP_ONLY,
     extraUserAgent: 'extra-user-agent',
   });
 
   // THEN
+  expect(deployStackResult.noOp).toEqual(true);
   expect(tryHotswapDeployment).toHaveBeenCalled();
   // check that the extra User-Agent is honored
   expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
