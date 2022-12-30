@@ -1,10 +1,22 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { IBucket } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import { ProductStackHistory } from './product-stack-history';
+
+/**
+ * Product stack props.
+ */
+export interface ProductStackProps {
+  /**
+   * A Bucket can be passed to store assets, enabling ProductStack Asset support
+   * @default No Bucket provided and Assets will not be supported.
+   */
+  readonly assetBucket?: IBucket;
+}
 
 /**
  * A Service Catalog product stack, which is similar in form to a Cloudformation nested stack.
@@ -21,15 +33,19 @@ export class ProductStack extends cdk.Stack {
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
 
-  constructor(scope: Construct, id: string) {
+  private assetBucket?: IBucket;
+
+  constructor(scope: Construct, id: string, props: ProductStackProps = {}) {
     super(scope, id, {
-      synthesizer: new ProductStackSynthesizer(),
+      synthesizer: new ProductStackSynthesizer(props.assetBucket),
     });
 
     this._parentStack = findParentStack(scope);
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;
+
+    this.assetBucket = props.assetBucket;
   }
 
   /**
@@ -48,6 +64,24 @@ export class ProductStack extends cdk.Stack {
    */
   public _getTemplateUrl(): string {
     return cdk.Lazy.uncachedString({ produce: () => this._templateUrl });
+  }
+
+  /**
+   * Fetch the asset bucket.
+   *
+   * @internal
+   */
+  public _getAssetBucket(): IBucket | undefined {
+    return this.assetBucket;
+  }
+
+  /**
+   * Fetch the parent Stack.
+   *
+   * @internal
+   */
+  public _getParentStack(): cdk.Stack {
+    return this._parentStack;
   }
 
   /**

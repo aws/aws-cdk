@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
@@ -191,6 +192,62 @@ describe('Portfolio', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::PortfolioShare', {
         AccountId: shareAccountId,
+      });
+    }),
+
+    test('portfolio share with assets', () => {
+      const assetBucket = new s3.Bucket(stack, 'MyProductStackAssetBucket', {
+        bucketName: 'test-asset-bucket',
+      });
+
+      const productStack = new servicecatalog.ProductStack(stack, 'MyProductStack', {
+      });
+
+      const product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+        productName: 'testProduct',
+        owner: 'testOwner',
+        productVersions: [
+          {
+            productVersionName: 'v1',
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStack),
+          },
+        ],
+      });
+
+      product.assetBuckets.push(assetBucket);
+
+      const shareAccountId = '012345678901';
+
+      portfolio.addProduct(product);
+      portfolio.shareWithAccount(shareAccountId);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::PortfolioShare', {
+        AccountId: shareAccountId,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        BucketName: 'test-asset-bucket',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [{
+            Effect: 'Allow',
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':iam::012345678901:root',
+                  ],
+                ],
+              },
+            },
+          }],
+        },
       });
     }),
 

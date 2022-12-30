@@ -39,7 +39,9 @@ export class PackageManager {
       case LockFile.PNPM:
         return new PackageManager({
           lockFile: LockFile.PNPM,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['pnpm', 'install', '--reporter', 'silent'] : ['pnpm', 'install'],
+          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['pnpm', 'install', '--reporter', 'silent', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy'] : ['pnpm', 'install', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy'],
+          // --config.node-linker=hoisted to create flat node_modules without symlinks
+          // --config.package-import-method=clone-or-copy to avoid hardlinking packages from the store
           runCommand: ['pnpm', 'exec'],
           argsSeparator: '--',
         });
