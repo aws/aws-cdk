@@ -319,7 +319,7 @@ export class Cluster extends Resource implements ICluster {
         });
         break;
       default:
-        throw new Error('Namespace type is not valid/supported.');
+        throw new Error(`Namespace type ${namespaceType} is not supported.`);
     }
 
     this._defaultCloudMapNamespace = sdNamespace;
