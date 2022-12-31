@@ -76,6 +76,7 @@ removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.cluster
 strengthened:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps
 
 # Changed property filterPolicy to be compatible with message body filter policy scope
+changed-type:@aws-cdk/aws-sns.SubscriptionProps.filterPolicy
 changed-type:@aws-cdk/aws-sns-subscriptions.UrlSubscriptionProps.filterPolicy
 changed-type:@aws-cdk/aws-sns-subscriptions.SqsSubscriptionProps.filterPolicy
 changed-type:@aws-cdk/aws-sns-subscriptions.SmsSubscriptionProps.filterPolicy
@@ -88,7 +89,6 @@ changed-type:aws-cdk-lib.aws_sns_subscriptions.LambdaSubscriptionProps.filterPol
 changed-type:aws-cdk-lib.aws_sns_subscriptions.EmailSubscriptionProps.filterPolicy
 changed-type:aws-cdk-lib.aws_lambda_event_sources.SnsEventSourceProps.filterPolicy
 changed-type:aws-cdk-lib.aws_sns.SubscriptionProps.filterPolicy
-
 
 # Remove IO2 from autoscaling EbsDeviceVolumeType. This value is not supported
 # at the moment and was not supported in the past.
