@@ -572,6 +572,11 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly ACM_CERTIFICATE_EXPIRATION_CHECK = 'ACM_CERTIFICATE_EXPIRATION_CHECK';
   /**
+   * Checks if an Application Load Balancer (ALB) is configured with a user defined desync mitigation mode.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/alb-desync-mode-check.html
+   */
+  public static readonly ALB_DESYNC_MODE_CHECK = 'ALB_DESYNC_MODE_CHECK';
+  /**
    * Checks if rule evaluates Application Load Balancers (ALBs) to ensure they are configured to drop http headers.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/alb-http-drop-invalid-header-enabled.html
    */
@@ -586,6 +591,21 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/alb-waf-enabled.html
    */
   public static readonly ALB_WAF_ENABLED = 'ALB_WAF_ENABLED';
+  /**
+   * Checks if Amazon API Gateway V2 stages have access logging enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gwv2-access-logs-enabled.html
+   */
+  public static readonly API_GWV2_ACCESS_LOGS_ENABLED = 'API_GWV2_ACCESS_LOGS_ENABLED';
+  /**
+   * Checks if Amazon API Gatewayv2 API routes have an authorization type set.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gwv2-authorization-type-configured.html
+   */
+  public static readonly API_GWV2_AUTHORIZATION_TYPE_CONFIGURED = 'API_GWV2_AUTHORIZATION_TYPE_CONFIGURED';
+  /**
+   * Checks if an Amazon API Gateway API stage is using an AWS WAF Web ACL.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gw-associated-with-waf.html
+   */
+  public static readonly API_GW_ASSOCIATED_WITH_WAF = 'API_GW_ASSOCIATED_WITH_WAF';
   /**
    * Checks that all methods in Amazon API Gateway stages have caching enabled and encrypted.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gw-cache-enabled-and-encrypted.html
@@ -602,6 +622,16 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly API_GW_EXECUTION_LOGGING_ENABLED = 'API_GW_EXECUTION_LOGGING_ENABLED';
   /**
+   * Checks if a REST API stage uses an Secure Sockets Layer (SSL) certificate.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gw-ssl-enabled.html
+   */
+  public static readonly API_GW_SSL_ENABLED = 'API_GW_SSL_ENABLED';
+  /**
+   * Checks if AWS X-Ray tracing is enabled on Amazon API Gateway REST APIs.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gw-xray-enabled.html
+   */
+  public static readonly API_GW_XRAY_ENABLED = 'API_GW_XRAY_ENABLED';
+  /**
    * Checks whether running instances are using specified AMIs.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/approved-amis-by-id.html
    */
@@ -612,11 +642,61 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly APPROVED_AMIS_BY_TAG = 'APPROVED_AMIS_BY_TAG';
   /**
+   * Checks if a recovery point was created for Amazon Aurora DB clusters.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/aurora-last-backup-recovery-point-created.html
+   */
+  public static readonly AURORA_LAST_BACKUP_RECOVERY_POINT_CREATED = 'AURORA_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  /**
+   * Checks if an Amazon Aurora MySQL cluster has backtracking enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/aurora-mysql-backtracking-enabled.html
+   */
+  public static readonly AURORA_MYSQL_BACKTRACKING_ENABLED = 'AURORA_MYSQL_BACKTRACKING_ENABLED';
+  /**
+   * Checks if Amazon Aurora DB clusters are protected by a backup plan.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/aurora-resources-protected-by-backup-plan.html
+   */
+  public static readonly AURORA_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'AURORA_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  /**
+   * Checks if Capacity Rebalancing is enabled for Amazon EC2 Auto Scaling groups that use multiple instance types.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-capacity-rebalancing.html
+   */
+  public static readonly AUTOSCALING_CAPACITY_REBALANCING = 'AUTOSCALING_CAPACITY_REBALANCING';
+  /**
    * Checks whether your Auto Scaling groups that are associated with a load balancer are using
    * Elastic Load Balancing health checks.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-group-elb-healthcheck-required.html
    */
   public static readonly AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED = 'AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED';
+  /**
+   * Checks whether only IMDSv2 is enabled.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launchconfig-requires-imdsv2.html
+   */
+  public static readonly AUTOSCALING_LAUNCHCONFIG_REQUIRES_IMDSV2 = 'AUTOSCALING_LAUNCHCONFIG_REQUIRES_IMDSV2';
+  /**
+   * Checks the number of network hops that the metadata token can travel.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launch-config-hop-limit.html
+   */
+  public static readonly AUTOSCALING_LAUNCH_CONFIG_HOP_LIMIT = 'AUTOSCALING_LAUNCH_CONFIG_HOP_LIMIT';
+  /**
+   * Checks if Amazon EC2 Auto Scaling groups have public IP addresses enabled through Launch Configurations.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launch-config-public-ip-disabled.html
+   */
+  public static readonly AUTOSCALING_LAUNCH_CONFIG_PUBLIC_IP_DISABLED = 'AUTOSCALING_LAUNCH_CONFIG_PUBLIC_IP_DISABLED';
+  /**
+   * Checks if an Amazon Elastic Compute Cloud (EC2) Auto Scaling group is created from an EC2 launch template.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launch-template.html
+   */
+  public static readonly AUTOSCALING_LAUNCH_TEMPLATE = 'AUTOSCALING_LAUNCH_TEMPLATE';
+  /**
+   * Checks if the Auto Scaling group spans multiple Availability Zones.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-multiple-az.html
+   */
+  public static readonly AUTOSCALING_MULTIPLE_AZ = 'AUTOSCALING_MULTIPLE_AZ';
+  /**
+   * Checks if an Amazon Elastic Compute Cloud (Amazon EC2) Auto Scaling group uses multiple instance types.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-multiple-instance-types.html
+   */
+  public static readonly AUTOSCALING_MULTIPLE_INSTANCE_TYPES = 'AUTOSCALING_MULTIPLE_INSTANCE_TYPES';
   /**
    * Checks if a backup plan has a backup rule that satisfies the required frequency and retention period.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-plan-min-frequency-and-min-retention-check.html
@@ -695,13 +775,13 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-origin-access-identity-enabled.html
    */
   public static readonly CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED = 'CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED';
-  /** 
+  /**
    * Checks whether an origin group is configured for the distribution of at least 2 origins in the
    * origin group for Amazon CloudFront.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-origin-failover-enabled.html
    */
   public static readonly CLOUDFRONT_ORIGIN_FAILOVER_ENABLED = 'CLOUDFRONT_ORIGIN_FAILOVER_ENABLED';
-  /** 
+  /**
    * Checks if Amazon CloudFront distributions are using a minimum security policy and cipher suite of TLSv1.2 or
    * greater for viewer connections.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-security-policy-check.html
@@ -825,8 +905,8 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED = 'CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED';
   /**
-   * Checks if the deployment group for EC2/On-Premises Compute Platform is configured with 
-   * a minimum healthy hosts fleet percentage or host count greater than or equal to the input threshold. 
+   * Checks if the deployment group for EC2/On-Premises Compute Platform is configured with
+   * a minimum healthy hosts fleet percentage or host count greater than or equal to the input threshold.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codedeploy-ec2-minimum-healthy-hosts-configured.html
    */
   public static readonly CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED = 'CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED';
@@ -888,7 +968,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly DYNAMODB_IN_BACKUP_PLAN = 'DYNAMODB_IN_BACKUP_PLAN';
   /**
-   * Checks if a recovery point was created for Amazon DynamoDB Tables within the specified period. 
+   * Checks if a recovery point was created for Amazon DynamoDB Tables within the specified period.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-last-backup-recovery-point-created.html
    */
   public static readonly DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED = 'DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED';
@@ -898,7 +978,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly DYNAMODB_PITR_ENABLED = 'DYNAMODB_PITR_ENABLED';
   /**
-   * Checks if Amazon DynamoDB tables are protected by a backup plan. 
+   * Checks if Amazon DynamoDB tables are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-resources-protected-by-backup-plan.html
    */
   public static readonly DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
@@ -966,7 +1046,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_INSTANCE_PROFILE_ATTACHED = 'EC2_INSTANCE_PROFILE_ATTACHED';
   /**
-   * Checks if Amazon Elastic Compute Cloud (Amazon EC2) uses multiple ENIs (Elastic Network Interfaces) 
+   * Checks if Amazon Elastic Compute Cloud (Amazon EC2) uses multiple ENIs (Elastic Network Interfaces)
    * or Elastic Fabric Adapters (EFAs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-multiple-eni-check.html
    */
@@ -977,7 +1057,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_INSTANCE_NO_PUBLIC_IP = 'EC2_INSTANCE_NO_PUBLIC_IP';
   /**
-   * Checks if a recovery point was created for Amazon Elastic Compute Cloud (Amazon EC2) instances. 
+   * Checks if a recovery point was created for Amazon Elastic Compute Cloud (Amazon EC2) instances.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-last-backup-recovery-point-created.html
    */
   public static readonly EC2_LAST_BACKUP_RECOVERY_POINT_CREATED = 'EC2_LAST_BACKUP_RECOVERY_POINT_CREATED';
@@ -1050,7 +1130,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_STOPPED_INSTANCE = 'EC2_STOPPED_INSTANCE';
   /**
-   * Checks if an Amazon Elastic Compute Cloud (EC2) instance metadata 
+   * Checks if an Amazon Elastic Compute Cloud (EC2) instance metadata
    * has a specified token hop limit that is below the desired limit.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-token-hop-limit-check.html
    */
@@ -1066,7 +1146,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EC2_VOLUME_INUSE_CHECK = 'EC2_VOLUME_INUSE_CHECK';
   /**
-   * Checks if a private Amazon Elastic Container Registry (ECR) repository has image scanning enabled. 
+   * Checks if a private Amazon Elastic Container Registry (ECR) repository has image scanning enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecr-private-image-scanning-enabled.html
    */
   public static readonly ECR_PRIVATE_IMAGE_SCANNING_ENABLED = 'ECR_PRIVATE_IMAGE_SCANNING_ENABLED';
@@ -1081,7 +1161,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED = 'ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED';
   /**
-   * Checks if the networking mode for active ECSTaskDefinitions is set to ‘awsvpc’. 
+   * Checks if the networking mode for active ECSTaskDefinitions is set to ‘awsvpc’.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-awsvpc-networking-enabled.html
    */
   public static readonly ECS_AWSVPC_NETWORKING_ENABLED = 'ECS_AWSVPC_NETWORKING_ENABLED';
@@ -1117,30 +1197,30 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly ECS_TASK_DEFINITION_LOG_CONFIGURATION = 'ECS_TASK_DEFINITION_LOG_CONFIGURATION';
   /**
-   * Checks if Amazon Elastic Container Service (ECS) task definitions have a set memory limit for its container definitions. 
+   * Checks if Amazon Elastic Container Service (ECS) task definitions have a set memory limit for its container definitions.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-task-definition-memory-hard-limit.html
    */
   public static readonly ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT = 'ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT';
   /**
-   * Checks if ECSTaskDefinitions specify a user 
+   * Checks if ECSTaskDefinitions specify a user
    * for Amazon Elastic Container Service (Amazon ECS) EC2 launch type containers to run on.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-task-definition-nonroot-user.html
    */
   public static readonly ECS_TASK_DEFINITION_NONROOT_USER = 'ECS_TASK_DEFINITION_NONROOT_USER';
   /**
-   * Checks if ECSTaskDefinitions are configured to share a host’s process namespace 
+   * Checks if ECSTaskDefinitions are configured to share a host’s process namespace
    * with its Amazon Elastic Container Service (Amazon ECS) containers.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-stopped-instance.html
    */
   public static readonly ECS_TASK_DEFINITION_PID_MODE_CHECK = 'ECS_TASK_DEFINITION_PID_MODE_CHECK';
   /**
-   * Checks if an Amazon Elastic Container Service (Amazon ECS) task definition 
+   * Checks if an Amazon Elastic Container Service (Amazon ECS) task definition
    * with host networking mode has 'privileged' or 'user' container definitions.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-volume-inuse-check.html
    */
   public static readonly EC2_VOLUME_IECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECKNUSE_CHECK = 'ECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECK';
   /**
-   * Checks if Amazon Elastic File System (Amazon EFS) access points are configured to enforce a root directory. 
+   * Checks if Amazon Elastic File System (Amazon EFS) access points are configured to enforce a root directory.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-access-point-enforce-root-directory.html
    */
   public static readonly EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY = 'EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY';
@@ -1156,7 +1236,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EFS_ENCRYPTED_CHECK = 'EFS_ENCRYPTED_CHECK';
   /**
-   * Checks if a recovery point was created for Amazon Elastic File System (Amazon EFS) File Systems. 
+   * Checks if a recovery point was created for Amazon Elastic File System (Amazon EFS) File Systems.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-last-backup-recovery-point-created.html
    */
   public static readonly EFS_LAST_BACKUP_RECOVERY_POINT_CREATED = 'EFS_LAST_BACKUP_RECOVERY_POINT_CREATED';
@@ -1226,14 +1306,14 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED = 'ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED';
   /**
-   * Checks if Application Load Balancers and Network Load Balancers 
+   * Checks if Application Load Balancers and Network Load Balancers
    * have listeners that are configured to use certificates from AWS Certificate Manager (ACM).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elbv2-acm-certificate-required.html
    */
   public static readonly ELBV2_ACM_CERTIFICATE_REQUIRED = 'ELBV2_ACM_CERTIFICATE_REQUIRED';
   /**
    * Checks if an Elastic Load Balancer V2 (Application, Network, or Gateway Load Balancer)
-   * has registered instances from multiple Availability Zones (AZ's). 
+   * has registered instances from multiple Availability Zones (AZ's).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elbv2-multiple-az.html
    */
   public static readonly ELBV2_MULTIPLE_AZ = 'ELBV2_MULTIPLE_AZ';
@@ -1292,24 +1372,24 @@ export class ManagedRuleIdentifiers {
    * master security groups at each rule level based on allowSecurityGroup and denySecurityGroup flag.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-security-group-audit-policy-check.html
    *
-   * @deprecated Inactive managed rule 
-   * 
+   * @deprecated Inactive managed rule
+   *
    */
   public static readonly FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK = 'FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK';
   /**
    * Checks whether AWS Firewall Manager created security groups content is the same as the master security groups.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-security-group-content-check.html
-   * 
-   * @deprecated Inactive managed rule 
-   * 
+   *
+   * @deprecated Inactive managed rule
+   *
    */
   public static readonly FMS_SECURITY_GROUP_CONTENT_CHECK = 'FMS_SECURITY_GROUP_CONTENT_CHECK';
   /**
    * Checks whether Amazon EC2 or an elastic network interface is associated with AWS Firewall Manager security groups.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-security-group-resource-association-check.html
-   * 
-   * @deprecated Inactive managed rule 
-   * 
+   *
+   * @deprecated Inactive managed rule
+   *
    */
   public static readonly FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK = 'FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK';
   /**
@@ -1578,7 +1658,7 @@ export class ManagedRuleIdentifiers {
    *Checks if there are any Amazon Relational Database Service (RDS) DB security groups that are not the default DB security group.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-db-security-group-not-allowed.html
    */
-   public static readonly RDS_DB_SECURITY_GROUP_NOT_ALLOWED = 'RDS_DB_SECURITY_GROUP_NOT_ALLOWED';
+  public static readonly RDS_DB_SECURITY_GROUP_NOT_ALLOWED = 'RDS_DB_SECURITY_GROUP_NOT_ALLOWED';
   /**
    * Checks if an Amazon Relational Database Service (Amazon RDS) instance has deletion protection enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-deletion-protection-enabled.html
@@ -1623,7 +1703,7 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for Amazon Relational Database Service (Amazon RDS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-last-backup-recovery-point-created.html
    */
-   public static readonly RDS_LAST_BACKUP_RECOVERY_POINT_CREATED = 'RDS_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly RDS_LAST_BACKUP_RECOVERY_POINT_CREATED = 'RDS_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Check whether the Amazon Relational Database Service instances are not publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-public-access-check.html
@@ -1739,26 +1819,26 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly SNS_ENCRYPTED_KMS = 'SNS_ENCRYPTED_KMS';
   /**
-   * Checks if Amazon Simple Notification Service (SNS) logging is enabled 
+   * Checks if Amazon Simple Notification Service (SNS) logging is enabled
    * for the delivery status of notification messages sent to a topic for the endpoints.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/sns-topic-message-delivery-notification-enabled.html
    */
-   public static readonly SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED = 'SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED';
+  public static readonly SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED = 'SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED';
   /**
    * Checks if AWS Systems Manager documents owned by the account are public.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ssm-document-not-public.html
    */
-   public static readonly SSM_DOCUMENT_NOT_PUBLIC = 'SSM_DOCUMENT_NOT_PUBLIC';
+  public static readonly SSM_DOCUMENT_NOT_PUBLIC = 'SSM_DOCUMENT_NOT_PUBLIC';
   /**
    * Checks if a recovery point was created for AWS Storage Gateway volumes.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/storagegateway-last-backup-recovery-point-created.html
    */
-   public static readonly STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED = 'STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED = 'STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * hecks if Amazon Virtual Private Cloud (Amazon VPC) subnets are assigned a public IP address.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/subnet-auto-assign-public-ip-disabled.html
    */
-   public static readonly SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED = 'SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED';
+  public static readonly SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED = 'SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED';
   /**
    * Checks whether the required public access block settings are configured from account level.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-account-level-public-access-blocks.html
@@ -1797,7 +1877,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly S3_BUCKET_POLICY_GRANTEE_CHECK = 'S3_BUCKET_POLICY_GRANTEE_CHECK';
   /**
-   * Checks if your Amazon Simple Storage Service bucket policies do not allow other inter-account permissions 
+   * Checks if your Amazon Simple Storage Service bucket policies do not allow other inter-account permissions
    * than the control Amazon S3 bucket policy that you provide.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-policy-not-more-permissive.html
    */
@@ -1838,28 +1918,28 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon S3 Events Notifications are enabled on an S3 bucket.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-event-notifications-enabled.html
    */
-   public static readonly S3_EVENT_NOTIFICATIONS_ENABLED = 'S3_EVENT_NOTIFICATIONS_ENABLED';
+  public static readonly S3_EVENT_NOTIFICATIONS_ENABLED = 'S3_EVENT_NOTIFICATIONS_ENABLED';
   /**
    * Checks if a recovery point was created for Amazon Simple Storage Service (Amazon S3).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-last-backup-recovery-point-created.html
    */
-   public static readonly S3_LAST_BACKUP_RECOVERY_POINT_CREATED = 'S3_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly S3_LAST_BACKUP_RECOVERY_POINT_CREATED = 'S3_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks if a lifecycle rule is configured for an Amazon Simple Storage Service (Amazon S3) bucket.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-lifecycle-policy-check.html
    */
-   public static readonly S3_LIFECYCLE_POLICY_CHECK = 'S3_LIFECYCLE_POLICY_CHECK';
+  public static readonly S3_LIFECYCLE_POLICY_CHECK = 'S3_LIFECYCLE_POLICY_CHECK';
   /**
    * Checks if Amazon Simple Storage Service (Amazon S3) buckets are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-resources-protected-by-backup-plan.html
    */
-   public static readonly S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks if Amazon Simple Storage Service (Amazon S3) version enabled buckets have lifecycle policy configured.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-version-lifecycle-policy-check.html
    */
-   public static readonly S3_VERSION_LIFECYCLE_POLICY_CHECK = 'S3_VERSION_LIFECYCLE_POLICY_CHECK';
-   /**
+  public static readonly S3_VERSION_LIFECYCLE_POLICY_CHECK = 'S3_VERSION_LIFECYCLE_POLICY_CHECK';
+  /**
    * Checks whether AWS Key Management Service (KMS) key is configured for an Amazon SageMaker endpoint configuration.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/sagemaker-endpoint-configuration-kms-key-configured.html
    */
@@ -1895,7 +1975,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly SECRETSMANAGER_SECRET_UNUSED = 'SECRETSMANAGER_SECRET_UNUSED';
   /**
-   * Checks if all secrets in AWS Secrets Manager are encrypted using the AWS managed key (aws/secretsmanager) 
+   * Checks if all secrets in AWS Secrets Manager are encrypted using the AWS managed key (aws/secretsmanager)
    * or a customer managed key that was created in AWS Key Management Service (AWS KMS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-using-cmk.html
    */
