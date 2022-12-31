@@ -81,6 +81,14 @@ changed-type:@aws-cdk/aws-sns-subscriptions.SqsSubscriptionProps.filterPolicy
 changed-type:@aws-cdk/aws-sns-subscriptions.SmsSubscriptionProps.filterPolicy
 changed-type:@aws-cdk/aws-sns-subscriptions.LambdaSubscriptionProps.filterPolicy
 changed-type:@aws-cdk/aws-sns-subscriptions.EmailSubscriptionProps.filterPolicy
+changed-type:aws-cdk-lib.aws_sns_subscriptions.UrlSubscriptionProps.filterPolicy
+changed-type:aws-cdk-lib.aws_sns_subscriptions.SqsSubscriptionProps.filterPolicy
+changed-type:aws-cdk-lib.aws_sns_subscriptions.SmsSubscriptionProps.filterPolicy
+changed-type:aws-cdk-lib.aws_sns_subscriptions.LambdaSubscriptionProps.filterPolicy
+changed-type:aws-cdk-lib.aws_sns_subscriptions.EmailSubscriptionProps.filterPolicy
+changed-type:aws-cdk-lib.aws_lambda_event_sources.SnsEventSourceProps.filterPolicy
+changed-type:aws-cdk-lib.aws_sns.SubscriptionProps.filterPolicy
+
 
 # Remove IO2 from autoscaling EbsDeviceVolumeType. This value is not supported
 # at the moment and was not supported in the past.
