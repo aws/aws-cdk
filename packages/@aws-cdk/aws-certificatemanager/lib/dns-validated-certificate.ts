@@ -48,6 +48,13 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
   readonly customResourceRole?: iam.IRole;
 
   /**
+   * Role to assume to create DNS records for the validated certificate
+   *
+   * @default - undefined
+   */
+  readonly dnsRole?: iam.IRole;
+
+  /**
    * When set to true, when the DnsValidatedCertificate is deleted,
    * the associated Route53 validation records are removed.
    *
@@ -115,26 +122,33 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate', 'acm:AddTagsToCertificate'],
       resources: ['*'],
     }));
-    requestorFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['route53:GetChange'],
-      resources: ['*'],
-    }));
-    requestorFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['route53:changeResourceRecordSets'],
-      resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
-      conditions: {
-        'ForAllValues:StringEquals': {
-          'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
-          'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
+    if (props.dnsRole?.roleArn) {
+      requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: [props.dnsRole.roleArn],
+      }));
+    } else {
+      requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['route53:GetChange'],
+        resources: ['*'],
+      }));
+      requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['route53:changeResourceRecordSets'],
+        resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
+        conditions: {
+          'ForAllValues:StringEquals': {
+            'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+            'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
+          },
+          'ForAllValues:StringLike': {
+            'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+              addWildcard(props.domainName),
+              ...(props.subjectAlternativeNames ?? []).map(d => addWildcard(d)),
+            ],
+          },
         },
-        'ForAllValues:StringLike': {
-          'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
-            addWildcard(props.domainName),
-            ...(props.subjectAlternativeNames ?? []).map(d => addWildcard(d)),
-          ],
-        },
-      },
-    }));
+      }));
+    }
 
     const certificate = new cdk.CustomResource(this, 'CertificateRequestorResource', {
       serviceToken: requestorFunction.functionArn,
@@ -146,6 +160,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
         RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
+        DnsRoleArn: props.dnsRole?.roleArn,
         // Custom resources properties are always converted to strings; might as well be explict here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),

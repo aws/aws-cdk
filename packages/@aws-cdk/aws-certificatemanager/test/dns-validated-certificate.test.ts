@@ -237,6 +237,50 @@ test('works with imported role', () => {
   });
 });
 
+test('works with DNS role', () => {
+  const stack = new Stack();
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+
+  const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::account-id:role/role-name');
+
+  new DnsValidatedCertificate(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone: exampleDotComZone,
+    dnsRole: role,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyName: 'CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC',
+    Roles: [
+      {
+        Ref: 'CertificateCertificateRequestorFunctionServiceRoleC04C13DA',
+      },
+    ],
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: [
+            'acm:RequestCertificate',
+            'acm:DescribeCertificate',
+            'acm:DeleteCertificate',
+            'acm:AddTagsToCertificate',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Resource: 'arn:aws:iam::account-id:role/role-name',
+        },
+      ],
+    },
+  });
+});
 
 test('throws when domain name is longer than 64 characters', () => {
   const stack = new Stack();

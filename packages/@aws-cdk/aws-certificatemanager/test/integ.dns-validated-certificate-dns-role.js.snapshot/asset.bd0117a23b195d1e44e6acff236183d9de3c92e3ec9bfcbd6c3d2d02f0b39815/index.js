@@ -94,10 +94,34 @@ const addTags = async function(certificateArn, region, tags) {
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, certificateTransparencyLoggingPreference, hostedZoneId, region, route53Endpoint) {
+const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, certificateTransparencyLoggingPreference, hostedZoneId, region, route53Endpoint, dnsRoleArn) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
-  const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
+
+  let credentials;
+  if (dnsRoleArn) {
+     const sts = new aws.STS({});
+     const timestamp = (new Date()).getTime();
+
+     const { Credentials: assumedCredentials } = await sts
+      .assumeRole({
+        RoleArn: dnsRoleArn,
+        RoleSessionName: `cross-account-acm-records-${timestamp}`,
+      })
+      .promise();
+
+     if (!assumedCredentials) {
+      throw Error('Error getting assume role credentials');
+     }
+
+     credentials = new aws.Credentials({
+      accessKeyId: assumedCredentials.AccessKeyId,
+      secretAccessKey: assumedCredentials.SecretAccessKey,
+      sessionToken: assumedCredentials.SessionToken,
+     });
+   }
+
+  const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint, credentials }) : new aws.Route53({ credentials });
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
     route53.waitFor = acm.waitFor = waiter;
@@ -316,6 +340,7 @@ exports.certificateRequestHandler = async function (event, context) {
       event.ResourceProperties.HostedZoneId,
       event.ResourceProperties.Region,
       event.ResourceProperties.Route53Endpoint,
+      event.ResourceProperties.DnsRoleArn,
     );
     responseData.Arn = physicalResourceId = certificateArn;
   }

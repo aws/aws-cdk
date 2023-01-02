@@ -16,6 +16,99 @@
               "version": "0.0.0"
             }
           },
+          "Role": {
+            "id": "Role",
+            "path": "integ-dns-validated-certificate/Role",
+            "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "integ-dns-validated-certificate/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-dns-validated-certificate/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "delegation",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "route53:ChangeResourceRecordSets",
+                                "route53:ListHostedZonesByName"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":route53:::hostedzone/Z23ABC4XYZL05B"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "route53:GetChange",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "DNSRole"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
           "Certificate": {
             "id": "Certificate",
             "path": "integ-dns-validated-certificate/Certificate",
@@ -92,40 +185,18 @@
                                         "acm:AddTagsToCertificate",
                                         "acm:DeleteCertificate",
                                         "acm:DescribeCertificate",
-                                        "acm:RequestCertificate",
-                                        "route53:GetChange"
+                                        "acm:RequestCertificate"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": "*"
                                     },
                                     {
-                                      "Action": "route53:changeResourceRecordSets",
-                                      "Condition": {
-                                        "ForAllValues:StringEquals": {
-                                          "route53:ChangeResourceRecordSetsRecordTypes": [
-                                            "CNAME"
-                                          ],
-                                          "route53:ChangeResourceRecordSetsActions": [
-                                            "UPSERT"
-                                          ]
-                                        },
-                                        "ForAllValues:StringLike": {
-                                          "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
-                                            "*.example.com"
-                                          ]
-                                        }
-                                      },
+                                      "Action": "sts:AssumeRole",
                                       "Effect": "Allow",
                                       "Resource": {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":route53:::hostedzone/Z23ABC4XYZL05B"
-                                          ]
+                                        "Fn::GetAtt": [
+                                          "Role1ABCC5F0",
+                                          "Arn"
                                         ]
                                       }
                                     }

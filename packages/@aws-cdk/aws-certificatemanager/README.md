@@ -81,6 +81,64 @@ const cert = new acm.Certificate(this, 'Certificate', {
 });
 ```
 
+If the Route 53 Hosted Zone is in a separate AWS account you can pass a role to assume to create the validation records
+
+```ts
+const exampleCom = route53.HostedZone.fromHostedZoneAttributes(this, 'ExampleCom', {
+  hostedZoneId: 'Z00123456789',
+  zoneName: 'example.com',
+});
+
+const roleArn = Stack.of(this).formatArn({
+  region: '',
+  service: 'iam',
+  account: '123456789', // Role of account with zone
+  resource: 'role',
+  resourceName: 'DnsRole', // Role that is able to make changes
+});
+const role = iam.Role.fromRoleArn(this, 'Role', roleArn);
+
+const cert = new acm.DnsValidatedCertificate(this, 'Certificate', {
+  domainName: 'example.com',
+  hostedZone: zone,
+  dnsRole: role,
+});
+```
+
+The role in the account with the hosted zone needs to look like
+
+```ts
+ const role = new iam.Role(this, 'Role', {
+   roleName: 'DnsRole',
+   assumedBy: new iam.AccountPrincipal('11111111'),
+   inlinePolicies: {
+     delegation: new iam.PolicyDocument({
+       statements: [
+         new iam.PolicyStatement({
+           actions: ['route53:ChangeResourceRecordSets'],
+           resources: [zone.hostedZoneArn],
+           conditions: {
+             'ForAllValues:StringEquals': {
+               'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+               'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+               'route53:ChangeResourceRecordSetsNormalizedRecordNames': ['example.com'],
+             },
+           },
+         }),
+         new iam.PolicyStatement({
+           actions: ['route53:ListHostedZonesByName'],
+           resources: ['*'],
+         }),
+         new iam.PolicyStatement({
+           actions: ['route53:GetChange'],
+           resources: ['*'],
+         }),
+       ]
+     }),
+   }
+});
+```
+
 ## Email validation
 
 Email-validated certificates (the default) are validated by receiving an
