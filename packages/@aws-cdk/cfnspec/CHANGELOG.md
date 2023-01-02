@@ -2,6 +2,12 @@
 
 ## New Resource Types
 
+* AWS::DeviceFarm::DevicePool
+* AWS::DeviceFarm::InstanceProfile
+* AWS::DeviceFarm::NetworkProfile
+* AWS::DeviceFarm::Project
+* AWS::DeviceFarm::TestGridProject
+* AWS::DeviceFarm::VPCEConfiguration
 
 ## Attribute Changes
 
