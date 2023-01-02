@@ -307,13 +307,28 @@ describe('resource', () => {
     }
 
     const stack = new Stack();
-    const child: IResource = new Child(stack, 'Child');
 
-    child.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    const childRetain: IResource = new Child(stack, 'ChildRetain');
+    childRetain.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+    const childDelete: IResource = new Child(stack, 'ChildDelete');
+    childDelete.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+    const childWithOptions: IResource = new Child(stack, 'ChildOpt');
+    childWithOptions.applyRemovalPolicy(RemovalPolicy.DESTROY, { applyToUpdateReplacePolicy: false });
 
     expect(toCloudFormation(stack)).toEqual({
       Resources: {
-        ChildDAB30558: {
+        ChildDelete65DE9CDA: {
+          DeletionPolicy: 'Delete',
+          Type: 'ChildResourceType',
+          UpdateReplacePolicy: 'Delete',
+        },
+        ChildOptE6EDECD8: {
+          DeletionPolicy: 'Delete',
+          Type: 'ChildResourceType',
+        },
+        ChildRetainE07018D7: {
           DeletionPolicy: 'Retain',
           Type: 'ChildResourceType',
           UpdateReplacePolicy: 'Retain',
