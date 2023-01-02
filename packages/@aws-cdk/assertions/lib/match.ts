@@ -1,5 +1,7 @@
 import { Matcher, MatchResult } from './matcher';
 import { AbsentMatch } from './private/matchers/absent';
+import { sortKeyComparator } from './private/sorting';
+import { SparseMatrix } from './private/sparse-matrix';
 import { getType } from './private/type';
 
 /**
@@ -196,18 +198,53 @@ class ArrayMatch extends Matcher {
         message: `Expected type array but received ${getType(actual)}`,
       });
     }
-    if (!this.subsequence && this.pattern.length !== actual.length) {
-      return new MatchResult(actual).recordFailure({
+
+    return this.subsequence ? this.testSubsequence(actual) : this.testFullArray(actual);
+  }
+
+  private testFullArray(actual: Array<any>): MatchResult {
+    const result = new MatchResult(actual);
+
+    let i = 0;
+    for (; i < this.pattern.length && i < actual.length; i++) {
+      const patternElement = this.pattern[i];
+      const matcher = Matcher.isMatcher(patternElement)
+        ? patternElement
+        : new LiteralMatch(this.name, patternElement, { partialObjects: this.partialObjects });
+
+      const innerResult = matcher.test(actual[i]);
+      result.compose(`${i}`, innerResult);
+    }
+
+    if (i < this.pattern.length) {
+      result.recordFailure({
         matcher: this,
-        path: [],
-        message: `Expected array of length ${this.pattern.length} but received ${actual.length}`,
+        message: `Not enough elements in array (expecting ${this.pattern.length}, got ${actual.length})`,
+        path: [`${i}`],
+      });
+    }
+    if (i < actual.length) {
+      result.recordFailure({
+        matcher: this,
+        message: `Too many elements in array (expecting ${this.pattern.length}, got ${actual.length})`,
+        path: [`${i}`],
       });
     }
 
+    return result;
+  }
+
+  private testSubsequence(actual: Array<any>): MatchResult {
+    const result = new MatchResult(actual);
+
+    // For subsequences, there is a lot of testing and backtracking that happens
+    // here, keep track of it all so we can report in a sensible amount of
+    // detail on what we did if the match happens to fail.
+
     let patternIdx = 0;
     let actualIdx = 0;
+    const matches = new SparseMatrix<MatchResult>();
 
-    const result = new MatchResult(actual);
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
 
@@ -216,30 +253,59 @@ class ArrayMatch extends Matcher {
         : new LiteralMatch(this.name, patternElement, { partialObjects: this.partialObjects });
 
       const matcherName = matcher.name;
-      if (this.subsequence && (matcherName == 'absent' || matcherName == 'anyValue')) {
+      if (matcherName == 'absent' || matcherName == 'anyValue') {
         // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
         throw new Error(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
       }
 
       const innerResult = matcher.test(actual[actualIdx]);
+      matches.set(patternIdx, actualIdx, innerResult);
 
-      if (!this.subsequence || !innerResult.hasFailed()) {
-        result.compose(`[${actualIdx}]`, innerResult);
+      actualIdx++;
+      if (innerResult.isSuccess) {
+        result.compose(`${actualIdx}`, innerResult); // Record any captures
         patternIdx++;
-        actualIdx++;
-      } else {
-        actualIdx++;
       }
     }
 
-    for (; patternIdx < this.pattern.length; patternIdx++) {
-      const pattern = this.pattern[patternIdx];
-      const element = (Matcher.isMatcher(pattern) || typeof pattern === 'object') ? ' ' : ` [${pattern}] `;
-      result.recordFailure({
-        matcher: this,
-        path: [],
-        message: `Missing element${element}at pattern index ${patternIdx}`,
-      });
+    // If we haven't matched all patterns:
+    // - Report on each one that did match on where it matched (perhaps it was wrong)
+    // - Report the closest match for the failing one
+    if (patternIdx < this.pattern.length) {
+      // Succeeded Pattern Index
+      for (let spi = 0; spi < patternIdx; spi++) {
+        const foundMatch = matches.row(spi).find(([, r]) => r.isSuccess);
+        if (!foundMatch) { continue; } // Should never fail but let's be defensive
+
+        const [index] = foundMatch;
+
+        result.compose(`${index}`, new MatchResult(actual[index]).recordFailure({
+          matcher: this,
+          message: `arrayWith pattern ${spi} matched here`,
+          path: [],
+          cost: 0, // This is an informational message so it would be unfair to assign it cost
+        }));
+      }
+
+      const failedMatches = matches.row(patternIdx);
+      failedMatches.sort(sortKeyComparator(([i, r]) => [r.failCost, i]));
+      if (failedMatches.length > 0) {
+        const [index, innerResult] = failedMatches[0];
+        result.recordFailure({
+          matcher: this,
+          message: `Could not match arrayWith pattern ${patternIdx}. This is the closest match`,
+          path: [`${index}`],
+          cost: 0, //  Informational message
+        });
+        result.compose(`${index}`, innerResult);
+      } else {
+        // The previous matcher matched at the end of the pattern and we didn't even get to try anything
+        result.recordFailure({
+          matcher: this,
+          message: `Could not match arrayWith pattern ${patternIdx}. No more elements to try`,
+          path: [`${actual.length}`],
+        });
+      }
     }
 
     return result;
@@ -288,8 +354,8 @@ class ObjectMatch extends Matcher {
         if (!(a in this.pattern)) {
           result.recordFailure({
             matcher: this,
-            path: [`/${a}`],
-            message: 'Unexpected key',
+            path: [a],
+            message: `Unexpected key ${a}`,
           });
         }
       }
@@ -299,8 +365,8 @@ class ObjectMatch extends Matcher {
       if (!(patternKey in actual) && !(patternVal instanceof AbsentMatch)) {
         result.recordFailure({
           matcher: this,
-          path: [`/${patternKey}`],
-          message: `Missing key '${patternKey}' among {${Object.keys(actual).join(',')}}`,
+          path: [patternKey],
+          message: `Missing key '${patternKey}'`,
         });
         continue;
       }
@@ -308,7 +374,7 @@ class ObjectMatch extends Matcher {
         patternVal :
         new LiteralMatch(this.name, patternVal, { partialObjects: this.partial });
       const inner = matcher.test(actual[patternKey]);
-      result.compose(`/${patternKey}`, inner);
+      result.compose(patternKey, inner);
     }
 
     return result;
@@ -324,26 +390,23 @@ class SerializedJson extends Matcher {
   };
 
   public test(actual: any): MatchResult {
-    const result = new MatchResult(actual);
     if (getType(actual) !== 'string') {
-      result.recordFailure({
+      return new MatchResult(actual).recordFailure({
         matcher: this,
         path: [],
         message: `Expected JSON as a string but found ${getType(actual)}`,
       });
-      return result;
     }
     let parsed;
     try {
       parsed = JSON.parse(actual);
     } catch (err) {
       if (err instanceof SyntaxError) {
-        result.recordFailure({
+        return new MatchResult(actual).recordFailure({
           matcher: this,
           path: [],
           message: `Invalid JSON string: ${actual}`,
         });
-        return result;
       } else {
         throw err;
       }
@@ -351,8 +414,14 @@ class SerializedJson extends Matcher {
 
     const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);
-    result.compose(`(${this.name})`, innerResult);
-    return result;
+    if (innerResult.hasFailed()) {
+      innerResult.recordFailure({
+        matcher: this,
+        path: [],
+        message: 'Encoded JSON value does not match',
+      });
+    }
+    return innerResult;
   }
 }
 
