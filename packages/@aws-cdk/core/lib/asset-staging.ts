@@ -479,17 +479,17 @@ export class AssetStaging extends Construct {
           `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
         ]);
         // copy files over
-        dockerExec(['cp', `${this.sourcePath}/`, `${copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}/`]);
+        dockerExec(['cp', `${this.sourcePath}/.`, `${copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`]);
         // but docker cp does not behave like normal cp, so we need to move them again
-        dockerExec([
-          'run',
-          '--rm',
-          '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-          'ubuntu',
-          'bash',
-          '-c',
-          `tmpfolder=$(ls -d ${AssetStaging.BUNDLING_INPUT_DIR}/\*) mv $tmpfolder/\* ${AssetStaging.BUNDLING_INPUT_DIR}/ && rmdir $tmpfolder`,
-        ]);
+        // dockerExec([
+        //   'run',
+        //   '--rm',
+        //   '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+        //   'ubuntu',
+        //   'bash',
+        //   '-c',
+        //   `tmpfolder=$(ls -d ${AssetStaging.BUNDLING_INPUT_DIR}/\*) mv $tmpfolder/\* ${AssetStaging.BUNDLING_INPUT_DIR}/ && rmdir $tmpfolder`,
+        // ]);
         // this seems not work always
 
 
