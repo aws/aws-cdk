@@ -502,7 +502,7 @@ export class AssetStaging extends Construct {
           securityOpt: options.securityOpt ?? '',
           volumesFrom: [copyContainerName, ...options.volumesFrom ?? []],
         });
-        dockerExec(['cp', `${copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`, bundleDir]);
+        dockerExec(['cp', `${copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, bundleDir]);
         dockerExec(['rm', copyContainerName]);
         dockerExec(['volume', 'rm', inputVolumeName]);
         dockerExec(['volume', 'rm', outputVolumeName]);
