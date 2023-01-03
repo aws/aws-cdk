@@ -383,6 +383,7 @@ export class DockerImage extends BundlingDockerImage {
     reset(deprecated);
     return result;
   }
+
 }
 
 /**
@@ -536,7 +537,7 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function dockerExec(args: string[], options?: SpawnSyncOptions) {
+export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
   const proc = spawnSync(prog, args, options ?? {
     stdio: [ // show Docker output
