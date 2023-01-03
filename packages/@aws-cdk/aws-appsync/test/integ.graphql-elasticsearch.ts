@@ -22,12 +22,12 @@ const domain = new es.Domain(stack, 'Domain', {
 
 const api = new appsync.GraphqlApi(stack, 'api', {
   name: 'api',
-  schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
 });
 
 const ds = api.addElasticsearchDataSource('ds', domain);
 
-ds.createResolver({
+ds.createResolver('QueryGetTests', {
   typeName: 'Query',
   fieldName: 'getTests',
   requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({

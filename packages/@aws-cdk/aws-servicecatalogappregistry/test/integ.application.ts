@@ -6,12 +6,12 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
 
 const application = new appreg.Application(stack, 'TestApplication', {
-  applicationName: 'myApplicationtest',
+  applicationName: 'myApplication',
   description: 'my application description',
 });
 
 const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
-  attributeGroupName: 'myAttributeGroupTest',
+  attributeGroupName: 'myAttributeGroup',
   description: 'my attribute group description',
   attributes: {
     stage: 'alpha',

@@ -100,6 +100,7 @@ class CreateTargetApplication extends TargetApplication {
       applicationName: this.applicationOptions.applicationName,
       description: this.applicationOptions.applicationDescription || 'Application containing stacks deployed via CDK.',
     });
+    cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
 
     return {
       application: appRegApplication,

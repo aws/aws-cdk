@@ -1,6 +1,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { HostedZone, PrivateHostedZone, PublicHostedZone } from '../lib';
 
@@ -59,7 +60,7 @@ describe('hosted zone', () => {
     });
   });
 
-  test('with crossAccountZoneDelegationPrincipal', () => {
+  testDeprecated('with crossAccountZoneDelegationPrincipal', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -154,7 +155,7 @@ describe('hosted zone', () => {
     });
   });
 
-  test('with crossAccountZoneDelegationPrincipal, throws if name provided without principal', () => {
+  testDeprecated('with crossAccountZoneDelegationPrincipal, throws if name provided without principal', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -227,5 +228,62 @@ describe('Vpc', () => {
       ],
       Name: Match.anyValue(),
     });
+  });
+});
+
+test('grantDelegation', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', {
+    env: { account: '123456789012', region: 'us-east-1' },
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountPrincipal('22222222222222'),
+  });
+
+  const zone = new PublicHostedZone(stack, 'Zone', {
+    zoneName: 'banana.com',
+  });
+
+  // WHEN
+  zone.grantDelegation(role);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'route53:ChangeResourceRecordSets',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':route53:::hostedzone/',
+                {
+                  Ref: 'ZoneA5DE4B68',
+                },
+              ],
+            ],
+          },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+          },
+        },
+        {
+          Action: 'route53:ListHostedZonesByName',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
   });
 });
