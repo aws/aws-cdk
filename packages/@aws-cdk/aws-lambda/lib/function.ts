@@ -728,6 +728,7 @@ export class Function extends FunctionBase {
           resource: 'profilingGroup',
           resourceName: props.profilingGroup.profilingGroupName,
         }),
+        AWS_CODEGURU_PROFILER_GROUP_NAME: props.profilingGroup.profilingGroupName,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
@@ -738,6 +739,7 @@ export class Function extends FunctionBase {
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
+        AWS_CODEGURU_PROFILER_GROUP_NAME: profilingGroup.profilingGroupName,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     }
