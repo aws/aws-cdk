@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetStaging, BundlingOptions as CdkBundlingOptions, DockerImage } from '@aws-cdk/core';
+import { AssetStaging, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from '@aws-cdk/core';
 import { Packaging, DependenciesFile } from './packaging';
 import { BundlingOptions, ICommandHooks } from './types';
 
@@ -57,8 +57,15 @@ export class Bundling implements CdkBundlingOptions {
   }
 
   public readonly image: DockerImage;
+  public readonly entrypoint?: string[]
   public readonly command: string[];
+  public readonly volumes?: DockerVolume[];
+  public readonly volumesFrom?: string[];
   public readonly environment?: { [key: string]: string };
+  public readonly workingDirectory?: string;
+  public readonly user?: string;
+  public readonly securityOpt?: string;
+  public readonly network?: string;
 
   constructor(props: BundlingProps) {
     const {
@@ -88,8 +95,15 @@ export class Bundling implements CdkBundlingOptions {
       },
       platform: architecture.dockerPlatform,
     });
-    this.command = ['bash', '-c', chain(bundlingCommands)];
+    this.command = props.command ?? ['bash', '-c', chain(bundlingCommands)];
+    this.entrypoint = props.entrypoint;
+    this.volumes = props.volumes;
+    this.volumesFrom = props.volumesFrom;
     this.environment = props.environment;
+    this.workingDirectory = props.workingDirectory;
+    this.user = props.user;
+    this.securityOpt = props.securityOpt;
+    this.network = props.network;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {

@@ -431,6 +431,18 @@ new cognito.UserPool(this, 'myuserpool', {
 });
 ```
 
+If `fromName` does not comply RFC 5322 atom or quoted-string, it will be quoted or mime-encoded.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'myname@mycompany.com',
+  }),
+});
+// => From: "myname@mycompany.com" <noreply@myawesomeapp.com>
+```
+
 ### Device Tracking
 
 User pools can be configured to track devices that users have logged in to.
@@ -557,6 +569,21 @@ const userpool = new cognito.UserPool(this, 'Pool');
 const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
   clientId: 'amzn-client-id',
   clientSecret: 'amzn-client-secret',
+  userPool: userpool,
+});
+```
+
+Using Google identity provider is possible to use clientSecretValue with SecretValue from secrets manager.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+const secret = secretsManager.Secret.fromSecretAttributes(this, "CognitoClientSecret", {
+    secretCompleteArn: "arn:aws:secretsmanager:xxx:xxx:secret:xxx-xxx"
+}).secretValue
+
+const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
+  clientId: 'amzn-client-id',
+  clientSecretValue: secret,
   userPool: userpool,
 });
 ```
@@ -706,6 +733,17 @@ const client = pool.addClient('app-client', {
 });
 
 client.node.addDependency(provider);
+```
+
+The property `authSessionValidity` is the session token for each API request in the authentication flow.
+Valid duration is from 3 to 15 minutes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  authSessionValidity: Duration.minutes(15),
+});
 ```
 
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
