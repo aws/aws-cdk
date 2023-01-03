@@ -32,41 +32,40 @@ describe('queuedMatchmakingConfiguration', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::MatchmakingConfiguration', {
-        Properties:
+        Properties: {
+          Name: 'test-config-name',
+          NotificationTarget: { Ref: 'MyQueuedMatchmakingConfigurationTopicBAC3E679' },
+          FlexMatchMode: 'WITH_QUEUE',
+          BackfillMode: 'AUTOMATIC',
+          AcceptanceRequired: false,
+          RequestTimeoutSeconds: 300,
+          RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
+          GameSessionQueueArns: [
             {
-              Name: 'test-config-name',
-              NotificationTarget: { Ref: 'MyQueuedMatchmakingConfigurationTopicBAC3E679' },
-              FlexMatchMode: 'WITH_QUEUE',
-              BackfillMode: 'AUTOMATIC',
-              AcceptanceRequired: false,
-              RequestTimeoutSeconds: 300,
-              RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
-              GameSessionQueueArns: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':gamelift:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':gamesessionqueue/',
-                      {
-                        Ref: 'MyGameSessionQueue1A15CE31',
-                      },
-                    ],
-                  ],
-                },
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':gamelift:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':gamesessionqueue/',
+                  {
+                    Ref: 'MyGameSessionQueue1A15CE31',
+                  },
+                ],
               ],
             },
+          ],
+        },
       });
     });
 
@@ -85,64 +84,63 @@ describe('queuedMatchmakingConfiguration', () => {
       matchmakingConfiguration.addGameSessionQueue(gameSessionQueue2);
 
       Template.fromStack(stack).hasResource('AWS::GameLift::MatchmakingConfiguration', {
-        Properties:
-              {
-                Name: 'test-config-name',
-                NotificationTarget: { Ref: 'MyQueuedMatchmakingConfigurationTopicBAC3E679' },
-                FlexMatchMode: 'WITH_QUEUE',
-                BackfillMode: 'AUTOMATIC',
-                AcceptanceRequired: false,
-                RequestTimeoutSeconds: 300,
-                RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
-                GameSessionQueueArns: [
+        Properties: {
+          Name: 'test-config-name',
+          NotificationTarget: { Ref: 'MyQueuedMatchmakingConfigurationTopicBAC3E679' },
+          FlexMatchMode: 'WITH_QUEUE',
+          BackfillMode: 'AUTOMATIC',
+          AcceptanceRequired: false,
+          RequestTimeoutSeconds: 300,
+          RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
+          GameSessionQueueArns: [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
                   {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':gamelift:',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          Ref: 'AWS::AccountId',
-                        },
-                        ':gamesessionqueue/',
-                        {
-                          Ref: 'MyGameSessionQueue1A15CE31',
-                        },
-                      ],
-                    ],
+                    Ref: 'AWS::Partition',
                   },
+                  ':gamelift:',
                   {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':gamelift:',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          Ref: 'AWS::AccountId',
-                        },
-                        ':gamesessionqueue/',
-                        {
-                          Ref: 'MyGameSessionQueue2EED85BF6',
-                        },
-                      ],
-                    ],
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':gamesessionqueue/',
+                  {
+                    Ref: 'MyGameSessionQueue1A15CE31',
                   },
                 ],
-              },
+              ],
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':gamelift:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':gamesessionqueue/',
+                  {
+                    Ref: 'MyGameSessionQueue2EED85BF6',
+                  },
+                ],
+              ],
+            },
+          ],
+        },
       });
     });
 
@@ -166,51 +164,50 @@ describe('queuedMatchmakingConfiguration', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::MatchmakingConfiguration', {
-        Properties:
+        Properties: {
+          Name: 'test-queuedMatchmakingConfiguration',
+          NotificationTarget: { Ref: 'MyQueuedMatchmakingConfigurationTopicBAC3E679' },
+          FlexMatchMode: 'WITH_QUEUE',
+          BackfillMode: 'MANUAL',
+          AcceptanceRequired: true,
+          RequestTimeoutSeconds: 30,
+          RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
+          AcceptanceTimeoutSeconds: 30,
+          AdditionalPlayerCount: 3,
+          GameSessionData: 'test-session-data',
+          Description: 'test description',
+          GameProperties: [
             {
-              Name: 'test-queuedMatchmakingConfiguration',
-              NotificationTarget: { Ref: 'MyQueuedMatchmakingConfigurationTopicBAC3E679' },
-              FlexMatchMode: 'WITH_QUEUE',
-              BackfillMode: 'MANUAL',
-              AcceptanceRequired: true,
-              RequestTimeoutSeconds: 30,
-              RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
-              AcceptanceTimeoutSeconds: 30,
-              AdditionalPlayerCount: 3,
-              GameSessionData: 'test-session-data',
-              Description: 'test description',
-              GameProperties: [
-                {
-                  Key: 'test-key',
-                  Value: 'test-value',
-                },
-              ],
-              GameSessionQueueArns: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':gamelift:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':gamesessionqueue/',
-                      {
-                        Ref: 'MyGameSessionQueue1A15CE31',
-                      },
-                    ],
-                  ],
-                },
+              Key: 'test-key',
+              Value: 'test-value',
+            },
+          ],
+          GameSessionQueueArns: [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':gamelift:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':gamesessionqueue/',
+                  {
+                    Ref: 'MyGameSessionQueue1A15CE31',
+                  },
+                ],
               ],
             },
+          ],
+        },
       });
     });
 
