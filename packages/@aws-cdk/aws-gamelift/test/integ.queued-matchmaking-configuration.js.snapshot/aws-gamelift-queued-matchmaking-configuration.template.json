@@ -1,0 +1,331 @@
+{
+ "Resources": {
+  "QueuedMatchmakingConfiguration84BDFE18": {
+   "Type": "AWS::GameLift::MatchmakingRuleSet",
+   "Properties": {
+    "Name": "my-test-ruleset",
+    "RuleSetBody": "{\"name\":\"three_team_game\",\"ruleLanguageVersion\":\"1.0\",\"playerAttributes\":[{\"name\":\"skill\",\"type\":\"number\",\"default\":10},{\"name\":\"character\",\"type\":\"string_list\",\"default\":[\"peasant\"]}],\"teams\":[{\"name\":\"trio\",\"minPlayers\":3,\"maxPlayers\":5,\"quantity\":3}],\"rules\":[{\"name\":\"FairTeamSkill\",\"description\":\"The average skill of players in each team is within 10 points from the average skill of players in the match\",\"type\":\"distance\",\"measurements\":[\"avg(teams[*].players.attributes[skill])\"],\"referenceValue\":\"avg(flatten(teams[*].players.attributes[skill]))\",\"maxDistance\":10},{\"name\":\"CloseTeamSizes\",\"description\":\"Only launch a game when the team sizes are within 1 of each other.  e.g. 3 v 3 v 4 is okay, but not 3 v 5 v 5\",\"type\":\"distance\",\"measurements\":[\"max(count(teams[*].players))\"],\"referenceValue\":\"min(count(teams[*].players))\",\"maxDistance\":1},{\"name\":\"OverallMedicLimit\",\"description\":\"Don't allow more than 5 medics in the game\",\"type\":\"collection\",\"measurements\":[\"flatten(teams[*].players.attributes[character])\"],\"operation\":\"contains\",\"referenceValue\":\"medic\",\"maxCount\":5},{\"name\":\"FastConnection\",\"description\":\"Prefer matches with fast player connections first\",\"type\":\"latency\",\"maxLatency\":50}],\"expansions\":[{\"target\":\"rules[FastConnection].maxLatency\",\"steps\":[{\"waitTimeSeconds\":10,\"value\":100},{\"waitTimeSeconds\":20,\"value\":150}]}]}"
+   }
+  },
+  "BuildServiceRole1F57E904": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "gamelift.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BuildServiceRoleDefaultPolicyCB7101C6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "/b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BuildServiceRoleDefaultPolicyCB7101C6",
+    "Roles": [
+     {
+      "Ref": "BuildServiceRole1F57E904"
+     }
+    ]
+   }
+  },
+  "Build45A36621": {
+   "Type": "AWS::GameLift::Build",
+   "Properties": {
+    "OperatingSystem": "AMAZON_LINUX_2",
+    "StorageLocation": {
+     "Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "Key": "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "BuildServiceRole1F57E904",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "BuildServiceRoleDefaultPolicyCB7101C6",
+    "BuildServiceRole1F57E904"
+   ]
+  },
+  "BuildFleetServiceRole32D49FB4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "ec2.amazonaws.com",
+         "gamelift.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BuildFleet027ED403": {
+   "Type": "AWS::GameLift::Fleet",
+   "Properties": {
+    "BuildId": {
+     "Ref": "Build45A36621"
+    },
+    "CertificateConfiguration": {
+     "CertificateType": "DISABLED"
+    },
+    "EC2InboundPermissions": [
+     {
+      "FromPort": 1935,
+      "IpRange": "0.0.0.0/0",
+      "Protocol": "TCP",
+      "ToPort": 1935
+     }
+    ],
+    "EC2InstanceType": "c5.large",
+    "FleetType": "ON_DEMAND",
+    "InstanceRoleARN": {
+     "Fn::GetAtt": [
+      "BuildFleetServiceRole32D49FB4",
+      "Arn"
+     ]
+    },
+    "MaxSize": 1,
+    "MinSize": 0,
+    "Name": "test-fleet",
+    "NewGameSessionProtectionPolicy": "NoProtection",
+    "RuntimeConfiguration": {
+     "GameSessionActivationTimeoutSeconds": 300,
+     "MaxConcurrentGameSessionActivations": 1,
+     "ServerProcesses": [
+      {
+       "ConcurrentExecutions": 1,
+       "LaunchPath": "/local/game/TestApplicationServer",
+       "Parameters": "port:1935 gameSessionLengthSeconds:20"
+      }
+     ]
+    }
+   }
+  },
+  "MyGameSessionQueue1A15CE31": {
+   "Type": "AWS::GameLift::GameSessionQueue",
+   "Properties": {
+    "Name": "test-gameSessionQueue",
+    "Destinations": [
+     {
+      "DestinationArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":gamelift:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":fleet/",
+         {
+          "Ref": "BuildFleet027ED403"
+         }
+        ]
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "MyQueuedMatchmakingConfigurationTopicBAC3E679": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "MyQueuedMatchmakingConfigurationTopicPolicy17A129EA": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "gamelift.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+     }
+    ]
+   }
+  },
+  "MyQueuedMatchmakingConfiguration94A9FD4E": {
+   "Type": "AWS::GameLift::MatchmakingConfiguration",
+   "Properties": {
+    "AcceptanceRequired": true,
+    "Name": "test-config-name",
+    "RequestTimeoutSeconds": 30,
+    "RuleSetName": {
+     "Ref": "QueuedMatchmakingConfiguration84BDFE18"
+    },
+    "AcceptanceTimeoutSeconds": 30,
+    "AdditionalPlayerCount": 3,
+    "BackfillMode": "MANUAL",
+    "CustomEventData": "event-data",
+    "Description": "test description",
+    "FlexMatchMode": "WITH_QUEUE",
+    "GameProperties": [
+     {
+      "Key": "test-key",
+      "Value": "test-value"
+     }
+    ],
+    "GameSessionData": "test-session-data",
+    "GameSessionQueueArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":gamelift:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":gamesessionqueue/",
+        {
+         "Ref": "MyGameSessionQueue1A15CE31"
+        }
+       ]
+      ]
+     }
+    ],
+    "NotificationTarget": {
+     "Ref": "MyQueuedMatchmakingConfigurationTopicBAC3E679"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "MatchmakingConfigurationArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:",
+      {
+       "Ref": "AWS::Partition"
+      },
+      ":gamelift:",
+      {
+       "Ref": "AWS::Region"
+      },
+      ":",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":matchmakingconfiguration/",
+      {
+       "Ref": "MyQueuedMatchmakingConfiguration94A9FD4E"
+      }
+     ]
+    ]
+   }
+  },
+  "MatchmakingConfigurationName": {
+   "Value": {
+    "Ref": "MyQueuedMatchmakingConfiguration94A9FD4E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as gamelift from '../lib';
 
@@ -46,6 +47,64 @@ describe('MatchmakingRuleSet', () => {
         matchmakingRuleSetName: incorrectName,
         content: gamelift.RuleSetContent.fromInline(ruleSetBody),
       })).toThrow(/RuleSet name test with space can contain only letters, numbers, hyphens, back slash or dot with no spaces./);
+    });
+  });
+
+  describe('metric methods provide a Metric with configured and attached properties', () => {
+    let stack: cdk.Stack;
+    const ruleSetBody = JSON.stringify('{}');
+    let ruleSet: gamelift.MatchmakingRuleSet;
+
+    beforeEach(() => {
+      stack = new cdk.Stack(undefined, undefined, { env: { account: '000000000000', region: 'us-west-1' } });
+      ruleSet = new gamelift.MatchmakingRuleSet(stack, 'MyMatchmakingRuleSet', {
+        matchmakingRuleSetName: 'test-ruleSet',
+        content: gamelift.RuleSetContent.fromInline(ruleSetBody),
+      });
+    });
+
+    test('metric', () => {
+      const metric = ruleSet.metric('RuleEvaluationsPassed');
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/GameLift',
+        metricName: 'RuleEvaluationsPassed',
+        dimensions: {
+          MatchmakingRuleSetName: ruleSet.matchmakingRuleSetName,
+        },
+      });
+    });
+
+    test('RuleEvaluationsPassed', () => {
+      const metric = ruleSet.metricRuleEvaluationsPassed();
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/GameLift',
+        metricName: 'RuleEvaluationsPassed',
+        statistic: cloudwatch.Stats.AVERAGE,
+        dimensions: {
+          MatchmakingRuleSetName: ruleSet.matchmakingRuleSetName,
+        },
+      });
+    });
+
+    test('RuleEvaluationsFailed', () => {
+      const metric = ruleSet.metricRuleEvaluationsFailed();
+
+      expect(metric).toMatchObject({
+        account: stack.account,
+        region: stack.region,
+        namespace: 'AWS/GameLift',
+        metricName: 'RuleEvaluationsFailed',
+        statistic: cloudwatch.Stats.AVERAGE,
+        dimensions: {
+          MatchmakingRuleSetName: ruleSet.matchmakingRuleSetName,
+        },
+      });
     });
   });
 
