@@ -24,9 +24,9 @@ import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
-import { enableTracing } from './util/tracing';
-import { checkForPlatformWarnings } from './platform-warnings';
 import { HotswapMode } from './api/hotswap/common';
+import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -505,8 +505,11 @@ async function initCommandLine() {
           throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
         }
 
-        let hotswapMode: HotswapMode | boolean = false;
-        hotswapMode = args.hotswapOnly ? HotswapMode.HOTSWAP_ONLY : HotswapMode.CLASSIC;
+        let hotswapMode: HotswapMode | undefined = undefined;
+        // XOR
+        if ((args.hotswap && !args.hotswapOnly) || (!args.hotswap && args.hotswapOnly)) {
+          hotswapMode = args.hotswap ?? args.hotswapOnly;
+        }
 
         let deploymentMethod: DeploymentMethod | undefined;
         switch (args.method) {

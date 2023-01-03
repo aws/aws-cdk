@@ -122,7 +122,6 @@ export async function isHotswappableLambdaFunctionChange(
             if (aliasesNames.length > 0) {
               // we need to wait for the Version to finish publishing
               const versionUpdate = await publishVersionPromise;
-
               for (const alias of aliasesNames) {
                 operations.push(lambda.updateAlias({
                   FunctionName: functionName,

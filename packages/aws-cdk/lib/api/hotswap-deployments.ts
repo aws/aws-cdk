@@ -286,7 +286,7 @@ function isCandidateForHotswapping(
       resourceType: change.newValue!.Type,
       logicalId,
       rejectedChanges: [],
-      reason: `resource ${logicalId} was created`,
+      reason: `resource ${logicalId} was created by this deployment`,
     };
   } else if (!change.newValue) {
     return {
@@ -294,7 +294,7 @@ function isCandidateForHotswapping(
       resourceType: change.oldValue!.Type,
       logicalId,
       rejectedChanges: [],
-      reason: `resource '${logicalId}' was destroyed`,
+      reason: `resource '${logicalId}' was destroyed by this deployment`,
     };
   }
 
@@ -329,7 +329,9 @@ function isCandidateForHotswapping(
 }
 
 async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: HotswappableChange[]): Promise<void[]> {
-  print(`\n${ICON} hotswapping resources:`);
+  if (hotswappableChanges.length > 0) {
+    print(`\n${ICON} hotswapping resources:`);
+  }
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
     return applyHotswappableChange(sdk, hotswapOperation);
   }));
@@ -340,17 +342,19 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
   const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
   sdk.appendCustomUserAgent(customUserAgent);
 
-  try {
-    for (const name of hotswapOperation.resourceNames) {
-      print(`   ${ICON} %s`, chalk.bold(name));
-    }
-    await hotswapOperation.apply(sdk);
-  } finally {
-    for (const name of hotswapOperation.resourceNames) {
-      print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
-    }
-    sdk.removeCustomUserAgent(customUserAgent);
+  for (const name of hotswapOperation.resourceNames) {
+    print(`   ${ICON} %s`, chalk.bold(name));
   }
+
+  // if the SDK call fails, an error will be thrown by the SDK
+  // and will prevent the green 'hotswapped!' text from being incorrectly displayed
+  await hotswapOperation.apply(sdk);
+
+  for (const name of hotswapOperation.resourceNames) {
+    print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
+  }
+
+  sdk.removeCustomUserAgent(customUserAgent);
 }
 
 function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[]): void {

@@ -131,6 +131,23 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", 
   expect(sdk.appendCustomUserAgent).not.toHaveBeenCalledWith('cdk-hotswap/fallback');
 });
 
+test('correctly passes CFN parameters when hotswapping', async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: HotswapMode.CLASSIC,
+    parameters: {
+      A: 'A-value',
+      B: 'B=value',
+      C: undefined,
+      D: '',
+    },
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.CLASSIC);
+});
+
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
   // WHEN
   await deployStack({
