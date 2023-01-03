@@ -467,6 +467,7 @@ const runTask = new tasks.EcsRunTask(this, 'Run', {
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   cluster,
   taskDefinition,
+  propagateTags: ecs.PropagatedTagSource.SERVICE,
   launchTarget: new tasks.EcsEc2LaunchTarget({
     placementStrategies: [
       ecs.PlacementStrategy.spreadAcrossInstances(),
@@ -519,6 +520,7 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
   cluster,
   taskDefinition,
   assignPublicIp: true,
+  propagateTags: ecs.PropagatedTagSource.SERVICE
   containerOverrides: [{
     containerDefinition,
     environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
