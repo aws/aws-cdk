@@ -39,7 +39,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
-| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | V2NEXT | (fix) |
+| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 
 <!-- END table -->
 
@@ -714,7 +714,7 @@ practices for S3.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.59.0 | `false` | `true` |
 
 
 <!-- END details -->
