@@ -573,6 +573,21 @@ const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
 });
 ```
 
+Using Google identity provider is possible to use clientSecretValue with SecretValue from secrets manager.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+const secret = secretsManager.Secret.fromSecretAttributes(this, "CognitoClientSecret", {
+    secretCompleteArn: "arn:aws:secretsmanager:xxx:xxx:secret:xxx-xxx"
+}).secretValue
+
+const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
+  clientId: 'amzn-client-id',
+  clientSecretValue: secret,
+  userPool: userpool,
+});
+```
+
 Attribute mapping allows mapping attributes provided by the third-party identity providers to [standard and custom
 attributes](#Attributes) of the user pool. Learn more about [Specifying Identity Provider Attribute Mappings for Your
 User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html).
