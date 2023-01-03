@@ -70,7 +70,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    *
    * @default PropagatedTagSource.NONE
    */
-  readonly propagateTags?: PropagatedTagSource;
+  readonly propagateTags?: ecs.PropagatedTagSource;
 }
 
 /**
@@ -144,26 +144,6 @@ export interface EcsEc2LaunchTargetOptions {
    * @default - None
    */
   readonly placementStrategies?: ecs.PlacementStrategy[];
-}
-
-/**
- * Propagate tags from either service or task definition
- */
-export enum PropagatedTagSource {
-  /**
-   * Propagate tags from service
-   */
-  SERVICE = 'SERVICE',
-
-  /**
-   * Propagate tags from task definition
-   */
-  TASK_DEFINITION = 'TASK_DEFINITION',
-
-  /**
-   * Do not propagate
-   */
-  NONE = 'NONE'
 }
 
 /**
