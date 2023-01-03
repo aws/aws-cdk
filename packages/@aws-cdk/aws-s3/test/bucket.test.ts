@@ -337,6 +337,28 @@ describe('bucket', () => {
 
   });
 
+  test('throws error if using KMS-Managed key and server access logging to self', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
+    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+  });
+  test('throws error if using KMS CMK and server access logging to self', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, serverAccessLogsPrefix: 'test' });
+    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+  });
+  test('throws error if enabling server access logging to bucket with SSE-KMS', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey');
+    const targetBucket = new s3.Bucket(stack, 'TargetBucket', { encryptionKey: key } );
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: targetBucket });
+    }).toThrow('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
+  });
+
   test('bucket with versioning turned on', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -2181,6 +2203,71 @@ describe('bucket', () => {
         accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
       }),
     ).toThrow(/Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
+  });
+
+  test('Bucket Allow Log delivery should use the recommended policy when flag enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const bucket = new s3.Bucket(stack, 'TestBucket', { serverAccessLogsPrefix: 'test' });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      AccessControl: Match.absent(),
+    });
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(bucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${bucket.bucketArn}/test*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(bucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': { 'Ref': 'AWS::AccountId' },
+            },
+          },
+        })]),
+      }),
+    });
+  });
+
+  test('Log Delivery bucket policy should properly set source bucket ARN/Account', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const targetBucket = new s3.Bucket(stack, 'TargetBucket');
+    const sourceBucket = new s3.Bucket(stack, 'SourceBucket', { serverAccessLogsBucket: targetBucket });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(targetBucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${targetBucket.bucketArn}/*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(sourceBucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': stack.resolve(sourceBucket.env.account),
+            },
+          },
+        })]),
+      }),
+    });
   });
 
   test('Defaults for an inventory bucket', () => {
