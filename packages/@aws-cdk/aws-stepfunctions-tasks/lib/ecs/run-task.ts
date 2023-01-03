@@ -62,6 +62,15 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html
    */
   readonly launchTarget: IEcsLaunchTarget;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
+   *
+   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION or PropagatedTagSource.NONE
+   *
+   * @default PropagatedTagSource.NONE
+   */
+  readonly propagateTags?: PropagatedTagSource;
 }
 
 /**
@@ -135,6 +144,26 @@ export interface EcsEc2LaunchTargetOptions {
    * @default - None
    */
   readonly placementStrategies?: ecs.PlacementStrategy[];
+}
+
+/**
+ * Propagate tags from either service or task definition
+ */
+export enum PropagatedTagSource {
+  /**
+   * Propagate tags from service
+   */
+  SERVICE = 'SERVICE',
+
+  /**
+   * Propagate tags from task definition
+   */
+  TASK_DEFINITION = 'TASK_DEFINITION',
+
+  /**
+   * Do not propagate
+   */
+  NONE = 'NONE'
 }
 
 /**
