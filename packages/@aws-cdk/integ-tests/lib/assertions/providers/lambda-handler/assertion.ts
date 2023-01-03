@@ -19,10 +19,7 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
         failed: true,
         assertion: JSON.stringify({
           status: 'fail',
-          message: [
-            ...matchResult.toHumanStrings(),
-            JSON.stringify(matchResult.target, undefined, 2),
-          ].join('\n'),
+          message: matchResult.renderMismatch(),
         }),
       };
       if (request.failDeployment) {
