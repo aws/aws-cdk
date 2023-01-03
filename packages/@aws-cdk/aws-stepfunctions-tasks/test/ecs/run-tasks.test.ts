@@ -152,6 +152,7 @@ test('Running a Fargate Task', () => {
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }),
+    propagateTags: tasks.PropagatedTagSource.SERVICE,
   });
 
   new sfn.StateMachine(stack, 'SM', {
@@ -171,6 +172,7 @@ test('Running a Fargate Task', () => {
         },
       },
       PlatformVersion: '1.4.0',
+      PropagateTags: 'SERVICE',
       TaskDefinition: 'TD',
       Overrides: {
         ContainerOverrides: [
