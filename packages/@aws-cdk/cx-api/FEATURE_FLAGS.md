@@ -39,6 +39,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | (fix) |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
+| [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 
 <!-- END table -->
 
@@ -68,7 +69,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
-    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true
+    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true
   }
 }
 ```
@@ -693,6 +695,26 @@ This flag disables use of that exceptions database and always uses the global se
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.51.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy
+
+*Use S3 Bucket Policy instead of ACLs for Server Access Logging* (fix)
+
+Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+rather than using the canned `LogDeliveryWrite` ACL. ACLs do not work when Object Ownership is
+enabled on the bucket.
+
+This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
+practices for S3.
+
+@see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.59.0 | `false` | `true` |
 
 
 <!-- END details -->

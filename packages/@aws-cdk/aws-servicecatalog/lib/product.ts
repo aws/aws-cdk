@@ -1,3 +1,4 @@
+import { IBucket } from '@aws-cdk/aws-s3';
 import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
@@ -24,6 +25,12 @@ export interface IProduct extends IResource {
   readonly productId: string;
 
   /**
+   * The asset buckets of a product created via product stack.
+   * @attribute
+   */
+  readonly assetBuckets: IBucket[];
+
+  /**
    * Associate Tag Options.
    * A TagOption is a key-value pair managed in AWS Service Catalog.
    * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
@@ -34,6 +41,7 @@ export interface IProduct extends IResource {
 abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
+  public abstract readonly assetBuckets: IBucket[];
 
   public associateTagOptions(tagOptions: TagOptions) {
     AssociationManager.associateTagOptions(this, this.productId, tagOptions);
@@ -161,6 +169,7 @@ export abstract class Product extends ProductBase {
     return new class extends ProductBase {
       public readonly productId = productId!;
       public readonly productArn = productArn;
+      public readonly assetBuckets = [];
     }(scope, id);
   }
 }
@@ -171,6 +180,11 @@ export abstract class Product extends ProductBase {
 export class CloudFormationProduct extends Product {
   public readonly productArn: string;
   public readonly productId: string;
+  /**
+   * The asset bucket of a product created via product stack.
+   * @default - Empty - no assets are used in this product
+   */
+  public readonly assetBuckets = new Array<IBucket>();
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
@@ -206,6 +220,9 @@ export class CloudFormationProduct extends Product {
     props: CloudFormationProductProps): CfnCloudFormationProduct.ProvisioningArtifactPropertiesProperty[] {
     return props.productVersions.map(productVersion => {
       const template = productVersion.cloudFormationTemplate.bind(this);
+      if (template.assetBucket) {
+        this.assetBuckets.push(template.assetBucket);
+      }
       InputValidator.validateUrl(this.node.path, 'provisioning template url', template.httpUrl);
       return {
         name: productVersion.productVersionName,
