@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "68082417a916e61a422d31bcdde21bb5a0d8d4bb6d8f51785d3efa184fbc6331": {
+      "source": {
+        "path": "EcsRunStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "68082417a916e61a422d31bcdde21bb5a0d8d4bb6d8f51785d3efa184fbc6331.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

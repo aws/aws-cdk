@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "EcsRunTaskTest/DefaultTest": {
+      "stacks": [
+        "EcsRunStack"
+      ],
+      "assertionStack": "EcsRunTaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsRunTaskTestDefaultTestDeployAssert47A62133"
+    }
+  }
+}
