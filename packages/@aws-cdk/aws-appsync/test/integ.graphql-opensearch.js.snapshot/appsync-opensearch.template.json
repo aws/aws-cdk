@@ -87,7 +87,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "appsync"
+        "Service": "appsync.amazonaws.com"
        }
       }
      ],
@@ -182,7 +182,7 @@
     }
    }
   },
-  "apidsQuerygetTestsResolver5C6FBB59": {
+  "apiQueryGetTests5F79F353": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {

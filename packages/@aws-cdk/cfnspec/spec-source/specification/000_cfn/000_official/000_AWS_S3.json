@@ -1,6 +1,17 @@
 {
-  "$version": "97.0.0",
+  "$version": "105.0.0",
   "PropertyTypes": {
+    "AWS::S3::AccessPoint.PolicyStatus": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-accesspoint-policystatus.html",
+      "Properties": {
+        "IsPublic": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-accesspoint-policystatus.html#cfn-s3-accesspoint-policystatus-ispublic",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::S3::AccessPoint.PublicAccessBlockConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-accesspoint-publicaccessblockconfiguration.html",
       "Properties": {
@@ -1319,6 +1330,17 @@
         }
       }
     },
+    "AWS::S3::MultiRegionAccessPointPolicy.PolicyStatus": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-multiregionaccesspointpolicy-policystatus.html",
+      "Properties": {
+        "IsPublic": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-multiregionaccesspointpolicy-policystatus.html#cfn-s3-multiregionaccesspointpolicy-policystatus-ispublic",
+          "PrimitiveType": "String",
+          "Required": true,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
     "AWS::S3::StorageLens.AccountLevel": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-accountlevel.html",
       "Properties": {
@@ -1328,10 +1350,28 @@
           "Type": "ActivityMetrics",
           "UpdateType": "Mutable"
         },
+        "AdvancedCostOptimizationMetrics": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-accountlevel.html#cfn-s3-storagelens-accountlevel-advancedcostoptimizationmetrics",
+          "Required": false,
+          "Type": "AdvancedCostOptimizationMetrics",
+          "UpdateType": "Mutable"
+        },
+        "AdvancedDataProtectionMetrics": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-accountlevel.html#cfn-s3-storagelens-accountlevel-advanceddataprotectionmetrics",
+          "Required": false,
+          "Type": "AdvancedDataProtectionMetrics",
+          "UpdateType": "Mutable"
+        },
         "BucketLevel": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-accountlevel.html#cfn-s3-storagelens-accountlevel-bucketlevel",
           "Required": true,
           "Type": "BucketLevel",
+          "UpdateType": "Mutable"
+        },
+        "DetailedStatusCodesMetrics": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-accountlevel.html#cfn-s3-storagelens-accountlevel-detailedstatuscodesmetrics",
+          "Required": false,
+          "Type": "DetailedStatusCodesMetrics",
           "UpdateType": "Mutable"
         }
       }
@@ -1341,6 +1381,28 @@
       "Properties": {
         "IsEnabled": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-activitymetrics.html#cfn-s3-storagelens-activitymetrics-isenabled",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::S3::StorageLens.AdvancedCostOptimizationMetrics": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-advancedcostoptimizationmetrics.html",
+      "Properties": {
+        "IsEnabled": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-advancedcostoptimizationmetrics.html#cfn-s3-storagelens-advancedcostoptimizationmetrics-isenabled",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::S3::StorageLens.AdvancedDataProtectionMetrics": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-advanceddataprotectionmetrics.html",
+      "Properties": {
+        "IsEnabled": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-advanceddataprotectionmetrics.html#cfn-s3-storagelens-advanceddataprotectionmetrics-isenabled",
           "PrimitiveType": "Boolean",
           "Required": false,
           "UpdateType": "Mutable"
@@ -1365,6 +1427,24 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-bucketlevel.html#cfn-s3-storagelens-bucketlevel-activitymetrics",
           "Required": false,
           "Type": "ActivityMetrics",
+          "UpdateType": "Mutable"
+        },
+        "AdvancedCostOptimizationMetrics": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-bucketlevel.html#cfn-s3-storagelens-bucketlevel-advancedcostoptimizationmetrics",
+          "Required": false,
+          "Type": "AdvancedCostOptimizationMetrics",
+          "UpdateType": "Mutable"
+        },
+        "AdvancedDataProtectionMetrics": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-bucketlevel.html#cfn-s3-storagelens-bucketlevel-advanceddataprotectionmetrics",
+          "Required": false,
+          "Type": "AdvancedDataProtectionMetrics",
+          "UpdateType": "Mutable"
+        },
+        "DetailedStatusCodesMetrics": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-bucketlevel.html#cfn-s3-storagelens-bucketlevel-detailedstatuscodesmetrics",
+          "Required": false,
+          "Type": "DetailedStatusCodesMetrics",
           "UpdateType": "Mutable"
         },
         "PrefixLevel": {
@@ -1420,6 +1500,17 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-dataexport.html#cfn-s3-storagelens-dataexport-s3bucketdestination",
           "Required": false,
           "Type": "S3BucketDestination",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::S3::StorageLens.DetailedStatusCodesMetrics": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-detailedstatuscodesmetrics.html",
+      "Properties": {
+        "IsEnabled": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-storagelens-detailedstatuscodesmetrics.html#cfn-s3-storagelens-detailedstatuscodesmetrics-isenabled",
+          "PrimitiveType": "Boolean",
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }
@@ -1622,6 +1713,12 @@
           "Required": true,
           "UpdateType": "Immutable"
         },
+        "BucketAccountId": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-accesspoint.html#cfn-s3-accesspoint-bucketaccountid",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
         "Name": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-accesspoint.html#cfn-s3-accesspoint-name",
           "PrimitiveType": "String",
@@ -1636,8 +1733,8 @@
         },
         "PolicyStatus": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-accesspoint.html#cfn-s3-accesspoint-policystatus",
-          "PrimitiveType": "Json",
           "Required": false,
+          "Type": "PolicyStatus",
           "UpdateType": "Mutable"
         },
         "PublicAccessBlockConfiguration": {
@@ -1857,6 +1954,14 @@
       }
     },
     "AWS::S3::MultiRegionAccessPointPolicy": {
+      "Attributes": {
+        "PolicyStatus": {
+          "Type": "PolicyStatus"
+        },
+        "PolicyStatus.IsPublic": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-multiregionaccesspointpolicy.html",
       "Properties": {
         "MrapName": {

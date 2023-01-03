@@ -2,6 +2,107 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.58.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.58.0-alpha.0...v2.58.1-alpha.0) (2022-12-30)
+
+## [2.58.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.57.0-alpha.0...v2.58.0-alpha.0) (2022-12-28)
+
+## [2.57.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.56.1-alpha.0...v2.57.0-alpha.0) (2022-12-27)
+
+
+### Bug Fixes
+
+* **aws-redshift:** Columns are not dropped on removal from array ([#23011](https://github.com/aws/aws-cdk/issues/23011)) ([2981313](https://github.com/aws/aws-cdk/commit/298131312b513c0e73865e6fff74c189ee99e328)), closes [#22208](https://github.com/aws/aws-cdk/issues/22208)
+
+## [2.56.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.56.0-alpha.0...v2.56.1-alpha.0) (2022-12-23)
+
+## [2.56.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.55.1-alpha.0...v2.56.0-alpha.0) (2022-12-21)
+
+
+### Features
+
+* **integ-tests:** add serializedJson on match utility ([#23218](https://github.com/aws/aws-cdk/issues/23218)) ([1a62dc4](https://github.com/aws/aws-cdk/commit/1a62dc4590d725d3c03861af434a24789eaa0a2e))
+* **servicecatalogappregistry:** Cross region warning and default application tag ([#23412](https://github.com/aws/aws-cdk/issues/23412)) ([8d359ae](https://github.com/aws/aws-cdk/commit/8d359ae35877ce066e419f7e2e7da2b0deb587e6))
+
+## [2.55.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.55.0-alpha.0...v2.55.1-alpha.0) (2022-12-16)
+
+## [2.55.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.54.0-alpha.0...v2.55.0-alpha.0) (2022-12-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appsync:** `DataSource.createResolver`,
+`DataSource.createFunction`, and `GraphQlApi.createResolver` now require
+2 arguments instead of 1.
+* **appsync:** Renames `Schema` to `SchemaFile` that implements `ISchema`. Removes all `addXxx` type methods from `GraphQlApi`.
+
+### Features
+
+* **aws-lambda-python:** add command hooks for bundling to allow for execution of custom commands in the build container ([#23330](https://github.com/aws/aws-cdk/issues/23330)) ([d3d071f](https://github.com/aws/aws-cdk/commit/d3d071f51fab61ae0e484f143e68e698bba48537))
+* **gamelift:** add GameSessionQueue L2 Construct for GameLift ([#23266](https://github.com/aws/aws-cdk/issues/23266)) ([1ded644](https://github.com/aws/aws-cdk/commit/1ded64430d8258f6666743e245ef5ac31ed4bf0b))
+
+
+### Bug Fixes
+
+* **appsync:** unexpected resolver replacement ([#23322](https://github.com/aws/aws-cdk/issues/23322)) ([6dc15d4](https://github.com/aws/aws-cdk/commit/6dc15d40764dc71fe6a3b70691f586e96cdcf730)), closes [#13269](https://github.com/aws/aws-cdk/issues/13269)
+* **servicecatalogappregistry:** synth error when associating a nested stack ([#23248](https://github.com/aws/aws-cdk/issues/23248)) ([30301d9](https://github.com/aws/aws-cdk/commit/30301d9e5ab4af86c5e48a5ad47013924acdfed7))
+
+
+### Miscellaneous Chores
+
+* **appsync:** removes codefirst schema generation ([#23250](https://github.com/aws/aws-cdk/issues/23250)) ([2bd1e41](https://github.com/aws/aws-cdk/commit/2bd1e4184aea054766f7872b300b960b2b83ef06))
+
+## [2.54.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.53.0-alpha.0...v2.54.0-alpha.0) (2022-12-07)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **servicecatalogappregistry:** Stack inside ApplicationAssociator is no longer is created inside ApplicationAssociator Construct scope. The stack will now get created inside cdk.App scope.
+* ** servicecatalogappregistry:** stackId  will no longer have ApplicationAssociator Construct scope.
+
+### All Submissions:
+
+* [ X] Have you followed the guidelines in our [Contributing guide?](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md)
+
+### Adding new Unconventional Dependencies:
+
+* [ ] This PR adds new unconventional dependencies following the process described [here](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md/#adding-new-unconventional-dependencies)
+
+### New Features
+
+* [ ] Have you added the new feature to an [integration test](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md)?
+	* [ ] Did you use `yarn integ` to deploy the infrastructure and generate the snapshot (i.e. `yarn integ` without `--dry-run`)?
+
+*By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
+
+### Features
+
+* **gamelift:** add Alias L2 Construct for GameLift ([#23042](https://github.com/aws/aws-cdk/issues/23042)) ([49d5c3a](https://github.com/aws/aws-cdk/commit/49d5c3a21ae1fa15bf1be4c6b81194800b016372))
+* **gamelift:** add MatchmakingRuleSet L2 Construct for GameLift ([#23091](https://github.com/aws/aws-cdk/issues/23091)) ([ad8a704](https://github.com/aws/aws-cdk/commit/ad8a704cce7c09bf51f6ee4d688d00fcb2c86472))
+* **gamelift:** add support for buildArn output attribute ([#23070](https://github.com/aws/aws-cdk/issues/23070)) ([08f2995](https://github.com/aws/aws-cdk/commit/08f2995784cdc0fd43ec10af534c49a8466b5351))
+* **glue:** support glue version 4.0 ([#23223](https://github.com/aws/aws-cdk/issues/23223)) ([fe08aa9](https://github.com/aws/aws-cdk/commit/fe08aa900103f93ca5ea4c3fc3cdc6b31d4b52d9)), closes [#23220](https://github.com/aws/aws-cdk/issues/23220)
+* **lambda-go:** allow configuration of GOPROXY ([#23171](https://github.com/aws/aws-cdk/issues/23171)) ([d189161](https://github.com/aws/aws-cdk/commit/d189161964f7169f1c0918cdec0fca9cacec4d61))
+* **location:** `PlaceIndex` ([#22853](https://github.com/aws/aws-cdk/issues/22853)) ([50422df](https://github.com/aws/aws-cdk/commit/50422df24f00b10a5487aa56bdf7220846ebbeaa))
+* **sagemaker:** add Endpoint L2 construct ([#22886](https://github.com/aws/aws-cdk/issues/22886)) ([bf7586b](https://github.com/aws/aws-cdk/commit/bf7586b16a6f7706d8d7da3a6e0aed955f159e15)), closes [#2809](https://github.com/aws/aws-cdk/issues/2809)
+
+
+### Bug Fixes
+
+* **appsync:** fully qualify service principal ([#23054](https://github.com/aws/aws-cdk/issues/23054)) ([0bfce89](https://github.com/aws/aws-cdk/commit/0bfce8965ee50ab79054e6f5a4c6bbecb0955e19))
+* **servicecatalogappregistry:** creating ApplicationStack in AppScope to give user more control over the passed stackId ([#22977](https://github.com/aws/aws-cdk/issues/22977)) ([85fe047](https://github.com/aws/aws-cdk/commit/85fe047a94494794afc1ef6c1c788219af3eb0cb)), closes [#22973](https://github.com/aws/aws-cdk/issues/22973)
+
+## [2.53.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.52.1-alpha.0...v2.53.0-alpha.0) (2022-11-29)
+
+## [2.52.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.52.0-alpha.0...v2.52.1-alpha.0) (2022-11-28)
+
+
+### Bug Fixes
+
+* **appsync:** fully qualify service principal ([#23054](https://github.com/aws/aws-cdk/issues/23054)) ([d7141dd](https://github.com/aws/aws-cdk/commit/d7141dd7318fd6ee45206dfb35553e4a528decf9))
+
+## [2.52.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.51.1-alpha.0...v2.52.0-alpha.0) (2022-11-27)
+
+## [2.51.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.51.0-alpha.0...v2.51.1-alpha.0) (2022-11-18)
+
 ## [2.51.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.50.0-alpha.0...v2.51.0-alpha.0) (2022-11-18)
 
 
@@ -28,7 +129,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **synthetics:** aws synthetics runtime version syn-nodejs-puppeteer-3.8 ([#22707](https://github.com/aws/aws-cdk/issues/22707)) ([228c865](https://github.com/aws/aws-cdk/commit/228c86532118b143e365b2268d06ee3a36fcf3a7))
 
-## [2.49.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.0-alpha.0...v2.49.1-alpha.0) (2022-10-31) 
+## [2.49.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.49.0-alpha.0...v2.49.1-alpha.0) (2022-10-31)
 
 ## [2.49.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.48.0-alpha.0...v2.49.0-alpha.0) (2022-10-27)
 

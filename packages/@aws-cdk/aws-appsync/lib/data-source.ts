@@ -113,7 +113,7 @@ export abstract class BaseDataSource extends Construct {
     super(scope, id);
 
     if (extended.type !== 'NONE') {
-      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
+      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync.amazonaws.com') });
     }
     // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
     const name = (props.name ?? id);
@@ -132,8 +132,8 @@ export abstract class BaseDataSource extends Construct {
   /**
    * creates a new resolver for this datasource and API using the given properties
    */
-  public createResolver(props: BaseResolverProps): Resolver {
-    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+  public createResolver(id: string, props: BaseResolverProps): Resolver {
+    return new Resolver(this.api, id, {
       api: this.api,
       dataSource: this,
       ...props,
@@ -143,8 +143,8 @@ export abstract class BaseDataSource extends Construct {
   /**
    * creates a new appsync function for this datasource and API using the given properties
    */
-  public createFunction(props: BaseAppsyncFunctionProps): AppsyncFunction {
-    return new AppsyncFunction(this, `${props.name}Function`, {
+  public createFunction(id: string, props: BaseAppsyncFunctionProps): AppsyncFunction {
+    return new AppsyncFunction(this.api, id, {
       api: this.api,
       dataSource: this,
       ...props,

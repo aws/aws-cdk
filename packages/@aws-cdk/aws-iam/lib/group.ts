@@ -6,8 +6,8 @@ import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
-import { AttachedPolicies } from './util';
 
 /**
  * Represents an IAM Group.

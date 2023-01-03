@@ -7,7 +7,8 @@ import { IApplication, Application } from './application';
   */
 export interface TargetApplicationCommonOptions extends cdk.StackProps {
   /**
-    * Stack ID in which application will be created or imported.
+    * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
+    * refer to it in the {@link https://docs.aws.amazon.com/cdk/v2/guide/cli.html | AWS CDK Toolkit (cdk command)}.
     *
     * @default - ApplicationAssociatorStack
     */
@@ -99,6 +100,7 @@ class CreateTargetApplication extends TargetApplication {
       applicationName: this.applicationOptions.applicationName,
       description: this.applicationOptions.applicationDescription || 'Application containing stacks deployed via CDK.',
     });
+    cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
 
     return {
       application: appRegApplication,
