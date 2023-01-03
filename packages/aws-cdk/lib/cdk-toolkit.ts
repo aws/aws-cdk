@@ -181,8 +181,8 @@ export class CdkToolkit {
     }
 
     if (options.hotswap) {
-      warning('⚠️ The --hotswap flag deliberately introduces CloudFormation drift to speed up deployments');
-      warning('⚠️ It should only be used for development - never use it for your production Stacks!');
+      warning('⚠️ The --hotswap and --hotswap-only flags deliberately introduces CloudFormation drift to speed up deployments');
+      warning('⚠️ They should only be used for development - never use them for your production Stacks!');
     }
 
     const stacks = stackCollection.stackArtifacts;
