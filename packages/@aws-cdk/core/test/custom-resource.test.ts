@@ -82,6 +82,32 @@ describe('custom resource', () => {
     });
   });
 
+  test('removal policy after creation', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const customResource = new CustomResource(stack, 'MyCustomResource', {
+      serviceToken: 'MyServiceToken',
+    });
+
+    customResource.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: false });
+
+    // THEN
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        MyCustomResource: {
+          Type: 'AWS::CloudFormation::CustomResource',
+          Properties: {
+            ServiceToken: 'MyServiceToken',
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Retain',
+        },
+      },
+    });
+  });
+
   test('resource type must begin with "Custom::"', () => {
     // GIVEN
     const stack = new Stack();

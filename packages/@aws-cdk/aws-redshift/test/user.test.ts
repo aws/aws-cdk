@@ -178,12 +178,13 @@ describe('cluster user', () => {
   it('retains user on deletion if requested', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
 
-    user.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+    user.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: false });
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
       Properties: {
         passwordSecretArn: { Ref: 'UserSecretAttachment02022609' },
       },
+      UpdateReplacePolicy: 'Delete',
       DeletionPolicy: 'Retain',
     });
   });

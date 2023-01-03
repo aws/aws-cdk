@@ -129,12 +129,13 @@ describe('cluster table', () => {
       tableColumns,
     });
 
-    table.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+    table.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY, { applyToUpdateReplacePolicy: false });
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
       Properties: {
         handler: 'table',
       },
+      UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Delete',
     });
   });

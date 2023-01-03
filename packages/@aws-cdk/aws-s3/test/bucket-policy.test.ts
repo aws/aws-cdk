@@ -94,7 +94,7 @@ describe('bucket policy', () => {
       actions: ['s3:GetObject*'],
       principals: [new AnyPrincipal()],
     }));
-    myBucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    myBucket.policy?.applyRemovalPolicy(RemovalPolicy.DESTROY, { applyToUpdateReplacePolicy: false });
 
     Template.fromStack(stack).templateMatches({
       'Resources': {
@@ -121,8 +121,7 @@ describe('bucket policy', () => {
               'Version': '2012-10-17',
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Delete',
         },
       },
     });

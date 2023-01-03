@@ -1,5 +1,5 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { RemovalPolicy, Resource, Token, Tokenization } from '@aws-cdk/core';
+import { RemovalPolicy, Resource, ResourceRemovalPolicyOptions, Token, Tokenization } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import { Construct } from 'constructs';
 import { Bucket, IBucket } from './bucket';
@@ -104,8 +104,9 @@ export class BucketPolicy extends Resource {
   /**
    * Sets the removal policy for the BucketPolicy.
    * @param removalPolicy the RemovalPolicy to set.
+   * @param options the RemovalPolicy options to set.
    */
-  public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
-    this.resource.applyRemovalPolicy(removalPolicy);
+  public applyRemovalPolicy(removalPolicy: RemovalPolicy, options?: ResourceRemovalPolicyOptions) {
+    this.resource.applyRemovalPolicy(removalPolicy, options);
   }
 }

@@ -184,7 +184,7 @@ export class User extends UserBase {
    *
    * This resource is destroyed by default.
    */
-  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
-    this.resource.applyRemovalPolicy(policy);
+  public applyRemovalPolicy(policy: cdk.RemovalPolicy, options?: cdk.ResourceRemovalPolicyOptions): void {
+    this.resource.applyRemovalPolicy(policy, options);
   }
 }

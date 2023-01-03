@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
 import { RemovalPolicy } from './removal-policy';
-import { Resource } from './resource';
+import { Resource, ResourceRemovalPolicyOptions } from './resource';
 import { Token } from './token';
 
 /**
@@ -92,6 +92,13 @@ export interface CustomResourceProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * The policy options to apply when this resource is removed from the application.
+   *
+   * @default cdk.RemovalPolicy.Destroy
+   */
+  readonly removalPolicyOptions?: ResourceRemovalPolicyOptions;
+
+  /**
    * Convert all property keys to pascal case.
    *
    * @default false
@@ -142,6 +149,7 @@ export class CustomResource extends Resource {
 
     this.resource.applyRemovalPolicy(props.removalPolicy, {
       default: RemovalPolicy.DESTROY,
+      applyToUpdateReplacePolicy: props.removalPolicyOptions?.applyToUpdateReplacePolicy,
     });
   }
 

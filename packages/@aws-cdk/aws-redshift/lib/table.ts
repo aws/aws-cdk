@@ -253,8 +253,8 @@ export class Table extends TableBase {
    *
    * This resource is retained by default.
    */
-  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
-    this.resource.applyRemovalPolicy(policy);
+  public applyRemovalPolicy(policy: cdk.RemovalPolicy, options?: cdk.ResourceRemovalPolicyOptions): void {
+    this.resource.applyRemovalPolicy(policy, options);
   }
 
   private validateDistKeyColumns(columns: Column[]): void {

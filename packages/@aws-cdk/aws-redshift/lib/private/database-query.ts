@@ -68,8 +68,8 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
     this.ref = this.resource.ref;
   }
 
-  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
-    this.resource.applyRemovalPolicy(policy);
+  public applyRemovalPolicy(policy: cdk.RemovalPolicy, options?: cdk.ResourceRemovalPolicyOptions): void {
+    this.resource.applyRemovalPolicy(policy, options);
   }
 
   public getAtt(attributeName: string): cdk.Reference {

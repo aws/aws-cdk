@@ -182,10 +182,11 @@ describe('database query', () => {
       ...minimalProps,
     });
 
-    query.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+    query.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: false });
 
     Template.fromStack(stack).hasResource('Custom::RedshiftDatabaseQuery', {
-      DeletionPolicy: 'Delete',
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Delete',
     });
   });
 
