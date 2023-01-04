@@ -1841,6 +1841,12 @@ export class Bucket extends BucketBase {
     // another situation that causes `instanceof` to fail
     } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
       this.allowLogDelivery(this, props.serverAccessLogsPrefix);
+    } else if (props.serverAccessLogsBucket) {
+      // A `serverAccessLogsBucket` was provided but it is not a concrete `Bucket` and it
+      // may not be possible to configure the ACLs or bucket policy as required.
+      Annotations.of(this).addWarning(
+        `Unable to add necessary logging permissions to imported target bucket: ${props.serverAccessLogsBucket}`,
+      );
     }
 
     for (const inventory of props.inventories ?? []) {
