@@ -53,6 +53,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [App Clients](#app-clients)
   - [Resource Servers](#resource-servers)
   - [Domains](#domains)
+  - [Deletion protection](#deletion-protection)
 
 ## User Pools
 
@@ -71,7 +72,7 @@ new cognito.UserPool(this, 'myuserpool', {
 ```
 
 By default, usernames and email addresses in user pools are case sensitive, which means `user@example.com` and `User@example.com`
-are considered different. In most situations it is prefered to have usernames and email addresses be case insensitive so that
+are considered different. In most situations it is preferred to have usernames and email addresses be case insensitive so that
 capitalization differences are ignored. As shown above, you can make a user pool case insensitive by setting `signInCaseSensitive`
 to `false`. The case sensitivity cannot be changed once a user pool is created.
 
@@ -355,6 +356,16 @@ new cognito.UserPool(this, 'UserPool', {
 The default for account recovery is by phone if available and by email otherwise.
 A user will not be allowed to reset their password via phone if they are also using it for MFA.
 
+#### Advanced Security Mode
+
+User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
+});
+```
 
 ### Emails
 
@@ -418,6 +429,18 @@ new cognito.UserPool(this, 'myuserpool', {
     sesVerifiedDomain: 'myawesomeapp.com',
   }),
 });
+```
+
+If `fromName` does not comply RFC 5322 atom or quoted-string, it will be quoted or mime-encoded.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  email: cognito.UserPoolEmail.withSES({
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'myname@mycompany.com',
+  }),
+});
+// => From: "myname@mycompany.com" <noreply@myawesomeapp.com>
 ```
 
 ### Device Tracking
@@ -546,6 +569,21 @@ const userpool = new cognito.UserPool(this, 'Pool');
 const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
   clientId: 'amzn-client-id',
   clientSecret: 'amzn-client-secret',
+  userPool: userpool,
+});
+```
+
+Using Google identity provider is possible to use clientSecretValue with SecretValue from secrets manager.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+const secret = secretsManager.Secret.fromSecretAttributes(this, "CognitoClientSecret", {
+    secretCompleteArn: "arn:aws:secretsmanager:xxx:xxx:secret:xxx-xxx"
+}).secretValue
+
+const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
+  clientId: 'amzn-client-id',
+  clientSecretValue: secret,
   userPool: userpool,
 });
 ```
@@ -695,6 +733,17 @@ const client = pool.addClient('app-client', {
 });
 
 client.node.addDependency(provider);
+```
+
+The property `authSessionValidity` is the session token for each API request in the authentication flow.
+Valid duration is from 3 to 15 minutes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  authSessionValidity: Duration.minutes(15),
+});
 ```
 
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
@@ -869,3 +918,16 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 ```ts
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
+
+### Deletion protection
+
+Deletion protection can be enabled on a user pool to prevent accidental deletion:
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool', {
+  // ...
+  deletionProtection: true,
+});
+```
+
+By default deletion protection is disabled.

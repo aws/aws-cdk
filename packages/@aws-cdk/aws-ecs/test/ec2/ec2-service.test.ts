@@ -1237,6 +1237,34 @@ describe('ec2 service', () => {
 
     });
 
+    test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+        circuitBreaker: { rollback: true },
+      });
+
+      // THEN
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+
+    });
+
     test('errors if daemon and desiredCount both specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -2591,6 +2619,37 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
+
+
+    });
+
+    test('fails to enable Service Discovery with HTTP defaultCloudmapNamespace', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.NONE,
+      });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      cluster.addDefaultCloudMapNamespace({ name: 'foo.com', type: cloudmap.NamespaceType.HTTP });
+
+      // THEN
+      expect(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            name: 'myApp',
+          },
+        });
+      }).toThrow(/Cannot enable DNS service discovery for HTTP Cloudmap Namespace./);
 
 
     });

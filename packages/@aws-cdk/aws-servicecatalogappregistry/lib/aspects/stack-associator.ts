@@ -80,7 +80,7 @@ abstract class StackAssociatorBase implements IAspect {
     }
 
     if (node.region != this.application.env.region) {
-      this.error(node, 'AppRegistry does not support cross region associations. Application region '
+      this.warning(node, 'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app. Application region '
       + this.application.env.region + ', stack region ' + node.region);
     }
   }
@@ -115,7 +115,7 @@ export class CheckedStageStackAssociator extends StackAssociatorBase {
 
   constructor(app: ApplicationAssociator) {
     super();
-    this.application = app.appRegistryApplication;
+    this.application = app.appRegistryApplication();
     this.applicationAssociator = app;
   }
 }

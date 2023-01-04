@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "SQSBucketNotificationsTest/DefaultTest": {
+      "stacks": [
+        "sqs-bucket-notifications"
+      ],
+      "assertionStack": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
+    }
+  }
+}

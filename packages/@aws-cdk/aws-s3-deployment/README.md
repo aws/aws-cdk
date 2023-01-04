@@ -61,6 +61,20 @@ new ConstructThatReadsFromTheBucket(this, 'Consumer', {
 });
 ```
 
+It is also possible to add additional sources using the `addSource` method.
+
+```ts
+declare const websiteBucket: s3.IBucket;
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket: websiteBucket,
+  destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
+});
+
+deployment.addSource(s3deploy.Source.asset('./another-asset'));
+```
+
 ## Supported sources
 
 The following source types are supported for bucket deployments:
@@ -366,11 +380,11 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 
 ## Development
 
-The custom resource is implemented in Python 3.7 in order to be able to leverage
+The custom resource is implemented in Python 3.9 in order to be able to leverage
 the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
 unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
-This package requires Python 3.7 during build time in order to create the custom
+This package requires Python 3.9 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so
 might be tricky to build on Windows.
 

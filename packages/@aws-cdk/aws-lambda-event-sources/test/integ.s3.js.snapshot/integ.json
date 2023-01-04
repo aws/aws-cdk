@@ -1,0 +1,14 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "integ.s3": {
+      "stacks": [
+        "lambda-event-source-s3"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

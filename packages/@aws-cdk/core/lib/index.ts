@@ -3,6 +3,7 @@ export * from './tag-aspect';
 
 export * from './token';
 export * from './resolvable';
+export * from './type-hints';
 export * from './lazy';
 export * from './tag-manager';
 export * from './string-fragments';
@@ -33,6 +34,7 @@ export * from './duration';
 export * from './expiration';
 export * from './size';
 export * from './stack-trace';
+export { Element } from './deps';
 
 export * from './app';
 export * from './context-provider';
@@ -60,6 +62,7 @@ export * from './cfn-capabilities';
 export * from './cloudformation.generated';
 
 export * from './feature-flags';
+export * from './permissions-boundary';
 
 // WARNING: Should not be exported, but currently is because of a bug. See the
 // class description for more information.

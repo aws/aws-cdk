@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "8058932a68b7558432685502c7b88e62d0ce087e3a6648b189ef5cda358e4f75": {
+      "source": {
+        "path": "aws-cdk-codedeploy-ecs-dg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8058932a68b7558432685502c7b88e62d0ce087e3a6648b189ef5cda358e4f75.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

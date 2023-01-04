@@ -151,14 +151,13 @@ describe('constructs version', () => {
           const config = await fs.readJson(path.join(tmpDir, 'cdk.json'));
           const context = config.context || {};
           for (const [key, actual] of Object.entries(context)) {
-            expect(key in cxapi.FUTURE_FLAGS || key in cxapi.NEW_PROJECT_DEFAULT_CONTEXT).toBeTruthy();
-
-            expect(cxapi.FUTURE_FLAGS[key] ?? cxapi.NEW_PROJECT_DEFAULT_CONTEXT[key]).toEqual(actual);
+            expect(key in cxapi.NEW_PROJECT_CONTEXT).toBeTruthy();
+            expect(cxapi.NEW_PROJECT_CONTEXT[key]).toEqual(actual);
           }
 
           // assert that expired future flags are not part of the cdk.json
           Object.keys(context).forEach(k => {
-            expect(cxapi.FUTURE_FLAGS_EXPIRED.includes(k)).toEqual(false);
+            expect(cxapi.CURRENT_VERSION_EXPIRED_FLAGS.includes(k)).toEqual(false);
           });
         });
       }

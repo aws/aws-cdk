@@ -1,7 +1,7 @@
 import { Duration, Names, Resource } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import { arnForDeploymentConfig, validateName } from '../utils';
+import { arnForDeploymentConfig, validateName } from '../private/utils';
 import { ILambdaDeploymentConfig } from './deployment-config';
 
 /**

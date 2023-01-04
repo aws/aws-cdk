@@ -6,6 +6,11 @@
 export const RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN = Symbol('S3_WEBSITE_REGIONAL_SUBDOMAIN');
 
 /**
+ * After this point, all regions in the 'aws' partition are opt-in.
+ */
+export const RULE_CLASSIC_PARTITION_BECOMES_OPT_IN = Symbol('CLASSIC_PARTITION_BECOMES_OPT_IN');
+
+/**
  * List of AWS region, ordered by launch date (oldest to newest)
  *
  * The significance of this is that standards and conventions change over time.
@@ -44,6 +49,7 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'ap-northeast-3', // Asia Pacific (Osaka)
   'us-gov-east-1', // AWS GovCloud (US-East)
   'eu-north-1', // Europe (Stockholm)
+  RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
   'ap-east-1', // Asia Pacific (Hong Kong)
   'me-south-1', // Middle East (Bahrain)
   'eu-south-1', // Europe (Milan)
@@ -51,6 +57,8 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'us-iso-west-1', // US ISO West
   'eu-south-2', // Europe (Spain)
   'ap-southeast-3', // Asia Pacific (Jakarta)
+  'me-central-1', // Middle East (UAE)
+  'ap-south-2', // Asia Pacific (Hyderabad)
 ];
 
 /**
@@ -63,7 +71,7 @@ export const AWS_REGIONS = AWS_REGIONS_AND_RULES
   .sort() as readonly string[];
 
 /**
- * Possibly non-exaustive list of all service names, used to locate service principals.
+ * Possibly non-exhaustive list of all service names, used to locate service principals.
  *
  * Not in the list ==> default service principal mappings.
  */

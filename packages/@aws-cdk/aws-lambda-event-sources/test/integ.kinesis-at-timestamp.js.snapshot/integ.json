@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "AtTimestamp/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-kinesis-at-timestamp"
+      ],
+      "assertionStack": "AtTimestamp/DefaultTest/DeployAssert",
+      "assertionStackName": "AtTimestampDefaultTestDeployAssert8000E9DC"
+    }
+  }
+}

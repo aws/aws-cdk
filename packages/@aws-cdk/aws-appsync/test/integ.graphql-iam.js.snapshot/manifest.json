@@ -1,0 +1,175 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "aws-appsync-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-appsync-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-appsync-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-appsync-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/828c009f2f1e2d21ce3627f5921a761c1c9b77228bbd5d9723b9a0a92952b49f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-appsync-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-appsync-integ.assets"
+      ],
+      "metadata": {
+        "/aws-appsync-integ/Pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PoolD3F588B8"
+          }
+        ],
+        "/aws-appsync-integ/Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiF70053CD"
+          }
+        ],
+        "/aws-appsync-integ/Api/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiSchema510EECD7"
+          }
+        ],
+        "/aws-appsync-integ/Api/ds/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsServiceRoleADC7D124"
+          }
+        ],
+        "/aws-appsync-integ/Api/ds/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsServiceRoleDefaultPolicyE5E18D6D"
+          }
+        ],
+        "/aws-appsync-integ/Api/ds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Apids0DB53FEA"
+          }
+        ],
+        "/aws-appsync-integ/Api/QueryGetTest/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiQueryGetTest0BEAD0F2"
+          }
+        ],
+        "/aws-appsync-integ/Api/QueryGetTests/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiQueryGetTestsF8C40170"
+          }
+        ],
+        "/aws-appsync-integ/Api/MutationAddTest/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiMutationAddTestBF148084"
+          }
+        ],
+        "/aws-appsync-integ/TestTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestTable5769773A"
+          }
+        ],
+        "/aws-appsync-integ/LambdaIAM/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaIAM687B49AF"
+          }
+        ],
+        "/aws-appsync-integ/LambdaIAM/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaIAMDefaultPolicy96DEA124"
+          }
+        ],
+        "/aws-appsync-integ/testQuery/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testQuery6695AADE"
+          }
+        ],
+        "/aws-appsync-integ/testFail/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testFailServiceRole9FF22F85"
+          }
+        ],
+        "/aws-appsync-integ/testFail/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testFail33CE01D1"
+          }
+        ],
+        "/aws-appsync-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-appsync-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ApidsQuerygetTestResolverCCED7EC2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsQuerygetTestResolverCCED7EC2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ApidsQuerygetTestsResolver952F49EE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsQuerygetTestsResolver952F49EE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ApidsMutationaddTestResolverBCF0400B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApidsMutationaddTestResolverBCF0400B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-appsync-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-stepfunctions-state-machine-credentials-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-stepfunctions-state-machine-credentials-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-stepfunctions-state-machine-credentials-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-state-machine-credentials-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d775f19c6469457d54fcd62837c1d84ec75c1b8aea7b635bb10dc74dcc0e474d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-stepfunctions-state-machine-credentials-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-stepfunctions-state-machine-credentials-integ.assets"
+      ],
+      "metadata": {
+        "/aws-stepfunctions-state-machine-credentials-integ/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithLiteralCredentialsRole1F1DEEC1"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithLiteralCredentialsRoleDefaultPolicy331008EE"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithLiteralCredentials/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithLiteralCredentialsBF5A67AE"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCrossAccountLiteralCredentialsRole4AA04DBC"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCrossAccountLiteralCredentialsRoleDefaultPolicy9B9943BD"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithCrossAccountLiteralCredentials/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithCrossAccountLiteralCredentialsA2DD713D"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithJsonPathCredentialsRole7BDE9FA6"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithJsonPathCredentialsRoleDefaultPolicy1DA1C50B"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/StateMachineWithJsonPathCredentials/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineWithJsonPathCredentials5786712E"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-stepfunctions-state-machine-credentials-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-state-machine-credentials-integ"
+    },
+    "StateMachineCredentialsDefaultTestDeployAssert3F5E6D8D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "StateMachineCredentialsDefaultTestDeployAssert3F5E6D8D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "StateMachineCredentialsDefaultTestDeployAssert3F5E6D8D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "StateMachineCredentialsDefaultTestDeployAssert3F5E6D8D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "StateMachineCredentialsDefaultTestDeployAssert3F5E6D8D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "StateMachineCredentialsDefaultTestDeployAssert3F5E6D8D.assets"
+      ],
+      "metadata": {
+        "/StateMachineCredentials/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/StateMachineCredentials/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "StateMachineCredentials/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
