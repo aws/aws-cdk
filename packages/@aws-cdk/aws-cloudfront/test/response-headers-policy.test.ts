@@ -64,6 +64,8 @@ describe('ResponseHeadersPolicy', () => {
         strictTransportSecurity: { accessControlMaxAge: Duration.seconds(600), includeSubdomains: true, override: true },
         xssProtection: { protection: true, modeBlock: true, reportUri: 'https://example.com/csp-report', override: true },
       },
+      removeHeaders: ['Server'],
+      serverTimingSamplingRate: 12.3456,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::ResponseHeadersPolicy', {
@@ -140,8 +142,33 @@ describe('ResponseHeadersPolicy', () => {
             ReportUri: 'https://example.com/csp-report',
           },
         },
+        RemoveHeadersConfig: {
+          Items: [{ Header: 'Server' }],
+        },
+        ServerTimingHeadersConfig: {
+          Enabled: true,
+          SamplingRate: 12.3456,
+        },
       },
     });
+  });
+
+  test('throws when removing read-only headers', () => {
+    expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+      removeHeaders: ['Content-Encoding'],
+    })).toThrow('Cannot remove read-only header Content-Encoding');
+  });
+
+  test('throws with out of range sampling rate', () => {
+    expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+      serverTimingSamplingRate: 110,
+    })).toThrow('Sampling rate must be between 0 and 100 (inclusive), received 110');
+  });
+
+  test('throws with sampling rate with more than 4 decimal places', () => {
+    expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+      serverTimingSamplingRate: 50.12345,
+    })).toThrow('Sampling rate can have up to four decimal places, received 50.12345');
   });
 
   test('it truncates long auto-generated names', () => {

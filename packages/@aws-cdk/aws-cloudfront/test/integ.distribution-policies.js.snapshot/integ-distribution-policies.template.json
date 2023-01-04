@@ -76,7 +76,18 @@
       "AccessControlMaxAgeSec": 600,
       "OriginOverride": true
      },
-     "Name": "ACustomResponseHeadersPolicy"
+     "Name": "ACustomResponseHeadersPolicy",
+     "RemoveHeadersConfig": {
+      "Items": [
+       {
+        "Header": "Server"
+       }
+      ]
+     },
+     "ServerTimingHeadersConfig": {
+      "Enabled": true,
+      "SamplingRate": 50
+     }
     }
    }
   },

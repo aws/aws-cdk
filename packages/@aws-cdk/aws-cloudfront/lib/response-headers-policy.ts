@@ -1,4 +1,4 @@
-import { Duration, Names, Resource } from '@aws-cdk/core';
+import { Duration, Names, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
 
@@ -51,6 +51,22 @@ export interface ResponseHeadersPolicyProps {
    * @default - no security headers behavior
    */
   readonly securityHeadersBehavior?: ResponseSecurityHeadersBehavior;
+
+  /**
+   * A list of HTTP response headers that CloudFront removes from HTTP responses
+   * that it sends to viewers.
+   *
+   * @default - no headers are removed
+   */
+  readonly removeHeaders?: string[]
+
+  /**
+   * The percentage of responses that you want CloudFront to add the Server-Timing
+   * header to.
+   *
+   * @default - no Server-Timing header is added to HTTP responses
+   */
+  readonly serverTimingSamplingRate?: number;
 }
 
 /**
@@ -105,6 +121,8 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
         corsConfig: props.corsBehavior ? this._renderCorsConfig(props.corsBehavior) : undefined,
         customHeadersConfig: props.customHeadersBehavior ? this._renderCustomHeadersConfig(props.customHeadersBehavior) : undefined,
         securityHeadersConfig: props.securityHeadersBehavior ? this._renderSecurityHeadersConfig(props.securityHeadersBehavior) : undefined,
+        removeHeadersConfig: props.removeHeaders ? this._renderRemoveHeadersConfig(props.removeHeaders) : undefined,
+        serverTimingHeadersConfig: props.serverTimingSamplingRate ? this._renderServerTimingHeadersConfig(props.serverTimingSamplingRate) : undefined,
       },
     });
 
@@ -140,6 +158,36 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
         accessControlMaxAgeSec: behavior.strictTransportSecurity.accessControlMaxAge.toSeconds(),
       }: undefined,
       xssProtection: behavior.xssProtection,
+    };
+  }
+
+  private _renderRemoveHeadersConfig(headers: string[]): CfnResponseHeadersPolicy.RemoveHeadersConfigProperty {
+    const readonlyHeaders = ['content-encoding', 'content-length', 'transfer-encoding', 'warning', 'via'];
+
+    return {
+      items: headers.map(header => {
+        if (!Token.isUnresolved(header) && readonlyHeaders.includes(header.toLowerCase())) {
+          throw new Error(`Cannot remove read-only header ${header}`);
+        }
+        return { header };
+      }),
+    };
+  }
+
+  private _renderServerTimingHeadersConfig(samplingRate: number): CfnResponseHeadersPolicy.ServerTimingHeadersConfigProperty {
+    if (!Token.isUnresolved(samplingRate)) {
+      if ((samplingRate < 0 || samplingRate > 100)) {
+        throw new Error(`Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`);
+      }
+
+      if (!hasMaxDecimalPlaces(samplingRate, 4)) {
+        throw new Error(`Sampling rate can have up to four decimal places, received ${samplingRate}`);
+      }
+    }
+
+    return {
+      enabled: true,
+      samplingRate,
     };
   }
 }
@@ -455,4 +503,9 @@ export enum HeadersReferrerPolicy {
    * The referrer policy is unsafe-url.
    */
   UNSAFE_URL = 'unsafe-url',
+}
+
+function hasMaxDecimalPlaces(num: number, decimals: number): boolean {
+  const parts = num.toString().split('.');
+  return parts.length === 1 || parts[1].length <= decimals;
 }
