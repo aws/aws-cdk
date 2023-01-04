@@ -19,6 +19,7 @@ import {
   Tags,
   Token,
   Tokenization,
+  Annotations,
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -1833,7 +1834,12 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
-    } else if (props.serverAccessLogsPrefix) {
+    // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
+    // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
+    // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
+    // For example, we should not allow log delivery to `this` if given an imported bucket or
+    // another situation that causes `instanceof` to fail
+    } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
       this.allowLogDelivery(this, props.serverAccessLogsPrefix);
     }
 
