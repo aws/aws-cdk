@@ -408,10 +408,10 @@
     }
    }
   },
-  "ClusterSubnetsDCFA5CB7": {
+  "Cluster1Subnets31ACF7AC": {
    "Type": "AWS::Redshift::ClusterSubnetGroup",
    "Properties": {
-    "Description": "Subnets for Cluster Redshift cluster",
+    "Description": "Subnets for Cluster1 Redshift cluster",
     "SubnetIds": [
      {
       "Ref": "VPCPublicSubnet1SubnetB4246D30"
@@ -424,7 +424,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterSecurityGroup0921994B": {
+  "Cluster1SecurityGroup6200A004": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Redshift security group",
@@ -440,7 +440,7 @@
     }
    }
   },
-  "ClusterSecret6368BD0F": {
+  "Cluster1Secret8E220B90": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "GenerateSecretString": {
@@ -453,19 +453,19 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterSecretAttachment769E6258": {
+  "Cluster1SecretAttachment3E4C26EC": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "ClusterSecret6368BD0F"
+     "Ref": "Cluster1Secret8E220B90"
     },
     "TargetId": {
-     "Ref": "ClusterEB0386A7"
+     "Ref": "Cluster192CD0375"
     },
     "TargetType": "AWS::Redshift::Cluster"
    }
   },
-  "ClusterEB0386A7": {
+  "Cluster192CD0375": {
    "Type": "AWS::Redshift::Cluster",
    "Properties": {
     "ClusterType": "multi-node",
@@ -476,7 +476,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "ClusterSecret6368BD0F"
+        "Ref": "Cluster1Secret8E220B90"
        },
        ":SecretString:username::}}"
       ]
@@ -488,7 +488,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "ClusterSecret6368BD0F"
+        "Ref": "Cluster1Secret8E220B90"
        },
        ":SecretString:password::}}"
       ]
@@ -498,7 +498,7 @@
     "AllowVersionUpgrade": true,
     "AutomatedSnapshotRetentionPeriod": 1,
     "ClusterSubnetGroupName": {
-     "Ref": "ClusterSubnetsDCFA5CB7"
+     "Ref": "Cluster1Subnets31ACF7AC"
     },
     "Encrypted": true,
     "IamRoles": [
@@ -514,7 +514,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "ClusterSecurityGroup0921994B",
+       "Cluster1SecurityGroup6200A004",
        "GroupId"
       ]
      }
@@ -523,7 +523,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterdefaultroleB2E5C52F": {
+  "Cluster1defaultroleA9EA45BA": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -538,7 +538,7 @@
       [
        "{\"service\":\"Redshift\",\"action\":\"modifyClusterIamRoles\",\"parameters\":{\"ClusterIdentifier\":\"",
        {
-        "Ref": "ClusterEB0386A7"
+        "Ref": "Cluster192CD0375"
        },
        "\",\"AddIamRoles\":[\"",
        {
@@ -563,7 +563,7 @@
        },
        "-",
        {
-        "Ref": "ClusterEB0386A7"
+        "Ref": "Cluster192CD0375"
        },
        "\"}}"
       ]
@@ -575,7 +575,7 @@
       [
        "{\"service\":\"Redshift\",\"action\":\"modifyClusterIamRoles\",\"parameters\":{\"ClusterIdentifier\":\"",
        {
-        "Ref": "ClusterEB0386A7"
+        "Ref": "Cluster192CD0375"
        },
        "\",\"AddIamRoles\":[\"",
        {
@@ -600,7 +600,7 @@
        },
        "-",
        {
-        "Ref": "ClusterEB0386A7"
+        "Ref": "Cluster192CD0375"
        },
        "\"}}"
       ]
@@ -609,12 +609,12 @@
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
-    "ClusterdefaultroleCustomResourcePolicyE636FA86"
+    "Cluster1defaultroleCustomResourcePolicy6ECBAB35"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterdefaultroleCustomResourcePolicyE636FA86": {
+  "Cluster1defaultroleCustomResourcePolicy6ECBAB35": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -627,7 +627,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterdefaultroleCustomResourcePolicyE636FA86",
+    "PolicyName": "Cluster1defaultroleCustomResourcePolicy6ECBAB35",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -715,6 +715,233 @@
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
+  },
+  "Cluster2SubnetsB040B959": {
+   "Type": "AWS::Redshift::ClusterSubnetGroup",
+   "Properties": {
+    "Description": "Subnets for Cluster2 Redshift cluster",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster2SecurityGroup9AB2C86A": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Redshift security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "Cluster2SecretB5A9F95D": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludeCharacters": "\"@/\\ '",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster2SecretAttachment957D8524": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "Cluster2SecretB5A9F95D"
+    },
+    "TargetId": {
+     "Ref": "Cluster2720FF351"
+    },
+    "TargetType": "AWS::Redshift::Cluster"
+   }
+  },
+  "Cluster2720FF351": {
+   "Type": "AWS::Redshift::Cluster",
+   "Properties": {
+    "ClusterType": "multi-node",
+    "DBName": "default_db",
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "Cluster2SecretB5A9F95D"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "Cluster2SecretB5A9F95D"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "NodeType": "dc2.large",
+    "AllowVersionUpgrade": true,
+    "AutomatedSnapshotRetentionPeriod": 1,
+    "ClusterSubnetGroupName": {
+     "Ref": "Cluster2SubnetsB040B959"
+    },
+    "Encrypted": true,
+    "IamRoles": [
+     {
+      "Fn::GetAtt": [
+       "IAMF8C44BCA",
+       "Arn"
+      ]
+     }
+    ],
+    "NumberOfNodes": 2,
+    "PubliclyAccessible": false,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "Cluster2SecurityGroup9AB2C86A",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster2defaultrole6C82C6FC": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Redshift\",\"action\":\"modifyClusterIamRoles\",\"parameters\":{\"ClusterIdentifier\":\"",
+       {
+        "Ref": "Cluster2720FF351"
+       },
+       "\",\"AddIamRoles\":[\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "\"],\"DefaultIamRoleArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "-",
+       {
+        "Ref": "Cluster2720FF351"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Redshift\",\"action\":\"modifyClusterIamRoles\",\"parameters\":{\"ClusterIdentifier\":\"",
+       {
+        "Ref": "Cluster2720FF351"
+       },
+       "\",\"AddIamRoles\":[\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "\"],\"DefaultIamRoleArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "-",
+       {
+        "Ref": "Cluster2720FF351"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": true
+   },
+   "DependsOn": [
+    "Cluster2defaultroleCustomResourcePolicy042F9AF5"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Cluster2defaultroleCustomResourcePolicy042F9AF5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "redshift:ModifyClusterIamRoles",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Cluster2defaultroleCustomResourcePolicy042F9AF5",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

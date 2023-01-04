@@ -16,7 +16,8 @@ class RedshiftEnv extends Stack {
     },
     );
 
-    new redshift.Cluster(this, 'Cluster', {
+    // Adding default role on cluster creation
+    new redshift.Cluster(this, 'Cluster1', {
       vpc: vpc,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC,
@@ -28,6 +29,21 @@ class RedshiftEnv extends Stack {
       defaultRole: defaultRole,
       removalPolicy: RemovalPolicy.DESTROY,
     });
+
+    // Adding default role after cluster creation
+    const redshiftCluster = new redshift.Cluster(this, 'Cluster2', {
+      vpc: vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      roles: [defaultRole],
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    redshiftCluster.addDefaultIamRole(defaultRole);
   }
 }
 
