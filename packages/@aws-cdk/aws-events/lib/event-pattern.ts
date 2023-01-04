@@ -38,14 +38,14 @@ export class Match implements IResolvable {
   }
 
   /**
-   * Matches a string, exactly, in the JSON of the event
+   * Matches a string, regardless of case, in the JSON of the event
    */
   public static exactString(value: string): string[] {
     return this.fromObjects([value]);
   }
 
   /**
-   * Matches a string, regardless of case, in the JSON of the event
+   * Matches a string, exactly, in the JSON of the event
    */
   public static equalsIgnoreCase(value: string): string[] {
     return this.fromObjects([{ 'equals-ignore-case': value }]);
