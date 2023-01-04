@@ -1222,10 +1222,11 @@ describe('vpc', () => {
         NetworkInterfaceId: 'router-1',
       });
 
-
     });
+  });
 
-    test('fromVpcAttributes passes region correctly', () => {
+  describe('fromVpcAttributes', () => {
+    test('passes region correctly', () => {
       // GIVEN
       const stack = getTestStack();
 
@@ -1240,6 +1241,83 @@ describe('vpc', () => {
 
       // THEN
       expect(vpc.env.region).toEqual('region-12345');
+    });
+
+    test('passes subnet IPv4 CIDR blocks correctly', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+        publicSubnetIpv4CidrBlocks: ['10.0.0.0/18', '10.0.64.0/18', '10.0.128.0/18'],
+        privateSubnetIds: ['pri-1', 'pri-2', 'pri-3'],
+        privateSubnetIpv4CidrBlocks: ['10.10.0.0/18', '10.10.64.0/18', '10.10.128.0/18'],
+        isolatedSubnetIds: ['iso-1', 'iso-2', 'iso-3'],
+        isolatedSubnetIpv4CidrBlocks: ['10.20.0.0/18', '10.20.64.0/18', '10.20.128.0/18'],
+      });
+
+      // WHEN
+      const public1 = vpc.publicSubnets.find(({ subnetId }) => subnetId === 'pub-1');
+      const public2 = vpc.publicSubnets.find(({ subnetId }) => subnetId === 'pub-2');
+      const public3 = vpc.publicSubnets.find(({ subnetId }) => subnetId === 'pub-3');
+      const private1 = vpc.privateSubnets.find(({ subnetId }) => subnetId === 'pri-1');
+      const private2 = vpc.privateSubnets.find(({ subnetId }) => subnetId === 'pri-2');
+      const private3 = vpc.privateSubnets.find(({ subnetId }) => subnetId === 'pri-3');
+      const isolated1 = vpc.isolatedSubnets.find(({ subnetId }) => subnetId === 'iso-1');
+      const isolated2 = vpc.isolatedSubnets.find(({ subnetId }) => subnetId === 'iso-2');
+      const isolated3 = vpc.isolatedSubnets.find(({ subnetId }) => subnetId === 'iso-3');
+
+      // THEN
+      expect(public1?.ipv4CidrBlock).toEqual('10.0.0.0/18');
+      expect(public2?.ipv4CidrBlock).toEqual('10.0.64.0/18');
+      expect(public3?.ipv4CidrBlock).toEqual('10.0.128.0/18');
+      expect(private1?.ipv4CidrBlock).toEqual('10.10.0.0/18');
+      expect(private2?.ipv4CidrBlock).toEqual('10.10.64.0/18');
+      expect(private3?.ipv4CidrBlock).toEqual('10.10.128.0/18');
+      expect(isolated1?.ipv4CidrBlock).toEqual('10.20.0.0/18');
+      expect(isolated2?.ipv4CidrBlock).toEqual('10.20.64.0/18');
+      expect(isolated3?.ipv4CidrBlock).toEqual('10.20.128.0/18');
+
+    });
+
+    test('throws on incorrect number of subnet names', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetNames: ['Public 1', 'Public 2'],
+        }),
+      ).toThrow(/publicSubnetNames must have an entry for every corresponding subnet group/);
+    });
+
+    test('throws on incorrect number of route table ids', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetRouteTableIds: ['rt-12345'],
+        }),
+      ).toThrow('Number of publicSubnetRouteTableIds (1) must be equal to the amount of publicSubnetIds (3).');
+    });
+
+    test('throws on incorrect number of subnet IPv4 CIDR blocks', () => {
+      const stack = new Stack();
+
+      expect(() =>
+        Vpc.fromVpcAttributes(stack, 'VPC', {
+          vpcId: 'vpc-1234',
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+          publicSubnetIpv4CidrBlocks: ['10.0.0.0/18', '10.0.64.0/18'],
+        }),
+      ).toThrow('Number of publicSubnetIpv4CidrBlocks (2) must be equal to the amount of publicSubnetIds (3).');
     });
   });
 
