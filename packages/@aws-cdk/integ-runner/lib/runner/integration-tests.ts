@@ -213,10 +213,13 @@ export class IntegrationTests {
 
     // Use the selected presets
     if (!options.app && !options.testRegex) {
+      // Only case with multiple languages, i.e. the only time we need to check the special case
+      const ignoreUncompiledTypeScript = options.language?.includes('javascript') && options.language?.includes('typescript');
+
       return this.discover({
         testCases: this.getLanguagePresets(options.language),
         ...baseOptions,
-      });
+      }, ignoreUncompiledTypeScript);
     }
 
     // Only one of app or test-regex is set, with a single preset selected
@@ -302,10 +305,10 @@ export class IntegrationTests {
    * @param tests Tests to include or exclude, undefined means include all tests.
    * @param exclude Whether the 'tests' list is inclusive or exclusive (inclusive by default).
    */
-  private async discover(options: IntegrationTestsDiscoveryOptions): Promise<IntegTest[]> {
+  private async discover(options: IntegrationTestsDiscoveryOptions, ignoreUncompiledTypeScript: boolean = false): Promise<IntegTest[]> {
     const files = await this.readTree();
 
-    const discoveredTests = Object.entries(options.testCases)
+    const testCases = Object.entries(options.testCases)
       .flatMap(([appCommand, patterns]) => files
         .filter(fileName => patterns.some((pattern) => {
           const regex = new RegExp(pattern);
@@ -318,7 +321,23 @@ export class IntegrationTests {
         })),
       );
 
+    const discoveredTests = ignoreUncompiledTypeScript ? this.filterUncompiledTypeScript(testCases) : testCases;
+
     return this.filterTests(discoveredTests, options.tests, options.exclude);
+  }
+
+  private filterUncompiledTypeScript(testCases: IntegTest[]): IntegTest[] {
+    const jsTestCases = testCases.filter(t => t.fileName.endsWith('.js'));
+
+    return testCases
+      // Remove all TypeScript test cases (ending in .ts)
+      // for which a compiled version is present (same name, ending in .js)
+      .filter((tsCandidate) => {
+        if (!tsCandidate.fileName.endsWith('.ts')) {
+          return true;
+        }
+        return jsTestCases.findIndex(jsTest => jsTest.testName === tsCandidate.testName) === -1;
+      });
   }
 
   private async readTree(): Promise<string[]> {

@@ -114,4 +114,19 @@ describe('IntegrationTests Discovery', () => {
       });
     });
   });
+
+  describe('Same test file in JS and TS is only running JS', () => {
+    const cliOptions = {
+      language: ['javascript', 'typescript'],
+    };
+
+    test('find only JS files', async () => {
+      const integTests = await tests.fromCliOptions(cliOptions);
+
+      expect(integTests.length).toEqual(3);
+      expect(integTests[0].fileName).toEqual(expect.stringMatching(new RegExp('^.*test1\\.js$')));
+      expect(integTests[1].fileName).toEqual(expect.stringMatching(new RegExp('^.*test2\\.js$')));
+      expect(integTests[2].fileName).toEqual(expect.stringMatching(new RegExp('^.*test3\\.js$')));
+    });
+  });
 });
