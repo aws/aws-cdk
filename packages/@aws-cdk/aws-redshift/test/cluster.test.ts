@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
 import { CfnCluster } from '../lib/redshift.generated';
 

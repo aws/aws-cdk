@@ -682,6 +682,23 @@ export class Cluster extends ClusterBase {
    * @param defaultIamRole the IAM role to be set as the default role
    */
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
+    // Get list of IAM roles attached to cluster
+    const clusterRoleList = this.cluster.iamRoles ?? [];
+
+    // If number of roles is greater than or equal to 10, check to see if default role is included in list
+    if (clusterRoleList.length >= 10) {
+      var roleAlreadyOnCluster = false;
+      for (var i = 0; i < clusterRoleList.length; i++) {
+        if (clusterRoleList[i] == defaultIamRole.roleArn) {
+          roleAlreadyOnCluster = true;
+          break;
+        }
+      }
+      if (!roleAlreadyOnCluster) {
+        throw new Error('Cannot add a new IAM role as default as there are already 10 roles attached to the cluster.');
+      }
+    }
+
     const defaultRoleCustomResource = new AwsCustomResource(this, 'default-role', {
       onUpdate: {
         service: 'Redshift',
