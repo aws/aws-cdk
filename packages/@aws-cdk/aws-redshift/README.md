@@ -388,6 +388,7 @@ new Cluster(stack, 'Redshift', {
 If enhanced VPC routing is not enabled, Amazon Redshift routes traffic through the internet, including traffic to other services within the AWS network.
 
 ## Default IAM role
+
 Some Amazon Redshift features require Amazon Redshift to access other AWS services on your behalf. For your Amazon Redshift clusters to act on your behalf, you supply security credentials to your clusters. The preferred method to supply security credentials is to specify an AWS Identity and Access Management (IAM) role.
 
 When you create an IAM role and set it as the default for the cluster using console, you don't have to provide the IAM role's Amazon Resource Name (ARN) to perform authentication and authorization.
