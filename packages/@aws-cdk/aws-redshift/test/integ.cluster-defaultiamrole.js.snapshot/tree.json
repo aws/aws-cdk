@@ -694,21 +694,21 @@
               "version": "0.0.0"
             }
           },
-          "Cluster": {
-            "id": "Cluster",
-            "path": "redshift-defaultiamrole-integ/Cluster",
+          "Cluster1": {
+            "id": "Cluster1",
+            "path": "redshift-defaultiamrole-integ/Cluster1",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "redshift-defaultiamrole-integ/Cluster/Subnets",
+                "path": "redshift-defaultiamrole-integ/Cluster1/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "redshift-defaultiamrole-integ/Cluster/Subnets/Default",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Redshift::ClusterSubnetGroup",
                       "aws:cdk:cloudformation:props": {
-                        "description": "Subnets for Cluster Redshift cluster",
+                        "description": "Subnets for Cluster1 Redshift cluster",
                         "subnetIds": [
                           {
                             "Ref": "VPCPublicSubnet1SubnetB4246D30"
@@ -732,11 +732,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "redshift-defaultiamrole-integ/Cluster/SecurityGroup",
+                "path": "redshift-defaultiamrole-integ/Cluster1/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "redshift-defaultiamrole-integ/Cluster/SecurityGroup/Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -766,11 +766,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "redshift-defaultiamrole-integ/Cluster/Secret",
+                "path": "redshift-defaultiamrole-integ/Cluster1/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "redshift-defaultiamrole-integ/Cluster/Secret/Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -789,19 +789,19 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "redshift-defaultiamrole-integ/Cluster/Secret/Attachment",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "redshift-defaultiamrole-integ/Cluster/Secret/Attachment/Resource",
+                        "path": "redshift-defaultiamrole-integ/Cluster1/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
                             "secretId": {
-                              "Ref": "ClusterSecret6368BD0F"
+                              "Ref": "Cluster1Secret8E220B90"
                             },
                             "targetId": {
-                              "Ref": "ClusterEB0386A7"
+                              "Ref": "Cluster192CD0375"
                             },
                             "targetType": "AWS::Redshift::Cluster"
                           }
@@ -825,7 +825,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "redshift-defaultiamrole-integ/Cluster/Resource",
+                "path": "redshift-defaultiamrole-integ/Cluster1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Redshift::Cluster",
                   "aws:cdk:cloudformation:props": {
@@ -837,7 +837,7 @@
                         [
                           "{{resolve:secretsmanager:",
                           {
-                            "Ref": "ClusterSecret6368BD0F"
+                            "Ref": "Cluster1Secret8E220B90"
                           },
                           ":SecretString:username::}}"
                         ]
@@ -849,7 +849,7 @@
                         [
                           "{{resolve:secretsmanager:",
                           {
-                            "Ref": "ClusterSecret6368BD0F"
+                            "Ref": "Cluster1Secret8E220B90"
                           },
                           ":SecretString:password::}}"
                         ]
@@ -859,7 +859,7 @@
                     "allowVersionUpgrade": true,
                     "automatedSnapshotRetentionPeriod": 1,
                     "clusterSubnetGroupName": {
-                      "Ref": "ClusterSubnetsDCFA5CB7"
+                      "Ref": "Cluster1Subnets31ACF7AC"
                     },
                     "encrypted": true,
                     "iamRoles": [
@@ -875,7 +875,7 @@
                     "vpcSecurityGroupIds": [
                       {
                         "Fn::GetAtt": [
-                          "ClusterSecurityGroup0921994B",
+                          "Cluster1SecurityGroup6200A004",
                           "GroupId"
                         ]
                       }
@@ -889,11 +889,11 @@
               },
               "default-role": {
                 "id": "default-role",
-                "path": "redshift-defaultiamrole-integ/Cluster/default-role",
+                "path": "redshift-defaultiamrole-integ/Cluster1/default-role",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "redshift-defaultiamrole-integ/Cluster/default-role/Provider",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/default-role/Provider",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -901,11 +901,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "redshift-defaultiamrole-integ/Cluster/default-role/Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/default-role/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "redshift-defaultiamrole-integ/Cluster/default-role/Resource/Default",
+                        "path": "redshift-defaultiamrole-integ/Cluster1/default-role/Resource/Default",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
@@ -919,11 +919,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "redshift-defaultiamrole-integ/Cluster/default-role/CustomResourcePolicy",
+                    "path": "redshift-defaultiamrole-integ/Cluster1/default-role/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "redshift-defaultiamrole-integ/Cluster/default-role/CustomResourcePolicy/Resource",
+                        "path": "redshift-defaultiamrole-integ/Cluster1/default-role/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -937,7 +937,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterdefaultroleCustomResourcePolicyE636FA86",
+                            "policyName": "Cluster1defaultroleCustomResourcePolicy6ECBAB35",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1130,6 +1130,280 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Cluster2": {
+            "id": "Cluster2",
+            "path": "redshift-defaultiamrole-integ/Cluster2",
+            "children": {
+              "Subnets": {
+                "id": "Subnets",
+                "path": "redshift-defaultiamrole-integ/Cluster2/Subnets",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/Subnets/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Redshift::ClusterSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "Subnets for Cluster2 Redshift cluster",
+                        "subnetIds": [
+                          {
+                            "Ref": "VPCPublicSubnet1SubnetB4246D30"
+                          },
+                          {
+                            "Ref": "VPCPublicSubnet2Subnet74179F39"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-redshift.CfnClusterSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-redshift.ClusterSubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "redshift-defaultiamrole-integ/Cluster2/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Redshift security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Secret": {
+                "id": "Secret",
+                "path": "redshift-defaultiamrole-integ/Cluster2/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"admin\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": "\"@/\\ '"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/Secret/Attachment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "redshift-defaultiamrole-integ/Cluster2/Secret/Attachment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                          "aws:cdk:cloudformation:props": {
+                            "secretId": {
+                              "Ref": "Cluster2SecretB5A9F95D"
+                            },
+                            "targetId": {
+                              "Ref": "Cluster2720FF351"
+                            },
+                            "targetType": "AWS::Redshift::Cluster"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-redshift.DatabaseSecret",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "redshift-defaultiamrole-integ/Cluster2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Redshift::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterType": "multi-node",
+                    "dbName": "default_db",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "Cluster2SecretB5A9F95D"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "Cluster2SecretB5A9F95D"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "nodeType": "dc2.large",
+                    "allowVersionUpgrade": true,
+                    "automatedSnapshotRetentionPeriod": 1,
+                    "clusterSubnetGroupName": {
+                      "Ref": "Cluster2SubnetsB040B959"
+                    },
+                    "encrypted": true,
+                    "iamRoles": [
+                      {
+                        "Fn::GetAtt": [
+                          "IAMF8C44BCA",
+                          "Arn"
+                        ]
+                      }
+                    ],
+                    "numberOfNodes": 2,
+                    "publiclyAccessible": false,
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "Cluster2SecurityGroup9AB2C86A",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-redshift.CfnCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "default-role": {
+                "id": "default-role",
+                "path": "redshift-defaultiamrole-integ/Cluster2/default-role",
+                "children": {
+                  "Provider": {
+                    "id": "Provider",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/default-role/Provider",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/default-role/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "redshift-defaultiamrole-integ/Cluster2/default-role/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CustomResourcePolicy": {
+                    "id": "CustomResourcePolicy",
+                    "path": "redshift-defaultiamrole-integ/Cluster2/default-role/CustomResourcePolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "redshift-defaultiamrole-integ/Cluster2/default-role/CustomResourcePolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "redshift:ModifyClusterIamRoles",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Cluster2defaultroleCustomResourcePolicy042F9AF5",
+                            "roles": [
+                              {
+                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/custom-resources.AwsCustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-redshift.Cluster",
               "version": "0.0.0"
             }
           },

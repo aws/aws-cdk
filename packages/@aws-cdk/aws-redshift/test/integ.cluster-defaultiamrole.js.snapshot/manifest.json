@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ff5d4d7cf405a9a94d98af30e54b961aa8f3f8d3d932b25b8f3978a3ad3a91f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb31ac4d94e1951f1abbf7ff933a4b15e1f5c252ac891babb773cc5102ca8c51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,46 +177,46 @@
             "data": "IAMF8C44BCA"
           }
         ],
-        "/redshift-defaultiamrole-integ/Cluster/Subnets/Default": [
+        "/redshift-defaultiamrole-integ/Cluster1/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSubnetsDCFA5CB7"
+            "data": "Cluster1Subnets31ACF7AC"
           }
         ],
-        "/redshift-defaultiamrole-integ/Cluster/SecurityGroup/Resource": [
+        "/redshift-defaultiamrole-integ/Cluster1/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSecurityGroup0921994B"
+            "data": "Cluster1SecurityGroup6200A004"
           }
         ],
-        "/redshift-defaultiamrole-integ/Cluster/Secret/Resource": [
+        "/redshift-defaultiamrole-integ/Cluster1/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSecret6368BD0F"
+            "data": "Cluster1Secret8E220B90"
           }
         ],
-        "/redshift-defaultiamrole-integ/Cluster/Secret/Attachment/Resource": [
+        "/redshift-defaultiamrole-integ/Cluster1/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSecretAttachment769E6258"
+            "data": "Cluster1SecretAttachment3E4C26EC"
           }
         ],
-        "/redshift-defaultiamrole-integ/Cluster/Resource": [
+        "/redshift-defaultiamrole-integ/Cluster1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7"
+            "data": "Cluster192CD0375"
           }
         ],
-        "/redshift-defaultiamrole-integ/Cluster/default-role/Resource/Default": [
+        "/redshift-defaultiamrole-integ/Cluster1/default-role/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterdefaultroleB2E5C52F"
+            "data": "Cluster1defaultroleA9EA45BA"
           }
         ],
-        "/redshift-defaultiamrole-integ/Cluster/default-role/CustomResourcePolicy/Resource": [
+        "/redshift-defaultiamrole-integ/Cluster1/default-role/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterdefaultroleCustomResourcePolicyE636FA86"
+            "data": "Cluster1defaultroleCustomResourcePolicy6ECBAB35"
           }
         ],
         "/redshift-defaultiamrole-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -237,6 +237,48 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
+        "/redshift-defaultiamrole-integ/Cluster2/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster2SubnetsB040B959"
+          }
+        ],
+        "/redshift-defaultiamrole-integ/Cluster2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster2SecurityGroup9AB2C86A"
+          }
+        ],
+        "/redshift-defaultiamrole-integ/Cluster2/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster2SecretB5A9F95D"
+          }
+        ],
+        "/redshift-defaultiamrole-integ/Cluster2/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster2SecretAttachment957D8524"
+          }
+        ],
+        "/redshift-defaultiamrole-integ/Cluster2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster2720FF351"
+          }
+        ],
+        "/redshift-defaultiamrole-integ/Cluster2/default-role/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster2defaultrole6C82C6FC"
+          }
+        ],
+        "/redshift-defaultiamrole-integ/Cluster2/default-role/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster2defaultroleCustomResourcePolicy042F9AF5"
+          }
+        ],
         "/redshift-defaultiamrole-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -247,6 +289,69 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterSubnetsDCFA5CB7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSubnetsDCFA5CB7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterSecurityGroup0921994B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecurityGroup0921994B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterSecret6368BD0F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecret6368BD0F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterSecretAttachment769E6258": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecretAttachment769E6258",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterEB0386A7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterdefaultroleB2E5C52F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterdefaultroleB2E5C52F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterdefaultroleCustomResourcePolicyE636FA86": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterdefaultroleCustomResourcePolicyE636FA86",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
