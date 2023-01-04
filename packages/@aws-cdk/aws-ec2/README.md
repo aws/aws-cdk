@@ -530,7 +530,9 @@ const vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', {
 For each subnet group the import function accepts optional parameters for subnet
 names, route table ids and IPv4 CIDR blocks. When supplied, the length of these
 lists are required to match the length of the list of subnet ids, allowing the
-lists to be zipped together to form `ISubnet` instances. Example:
+lists to be zipped together to form `ISubnet` instances.
+
+Public subnet group example (for private or isolated subnet groups, use the properties with the respective prefix):
 
 ```ts
 const vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', {
