@@ -560,9 +560,9 @@ declare const api: appsync.GraphqlApi;
 const myJsFunction = new appsync.AppsyncFunction(this, 'function', {
   name: 'my_js_function',
   api,
-  dataSource: api.addNodeDataSource('none'),
+  dataSource: api.addNoneDataSource('none'),
   code: appsync.Code.fromAsset('directory/function_code.js'),
-  runtime: appsync.Runtime.JS_1_0_0,
+  runtime: appsync.FunctionRuntime.JS_1_0_0,
 });
 
 new appsync.Resolver(this, 'PipelineResolver', {
@@ -581,7 +581,7 @@ new appsync.Resolver(this, 'PipelineResolver', {
       return ctx.prev.result
     }
   `),
-  runtime: appsync.Runtime.JS_1_0_0,
+  runtime: appsync.FunctionRuntime.JS_1_0_0,
   pipelineConfig: [myJsFunction],
 });
 ```
