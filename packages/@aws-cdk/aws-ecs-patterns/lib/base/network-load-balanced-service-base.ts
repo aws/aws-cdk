@@ -131,6 +131,15 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly loadBalancer?: INetworkLoadBalancer;
 
   /**
+   * The network load balancer's listener that will listent to traffic to the service.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - a new listener will be created.
+   */
+  readonly listener?: NetworkListener;
+
+  /**
    * Listener port of the network load balancer that will serve traffic to the service.
    *
    * @default 80
@@ -361,8 +370,18 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
       port: props.taskImageOptions?.containerPort ?? 80,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+    this.listener = props.listener ?? loadBalancer.addListener('PublicListener', { port: listenerPort });
+
+    if (props.listener !== undefined) {
+      this.targetGroup = new NetworkTargetGroup(this, `ECS${props.serviceName ?? ''}`, {
+        ...targetProps,
+        vpc: lbProps.vpc,
+      });
+
+      this.listener.addTargetGroups('TargetGroup', this.targetGroup);
+    } else {
+      this.targetGroup = this.listener.addTargets(`ECS${props.serviceName ?? ''}`, targetProps);
+    }
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {

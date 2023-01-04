@@ -6,7 +6,7 @@ import {
 } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy, ListenerCondition, IApplicationListener,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
@@ -123,6 +123,28 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
+   * Priority of this target group
+   *
+   * The rule with the lowest priority will be used for every request.
+   * If priority is not given, these target groups will be added as
+   * defaults, and must not have conditions.
+   *
+   * Priorities must be unique.
+   *
+   * @default Target groups are used as defaults
+   */
+  readonly priority?: number;
+
+  /**
+   * Rule applies if matches the conditions.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
+   *
+   * @default - No conditions.
+   */
+  readonly conditions?: ListenerCondition[];
+
+  /**
    * The domain name for the service, e.g. "api.example.com."
    *
    * @default - No domain name.
@@ -179,6 +201,15 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: IApplicationLoadBalancer;
+
+  /**
+   * The application load balancer's listener that will listent to traffic to the service.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - a new listener will be created.
+   */
+  readonly listener?: IApplicationListener;
 
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
@@ -496,15 +527,31 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const targetProps: AddApplicationTargetsProps = {
       protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
       protocolVersion: props.protocolVersion,
+      conditions: props.conditions,
+      priority: props.priority,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', {
+    const isImprotedListener = props.listener !== undefined && !(props.listener instanceof ApplicationListener);
+    this.listener = props.listener as ApplicationListener ?? loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
       sslPolicy: props.sslPolicy,
     });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+
+    if (props.listener !== undefined && isImprotedListener) {
+      this.targetGroup = new ApplicationTargetGroup(this, `ECS${props.serviceName ?? ''}`, {
+        ...targetProps,
+        vpc: lbProps.vpc,
+      });
+
+      this.listener.addTargetGroups('TargetGroup', {
+        targetGroups: [this.targetGroup],
+        ...targetProps,
+      });
+    } else {
+      this.targetGroup = this.listener.addTargets(`ECS${props.serviceName ?? ''}`, targetProps);
+    }
 
     if (protocol === ApplicationProtocol.HTTPS) {
 

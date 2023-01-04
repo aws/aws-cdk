@@ -1,7 +1,8 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import { Vpc } from '@aws-cdk/aws-ec2';
+import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
+import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ListenerAction, ListenerCondition } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
@@ -840,5 +841,178 @@ describe('When Network Load Balancer', () => {
         Ref: 'VPCB9E5F0B4',
       },
     });
+  });
+
+
+  test('reuse existing Listener on ApplicationLoadBalancedFargateService', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    const s1 = new ApplicationLoadBalancedFargateService(stack, 'Service1', {
+      cluster,
+      serviceName: 'service1',
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    new ApplicationLoadBalancedFargateService(stack, 'Service2', {
+      cluster,
+      loadBalancer: s1.loadBalancer,
+      serviceName: 'service2',
+      listener: s1.listener,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
+  });
+
+  test('reuse existing Listener on ApplicationMultipleTargetGroupsFargateService', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    const s1 = new ApplicationMultipleTargetGroupsFargateService(stack, 'Service1', {
+      cluster,
+      serviceName: 'service1',
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    new ApplicationMultipleTargetGroupsFargateService(stack, 'Service2', {
+      cluster,
+      loadBalancers: [{
+        name: s1.loadBalancer.loadBalancerName,
+        loadBalancer: s1.loadBalancer,
+        listeners: [{
+          name: s1.listener.node.id,
+        }],
+      }],
+      serviceName: 'service2',
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
+  });
+
+  test('reuse existing Listener on NetworkLoadBalancedFargateService', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    const s1 = new NetworkLoadBalancedFargateService(stack, 'Service1', {
+      cluster,
+      serviceName: 'service1',
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    new NetworkLoadBalancedFargateService(stack, 'Service2', {
+      cluster,
+      loadBalancer: s1.loadBalancer,
+      serviceName: 'service2',
+      listener: s1.listener,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
+  });
+
+  test('reuse existing Listener on NetworkMultipleTargetGroupsFargateService', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    const s1 = new NetworkMultipleTargetGroupsFargateService(stack, 'Service1', {
+      cluster,
+      serviceName: 'service1',
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    new NetworkMultipleTargetGroupsFargateService(stack, 'Service2', {
+      cluster,
+      loadBalancers: [{
+        name: s1.loadBalancer.loadBalancerName,
+        loadBalancer: s1.loadBalancer,
+        listeners: [{
+          name: s1.listener.node.id,
+        }],
+      }],
+      serviceName: 'service2',
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
+  });
+
+  test('reuse imported listener and loadBalancer on ApplicationLoadBalancedFargateService', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const securityGroup = new SecurityGroup(stack, 'SecurityGroup', {
+      vpc,
+    });
+
+    // WHEN
+    const loadBalancer = new ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+      securityGroup,
+    });
+
+    const listener = loadBalancer.addListener('Listener', {
+      port: 5000,
+      protocol: ApplicationProtocol.HTTP,
+      defaultAction: ListenerAction.fixedResponse(204),
+    });
+
+    const importedLoadBalancer = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ImportedLoadBalancer', {
+      loadBalancerArn: loadBalancer.loadBalancerArn,
+      loadBalancerDnsName: loadBalancer.loadBalancerDnsName,
+      vpc,
+      securityGroupId: securityGroup.securityGroupId,
+    });
+
+    const importedListener = ApplicationListener.fromApplicationListenerAttributes(stack, 'ImportedListener', {
+      listenerArn: listener.listenerArn,
+      securityGroup,
+    });
+
+    new ApplicationLoadBalancedFargateService(stack, 'Service2', {
+      cluster,
+      loadBalancer: importedLoadBalancer,
+      serviceName: 'service2',
+      listener: importedListener,
+      priority: 1,
+      conditions: [
+        ListenerCondition.hostHeaders(['example.com']),
+      ],
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
   });
 });

@@ -80,6 +80,11 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly loadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = attrs.vpc;
+
+      public get listeners(): NetworkListener[] {
+        throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');
+      }
+
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
@@ -103,12 +108,15 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new Import(scope, id, { environmentFromArn: attrs.loadBalancerArn });
   }
 
+  public readonly listeners: NetworkListener[];
+
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
     });
 
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
+    this.listeners = [];
   }
 
   /**
@@ -117,10 +125,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @returns The newly created listener
    */
   public addListener(id: string, props: BaseNetworkListenerProps): NetworkListener {
-    return new NetworkListener(this, id, {
+    const listener = new NetworkListener(this, id, {
       loadBalancer: this,
       ...props,
     });
+
+    this.listeners.push(listener);
+    return listener;
   }
 
   /**
@@ -258,6 +269,12 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   readonly vpc?: ec2.IVpc;
 
   /**
+   * A list of listeners that have been added to the load balancer.
+   * This list is only valid for owned constructs.
+   */
+  readonly listeners: NetworkListener[];
+
+  /**
    * Add a listener to this load balancer
    *
    * @returns The newly created listener
@@ -270,6 +287,10 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly loadBalancerDnsName: string;
   public readonly loadBalancerArn: string;
   public readonly vpc?: ec2.IVpc;
+
+  public get listeners(): NetworkListener[] {
+    throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');
+  }
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });

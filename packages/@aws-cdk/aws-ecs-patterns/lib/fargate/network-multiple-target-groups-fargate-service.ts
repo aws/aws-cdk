@@ -103,7 +103,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       this.addPortMappingForTargets(this.taskDefinition.defaultContainer, props.targetGroups);
       this.targetGroup = this.registerECSTargets(this.service, this.taskDefinition.defaultContainer, props.targetGroups);
     } else {
-      this.targetGroup = this.listener.addTargets('ECS', {
+      this.targetGroup = this.listener.addTargets(`ECS${props.serviceName ?? ''}`, {
         targets: [this.service],
         port: this.taskDefinition.defaultContainer.portMappings[0].containerPort,
       });
