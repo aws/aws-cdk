@@ -259,7 +259,7 @@ test('does not throw when domain name is longer than 64 characters with tokens',
     zoneName,
   });
   const embededToken = Aws.REGION;
-  const baseSubDomain = 'a'.repeat(65-embededToken.length-1-zoneName.length);
+  const baseSubDomain = 'a'.repeat(65 - embededToken.length -1 -zoneName.length);
   const domainName = `${embededToken}${baseSubDomain}.${zoneName}`;
 
   new DnsValidatedCertificate(stack, 'Cert', {
