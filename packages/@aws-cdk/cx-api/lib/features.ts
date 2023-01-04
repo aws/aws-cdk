@@ -590,7 +590,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.59.0' },
     recommendedValue: true,
   },
 };

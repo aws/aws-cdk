@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-user-pool-idp-google": {
         "id": "integ-user-pool-idp-google",
         "path": "integ-user-pool-idp-google",
@@ -137,6 +129,42 @@
               "version": "0.0.0"
             }
           },
+          "GoogleClientSecretValue": {
+            "id": "GoogleClientSecretValue",
+            "path": "integ-user-pool-idp-google/GoogleClientSecretValue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-idp-google/GoogleClientSecretValue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {
+                      "excludePunctuation": true,
+                      "passwordLength": 20
+                    },
+                    "name": "GoogleClientSecretValueName"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "0.0.0"
+            }
+          },
+          "GoogleClientSecretValue2": {
+            "id": "GoogleClientSecretValue2",
+            "path": "integ-user-pool-idp-google/GoogleClientSecretValue2",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
           "google": {
             "id": "google",
             "path": "integ-user-pool-idp-google/google",
@@ -161,7 +189,18 @@
                     },
                     "providerDetails": {
                       "client_id": "google-client-id",
-                      "client_secret": "google-client-secret",
+                      "client_secret": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "{{resolve:secretsmanager:",
+                            {
+                              "Ref": "GoogleClientSecretValueD28C3034"
+                            },
+                            ":SecretString:::}}"
+                          ]
+                        ]
+                      },
                       "authorize_scopes": "profile"
                     }
                   }
@@ -181,20 +220,44 @@
             "id": "SignInLink",
             "path": "integ-user-pool-idp-google/SignInLink",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-user-pool-idp-google/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-user-pool-idp-google/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.161"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

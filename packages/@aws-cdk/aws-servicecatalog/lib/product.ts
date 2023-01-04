@@ -27,9 +27,8 @@ export interface IProduct extends IResource {
   /**
    * The asset buckets of a product created via product stack.
    * @attribute
-   * @default - Empty - no assets are used in this product
    */
-  readonly assetBuckets?: IBucket[];
+  readonly assetBuckets: IBucket[];
 
   /**
    * Associate Tag Options.
@@ -42,6 +41,7 @@ export interface IProduct extends IResource {
 abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
+  public abstract readonly assetBuckets: IBucket[];
 
   public associateTagOptions(tagOptions: TagOptions) {
     AssociationManager.associateTagOptions(this, this.productId, tagOptions);
@@ -169,6 +169,7 @@ export abstract class Product extends ProductBase {
     return new class extends ProductBase {
       public readonly productId = productId!;
       public readonly productArn = productArn;
+      public readonly assetBuckets = [];
     }(scope, id);
   }
 }
@@ -183,7 +184,7 @@ export class CloudFormationProduct extends Product {
    * The asset bucket of a product created via product stack.
    * @default - Empty - no assets are used in this product
    */
-  public readonly assetBuckets: IBucket[] = [];
+  public readonly assetBuckets = new Array<IBucket>();
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
