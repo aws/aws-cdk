@@ -409,3 +409,23 @@ new Cluster(stack, 'Redshift', {
     defaultRole,
 });
 ```
+
+A default role can also be added to a cluster using the `addDefaultIamRole` method.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const defaultRole = new iam.Role(this, 'DefaultRole', {
+  assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+},
+);
+
+const redshiftCluster = new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+});
+
+redshiftCluster.addDefaultIamRole(defaultRole);
+```
