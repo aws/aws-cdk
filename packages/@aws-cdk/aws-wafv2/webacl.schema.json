@@ -1,0 +1,1352 @@
+{
+  "typeName": "AWS::WAFv2::WebACL",
+  "description": "Contains the Rules that identify the requests that you want to allow, block, or count. In a WebACL, you also specify a default action (ALLOW or BLOCK), and the action for each Rule that you add to a WebACL, for example, block requests from specified IP addresses or block requests from specified referrers. You also associate the WebACL with a CloudFront distribution to identify the requests that you want AWS WAF to filter. If you add more than one Rule to a WebACL, a request needs to match only one of the specifications to be allowed, blocked, or counted.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-wafv2.git",
+  "definitions": {
+    "AndStatement": {
+      "type": "object",
+      "properties": {
+        "Statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Statement"
+          }
+        }
+      },
+      "required": [
+        "Statements"
+      ],
+      "additionalProperties": false
+    },
+    "Body": {
+      "description": "The body of a web request. This immediately follows the request headers.",
+      "type": "object",
+      "properties": {
+        "OversizeHandling": {
+          "$ref": "#/definitions/OversizeHandling"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ByteMatchStatement": {
+      "description": "Byte Match statement.",
+      "type": "object",
+      "properties": {
+        "SearchString": {
+          "$ref": "#/definitions/SearchString"
+        },
+        "SearchStringBase64": {
+          "$ref": "#/definitions/SearchStringBase64"
+        },
+        "FieldToMatch": {
+          "$ref": "#/definitions/FieldToMatch"
+        },
+        "TextTransformations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TextTransformation"
+          }
+        },
+        "PositionalConstraint": {
+          "$ref": "#/definitions/PositionalConstraint"
+        }
+      },
+      "required": [
+        "FieldToMatch",
+        "PositionalConstraint",
+        "TextTransformations"
+      ],
+      "additionalProperties": false
+    },
+    "DefaultAction": {
+      "description": "Default Action WebACL will take against ingress traffic when there is no matching Rule.",
+      "type": "object",
+      "properties": {
+        "Allow": {
+          "$ref": "#/definitions/AllowAction"
+        },
+        "Block": {
+          "$ref": "#/definitions/BlockAction"
+        }
+      },
+      "additionalProperties": false
+    },
+    "EntityDescription": {
+      "description": "Description of the entity.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9=:#@/\\-,.][a-zA-Z0-9+=:#@/\\-,.\\s]+[a-zA-Z0-9+=:#@/\\-,.]{1,256}$"
+    },
+    "EntityName": {
+      "description": "Name of the WebACL.",
+      "type": "string",
+      "pattern": "^[0-9A-Za-z_-]{1,128}$"
+    },
+    "ExcludedRule": {
+      "description": "Excluded Rule in the RuleGroup or ManagedRuleGroup will not be evaluated.",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "$ref": "#/definitions/EntityName"
+        }
+      },
+      "required": [
+        "Name"
+      ],
+      "additionalProperties": false
+    },
+    "ExcludedRules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ExcludedRule"
+      }
+    },
+    "FieldToMatch": {
+      "description": "Field of the request to match.",
+      "type": "object",
+      "properties": {
+        "SingleHeader": {
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "Name"
+          ],
+          "additionalProperties": false
+        },
+        "SingleQueryArgument": {
+          "description": "One query argument in a web request, identified by name, for example UserName or SalesRegion. The name can be up to 30 characters long and isn't case sensitive.",
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "Name"
+          ],
+          "additionalProperties": false
+        },
+        "AllQueryArguments": {
+          "description": "All query arguments of a web request.",
+          "type": "object"
+        },
+        "UriPath": {
+          "description": "The path component of the URI of a web request. This is the part of a web request that identifies a resource, for example, /images/daily-ad.jpg.",
+          "type": "object"
+        },
+        "QueryString": {
+          "description": "The query string of a web request. This is the part of a URL that appears after a ? character, if any.",
+          "type": "object"
+        },
+        "Body": {
+          "$ref": "#/definitions/Body"
+        },
+        "Method": {
+          "description": "The HTTP method of a web request. The method indicates the type of operation that the request is asking the origin to perform.",
+          "type": "object"
+        },
+        "JsonBody": {
+          "$ref": "#/definitions/JsonBody"
+        },
+        "Headers": {
+          "$ref": "#/definitions/Headers"
+        },
+        "Cookies": {
+          "$ref": "#/definitions/Cookies"
+        }
+      },
+      "additionalProperties": false
+    },
+    "JsonBody": {
+      "description": "Inspect the request body as JSON. The request body immediately follows the request headers.",
+      "type": "object",
+      "properties": {
+        "MatchPattern": {
+          "$ref": "#/definitions/JsonMatchPattern"
+        },
+        "MatchScope": {
+          "$ref": "#/definitions/JsonMatchScope"
+        },
+        "InvalidFallbackBehavior": {
+          "$ref": "#/definitions/BodyParsingFallbackBehavior"
+        },
+        "OversizeHandling": {
+          "$ref": "#/definitions/OversizeHandling"
+        }
+      },
+      "required": [
+        "MatchPattern",
+        "MatchScope"
+      ],
+      "additionalProperties": false
+    },
+    "BodyParsingFallbackBehavior": {
+      "description": "The inspection behavior to fall back to if the JSON in the request body is invalid.",
+      "type": "string",
+      "enum": [
+        "MATCH",
+        "NO_MATCH",
+        "EVALUATE_AS_STRING"
+      ]
+    },
+    "JsonMatchScope": {
+      "description": "The parts of the JSON to match against using the MatchPattern.",
+      "type": "string",
+      "enum": [
+        "ALL",
+        "KEY",
+        "VALUE"
+      ]
+    },
+    "JsonMatchPattern": {
+      "description": "The pattern to look for in the JSON body.",
+      "type": "object",
+      "properties": {
+        "All": {
+          "description": "Inspect all parts of the web request's JSON body.",
+          "type": "object"
+        },
+        "IncludedPaths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/JsonPointerPath"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "JsonPointerPath": {
+      "description": "JSON pointer path in the web request's JSON body",
+      "type": "string",
+      "pattern": "^[\\/]+([^~]*(~[01])*)*{1,512}$"
+    },
+    "GeoMatchStatement": {
+      "type": "object",
+      "properties": {
+        "CountryCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2
+          }
+        },
+        "ForwardedIPConfig": {
+          "$ref": "#/definitions/ForwardedIPConfiguration"
+        }
+      },
+      "additionalProperties": false
+    },
+    "EntityId": {
+      "description": "Id of the WebACL",
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$"
+    },
+    "IPSetReferenceStatement": {
+      "type": "object",
+      "properties": {
+        "Arn": {
+          "$ref": "#/definitions/ResourceArn"
+        },
+        "IPSetForwardedIPConfig": {
+          "$ref": "#/definitions/IPSetForwardedIPConfiguration"
+        }
+      },
+      "required": [
+        "Arn"
+      ],
+      "additionalProperties": false
+    },
+    "ManagedRuleGroupStatement": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "$ref": "#/definitions/EntityName"
+        },
+        "VendorName": {
+          "type": "string"
+        },
+        "Version": {
+          "type": "string",
+          "pattern": "^[\\w#:\\.\\-/]+$",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "ExcludedRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExcludedRule"
+          }
+        },
+        "ScopeDownStatement": {
+          "$ref": "#/definitions/Statement"
+        },
+        "ManagedRuleGroupConfigs": {
+          "description": "Collection of ManagedRuleGroupConfig.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ManagedRuleGroupConfig"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "VendorName",
+        "Name"
+      ],
+      "additionalProperties": false
+    },
+    "NotStatement": {
+      "type": "object",
+      "properties": {
+        "Statement": {
+          "$ref": "#/definitions/Statement"
+        }
+      },
+      "required": [
+        "Statement"
+      ],
+      "additionalProperties": false
+    },
+    "OrStatement": {
+      "type": "object",
+      "properties": {
+        "Statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Statement"
+          }
+        }
+      },
+      "required": [
+        "Statements"
+      ],
+      "additionalProperties": false
+    },
+    "OverrideAction": {
+      "description": "Override a RuleGroup or ManagedRuleGroup behavior. This can only be applied to Rule that has RuleGroupReferenceStatement or ManagedRuleGroupReferenceStatement.",
+      "type": "object",
+      "properties": {
+        "Count": {
+          "description": "Count traffic towards application.",
+          "type": "object"
+        },
+        "None": {
+          "description": "Keep the RuleGroup or ManagedRuleGroup behavior as is.",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PositionalConstraint": {
+      "description": "Position of the evaluation in the FieldToMatch of request.",
+      "type": "string",
+      "enum": [
+        "EXACTLY",
+        "STARTS_WITH",
+        "ENDS_WITH",
+        "CONTAINS",
+        "CONTAINS_WORD"
+      ]
+    },
+    "QueryString": {
+      "type": "object"
+    },
+    "RateBasedStatement": {
+      "type": "object",
+      "properties": {
+        "Limit": {
+          "$ref": "#/definitions/RateLimit"
+        },
+        "AggregateKeyType": {
+          "type": "string",
+          "enum": [
+            "IP",
+            "FORWARDED_IP"
+          ]
+        },
+        "ScopeDownStatement": {
+          "$ref": "#/definitions/Statement"
+        },
+        "ForwardedIPConfig": {
+          "$ref": "#/definitions/ForwardedIPConfiguration"
+        }
+      },
+      "required": [
+        "Limit",
+        "AggregateKeyType"
+      ],
+      "additionalProperties": false
+    },
+    "RateLimit": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 2000000000
+    },
+    "RegexPatternSetReferenceStatement": {
+      "type": "object",
+      "properties": {
+        "Arn": {
+          "$ref": "#/definitions/ResourceArn"
+        },
+        "FieldToMatch": {
+          "$ref": "#/definitions/FieldToMatch"
+        },
+        "TextTransformations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TextTransformation"
+          }
+        }
+      },
+      "required": [
+        "Arn",
+        "FieldToMatch",
+        "TextTransformations"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceArn": {
+      "description": "ARN of the WAF entity.",
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 2048
+    },
+    "ForwardedIPConfiguration": {
+      "type": "object",
+      "properties": {
+        "HeaderName": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+{1,255}$"
+        },
+        "FallbackBehavior": {
+          "type": "string",
+          "enum": [
+            "MATCH",
+            "NO_MATCH"
+          ]
+        }
+      },
+      "required": [
+        "HeaderName",
+        "FallbackBehavior"
+      ],
+      "additionalProperties": false
+    },
+    "IPSetForwardedIPConfiguration": {
+      "type": "object",
+      "properties": {
+        "HeaderName": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+{1,255}$"
+        },
+        "FallbackBehavior": {
+          "type": "string",
+          "enum": [
+            "MATCH",
+            "NO_MATCH"
+          ]
+        },
+        "Position": {
+          "type": "string",
+          "enum": [
+            "FIRST",
+            "LAST",
+            "ANY"
+          ]
+        }
+      },
+      "required": [
+        "HeaderName",
+        "FallbackBehavior",
+        "Position"
+      ],
+      "additionalProperties": false
+    },
+    "Rule": {
+      "description": "Rule of WebACL that contains condition and action.",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "$ref": "#/definitions/EntityName"
+        },
+        "Priority": {
+          "$ref": "#/definitions/RulePriority"
+        },
+        "Statement": {
+          "$ref": "#/definitions/Statement"
+        },
+        "Action": {
+          "$ref": "#/definitions/RuleAction"
+        },
+        "OverrideAction": {
+          "$ref": "#/definitions/OverrideAction"
+        },
+        "RuleLabels": {
+          "description": "Collection of Rule Labels.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Label"
+          }
+        },
+        "VisibilityConfig": {
+          "$ref": "#/definitions/VisibilityConfig"
+        },
+        "CaptchaConfig": {
+          "$ref": "#/definitions/CaptchaConfig"
+        }
+      },
+      "required": [
+        "Name",
+        "Priority",
+        "Statement",
+        "VisibilityConfig"
+      ],
+      "additionalProperties": false
+    },
+    "Rules": {
+      "description": "Collection of Rules.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Rule"
+      }
+    },
+    "RuleAction": {
+      "description": "Action taken when Rule matches its condition.",
+      "type": "object",
+      "properties": {
+        "Allow": {
+          "$ref": "#/definitions/AllowAction"
+        },
+        "Block": {
+          "$ref": "#/definitions/BlockAction"
+        },
+        "Count": {
+          "$ref": "#/definitions/CountAction"
+        },
+        "Captcha": {
+          "$ref": "#/definitions/CaptchaAction"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AllowAction": {
+      "description": "Allow traffic towards application.",
+      "type": "object",
+      "properties": {
+        "CustomRequestHandling": {
+          "$ref": "#/definitions/CustomRequestHandling"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CountAction": {
+      "description": "Allow traffic towards application.",
+      "type": "object",
+      "properties": {
+        "CustomRequestHandling": {
+          "$ref": "#/definitions/CustomRequestHandling"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CaptchaAction": {
+      "description": "Checks valid token exists with request.",
+      "type": "object",
+      "properties": {
+        "CustomRequestHandling": {
+          "$ref": "#/definitions/CustomRequestHandling"
+        }
+      },
+      "additionalProperties": false
+    },
+    "BlockAction": {
+      "description": "Block traffic towards application.",
+      "type": "object",
+      "properties": {
+        "CustomResponse": {
+          "$ref": "#/definitions/CustomResponse"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CustomHTTPHeaderName": {
+      "description": "HTTP header name.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "CustomHTTPHeaderValue": {
+      "description": "HTTP header value.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "CustomHTTPHeader": {
+      "description": "HTTP header.",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "$ref": "#/definitions/CustomHTTPHeaderName"
+        },
+        "Value": {
+          "$ref": "#/definitions/CustomHTTPHeaderValue"
+        }
+      },
+      "required": [
+        "Name",
+        "Value"
+      ],
+      "additionalProperties": false
+    },
+    "CustomRequestHandling": {
+      "description": "Custom request handling.",
+      "type": "object",
+      "properties": {
+        "InsertHeaders": {
+          "description": "Collection of HTTP headers.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomHTTPHeader"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "InsertHeaders"
+      ],
+      "additionalProperties": false
+    },
+    "ResponseStatusCode": {
+      "description": "Custom response code.",
+      "type": "integer",
+      "minimum": 200,
+      "maximum": 599
+    },
+    "ResponseContentType": {
+      "description": "Valid values are TEXT_PLAIN, TEXT_HTML, and APPLICATION_JSON.",
+      "type": "string",
+      "enum": [
+        "TEXT_PLAIN",
+        "TEXT_HTML",
+        "APPLICATION_JSON"
+      ]
+    },
+    "ResponseContent": {
+      "description": "Response content.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10240
+    },
+    "CustomResponseBody": {
+      "description": "Custom response body.",
+      "type": "object",
+      "properties": {
+        "ContentType": {
+          "$ref": "#/definitions/ResponseContentType"
+        },
+        "Content": {
+          "$ref": "#/definitions/ResponseContent"
+        }
+      },
+      "required": [
+        "ContentType",
+        "Content"
+      ],
+      "additionalProperties": false
+    },
+    "CustomResponse": {
+      "description": "Custom response.",
+      "type": "object",
+      "properties": {
+        "ResponseCode": {
+          "$ref": "#/definitions/ResponseStatusCode"
+        },
+        "CustomResponseBodyKey": {
+          "description": "Custom response body key.",
+          "type": "string",
+          "pattern": "^[\\w\\-]+$"
+        },
+        "ResponseHeaders": {
+          "description": "Collection of HTTP headers.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomHTTPHeader"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "ResponseCode"
+      ],
+      "additionalProperties": false
+    },
+    "CustomResponseBodies": {
+      "description": "Custom response key and body map.",
+      "type": "object",
+      "patternProperties": {
+        "^[\\w\\-]+$": {
+          "$ref": "#/definitions/CustomResponseBody"
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "RuleGroupReferenceStatement": {
+      "type": "object",
+      "properties": {
+        "Arn": {
+          "$ref": "#/definitions/ResourceArn"
+        },
+        "ExcludedRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExcludedRule"
+          }
+        }
+      },
+      "required": [
+        "Arn"
+      ],
+      "additionalProperties": false
+    },
+    "RulePriority": {
+      "description": "Priority of the Rule, Rules get evaluated from lower to higher priority.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "Scope": {
+      "description": "Use CLOUDFRONT for CloudFront WebACL, use REGIONAL for Application Load Balancer and API Gateway.",
+      "type": "string",
+      "enum": [
+        "CLOUDFRONT",
+        "REGIONAL"
+      ]
+    },
+    "SearchString": {
+      "description": "String that is searched to find a match.",
+      "type": "string"
+    },
+    "SearchStringBase64": {
+      "description": "Base64 encoded string that is searched to find a match.",
+      "type": "string"
+    },
+    "SingleHeader": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SingleQueryArgument": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SizeConstraintStatement": {
+      "description": "Size Constraint statement.",
+      "type": "object",
+      "properties": {
+        "FieldToMatch": {
+          "$ref": "#/definitions/FieldToMatch"
+        },
+        "ComparisonOperator": {
+          "type": "string",
+          "enum": [
+            "EQ",
+            "NE",
+            "LE",
+            "LT",
+            "GE",
+            "GT"
+          ]
+        },
+        "Size": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 21474836480
+        },
+        "TextTransformations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TextTransformation"
+          }
+        }
+      },
+      "required": [
+        "FieldToMatch",
+        "ComparisonOperator",
+        "Size",
+        "TextTransformations"
+      ],
+      "additionalProperties": false
+    },
+    "SqliMatchStatement": {
+      "description": "Sqli Match Statement.",
+      "type": "object",
+      "properties": {
+        "FieldToMatch": {
+          "$ref": "#/definitions/FieldToMatch"
+        },
+        "TextTransformations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TextTransformation"
+          }
+        },
+        "SensitivityLevel": {
+          "$ref": "#/definitions/SensitivityLevel"
+        }
+      },
+      "required": [
+        "FieldToMatch",
+        "TextTransformations"
+      ],
+      "additionalProperties": false
+    },
+    "Statement": {
+      "description": "First level statement that contains conditions, such as ByteMatch, SizeConstraint, etc",
+      "type": "object",
+      "properties": {
+        "ByteMatchStatement": {
+          "$ref": "#/definitions/ByteMatchStatement"
+        },
+        "SqliMatchStatement": {
+          "$ref": "#/definitions/SqliMatchStatement"
+        },
+        "XssMatchStatement": {
+          "$ref": "#/definitions/XssMatchStatement"
+        },
+        "SizeConstraintStatement": {
+          "$ref": "#/definitions/SizeConstraintStatement"
+        },
+        "GeoMatchStatement": {
+          "$ref": "#/definitions/GeoMatchStatement"
+        },
+        "RuleGroupReferenceStatement": {
+          "$ref": "#/definitions/RuleGroupReferenceStatement"
+        },
+        "IPSetReferenceStatement": {
+          "$ref": "#/definitions/IPSetReferenceStatement"
+        },
+        "RegexPatternSetReferenceStatement": {
+          "$ref": "#/definitions/RegexPatternSetReferenceStatement"
+        },
+        "ManagedRuleGroupStatement": {
+          "$ref": "#/definitions/ManagedRuleGroupStatement"
+        },
+        "RateBasedStatement": {
+          "$ref": "#/definitions/RateBasedStatement"
+        },
+        "AndStatement": {
+          "$ref": "#/definitions/AndStatement"
+        },
+        "OrStatement": {
+          "$ref": "#/definitions/OrStatement"
+        },
+        "NotStatement": {
+          "$ref": "#/definitions/NotStatement"
+        },
+        "LabelMatchStatement": {
+          "$ref": "#/definitions/LabelMatchStatement"
+        },
+        "RegexMatchStatement": {
+          "$ref": "#/definitions/RegexMatchStatement"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "Value": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 256
+        }
+      },
+      "additionalProperties": false
+    },
+    "TextTransformation": {
+      "description": "Text Transformation on the Search String before match.",
+      "type": "object",
+      "properties": {
+        "Priority": {
+          "$ref": "#/definitions/TextTransformationPriority"
+        },
+        "Type": {
+          "$ref": "#/definitions/TextTransformationType"
+        }
+      },
+      "required": [
+        "Priority",
+        "Type"
+      ],
+      "additionalProperties": false
+    },
+    "TextTransformationPriority": {
+      "description": "Priority of Rule being evaluated.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "TextTransformationType": {
+      "description": "Type of text transformation.",
+      "type": "string",
+      "enum": [
+        "NONE",
+        "COMPRESS_WHITE_SPACE",
+        "HTML_ENTITY_DECODE",
+        "LOWERCASE",
+        "CMD_LINE",
+        "URL_DECODE",
+        "BASE64_DECODE",
+        "HEX_DECODE",
+        "MD5",
+        "REPLACE_COMMENTS",
+        "ESCAPE_SEQ_DECODE",
+        "SQL_HEX_DECODE",
+        "CSS_DECODE",
+        "JS_DECODE",
+        "NORMALIZE_PATH",
+        "NORMALIZE_PATH_WIN",
+        "REMOVE_NULLS",
+        "REPLACE_NULLS",
+        "BASE64_DECODE_EXT",
+        "URL_DECODE_UNI",
+        "UTF8_TO_UNICODE"
+      ]
+    },
+    "UriPath": {
+      "type": "object"
+    },
+    "VisibilityConfig": {
+      "description": "Visibility Metric of the WebACL.",
+      "type": "object",
+      "properties": {
+        "SampledRequestsEnabled": {
+          "type": "boolean"
+        },
+        "CloudWatchMetricsEnabled": {
+          "type": "boolean"
+        },
+        "MetricName": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "SampledRequestsEnabled",
+        "CloudWatchMetricsEnabled",
+        "MetricName"
+      ],
+      "additionalProperties": false
+    },
+    "XssMatchStatement": {
+      "description": "Xss Match Statement.",
+      "type": "object",
+      "properties": {
+        "FieldToMatch": {
+          "$ref": "#/definitions/FieldToMatch"
+        },
+        "TextTransformations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TextTransformation"
+          }
+        }
+      },
+      "required": [
+        "FieldToMatch",
+        "TextTransformations"
+      ],
+      "additionalProperties": false
+    },
+    "LabelName": {
+      "description": "Name of the Label.",
+      "type": "string",
+      "pattern": "^[0-9A-Za-z_:-]{1,1024}$"
+    },
+    "Label": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "$ref": "#/definitions/LabelName"
+        }
+      },
+      "required": [
+        "Name"
+      ],
+      "additionalProperties": false
+    },
+    "LabelMatchKey": {
+      "type": "string",
+      "pattern": "^[0-9A-Za-z_:-]{1,1024}$"
+    },
+    "LabelMatchScope": {
+      "type": "string",
+      "enum": [
+        "LABEL",
+        "NAMESPACE"
+      ]
+    },
+    "LabelMatchStatement": {
+      "type": "object",
+      "properties": {
+        "Scope": {
+          "$ref": "#/definitions/LabelMatchScope"
+        },
+        "Key": {
+          "$ref": "#/definitions/LabelMatchKey"
+        }
+      },
+      "required": [
+        "Scope",
+        "Key"
+      ],
+      "additionalProperties": false
+    },
+    "RegexMatchStatement": {
+      "type": "object",
+      "properties": {
+        "RegexString": {
+          "type": "string",
+          "maxLength": 512,
+          "minLength": 1
+        },
+        "FieldToMatch": {
+          "$ref": "#/definitions/FieldToMatch"
+        },
+        "TextTransformations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TextTransformation"
+          }
+        }
+      },
+      "required": [
+        "RegexString",
+        "FieldToMatch",
+        "TextTransformations"
+      ],
+      "additionalProperties": false
+    },
+    "CaptchaConfig" : {
+      "type": "object",
+      "properties": {
+        "ImmunityTimeProperty": {
+          "$ref": "#/definitions/ImmunityTimeProperty"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ImmunityTimeProperty" : {
+      "type": "object",
+      "properties": {
+        "ImmunityTime": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 259200
+        }
+      },
+      "required": [
+        "ImmunityTime"
+      ],
+      "additionalProperties": false
+    },
+    "ManagedRuleGroupConfig": {
+      "description": "ManagedRuleGroupConfig.",
+      "type": "object",
+      "properties": {
+        "LoginPath": {
+          "type": "string",
+          "pattern": ".*\\S.*",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "PayloadType": {
+          "type": "string",
+          "enum": [
+            "JSON",
+            "FORM_ENCODED"
+          ]
+        },
+        "UsernameField": {
+          "$ref": "#/definitions/FieldIdentifier"
+        },
+        "PasswordField": {
+          "$ref": "#/definitions/FieldIdentifier"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FieldIdentifier" : {
+      "type": "object",
+      "properties": {
+        "Identifier": {
+          "type": "string",
+          "pattern": ".*\\S.*",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "Identifier"
+      ],
+      "additionalProperties": false
+    },
+    "Headers": {
+      "description": "Includes headers of a web request.",
+      "type": "object",
+      "properties": {
+        "MatchPattern": {
+          "$ref": "#/definitions/HeaderMatchPattern"
+        },
+        "MatchScope": {
+          "$ref": "#/definitions/MapMatchScope"
+        },
+        "OversizeHandling": {
+          "$ref": "#/definitions/OversizeHandling"
+        }
+      },
+      "required": [
+        "MatchPattern",
+        "MatchScope",
+        "OversizeHandling"
+      ],
+      "additionalProperties": false
+    },
+    "Cookies": {
+      "description": "Includes headers of a web request.",
+      "type": "object",
+      "properties": {
+        "MatchPattern": {
+          "$ref": "#/definitions/CookieMatchPattern"
+        },
+        "MatchScope": {
+          "$ref": "#/definitions/MapMatchScope"
+        },
+        "OversizeHandling": {
+          "$ref": "#/definitions/OversizeHandling"
+        }
+      },
+      "required": [
+        "MatchPattern",
+        "MatchScope",
+        "OversizeHandling"
+      ],
+      "additionalProperties": false
+    },
+    "HeaderMatchPattern": {
+      "description": "The pattern to look for in the request headers.",
+      "type": "object",
+      "properties": {
+        "All": {
+          "description": "Inspect all parts of the web request headers.",
+          "type": "object"
+        },
+        "IncludedHeaders": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": ".*\\S.*",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "minItems": 1,
+          "maxItems": 199
+        },
+        "ExcludedHeaders": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": ".*\\S.*",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "minItems": 1,
+          "maxItems": 199
+        }
+      },
+      "additionalProperties": false
+    },
+    "CookieMatchPattern": {
+      "description": "The pattern to look for in the request cookies.",
+      "type": "object",
+      "properties": {
+        "All": {
+          "description": "Inspect all parts of the web request cookies.",
+          "type": "object"
+        },
+        "IncludedCookies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": ".*\\S.*",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "minItems": 1,
+          "maxItems": 199
+        },
+        "ExcludedCookies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": ".*\\S.*",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "minItems": 1,
+          "maxItems": 199
+        }
+      },
+      "additionalProperties": false
+    },
+    "MapMatchScope": {
+      "description": "The parts of the request to match against using the MatchPattern.",
+      "type": "string",
+      "enum": [
+        "ALL",
+        "KEY",
+        "VALUE"
+      ]
+    },
+    "OversizeHandling": {
+      "description": "Handling of requests containing oversize fields",
+      "type": "string",
+      "enum": [
+        "CONTINUE",
+        "MATCH",
+        "NO_MATCH"
+      ]
+    },
+    "SensitivityLevel": {
+      "description": "Sensitivity Level current only used for sqli match statements.",
+      "type": "string",
+      "enum": [
+        "LOW",
+        "HIGH"
+      ]
+    }
+  },
+  "properties": {
+    "Arn": {
+      "$ref": "#/definitions/ResourceArn"
+    },
+    "Capacity": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "DefaultAction": {
+      "$ref": "#/definitions/DefaultAction"
+    },
+    "Description": {
+      "$ref": "#/definitions/EntityDescription"
+    },
+    "Name": {
+      "$ref": "#/definitions/EntityName"
+    },
+    "Id": {
+      "$ref": "#/definitions/EntityId"
+    },
+    "Scope": {
+      "$ref": "#/definitions/Scope"
+    },
+    "Rules": {
+      "description": "Collection of Rules.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Rule"
+      }
+    },
+    "VisibilityConfig": {
+      "$ref": "#/definitions/VisibilityConfig"
+    },
+    "Tags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Tag"
+      },
+      "minItems": 1
+    },
+    "LabelNamespace": {
+      "$ref": "#/definitions/LabelName"
+    },
+    "CustomResponseBodies": {
+      "$ref": "#/definitions/CustomResponseBodies"
+    },
+    "CaptchaConfig": {
+      "$ref": "#/definitions/CaptchaConfig"
+    }
+  },
+  "required": [
+    "DefaultAction",
+    "Scope",
+    "VisibilityConfig"
+  ],
+  "primaryIdentifier": [
+    "/properties/Name",
+    "/properties/Id",
+    "/properties/Scope"
+  ],
+  "createOnlyProperties": [
+    "/properties/Name",
+    "/properties/Scope"
+  ],
+  "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/Capacity",
+    "/properties/Id",
+    "/properties/LabelNamespace"
+  ],
+  "additionalProperties": false,
+  "handlers": {
+    "create": {
+      "permissions": [
+        "wafv2:CreateWebACL",
+        "wafv2:GetWebACL",
+        "wafv2:ListTagsForResource"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "wafv2:DeleteWebACL",
+        "wafv2:GetWebACL"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "wafv2:GetWebACL",
+        "wafv2:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "wafv2:UpdateWebACL",
+        "wafv2:GetWebACL",
+        "wafv2:ListTagsForResource"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "wafv2:listWebACLs"
+      ]
+    }
+  }
+}
+

@@ -1,0 +1,67 @@
+{
+  "typeName": "AWS::WAFv2::WebACLAssociation",
+  "description": "Associates WebACL to Application Load Balancer, CloudFront or API Gateway.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-wafv2.git",
+  "definitions": {
+    "ResourceArn": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 2048
+    }
+  },
+  "properties": {
+    "ResourceArn": {
+      "$ref": "#/definitions/ResourceArn"
+    },
+    "WebACLArn": {
+      "$ref": "#/definitions/ResourceArn"
+    }
+  },
+  "required": [
+    "ResourceArn",
+    "WebACLArn"
+  ],
+  "createOnlyProperties": [
+    "/properties/ResourceArn",
+    "/properties/WebACLArn"
+  ],
+  "primaryIdentifier": [
+    "/properties/ResourceArn",
+    "/properties/WebACLArn"
+  ],
+  "additionalProperties": false,
+  "handlers": {
+    "create": {
+      "permissions": [
+        "wafv2:AssociateWebACL",
+        "elasticloadbalancing:SetWebACL",
+        "apigateway:SetWebACL",
+        "appsync:SetWebACL",
+        "cognito-idp:AssociateWebACL"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "wafv2:DisassociateWebACL",
+        "wafv2:GetWebACLForResource",
+        "wafv2:GetWebACL",
+        "elasticloadbalancing:SetWebACL",
+        "apigateway:SetWebACL",
+        "appsync:SetWebACL",
+        "cognito-idp:DisassociateWebACL",
+        "cognito-idp:GetWebACLForResource"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "wafv2:GetWebACLForResource",
+        "wafv2:GetWebACL",
+        "cognito-idp:GetWebACLForResource"
+      ]
+    },
+    "update": {
+      "permissions": []
+    }
+  }
+}
+

@@ -11,7 +11,6 @@ import { IValue, objLit } from '../value';
 
 export interface EnumClassImplicitUnionMappingFactoryProps {
   readonly objType: SchemaObject;
-  readonly alternatives: Record<string, SchemaObject>;
 }
 
 export class EnumClassImplicitUnionMappingFactory implements ITypeMappingFactory {
@@ -28,13 +27,10 @@ export class EnumClassImplicitUnionMappingFactory implements ITypeMappingFactory
     // For now we expect 0 discriminators. We might have at most one at some point.
     if (discriminators.length > 0) { return []; }
 
-    const alternatives = Object.fromEntries(Object.entries(objType.properties).flatMap(([name, prop]) => {
-      const asObject = schema.parseSchemaObject(schema.resolveType(prop.type));
-      return !prop.required && !!asObject ? [[name, asObject] as const] : [];
-    }));
-    if (Object.keys(alternatives).length !== Object.keys(objType.properties).length) { return []; }
+    const allOptional = Object.values(objType.properties).every(p => !p.required);
+    if (!allOptional) { return []; }
 
-    return [new EnumClassImplicitUnionMappingFactory(schema, type, { objType, alternatives })];
+    return [new EnumClassImplicitUnionMappingFactory(schema, type, { objType })];
   }
 
   public readonly mapperId = `${this.type.schemaLocation}.ImplicitEnumClass`;
@@ -52,14 +48,12 @@ export class EnumClassImplicitUnionMappingFactory implements ITypeMappingFactory
   public lockInConfiguration(): ITypeMapping {
     return new EnumClassImplicitUnionMapping(this, this.schema, this.type, {
       objType: this.props.objType,
-      alternatives: this.props.alternatives,
     });
   }
 }
 
 export interface EnumClassImplicitUnionMappingProps {
   readonly objType: SchemaObject;
-  readonly alternatives: Record<string, SchemaObject>;
 }
 
 /**
@@ -68,12 +62,14 @@ export interface EnumClassImplicitUnionMappingProps {
 export class EnumClassImplicitUnionMapping implements ITypeMapping {
   public readonly description = `Implicit enum class`;
   public readonly coveredSchemaLocations: string[] = [];
+  private readonly properties: Record<string, ResolvedType> = {};
 
   constructor(public readonly factory: EnumClassImplicitUnionMappingFactory, private readonly schema: CfnSchema, private readonly type: ResolvedType, private readonly props: EnumClassImplicitUnionMappingProps) {
     this.coveredSchemaLocations.push(props.objType.schemaLocation);
 
-    for (const [, propType] of Object.entries(props.objType.properties)) {
+    for (const [name, propType] of Object.entries(props.objType.properties)) {
       const resolved = schema.resolveType(propType.type);
+      this.properties[name] = resolved;
       this.coveredSchemaLocations.push(resolved.schemaLocation);
     }
   }
@@ -84,26 +80,36 @@ export class EnumClassImplicitUnionMapping implements ITypeMapping {
       typeCheckedReturnType: genTypeForPropertyType(this.schema.cfnResourceName, name),
     });
 
-    for (const [name, altObj] of Object.entries(this.props.alternatives)) {
+    for (const [name, altType] of Object.entries(this.properties)) {
       const enumName = toCamelCase(name);
 
       enumClass.alternative(enumName, alt => {
-        // Options
-        const wireResult: Record<string, IValue> = {};
+        const altObj = this.schema.parseSchemaObject(altType);
+        if (altObj) {
+          // Options
+          const wireResult: Record<string, IValue> = Object.fromEntries(Object.entries(altObj.properties).map(
+            ([optName, opt]) => [toCamelCase(optName), alt.option({
+              name: toCamelCase(optName),
+              required: !!opt.required,
+              type: mapper.mapType(opt.type),
+              summary: '',
+              defaultDescription: !opt.required ? 'Some default' : undefined,
+            })]));
 
-        for (const [optName, opt] of Object.entries(altObj.properties)) {
-          wireResult[toCamelCase(optName)] = alt.option({
-            name: toCamelCase(optName),
-            required: !!opt.required,
-            type: mapper.mapType(opt.type),
-            summary: '',
-            defaultDescription: !opt.required ? 'Some default' : undefined,
+          alt.wire({
+            [enumName]: objLit(wireResult),
+          });
+        } else {
+          // Anything else
+          alt.wire({
+            [enumName]: alt.positional({
+              name: toCamelCase(name),
+              type: mapper.mapType(altType),
+              required: true,
+              summary: '',
+            }),
           });
         }
-
-        alt.wire({
-          [enumName]: objLit(wireResult),
-        });
       });
     }
 

@@ -23,6 +23,8 @@ Interesting Design Decisions
     documentation is extremely unclear on this value and it took me 2 hours and communicating with
     the doc writer to figure out what this does. Renamed to "cloudWatchDefaultDimension", picked a
     default value of "DefaultAction".
+  - { CaptchaConfig: { ImmunityTimeProperty: { ImmunityTime: 300 }}} -> { defaultCaptchaImmunity: Duration.minutes(5) }
+  - { ChallengeConfig: { ImmunityTimeProperty: { ImmunityTime: 300 }}} -> { defaultChallengeImmunity: Duration.minutes(5)
 
 - Unnecessary information separation
   - Custom response bodies reference a body by key in a resource-wide lookup table. This requires setting a custom response in two places:
@@ -30,5 +32,7 @@ Interesting Design Decisions
     - Second, reference the response by key in a Rule Action.
   - Add a case class that contains the entire response for use in a Rule Action, transparently invent a key and split the body off to the lookup table.
 
-
 - Rules are in an array and all have a `priority` field. If not given, we can derive the priority field from the array order.
+
+- CaptchaConfig and ChallengeConfig also appear in Rules, but only apply if the Action in that same Rule is a Captcha or Challenge action.
+
