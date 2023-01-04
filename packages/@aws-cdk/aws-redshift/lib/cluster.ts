@@ -4,6 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { AwsCustomResource, PhysicalResourceId, AwsCustomResourcePolicy } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -305,6 +306,13 @@ export interface ClusterProps {
   readonly roles?: iam.IRole[];
 
   /**
+   * A single AWS Identity and Access Management (IAM) role to be used as the default role for the cluster.
+   *
+   * @default - No default role is attached to the cluster.
+   */
+  readonly defaultRole?: iam.IRole;
+
+  /**
    * Name of a database which is automatically created inside the cluster
    *
    * @default - default_db
@@ -575,6 +583,11 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
+
+    // Add default role if specified
+    if (props.defaultRole) {
+      this.addDefaultIamRole(props.defaultRole);
+    }
   }
 
   /**
@@ -661,5 +674,30 @@ export class Cluster extends ClusterBase {
     } else {
       throw new Error('Cannot add a parameter to an imported parameter group.');
     }
+  }
+
+  /**
+   * Adds default IAM role to cluster
+   *
+   * @param defaultIamRole the IAM role to be set as the default role
+   */
+  public addDefaultIamRole(defaultIamRole: iam.IRole): void {
+    new AwsCustomResource(this, 'default-role', {
+      onUpdate: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          AddIamRoles: [defaultIamRole.roleArn],
+          DefaultIamRoleArn: defaultIamRole.roleArn,
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
+        ),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
   }
 }
