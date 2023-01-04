@@ -16,6 +16,7 @@ enum DockerStubCommand {
   SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT',
   MULTIPLE_FILES = 'DOCKER_STUB_MULTIPLE_FILES',
   SINGLE_ARCHIVE = 'DOCKER_STUB_SINGLE_ARCHIVE',
+  VOLUME_SINGLE_ARCHIVE = 'DOCKER_STUB_VOLUME_SINGLE_ARCHIVE',
 }
 
 const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
@@ -1158,6 +1159,39 @@ describe('staging', () => {
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(true);
   });
+
+  // vtest('bundling with docker image copy variant', () => {
+  //   // GIVEN
+  //   const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  //   const stack = new Stack(app, 'stack');
+  //   const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+  //   // WHEN
+  //   const staging = new AssetStaging(stack, 'Asset', {
+  //     sourcePath: directory,
+  //     bundling: {
+  //       image: DockerImage.fromRegistry('alpine'),
+  //       command: [DockerStubCommand.VOLUME_SINGLE_ARCHIVE],
+  //       fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
+  //     },
+  //   });
+
+  //   // THEN
+  //   const assembly = app.synth();
+  //   expect(fs.readdirSync(assembly.directory)).toEqual([
+  //     'asset.b978cc9f3faeb46e1eefdcc1f7d606ba6e0a171c90fad671e35a105b357b9c3b', // this is the bundle dir
+  //     'asset.b978cc9f3faeb46e1eefdcc1f7d606ba6e0a171c90fad671e35a105b357b9c3b.zip',
+  //     'cdk.out',
+  //     'manifest.json',
+  //     'stack.template.json',
+  //     'tree.json',
+  //   ]);
+  //   expect(fs.readdirSync(path.join(assembly.directory, 'asset.b978cc9f3faeb46e1eefdcc1f7d606ba6e0a171c90fad671e35a105b357b9c3b'))).toEqual([
+  //     'test.zip', // bundle dir with "touched" bundled output file
+  //   ]);
+  //   expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+  //   expect(staging.isArchive).toEqual(true);
+  // });
 
   test('bundling that produces a single archive file with disk cache', () => {
     // GIVEN

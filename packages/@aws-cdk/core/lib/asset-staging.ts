@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingOptions, BundlingOutput, dockerExec } from './bundling';
+import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput, dockerExec, DockerVolume } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
@@ -433,17 +433,22 @@ export class AssetStaging extends Construct {
     fs.chmodSync(bundleDir, 0o777);
 
     // Always mount input and output dir
-    // const volumes = [
-    //   {
-    //     hostPath: this.sourcePath,
-    //     containerPath: AssetStaging.BUNDLING_INPUT_DIR,
-    //   },
-    //   {
-    //     hostPath: bundleDir,
-    //     containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
-    //   },
-    //   ...options.volumes ?? [],
-    // ];
+    let volumes: DockerVolume[] = [];
+    if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
+      volumes = options.volumes ?? [];
+    } else {
+      volumes = [
+        {
+          hostPath: this.sourcePath,
+          containerPath: AssetStaging.BUNDLING_INPUT_DIR,
+        },
+        {
+          hostPath: bundleDir,
+          containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
+        },
+        ...options.volumes ?? [],
+      ];
+    }
 
     let localBundling: boolean | undefined;
     try {
@@ -465,33 +470,26 @@ export class AssetStaging extends Construct {
         const inputVolumeName = `assetInput${copySuffix}`;
         const outputVolumeName = `assetOutput${copySuffix}`;
         const copyContainerName = `copy${copySuffix}`;
-        dockerExec(['volume', 'create', inputVolumeName]);
-        dockerExec(['volume', 'create', outputVolumeName]);
 
-        dockerExec([
-          'run',
-          '--name', copyContainerName,
-          '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-          '-v', `${outputVolumeName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`,
-          'alpine',
-          'sh',
-          '-c',
-          `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
-        ]);
-        // copy files over
-        dockerExec(['cp', `${this.sourcePath}/.`, `${copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`]);
-        // but docker cp does not behave like normal cp, so we need to move them again
-        // dockerExec([
-        //   'run',
-        //   '--rm',
-        //   '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-        //   'ubuntu',
-        //   'bash',
-        //   '-c',
-        //   `tmpfolder=$(ls -d ${AssetStaging.BUNDLING_INPUT_DIR}/\*) mv $tmpfolder/\* ${AssetStaging.BUNDLING_INPUT_DIR}/ && rmdir $tmpfolder`,
-        // ]);
-        // this seems not work always
+        let volumesFrom: string[] = options.volumesFrom ?? [];
 
+        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
+          volumesFrom = [copyContainerName, ...options.volumesFrom ?? []];
+          dockerExec(['volume', 'create', inputVolumeName]);
+          dockerExec(['volume', 'create', outputVolumeName]);
+
+          dockerExec([
+            'run',
+            '--name', copyContainerName,
+            '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+            '-v', `${outputVolumeName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`,
+            'alpine',
+            'sh',
+            '-c',
+            `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+          ]);
+          dockerExec(['cp', `${this.sourcePath}/.`, `${copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`]);
+        }
 
         options.image.run({
           command: options.command,
@@ -500,12 +498,16 @@ export class AssetStaging extends Construct {
           entrypoint: options.entrypoint,
           workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
           securityOpt: options.securityOpt ?? '',
-          volumesFrom: [copyContainerName, ...options.volumesFrom ?? []],
+          volumes,
+          volumesFrom,
         });
-        dockerExec(['cp', `${copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, bundleDir]);
-        dockerExec(['rm', copyContainerName]);
-        dockerExec(['volume', 'rm', inputVolumeName]);
-        dockerExec(['volume', 'rm', outputVolumeName]);
+
+        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
+          dockerExec(['cp', `${copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, bundleDir]);
+          dockerExec(['rm', copyContainerName]);
+          dockerExec(['volume', 'rm', inputVolumeName]);
+          dockerExec(['volume', 'rm', outputVolumeName]);
+        }
       }
     } catch (err) {
       // When bundling fails, keep the bundle output for diagnosability, but

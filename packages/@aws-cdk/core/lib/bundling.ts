@@ -108,6 +108,12 @@ export interface BundlingOptions {
    * @default - no networking options
    */
   readonly network?: string;
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BIND_MOUNT
+   */
+  readonly fileCopyVariant?: BundlingFileCopyVariant;
 }
 
 /**
@@ -150,6 +156,25 @@ export interface ILocalBundling {
    */
   tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
+
+/**
+ * The type of file copy that should be used for bundling
+ */
+export enum BundlingFileCopyVariant {
+  /**
+   * Creates temporary volumes and docker containers
+   * This is slower, but works also in more complex situations with remote or shared docker sockets.
+   */
+  DOCKER_COPY = 'docker-copy',
+
+  /**
+   * The source and output folders will be mounted as bind mount from the host system
+   * This is faster and simpler, but less portable than the other option.
+   */
+  BIND_MOUNT = 'bind-mount',
+
+}
+
 
 /**
  * A Docker image used for asset bundling
