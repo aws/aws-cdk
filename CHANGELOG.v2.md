@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.59.0](https://github.com/aws/aws-cdk/compare/v2.58.1...v2.59.0) (2023-01-03)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v105.0.0 ([#23501](https://github.com/aws/aws-cdk/issues/23501)) ([72bd3a0](https://github.com/aws/aws-cdk/commit/72bd3a0ce96c9fd98bbf2f3eb76db1336c8a3029))
+* **s3:** use Bucket Policy for Server Access Logging grant (under feature flag) ([#23386](https://github.com/aws/aws-cdk/issues/23386)) ([6975a7e](https://github.com/aws/aws-cdk/commit/6975a7ea06a5680bebd38ad5c26ab5bd566d33b1)), closes [#22183](https://github.com/aws/aws-cdk/issues/22183)
+* **servicecatalog:** Add Product Stack Asset Support ([#22857](https://github.com/aws/aws-cdk/issues/22857)) ([ceaac3a](https://github.com/aws/aws-cdk/commit/ceaac3ad49fcfdb89ec80c2784934589542e80b6)), closes [#20690](https://github.com/aws/aws-cdk/issues/20690)
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** unable to use `nodeModules` with pnpm ([#21911](https://github.com/aws/aws-cdk/issues/21911)) ([7c752db](https://github.com/aws/aws-cdk/commit/7c752db4aa83b242098483fc006c1100d1be11a9)), closes [#21910](https://github.com/aws/aws-cdk/issues/21910)
+* **servicecatalog:** make assetBuckets a required property ([#23507](https://github.com/aws/aws-cdk/issues/23507)) ([10b6b96](https://github.com/aws/aws-cdk/commit/10b6b96f35ac32a60aa2bf4ea1856158392ae8ad))
+
+## [2.58.1](https://github.com/aws/aws-cdk/compare/v2.58.0...v2.58.1) (2022-12-30)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v105.0.0 ([#23501](https://github.com/aws/aws-cdk/issues/23501)) ([05c3411](https://github.com/aws/aws-cdk/commit/05c3411047ce1d5ad4f2d6e564a6b8d20f76bea6))
+
+## [2.58.0](https://github.com/aws/aws-cdk/compare/v2.57.0...v2.58.0) (2022-12-28)
+
+
+### Features
+
+* **assertions:** improve printing of match failures ([#23453](https://github.com/aws/aws-cdk/issues/23453)) ([2676386](https://github.com/aws/aws-cdk/commit/267638674474c4cac9be5ca0d7f8b9a538ba2e39))
+
+## [2.57.0](https://github.com/aws/aws-cdk/compare/v2.56.1...v2.57.0) (2022-12-27)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v103.0.0 ([#23452](https://github.com/aws/aws-cdk/issues/23452)) ([e49e57d](https://github.com/aws/aws-cdk/commit/e49e57d3106f62c5d64c428cba73b4107d664cba))
+* **lambda:** add support for auto-instrumentation with ADOT Lambda layer ([#23027](https://github.com/aws/aws-cdk/issues/23027)) ([fc70535](https://github.com/aws/aws-cdk/commit/fc70535fe699e72332d5ddb4543308e76a89594a))
+
+
+### Bug Fixes
+
+* **cfnspec:** v101.0.0 introduced specific types on several types that previously were typed as json ([#23448](https://github.com/aws/aws-cdk/issues/23448)) ([4fbc182](https://github.com/aws/aws-cdk/commit/4fbc1827b8978262da0b5b77b1ee9bc0ecfdcc3e))
+* **codedeploy:** referenced Applications are not environment-aware ([#23405](https://github.com/aws/aws-cdk/issues/23405)) ([96242d7](https://github.com/aws/aws-cdk/commit/96242d73c0ae853524a567aece86f8a8a514495c))
+* **s3:** buckets with SSE-KMS silently fail to receive logs ([#23385](https://github.com/aws/aws-cdk/issues/23385)) ([1b7a384](https://github.com/aws/aws-cdk/commit/1b7a384c330d168d64c0cd82118e5b5473d08a67))
+
 ## [2.56.1](https://github.com/aws/aws-cdk/compare/v2.56.0...v2.56.1) (2022-12-23)
 
 
