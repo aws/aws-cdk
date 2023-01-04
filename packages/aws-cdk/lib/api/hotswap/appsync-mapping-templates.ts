@@ -9,7 +9,6 @@ export async function isHotswappableAppSyncChange(
   const isFunction = change.newValue.Type === 'AWS::AppSync::FunctionConfiguration';
 
   if (!isResolver && !isFunction) {
-    // This decider can't make decisions about this resource type
     return [];
   }
 
