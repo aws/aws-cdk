@@ -1,14 +1,12 @@
 {
   "version": "22.0.0",
   "testCases": {
-    "integ.imported-role": {
+    "ImportedRoleTest/DefaultTest": {
       "stacks": [
-        "integ-iam-imported-role-1"
+        "integ-iam-imported-role-role-stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "ImportedRoleTestAssertions",
+      "assertionStackName": "ImportedRoleTestAssertions"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

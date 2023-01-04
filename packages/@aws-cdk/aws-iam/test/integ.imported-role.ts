@@ -15,18 +15,26 @@ const role = new Role(roleStack, 'TestRole', {
 
 const firstStack = new Stack(app, 'integ-iam-imported-role-1');
 const roleInFirstStack = Role.fromRoleName(firstStack, 'Role', role.roleName);
-roleInFirstStack.addToPolicy(new PolicyStatement({ resources: ['firstQueue'], actions: ['sqs:SendMessage'] }));
+roleInFirstStack.addToPrincipalPolicy(new PolicyStatement({ resources: ['arn:aws:sqs:*:*:firstQueue'], actions: ['sqs:SendMessage'] }));
 
 const secondStack = new Stack(app, 'integ-iam-imported-role-2');
 secondStack.addDependency(firstStack, 'So that this stack can be tested after both are deployed.');
-
 const roleInSecondStack = Role.fromRoleName(secondStack, 'Role', role.roleName);
-roleInSecondStack.addToPolicy(new PolicyStatement({ resources: ['secondQueue'], actions: ['sqs:SendMessage'] }));
+roleInSecondStack.addToPrincipalPolicy(new PolicyStatement({ resources: ['arn:aws:sqs:*:*:secondQueue'], actions: ['sqs:SendMessage'] }));
+
+const assertionStack = new Stack(app, 'ImportedRoleTestAssertions');
+assertionStack.addDependency(roleStack);
+assertionStack.addDependency(firstStack);
+assertionStack.addDependency(secondStack);
 
 const test = new integ.IntegTest(app, 'ImportedRoleTest', {
-  testCases: [secondStack],
+  testCases: [roleStack],
+  assertionStack,
 });
 
-test.assertions.awsApiCall('IAM', 'listRolePolicies', { RoleName: role.roleName }).assertAtPath('PolicyNames', integ.ExpectedResult.arrayWith([integ.Match.stringLikeRegexp('.*'), integ.Match.stringLikeRegexp('.*')]));
+test.assertions
+  .awsApiCall('IAM', 'listRolePolicies', { RoleName: role.roleName })
+  .assertAtPath('PolicyNames.0', integ.ExpectedResult.stringLikeRegexp('^Policyintegiamimportedrole1Role.{8}$'))
+  .assertAtPath('PolicyNames.1', integ.ExpectedResult.stringLikeRegexp('^Policyintegiamimportedrole2Role.{8}$'));
 
 app.synth();
