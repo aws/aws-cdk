@@ -1,0 +1,13 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "lambda-python-function-dockercopy/DefaultTest": {
+      "stacks": [
+        "integ-lambda-python-function-dockercopy"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-function-dockercopy/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonfunctiondockercopyDefaultTestDeployAssert9D2D26DD"
+    }
+  }
+}

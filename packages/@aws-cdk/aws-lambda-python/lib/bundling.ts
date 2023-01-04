@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetStaging, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from '@aws-cdk/core';
+import { AssetStaging, BundlingFileCopyVariant, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from '@aws-cdk/core';
 import { Packaging, DependenciesFile } from './packaging';
 import { BundlingOptions, ICommandHooks } from './types';
 
@@ -41,6 +41,12 @@ export interface BundlingProps extends BundlingOptions {
    * @default - Does not skip bundling
    */
   readonly skip?: boolean;
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BIND_MOUNT
+   */
+  fileCopyVariant?: BundlingFileCopyVariant
 }
 
 /**
@@ -66,6 +72,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly user?: string;
   public readonly securityOpt?: string;
   public readonly network?: string;
+  public readonly fileCopyVariant?: BundlingFileCopyVariant;
 
   constructor(props: BundlingProps) {
     const {
@@ -104,6 +111,7 @@ export class Bundling implements CdkBundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
+    this.fileCopyVariant = props.fileCopyVariant;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
