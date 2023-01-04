@@ -682,7 +682,7 @@ export class Cluster extends ClusterBase {
    * @param defaultIamRole the IAM role to be set as the default role
    */
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
-    const defaultRoleCustomeResource = new AwsCustomResource(this, 'default-role', {
+    const defaultRoleCustomResource = new AwsCustomResource(this, 'default-role', {
       onUpdate: {
         service: 'Redshift',
         action: 'modifyClusterIamRoles',
@@ -700,6 +700,6 @@ export class Cluster extends ClusterBase {
       }),
     });
 
-    defaultIamRole.grantPassRole(defaultRoleCustomeResource.grantPrincipal);
+    defaultIamRole.grantPassRole(defaultRoleCustomResource.grantPrincipal);
   }
 }
