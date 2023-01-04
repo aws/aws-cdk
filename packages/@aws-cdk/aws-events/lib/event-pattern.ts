@@ -24,14 +24,14 @@ export class Match implements IResolvable {
   }
 
   /**
-   * Matches when the field is absent from the JSON of the event
+   * Matches when the field is present in the JSON of the event
    */
   public static exists(): string[] {
     return this.fromObjects([{ exists: true }]);
   }
 
   /**
-   * Matches when the field is present in the JSON of the event
+   * Matches when the field is absent from the JSON of the event
    */
   public static doesNotExist(): string[] {
     return this.fromObjects([{ exists: false }]);
