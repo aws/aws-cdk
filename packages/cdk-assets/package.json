@@ -36,7 +36,7 @@
     "@types/mime": "^2.0.3",
     "@types/mock-fs": "^4.13.1",
     "@types/node": "^10.17.60",
-    "@types/yargs": "^15.0.14",
+    "@types/yargs": "^15.0.15",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^27.5.1",
     "jszip": "^3.10.1",
