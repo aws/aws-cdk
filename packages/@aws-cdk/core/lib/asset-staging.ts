@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput, dockerExec, DockerVolume } from './bundling';
+import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput, DockerImageBundlingCopyHelper, DockerVolume } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
@@ -466,29 +466,14 @@ export class AssetStaging extends Construct {
             : '1000:1000';
         }
 
-        const copySuffix = crypto.randomBytes(12).toString('hex');
-        const inputVolumeName = `assetInput${copySuffix}`;
-        const outputVolumeName = `assetOutput${copySuffix}`;
-        const copyContainerName = `copy${copySuffix}`;
-
         let volumesFrom: string[] = options.volumesFrom ?? [];
 
+        const helperContainer = new DockerImageBundlingCopyHelper();
         if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
-          volumesFrom = [copyContainerName, ...options.volumesFrom ?? []];
-          dockerExec(['volume', 'create', inputVolumeName]);
-          dockerExec(['volume', 'create', outputVolumeName]);
-
-          dockerExec([
-            'run',
-            '--name', copyContainerName,
-            '-v', `${inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-            '-v', `${outputVolumeName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`,
-            'alpine',
-            'sh',
-            '-c',
-            `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
-          ]);
-          dockerExec(['cp', `${this.sourcePath}/.`, `${copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`]);
+          volumesFrom = [helperContainer.copyContainerName, ...options.volumesFrom ?? []];
+          helperContainer.prepareVolumes();
+          helperContainer.startHelperContainer(user);
+          helperContainer.copyInputFrom(this.sourcePath);
         }
 
         options.image.run({
@@ -503,10 +488,9 @@ export class AssetStaging extends Construct {
         });
 
         if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
-          dockerExec(['cp', `${copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, bundleDir]);
-          dockerExec(['rm', copyContainerName]);
-          dockerExec(['volume', 'rm', inputVolumeName]);
-          dockerExec(['volume', 'rm', outputVolumeName]);
+          helperContainer.copyOutputTo(bundleDir);
+          helperContainer.cleanHelperContainer();
+          helperContainer.cleanVolumes();
         }
       }
     } catch (err) {

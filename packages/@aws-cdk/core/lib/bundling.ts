@@ -1,6 +1,7 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
+import { AssetStaging } from './asset-staging';
 import { FileSystem } from './fs';
 import { quiet, reset } from './private/jsii-deprecated';
 
@@ -558,11 +559,93 @@ export interface DockerBuildOptions {
   readonly targetStage?: string;
 }
 
+/**
+ * Provides a helper container for copying bundling related files to specific input and output volumes
+ */
+export class DockerImageBundlingCopyHelper {
+  /**
+   * Name of the Docker volume that is used for the asset input
+   */
+  private inputVolumeName: string;
+  /**
+   * Name of the Docker volume that is used for the asset output
+   */
+  private outputVolumeName: string;
+  /**
+   * Name of the Docker helper container to copy files into the volume
+   */
+  public copyContainerName: string;
+
+  constructor() {
+    const copySuffix = crypto.randomBytes(12).toString('hex');
+    this.inputVolumeName = `assetInput${copySuffix}`;
+    this.outputVolumeName = `assetOutput${copySuffix}`;
+    this.copyContainerName = `copy${copySuffix}`;
+  }
+
+  /**
+   * Creates volumes for asset input and output
+   */
+  public prepareVolumes() {
+    dockerExec(['volume', 'create', this.inputVolumeName]);
+    dockerExec(['volume', 'create', this.outputVolumeName]);
+  }
+
+  /**
+   * Removes volumes for asset input and output
+   */
+  public cleanVolumes() {
+    dockerExec(['volume', 'rm', this.inputVolumeName]);
+    dockerExec(['volume', 'rm', this.outputVolumeName]);
+  }
+
+  /**
+   * runs a helper container that holds volumes and does some preparation tasks
+   * @param user The user that will later access these files and needs permissions to do so
+   */
+  public startHelperContainer(user: string) {
+    dockerExec([
+      'run',
+      '--name', this.copyContainerName,
+      '-v', `${this.inputVolumeName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+      '-v', `${this.outputVolumeName}:${AssetStaging.BUNDLING_OUTPUT_DIR}`,
+      'alpine',
+      'sh',
+      '-c',
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+    ]);
+  }
+
+  /**
+   * removes the Docker helper container
+   */
+  public cleanHelperContainer() {
+    dockerExec(['rm', this.copyContainerName]);
+  }
+
+  /**
+   * copy files from the host where this is executed into the input volume
+   * @param sourcePath - path to folder where files should be copied from - without trailing slash
+   */
+  public copyInputFrom(sourcePath: string) {
+    dockerExec(['cp', `${sourcePath}/.`, `${this.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`]);
+
+  }
+
+  /**
+   * copy files from the the output volume to the host where this is executed
+   * @param outputPath - path to folder where files should be copied to - without trailing slash
+   */
+  public copyOutputTo(outputPath: string) {
+    dockerExec(['cp', `${this.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, outputPath]);
+  }
+}
+
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-export function dockerExec(args: string[], options?: SpawnSyncOptions) {
+function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
   const proc = spawnSync(prog, args, options ?? {
     stdio: [ // show Docker output
