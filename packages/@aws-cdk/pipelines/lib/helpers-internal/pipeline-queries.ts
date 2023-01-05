@@ -1,4 +1,4 @@
-import { Step, ShellStep, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
+import { Step, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 
 /**
@@ -25,9 +25,7 @@ export class PipelineQueries {
 
     const ret = new Array<string>();
     for (const step of steps) {
-      if (!(step instanceof ShellStep)) { continue; }
-
-      for (const outputRef of Object.values(step.envFromCfnOutputs)) {
+      for (const outputRef of step.consumedStackOutputs) {
         if (outputRef.isProducedBy(stack)) {
           ret.push(outputRef.outputName);
         }
