@@ -5,8 +5,8 @@ import {
   ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '@aws-cdk/aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy, ListenerCondition, IApplicationListener,
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy, IApplicationListener,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
@@ -96,53 +96,11 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly certificate?: ICertificate;
 
   /**
-   * The protocol for connections from the load balancer to the ECS tasks.
-   * The default target port is determined from the protocol (port 80 for
-   * HTTP, port 443 for HTTPS).
+   * Properties for adding new targets to a listener.
    *
-   * @default HTTP.
+   * @default protocol = HTTP
    */
-  readonly targetProtocol?: ApplicationProtocol;
-
-  /**
-   * The protocol for connections from clients to the load balancer.
-   * The load balancer port is determined from the protocol (port 80 for
-   * HTTP, port 443 for HTTPS).  If HTTPS, either a certificate or domain
-   * name and domain zone must also be specified.
-   *
-   * @default HTTP. If a certificate is specified, the protocol will be
-   * set by default to HTTPS.
-   */
-  readonly protocol?: ApplicationProtocol;
-
-  /**
-   * The protocol version to use
-   *
-   * @default ApplicationProtocolVersion.HTTP1
-   */
-  readonly protocolVersion?: ApplicationProtocolVersion;
-
-  /**
-   * Priority of this target group
-   *
-   * The rule with the lowest priority will be used for every request.
-   * If priority is not given, these target groups will be added as
-   * defaults, and must not have conditions.
-   *
-   * Priorities must be unique.
-   *
-   * @default Target groups are used as defaults
-   */
-  readonly priority?: number;
-
-  /**
-   * Rule applies if matches the conditions.
-   *
-   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
-   *
-   * @default - No conditions.
-   */
-  readonly conditions?: ListenerCondition[];
+  readonly target?: AddApplicationTargetsProps;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -515,20 +473,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
 
-    if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
+    if (props.certificate !== undefined && props.target?.protocol !== undefined && props.target?.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    const protocol = props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    const protocol = props.target?.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
       throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
     }
 
     const targetProps: AddApplicationTargetsProps = {
-      protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
-      protocolVersion: props.protocolVersion,
-      conditions: props.conditions,
-      priority: props.priority,
+      protocol: ApplicationProtocol.HTTP,
+      ...props.target,
     };
 
     const isImprotedListener = props.listener !== undefined && !(props.listener instanceof ApplicationListener);
