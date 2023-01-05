@@ -13,7 +13,7 @@ import { deployArtifactBounds } from '../common';
 /**
  * Used for HTTP cache-control header, which influences downstream caches.
  * Use the provided static factory methods to construct instances of this class.
- * Used in the {@link S3DeployActionProps.cacheControl} property.
+ * Used in the `S3DeployActionProps.cacheControl` property.
  *
  * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
  */
@@ -45,7 +45,7 @@ export class CacheControl {
 }
 
 /**
- * Construction properties of the {@link S3DeployAction S3 deploy Action}.
+ * Construction properties of the `S3DeployAction S3 deploy Action`.
  */
 export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
   /**

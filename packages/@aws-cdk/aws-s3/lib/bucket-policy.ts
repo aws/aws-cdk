@@ -35,7 +35,7 @@ export interface BucketPolicyProps {
  */
 export class BucketPolicy extends Resource {
   /**
-   * Create a mutable {@link BucketPolicy} from a {@link CfnBucketPolicy}.
+   * Create a mutable `BucketPolicy` from a `CfnBucketPolicy`.
    */
   public static fromCfnBucketPolicy(cfnBucketPolicy: CfnBucketPolicy): BucketPolicy {
     // use a "weird" id that has a higher chance of being unique

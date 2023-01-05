@@ -6,7 +6,7 @@ import { IFunction } from './function-base';
 
 
 /**
- * Config returned from {@link LambdaInsightsVersion._bind}
+ * Config returned from `LambdaInsightsVersion._bind`
  */
 interface InsightsBindConfig {
   /**

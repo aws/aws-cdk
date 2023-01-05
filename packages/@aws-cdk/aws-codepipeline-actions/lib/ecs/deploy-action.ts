@@ -7,7 +7,7 @@ import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
 /**
- * Construction properties of {@link EcsDeployAction}.
+ * Construction properties of `EcsDeployAction`.
  */
 export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**

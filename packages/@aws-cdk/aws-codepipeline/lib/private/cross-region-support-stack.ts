@@ -81,7 +81,7 @@ export class CrossRegionSupportConstruct extends Construct {
 }
 
 /**
- * Construction properties for {@link CrossRegionSupportStack}.
+ * Construction properties for `CrossRegionSupportStack`.
  * This interface is private to the aws-codepipeline package.
  */
 export interface CrossRegionSupportStackProps {

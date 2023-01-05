@@ -46,8 +46,8 @@ export interface TagProps {
    *
    * Default priorities:
    *
-   * - 100 for {@link SetTag}
-   * - 200 for {@link RemoveTag}
+   * - 100 for `SetTag`
+   * - 200 for `RemoveTag`
    * - 50 for tags added directly to CloudFormation resources
    *
    */

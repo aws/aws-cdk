@@ -4,7 +4,7 @@ import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
 
 /**
- * The type returned from {@link IArtifacts#bind}.
+ * The type returned from `IArtifacts#bind`.
  */
 export interface ArtifactsConfig {
   /**
@@ -15,7 +15,7 @@ export interface ArtifactsConfig {
 
 /**
  * The abstract interface of a CodeBuild build output.
- * Implemented by {@link Artifacts}.
+ * Implemented by `Artifacts`.
  */
 export interface IArtifacts {
   /**
@@ -75,7 +75,7 @@ export abstract class Artifacts implements IArtifacts {
 }
 
 /**
- * Construction properties for {@link S3Artifacts}.
+ * Construction properties for `S3Artifacts`.
  */
 export interface S3ArtifactsProps extends ArtifactsProps {
   /**

@@ -7,11 +7,11 @@ import { arnForApplication, validateName } from '../private/utils';
  * Represents a reference to a CodeDeploy Application deploying to Amazon ECS.
  *
  * If you're managing the Application alongside the rest of your CDK resources,
- * use the {@link EcsApplication} class.
+ * use the `EcsApplication` class.
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link EcsApplication#fromEcsApplicationName} method.
+ * use the `EcsApplication#fromEcsApplicationName` method.
  */
 export interface IEcsApplication extends IResource {
   /** @attribute */
@@ -22,7 +22,7 @@ export interface IEcsApplication extends IResource {
 }
 
 /**
- * Construction properties for {@link EcsApplication}.
+ * Construction properties for `EcsApplication`.
  */
 export interface EcsApplicationProps {
   /**

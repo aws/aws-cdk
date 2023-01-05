@@ -62,7 +62,7 @@ export interface CustomLambdaDeploymentConfigProps {
 /**
  * A custom Deployment Configuration for a Lambda Deployment Group.
  * @resource AWS::CodeDeploy::DeploymentGroup
- * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use {@link LambdaDeploymentConfig}.
+ * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use `LambdaDeploymentConfig`.
  */
 export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
 

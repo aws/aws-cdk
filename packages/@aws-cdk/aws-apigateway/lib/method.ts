@@ -25,9 +25,9 @@ export interface MethodOptions {
    * Method authorization.
    * If the value is set of `Custom`, an `authorizer` must also be specified.
    *
-   * If you're using one of the authorizers that are available via the {@link Authorizer} class, such as {@link Authorizer#token()},
+   * If you're using one of the authorizers that are available via the `Authorizer` class, such as `Authorizer#token()`,
    * it is recommended that this option not be specified. The authorizer will take care of setting the correct authorization type.
-   * However, specifying an authorization type using this property that conflicts with what is expected by the {@link Authorizer}
+   * However, specifying an authorization type using this property that conflicts with what is expected by the `Authorizer`
    * will result in an error.
    *
    * @default - open access unless `authorizer` is specified

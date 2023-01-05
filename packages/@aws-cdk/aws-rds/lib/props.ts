@@ -152,7 +152,7 @@ export interface CredentialsBaseOptions {
 
   /**
    * The characters to exclude from the generated password.
-   * Has no effect if {@link password} has been provided.
+   * Has no effect if `password` has been provided.
    *
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
@@ -292,7 +292,7 @@ export abstract class Credentials {
 
   /**
    * The characters to exclude from the generated password.
-   * Only used if {@link password} has not been set.
+   * Only used if `password` has not been set.
    *
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
@@ -307,7 +307,7 @@ export abstract class Credentials {
 }
 
 /**
- * Options used in the {@link SnapshotCredentials.fromGeneratedPassword} method.
+ * Options used in the `SnapshotCredentials.fromGeneratedPassword` method.
  */
 export interface SnapshotCredentialsFromGeneratedPasswordOptions {
   /**
@@ -441,7 +441,7 @@ export abstract class SnapshotCredentials {
 
   /**
    * The characters to exclude from the generated password.
-   * Only used if {@link generatePassword} if true.
+   * Only used if `generatePassword` if true.
    *
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */

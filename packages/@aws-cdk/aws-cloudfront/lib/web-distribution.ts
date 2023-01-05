@@ -54,7 +54,7 @@ export enum FailoverStatusCode {
  * "cloudfront.net" domain. To use this feature you must provide the list of
  * additional domains, and the ACM Certificate that CloudFront should use for
  * these additional domains.
- * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
+ * @deprecated see `CloudFrontWebDistributionProps#viewerCertificate` with `ViewerCertificate#acmCertificate`
  */
 export interface AliasConfiguration {
   /**
@@ -557,7 +557,7 @@ export class ViewerCertificate {
   /**
    * Generate a viewer certifcate configuration using
    * the CloudFront default certificate (e.g. d111111abcdef8.cloudfront.net)
-   * and a {@link SecurityPolicyProtocol.TLS_V1} security policy.
+   * and a `SecurityPolicyProtocol.TLS_V1` security policy.
    *
    * @param aliases Alternative CNAME aliases
    *                You also must create a CNAME record with your DNS service to route queries
@@ -577,7 +577,7 @@ export interface CloudFrontWebDistributionProps {
    * AliasConfiguration is used to configured CloudFront to respond to requests on custom domain names.
    *
    * @default - None.
-   * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
+   * @deprecated see `CloudFrontWebDistributionProps#viewerCertificate` with `ViewerCertificate#acmCertificate`
    */
   readonly aliasConfiguration?: AliasConfiguration;
 

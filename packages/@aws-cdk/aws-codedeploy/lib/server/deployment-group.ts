@@ -108,7 +108,7 @@ export class InstanceTagSet {
 }
 
 /**
- * Construction properties for {@link ServerDeploymentGroup}.
+ * Construction properties for `ServerDeploymentGroup`.
  */
 export interface ServerDeploymentGroupProps {
   /**
@@ -143,7 +143,7 @@ export interface ServerDeploymentGroupProps {
    * The auto-scaling groups belonging to this Deployment Group.
    *
    * Auto-scaling groups can also be added after the Deployment Group is created
-   * using the {@link #addAutoScalingGroup} method.
+   * using the `#addAutoScalingGroup` method.
    *
    * [disable-awslint:ref-via-interface] is needed because we update userdata
    * for ASGs to install the codedeploy agent.
@@ -153,7 +153,7 @@ export interface ServerDeploymentGroupProps {
   readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 
   /**
-   * If you've provided any auto-scaling groups with the {@link #autoScalingGroups} property,
+   * If you've provided any auto-scaling groups with the `#autoScalingGroups` property,
    * you can set this property to add User Data that installs the CodeDeploy agent on the instances.
    *
    * @default true
@@ -189,7 +189,7 @@ export interface ServerDeploymentGroupProps {
    * CodeDeploy will stop (and optionally roll back)
    * a deployment if during it any of the alarms trigger.
    *
-   * Alarms can also be added after the Deployment Group is created using the {@link #addAlarm} method.
+   * Alarms can also be added after the Deployment Group is created using the `#addAlarm` method.
    *
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html

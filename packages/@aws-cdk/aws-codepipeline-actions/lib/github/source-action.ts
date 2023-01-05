@@ -34,7 +34,7 @@ export interface GitHubSourceVariables {
 }
 
 /**
- * Construction properties of the {@link GitHubSourceAction GitHub source action}.
+ * Construction properties of the `GitHubSourceAction GitHub source action`.
  */
 export interface GitHubSourceActionProps extends codepipeline.CommonActionProps {
   /**
