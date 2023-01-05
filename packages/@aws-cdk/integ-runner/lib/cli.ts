@@ -37,8 +37,8 @@ export function parseCliArgs(args: string[] = []) {
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
     .option('language', {
       alias: 'l',
-      default: ['javascript', 'typescript', 'python'],
-      choices: ['javascript', 'typescript', 'python'],
+      default: ['javascript', 'typescript', 'python', 'go'],
+      choices: ['javascript', 'typescript', 'python', 'go'],
       type: 'array',
       desc: 'Use these presets to run integration tests for the selected languages',
     })

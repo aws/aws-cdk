@@ -250,6 +250,7 @@ export class IntegrationTests {
       javascript: ['node {filePath}', ['^integ\\..*\\.js$']],
       typescript: ['node -r ts-node/register {filePath}', ['^integ\\.(?!.*\\.d\\.ts$).*\\.ts$']],
       python: [`${pythonExecutable()} {filePath}`, ['^integ_.*\\.py$']],
+      go: ['go run {filePath}', ['^integ_.*\\.go$']],
     };
 
     return languagePresets[language];
