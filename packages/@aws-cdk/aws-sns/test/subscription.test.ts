@@ -153,7 +153,7 @@ describe('Subscription', () => {
 
   });
 
-  test('with filter policy scope', () => {
+  test('with filter policy scope and filter policy V2', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
@@ -161,7 +161,7 @@ describe('Subscription', () => {
     // WHEN
     new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
-      filterPolicy: {
+      filterPolicyV2: {
         background: {
           color: sns.SubscriptionFilter.stringFilter({
             allowlist: ['red', 'green'],
@@ -290,7 +290,7 @@ describe('Subscription', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
-    const cond = { conditions: new sns.SubscriptionFilter([]) };
+    const cond = { conditions: [] };
 
     // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
@@ -320,15 +320,15 @@ describe('Subscription', () => {
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
       filterPolicy: {
-        a: new sns.SubscriptionFilter([...Array.from(Array(2).keys())]),
-        b: new sns.SubscriptionFilter([...Array.from(Array(10).keys())]),
-        c: new sns.SubscriptionFilter([...Array.from(Array(8).keys())]),
+        a: { conditions: [...Array.from(Array(2).keys())] },
+        b: { conditions: [...Array.from(Array(10).keys())] },
+        c: { conditions: [...Array.from(Array(6).keys())] },
       },
-    })).toThrow(/\(160\) must not exceed 150/);
+    })).toThrow(/\(120\) must not exceed 100/);
 
   });
 
-  test('throws with more than 100 conditions in a filter policy with filter policy scope set to MessageBody', () => {
+  test('throws with more than 150 conditions in a filter policy with filter policy scope set to MessageBody', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
@@ -338,7 +338,7 @@ describe('Subscription', () => {
       endpoint: 'endpoint',
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
-      filterPolicy: {
+      filterPolicyV2: {
         a: { b: new sns.SubscriptionFilter([...Array.from(Array(10).keys())]) },
         c: { d: new sns.SubscriptionFilter([...Array.from(Array(5).keys())]) },
       },

@@ -1929,7 +1929,7 @@ test('with filter policy', () => {
   });
 });
 
-test('with filter policy', () => {
+test('with filter policy and filter policy scope set to MessageAttributes', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
@@ -1986,7 +1986,7 @@ test('with filter policy', () => {
   });
 });
 
-test('with filter policy scope', () => {
+test('with filter policy scope MessageBody', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
@@ -1994,7 +1994,7 @@ test('with filter policy scope', () => {
   });
 
   topic.addSubscription(new subs.LambdaSubscription(fction, {
-    filterPolicy: {
+    filterPolicyV2: {
       color: {
         background: sns.SubscriptionFilter.stringFilter({
           allowlist: ['red'],

@@ -45,6 +45,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
+      filterPolicyV2: this.props.filterPolicyV2,
       filterPolicyScope: this.props.filterPolicyScope,
       region: this.regionFromArn(topic),
       deadLetterQueue: this.props.deadLetterQueue,
