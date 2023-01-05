@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb31ac4d94e1951f1abbf7ff933a4b15e1f5c252ac891babb773cc5102ca8c51.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b8fac91d54694ce82b7d11fb7e162d77477381e3254fead4dee0509fcf0d575.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -289,69 +289,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterSubnetsDCFA5CB7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSubnetsDCFA5CB7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterSecurityGroup0921994B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSecurityGroup0921994B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterSecret6368BD0F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSecret6368BD0F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterSecretAttachment769E6258": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSecretAttachment769E6258",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterEB0386A7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterdefaultroleB2E5C52F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterdefaultroleB2E5C52F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterdefaultroleCustomResourcePolicyE636FA86": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterdefaultroleCustomResourcePolicyE636FA86",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
