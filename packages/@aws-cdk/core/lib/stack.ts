@@ -127,8 +127,13 @@ export interface StackProps {
    * like how assets are referenced and what IAM roles to use. For more
    * information, see the README of the main CDK package.
    *
-   * @default - `DefaultStackSynthesizer` if the `@aws-cdk/core:newStyleStackSynthesis` feature flag
-   * is set, `LegacyStackSynthesizer` otherwise.
+   * If not specified, the `defaultStackSynthesizer` from `App` will be used.
+   * If that is not specified, `DefaultStackSynthesizer` is used if
+   * `@aws-cdk/core:newStyleStackSynthesis` is set to `true` or the CDK major
+   * version is v2. In CDK v1 `LegacyStackSynthesizer` is the default if no
+   * other synthesizer is specified.
+   *
+   * @default - The synthesizer specified on `App`, or `DefaultStackSynthesizer` otherwise.
    */
   readonly synthesizer?: IStackSynthesizer;
 

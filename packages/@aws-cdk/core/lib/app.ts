@@ -115,8 +115,7 @@ export interface AppProps {
    * like how assets are referenced and what IAM roles to use. For more
    * information, see the README of the main CDK package.
    *
-   * @default - `DefaultStackSynthesizer` if the `@aws-cdk/core:newStyleStackSynthesis` feature flag
-   * is set, `LegacyStackSynthesizer` otherwise.
+   * @default - A `DefaultStackSynthesizer` with default settings
    */
   readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
 }
