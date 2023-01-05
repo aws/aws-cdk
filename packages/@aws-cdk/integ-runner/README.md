@@ -77,7 +77,7 @@ to be a self contained CDK app. The runner will execute the following for each f
 
   Use together with `--app` to fully customize how tests are run, or use with a single `--language` preset to change which files are detected for this language.
 - `--language`
-  The language presets to use. You can discover and run tests written in multiple languages by passing this flag multiple times (`--language javascript --language typescript`). Defaults to all supported languages. Currently supported language presets are:
+  The language presets to use. You can discover and run tests written in multiple languages by passing this flag multiple times (`--language typescript --language python`). Defaults to all supported languages. Currently supported language presets are:
   - `javascript`:
     - File RegExp: `^integ\..*\.js$`
     - App run command: `node {filePath}`
@@ -88,6 +88,9 @@ to be a self contained CDK app. The runner will execute the following for each f
   - `python`:
     - File RegExp: `^integ_.*\.py$`
     - App run command: `python {filePath}`
+  - `go`:
+    - File RegExp: `^integ_.*\.go$`
+    - App run command: `go run {filePath}`
 
 Example:
 
