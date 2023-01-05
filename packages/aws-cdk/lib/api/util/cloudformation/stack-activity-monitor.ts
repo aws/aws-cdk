@@ -417,15 +417,16 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
   public failureReason(activity: StackActivity) {
     const resourceStatusReason = activity.event.ResourceStatusReason ?? '';
     const logicalResourceId = activity.event.LogicalResourceId ?? '';
-    
     const hookFailureReasonMap = this.hookFailureMap.get(logicalResourceId);
-    if (hookFailureReasonMap !== undefined){
-      for(const hookType of hookFailureReasonMap.keys())
-        if (resourceStatusReason.includes(hookType)){
+
+    if (hookFailureReasonMap !== undefined) {
+      for (const hookType of hookFailureReasonMap.keys()) {
+        if (resourceStatusReason.includes(hookType)) {
           return resourceStatusReason + ' : ' + hookFailureReasonMap.get(hookType);
         }
+      }
     }
-    return resourceStatusReason; 
+    return resourceStatusReason;
   }
 
   public addActivity(activity: StackActivity) {
@@ -475,12 +476,13 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       this.resourcesPrevCompleteState[activity.event.LogicalResourceId] = status;
     }
 
-    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId != undefined && hookType != undefined) {
-      
-      if (this.hookFailureMap.has(activity.event.LogicalResourceId)){
+    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId !== undefined && hookType !== undefined) {
+
+      if (this.hookFailureMap.has(activity.event.LogicalResourceId)) {
         this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
-      }else{
+      } else {
         this.hookFailureMap.set(activity.event.LogicalResourceId, new Map<string, string>());
+        this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
       }
     }
   }
@@ -557,11 +559,16 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     let stackTrace = '';
     const md = activity.metadata;
-    if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
-      stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
-      reasonColor = chalk.red;
 
-      e.ResourceStatusReason = e.ResourceStatusReason ? this.failureReason(activity) : '';
+    if (e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
+      if (progress == undefined || progress) {
+        e.ResourceStatusReason = e.ResourceStatusReason ? this.failureReason(activity) : '';
+      }
+      if (md) {
+        stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
+
+      }
+      reasonColor = chalk.red;
     }
 
     const resourceName = md ? md.constructPath : (e.LogicalResourceId || '');
