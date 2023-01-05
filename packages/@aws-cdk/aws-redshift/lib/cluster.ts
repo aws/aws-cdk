@@ -584,9 +584,13 @@ export class Cluster extends ClusterBase {
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
 
-    // Add default role if specified
+    // Add default role if specified and also available in the roles list
     if (props.defaultRole) {
-      this.addDefaultIamRole(props.defaultRole);
+      if (props.roles?.some(x => x === props.defaultRole)) {
+        this.addDefaultIamRole(props.defaultRole);
+      } else {
+        throw new Error('Default role must be included in role list.');
+      }
     }
   }
 
@@ -685,27 +689,25 @@ export class Cluster extends ClusterBase {
     // Get list of IAM roles attached to cluster
     const clusterRoleList = this.cluster.iamRoles ?? [];
 
-    // If number of roles is greater than or equal to 10, check to see if default role is included in list
-    if (clusterRoleList.length >= 10) {
-      var roleAlreadyOnCluster = false;
-      for (var i = 0; i < clusterRoleList.length; i++) {
-        if (clusterRoleList[i] == defaultIamRole.roleArn) {
-          roleAlreadyOnCluster = true;
-          break;
-        }
-      }
-      if (!roleAlreadyOnCluster) {
-        throw new Error('Cannot add a new IAM role as default as there are already 10 roles attached to the cluster.');
+    // Check to see if default role is included in list of cluster IAM roles
+    var roleAlreadyOnCluster = false;
+    for (var i = 0; i < clusterRoleList.length; i++) {
+      if (clusterRoleList[i] == defaultIamRole.roleArn) {
+        roleAlreadyOnCluster = true;
+        break;
       }
     }
+    if (!roleAlreadyOnCluster) {
+      throw new Error('Default role must be included in role list.');
+    }
 
+    // On UPDATE or CREATE define the default IAM role. On DELETE, remove the default IAM role
     const defaultRoleCustomResource = new AwsCustomResource(this, 'default-role', {
       onUpdate: {
         service: 'Redshift',
         action: 'modifyClusterIamRoles',
         parameters: {
           ClusterIdentifier: this.cluster.ref,
-          AddIamRoles: [defaultIamRole.roleArn],
           DefaultIamRoleArn: defaultIamRole.roleArn,
         },
         physicalResourceId: PhysicalResourceId.of(
