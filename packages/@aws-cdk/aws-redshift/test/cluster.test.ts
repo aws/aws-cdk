@@ -644,7 +644,7 @@ describe('default IAM role', () => {
 
     expect(() => {
       cluster.addDefaultIamRole(defaultRole1);
-    }).toThrow(/Default role must be included in role list./);
+    }).toThrow(/Default role must be associated to the Redshift cluster to be set as the default role./);
   });
 });
 
