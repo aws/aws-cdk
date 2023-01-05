@@ -23,5 +23,4 @@ junit.xml
 !**/*.snapshot/**/asset.*/*.d.ts
 
 !**/*.snapshot/**/asset.*/**
-!test/appsync-js-resolver.js
-!test/appsync-js-pipeline.js
+!test/integ-assets/**/*.js

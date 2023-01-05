@@ -3,7 +3,7 @@
   "testCases": {
     "JsResolverIntegTest/DefaultTest": {
       "stacks": [
-        "Stack"
+        "AppSyncJsResolverTestStack"
       ],
       "assertionStack": "JsResolverIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "JsResolverIntegTestDefaultTestDeployAssert57AD8D20"

@@ -199,7 +199,7 @@
     "DataSourceName": "DynamoDataSource",
     "Name": "addTestFunc",
     "CodeS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/850ecb9fcba87ba0ea25b5097b9229d1e2735ff2ee756e680f65b281b476a73b.js"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64f136fd66d0a20e8574eddfe2e50aa10168344ebac0f3ca03e5ae0b4b7475ec.js"
     },
     "FunctionVersion": "2018-05-29",
     "Runtime": {
@@ -310,8 +310,8 @@
      "WriteCapacityUnits": 5
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AddTestResolver8AF95A30": {
    "Type": "AWS::AppSync::Resolver",
@@ -325,7 +325,7 @@
     "FieldName": "addTest",
     "TypeName": "Mutation",
     "CodeS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1cb9d0f882ba003a9680d1b18c6c668cc8a6631688ed3873cb1fdd8211af200.js"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/922ddc9d9563ca9402e283efe80ad2b4e00c8ddf6fbbbc2ae2b9dc6fe7107061.js"
     },
     "Kind": "PIPELINE",
     "PipelineConfig": {
@@ -346,6 +346,99 @@
    "DependsOn": [
     "JsResolverApiSchema1CF261C1"
    ]
+  },
+  "InvokeApiServiceRoleFB17CD97": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "InvokeApi313C8B49": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c8a056b7b029cede879af4833f48bcc456748b2f8456f85ba76393466c08693a.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "InvokeApiServiceRoleFB17CD97",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "InvokeApiServiceRoleFB17CD97"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefInvokeApi313C8B4949AC2AFC": {
+   "Value": {
+    "Ref": "InvokeApi313C8B49"
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+   }
+  },
+  "ExportsOutputFnGetAttJsResolverApi612CD442GraphQLUrl15495788": {
+   "Value": {
+    "Fn::GetAtt": [
+     "JsResolverApi612CD442",
+     "GraphQLUrl"
+    ]
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApi612CD442GraphQLUrl15495788"
+   }
+  },
+  "ExportsOutputFnGetAttJsResolverApiDefaultApiKeyBD458F31ApiKey4D429933": {
+   "Value": {
+    "Fn::GetAtt": [
+     "JsResolverApiDefaultApiKeyBD458F31",
+     "ApiKey"
+    ]
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApiDefaultApiKeyBD458F31ApiKey4D429933"
+   }
+  },
+  "ExportsOutputRefDynamoTableB2B22E1592AFC2EE": {
+   "Value": {
+    "Ref": "DynamoTableB2B22E15"
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputRefDynamoTableB2B22E1592AFC2EE"
+   }
   }
  },
  "Parameters": {

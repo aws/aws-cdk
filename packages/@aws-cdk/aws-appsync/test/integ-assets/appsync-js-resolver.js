@@ -9,14 +9,14 @@ export function request(ctx) {
     name,
   }
 
-  return JSON.stringify({
+  return {
     version: '2018-05-29',
     operation: 'PutItem',
     key: { id: util.dynamodb.toDynamoDB(ctx.args.input.id) },
     attributeValues: util.dynamodb.toMapValues(ctx.args.input),
-  })
+  };
 }
 
 export function response(ctx) {
-  return JSON.stringify(ctx.result)
+  return ctx.result;
 }

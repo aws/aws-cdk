@@ -1,4 +1,17 @@
-import { CfnFunctionConfiguration } from './appsync.generated';
+/**
+ * Config for binding runtime to a function or resolver
+ */
+export interface RuntimeConfig {
+  /**
+   * The name of the runtime
+   */
+  readonly name: string;
+
+  /**
+   * The version string of the runtime
+   */
+  readonly runtimeVersion: string;
+}
 
 /**
  * Appsync supported runtimes. Only JavaScript as of now
@@ -37,7 +50,7 @@ export class FunctionRuntime {
   /**
    * Convert to Cfn runtime configuration property format
    */
-  public toProperties(): CfnFunctionConfiguration.AppSyncRuntimeProperty {
+  public toProperties(): RuntimeConfig {
     return {
       name: this.name,
       runtimeVersion: this.version,

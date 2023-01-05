@@ -36,7 +36,7 @@ export interface BaseAppsyncFunctionProps {
   /**
    * The functions runtime
    *
-   * @default - no function runtime, VTL maping templates used
+   * @default - no function runtime, VTL mapping templates used
    */
   readonly runtime?: FunctionRuntime;
   /**
@@ -146,6 +146,10 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
       throw new Error('Code is required when specifying a runtime');
+    }
+
+    if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
+      throw new Error('Mapping templates cannot be used alongside code');
     }
 
     const code = props.code?.bind(this);

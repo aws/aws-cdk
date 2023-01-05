@@ -57,7 +57,7 @@ export interface BaseResolverProps {
   /**
    * The functions runtime
    *
-   * @default - no function runtime, VTL maping templates used
+   * @default - no function runtime, VTL mapping templates used
    */
   readonly runtime?: FunctionRuntime;
   /**
@@ -111,6 +111,10 @@ export class Resolver extends Construct {
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
       throw new Error('Code is required when specifying a runtime');
+    }
+
+    if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
+      throw new Error('Mapping templates cannot be used alongside code');
     }
 
     if (pipelineConfig && props.dataSource) {

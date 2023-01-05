@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "Stack": {
-        "id": "Stack",
-        "path": "Stack",
+      "AppSyncJsResolverTestStack": {
+        "id": "AppSyncJsResolverTestStack",
+        "path": "AppSyncJsResolverTestStack",
         "children": {
           "JsResolverApi": {
             "id": "JsResolverApi",
-            "path": "Stack/JsResolverApi",
+            "path": "AppSyncJsResolverTestStack/JsResolverApi",
             "children": {
               "ApiLogsRole": {
                 "id": "ApiLogsRole",
-                "path": "Stack/JsResolverApi/ApiLogsRole",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/ApiLogsRole",
                 "children": {
                   "ImportApiLogsRole": {
                     "id": "ImportApiLogsRole",
-                    "path": "Stack/JsResolverApi/ApiLogsRole/ImportApiLogsRole",
+                    "path": "AppSyncJsResolverTestStack/JsResolverApi/ApiLogsRole/ImportApiLogsRole",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "Stack/JsResolverApi/ApiLogsRole/Resource",
+                    "path": "AppSyncJsResolverTestStack/JsResolverApi/ApiLogsRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -71,7 +71,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "Stack/JsResolverApi/Resource",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
                   "aws:cdk:cloudformation:props": {
@@ -95,7 +95,7 @@
               },
               "Schema": {
                 "id": "Schema",
-                "path": "Stack/JsResolverApi/Schema",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/Schema",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
                   "aws:cdk:cloudformation:props": {
@@ -115,7 +115,7 @@
               },
               "DefaultApiKey": {
                 "id": "DefaultApiKey",
-                "path": "Stack/JsResolverApi/DefaultApiKey",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/DefaultApiKey",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
                   "aws:cdk:cloudformation:props": {
@@ -134,7 +134,7 @@
               },
               "LogGroup": {
                 "id": "LogGroup",
-                "path": "Stack/JsResolverApi/LogGroup",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/LogGroup",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -142,11 +142,11 @@
               },
               "LogRetention": {
                 "id": "LogRetention",
-                "path": "Stack/JsResolverApi/LogRetention",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/LogRetention",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "Stack/JsResolverApi/LogRetention/Resource",
+                    "path": "AppSyncJsResolverTestStack/JsResolverApi/LogRetention/Resource",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnResource",
                       "version": "0.0.0"
@@ -160,15 +160,15 @@
               },
               "DynamoDataSource": {
                 "id": "DynamoDataSource",
-                "path": "Stack/JsResolverApi/DynamoDataSource",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "Stack/JsResolverApi/DynamoDataSource/ServiceRole",
+                    "path": "AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "Stack/JsResolverApi/DynamoDataSource/ServiceRole/ImportServiceRole",
+                        "path": "AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.Resource",
                           "version": "0.0.0"
@@ -176,7 +176,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "Stack/JsResolverApi/DynamoDataSource/ServiceRole/Resource",
+                        "path": "AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -201,11 +201,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "Stack/JsResolverApi/DynamoDataSource/ServiceRole/DefaultPolicy",
+                        "path": "AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "Stack/JsResolverApi/DynamoDataSource/ServiceRole/DefaultPolicy/Resource",
+                            "path": "AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/ServiceRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -269,7 +269,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "Stack/JsResolverApi/DynamoDataSource/Resource",
+                    "path": "AppSyncJsResolverTestStack/JsResolverApi/DynamoDataSource/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
                       "aws:cdk:cloudformation:props": {
@@ -310,15 +310,15 @@
               },
               "AddTestFunction": {
                 "id": "AddTestFunction",
-                "path": "Stack/JsResolverApi/AddTestFunction",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/AddTestFunction",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "Stack/JsResolverApi/AddTestFunction/Code",
+                    "path": "AppSyncJsResolverTestStack/JsResolverApi/AddTestFunction/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "Stack/JsResolverApi/AddTestFunction/Code/Stage",
+                        "path": "AppSyncJsResolverTestStack/JsResolverApi/AddTestFunction/Code/Stage",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.AssetStaging",
                           "version": "0.0.0"
@@ -326,7 +326,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "Stack/JsResolverApi/AddTestFunction/Code/AssetBucket",
+                        "path": "AppSyncJsResolverTestStack/JsResolverApi/AddTestFunction/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "@aws-cdk/aws-s3.BucketBase",
                           "version": "0.0.0"
@@ -340,7 +340,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "Stack/JsResolverApi/AddTestFunction/Resource",
+                    "path": "AppSyncJsResolverTestStack/JsResolverApi/AddTestFunction/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "dataSourceName": "DynamoDataSource",
                         "name": "addTestFunc",
                         "codeS3Location": {
-                          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/850ecb9fcba87ba0ea25b5097b9229d1e2735ff2ee756e680f65b281b476a73b.js"
+                          "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64f136fd66d0a20e8574eddfe2e50aa10168344ebac0f3ca03e5ae0b4b7475ec.js"
                         },
                         "functionVersion": "2018-05-29",
                         "runtime": {
@@ -381,15 +381,15 @@
           },
           "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
             "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
-            "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
             "children": {
               "Code": {
                 "id": "Code",
-                "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
@@ -397,7 +397,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -411,11 +411,11 @@
               },
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
+                    "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "0.0.0"
@@ -423,7 +423,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -462,11 +462,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -510,7 +510,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "path": "AppSyncJsResolverTestStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnResource",
                   "version": "0.0.0"
@@ -524,11 +524,11 @@
           },
           "DynamoTable": {
             "id": "DynamoTable",
-            "path": "Stack/DynamoTable",
+            "path": "AppSyncJsResolverTestStack/DynamoTable",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "Stack/DynamoTable/Resource",
+                "path": "AppSyncJsResolverTestStack/DynamoTable/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
@@ -557,7 +557,7 @@
               },
               "ScalingRole": {
                 "id": "ScalingRole",
-                "path": "Stack/DynamoTable/ScalingRole",
+                "path": "AppSyncJsResolverTestStack/DynamoTable/ScalingRole",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -571,15 +571,15 @@
           },
           "AddTestResolver": {
             "id": "AddTestResolver",
-            "path": "Stack/AddTestResolver",
+            "path": "AppSyncJsResolverTestStack/AddTestResolver",
             "children": {
               "Code": {
                 "id": "Code",
-                "path": "Stack/AddTestResolver/Code",
+                "path": "AppSyncJsResolverTestStack/AddTestResolver/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "Stack/AddTestResolver/Code/Stage",
+                    "path": "AppSyncJsResolverTestStack/AddTestResolver/Code/Stage",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
@@ -587,7 +587,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "Stack/AddTestResolver/Code/AssetBucket",
+                    "path": "AppSyncJsResolverTestStack/AddTestResolver/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-s3.BucketBase",
                       "version": "0.0.0"
@@ -601,7 +601,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "Stack/AddTestResolver/Resource",
+                "path": "AppSyncJsResolverTestStack/AddTestResolver/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
                   "aws:cdk:cloudformation:props": {
@@ -614,7 +614,7 @@
                     "fieldName": "addTest",
                     "typeName": "Mutation",
                     "codeS3Location": {
-                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1cb9d0f882ba003a9680d1b18c6c668cc8a6631688ed3873cb1fdd8211af200.js"
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/922ddc9d9563ca9402e283efe80ad2b4e00c8ddf6fbbbc2ae2b9dc6fe7107061.js"
                     },
                     "kind": "PIPELINE",
                     "pipelineConfig": {
@@ -644,9 +644,171 @@
               "version": "0.0.0"
             }
           },
+          "InvokeApi": {
+            "id": "InvokeApi",
+            "path": "AppSyncJsResolverTestStack/InvokeApi",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "AppSyncJsResolverTestStack/InvokeApi/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "AppSyncJsResolverTestStack/InvokeApi/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AppSyncJsResolverTestStack/InvokeApi/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "AppSyncJsResolverTestStack/InvokeApi/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppSyncJsResolverTestStack/InvokeApi/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppSyncJsResolverTestStack/InvokeApi/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppSyncJsResolverTestStack/InvokeApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "c8a056b7b029cede879af4833f48bcc456748b2f8456f85ba76393466c08693a.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "InvokeApiServiceRoleFB17CD97",
+                        "Arn"
+                      ]
+                    },
+                    "handler": "index.handler",
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "AppSyncJsResolverTestStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"InvokeApi313C8B49\"}": {
+                "id": "Output{\"Ref\":\"InvokeApi313C8B49\"}",
+                "path": "AppSyncJsResolverTestStack/Exports/Output{\"Ref\":\"InvokeApi313C8B49\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"JsResolverApi612CD442\",\"GraphQLUrl\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"JsResolverApi612CD442\",\"GraphQLUrl\"]}",
+                "path": "AppSyncJsResolverTestStack/Exports/Output{\"Fn::GetAtt\":[\"JsResolverApi612CD442\",\"GraphQLUrl\"]}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"JsResolverApiDefaultApiKeyBD458F31\",\"ApiKey\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"JsResolverApiDefaultApiKeyBD458F31\",\"ApiKey\"]}",
+                "path": "AppSyncJsResolverTestStack/Exports/Output{\"Fn::GetAtt\":[\"JsResolverApiDefaultApiKeyBD458F31\",\"ApiKey\"]}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"DynamoTableB2B22E15\"}": {
+                "id": "Output{\"Ref\":\"DynamoTableB2B22E15\"}",
+                "path": "AppSyncJsResolverTestStack/Exports/Output{\"Ref\":\"DynamoTableB2B22E15\"}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.189"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "Stack/BootstrapVersion",
+            "path": "AppSyncJsResolverTestStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -654,7 +816,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "Stack/CheckBootstrapVersion",
+            "path": "AppSyncJsResolverTestStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
@@ -686,6 +848,156 @@
                 "id": "DeployAssert",
                 "path": "JsResolverIntegTest/DefaultTest/DeployAssert",
                 "children": {
+                  "LambdaInvokeb55e453397dded0a19101717f7183064": {
+                    "id": "LambdaInvokeb55e453397dded0a19101717f7183064",
+                    "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.189"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "JsResolverIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.189"
+                    }
+                  },
+                  "AwsApiCallDynamoDBgetItem": {
+                    "id": "AwsApiCallDynamoDBgetItem",
+                    "path": "JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.189"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "JsResolverIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
