@@ -548,7 +548,7 @@ describe('IntegTest runIntegTests', () => {
     }));
   });
 
-  test('with custom app run command for JavaScript', () => {
+  test('with custom app run command', () => {
     // WHEN
     const integTest = new IntegTestRunner({
       cdk: cdkMock.cdk,

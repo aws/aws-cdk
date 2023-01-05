@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "Python/DefaultTest": {
+      "stacks": [
+        "PythonStack"
+      ],
+      "assertionStack": "Python/DefaultTest/DeployAssert",
+      "assertionStackName": "PythonDefaultTestDeployAssert82E20B88"
+    }
+  }
+}
