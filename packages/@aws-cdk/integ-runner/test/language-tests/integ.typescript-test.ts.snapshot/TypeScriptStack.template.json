@@ -1,4 +1,24 @@
 {
+ "Resources": {
+  "Queue4A7E3555": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "FifoQueue": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefQueue4A7E3555425E8BD3": {
+   "Value": {
+    "Ref": "Queue4A7E3555"
+   },
+   "Export": {
+    "Name": "TypeScriptStack:ExportsOutputRefQueue4A7E3555425E8BD3"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
