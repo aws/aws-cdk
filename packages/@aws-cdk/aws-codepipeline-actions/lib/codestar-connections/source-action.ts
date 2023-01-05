@@ -23,7 +23,7 @@ export interface CodeStarSourceVariables {
 }
 
 /**
- * Construction properties for {@link CodeStarConnectionsSourceAction}.
+ * Construction properties for `CodeStarConnectionsSourceAction`.
  */
 export interface CodeStarConnectionsSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -69,7 +69,7 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
    * or a link that allows CodeBuild to clone the repository before building.
    *
    * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * then only CodeBuild actions can use the resulting `output`.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config

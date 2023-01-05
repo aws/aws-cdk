@@ -50,7 +50,7 @@ export interface ClusterProps {
    * The capacity providers to add to the cluster
    *
    * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
-   * @deprecated Use {@link ClusterProps.enableFargateCapacityProviders} instead.
+   * @deprecated Use `ClusterProps.enableFargateCapacityProviders` instead.
    */
   readonly capacityProviders?: string[];
 
@@ -288,8 +288,8 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Add an AWS Cloud Map DNS namespace for this cluster.
-   * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
-   * Map service.
+   * NOTE: HttpNamespaces are supported only for use cases involving Service Connect. For use cases involving both Service-
+   * Discovery and Service Connect, customers should manage the HttpNamespace outside of the Cluster.addDefaultCloudMapNamespace method.
    */
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
@@ -300,14 +300,27 @@ export class Cluster extends Resource implements ICluster {
       ? options.type
       : cloudmap.NamespaceType.DNS_PRIVATE;
 
-    const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
-      new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-        name: options.name,
-        vpc: this.vpc,
-      }) :
-      new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
-        name: options.name,
-      });
+    let sdNamespace;
+    switch (namespaceType) {
+      case cloudmap.NamespaceType.DNS_PRIVATE:
+        sdNamespace = new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+          vpc: this.vpc,
+        });
+        break;
+      case cloudmap.NamespaceType.DNS_PUBLIC:
+        sdNamespace = new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+        break;
+      case cloudmap.NamespaceType.HTTP:
+        sdNamespace = new cloudmap.HttpNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+          name: options.name,
+        });
+        break;
+      default:
+        throw new Error(`Namespace type ${namespaceType} is not supported.`);
+    }
 
     this._defaultCloudMapNamespace = sdNamespace;
     if (options.useForServiceConnect) {
@@ -327,7 +340,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   * It is highly recommended to use `Cluster.addAsgCapacityProvider` instead of this method.
    *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
@@ -384,7 +397,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * This method adds compute capacity to a cluster using the specified AutoScalingGroup.
    *
-   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
+   * @deprecated Use `Cluster.addAsgCapacityProvider` instead.
    * @param autoScalingGroup the ASG to add to this cluster.
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
@@ -492,8 +505,8 @@ export class Cluster extends Resource implements ICluster {
    * This method enables the Fargate or Fargate Spot capacity providers on the cluster.
    *
    * @param provider the capacity provider to add to this cluster.
-   * @deprecated Use {@link enableFargateCapacityProviders} instead.
-   * @see {@link addAsgCapacityProvider} to add an Auto Scaling Group capacity provider to the cluster.
+   * @deprecated Use `enableFargateCapacityProviders` instead.
+   * @see `addAsgCapacityProvider` to add an Auto Scaling Group capacity provider to the cluster.
    */
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
@@ -817,7 +830,7 @@ export interface AddAutoScalingGroupCapacityOptions {
   readonly spotInstanceDraining?: boolean
 
   /**
-   * If {@link AddAutoScalingGroupCapacityOptions.taskDrainTime} is non-zero, then the ECS cluster creates an
+   * If `AddAutoScalingGroupCapacityOptions.taskDrainTime` is non-zero, then the ECS cluster creates an
    * SNS Topic to as part of a system to drain instances of tasks when the instance is being shut down.
    * If this property is provided, then this key will be used to encrypt the contents of that SNS Topic.
    * See [SNS Data Encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for more information.
