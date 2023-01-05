@@ -573,6 +573,21 @@ const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
 });
 ```
 
+Using Google identity provider is possible to use clientSecretValue with SecretValue from secrets manager.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+const secret = secretsManager.Secret.fromSecretAttributes(this, "CognitoClientSecret", {
+    secretCompleteArn: "arn:aws:secretsmanager:xxx:xxx:secret:xxx-xxx"
+}).secretValue
+
+const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
+  clientId: 'amzn-client-id',
+  clientSecretValue: secret,
+  userPool: userpool,
+});
+```
+
 Attribute mapping allows mapping attributes provided by the third-party identity providers to [standard and custom
 attributes](#Attributes) of the user pool. Learn more about [Specifying Identity Provider Attribute Mappings for Your
 User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html).
@@ -718,6 +733,17 @@ const client = pool.addClient('app-client', {
 });
 
 client.node.addDependency(provider);
+```
+
+The property `authSessionValidity` is the session token for each API request in the authentication flow.
+Valid duration is from 3 to 15 minutes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  authSessionValidity: Duration.minutes(15),
+});
 ```
 
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
