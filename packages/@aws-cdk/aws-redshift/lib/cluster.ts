@@ -712,6 +712,17 @@ export class Cluster extends ClusterBase {
           `${defaultIamRole.roleArn}-${this.cluster.ref}`,
         ),
       },
+      onDelete: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          DefaultIamRoleArn: '',
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
+        ),
+      },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
