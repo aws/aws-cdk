@@ -580,7 +580,7 @@ export class DockerImageBundlingCopyHelper {
     const copySuffix = crypto.randomBytes(12).toString('hex');
     this.inputVolumeName = `assetInput${copySuffix}`;
     this.outputVolumeName = `assetOutput${copySuffix}`;
-    this.copyContainerName = `copy${copySuffix}`;
+    this.copyContainerName = `copyContainer${copySuffix}`;
   }
 
   /**

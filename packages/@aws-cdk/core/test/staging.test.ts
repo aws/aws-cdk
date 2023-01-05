@@ -1,3 +1,4 @@
+// import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -5,7 +6,7 @@ import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage } from '../lib';
+import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileCopyVariant } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -28,10 +29,16 @@ const ARCHIVE_TARBALL_TEST_HASH = '3e948ff54a277d6001e2452fdbc4a9ef61f916ff662ba
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
 
-// this is a way to provide a custom "docker" command for staging.
-process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
 
 describe('staging', () => {
+  beforeAll(() => {
+    // this is a way to provide a custom "docker" command for staging.
+    process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
+  });
+
+  afterAll(() => {
+    delete process.env.CDK_DOCKER;
+  });
 
   afterEach(() => {
     AssetStaging.clearAssetHashCache();
@@ -1160,39 +1167,6 @@ describe('staging', () => {
     expect(staging.isArchive).toEqual(true);
   });
 
-  // vtest('bundling with docker image copy variant', () => {
-  //   // GIVEN
-  //   const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-  //   const stack = new Stack(app, 'stack');
-  //   const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-
-  //   // WHEN
-  //   const staging = new AssetStaging(stack, 'Asset', {
-  //     sourcePath: directory,
-  //     bundling: {
-  //       image: DockerImage.fromRegistry('alpine'),
-  //       command: [DockerStubCommand.VOLUME_SINGLE_ARCHIVE],
-  //       fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
-  //     },
-  //   });
-
-  //   // THEN
-  //   const assembly = app.synth();
-  //   expect(fs.readdirSync(assembly.directory)).toEqual([
-  //     'asset.b978cc9f3faeb46e1eefdcc1f7d606ba6e0a171c90fad671e35a105b357b9c3b', // this is the bundle dir
-  //     'asset.b978cc9f3faeb46e1eefdcc1f7d606ba6e0a171c90fad671e35a105b357b9c3b.zip',
-  //     'cdk.out',
-  //     'manifest.json',
-  //     'stack.template.json',
-  //     'tree.json',
-  //   ]);
-  //   expect(fs.readdirSync(path.join(assembly.directory, 'asset.b978cc9f3faeb46e1eefdcc1f7d606ba6e0a171c90fad671e35a105b357b9c3b'))).toEqual([
-  //     'test.zip', // bundle dir with "touched" bundled output file
-  //   ]);
-  //   expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
-  //   expect(staging.isArchive).toEqual(true);
-  // });
-
   test('bundling that produces a single archive file with disk cache', () => {
     // GIVEN
     const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
@@ -1283,6 +1257,73 @@ describe('staging', () => {
         outputType: BundlingOutput.ARCHIVED,
       },
     })).toThrow(/Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`/);
+  });
+});
+
+describe('staging with docker cp', () => {
+  beforeAll(() => {
+    // this is a way to provide a custom "docker" command for staging.
+    process.env.CDK_DOCKER = `${__dirname}/docker-stub-cp.sh`;
+  });
+
+  afterAll(() => {
+    delete process.env.CDK_DOCKER;
+  });
+
+  afterEach(() => {
+    AssetStaging.clearAssetHashCache();
+    if (fs.existsSync(STUB_INPUT_FILE)) {
+      fs.unlinkSync(STUB_INPUT_FILE);
+    }
+    if (fs.existsSync(STUB_INPUT_CONCAT_FILE)) {
+      fs.unlinkSync(STUB_INPUT_CONCAT_FILE);
+    }
+    sinon.restore();
+  });
+
+  test('bundling with docker image copy variant', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.VOLUME_SINGLE_ARCHIVE],
+        fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    expect(fs.readdirSync(assembly.directory)).toEqual([
+      'asset.358c99dcb340194559aa346ecba33e7f22d3e9607bb2885623325f5eb6e0389f', // this is the bundle dir
+      'asset.358c99dcb340194559aa346ecba33e7f22d3e9607bb2885623325f5eb6e0389f.zip',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+    expect(fs.readdirSync(path.join(assembly.directory, 'asset.358c99dcb340194559aa346ecba33e7f22d3e9607bb2885623325f5eb6e0389f'))).toEqual([
+      'test.zip', // bundle dir with "touched" bundled output file
+    ]);
+    expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(staging.isArchive).toEqual(true);
+    const dockerCalls: string[] = readDockerStubInputConcat().split(/\r?\n/);
+    expect(dockerCalls).toEqual(expect.arrayContaining([
+      expect.stringContaining('volume create assetInput'),
+      expect.stringContaining('volume create assetOutput'),
+      expect.stringMatching('run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'),
+      expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
+      expect.stringMatching('run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'),
+      expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),
+      expect.stringContaining('rm copyContainer'),
+      expect.stringContaining('volume rm assetInput'),
+      expect.stringContaining('volume rm assetOutput'),
+    ]));
   });
 });
 

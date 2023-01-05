@@ -432,24 +432,6 @@ export class AssetStaging extends Construct {
     // Chmod the bundleDir to full access.
     fs.chmodSync(bundleDir, 0o777);
 
-    // Always mount input and output dir
-    let volumes: DockerVolume[] = [];
-    if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
-      volumes = options.volumes ?? [];
-    } else {
-      volumes = [
-        {
-          hostPath: this.sourcePath,
-          containerPath: AssetStaging.BUNDLING_INPUT_DIR,
-        },
-        {
-          hostPath: bundleDir,
-          containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
-        },
-        ...options.volumes ?? [],
-      ];
-    }
-
     let localBundling: boolean | undefined;
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
@@ -466,14 +448,28 @@ export class AssetStaging extends Construct {
             : '1000:1000';
         }
 
+        let volumes: DockerVolume[] = [];
         let volumesFrom: string[] = options.volumesFrom ?? [];
 
         const helperContainer = new DockerImageBundlingCopyHelper();
         if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
+          volumes = options.volumes ?? [];
           volumesFrom = [helperContainer.copyContainerName, ...options.volumesFrom ?? []];
           helperContainer.prepareVolumes();
           helperContainer.startHelperContainer(user);
           helperContainer.copyInputFrom(this.sourcePath);
+        } else {
+          volumes = [
+            {
+              hostPath: this.sourcePath,
+              containerPath: AssetStaging.BUNDLING_INPUT_DIR,
+            },
+            {
+              hostPath: bundleDir,
+              containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
+            },
+            ...options.volumes ?? [],
+          ];
         }
 
         options.image.run({

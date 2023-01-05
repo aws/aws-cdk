@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
-import { DockerImage } from '@aws-cdk/core';
+import { BundlingFileCopyVariant, DockerImage } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
@@ -370,6 +370,22 @@ test('Bundling with custom network', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
     bundling: expect.objectContaining({
       network: 'host',
+    }),
+  }));
+});
+
+test('Bundling with docker copy variant', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
+
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
     }),
   }));
 });

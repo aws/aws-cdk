@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { DockerImage, FileSystem } from '../lib';
+import { AssetStaging, DockerImage, DockerImageBundlingCopyHelper, FileSystem } from '../lib';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -598,4 +598,145 @@ describe('bundling', () => {
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
+
+  test('DockerImageBundlingCopyHelper prepareVolumes', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const helper = new DockerImageBundlingCopyHelper();
+    helper.prepareVolumes();
+
+    // THEN
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'volume', 'create', sinon.match(/assetInput.*/g),
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'volume', 'create', sinon.match(/assetOutput.*/g),
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
+  });
+
+  test('DockerImageBundlingCopyHelper cleanVolumes', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const helper = new DockerImageBundlingCopyHelper();
+    helper.cleanVolumes();
+
+    // THEN
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'volume', 'rm', sinon.match(/assetInput.*/g),
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'volume', 'rm', sinon.match(/assetOutput.*/g),
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
+  });
+
+  test('DockerImageBundlingCopyHelper startHelperContainer', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const helper = new DockerImageBundlingCopyHelper();
+    const user = '1000';
+    helper.startHelperContainer(user);
+
+    // THEN
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'run',
+      '--name', sinon.match(/copyContainer.*/g),
+      '-v', sinon.match(/assetInput.*/g),
+      '-v', sinon.match(/assetOutput.*/g),
+      'alpine',
+      'sh',
+      '-c',
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('DockerImageBundlingCopyHelper cleanHelperContainer', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const helper = new DockerImageBundlingCopyHelper();
+    helper.cleanHelperContainer();
+
+    // THEN
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'rm', sinon.match(/copyContainer.*/g),
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('DockerImageBundlingCopyHelper copyInputFrom', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const helper = new DockerImageBundlingCopyHelper();
+    const dir = '/test/dir';
+    helper.copyInputFrom(dir);
+
+    // THEN
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'cp', `${dir}/.`, `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('DockerImageBundlingCopyHelper copyOutputTo', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const helper = new DockerImageBundlingCopyHelper();
+    const dir = '/test/dir';
+    helper.copyOutputTo(dir);
+
+    // THEN
+    expect(spawnSyncStub.calledWith('docker', sinon.match([
+      'cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, dir,
+    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
 });
