@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.123"
-        }
-      },
       "aws-cdk-route53-cross-account-integ": {
         "id": "aws-cdk-route53-cross-account-integ",
         "path": "aws-cdk-route53-cross-account-integ",
@@ -38,6 +30,14 @@
                 "id": "CrossAccountZoneDelegationRole",
                 "path": "aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole",
                 "children": {
+                  "ImportCrossAccountZoneDelegationRole": {
+                    "id": "ImportCrossAccountZoneDelegationRole",
+                    "path": "aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole/ImportCrossAccountZoneDelegationRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole/Resource",
@@ -167,13 +167,13 @@
                 "id": "cross-account-zone-delegation-handler-role",
                 "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role",
                 "children": {
-                  "Policy": {
-                    "id": "Policy",
-                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policy",
+                  "Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473": {
+                    "id": "Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473",
+                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policy/Resource",
+                        "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -192,7 +192,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B",
+                            "policyName": "Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473",
                             "roles": [
                               {
                                 "Fn::Select": [
@@ -330,13 +330,13 @@
                 "id": "cross-account-zone-delegation-handler-role",
                 "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role",
                 "children": {
-                  "Policy": {
-                    "id": "Policy",
-                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policy",
+                  "Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782": {
+                    "id": "Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782",
+                    "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policy/Resource",
+                        "path": "aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -355,7 +355,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882",
+                            "policyName": "Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782",
                             "roles": [
                               {
                                 "Fn::Select": [
@@ -426,11 +426,35 @@
               "fqn": "@aws-cdk/aws-route53.CrossAccountZoneDelegationRecord",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-route53-cross-account-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-route53-cross-account-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.189"
         }
       }
     },
