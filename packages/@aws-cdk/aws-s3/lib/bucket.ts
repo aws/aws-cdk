@@ -198,7 +198,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -219,7 +219,7 @@ export interface IBucket extends IResource {
    * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
    *
    * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
-   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * calling `grantWrite` or `grantReadWrite` no longer grants permissions to modify the ACLs of the objects;
    * in this case, if you need to modify object ACLs, call this method explicitly.
    *
    * @param identity The principal
@@ -249,7 +249,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -1648,7 +1648,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
   public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
     // use a "weird" id that has a higher chance of being unique
@@ -1832,7 +1832,9 @@ export class Bucket extends BucketBase {
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
-      props.serverAccessLogsBucket.allowLogDelivery();
+      props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
+    } else if (props.serverAccessLogsPrefix) {
+      this.allowLogDelivery(this, props.serverAccessLogsPrefix);
     }
 
     for (const inventory of props.inventories ?? []) {
@@ -2189,17 +2191,35 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Allows the LogDelivery group to write, fails if ACL was set differently.
+   * Allows Log Delivery to the S3 bucket, using a Bucket Policy if the relevant feature
+   * flag is enabled, otherwise the canned ACL is used.
+   *
+   * If log delivery is to be allowed using the ACL and an ACL has already been set, this fails.
    *
    * @see
-   * https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+   * https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
    */
-  private allowLogDelivery() {
-    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
+  private allowLogDelivery(from: IBucket, prefix?: string) {
+    if (FeatureFlags.of(this).isEnabled(cxapi.S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY)) {
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
+        conditions: {
+          ArnLike: {
+            'aws:SourceArn': from.bucketArn,
+          },
+          StringEquals: {
+            'aws:SourceAccount': from.env.account,
+          },
+        },
+      }));
+    } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
+    } else {
+      this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
     }
-
-    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 
   private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
