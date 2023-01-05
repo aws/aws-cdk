@@ -307,8 +307,9 @@ export interface ClusterProps {
 
   /**
    * A single AWS Identity and Access Management (IAM) role to be used as the default role for the cluster.
+   * The default role must be included in the roles list.
    *
-   * @default - No default role is attached to the cluster.
+   * @default - No default role is specified for the cluster.
    */
   readonly defaultRole?: iam.IRole;
 
@@ -681,7 +682,7 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-   * Adds default IAM role to cluster
+   * Adds default IAM role to cluster. The default IAM role must be already associated to the cluster to be added as the default role.
    *
    * @param defaultIamRole the IAM role to be set as the default role
    */
@@ -698,7 +699,7 @@ export class Cluster extends ClusterBase {
       }
     }
     if (!roleAlreadyOnCluster) {
-      throw new Error('Default role must be included in role list.');
+      throw new Error('Default role must be associated to the Redshift cluster to be set as the default role.');
     }
 
     // On UPDATE or CREATE define the default IAM role. On DELETE, remove the default IAM role
