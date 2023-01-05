@@ -58,6 +58,7 @@ test('cache folders have the right permissions', () => {
     'bash', '-c', [
       'stat -c \'%a\' /tmp/npm-cache',
       'stat -c \'%a\' /tmp/yarn-cache',
+      'stat -c \'%a\' /tmp/pnpm-cache',
     ].join(' &&  '),
   ]);
   expect(proc.stdout.toString()).toMatch('777\n777');
