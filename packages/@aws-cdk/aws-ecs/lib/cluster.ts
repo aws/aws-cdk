@@ -50,7 +50,7 @@ export interface ClusterProps {
    * The capacity providers to add to the cluster
    *
    * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
-   * @deprecated Use {@link ClusterProps.enableFargateCapacityProviders} instead.
+   * @deprecated Use `ClusterProps.enableFargateCapacityProviders` instead.
    */
   readonly capacityProviders?: string[];
 
@@ -340,7 +340,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   * It is highly recommended to use `Cluster.addAsgCapacityProvider` instead of this method.
    *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
@@ -397,7 +397,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * This method adds compute capacity to a cluster using the specified AutoScalingGroup.
    *
-   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
+   * @deprecated Use `Cluster.addAsgCapacityProvider` instead.
    * @param autoScalingGroup the ASG to add to this cluster.
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
@@ -505,8 +505,8 @@ export class Cluster extends Resource implements ICluster {
    * This method enables the Fargate or Fargate Spot capacity providers on the cluster.
    *
    * @param provider the capacity provider to add to this cluster.
-   * @deprecated Use {@link enableFargateCapacityProviders} instead.
-   * @see {@link addAsgCapacityProvider} to add an Auto Scaling Group capacity provider to the cluster.
+   * @deprecated Use `enableFargateCapacityProviders` instead.
+   * @see `addAsgCapacityProvider` to add an Auto Scaling Group capacity provider to the cluster.
    */
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
@@ -830,7 +830,7 @@ export interface AddAutoScalingGroupCapacityOptions {
   readonly spotInstanceDraining?: boolean
 
   /**
-   * If {@link AddAutoScalingGroupCapacityOptions.taskDrainTime} is non-zero, then the ECS cluster creates an
+   * If `AddAutoScalingGroupCapacityOptions.taskDrainTime` is non-zero, then the ECS cluster creates an
    * SNS Topic to as part of a system to drain instances of tasks when the instance is being shut down.
    * If this property is provided, then this key will be used to encrypt the contents of that SNS Topic.
    * See [SNS Data Encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for more information.

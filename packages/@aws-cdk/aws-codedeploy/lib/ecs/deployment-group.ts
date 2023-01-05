@@ -111,7 +111,7 @@ export interface EcsBlueGreenDeploymentConfig {
 }
 
 /**
- * Construction properties for {@link EcsDeploymentGroup}.
+ * Construction properties for `EcsDeploymentGroup`.
  */
 export interface EcsDeploymentGroupProps {
   /**
@@ -140,7 +140,7 @@ export interface EcsDeploymentGroupProps {
    * CodeDeploy will stop (and optionally roll back)
    * a deployment if during it any of the alarms trigger.
    *
-   * Alarms can also be added after the Deployment Group is created using the {@link #addAlarm} method.
+   * Alarms can also be added after the Deployment Group is created using the `#addAlarm` method.
    *
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html

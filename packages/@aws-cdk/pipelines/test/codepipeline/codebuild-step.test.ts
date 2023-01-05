@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
+import { StackOutputReference } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, AppWithOutput } from '../testhelpers';
 
 let app: TestApp;
@@ -296,4 +297,20 @@ test('step has caching set', () => {
       },
     },
   });
+});
+
+test('step exposes consumed stack output reference', () => {
+  // WHEN
+  const myApp = new AppWithOutput(app, 'AppWithOutput', {
+    stackId: 'Stack',
+  });
+  const step = new cdkp.ShellStep('AStep', {
+    commands: ['/bin/true'],
+    envFromCfnOutputs: {
+      THE_OUTPUT: myApp.theOutput,
+    },
+  });
+
+  // THEN
+  expect(step.consumedStackOutputs).toContainEqual(StackOutputReference.fromCfnOutput(myApp.theOutput));
 });
