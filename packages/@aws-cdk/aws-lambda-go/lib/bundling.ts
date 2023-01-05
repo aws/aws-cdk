@@ -4,6 +4,7 @@ import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { BundlingOptions } from './types';
 import { exec, findUp, getGoBuildVersion } from './util';
+import { BundlingFileCopyVariant } from '@aws-cdk/core';
 
 /**
  * Options for bundling
@@ -60,6 +61,12 @@ export interface BundlingProps extends BundlingOptions {
    * The system architecture of the lambda function
    */
   readonly architecture: Architecture;
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BIND_MOUNT
+   */
+  readonly fileCopyVariant?: BundlingFileCopyVariant;
 }
 
 /**
@@ -85,6 +92,7 @@ export class Bundling implements cdk.BundlingOptions {
         user: bundling.user,
         securityOpt: bundling.securityOpt,
         network: bundling.network,
+        fileCopyVariant: bundling.fileCopyVariant,
       },
     });
   }
@@ -107,6 +115,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly user?: string;
   public readonly securityOpt?: string;
   public readonly network?: string;
+  public readonly fileCopyVariant?: cdk.BundlingFileCopyVariant;
 
   private readonly relativeEntryPath: string;
 
@@ -154,6 +163,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
+    this.fileCopyVariant = props.fileCopyVariant;
 
     // Local bundling
     if (!props.forcedDockerBundling) { // only if Docker is not forced

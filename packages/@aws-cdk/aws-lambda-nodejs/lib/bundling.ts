@@ -6,6 +6,7 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
+import { BundlingFileCopyVariant } from '@aws-cdk/core';
 
 const ESBUILD_MAJOR_VERSION = '0';
 
@@ -42,6 +43,12 @@ export interface BundlingProps extends BundlingOptions {
    * Run compilation using `tsc` before bundling
    */
   readonly preCompilation?: boolean
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BIND_MOUNT
+   */
+  readonly fileCopyVariant?: BundlingFileCopyVariant;
 
 }
 
@@ -83,6 +90,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly local?: cdk.ILocalBundling;
+  public readonly fileCopyVariant?: cdk.BundlingFileCopyVariant;
 
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
@@ -154,6 +162,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
+    this.fileCopyVariant = props.fileCopyVariant;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
