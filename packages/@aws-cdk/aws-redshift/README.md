@@ -406,7 +406,8 @@ new Cluster(stack, 'Redshift', {
       masterUsername: 'admin',
     },
     vpc,
-    defaultRole,
+    roles: [defaultRole],
+    defaultRole: defaultRole,
 });
 ```
 
@@ -425,6 +426,7 @@ const redshiftCluster = new Cluster(stack, 'Redshift', {
       masterUsername: 'admin',
     },
     vpc,
+    roles: [defaultRole],
 });
 
 redshiftCluster.addDefaultIamRole(defaultRole);
