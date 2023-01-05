@@ -1,3 +1,37 @@
+# CloudFormation Resource Specification v105.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Lambda::EventSourceMapping ScalingConfig (__deleted__)
+* AWS::SNS::Subscription FilterPolicyScope (__added__)
+* AWS::SageMaker::Domain AppSecurityGroupManagement.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__removed__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeader (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.VolumeConfiguration (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ResponseHeadersPolicyConfig RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration AutomaticTerminationMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration SessionPersistenceMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration VolumeConfiguration (__added__)
+* AWS::SageMaker::Domain.DomainSettings SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Domain.RStudioServerProDomainSettings DomainExecutionRoleArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
 # CloudFormation Resource Specification v103.0.0
 
 ## New Resource Types
