@@ -86,4 +86,33 @@ describe('Cognito Authorizer', () => {
 
     expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
   });
+
+  test('a new deployment is created when a cognito user pool is re-created', () => {
+    const createApiTemplate = (userPoolId: string) => {
+      const stack = new Stack();
+
+      const userPool = new cognito.UserPool(stack, userPoolId);
+
+      const auth = new CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
+        resultsCacheTtl: Duration.seconds(0),
+        cognitoUserPools: [userPool],
+      });
+
+      const restApi = new RestApi(stack, 'myrestapi');
+      restApi.root.addMethod('ANY', undefined, {
+        authorizer: auth,
+        authorizationType: AuthorizationType.COGNITO,
+      });
+
+      return Template.fromStack(stack);
+    };
+
+    const oldTemplate = createApiTemplate('foo');
+    const newTemplate = createApiTemplate('bar');
+
+    const oldDeploymentId = Object.keys(oldTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+    const newDeploymentId = Object.keys(newTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(oldDeploymentId).not.toEqual(newDeploymentId);
+  });
 });

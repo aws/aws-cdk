@@ -580,4 +580,39 @@ describe('lambda authorizer', () => {
 
     expect(deployment.DependsOn).toEqual(expect.arrayContaining([authorizerId]));
   });
+
+  test('a new deployment is created when a lambda function changes name', () => {
+    const createApiTemplate = (lambdaFunctionName: string) => {
+      const stack = new Stack();
+
+      const func = new lambda.Function(stack, 'myfunction', {
+        handler: 'handler',
+        functionName: lambdaFunctionName,
+        code: lambda.Code.fromInline('foo'),
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+
+      const auth = new RequestAuthorizer(stack, 'myauthorizer', {
+        handler: func,
+        resultsCacheTtl: Duration.seconds(0),
+        identitySources: [],
+      });
+
+      const restApi = new RestApi(stack, 'myrestapi');
+      restApi.root.addMethod('ANY', undefined, {
+        authorizer: auth,
+        authorizationType: AuthorizationType.CUSTOM,
+      });
+
+      return Template.fromStack(stack);
+    };
+
+    const oldTemplate = createApiTemplate('foo');
+    const newTemplate = createApiTemplate('bar');
+
+    const oldDeploymentId = Object.keys(oldTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+    const newDeploymentId = Object.keys(newTemplate.findResources('AWS::ApiGateway::Deployment'))[0];
+
+    expect(oldDeploymentId).not.toEqual(newDeploymentId);
+  });
 });
