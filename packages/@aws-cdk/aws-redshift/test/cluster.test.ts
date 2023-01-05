@@ -1,9 +1,9 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
 import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
 import { CfnCluster } from '../lib/redshift.generated';
 
@@ -611,6 +611,40 @@ test('elastic ip address', () => {
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
+  });
+});
+
+describe('default IAM role', () => {
+
+  test('Default role not in role list', () => {
+    // GIVEN
+    const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        roles: [clusterRole1],
+        defaultRole: defaultRole1,
+      });
+    }).toThrow(/Default role must be included in role list./);
+  });
+
+  test('throws error when default role not attached to cluster when adding default role post creation', () => {
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    expect(() => {
+      cluster.addDefaultIamRole(defaultRole1);
+    }).toThrow(/Default role must be included in role list./);
   });
 });
 

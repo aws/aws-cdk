@@ -540,14 +540,7 @@
        {
         "Ref": "Cluster192CD0375"
        },
-       "\",\"AddIamRoles\":[\"",
-       {
-        "Fn::GetAtt": [
-         "IAMF8C44BCA",
-         "Arn"
-        ]
-       },
-       "\"],\"DefaultIamRoleArn\":\"",
+       "\",\"DefaultIamRoleArn\":\"",
        {
         "Fn::GetAtt": [
          "IAMF8C44BCA",
@@ -577,14 +570,7 @@
        {
         "Ref": "Cluster192CD0375"
        },
-       "\",\"AddIamRoles\":[\"",
-       {
-        "Fn::GetAtt": [
-         "IAMF8C44BCA",
-         "Arn"
-        ]
-       },
-       "\"],\"DefaultIamRoleArn\":\"",
+       "\",\"DefaultIamRoleArn\":\"",
        {
         "Fn::GetAtt": [
          "IAMF8C44BCA",
@@ -592,6 +578,29 @@
         ]
        },
        "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "-",
+       {
+        "Ref": "Cluster192CD0375"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "Delete": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Redshift\",\"action\":\"modifyClusterIamRoles\",\"parameters\":{\"ClusterIdentifier\":\"",
+       {
+        "Ref": "Cluster192CD0375"
+       },
+       "\",\"DefaultIamRoleArn\":\"\"},\"physicalResourceId\":{\"id\":\"",
        {
         "Fn::GetAtt": [
          "IAMF8C44BCA",
@@ -848,14 +857,7 @@
        {
         "Ref": "Cluster2720FF351"
        },
-       "\",\"AddIamRoles\":[\"",
-       {
-        "Fn::GetAtt": [
-         "IAMF8C44BCA",
-         "Arn"
-        ]
-       },
-       "\"],\"DefaultIamRoleArn\":\"",
+       "\",\"DefaultIamRoleArn\":\"",
        {
         "Fn::GetAtt": [
          "IAMF8C44BCA",
@@ -885,14 +887,7 @@
        {
         "Ref": "Cluster2720FF351"
        },
-       "\",\"AddIamRoles\":[\"",
-       {
-        "Fn::GetAtt": [
-         "IAMF8C44BCA",
-         "Arn"
-        ]
-       },
-       "\"],\"DefaultIamRoleArn\":\"",
+       "\",\"DefaultIamRoleArn\":\"",
        {
         "Fn::GetAtt": [
          "IAMF8C44BCA",
@@ -900,6 +895,29 @@
         ]
        },
        "\"},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Fn::GetAtt": [
+         "IAMF8C44BCA",
+         "Arn"
+        ]
+       },
+       "-",
+       {
+        "Ref": "Cluster2720FF351"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "Delete": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Redshift\",\"action\":\"modifyClusterIamRoles\",\"parameters\":{\"ClusterIdentifier\":\"",
+       {
+        "Ref": "Cluster2720FF351"
+       },
+       "\",\"DefaultIamRoleArn\":\"\"},\"physicalResourceId\":{\"id\":\"",
        {
         "Fn::GetAtt": [
          "IAMF8C44BCA",
