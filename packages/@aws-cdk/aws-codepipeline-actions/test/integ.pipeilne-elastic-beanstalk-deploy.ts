@@ -103,8 +103,8 @@ const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', 
   ],
 });
 
-beanstalkEnv.addDependsOn(instanceProfile);
-beanstalkEnv.addDependsOn(beanstalkApp);
+beanstalkEnv.addDependency(instanceProfile);
+beanstalkEnv.addDependency(beanstalkApp);
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
