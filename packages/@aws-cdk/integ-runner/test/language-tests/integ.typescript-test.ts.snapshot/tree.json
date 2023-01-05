@@ -4,13 +4,39 @@
     "id": "App",
     "path": "",
     "children": {
-      "Default": {
-        "id": "Default",
-        "path": "Default",
+      "TypeScriptStack": {
+        "id": "TypeScriptStack",
+        "path": "TypeScriptStack",
         "children": {
+          "Queue": {
+            "id": "Queue",
+            "path": "TypeScriptStack/Queue",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnResource",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "TypeScriptStack/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"Queue\",\"QueueUrl\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"Queue\",\"QueueUrl\"]}",
+                "path": "TypeScriptStack/Exports/Output{\"Fn::GetAtt\":[\"Queue\",\"QueueUrl\"]}",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.189"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "Default/BootstrapVersion",
+            "path": "TypeScriptStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -18,7 +44,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "Default/CheckBootstrapVersion",
+            "path": "TypeScriptStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
@@ -30,46 +56,134 @@
           "version": "0.0.0"
         }
       },
-      "Integ": {
-        "id": "Integ",
-        "path": "Integ",
+      "TypeScriptAssertions": {
+        "id": "TypeScriptAssertions",
+        "path": "TypeScriptAssertions",
         "children": {
-          "DefaultTest": {
-            "id": "DefaultTest",
-            "path": "Integ/DefaultTest",
+          "AwsApiCallSQSgetQueueAttributes": {
+            "id": "AwsApiCallSQSgetQueueAttributes",
+            "path": "TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes",
             "children": {
-              "Default": {
-                "id": "Default",
-                "path": "Integ/DefaultTest/Default",
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.189"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.182"
+                  "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                  "version": "0.0.0"
                 }
               },
-              "DeployAssert": {
-                "id": "DeployAssert",
-                "path": "Integ/DefaultTest/DeployAssert",
+              "Default": {
+                "id": "Default",
+                "path": "TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes/Default",
                 "children": {
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
+                  "Default": {
+                    "id": "Default",
+                    "path": "TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes/Default/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "@aws-cdk/core.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "@aws-cdk/core.CustomResource",
                   "version": "0.0.0"
+                }
+              },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes/AssertionResults",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+              "version": "0.0.0"
+            }
+          },
+          "SingletonFunction1488541a7b23466481b69b4408076b81": {
+            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+            "path": "TypeScriptAssertions/SingletonFunction1488541a7b23466481b69b4408076b81",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "TypeScriptAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "TypeScriptAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "TypeScriptAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.189"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "TypeScriptAssertions/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "TypeScriptAssertions/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "TypeScript": {
+        "id": "TypeScript",
+        "path": "TypeScript",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "TypeScript/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TypeScript/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.189"
                 }
               }
             },
@@ -89,7 +203,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.182"
+          "version": "10.1.189"
         }
       }
     },

@@ -1,4 +1,25 @@
 {
+ "Resources": {
+  "Queue": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "FifoQueue": true
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttQueueQueueUrlA8D516BA": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Queue",
+     "QueueUrl"
+    ]
+   },
+   "Export": {
+    "Name": "TypeScriptStack:ExportsOutputFnGetAttQueueQueueUrlA8D516BA"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

@@ -1,12 +1,12 @@
 {
   "version": "22.0.0",
   "testCases": {
-    "Integ/DefaultTest": {
+    "TypeScript/DefaultTest": {
       "stacks": [
-        "Default"
+        "TypeScriptStack"
       ],
-      "assertionStack": "Integ/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
+      "assertionStack": "TypeScriptAssertions",
+      "assertionStackName": "TypeScriptAssertions"
     }
   }
 }

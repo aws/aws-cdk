@@ -1,27 +1,27 @@
 {
   "version": "22.0.0",
   "artifacts": {
-    "Default.assets": {
+    "TypeScriptStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Default.assets.json",
+        "file": "TypeScriptStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Default": {
+    "TypeScriptStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Default.template.json",
+        "templateFile": "TypeScriptStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a28a0c4ed7dfaee5dec40a71393fffa16401094a480e0340d4713a9bb0677c36.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Default.assets"
+          "TypeScriptStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,45 +30,57 @@
         }
       },
       "dependencies": [
-        "Default.assets"
+        "TypeScriptStack.assets"
       ],
       "metadata": {
-        "/Default/BootstrapVersion": [
+        "/TypeScriptStack/Queue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue"
+          }
+        ],
+        "/TypeScriptStack/Exports/Output{\"Fn::GetAtt\":[\"Queue\",\"QueueUrl\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttQueueQueueUrlA8D516BA"
+          }
+        ],
+        "/TypeScriptStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Default/CheckBootstrapVersion": [
+        "/TypeScriptStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Default"
+      "displayName": "TypeScriptStack"
     },
-    "IntegDefaultTestDeployAssert4E6713E1.assets": {
+    "TypeScriptAssertions.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegDefaultTestDeployAssert4E6713E1.assets.json",
+        "file": "TypeScriptAssertions.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegDefaultTestDeployAssert4E6713E1": {
+    "TypeScriptAssertions": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
+        "templateFile": "TypeScriptAssertions.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bb131995f97d3bf2ccde6c8fd8d88a6b780ae97a9348985f50b9207d5e341b5c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegDefaultTestDeployAssert4E6713E1.assets"
+          "TypeScriptAssertions.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -77,23 +89,48 @@
         }
       },
       "dependencies": [
-        "IntegDefaultTestDeployAssert4E6713E1.assets"
+        "TypeScriptStack",
+        "TypeScriptAssertions.assets"
       ],
       "metadata": {
-        "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSgetQueueAttributes"
+          }
+        ],
+        "/TypeScriptAssertions/AwsApiCallSQSgetQueueAttributes/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSQSgetQueueAttributes"
+          }
+        ],
+        "/TypeScriptAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/TypeScriptAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/TypeScriptAssertions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/TypeScriptAssertions/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Integ/DefaultTest/DeployAssert"
+      "displayName": "TypeScriptAssertions"
     },
     "Tree": {
       "type": "cdk:tree",
