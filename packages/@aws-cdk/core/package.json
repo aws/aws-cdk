@@ -126,6 +126,8 @@
       "construct-interface-extends-iconstruct:@aws-cdk/core.ICustomResourceProvider",
       "props-physical-name:@aws-cdk/core.CustomResourceProps",
       "integ-return-type:@aws-cdk/core.IStackSynthesizer.bind",
+      "integ-return-type:@aws-cdk/core.IBoundStackSynthesizer.bind",
+      "integ-return-type:@aws-cdk/core.IReusableStackSynthesizer.bind",
       "props-no-any:@aws-cdk/core.CfnJsonProps.value"
     ]
   },

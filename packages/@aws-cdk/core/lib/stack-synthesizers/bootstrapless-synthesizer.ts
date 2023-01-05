@@ -33,6 +33,9 @@ export interface BootstraplessSynthesizerProps {
  * However, it will not assume asset buckets or repositories have been created,
  * and therefore does not support assets.
  *
+ * The name is poorly chosen -- it does still require bootstrapping, it just
+ * does not support assets.
+ *
  * Used by the CodePipeline construct for the support stacks needed for
  * cross-region replication S3 buckets. App builders do not need to use this
  * synthesizer directly.
