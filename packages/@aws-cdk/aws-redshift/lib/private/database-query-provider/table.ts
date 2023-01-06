@@ -1,6 +1,6 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { Column } from '../../table';
+import { Column, ColumnEncoding } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
@@ -141,6 +141,21 @@ async function updateTable(
         break;
       }
     }
+  }
+
+  const oldEncodingColumns = oldTableColumns.filter(column => column.encoding);
+  const newEncodingColumns = tableColumns.filter(column => column.encoding);
+  if (!areColumnsEqual(oldEncodingColumns, newEncodingColumns)) {
+    // Check for any new columns that need to be encoded.
+    const encodingColumnAdditions = newEncodingColumns.filter(column => {
+      return !oldEncodingColumns.some(oldColumn => column.name === oldColumn.name && column.encoding === oldColumn.encoding);
+    }).map(column => `ALTER TABLE ${tableName} ALTER COLUMN ${column.name} ENCODE ${column.encoding}`);
+    alterationStatements.push(...encodingColumnAdditions);
+    // Check for any old columns that need to be reverted.
+    const encodingColumnDeletions = oldEncodingColumns.filter(column => {
+      return !newEncodingColumns.some(newColumn => column.name === newColumn.name && column.encoding === newColumn.encoding);
+    }).map(column => `ALTER TABLE ${tableName} ALTER COLUMN ${column.name} ENCODE ${ColumnEncoding.AUTO}`);
+    alterationStatements.push(...encodingColumnDeletions);
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
