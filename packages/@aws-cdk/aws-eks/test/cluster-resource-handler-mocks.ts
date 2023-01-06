@@ -16,6 +16,8 @@ export let actualRequest: {
   createFargateProfile?: sdk.EKS.CreateFargateProfileRequest;
   describeFargateProfile?: sdk.EKS.DescribeFargateProfileRequest;
   deleteFargateProfile?: sdk.EKS.DeleteFargateProfileRequest;
+  untagResourceRequest?: sdk.EKS.UntagResourceRequest;
+tagResourceRequest?: sdk.EKS.TagResourceRequest;
 } = { };
 
 /**
@@ -136,6 +138,18 @@ export const client: EksClient = {
     actualRequest.deleteFargateProfile = req;
     return { };
   },
+
+    untagResource: async req => {
+    actualRequest.untagResourceRequest = req;
+    return {};
+  },
+
+  tagResource: async req => {
+    actualRequest.tagResourceRequest = req;
+    return {};
+  },
+
+
 };
 
 export const MOCK_PROPS = {

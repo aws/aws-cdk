@@ -162,6 +162,34 @@ export class ClusterResourceHandler extends ResourceHandler {
       return { EksUpdateId: updateResponse.update?.id };
     }
 
+    if (updates.updateTags) {
+      console.log(`updating cluster tags to ${JSON.stringify(this.newProps.tags)}`);
+
+      const resp = await this.eks.describeCluster({
+        name: this.clusterName,
+      });
+
+      if (!resp.cluster?.arn) {
+        throw new Error(`Cannot obtain cluster ARN with cluster name ${this.clusterName}`);
+      }
+
+      if (this.oldProps.tags) {
+        await this.eks.untagResource({
+          resourceArn: resp.cluster.arn,
+          tagKeys: Object.keys(this.oldProps.tags),
+        });
+      }
+
+      if (this.newProps.tags && Object.keys(this.newProps.tags).length) {
+        await this.eks.tagResource({
+          resourceArn: resp.cluster.arn,
+          tags: this.newProps.tags,
+        });
+      }
+
+      return;
+    }
+
     // no updates
     return;
   }
@@ -309,6 +337,7 @@ interface UpdateMap {
   updateLogging: boolean; // logging
   updateEncryption: boolean; // encryption (cannot be updated)
   updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+  updateTags: boolean; // tags
 }
 
 function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps: aws.EKS.CreateClusterRequest): UpdateMap {
@@ -336,6 +365,7 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
     updateVersion: newProps.version !== oldProps.version,
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
+    updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
   };
 }
 

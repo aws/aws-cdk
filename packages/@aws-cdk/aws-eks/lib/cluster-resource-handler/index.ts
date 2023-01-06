@@ -28,6 +28,8 @@ const defaultEksClient: EksClient = {
   createFargateProfile: req => getEksClient().createFargateProfile(req).promise(),
   deleteFargateProfile: req => getEksClient().deleteFargateProfile(req).promise(),
   describeFargateProfile: req => getEksClient().describeFargateProfile(req).promise(),
+  untagResource: req => getEksClient().untagResource(req).promise(),
+tagResource: req => getEksClient().tagResource(req).promise(),
   configureAssumeRole: req => {
     console.log(JSON.stringify({ assumeRole: req }, undefined, 2));
     const creds = new aws.ChainableTemporaryCredentials({

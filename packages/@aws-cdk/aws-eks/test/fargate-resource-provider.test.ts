@@ -282,5 +282,7 @@ function newEksClientMock() {
     }),
     deleteFargateProfile: sinon.fake(),
     describeFargateProfile: sinon.fake.throws('not implemented'),
+    untagResource: sinon.fake.throws('not implemented'),
+tagResource: sinon.fake.throws('not implemented'),
   };
 }
