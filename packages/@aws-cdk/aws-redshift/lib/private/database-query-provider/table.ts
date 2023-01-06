@@ -1,8 +1,8 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { Column, ColumnEncoding } from '../../table';
+import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
-import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
+import { ClusterProps, TableAndClusterProps, TableSortStyle, ColumnEncoding } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
