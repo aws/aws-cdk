@@ -13,7 +13,7 @@ import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
  * Possible Instances Types to use in Neptune cluster
- * used for defining {@link DatabaseClusterProps.engineVersion}.
+ * used for defining `DatabaseClusterProps.engineVersion`.
  */
 export class EngineVersion {
   /**

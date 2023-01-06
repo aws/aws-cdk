@@ -89,7 +89,7 @@
     "Name": "sub.myzone.com."
    }
   },
-  "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B": {
+  "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C47314C14718": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -107,7 +107,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B",
+    "PolicyName": "Policyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C473",
     "Roles": [
      {
       "Fn::Select": [
@@ -166,7 +166,7 @@
     "TTL": 172800
    },
    "DependsOn": [
-    "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B"
+    "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneIdcrossaccountzonedelegationhandlerrole5AE6C47314C14718"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -200,7 +200,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8791363ca4b6d78c7c58a13f79e0e9fb6f01527ad80687e5e98e33eab7b169d8.zip"
+     "S3Key": "89af49ab813a5bc5ab7e18adff91dcff5a5889842f419767c8a2a5aa94b0e6f8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -223,7 +223,7 @@
     "Name": "anothersub.myzone.com."
    }
   },
-  "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882": {
+  "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC28807823206B47A": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -241,7 +241,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882",
+    "PolicyName": "Policyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC2880782",
     "Roles": [
      {
       "Fn::Select": [
@@ -298,7 +298,7 @@
     "TTL": 172800
    },
    "DependsOn": [
-    "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882"
+    "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicyawscdkroute53crossaccountintegDelegationWithZoneNamecrossaccountzonedelegationhandlerroleC28807823206B47A"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

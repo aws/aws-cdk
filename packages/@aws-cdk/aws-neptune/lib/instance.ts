@@ -9,7 +9,7 @@ import { IParameterGroup } from './parameter-group';
 
 /**
  * Possible Instances Types to use in Neptune cluster
- * used for defining {@link DatabaseInstanceProps.instanceType}.
+ * used for defining `DatabaseInstanceProps.instanceType`.
  */
 export class InstanceType {
 
