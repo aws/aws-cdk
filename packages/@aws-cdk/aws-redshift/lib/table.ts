@@ -79,6 +79,20 @@ export interface Column {
    * @default - column is not a SORTKEY
    */
   readonly sortKey?: boolean;
+
+  /**
+   * The encoding to use for the column.
+   *
+   * @default - Amazon Redshift determines the encoding based on the data type.
+   */
+  readonly encoding?: ColumnEncoding;
+
+  /**
+   * A comment to attach to the column.
+   *
+   * @default - no comment
+   */
+  readonly comment?: string;
 }
 
 /**
@@ -335,4 +349,45 @@ export enum TableSortStyle {
    * Specifies that the data is sorted using an interleaved sort key.
    */
   INTERLEAVED = 'INTERLEAVED',
+}
+
+/**
+ * The compression encoding of a column.
+ */
+export enum ColumnEncoding {
+
+  /**
+   * Amazon Redshift assigns an optimal encoding based on the column data.
+   * This is the default.
+   */
+  AUTO,
+
+  /**
+   * The column is not compressed.
+   */
+  RAW,
+
+  AZ64,
+
+  BYTEDICT,
+
+  DELTA,
+
+  DELTA32K,
+
+  LZO,
+
+  MOSTLY8,
+
+  MOSTLY16,
+
+  MOSTLY32,
+
+  RUNLENGTH,
+
+  TEXT255,
+
+  TEXT32K,
+
+  ZSTD,
 }
