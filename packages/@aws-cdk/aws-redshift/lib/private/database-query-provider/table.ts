@@ -40,7 +40,7 @@ async function createTable(
   tableAndClusterProps: TableAndClusterProps,
 ): Promise<string> {
   const tableName = tableNamePrefix + tableNameSuffix;
-  const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}`).join();
+  const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}${getEncodingColumnString(column)}`).join();
 
   let statement = `CREATE TABLE ${tableName} (${tableColumnsString})`;
 
@@ -150,4 +150,11 @@ async function updateTable(
 
 function getSortKeyColumnsString(sortKeyColumns: Column[]) {
   return sortKeyColumns.map(column => column.name).join();
+}
+
+function getEncodingColumnString(column: Column): string {
+  if (column.encoding) {
+    return ` ENCODE ${column.encoding}`;
+  }
+  return '';
 }
