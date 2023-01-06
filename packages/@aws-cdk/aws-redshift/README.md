@@ -54,7 +54,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 
 const vpc = new ec2.Vpc(this, 'Vpc');
-const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
+const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'logging-bucket');
 
 const cluster = new Cluster(this, 'Redshift', {
   masterUser: {
@@ -62,7 +62,7 @@ const cluster = new Cluster(this, 'Redshift', {
   },
   vpc,
   loggingProperties: {
-    loggingBucket = bucket,
+    loggingBucket: bucket,
     loggingKeyPrefix: 'prefix',
   }
 });
@@ -200,6 +200,35 @@ new Table(this, 'Table', {
 });
 ```
 
+Both the table and their respective columns can be configured to contain comments:
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', comment: 'This is a comment' }, 
+    { name: 'col2', dataType: 'float', comment: 'This is a another comment' }
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  comment: 'This is a comment',
+});
+```
+
+Table columns can be configured to use a specific compression encoding:
+
+```ts fixture=cluster
+import { ColumnEncoding } from '@aws-cdk/aws-redshift';
+
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', encoding: ColumnEncoding.DELTA },
+    { name: 'col2', dataType: 'float', encoding: ColumnEncoding.DELTA32K },
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
 ### Granting Privileges
 
 You can give a user privileges to perform certain actions on a table by using the
@@ -305,7 +334,9 @@ cluster.addRotationMultiUser('MultiUserRotation', {
 You can add a parameter to a parameter group with`ClusterParameterGroup.addParameter()`.
 
 ```ts
-const params = new ClusterParameterGroup(stack, 'Params', {
+import { ClusterParameterGroup } from '@aws-cdk/aws-redshift';
+
+const params = new ClusterParameterGroup(this, 'Params', {
   description: 'desc',
   parameters: {
     require_ssl: 'true',
@@ -318,6 +349,8 @@ params.addParameter('enable_user_activity_logging', 'true');
 Additionally, you can add a parameter to the cluster's associated parameter group with `Cluster.addToParameterGroup()`. If the cluster does not have an associated parameter group, a new parameter group is created.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 declare const vpc: ec2.Vpc;
 
 const cluster = new Cluster(this, 'Cluster', {
@@ -336,9 +369,11 @@ cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 declare const vpc: ec2.Vpc;
 
-new Cluster(stack, 'Redshift', {
+new Cluster(this, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
       masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
@@ -352,6 +387,7 @@ new Cluster(stack, 'Redshift', {
 If the Cluster is in a VPC and you want to connect to it using the private IP address from within the cluster, it is important to enable *DNS resolution* and *DNS hostnames* in the VPC config. If these parameters would not be set, connections from within the VPC would connect to the elastic IP address and not the private IP address.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
 const vpc = new ec2.Vpc(this, 'VPC', {
   enableDnsSupport: true,
   enableDnsHostnames: true,
@@ -373,9 +409,11 @@ In some cases, you might want to associate the cluster with an elastic IP addres
 When you use Amazon Redshift enhanced VPC routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC) based on the Amazon VPC service. By using enhanced VPC routing, you can use standard VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateways, and Domain Name System (DNS) servers, as described in the Amazon VPC User Guide. You use these features to tightly manage the flow of data between your Amazon Redshift cluster and other resources. When you use enhanced VPC routing to route traffic through your VPC, you can also use VPC flow logs to monitor COPY and UNLOAD traffic.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cdk from '@aws-cdk/core';
 declare const vpc: ec2.Vpc;
 
-new Cluster(stack, 'Redshift', {
+new Cluster(this, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
       masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
