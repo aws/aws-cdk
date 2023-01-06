@@ -10,6 +10,7 @@ import dynamodb = require('@aws-cdk/aws-dynamodb');
 import ecr = require('@aws-cdk/aws-ecr');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import lambda = require('@aws-cdk/lambda');
 import pipelines = require('@aws-cdk/pipelines');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import sns = require('@aws-cdk/aws-sns');

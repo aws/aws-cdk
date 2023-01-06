@@ -17,7 +17,7 @@ export interface LambdaRestApiProps extends RestApiProps {
   /**
    * Specific Lambda integration options.
    *
-   * @default see defaults defined in {@link LambdaIntegrationOptions}.
+   * @default see defaults defined in `LambdaIntegrationOptions`.
    */
   readonly integrationOptions?: LambdaIntegrationOptions;
 

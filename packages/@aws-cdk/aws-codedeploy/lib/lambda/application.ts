@@ -7,11 +7,11 @@ import { arnForApplication, validateName } from '../private/utils';
  * Represents a reference to a CodeDeploy Application deploying to AWS Lambda.
  *
  * If you're managing the Application alongside the rest of your CDK resources,
- * use the {@link LambdaApplication} class.
+ * use the `LambdaApplication` class.
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link LambdaApplication#fromLambdaApplicationName} method.
+ * use the `LambdaApplication#fromLambdaApplicationName` method.
  */
 export interface ILambdaApplication extends IResource {
   /** @attribute */
@@ -22,7 +22,7 @@ export interface ILambdaApplication extends IResource {
 }
 
 /**
- * Construction properties for {@link LambdaApplication}.
+ * Construction properties for `LambdaApplication`.
  */
 export interface LambdaApplicationProps {
   /**
