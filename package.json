@@ -28,8 +28,8 @@
     "jsii-reflect": "1.72.0",
     "jsii-rosetta": "1.72.0",
     "lerna": "^4.0.0",
+    "remodel": "0.0.0",
     "patch-package": "^6.5.1",
-    "magic-repo-fixer": "0.0.0",
     "semver": "^6.3.0",
     "standard-version": "^9.5.0",
     "typescript": "~3.9.10"

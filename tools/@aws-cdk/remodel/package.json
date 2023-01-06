@@ -1,14 +1,13 @@
 {
-  "name": "magic-repo-fixer",
+  "name": "remodel",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "bin": {
-    "magic-repo-fixer": "bin/magic-repo-fixer"
+    "remodel": "bin/remodel"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/magic-repo-fixer",
-    "run": "ts-node bin/magic-repo-fixer.ts",
+    "build": "tsc -b && chmod +x bin/remodel",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -b --watch"
   },
