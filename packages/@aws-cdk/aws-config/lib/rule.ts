@@ -1456,6 +1456,8 @@ export class ResourceType {
   public static readonly CLOUDFRONT_STREAMING_DISTRIBUTION = new ResourceType('AWS::CloudFront::StreamingDistribution');
   /** Amazon CloudWatch Alarm */
   public static readonly CLOUDWATCH_ALARM = new ResourceType('AWS::CloudWatch::Alarm');
+  /** Amazon CloudWatch RUM */
+  public static readonly CLOUDWATCH_RUM_APP_MONITOR = new ResourceType('AWS::RUM::AppMonitor');
   /** Amazon DynamoDB Table */
   public static readonly DYNAMODB_TABLE = new ResourceType('AWS::DynamoDB::Table');
   /** Elastic Block Store (EBS) volume */
@@ -1520,12 +1522,22 @@ export class ResourceType {
   public static readonly EKS_CLUSTER = new ResourceType('AWS::EKS::Cluster');
   /** Amazon EMR security configuration */
   public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType('AWS::EMR::SecurityConfiguration');
+  /** Amazon EventBridge EventBus */
+  public static readonly EVENTBRIDGE_EVENTBUS = new ResourceType('AWS::Events::EventBus');
+  /** Amazon EventBridge Api Destination */
+  public static readonly EVENTBRIDGE_API_DESTINATION = new ResourceType('AWS::Events::ApiDestination');
+  /** Amazon EventBridge Archive */
+  public static readonly EVENTBRIDGE_ARCHIVE = new ResourceType('AWS::Events::Archive');
+  /** Amazon EventBridge Endpoint */
+  public static readonly EVENTBRIDGE_ENDPOINT = new ResourceType('AWS::Events::Endpoint');
   /** Amazon GuardDuty detector */
   public static readonly GUARDDUTY_DETECTOR = new ResourceType('AWS::GuardDuty::Detector');
   /** Amazon GuardDuty Threat Intel Set */
   public static readonly GUARDDUTY_THREAT_INTEL_SET = new ResourceType('AWS::GuardDuty::ThreatIntelSet');
   /** Amazon GuardDuty IP Set */
   public static readonly GUARDDUTY_IP_SET = new ResourceType(' AWS::GuardDuty::IPSet');
+  /** Amazon GuardDuty Filter */
+  public static readonly GUARDDUTY_FILTER = new ResourceType('AWS::GuardDuty::Filter');
   /** Amazon ElasticSearch domain */
   public static readonly ELASTICSEARCH_DOMAIN = new ResourceType('AWS::Elasticsearch::Domain');
   /** Amazon OpenSearch domain */
@@ -1536,6 +1548,10 @@ export class ResourceType {
   public static readonly KINESIS_STREAM = new ResourceType('AWS::Kinesis::Stream');
   /** Amazon Kinesis stream consumer */
   public static readonly KINESIS_STREAM_CONSUMER = new ResourceType('AWS::Kinesis::StreamConsumer');
+  /** Amazon Lightsail Certificate */
+  public static readonly LIGHTSAIL_CERTIFICATE = new ResourceType('AWS::Lightsail::Certificate');
+  /** Amazon Lightsail Disk */
+  public static readonly LIGHTSAIL_DISK = new ResourceType('AWS::Lightsail::Disk');
   /** Amazon MSK cluster */
   public static readonly MSK_CLUSTER = new ResourceType('AWS::MSK::Cluster');
   /** Amazon Redshift cluster */
@@ -1596,6 +1612,12 @@ export class ResourceType {
   public static readonly SES_CONFIGURATION_SET = new ResourceType('AWS::SES::ConfigurationSet');
   /** Amazon SES Contact List */
   public static readonly SES_CONTACT_LIST = new ResourceType('AWS::SES::ContactList');
+  /** Amazon SES Template */
+  public static readonly SES_TEMPLATE = new ResourceType('AWS::SES::Template');
+  /** Amazon SES ReceiptFilter */
+  public static readonly SES_RECEIPT_FILTER = new ResourceType('AWS::SES::ReceiptFilter');
+  /** Amazon SES ReceiptRuleSet */
+  public static readonly SES_RECEIPT_RECEIPT_RULE_SET = new ResourceType('AWS::SES::ReceiptRuleSet');
   /** Amazon S3 account public access block */
   public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType('AWS::S3::AccountPublicAccessBlock');
   /** Amazon EC2 customer gateway */
@@ -1636,8 +1658,10 @@ export class ResourceType {
   public static readonly BACKUP_BACKUP_SELECTION = new ResourceType('AWS::Backup::BackupSelection');
   /** AWS Backup backup vault */
   public static readonly BACKUP_BACKUP_VAULT = new ResourceType('AWS::Backup::BackupVault');
-  /** AWS Backup backup recovery point */
+  /** AWS Backup recovery point */
   public static readonly BACKUP_RECOVERY_POINT = new ResourceType('AWS::Backup::RecoveryPoint');
+  /** AWS Backup report plan */
+  public static readonly BACKUP_REPORT_PLAN = new ResourceType('AWS::Backup::ReportPlan');
   /** AWS Batch job queue */
   public static readonly BATCH_JOB_QUEUE = new ResourceType('AWS::Batch::JobQueue');
   /** AWS Batch compute environment */
@@ -1676,6 +1700,8 @@ export class ResourceType {
   public static readonly DATASYNC_LOCATION_SMB = new ResourceType('AWS::DataSync::LocationSMB');
   /** AWS DataSync location FSx Lustre */
   public static readonly DATASYNC_LOCATION_FSX_LUSTRE = new ResourceType('AWS::DataSync::LocationFSxLustre');
+  /** AWS DataSync location FSx Windows */
+  public static readonly DATASYNC_LOCATION_FSX_WINDOWS = new ResourceType('AWS::DataSync::LocationFSxWindows');
   /** AWS DataSync location S3 */
   public static readonly DATASYNC_LOCATION_S3 = new ResourceType('AWS::DataSync::LocationS3');
   /** AWS DataSync location EFS */
@@ -1694,8 +1720,8 @@ export class ResourceType {
   public static readonly ELASTIC_BEANSTALK_APPLICATION_VERSION = new ResourceType('AWS::ElasticBeanstalk::ApplicationVersion');
   /** AWS Elastic Beanstalk (EB) environment */
   public static readonly ELASTIC_BEANSTALK_ENVIRONMENT = new ResourceType('AWS::ElasticBeanstalk::Environment');
-  /** Amazon EventBridge EventBus */
-  public static readonly EVENTBRIDGE_EVENTBUS = new ResourceType('AWS::Events::EventBus');
+  /** AWS Fault Injection Simulator Experiment_Template */
+  public static readonly FIS_EXPERIMENT_TEMPLATE = new ResourceType('AWS::FIS::ExperimentTemplate');
   /** AWS GlobalAccelerator listener */
   public static readonly GLOBALACCELERATOR_LISTENER = new ResourceType('AWS::GlobalAccelerator::Listener');
   /** AWS GlobalAccelerator endpoint group */
