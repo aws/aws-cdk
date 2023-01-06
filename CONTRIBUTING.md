@@ -306,8 +306,9 @@ Examples:
 
 If you are working on a PR that requires an update to an integration test and you are unable
 to run the `cdk-integ` tool to perform a real deployment, please call this out on the pull request
-so a maintainer can run the tests for you. Please **do not** run the `cdk-integ` tool with `--dry-run`
-or manually update the snapshot.
+so a maintainer can run the tests for you. To pass the automated reviewer rule that requires an
+integ test update, please run `cdk-integ --update-on-failed --dry-run` and **clearly call this out
+in the PR** so we know to run these tests for you.
 
 See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
 CDK integration tests.
