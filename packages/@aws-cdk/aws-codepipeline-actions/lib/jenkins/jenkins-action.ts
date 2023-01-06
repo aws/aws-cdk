@@ -22,7 +22,7 @@ export enum JenkinsActionType {
 }
 
 /**
- * Construction properties of {@link JenkinsAction}.
+ * Construction properties of `JenkinsAction`.
  */
 export interface JenkinsActionProps extends codepipeline.CommonActionProps {
   /**

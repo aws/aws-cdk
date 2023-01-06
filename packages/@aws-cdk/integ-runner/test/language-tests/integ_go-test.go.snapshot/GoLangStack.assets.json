@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "cdf94bfd1a3da2b2708c1e970f501fd2aec8dffea45b036ee1f42e20f5081015": {
+      "source": {
+        "path": "GoLangStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cdf94bfd1a3da2b2708c1e970f501fd2aec8dffea45b036ee1f42e20f5081015.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
