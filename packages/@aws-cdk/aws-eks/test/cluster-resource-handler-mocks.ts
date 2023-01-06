@@ -17,8 +17,8 @@ export let actualRequest: {
   describeFargateProfile?: sdk.EKS.DescribeFargateProfileRequest;
   deleteFargateProfile?: sdk.EKS.DeleteFargateProfileRequest;
   untagResourceRequest?: sdk.EKS.UntagResourceRequest;
-tagResourceRequest?: sdk.EKS.TagResourceRequest;
-} = { };
+  tagResourceRequest?: sdk.EKS.TagResourceRequest;
+} = {};
 
 /**
  * Responses can be simulated by assigning values here.
@@ -29,11 +29,11 @@ export let simulateResponse: {
   describeUpdateResponseMockErrors?: sdk.EKS.ErrorDetails;
   deleteClusterErrorCode?: string;
   describeClusterExceptionCode?: string;
-} = { };
+} = {};
 
 export function reset() {
-  actualRequest = { };
-  simulateResponse = { };
+  actualRequest = {};
+  simulateResponse = {};
 }
 
 export const MOCK_UPDATE_STATUS_ID = 'MockEksUpdateStatusId';
@@ -126,20 +126,20 @@ export const client: EksClient = {
 
   createFargateProfile: async req => {
     actualRequest.createFargateProfile = req;
-    return { };
+    return {};
   },
 
   describeFargateProfile: async req => {
     actualRequest.describeFargateProfile = req;
-    return { };
+    return {};
   },
 
   deleteFargateProfile: async req => {
     actualRequest.deleteFargateProfile = req;
-    return { };
+    return {};
   },
 
-    untagResource: async req => {
+  untagResource: async req => {
     actualRequest.untagResourceRequest = req;
     return {};
   },

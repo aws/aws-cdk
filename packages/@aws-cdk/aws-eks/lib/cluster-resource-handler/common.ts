@@ -85,5 +85,5 @@ export interface EksClient {
   describeFargateProfile(request: aws.EKS.DescribeFargateProfileRequest): Promise<aws.EKS.DescribeFargateProfileResponse>;
   deleteFargateProfile(request: aws.EKS.DeleteFargateProfileRequest): Promise<aws.EKS.DeleteFargateProfileResponse>;
   untagResource(req: aws.EKS.UntagResourceRequest): Promise<aws.EKS.UntagResourceResponse>;
-tagResource(req: aws.EKS.TagResourceRequest): Promise<aws.EKS.TagResourceResponse>;
+  tagResource(req: aws.EKS.TagResourceRequest): Promise<aws.EKS.TagResourceResponse>;
 }
