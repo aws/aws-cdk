@@ -60,6 +60,16 @@ async function createTable(
   }
 
   await executeStatement(statement, tableAndClusterProps);
+
+  if (tableAndClusterProps.comment) {
+    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.comment}'`, tableAndClusterProps);
+  }
+
+  for (const column of tableColumns) {
+    if (column.comment) {
+      await executeStatement(`COMMENT ON COLUMN ${tableName}.${column.name} IS '${column.comment}'`, tableAndClusterProps);
+    }
+  }
   return tableName;
 }
 
@@ -85,6 +95,11 @@ async function updateTable(
   const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
   if (tableNamePrefix !== oldTableNamePrefix) {
     return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+  }
+
+  const oldComment = oldResourceProperties.comment;
+  if (tableAndClusterProps.comment !== oldComment) {
+    alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${tableAndClusterProps.comment ? `'${tableAndClusterProps.comment}'` : 'NULL'}`);
   }
 
   const oldTableColumns = oldResourceProperties.tableColumns;
@@ -156,6 +171,21 @@ async function updateTable(
       return !newEncodingColumns.some(newColumn => column.name === newColumn.name && column.encoding === newColumn.encoding);
     }).map(column => `ALTER TABLE ${tableName} ALTER COLUMN ${column.name} ENCODE ${ColumnEncoding.AUTO}`);
     alterationStatements.push(...encodingColumnDeletions);
+  }
+
+  const oldCommentedColumns = oldTableColumns.filter(column => column.comment);
+  const newCommentedColumns = tableColumns.filter(column => column.comment);
+  if (!areColumnsEqual(oldCommentedColumns, newCommentedColumns)) {
+    // Check for any new columns that need to be commented.
+    const commentColumnAdditions = newCommentedColumns.filter(column => {
+      return !oldCommentedColumns.some(oldColumn => column.name === oldColumn.name && column.comment === oldColumn.comment);
+    }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS '${column.comment}'`);
+    alterationStatements.push(...commentColumnAdditions);
+    // Check for any old columns that need to be reverted.
+    const commentColumnDeletions = oldCommentedColumns.filter(column => {
+      return !newCommentedColumns.some(newColumn => column.name === newColumn.name && column.comment === newColumn.comment);
+    }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS NULL`);
+    alterationStatements.push(...commentColumnDeletions);
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
