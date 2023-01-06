@@ -208,7 +208,8 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
   /**
    * Outputs to pass to the `docker build` command.
    *
-   * @default - no outputs are passed
+   * @default - no outputs are passed to the build command (default outputs are used)
+   * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
    */
   readonly outputs?: string[];
 }
