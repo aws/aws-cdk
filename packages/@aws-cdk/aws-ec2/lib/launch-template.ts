@@ -591,9 +591,14 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       },
     });
 
-    if (props.userData) {
-      this.userData = props.userData;
+    const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
+    if (imageConfig) {
+      this.osType = imageConfig.osType;
+      this.imageId = imageConfig.imageId;
     }
+
+    // priority: prop.userData -> userData from machineImage -> undefined
+    this.userData = props.userData ?? imageConfig?.userData;
     const userDataToken = Lazy.string({
       produce: () => {
         if (this.userData) {
@@ -602,12 +607,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         return undefined;
       },
     });
-
-    const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
-    if (imageConfig) {
-      this.osType = imageConfig.osType;
-      this.imageId = imageConfig.imageId;
-    }
 
     this.instanceType = props.instanceType;
 

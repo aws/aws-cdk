@@ -172,7 +172,7 @@ describe('LaunchTemplate', () => {
       },
     });
     expect(template.osType).toBe(OperatingSystemType.LINUX);
-    expect(template.userData).toBeUndefined();
+    expect(template.userData).toBeDefined();
   });
 
   test('Given machineImage (Windows)', () => {
@@ -190,7 +190,7 @@ describe('LaunchTemplate', () => {
       },
     });
     expect(template.osType).toBe(OperatingSystemType.WINDOWS);
-    expect(template.userData).toBeUndefined();
+    expect(template.userData).toBeDefined();
   });
 
   test('Given userData', () => {
