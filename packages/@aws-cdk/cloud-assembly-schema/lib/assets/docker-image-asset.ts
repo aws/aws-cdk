@@ -87,7 +87,6 @@ export interface DockerImageSource {
    * @default - No outputs
    */
   readonly dockerOutputs?: string[];
-
 }
 
 /**
