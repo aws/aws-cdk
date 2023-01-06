@@ -152,7 +152,6 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default no outputs are passed
    */
   readonly outputs?: string[];
-
 }
 
 /**
