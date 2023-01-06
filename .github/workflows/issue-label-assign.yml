@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: aws-github-ops/aws-issue-triage-manager@main
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: "${{ secrets.PROJEN_GITHUB_TOKEN }}"
           target: "pull-requests"
           area-is-keyword: true
           default-area: >
