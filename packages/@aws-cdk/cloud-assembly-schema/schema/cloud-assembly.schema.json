@@ -649,7 +649,7 @@
                     }
                 },
                 "returnAsymmetricSubnets": {
-                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "description": "Whether to populate the subnetGroups field of the `VpcContextResponse`,\nwhich contains potentially asymmetric subnet groups.",
                     "default": false,
                     "type": "boolean"
                 },
