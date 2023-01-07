@@ -2213,19 +2213,26 @@ export class Bucket extends BucketBase {
    */
   private allowLogDelivery(from: IBucket, prefix?: string) {
     if (FeatureFlags.of(this).isEnabled(cxapi.S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY)) {
-      this.addToResourcePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
-        actions: ['s3:PutObject'],
-        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
-        conditions: {
+      let conditions = undefined;
+      // The conditions for the bucket policy can be applied only when the buckets are in
+      // the same stack and a concrete bucket instance (not imported). Otherwise, the
+      // necessary imports may result in a cyclic dependency between the stacks.
+      if (from instanceof Bucket && Stack.of(this) === Stack.of(from)) {
+        conditions = {
           ArnLike: {
             'aws:SourceArn': from.bucketArn,
           },
           StringEquals: {
             'aws:SourceAccount': from.env.account,
           },
-        },
+        };
+      }
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
+        conditions: conditions,
       }));
     } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
