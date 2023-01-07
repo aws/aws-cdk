@@ -15,6 +15,13 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
   readonly clusterIdentifier: string;
 
   /**
+   * The immutable identifier for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP.
+   *
+   * This AWS Region-unique identifier is used in things like IAM authentication policies.
+   */
+  readonly clusterResourceIdentifier: string;
+
+  /**
    * Identifiers of the replicas
    */
   readonly instanceIdentifiers: string[];
@@ -57,6 +64,13 @@ export interface DatabaseClusterAttributes {
    */
   readonly clusterIdentifier: string;
 
+  /**
+   * The immutable identifier for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP.
+   *
+   * This AWS Region-unique identifier is used in things like IAM authentication policies.
+   */
+  readonly clusterResourceIdentifier?: string;
+  
   /**
    * The database port
    *
