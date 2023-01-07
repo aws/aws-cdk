@@ -199,7 +199,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -220,7 +220,7 @@ export interface IBucket extends IResource {
    * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
    *
    * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
-   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * calling `grantWrite` or `grantReadWrite` no longer grants permissions to modify the ACLs of the objects;
    * in this case, if you need to modify object ACLs, call this method explicitly.
    *
    * @param identity The principal
@@ -250,7 +250,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -1649,7 +1649,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
   public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
     // use a "weird" id that has a higher chance of being unique
