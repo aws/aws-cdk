@@ -1125,6 +1125,27 @@ const stack = new Stack(app, 'StackName', {
 });
 ```
 
+### Resource Removal Policy
+
+Removal Policy[cfn-deletion-policy] controls what happens to this resource when it stops being
+managed by CloudFormation, either because you've removed it from the CDK application
+or because you've made a change that requires the resource to be replaced.
+
+[cfn-deletion-policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+
+```ts
+import { aws_s3 as s3 } from 'aws-cdk-lib';
+
+const bucket = new s3.Bucket(stack, 'TestBucket');
+
+// The resource will be left in your AWS account if it is stoped being managed by CFN
+bucket.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+// The resource will be deleted (`RemovalPolicy.DESTROY`) once stoped being managed by CloudFormation.
+// Set `applyToUpdateReplacePolicy` if you do not want for the same deletion policy to apply to the resource's "UpdateReplacePolicy"
+bucket.applyRemovalPolicy(RemovalPolicy.DESTROY, { applyToUpdateReplacePolicy: false });
+```
+
 ### CfnJson
 
 `CfnJson` allows you to postpone the resolution of a JSON blob from
