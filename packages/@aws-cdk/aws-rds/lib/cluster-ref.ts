@@ -70,7 +70,7 @@ export interface DatabaseClusterAttributes {
    * This AWS Region-unique identifier is used in things like IAM authentication policies.
    */
   readonly clusterResourceIdentifier?: string;
-  
+
   /**
    * The database port
    *
