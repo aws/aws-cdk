@@ -1788,7 +1788,7 @@ describe('auto scaling group', () => {
     // THEN
     expect(() => {
       asg.userData;
-    }).toThrow('The provided launch template does not expose its user data.');
+    }).not.toThrow();
 
     expect(() => {
       asg.connections;
