@@ -29,7 +29,7 @@ export interface EcrSourceVariables {
 }
 
 /**
- * Construction properties of {@link EcrSourceAction}.
+ * Construction properties of `EcrSourceAction`.
  */
 export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
