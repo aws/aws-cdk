@@ -6,7 +6,7 @@
  *
  * The creation policy is invoked only when AWS CloudFormation creates the associated resource. Currently, the only
  * AWS CloudFormation resources that support creation policies are AWS::AutoScaling::AutoScalingGroup, AWS::EC2::Instance,
- * and AWS::CloudFormation::WaitCondition.
+ * AWS::CloudFormation::WaitCondition and AWS::AppStream::Fleet.
  *
  * Use the CreationPolicy attribute when you want to wait on resource configuration actions before stack creation proceeds.
  * For example, if you install and configure software applications on an EC2 instance, you might want those applications to
@@ -26,6 +26,11 @@ export interface CfnCreationPolicy {
    * the length of time that AWS CloudFormation waits for those signals.
    */
   readonly resourceSignal?: CfnResourceSignal;
+
+  /**
+   * For an AppStream Fleet creation, specifies that the fleet is started after creation.
+   */
+  readonly startFleet?: boolean;
 }
 
 /**

@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "fleet-test/DefaultTest": {
+      "stacks": [
+        "integ-appstream-fleet"
+      ],
+      "assertionStack": "fleet-test/DefaultTest/DeployAssert",
+      "assertionStackName": "fleettestDefaultTestDeployAssert9067216F"
+    }
+  }
+}
