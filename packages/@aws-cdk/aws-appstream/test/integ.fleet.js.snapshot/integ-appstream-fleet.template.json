@@ -15,6 +15,16 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefMyFleet2DDF6411": {
+   "Value": {
+    "Ref": "MyFleet"
+   },
+   "Export": {
+    "Name": "integ-appstream-fleet:ExportsOutputRefMyFleet2DDF6411"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

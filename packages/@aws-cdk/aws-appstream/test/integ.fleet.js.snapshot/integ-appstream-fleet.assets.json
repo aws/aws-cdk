@@ -1,15 +1,15 @@
 {
   "version": "22.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "5f9fe4d8145c4eeb8dc77cd8e867cf2e6b3b0736819b9ccaf63e5fcee2891cc5": {
       "source": {
-        "path": "fleettestDefaultTestDeployAssert9067216F.template.json",
+        "path": "integ-appstream-fleet.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "5f9fe4d8145c4eeb8dc77cd8e867cf2e6b3b0736819b9ccaf63e5fcee2891cc5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
