@@ -23,7 +23,7 @@ const fleet = new appstream.CfnFleet(stack, 'MyFleet', {
   imageName: 'AppStream-AmazonLinux2-09-21-2022',
 });
 fleet.cfnOptions.creationPolicy = {
- startFleet: true,
+  startFleet: true,
 };
 
 const testCase = new IntegTest(app, 'fleet-test', {
