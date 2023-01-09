@@ -58,7 +58,7 @@
     "FunctionServiceRole675BB04A"
    ]
   },
-  "FunctionCurrentVersion4E2B2261575f4b3bfb24f684a2cc2df76094842e": {
+  "FunctionCurrentVersion4E2B22618dd26ccb3af7b577163fa65856572807": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -76,7 +76,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "FunctionCurrentVersion4E2B2261575f4b3bfb24f684a2cc2df76094842e"
+     "Ref": "FunctionCurrentVersion4E2B22618dd26ccb3af7b577163fa65856572807"
     },
     "InvocationType": "RequestResponse",
     "Timeout": 120000

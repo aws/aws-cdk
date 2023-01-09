@@ -48,7 +48,7 @@
         "/TestStack/Function/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FunctionCurrentVersion4E2B2261575f4b3bfb24f684a2cc2df76094842e"
+            "data": "FunctionCurrentVersion4E2B22618dd26ccb3af7b577163fa65856572807"
           }
         ],
         "/TestStack/Trigger/Default/Default": [
