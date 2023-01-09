@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnBasePathMapping } from './apigateway.generated';
 import { IDomainName } from './domain-name';
 import { IRestApi, RestApiBase } from './restapi';
-import { Stage } from './stage';
+import { IStage } from './stage';
 
 export interface BasePathMappingOptions {
   /**
@@ -21,7 +21,7 @@ export interface BasePathMappingOptions {
    * [disable-awslint:ref-via-interface]
    * @default - map to deploymentStage of restApi otherwise stage needs to pass in URL
    */
-  readonly stage?: Stage;
+  readonly stage?: IStage;
 
   /**
    * Whether to attach the base path mapping to a stage.
