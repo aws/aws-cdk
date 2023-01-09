@@ -625,7 +625,7 @@ describe('cloudtrail', () => {
         });
       });
 
-      test('not provided and managementEvents set to None throws', () => {
+      test('not provided and managementEvents set to None throws missing event selectors error', () => {
         const stack = getTestStack();
 
         new Trail(stack, 'MyAmazingCloudTrail', {
@@ -634,7 +634,7 @@ describe('cloudtrail', () => {
 
         expect(() => {
           Template.fromStack(stack);
-        }).toThrow(/At least one event selector must be added when management event recording is set to None/);
+        }).toThrowError(/At least one event selector must be added when management event recording is set to None/);
       });
 
       test('defaults to not include management events when managementEvents set to None', () => {
