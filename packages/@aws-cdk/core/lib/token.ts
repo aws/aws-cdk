@@ -9,7 +9,7 @@ import { TokenizedStringFragments } from './string-fragments';
 
 /**
  * An enum-like class that represents the result of comparing two Tokens.
- * The return type of {@link Token.compareStrings}.
+ * The return type of `Token.compareStrings`.
  */
 export class TokenComparison {
   /**
