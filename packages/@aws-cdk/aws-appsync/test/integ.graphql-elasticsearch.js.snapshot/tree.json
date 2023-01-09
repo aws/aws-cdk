@@ -177,7 +177,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
