@@ -1,4 +1,4 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import { Metric, MetricOptions, Unit } from '@aws-cdk/aws-cloudwatch';
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ILogGroup, MetricFilterOptions } from './log-group';
@@ -49,7 +49,7 @@ export class MetricFilter extends Resource {
         metricValue: props.metricValue ?? '1',
         defaultValue: props.defaultValue,
         dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
-        unit: props.unit ?? 'None',
+        unit: props.unit ?? Unit.NONE,
       }],
     });
   }

@@ -550,7 +550,7 @@ export interface MetricFilterOptions {
    * The unit to assign to the metric. If you omit this, the unit is set as None.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-unit
-   * @default - "None"
+   * @default - cloudwatch.Unit.NONE
    */
   readonly unit?: cloudwatch.Unit;
 }
