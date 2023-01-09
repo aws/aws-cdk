@@ -192,6 +192,36 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
   });
 });
 
+test('CodePipeline enables key rotation on cross account keys', ()=>{
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  new CodePipeline(pipelineStack, 'Pipeline', {
+    enableKeyRotation: true,
+    crossAccountKeys: true, // requirement of key rotation
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+  });
+
+  const template = Template.fromStack(pipelineStack);
+
+  template.hasResourceProperties('AWS::KMS::Key', {
+    EnableKeyRotation: true,
+  });
+});
+
 test('CodePipeline supports use of existing role', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const repo = new ccommit.Repository(pipelineStack, 'Repo', {
