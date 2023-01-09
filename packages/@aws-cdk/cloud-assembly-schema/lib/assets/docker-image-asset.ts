@@ -80,6 +80,14 @@ export interface DockerImageSource {
    * @default - current machine platform
    */
   readonly platform?: string;
+
+  /**
+   * Outputs
+   *
+   * @default - no outputs are passed to the build command (default outputs are used)
+   * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
+   */
+  readonly dockerOutputs?: string[];
 }
 
 /**
