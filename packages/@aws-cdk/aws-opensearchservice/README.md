@@ -30,7 +30,7 @@ Create a development cluster by simply specifying the version:
 
 ```ts
 const devDomain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
 });
 ```
 
@@ -38,7 +38,7 @@ To perform version upgrades without replacing the entire domain, specify the `en
 
 ```ts
 const devDomain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   enableVersionUpgrade: true, // defaults to false
 });
 ```
@@ -47,7 +47,7 @@ Create a production grade cluster by also specifying things like capacity and az
 
 ```ts
 const prodDomain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   capacity: {
     masterNodes: 5,
     dataNodes: 20,
@@ -142,7 +142,7 @@ The domain can also be created with encryption enabled:
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   ebs: {
     volumeSize: 100,
     volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
@@ -167,7 +167,7 @@ Domains can be placed inside a VPC, providing a secure communication between Ama
 ```ts
 const vpc = new ec2.Vpc(this, 'Vpc');
 const domainProps: DomainProps = {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   removalPolicy: RemovalPolicy.DESTROY,
   vpc,
   // must be enabled since our VPC contains multiple private subnets.
@@ -204,7 +204,7 @@ be supplied or dynamically created if not supplied.
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   enforceHttps: true,
   nodeToNodeEncryption: true,
   encryptionAtRest: {
@@ -242,7 +242,7 @@ stored in the AWS Secrets Manager as secret. The secret has the prefix
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   useUnsignedBasicAuth: true,
 });
 
@@ -258,7 +258,7 @@ For simple permissions the `accessPolicies` constructor may be sufficient:
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   accessPolicies: [
     new iam.PolicyStatement({
       actions: ['es:*ESHttpPost', 'es:ESHttpPut*'],
@@ -276,7 +276,7 @@ allows for policies that include the explicit domain ARN.
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
 });
 domain.addAccessPolicies(
   new iam.PolicyStatement({
@@ -312,7 +312,7 @@ Audit logs can be enabled for a domain, but only when fine grained access contro
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   enforceHttps: true,
   nodeToNodeEncryption: true,
   encryptionAtRest: {
@@ -336,7 +336,7 @@ UltraWarm nodes can be enabled to provide a cost-effective way to store large am
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   capacity: {
     masterNodes: 2,
     warmNodes: 2,
@@ -351,7 +351,7 @@ Custom endpoints can be configured to reach the domain under a custom domain nam
 
 ```ts
 new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   customEndpoint: {
     domainName: 'search.example.com',
   },
@@ -368,7 +368,7 @@ Additionally, an automatic CNAME-Record is created if a hosted zone is provided 
 
 ```ts
 new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   advancedOptions: {
     'rest.action.multi.allow_explicit_index': 'false',
     'indices.fielddata.cache.size': '25',
@@ -387,7 +387,7 @@ The domain can be configured to use Amazon Cognito authentication for OpenSearch
 declare const cognitoConfigurationRole: iam.Role;
 
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_0,
+  version: EngineVersion.OPENSEARCH_2_3,
   cognitoDashboardsAuth: {
     role: cognitoConfigurationRole,
     identityPoolId: 'example-identity-pool-id',

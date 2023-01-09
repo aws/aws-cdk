@@ -196,7 +196,7 @@
                     "encryptionAtRestOptions": {
                       "enabled": false
                     },
-                    "engineVersion": "OpenSearch_1.0",
+                    "engineVersion": "OpenSearch_2.3",
                     "logPublishingOptions": {},
                     "nodeToNodeEncryptionOptions": {
                       "enabled": false

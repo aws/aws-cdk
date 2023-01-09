@@ -29,7 +29,7 @@ const readWriteActions = [
   ...writeActions,
 ];
 
-const defaultVersion = EngineVersion.OPENSEARCH_1_0;
+const defaultVersion = EngineVersion.OPENSEARCH_2_3;
 
 test('connections throws if domain is not placed inside a vpc', () => {
 
@@ -198,7 +198,7 @@ test('minimal example renders correctly', () => {
       InstanceType: 'r5.large.search',
       ZoneAwarenessEnabled: false,
     },
-    EngineVersion: 'OpenSearch_1.0',
+    EngineVersion: 'OpenSearch_2.3',
     EncryptionAtRestOptions: {
       Enabled: false,
     },
@@ -1467,15 +1467,15 @@ describe('custom error responses', () => {
 
   test('error when invalid domain name is given', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.OPENSEARCH_1_0,
+      version: EngineVersion.OPENSEARCH_2_3,
       domainName: 'InvalidName',
     })).toThrow(/Valid characters are a-z/);
     expect(() => new Domain(stack, 'Domain2', {
-      version: EngineVersion.OPENSEARCH_1_0,
+      version: EngineVersion.OPENSEARCH_2_3,
       domainName: 'a'.repeat(29),
     })).toThrow(/It must be between 3 and 28 characters/);
     expect(() => new Domain(stack, 'Domain3', {
-      version: EngineVersion.OPENSEARCH_1_0,
+      version: EngineVersion.OPENSEARCH_2_3,
       domainName: '123domain',
     })).toThrow(/It must start with a lowercase letter/);
   });

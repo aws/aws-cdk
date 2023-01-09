@@ -33,7 +33,7 @@ class TestStack extends Stack {
     // Adding a domain with cognito dashboards auth configured
     new opensearch.Domain(this, 'Domain', {
       removalPolicy: RemovalPolicy.DESTROY,
-      version: opensearch.EngineVersion.OPENSEARCH_1_0,
+      version: opensearch.EngineVersion.OPENSEARCH_2_3,
       cognitoDashboardsAuth: {
         role,
         identityPoolId: identityPool.ref,
