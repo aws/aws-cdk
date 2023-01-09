@@ -160,6 +160,10 @@ export class DependencyBuilder<A> {
   public get consumers(): ReadonlyArray<GraphNode<A>> {
     return this._consumers;
   }
+
+  public consumersAsString() {
+    return this.consumers.map(c => `${c}`).join(',');
+  }
 }
 
 /**

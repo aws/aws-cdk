@@ -55,6 +55,7 @@ export class PipelineGraph {
   private readonly synthNode?: AGraphNode;
   private readonly selfMutateNode?: AGraphNode;
   private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment>();
+  /** Mapping steps to depbuilders, satisfied by the step itself  */
   private readonly nodeDependencies = new DependencyBuilders<Step>();
   private readonly publishTemplate: boolean;
   private readonly prepareStep: boolean;
@@ -298,15 +299,28 @@ export class PipelineGraph {
    * between steps we didn't want to reparent those unnecessarily.
    */
   private addMissingDependencyNodes() {
-    for (const [step, builder] of this.nodeDependencies.unsatisfiedBuilders()) {
-      // Add a new node for this step to the parent of the "leftmost" consumer.
-      const leftMostConsumer = new GraphNodeCollection(builder.consumers).first();
-      const parent = leftMostConsumer.parentGraph;
-      if (!parent) {
-        throw new Error(`Consumer doesn't have a parent graph: ${leftMostConsumer}`);
+    // May need to do this more than once to recursively add all missing producers
+    let attempts = 20;
+    while (attempts-- > 0) {
+      const unsatisfied = this.nodeDependencies.unsatisfiedBuilders().filter(([s]) => s !== PipelineGraph.NO_STEP);
+      if (unsatisfied.length === 0) { return; }
+
+      for (const [step, builder] of unsatisfied) {
+        // Add a new node for this step to the parent of the "leftmost" consumer.
+        const leftMostConsumer = new GraphNodeCollection(builder.consumers).first();
+        const parent = leftMostConsumer.parentGraph;
+        if (!parent) {
+          throw new Error(`Consumer doesn't have a parent graph: ${leftMostConsumer}`);
+        }
+        this.addStepNode(step, parent);
       }
-      this.addStepNode(step, parent);
     }
+
+    const unsatisfied = this.nodeDependencies.unsatisfiedBuilders();
+    throw new Error([
+      'Recursion depth too large while adding dependency nodes:',
+      unsatisfied.map(([step, builder]) => `${builder.consumersAsString()} awaiting ${step}.`),
+    ].join(' '));
   }
 
   private publishAsset(stackAsset: StackAsset): AGraphNode {
