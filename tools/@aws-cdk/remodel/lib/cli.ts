@@ -44,15 +44,32 @@ export async function main() {
 
     const { 'tmp-dir': tmpDir, REPO_ROOT: repoRoot, clean } = args;
 
-    const targetDir = tmpDir ?? await fs.mkdtemp('magic-');
+    const targetDir = path.resolve(tmpDir ?? await fs.mkdtemp('magic-'));
 
     if (fs.existsSync(targetDir)){
       await fs.remove(targetDir);
     }
     await fs.mkdir(targetDir);
 
+    // Clone all source files from the current repo to our new working
+    // directory. The entire copy including the .git directory ensures git can
+    // be aware of all source file moves if needed via `git move`.
     await exec(`git clone ${repoRoot} ${targetDir}`);
+
+    const templateDir = path.join(__dirname, '..', 'lib', 'template');
+    const newPackagesDir = path.join(targetDir, 'remodel-packages');
+    await fs.mkdir(newPackagesDir);
+
+    const newToolsDir = path.join(newPackagesDir, 'tools');
+    await fs.mkdir(newToolsDir);
+
+    await makeRootFiles(templateDir, targetDir);
+    
     if (clean) {
-      await fs.rmdir(path.resolve(targetDir));
+      await fs.remove(path.resolve(targetDir));
     }
+}
+
+async function makeRootFiles(src: string, target: string) {
+  await fs.copy(src, target);
 }
