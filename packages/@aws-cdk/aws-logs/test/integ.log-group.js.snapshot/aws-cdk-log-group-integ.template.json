@@ -1,41 +1,56 @@
 {
  "Resources": {
+  "LogGroupLambdaAuditF8F47F46": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "auditDestinationForCDK",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "LogGroupLambdaAC756C5B": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "DataProtectionPolicy": {
-     "Name": "data-protection-policy",
-     "Description": "test description",
-     "Version": "2021-06-01",
-     "Statement": [
+     "name": "data-protection-policy-cdk",
+     "description": "cdk generated data protection policy",
+     "version": "2021-06-01",
+     "statement": [
       {
-       "Sid": "audit-policy test",
-       "DataIdentifier": [
+       "sid": "audit-statement-cdk",
+       "dataIdentifier": [
         "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
         "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
        ],
-       "Operation": {
-        "Audit": {
-         "FindingsDestination": {}
+       "operation": {
+        "audit": {
+         "findingsDestination": {
+          "cloudWatchLogs": {
+           "logGroup": {
+            "Ref": "LogGroupLambdaAuditF8F47F46"
+           }
+          }
+         }
         }
        }
       },
       {
-       "Sid": "redact-policy",
-       "DataIdentifier": [
+       "sid": "redact-statement-cdk",
+       "dataIdentifier": [
         "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
         "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
        ],
-       "Operation": {
-        "Deidentify": {
-         "MaskConfig": {}
+       "operation": {
+        "deidentify": {
+         "maskConfig": {}
         }
        }
       }
      ]
     },
     "LogGroupName": "cdkIntegLogGroup",
-    "RetentionInDays": 1
+    "RetentionInDays": 731
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"

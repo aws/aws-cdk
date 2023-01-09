@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { LogGroup, RetentionDays } from '../lib';
+import { LogGroup, RetentionDays, DataProtectionPolicy } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -435,45 +435,19 @@ describe('log group', () => {
     // GIVEN
     const stack = new Stack();
 
-    let policy:object = {
-      Name: 'data-protection-policy',
-      Description: 'test description',
-      Version: '2021-06-01',
-      Statement: [{
-        Sid: 'audit-policy test',
-        DataIdentifier: [
-          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
-          'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
-        ],
-        Operation: {
-          Audit: {
-            FindingsDestination: {},
-          },
-        },
-      },
-      {
-        Sid: 'redact-policy',
-        DataIdentifier: [
-          'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
-          'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
-        ],
-        Operation: {
-          Deidentify: {
-            MaskConfig: {},
-          },
-        },
-      }],
-    };
-
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      identifiers: ['EmailAddress', 'DriversLicense-US'],
+      cloudWatchLogsAuditDestination: 'logGroupName',
+    });
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      dataProtectionPolicy: policy,
+      dataProtectionPolicy: dataProtectionPolicy,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      DataProtectionPolicy: policy,
+      DataProtectionPolicy: dataProtectionPolicy,
     });
   });
 });

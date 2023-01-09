@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "artifacts": {
     "aws-cdk-log-group-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1afaab9dd3eb04cae7d3ebbac4159e2b1938ffbf5fc70af5a3a6222015faf225.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e242f881378fed3c95d7cfeb0a7dc9b0cead0859ed28d71a81b75f8a84b5bb09.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +33,12 @@
         "aws-cdk-log-group-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-log-group-integ/LogGroupLambdaAudit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupLambdaAuditF8F47F46"
+          }
+        ],
         "/aws-cdk-log-group-integ/LogGroupLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",

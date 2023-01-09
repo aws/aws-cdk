@@ -1,44 +1,23 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
-import { LogGroup, RetentionDays } from '../lib';
+import { LogGroup, DataProtectionPolicy } from '../lib';
 
 class LogGroupIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    var audit = new LogGroup(this, 'LogGroupLambdaAudit', {
+      logGroupName: 'auditDestinationForCDK',
+    });
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      identifiers: ['EmailAddress', 'DriversLicense-US'],
+      cloudWatchLogsAuditDestination: audit.logGroupName,
+    });
+
     new LogGroup(this, 'LogGroupLambda', {
       logGroupName: 'cdkIntegLogGroup',
-      retention: RetentionDays.ONE_DAY,
-      dataProtectionPolicy:
-        {
-          Name: 'data-protection-policy',
-          Description: 'test description',
-          Version: '2021-06-01',
-          Statement: [{
-            Sid: 'audit-policy test',
-            DataIdentifier: [
-              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
-              'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
-            ],
-            Operation: {
-              Audit: {
-                FindingsDestination: {},
-              },
-            },
-          },
-          {
-            Sid: 'redact-policy',
-            DataIdentifier: [
-              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
-              'arn:aws:dataprotection::aws:data-identifier/DriversLicense-US',
-            ],
-            Operation: {
-              Deidentify: {
-                MaskConfig: {},
-              },
-            },
-          }],
-        },
+      dataProtectionPolicy: dataProtectionPolicy,
     });
   }
 }

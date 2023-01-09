@@ -8,6 +8,31 @@
         "id": "aws-cdk-log-group-integ",
         "path": "aws-cdk-log-group-integ",
         "children": {
+          "LogGroupLambdaAudit": {
+            "id": "LogGroupLambdaAudit",
+            "path": "aws-cdk-log-group-integ/LogGroupLambdaAudit",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-log-group-integ/LogGroupLambdaAudit/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "auditDestinationForCDK",
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
           "LogGroupLambda": {
             "id": "LogGroupLambda",
             "path": "aws-cdk-log-group-integ/LogGroupLambda",
@@ -19,38 +44,44 @@
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
                     "dataProtectionPolicy": {
-                      "Name": "data-protection-policy",
-                      "Description": "test description",
-                      "Version": "2021-06-01",
-                      "Statement": [
+                      "name": "data-protection-policy-cdk",
+                      "description": "cdk generated data protection policy",
+                      "version": "2021-06-01",
+                      "statement": [
                         {
-                          "Sid": "audit-policy test",
-                          "DataIdentifier": [
+                          "sid": "audit-statement-cdk",
+                          "dataIdentifier": [
                             "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
                             "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
                           ],
-                          "Operation": {
-                            "Audit": {
-                              "FindingsDestination": {}
+                          "operation": {
+                            "audit": {
+                              "findingsDestination": {
+                                "cloudWatchLogs": {
+                                  "logGroup": {
+                                    "Ref": "LogGroupLambdaAuditF8F47F46"
+                                  }
+                                }
+                              }
                             }
                           }
                         },
                         {
-                          "Sid": "redact-policy",
-                          "DataIdentifier": [
+                          "sid": "redact-statement-cdk",
+                          "dataIdentifier": [
                             "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
                             "arn:aws:dataprotection::aws:data-identifier/DriversLicense-US"
                           ],
-                          "Operation": {
-                            "Deidentify": {
-                              "MaskConfig": {}
+                          "operation": {
+                            "deidentify": {
+                              "maskConfig": {}
                             }
                           }
                         }
                       ]
                     },
                     "logGroupName": "cdkIntegLogGroup",
-                    "retentionInDays": 1
+                    "retentionInDays": 731
                   }
                 },
                 "constructInfo": {

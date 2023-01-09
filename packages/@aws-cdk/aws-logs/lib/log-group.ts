@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { DataProtectionPolicy } from './data-protection-policy';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -363,11 +364,11 @@ export interface LogGroupProps {
   readonly logGroupName?: string;
 
   /**
-   * Data Protection Policy.
+   * Data Protection Policy for this log group.
    *
    * @default null
    */
-  readonly dataProtectionPolicy?: object;
+  readonly dataProtectionPolicy?: DataProtectionPolicy;
 
   /**
    * How long, in days, the log contents will be retained.
