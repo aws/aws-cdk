@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-servicecatalogappregistry-application": {
         "id": "integ-servicecatalogappregistry-application",
         "path": "integ-servicecatalogappregistry-application",
@@ -26,12 +18,20 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
-                    "name": "myApplicationtest",
+                    "name": "myApplication",
                     "description": "my application description"
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnApplication",
+                  "version": "0.0.0"
+                }
+              },
+              "ApplicationManagerUrl": {
+                "id": "ApplicationManagerUrl",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/ApplicationManagerUrl",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
               },
@@ -83,13 +83,13 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMSharead8ba81b8cdd": {
-                "id": "RAMSharead8ba81b8cdd",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMSharead8ba81b8cdd",
+              "RAMShare3dc6227daec1": {
+                "id": "RAMShare3dc6227daec1",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMShare3dc6227daec1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMSharead8ba81b8cdd",
+                    "name": "RAMShare3dc6227daec1",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
@@ -149,7 +149,7 @@
                         "release": "go time"
                       }
                     },
-                    "name": "myAttributeGroupTest",
+                    "name": "myAttributeGroup",
                     "description": "my attribute group description"
                   }
                 },
@@ -168,6 +168,14 @@
             "id": "MyRole",
             "path": "integ-servicecatalogappregistry-application/MyRole",
             "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "integ-servicecatalogappregistry-application/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-servicecatalogappregistry-application/MyRole/Resource",
@@ -213,17 +221,41 @@
               "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-servicecatalogappregistry-application/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-servicecatalogappregistry-application/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.189"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

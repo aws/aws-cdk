@@ -4,9 +4,9 @@ import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
+import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { generatePolicyName, undefinedIfEmpty } from './util';
 
 /**
  * Represents an IAM Policy
