@@ -351,7 +351,7 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
   // Implement iam.IGrantable interface
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
-  /** Implement the convenience {@link IApplication.addToPrincipalPolicy} method. */
+  /** Implement the convenience `IApplication.addToPrincipalPolicy` method. */
   public addToRolePolicy(policyStatement: iam.PolicyStatement): boolean {
     if (this.role) {
       this.role.addToPrincipalPolicy(policyStatement);

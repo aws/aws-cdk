@@ -25,6 +25,8 @@ const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(stack, 'Respo
     accessControlMaxAge: cdk.Duration.seconds(600),
     originOverride: true,
   },
+  removeHeaders: ['Server'],
+  serverTimingSamplingRate: 50,
 });
 
 new cloudfront.Distribution(stack, 'Dist', {
