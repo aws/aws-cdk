@@ -5,7 +5,9 @@ phases:
     commands:
       # CodeBuild always runs as root, allow npm to operate as such
       - npm config set unsafe-perm true
-      - /sbin/sysctl -w vm.max_map_count=2251954
+      - mkdir ${HOME}/aws-cdk && cd ${HOME}/aws-cdk
+      - git clone https://github.com/aws/aws-cdk -b feat/repo-restructure .
+      - git checkout ${CODEBUILD_RESOLVED_SOURCE_VERSION}
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
       - yarn install --frozen-lockfile
@@ -15,9 +17,7 @@ phases:
       - codebuild-breakpoint
   build:
     commands:
-      - mkdir ${HOME}/aws-cdk && cd ${HOME}/aws-cdk
-      - git clone https://github.com/aws/aws-cdk -b feat/repo-restructure .
-      - git checkout ${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - cd ${HOME}/aws-cdk
       - npx lerna run build --scope remodel --include-dependencies
       - npx remodel ${PWD} --tmp-dir ${HOME}/remodel --no-clean --dry-run
 
