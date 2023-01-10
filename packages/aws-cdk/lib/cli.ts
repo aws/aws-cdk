@@ -506,9 +506,10 @@ async function initCommandLine() {
         }
 
         let hotswapMode: HotswapMode | undefined = undefined;
-        // XOR
-        if ((args.hotswap && !args.hotswapOnly) || (!args.hotswap && args.hotswapOnly)) {
-          hotswapMode = args.hotswap ?? args.hotswapOnly;
+        if (args.hotswap) {
+          hotswapMode = HotswapMode.CLASSIC;
+        } else {
+          hotswapMode = HotswapMode.HOTSWAP_ONLY;
         }
 
         let deploymentMethod: DeploymentMethod | undefined;

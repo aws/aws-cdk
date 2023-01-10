@@ -177,7 +177,7 @@ test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: false,
+    hotswap: undefined,
   });
 
   // THEN
@@ -198,11 +198,11 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
   }));
 });
 
-test("rollback defaults to enabled if 'hotswap' is false", async () => {
+test("rollback defaults to enabled if 'hotswap' is undefined", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: false,
+    hotswap: undefined,
     rollback: undefined,
   });
 

@@ -286,7 +286,7 @@ function isCandidateForHotswapping(
       resourceType: change.newValue!.Type,
       logicalId,
       rejectedChanges: [],
-      reason: `resource ${logicalId} was created by this deployment`,
+      reason: `resource '${logicalId}' was created by this deployment`,
     };
   } else if (!change.newValue) {
     return {
@@ -347,7 +347,7 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
   }
 
   // if the SDK call fails, an error will be thrown by the SDK
-  // and will prevent the green 'hotswapped!' text from being incorrectly displayed
+  // and will prevent the green 'hotswapped!' text from being displayed
   await hotswapOperation.apply(sdk);
 
   for (const name of hotswapOperation.resourceNames) {
@@ -358,14 +358,17 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
 }
 
 function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[]): void {
-  print(`\n${ICON} %s`, chalk.red('the following non-hotswappable changes were found:'));
+  print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
+
   for (const change of nonHotswappableChanges) {
     let reason = change.reason;
     if (!reason) {
       reason = `resource properties '${change.rejectedChanges}' are not hotswappable on this resource type`;
     }
     change.rejectedChanges.length > 0 ?
-      print(`${ICON} logicalID: %s, type: %s, rejected changes: %s, reason: %s`, chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(reason)):
-      print(`${ICON} logicalID: %s, type: %s, reason: %s`, chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(reason));
+      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(reason)):
+      print('    logicalID: %s, type: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(reason));
   }
+
+  print(''); // newline
 }
