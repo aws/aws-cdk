@@ -66,7 +66,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
    *
-   * Valid values are: PropagatedTagSource.SERVICE, PropagatedTagSource.TASK_DEFINITION or PropagatedTagSource.NONE
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-propagateTags
    *
    * @default PropagatedTagSource.NONE
    */
