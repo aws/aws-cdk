@@ -35,7 +35,7 @@ export interface PipelineBaseProps {
  */
 export abstract class PipelineBase extends Construct {
   /**
-   * Return whether the given object extends {@link PipelineBase}.
+   * Return whether the given object extends `PipelineBase`.
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */

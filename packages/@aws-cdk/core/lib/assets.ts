@@ -221,6 +221,14 @@ export interface DockerImageAssetSource {
    * @default - no platform specified (the current machine architecture will be used)
    */
   readonly platform?: string;
+
+  /**
+   * Outputs to pass to the `docker build` command.
+   *
+   * @default - no build args are passed
+   */
+  readonly dockerOutputs?: string[];
+
 }
 
 /**
