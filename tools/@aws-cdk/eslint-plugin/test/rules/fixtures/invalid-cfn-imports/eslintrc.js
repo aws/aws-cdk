@@ -1,6 +1,6 @@
 module.exports = {
-  plugins: ['rulesdir'],
+  plugins: ['@aws-cdk'],
   rules: {
-    'rulesdir/invalid-cfn-imports': [ 'error' ],
+    '@aws-cdk/invalid-cfn-imports': [ 'error' ],
   }
 }
