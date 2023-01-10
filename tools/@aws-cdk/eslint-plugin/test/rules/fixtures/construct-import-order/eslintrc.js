@@ -1,6 +1,6 @@
 module.exports = {
-  plugins: ['rulesdir'],
+  plugins: ['@aws-cdk'],
   rules: {
-    'rulesdir/construct-import-order': [ 'error' ],
+    '@aws-cdk/construct-import-order': [ 'error' ],
   }
 }

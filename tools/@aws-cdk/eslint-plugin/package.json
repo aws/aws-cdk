@@ -19,7 +19,6 @@
     "@types/jest": "^27.5.2",
     "@types/node": "^10.17.60",
     "@types/estree": "*",
-    "eslint-plugin-rulesdir": "^0.2.2",
     "jest": "^27.5.1",
     "typescript": "~3.9.10"
   },
