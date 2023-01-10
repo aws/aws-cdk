@@ -136,8 +136,8 @@
       "props-physical-name:@aws-cdk/aws-appsync.AppsyncFunctionProps"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },
