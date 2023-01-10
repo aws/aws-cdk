@@ -2203,30 +2203,15 @@ describe('cluster', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', {
       enableFargateCapacityProviders: true,
     });
 
+    // WHEN
     cluster.addDefaultCapacityProviderStrategy([
       { capacityProvider: 'FARGATE', base: 10, weight: 50 },
+      { capacityProvider: 'FARGATE_SPOT' },
     ]);
-
-    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
-      vpc,
-      instanceType: new ec2.InstanceType('bogus'),
-      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
-    });
-
-    // WHEN
-    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
-      autoScalingGroup,
-      enableManagedTerminationProtection: false,
-    });
-
-    // Ensure not added twice
-    cluster.addAsgCapacityProvider(capacityProvider);
-    cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
@@ -2236,13 +2221,10 @@ describe('cluster', () => {
       CapacityProviders: [
         'FARGATE',
         'FARGATE_SPOT',
-        {
-          Ref: 'providerD3FF4D3A',
-        },
       ],
-      // DefaultCapacityProviderStrategy: [
-      //   { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
-      // ],
+      DefaultCapacityProviderStrategy: [
+        { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
+      ],
     });
 
   });
