@@ -1,0 +1,183 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "lambda-layer-kubectl-integ-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-layer-kubectl-integ-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-layer-kubectl-integ-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-layer-kubectl-integ-stack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/281f28b24c60025ec7e017770754588f6447b2342a089d75893892cd1eb1a09c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-layer-kubectl-integ-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-layer-kubectl-integ-stack.assets"
+      ],
+      "metadata": {
+        "/lambda-layer-kubectl-integ-stack/KubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlLayer600207B5"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Lambda$python3.7/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython37ServiceRoleB5A704D4"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Lambda$python3.7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython3780349E0A"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython37frameworkonEventServiceRole9EA6B2B0"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython37frameworkonEventServiceRoleDefaultPolicyA9099DC2"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.7/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython37frameworkonEvent3AA4F69E"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.7/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourcepython37"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Lambda$python3.9/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython39ServiceRoleE2CFED77"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Lambda$python3.9/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython39426A0480"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython39frameworkonEventServiceRoleA299F5C1"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython39frameworkonEventServiceRoleDefaultPolicy16A4767C"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.9/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython39frameworkonEvent00AFA742"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.9/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourcepython39"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-layer-kubectl-integ-stack"
+    },
+    "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7.assets"
+      ],
+      "metadata": {
+        "/lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

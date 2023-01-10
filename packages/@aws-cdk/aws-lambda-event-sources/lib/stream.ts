@@ -14,8 +14,8 @@ export interface BaseStreamEventSourceProps{
    * Valid Range:
    * * Minimum value of 1
    * * Maximum value of:
-   *   * 1000 for {@link DynamoEventSource}
-   *   * 10000 for {@link KinesisEventSource}, {@link ManagedKafkaEventSource} and {@link SelfManagedKafkaEventSource}
+   *   * 1000 for `DynamoEventSource`
+   *   * 10000 for `KinesisEventSource`, `ManagedKafkaEventSource` and `SelfManagedKafkaEventSource`
    *
    * @default 100
    */

@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
+import { TrafficRouting } from '../../lib';
 
 function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
@@ -614,6 +615,28 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       },
     });
   });
+
+  test('deploymentGroup from Arn knows its account and region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
+
+    // WHEN
+    const application = codedeploy.LambdaApplication.fromLambdaApplicationArn(stack, 'Application', 'arn:aws:codedeploy:theregion-1:222222222222:application:MyApplication');
+    const group = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGroupAttributes(stack, 'Group', {
+      application,
+      deploymentGroupName: 'DeploymentGroup',
+    });
+
+    // THEN
+    expect(application.env).toEqual(expect.objectContaining({
+      account: '222222222222',
+      region: 'theregion-1',
+    }));
+    expect(group.env).toEqual(expect.objectContaining({
+      account: '222222222222',
+      region: 'theregion-1',
+    }));
+  });
 });
 
 describe('imported with fromLambdaDeploymentGroupAttributes', () => {
@@ -627,5 +650,33 @@ describe('imported with fromLambdaDeploymentGroupAttributes', () => {
     });
 
     expect(importedGroup.deploymentConfig).toEqual(codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+  });
+});
+
+test('dependency on the config exists to ensure ordering', () => {
+  // WHEN
+  const stack = new cdk.Stack();
+  const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+  const alias = mockAlias(stack);
+  const config = new codedeploy.LambdaDeploymentConfig(stack, 'MyConfig', {
+    trafficRouting: TrafficRouting.timeBasedCanary({
+      interval: cdk.Duration.minutes(1),
+      percentage: 5,
+    }),
+  });
+  new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+    application,
+    alias,
+    deploymentConfig: config,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::CodeDeploy::DeploymentGroup', {
+    Properties: {
+      DeploymentConfigName: stack.resolve(config.deploymentConfigName),
+    },
+    DependsOn: [
+      stack.getLogicalId(config.node.defaultChild as codedeploy.CfnDeploymentConfig),
+    ],
   });
 });

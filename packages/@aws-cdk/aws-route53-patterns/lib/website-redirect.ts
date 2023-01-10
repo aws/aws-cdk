@@ -1,4 +1,4 @@
-import * as crypto from 'crypto';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
@@ -97,7 +97,7 @@ export class HttpsRedirect extends Construct {
     });
 
     domainNames.forEach((domainName) => {
-      const hash = crypto.createHash('md5').update(domainName).digest('hex').slice(0, 6);
+      const hash = md5hash(domainName).slice(0, 6);
       const aliasProps = {
         recordName: domainName,
         zone: props.zone,

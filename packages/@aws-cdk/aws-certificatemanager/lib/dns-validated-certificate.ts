@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CertificateProps, ICertificate } from './certificate';
 import { CertificateBase } from './certificate-base';
@@ -79,6 +80,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;
+  private _removalPolicy?: cdk.RemovalPolicy;
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
@@ -86,7 +88,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.region = props.region;
     this.domainName = props.domainName;
     // check if domain name is 64 characters or less
-    if (this.domainName.length > 64) {
+    if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
       throw new Error('Domain name must be 64 characters or less');
     }
     this.normalizedZoneName = props.hostedZone.zoneName;
@@ -121,6 +123,18 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     requestorFunction.addToRolePolicy(new iam.PolicyStatement({
       actions: ['route53:changeResourceRecordSets'],
       resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
+      conditions: {
+        'ForAllValues:StringEquals': {
+          'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+          'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
+        },
+        'ForAllValues:StringLike': {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+            addWildcard(props.domainName),
+            ...(props.subjectAlternativeNames ?? []).map(d => addWildcard(d)),
+          ],
+        },
+      },
     }));
 
     const certificate = new cdk.CustomResource(this, 'CertificateRequestorResource', {
@@ -132,6 +146,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
+        RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
         // Custom resources properties are always converted to strings; might as well be explict here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
@@ -141,6 +156,10 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.certificateArn = certificate.getAtt('Arn').toString();
 
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
+  }
+
+  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
+    this._removalPolicy = policy;
   }
 
   private validateDnsValidatedCertificate(): string[] {
@@ -153,4 +172,12 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     }
     return errors;
   }
+}
+
+// https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-rrset-conditions.html
+function addWildcard(domainName: string) {
+  if (domainName.startsWith('*.')) {
+    return domainName;
+  }
+  return `*.${domainName}`;
 }

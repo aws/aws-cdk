@@ -1,0 +1,231 @@
+{
+ "Resources": {
+  "NodeProxyAgentLayer924C1971": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ad44c2b0638f04871c889d78e71dea90ffae67b9cc4aa4366d5102db42435ee1.zip"
+    },
+    "Description": "/opt/nodejs/node_modules/proxy-agent"
+   }
+  },
+  "LambdaNode14ServiceRole3CFE3F36": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LambdaNode146E3D4F58": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "06c04d53e96719c6077dd6ff79d66b48853e9fe13d109ba06cbec8c094a69657.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaNode14ServiceRole3CFE3F36",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "NodeProxyAgentLayer924C1971"
+     }
+    ],
+    "MemorySize": 512,
+    "Runtime": "nodejs14.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LambdaNode14ServiceRole3CFE3F36"
+   ]
+  },
+  "ProviderNode14frameworkonEventServiceRoleFAE87DBE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ProviderNode14frameworkonEventServiceRoleDefaultPolicyE34339F9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "LambdaNode146E3D4F58",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "LambdaNode146E3D4F58",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderNode14frameworkonEventServiceRoleDefaultPolicyE34339F9",
+    "Roles": [
+     {
+      "Ref": "ProviderNode14frameworkonEventServiceRoleFAE87DBE"
+     }
+    ]
+   }
+  },
+  "ProviderNode14frameworkonEventD778512E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderNode14frameworkonEventServiceRoleFAE87DBE",
+      "Arn"
+     ]
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-node-proxy-agent-integ-stack/ProviderNode14)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "LambdaNode146E3D4F58",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "Runtime": "nodejs14.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "ProviderNode14frameworkonEventServiceRoleDefaultPolicyE34339F9",
+    "ProviderNode14frameworkonEventServiceRoleFAE87DBE"
+   ]
+  },
+  "CustomResourceNode14": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "ProviderNode14frameworkonEventD778512E",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

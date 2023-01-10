@@ -1,5 +1,6 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
@@ -2263,6 +2264,60 @@ describe('import', () => {
       });
     });
 
+    test('if an encryption key is included, encrypt/decrypt permissions are added to the principal for grantStreamRead', () => {
+      const stack = new Stack();
+
+      const tableName = 'MyTable';
+      const tableStreamArn = 'arn:foo:bar:baz:TrustMeThisIsATableStream';
+      const encryptionKey = new kms.Key(stack, 'Key', {
+        enableKeyRotation: true,
+      });
+
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', { tableName, tableStreamArn, encryptionKey });
+
+      const role = new iam.Role(stack, 'NewRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      expect(table.grantStreamRead(role)).toBeDefined();
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              'Action': 'dynamodb:ListStreams',
+              'Effect': 'Allow',
+              'Resource': '*',
+            },
+            {
+              'Action': [
+                'kms:Decrypt',
+                'kms:DescribeKey',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'Key961B73FD',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              'Action': [
+                'dynamodb:DescribeStream',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+              ],
+              'Effect': 'Allow',
+              'Resource': 'arn:foo:bar:baz:TrustMeThisIsATableStream',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        Roles: [stack.resolve(role.roleName)],
+      });
+    });
+
     test('creates the correct index grant if indexes have been provided when importing', () => {
       const stack = new Stack();
 
@@ -3007,6 +3062,96 @@ test('L1 inside L2 expects removalpolicy to have been set', () => {
   expect(() => {
     Template.fromStack(stack);
   }).toThrow(/is a stateful resource type/);
+});
+
+test('System errors metrics', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+  });
+  const metricTableThrottled = table.metricSystemErrorsForOperations({
+    operations: [Operation.SCAN],
+    period: Duration.minutes(1),
+  });
+  new cloudwatch.Alarm(stack, 'TableErrorAlarm', {
+    metric: metricTableThrottled,
+    evaluationPeriods: 1,
+    threshold: 1,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Metrics: Match.arrayWith([
+      Match.objectLike({
+        Expression: 'scan',
+      }),
+      Match.objectLike({
+        MetricStat: Match.objectLike({
+          Metric: Match.objectLike({
+            Dimensions: Match.arrayWith([
+              Match.objectLike({
+                Name: 'Operation',
+              }),
+              Match.objectLike({
+                Name: 'TableName',
+              }),
+            ]),
+            MetricName: 'SystemErrors',
+            Namespace: 'AWS/DynamoDB',
+          }),
+        }),
+      }),
+    ]),
+  });
+});
+
+test('Throttled requests metrics', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+  });
+  const metricTableThrottled = table.metricThrottledRequestsForOperations({
+    operations: [Operation.PUT_ITEM],
+    period: Duration.minutes(1),
+  });
+  new cloudwatch.Alarm(stack, 'TableThrottleAlarm', {
+    metric: metricTableThrottled,
+    evaluationPeriods: 1,
+    threshold: 1,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Metrics: Match.arrayWith([
+      Match.objectLike({
+        Expression: 'putitem',
+      }),
+      Match.objectLike({
+        MetricStat: Match.objectLike({
+          Metric: Match.objectLike({
+            Dimensions: Match.arrayWith([
+              Match.objectLike({
+                Name: 'Operation',
+              }),
+              Match.objectLike({
+                Name: 'TableName',
+              }),
+            ]),
+            MetricName: 'ThrottledRequests',
+            Namespace: 'AWS/DynamoDB',
+          }),
+        }),
+      }),
+    ]),
+  });
 });
 
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {

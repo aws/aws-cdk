@@ -93,7 +93,7 @@ describe('User Pool Client', () => {
             ],
           ],
         },
-        InstallLatestAwsSdk: true,
+        InstallLatestAwsSdk: false,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -140,12 +140,6 @@ describe('User Pool Client', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-        Code: {
-          S3Bucket: {
-            'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-          },
-          S3Key: '105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip',
-        },
         Role: {
           'Fn::GetAtt': [
             'AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2',
@@ -153,7 +147,6 @@ describe('User Pool Client', () => {
           ],
         },
         Handler: 'index.handler',
-        Runtime: 'nodejs14.x',
         Timeout: 120,
       });
     });
@@ -781,6 +774,86 @@ describe('User Pool Client', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       EnableTokenRevocation: true,
+    });
+  });
+
+  describe('auth session validity', () => {
+    test('default', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        authSessionValidity: Duration.minutes(3),
+      });
+      pool.addClient('Client2', {
+        userPoolClientName: 'Client2',
+        authSessionValidity: Duration.minutes(9),
+      });
+      pool.addClient('Client3', {
+        userPoolClientName: 'Client3',
+        authSessionValidity: Duration.minutes(15),
+      });
+      pool.addClient('Client5', {
+        userPoolClientName: 'Client4',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        AuthSessionValidity: 3,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client2',
+        AuthSessionValidity: 9,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client3',
+        AuthSessionValidity: 15,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client4',
+      });
+    });
+
+    test.each([
+      Duration.minutes(0),
+      Duration.minutes(1),
+      Duration.minutes(3).minus(Duration.minutes(1)),
+      Duration.minutes(15).plus(Duration.minutes(1)),
+      Duration.minutes(100),
+    ])('validates authSessionValidity is a duration between 3 and 15 minutes', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      expect(() => {
+        pool.addClient('Client1', {
+          userPoolClientName: 'Client1',
+          authSessionValidity: validity,
+        });
+      }).toThrow(`authSessionValidity: Must be a duration between 3 minutes and 15 minutes (inclusive); received ${validity.toHumanString()}.`);
+    });
+
+    test.each([
+      Duration.minutes(3),
+      Duration.minutes(9),
+      Duration.minutes(15),
+    ])('validates authSessionValidity is a duration between 3 and 15 minutes (valid)', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        authSessionValidity: validity,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        AuthSessionValidity: validity.toMinutes(),
+      });
     });
   });
 

@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "integ-user-ses-email"
+      ],
+      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+    }
+  }
+}

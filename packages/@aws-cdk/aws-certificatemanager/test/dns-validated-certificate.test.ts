@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack, Token, Tags } from '@aws-cdk/core';
+import { App, Stack, Token, Tags, RemovalPolicy, Aws } from '@aws-cdk/core';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 test('creates CloudFormation Custom Resource', () => {
@@ -75,6 +75,18 @@ test('creates CloudFormation Custom Resource', () => {
                 { Ref: 'ExampleDotCom4D1B83AA' },
               ],
             ],
+          },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+            'ForAllValues:StringLike': {
+              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+                '*.test.example.com',
+                '*.test2.example.com',
+              ],
+            },
           },
         },
       ],
@@ -240,6 +252,47 @@ test('throws when domain name is longer than 64 characters', () => {
   }).toThrow(/Domain name must be 64 characters or less/);
 }),
 
+test('does not throw when domain name is longer than 64 characters with tokens', () => {
+  const stack = new Stack();
+  const zoneName = 'example.com';
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName,
+  });
+  const embededToken = Aws.REGION;
+  const baseSubDomain = 'a'.repeat(65 - embededToken.length -1 -zoneName.length);
+  const domainName = `${embededToken}${baseSubDomain}.${zoneName}`;
+
+  new DnsValidatedCertificate(stack, 'Cert', {
+    domainName,
+    hostedZone: exampleDotComZone,
+    transparencyLoggingEnabled: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'CertCertificateRequestorFunction98FDF273',
+        'Arn',
+      ],
+    },
+    DomainName: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            Ref: 'AWS::Region',
+          },
+          `${baseSubDomain}.${zoneName}`,
+        ],
+      ],
+    },
+    HostedZoneId: {
+      Ref: 'ExampleDotCom4D1B83AA',
+    },
+    CertificateTransparencyLoggingPreference: 'DISABLED',
+  });
+});
+
 test('test transparency logging settings is passed to the custom resource', () => {
   const stack = new Stack();
 
@@ -265,5 +318,37 @@ test('test transparency logging settings is passed to the custom resource', () =
       Ref: 'ExampleDotCom4D1B83AA',
     },
     CertificateTransparencyLoggingPreference: 'DISABLED',
+  });
+});
+
+test('can set removal policy', () => {
+  const stack = new Stack();
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+
+  const cert = new DnsValidatedCertificate(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone: exampleDotComZone,
+    subjectAlternativeNames: ['test2.example.com'],
+    cleanupRoute53Records: true,
+  });
+  cert.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    DomainName: 'test.example.com',
+    SubjectAlternativeNames: ['test2.example.com'],
+    RemovalPolicy: 'retain',
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'CertificateCertificateRequestorFunction5E845413',
+        'Arn',
+      ],
+    },
+    HostedZoneId: {
+      Ref: 'ExampleDotCom4D1B83AA',
+    },
+    CleanupRecords: 'true',
   });
 });

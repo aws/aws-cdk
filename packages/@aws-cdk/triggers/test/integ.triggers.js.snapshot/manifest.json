@@ -1,0 +1,130 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "MyStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MyStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MyStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MyStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4155391c7a2ef259603bc3a1d18d0bad9a2478b51ed773d2c06efab5a0a51c56.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MyStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MyStack.assets"
+      ],
+      "metadata": {
+        "/MyStack/Topic1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic198E71B3E"
+          }
+        ],
+        "/MyStack/Topic2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic269377B75"
+          }
+        ],
+        "/MyStack/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/MyStack/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1"
+          }
+        ],
+        "/MyStack/MyFunction/Trigger/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionTriggerDB129D7B"
+          }
+        ],
+        "/MyStack/MyFunction/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionCurrentVersion197490AF2cb2bc11080c1ef11d3b49c1f1603957"
+          }
+        ],
+        "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"
+          }
+        ],
+        "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91"
+          }
+        ],
+        "/MyStack/MySecondFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondFunctionServiceRole5B930841"
+          }
+        ],
+        "/MyStack/MySecondFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondFunction0F0B51EB"
+          }
+        ],
+        "/MyStack/MySecondFunction/Trigger/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondFunctionTrigger8C61EC28"
+          }
+        ],
+        "/MyStack/MySecondFunction/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362"
+          }
+        ],
+        "/MyStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MyStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MyStack"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "call-rest-api/DefaultTest": {
+      "stacks": [
+        "CallRestApiInteg"
+      ],
+      "assertionStack": "call-rest-api/DefaultTest/DeployAssert",
+      "assertionStackName": "callrestapiDefaultTestDeployAssert9913150A"
+    }
+  }
+}

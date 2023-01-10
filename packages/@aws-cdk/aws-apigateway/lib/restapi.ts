@@ -403,11 +403,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
-   * Add an ApiKey
+   * Add an ApiKey to the deploymentStage
    */
   public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
     return new ApiKey(this, id, {
-      resources: [this],
+      stages: [this.deploymentStage],
       ...options,
     });
   }
@@ -616,7 +616,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 /**
  * Represents a REST API in Amazon API Gateway, created with an OpenAPI specification.
  *
- * Some properties normally accessible on @see {@link RestApi} - such as the description -
+ * Some properties normally accessible on @see `RestApi` - such as the description -
  * must be declared in the specification. All Resources and Methods need to be defined as
  * part of the OpenAPI specification file, and cannot be added via the CDK.
  *
@@ -662,15 +662,15 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this._configureDeployment(props);
-    if (props.domainName) {
-      this.addDomainName('CustomDomain', props.domainName);
-    }
-
     const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
     const cloudWatchRole = props.cloudWatchRole ?? cloudWatchRoleDefault;
     if (cloudWatchRole) {
       this._configureCloudWatchRole(resource);
+    }
+
+    this._configureDeployment(props);
+    if (props.domainName) {
+      this.addDomainName('CustomDomain', props.domainName);
     }
   }
 }

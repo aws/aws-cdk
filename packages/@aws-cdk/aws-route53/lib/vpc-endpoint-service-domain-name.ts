@@ -1,4 +1,4 @@
-import * as crypto from 'crypto';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { IVpcEndpointService } from '@aws-cdk/aws-ec2';
 import { Fn, Names, Stack } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
@@ -130,6 +130,8 @@ export class VpcEndpointServiceDomainName extends Construct {
           ]),
         ],
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
 
     // Look up the name/value pair if the domain changes, or the service changes,
@@ -154,6 +156,7 @@ export class VpcEndpointServiceDomainName extends Construct {
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      installLatestAwsSdk: false,
     });
 
     // We only want to call and get the name/value pair after we've told AWS to enable Private DNS
@@ -206,6 +209,7 @@ export class VpcEndpointServiceDomainName extends Construct {
           ]),
         ],
       }),
+      installLatestAwsSdk: false,
     });
     // Only verify after the record has been created
     startVerification.node.addDependency(verificationRecord);
@@ -225,7 +229,5 @@ interface PrivateDnsConfiguration {
  * Hash a string
  */
 function hashcode(s: string): string {
-  const hash = crypto.createHash('md5');
-  hash.update(s);
-  return hash.digest('hex');
+  return md5hash(s);
 };

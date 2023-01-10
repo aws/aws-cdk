@@ -5,11 +5,12 @@ import {
   AWS_SERVICES,
   before,
   RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN,
+  RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
 } from '../lib/aws-entities';
 import { Default } from '../lib/default';
 import {
   APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
-  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
+  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS, ADOT_LAMBDA_LAYER_ARNS,
 } from './fact-tables';
 
 async function main(): Promise<void> {
@@ -56,6 +57,8 @@ async function main(): Promise<void> {
 
     registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
 
+    registerFact(region, 'IS_OPT_IN_REGION', partition === 'aws' && after(region, RULE_CLASSIC_PARTITION_BECOMES_OPT_IN) ? 'YES' : 'NO');
+
     registerFact(region, 'S3_STATIC_WEBSITE_ENDPOINT', before(region, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN)
       ? `s3-website-${region}.${domainSuffix}`
       : `s3-website.${region}.${domainSuffix}`);
@@ -86,6 +89,18 @@ async function main(): Promise<void> {
       for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
         registerFact(region, ['cloudwatchLambdaInsightsVersion', version, arch], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]);
 
+      }
+    }
+
+    for (const type in ADOT_LAMBDA_LAYER_ARNS) {
+      for (const version in ADOT_LAMBDA_LAYER_ARNS[type]) {
+        for (const arch in ADOT_LAMBDA_LAYER_ARNS[type][version]) {
+          registerFact(
+            region,
+            ['adotLambdaLayer', type, version, arch],
+            ADOT_LAMBDA_LAYER_ARNS[type][version][arch][region],
+          );
+        }
       }
     }
   }
@@ -131,6 +146,10 @@ function checkRegionsSubMap(map: Record<string, Record<string, Record<string, un
 
     }
   }
+}
+
+export function after(region: string, ruleOrRegion: string | symbol) {
+  return region !== ruleOrRegion && !before(region, ruleOrRegion);
 }
 
 main().catch(e => {

@@ -282,6 +282,27 @@ test('esbuild bundling source map default', () => {
   });
 });
 
+test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_18_X', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node18 --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/*',
+      ],
+    }),
+  });
+});
+
 test('esbuild bundling source map inline', () => {
   Bundling.bundle({
     entry,
@@ -387,7 +408,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/pnpm-lock\.yaml.+pnpm install/),
+        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy && rm "\/asset-output\/node_modules\/.modules.yaml"/),
       ]),
     }),
   });
@@ -646,4 +667,138 @@ test('with custom hash', () => {
     assetHash: 'custom',
     assetHashType: AssetHashType.CUSTOM,
   }));
+});
+
+test('Custom bundling entrypoint', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
+    }),
+  });
+});
+
+test('Custom bundling volumes', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+    }),
+  });
+});
+
+test('Custom bundling volumesFrom', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    volumesFrom: ['777f7dc92da7'],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      volumesFrom: ['777f7dc92da7'],
+    }),
+  });
+});
+
+
+test('Custom bundling workingDirectory', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    workingDirectory: '/working-directory',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      workingDirectory: '/working-directory',
+    }),
+  });
+});
+
+test('Custom bundling user', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    user: 'user:group',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      user: 'user:group',
+    }),
+  });
+});
+
+test('Custom bundling securityOpt', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    securityOpt: 'no-new-privileges',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      securityOpt: 'no-new-privileges',
+    }),
+  });
+});
+
+test('Custom bundling network', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    network: 'host',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      network: 'host',
+    }),
+  });
 });

@@ -39,7 +39,7 @@ class Test extends cdk.Stack {
     toys.addMethod('POST');
     toys.addMethod('PUT');
 
-    const appliances = v1.addResource('appliances');
+    const appliances = v1.addResource('appliances:all');
     appliances.addMethod('GET');
 
     const books = v1.addResource('books');
@@ -78,6 +78,15 @@ class Test extends cdk.Stack {
         },
       ],
     });
+
+    const testDeploy = new apigateway.Deployment(this, 'TestDeployment', {
+      api,
+      retainDeployments: false,
+    });
+    const testStage = new apigateway.Stage(this, 'TestStage', {
+      deployment: testDeploy,
+    });
+    testStage.addApiKey('MyTestApiKey');
   }
 }
 

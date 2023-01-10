@@ -13,17 +13,17 @@ export interface LambdaAuthorizerProps {
   /**
    * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
-   * @default - the unique construcrt ID
+   * @default - the unique construct ID
    */
   readonly authorizerName?: string;
 
   /**
    * The handler for the authorizer lambda function.
    *
-   * The handler must follow a very specific protocol on the input it receives and the output it needs to produce.
-   * API Gateway has documented the handler's input specification
-   * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-input.html | here} and output specification
-   * {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html | here}.
+   * The handler must follow a very specific protocol on the input it receives
+   * and the output it needs to produce.  API Gateway has documented the
+   * handler's [input specification](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-input.html)
+   * and [output specification](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html).
    */
   readonly handler: lambda.IFunction;
 

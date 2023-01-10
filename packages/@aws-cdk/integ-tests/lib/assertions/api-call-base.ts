@@ -2,6 +2,7 @@ import { CustomResource, Reference } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { ExpectedResult } from './common';
 import { AssertionsProvider } from './providers';
+import { WaiterStateMachineOptions } from './waiter-state-machine';
 
 /**
  * Represents an ApiCall
@@ -53,11 +54,13 @@ export interface IApiCall extends IConstruct {
    * });
    * invoke.expect(ExpectedResult.objectLike({ Payload: 'OK' }));
    */
-  expect(expected: ExpectedResult): void;
+  expect(expected: ExpectedResult): IApiCall;
 
   /**
    * Assert that the ExpectedResult is equal
    * to the result of the AwsApiCall at the given path.
+   *
+   * Providing a path will filter the output of the initial API call.
    *
    * For example the SQS.receiveMessage api response would look
    * like:
@@ -83,7 +86,7 @@ export interface IApiCall extends IConstruct {
    *
    * message.assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('hello'));
    */
-  assertAtPath(path: string, expected: ExpectedResult): void;
+  assertAtPath(path: string, expected: ExpectedResult): IApiCall;
 
   /**
    * Allows you to chain IApiCalls. This adds an explicit dependency
@@ -98,6 +101,20 @@ export interface IApiCall extends IConstruct {
    * first.next(second);
    */
   next(next: IApiCall): IApiCall;
+
+  /**
+   * Wait for the IApiCall to return the expected response.
+   * If no expected response is specified then it will wait for
+   * the IApiCall to return a success
+   *
+   * @example
+   * declare const integ: IntegTest;
+   * declare const executionArn: string;
+   * integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+   *    executionArn,
+   * }).waitForAssertions();
+   */
+  waitForAssertions(options?: WaiterStateMachineOptions): IApiCall;
 }
 
 /**
@@ -126,14 +143,17 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
     return this.apiCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }
 
-  public expect(expected: ExpectedResult): void {
+  public expect(expected: ExpectedResult): IApiCall {
     this.expectedResult = expected.result;
+    return this;
   }
 
-  public abstract assertAtPath(path: string, expected: ExpectedResult): void;
+  public abstract assertAtPath(path: string, expected: ExpectedResult): IApiCall;
 
   public next(next: IApiCall): IApiCall {
     next.node.addDependency(this);
     return next;
   }
+
+  public abstract waitForAssertions(options?: WaiterStateMachineOptions): IApiCall
 }

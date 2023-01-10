@@ -6,7 +6,7 @@ import { IFunction } from './function-base';
 
 
 /**
- * Config returned from {@link LambdaInsightsVersion._bind}
+ * Config returned from `LambdaInsightsVersion._bind`
  */
 interface InsightsBindConfig {
   /**
@@ -51,6 +51,11 @@ export abstract class LambdaInsightsVersion {
    * Version 1.0.135.0
    */
   public static readonly VERSION_1_0_135_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.135.0');
+
+  /**
+   * Version 1.0.143.0
+   */
+  public static readonly VERSION_1_0_143_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.143.0');
 
   /**
    * Use the insights extension associated with the provided ARN. Make sure the ARN is associated

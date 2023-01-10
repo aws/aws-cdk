@@ -1,0 +1,832 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-appsync-integ": {
+        "id": "aws-appsync-integ",
+        "path": "aws-appsync-integ",
+        "children": {
+          "Pool": {
+            "id": "Pool",
+            "path": "aws-appsync-integ/Pool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/Pool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolName": "myPool",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "Api": {
+            "id": "Api",
+            "path": "aws-appsync-integ/Api",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/Api/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+                    "name": "Integ_Test_IAM",
+                    "additionalAuthenticationProviders": [
+                      {
+                        "authenticationType": "AWS_IAM"
+                      }
+                    ],
+                    "userPoolConfig": {
+                      "userPoolId": {
+                        "Ref": "PoolD3F588B8"
+                      },
+                      "awsRegion": {
+                        "Ref": "AWS::Region"
+                      },
+                      "defaultAction": "ALLOW"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "aws-appsync-integ/Api/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "ApiF70053CD",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type test @aws_iam {\n  id: String!\n  version: String!\n}\n\ntype Query {\n  getTest(id: String!): test\n  getTests: [ test! ]\n    @aws_iam \n}\n\ninput TestInput {\n  version: String!\n}\n\ntype Mutation {\n  addTest(input: TestInput!): test\n    @aws_iam\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-appsync-integ/Api/LogGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "ds": {
+                "id": "ds",
+                "path": "aws-appsync-integ/Api/ds",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "aws-appsync-integ/Api/ds/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/ds/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-appsync-integ/Api/ds/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-appsync-integ/Api/ds/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-appsync-integ/Api/ds/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:ConditionCheckItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:GetRecords",
+                                        "dynamodb:GetShardIterator",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:UpdateItem"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestTable5769773A",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Ref": "AWS::NoValue"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApidsServiceRoleDefaultPolicyE5E18D6D",
+                                "roles": [
+                                  {
+                                    "Ref": "ApidsServiceRoleADC7D124"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/ds/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "testDataSource",
+                        "type": "AMAZON_DYNAMODB",
+                        "dynamoDbConfig": {
+                          "tableName": {
+                            "Ref": "TestTable5769773A"
+                          },
+                          "awsRegion": {
+                            "Ref": "AWS::Region"
+                          }
+                        },
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "ApidsServiceRoleADC7D124",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "QueryGetTest": {
+                "id": "QueryGetTest",
+                "path": "aws-appsync-integ/Api/QueryGetTest",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/QueryGetTest/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "fieldName": "getTest",
+                        "typeName": "Query",
+                        "dataSourceName": "testDataSource",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
+                  "version": "0.0.0"
+                }
+              },
+              "QueryGetTests": {
+                "id": "QueryGetTests",
+                "path": "aws-appsync-integ/Api/QueryGetTests",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/QueryGetTests/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "fieldName": "getTests",
+                        "typeName": "Query",
+                        "dataSourceName": "testDataSource",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
+                  "version": "0.0.0"
+                }
+              },
+              "MutationAddTest": {
+                "id": "MutationAddTest",
+                "path": "aws-appsync-integ/Api/MutationAddTest",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/Api/MutationAddTest/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "ApiId"
+                          ]
+                        },
+                        "fieldName": "addTest",
+                        "typeName": "Mutation",
+                        "dataSourceName": "testDataSource",
+                        "kind": "UNIT",
+                        "requestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "TestTable": {
+            "id": "TestTable",
+            "path": "aws-appsync-integ/TestTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/TestTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-appsync-integ/TestTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "LambdaIAM": {
+            "id": "LambdaIAM",
+            "path": "aws-appsync-integ/LambdaIAM",
+            "children": {
+              "ImportLambdaIAM": {
+                "id": "ImportLambdaIAM",
+                "path": "aws-appsync-integ/LambdaIAM/ImportLambdaIAM",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/LambdaIAM/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-appsync-integ/LambdaIAM/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/LambdaIAM/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "appsync:graphql",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":appsync:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":apis/",
+                                    {
+                                      "Fn::GetAtt": [
+                                        "ApiF70053CD",
+                                        "ApiId"
+                                      ]
+                                    },
+                                    "/types/Query/fields/getTests"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "appsync:GraphQL",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":appsync:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":apis/",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ApiF70053CD",
+                                          "ApiId"
+                                        ]
+                                      },
+                                      "/types/Mutation/fields/addTest"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":appsync:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":apis/",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "ApiF70053CD",
+                                          "ApiId"
+                                        ]
+                                      },
+                                      "/types/test/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "LambdaIAMDefaultPolicy96DEA124",
+                        "roles": [
+                          {
+                            "Ref": "LambdaIAM687B49AF"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "testQuery": {
+            "id": "testQuery",
+            "path": "aws-appsync-integ/testQuery",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "aws-appsync-integ/testQuery/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-appsync-integ/testQuery/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-appsync-integ/testQuery/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/testQuery/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaIAM687B49AF",
+                        "Arn"
+                      ]
+                    },
+                    "environment": {
+                      "variables": {
+                        "APPSYNC_ENDPOINT": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "GraphQLUrl"
+                          ]
+                        }
+                      }
+                    },
+                    "handler": "iam-query.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "testFail": {
+            "id": "testFail",
+            "path": "aws-appsync-integ/testFail",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-appsync-integ/testFail/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-appsync-integ/testFail/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appsync-integ/testFail/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "aws-appsync-integ/testFail/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-appsync-integ/testFail/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-appsync-integ/testFail/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appsync-integ/testFail/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "testFailServiceRole9FF22F85",
+                        "Arn"
+                      ]
+                    },
+                    "environment": {
+                      "variables": {
+                        "APPSYNC_ENDPOINT": {
+                          "Fn::GetAtt": [
+                            "ApiF70053CD",
+                            "GraphQLUrl"
+                          ]
+                        }
+                      }
+                    },
+                    "handler": "iam-query.handler",
+                    "runtime": "nodejs14.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appsync-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appsync-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.182"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

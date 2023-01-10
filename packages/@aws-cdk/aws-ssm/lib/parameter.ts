@@ -492,7 +492,10 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
     const version = attrs.version ? Tokenization.stringifyNumber(attrs.version) : '';
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${version}`).toString();
+    const stringValue = new CfnDynamicReference(
+      CfnDynamicReferenceService.SSM_SECURE,
+      version ? `${attrs.parameterName}:${version}` : attrs.parameterName,
+    ).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -726,7 +729,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       name: this.physicalName,
       tier: props.tier,
       type: ParameterType.STRING_LIST,
-      value: props.stringListValue.join(','),
+      value: Fn.join(',', props.stringListValue),
     });
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {

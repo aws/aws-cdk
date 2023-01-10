@@ -7,7 +7,11 @@ import {
   CfnResource, Lazy, ScopedAws, Stack, validateString,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
-  Aws,
+  Aws, Fn, ResolutionTypeHint,
+  PermissionsBoundary,
+  PERMISSIONS_BOUNDARY_CONTEXT_KEY,
+  Aspects,
+  Stage,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -462,6 +466,599 @@ describe('stack', () => {
     });
   });
 
+  test('cross-stack references of lists returned from Fn::GetAtt work', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const exportResource = new CfnResource(stack1, 'exportedResource', {
+      type: 'BLA',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
+          Value: {
+            'Fn::Join': [
+              '||', {
+                'Fn::GetAtt': [
+                  'exportedResource',
+                  'List',
+                ],
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                '||',
+                {
+                  'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of lists returned from Fn::GetAtt can be used with CFN intrinsics', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const exportResource = new CfnResource(stack1, 'exportedResource', {
+      type: 'BLA',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: Fn.select(3, exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST) as any),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
+          Value: {
+            'Fn::Join': [
+              '||', {
+                'Fn::GetAtt': [
+                  'exportedResource',
+                  'List',
+                ],
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of lists returned from Fn::Ref work', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const param = new CfnParameter(stack1, 'magicParameter', {
+      default: 'BLAT,BLAH',
+      type: 'List<String>',
+    });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: param.value,
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Outputs: {
+        ExportsOutputRefmagicParameter4CC6F7BE: {
+          Value: {
+            'Fn::Join': [
+              '||', {
+                Ref: 'magicParameter',
+              },
+            ],
+          },
+          Export: { Name: 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE' },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                '||',
+                {
+                  'Fn::ImportValue': 'Stack1:ExportsOutputRefmagicParameter4CC6F7BE',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-region stack references, crossRegionReferences=true', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    // THEN
+    expect(template1).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+    });
+
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-region stack references throws error', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow(/Set crossRegionReferences=true to enable cross region references/);
+  });
+
+  test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+        Other: exportResource.getAtt('other'),
+        Other2: exportResource3.getAtt('other2'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+    const template3 = assembly.getStackByName(stack3.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    // THEN
+    expect(template2).toMatchObject({
+      Resources: {
+        CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD: {
+          Properties: {
+            Policies: [
+              {
+                PolicyDocument: {
+                  Statement: [
+                    {
+                      Action: [
+                        'ssm:AddTagsToResource',
+                        'ssm:RemoveTagsFromResource',
+                        'ssm:GetParameters',
+                      ],
+                      Effect: 'Allow',
+                      Resource: {
+                        'Fn::Join': [
+                          '',
+                          [
+                            'arn:',
+                            {
+                              Ref: 'AWS::Partition',
+                            },
+                            ':ssm:us-east-2:',
+                            {
+                              Ref: 'AWS::AccountId',
+                            },
+                            ':parameter/cdk/exports/Stack2/*',
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                  Version: '2012-10-17',
+                },
+                PolicyName: 'Inline',
+              },
+            ],
+          },
+          Type: 'AWS::IAM::Role',
+        },
+        ExportsReader8B249524: {
+          DeletionPolicy: 'Delete',
+          Properties: {
+            ReaderProps: {
+              imports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': '{{resolve:ssm:/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B}}',
+              },
+              region: 'us-east-2',
+              prefix: 'Stack2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
+                'Arn',
+              ],
+            },
+          },
+          Type: 'Custom::CrossRegionExportReader',
+          UpdateReplacePolicy: 'Delete',
+        },
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
+            },
+            Other: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
+              ],
+            },
+            Other2: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B',
+              ],
+            },
+          },
+        },
+      },
+    });
+    expect(template3).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other2',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+    });
+    expect(template1).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross region stack references with multiple stacks and multiple regions, crossRegionReferences=true', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack3 = new Stack(app, 'Stack3', { env: { region: 'us-west-1' }, crossRegionReferences: true });
+    const exportResource3 = new CfnResource(stack3, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+        Other: exportResource.getAtt('other'),
+        Other2: exportResource3.getAtt('other2'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+    const template3 = assembly.getStackByName(stack3.stackName).template;
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    // THEN
+    expect(template3).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+    });
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
+            },
+            Other: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
+              ],
+            },
+            Other2: {
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7',
+              ],
+            },
+          },
+        },
+      },
+    });
+    expect(template3).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other2',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+    });
+    expect(template1).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
     const app = new App({
@@ -483,7 +1080,7 @@ describe('stack', () => {
         RefToResource1: resourceA.ref,
       },
     });
-    resource2.addDependsOn(resourceB);
+    resource2.addDependency(resourceB);
 
     // THEN
     const assembly = app.synth();
@@ -519,6 +1116,206 @@ describe('stack', () => {
     expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
+  test('_addAssemblyDependency adds to _stackDependencies', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+
+    expect(childA._obtainAssemblyDependencies({ source: resourceA }))
+      .toEqual([resource1, resource2]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_addAssemblyDependency adds one StackDependencyReason with defaults', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+
+    childA._addAssemblyDependency(child1);
+
+    expect(childA._obtainAssemblyDependencies({ source: childA }))
+      .toEqual([child1]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_addAssemblyDependency raises error on cycle', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const child2 = new Stack(parent, 'Child2');
+
+    child2._addAssemblyDependency(child1);
+    expect(() => child1._addAssemblyDependency(child2)).toThrow("'Parent/Child2' depends on");
+  });
+
+  test('_addAssemblyDependency raises error for nested stacks', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new NestedStack(parent, 'Child1');
+    const child2 = new NestedStack(parent, 'Child2');
+
+    expect(() => child1._addAssemblyDependency(child2)).toThrow('Cannot add assembly-level');
+  });
+
+  test('_addAssemblyDependency handles duplicate dependency reasons', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const child2 = new Stack(parent, 'Child2');
+
+    child2._addAssemblyDependency(child1);
+    const depsBefore = child2._obtainAssemblyDependencies({ source: child2 });
+    child2._addAssemblyDependency(child1);
+    expect(depsBefore).toEqual(child2._obtainAssemblyDependencies({ source: child2 }));
+  });
+
+  test('_removeAssemblyDependency removes one StackDependencyReason of two from _stackDependencies', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'ChildA');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+
+    expect(childA._obtainAssemblyDependencies({ source: resourceA })).toEqual([resource2]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
+
+  test('_removeAssemblyDependency removes a StackDependency from _stackDependencies with the last reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource2 });
+
+    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+  });
+
+  test('_removeAssemblyDependency removes a StackDependency with default reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+
+    childA._addAssemblyDependency(child1);
+    childA._removeAssemblyDependency(child1);
+
+    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
+
+    const assembly = app.synth();
+
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+  });
+
+  test('_removeAssemblyDependency raises an error for nested stacks', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new NestedStack(parent, 'Child1');
+    const childA = new NestedStack(parent, 'Child2');
+
+    expect(() => childA._removeAssemblyDependency(child1)).toThrow('There cannot be assembly-level');
+  });
+
+  test('_removeAssemblyDependency handles a non-matching dependency reason', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': true,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const parent = new Stack(app, 'Parent');
+    const child1 = new Stack(parent, 'Child1');
+    const childA = new Stack(parent, 'Child2');
+    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
+    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
+
+    childA._addAssemblyDependency(child1);
+    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+  });
+
   test('automatic cross-stack references and manual exports look the same', () => {
     // GIVEN: automatic
     const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
@@ -532,6 +1329,29 @@ describe('stack', () => {
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
     producerM.exportValue(resourceM.getAtt('Att'));
+
+    // THEN - producers are the same
+    const templateA = appA.synth().getStackByName(producerA.stackName).template;
+    const templateM = appM.synth().getStackByName(producerM.stackName).template;
+
+    expect(templateA).toEqual(templateM);
+  });
+
+  test('automatic cross-stack references and manual list exports look the same', () => {
+    // GIVEN: automatic
+    const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
+    const producerA = new Stack(appA, 'Producer');
+    const consumerA = new Stack(appA, 'Consumer');
+    const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
+    (resourceA as any).attrAtt = ['Foo', 'Bar'];
+    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att', ResolutionTypeHint.STRING_LIST)}` });
+
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
+    (resourceM as any).attrAtt = ['Foo', 'Bar'];
+    producerM.exportStringListValue(resourceM.getAtt('Att', ResolutionTypeHint.STRING_LIST));
 
     // THEN - producers are the same
     const templateA = appA.synth().getStackByName(producerA.stackName).template;
@@ -619,6 +1439,15 @@ describe('stack', () => {
     }).toThrow(/or make sure to export a resource attribute/);
   });
 
+  test('manual list exports require a name if not supplying a resource attribute', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    expect(() => {
+      stack.exportStringListValue(['someValue']);
+    }).toThrow(/or make sure to export a resource attribute/);
+  });
+
   test('manual exports can also just be used to create an export of anything', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
@@ -626,6 +1455,37 @@ describe('stack', () => {
     const importV = stack.exportValue('someValue', { name: 'MyExport' });
 
     expect(stack.resolve(importV)).toEqual({ 'Fn::ImportValue': 'MyExport' });
+  });
+
+  test('manual list exports can also just be used to create an export of anything', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const importV = stack.exportStringListValue(['someValue', 'anotherValue'], { name: 'MyExport' });
+
+    expect(stack.resolve(importV)).toEqual(
+      {
+        'Fn::Split': [
+          '||',
+          {
+            'Fn::ImportValue': 'MyExport',
+          },
+        ],
+      },
+    );
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportMyExport: {
+          Value: 'someValue||anotherValue',
+          Export: {
+            Name: 'MyExport',
+          },
+        },
+      },
+    });
   });
 
   test('CfnSynthesisError is ignored when preparing cross references', () => {
@@ -826,12 +1686,12 @@ describe('stack', () => {
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
   });
 
-  test('cannot create references to stacks in other regions/accounts', () => {
+  test('cannot create references to stacks in other accounts', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
     const account1 = new ScopedAws(stack1).accountId;
-    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '11111111111', region: 'es-norst-2' } });
 
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
@@ -1213,6 +2073,75 @@ describe('stack', () => {
   });
 });
 
+describe('permissions boundary', () => {
+  test('can specify a valid permissions boundary name', () => {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack = new Stack(app, 'Stack', {
+      permissionsBoundary: PermissionsBoundary.fromName('valid'),
+    });
+
+    // THEN
+    const pbContext = stack.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    expect(pbContext).toEqual({
+      name: 'valid',
+    });
+  });
+
+  test('can specify a valid permissions boundary arn', () => {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack = new Stack(app, 'Stack', {
+      permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::12345678912:policy/valid'),
+    });
+
+    // THEN
+    const pbContext = stack.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    expect(pbContext).toEqual({
+      name: undefined,
+      arn: 'arn:aws:iam::12345678912:policy/valid',
+    });
+  });
+
+  test('single aspect is added to stack', () => {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stage = new Stage(app, 'Stage', {
+      permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::12345678912:policy/stage'),
+    });
+    const stack = new Stack(stage, 'Stack', {
+      permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::12345678912:policy/valid'),
+    });
+
+    // THEN
+    const aspects = Aspects.of(stack).all;
+    expect(aspects.length).toEqual(1);
+    const pbContext = stack.node.tryGetContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY);
+    expect(pbContext).toEqual({
+      name: undefined,
+      arn: 'arn:aws:iam::12345678912:policy/valid',
+    });
+  });
+
+  test('throws if pseudo parameters are in the name', () => {
+    // GIVEN
+    const app = new App();
+
+    // THEN
+    expect(() => {
+      new Stack(app, 'Stack', {
+        permissionsBoundary: PermissionsBoundary.fromArn('arn:aws:iam::${AWS::AccountId}:policy/valid'),
+      });
+    }).toThrow(/The permissions boundary .* includes a pseudo parameter/);
+  });
+});
+
 describe('regionalFact', () => {
   Fact.register({ name: 'MyFact', region: 'us-east-1', value: 'x.amazonaws.com' });
   Fact.register({ name: 'MyFact', region: 'eu-west-1', value: 'x.amazonaws.com' });
@@ -1235,6 +2164,31 @@ describe('regionalFact', () => {
     const stack = new Stack();
     Node.of(stack).setContext(cxapi.TARGET_PARTITIONS, ['aws']);
     expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
+  });
+
+  test('regional facts use the global lookup map if partition is the literal string of "undefined"', () => {
+    const stack = new Stack();
+    Node.of(stack).setContext(cxapi.TARGET_PARTITIONS, 'undefined');
+    new CfnOutput(stack, 'TheFact', {
+      value: stack.regionalFact('WeirdFact'),
+    });
+
+    expect(toCloudFormation(stack)).toEqual({
+      Mappings: {
+        WeirdFactMap: {
+          'eu-west-1': { value: 'otherformat' },
+          'us-east-1': { value: 'oneformat' },
+        },
+      },
+      Outputs: {
+        TheFact: {
+          Value: {
+            'Fn::FindInMap': ['WeirdFactMap', { Ref: 'AWS::Region' }, 'value'],
+          },
+        },
+      },
+    });
+
   });
 
   test('regional facts generate a mapping if necessary', () => {
@@ -1263,6 +2217,21 @@ describe('regionalFact', () => {
       },
     });
   });
+
+  test('stack.addMetadata() adds metadata', () => {
+    const stack = new Stack();
+
+    stack.addMetadata('Instances', { Description: 'Information about the instances' });
+    stack.addMetadata('Databases', { Description: 'Information about the databases' } );
+
+    expect(toCloudFormation(stack)).toEqual({
+      Metadata: {
+        Instances: { Description: 'Information about the instances' },
+        Databases: { Description: 'Information about the databases' },
+      },
+    });
+  });
+
 });
 
 class StackWithPostProcessor extends Stack {

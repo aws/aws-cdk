@@ -1,0 +1,105 @@
+{
+ "Resources": {
+  "MyAccessLogsBucketF7FE6635": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyAccessLogsBucketPolicyEA9AB063": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MyAccessLogsBucketF7FE6635"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "MyBucketF68F3FF0",
+           "Arn"
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "MyAccessLogsBucketF7FE6635",
+            "Arn"
+           ]
+          },
+          "/example*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyBucketF68F3FF0": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "LoggingConfiguration": {
+     "DestinationBucketName": {
+      "Ref": "MyAccessLogsBucketF7FE6635"
+     },
+     "LogFilePrefix": "example"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

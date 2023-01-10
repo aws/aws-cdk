@@ -16,20 +16,18 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
     matchResult.finished();
     if (matchResult.hasFailed()) {
       result = {
-        data: JSON.stringify({
+        failed: true,
+        assertion: JSON.stringify({
           status: 'fail',
-          message: [
-            ...matchResult.toHumanStrings(),
-            JSON.stringify(matchResult.target, undefined, 2),
-          ].join('\n'),
+          message: matchResult.renderMismatch(),
         }),
       };
       if (request.failDeployment) {
-        throw new Error(result.data);
+        throw new Error(result.assertion);
       }
     } else {
       result = {
-        data: JSON.stringify({
+        assertion: JSON.stringify({
           status: 'success',
         }),
       };
@@ -59,6 +57,7 @@ class MatchCreator {
    *   Messages: [{
    *     Body: Match.objectLike({
    *       Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *       Payload: Match.serializedJson({ key: 'value' }),
    *     }),
    *   }],
    * });
@@ -72,6 +71,9 @@ class MatchCreator {
    *           Elements: {
    *             $ArrayWith: [{ Asdf: 3 }],
    *           },
+   *           Payload: {
+   *             $SerializedJson: { key: 'value' }
+   *           }
    *         },
    *       },
    *     }],
@@ -88,6 +90,9 @@ class MatchCreator {
    *       Elements: {
    *         $ArrayWith: [{ Asdf: 3 }],
    *       },
+   *       Payload: {
+   *         $SerializedJson: { key: 'value' }
+   *       }
    *     },
    *   },
    * }
@@ -96,6 +101,7 @@ class MatchCreator {
    * {
    *   Body: Match.objectLike({
    *     Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *     Payload: Match.serializedJson({ key: 'value' }),
    *   }),
    * }
    */
@@ -110,6 +116,8 @@ class MatchCreator {
             return Match.objectLike(v[nested]);
           case '$StringLike':
             return Match.stringLikeRegexp(v[nested]);
+          case '$SerializedJson':
+            return Match.serializedJson(v[nested]);
           default:
             return v;
         }

@@ -198,7 +198,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -219,7 +219,7 @@ export interface IBucket extends IResource {
    * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
    *
    * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
-   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * calling `grantWrite` or `grantReadWrite` no longer grants permissions to modify the ACLs of the objects;
    * in this case, if you need to modify object ACLs, call this method explicitly.
    *
    * @param identity The principal
@@ -249,7 +249,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -1354,10 +1354,15 @@ export interface BucketProps {
   readonly enforceSSL?: boolean;
 
   /**
-   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
-   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   * Whether Amazon S3 should use its own intermediary key to generate data keys.
    *
-   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   * Only relevant when using KMS for encryption.
+   *
+   * - If not enabled, every object GET and PUT will cause an API call to KMS (with the
+   *   attendant cost implications of that).
+   * - If enabled, S3 will use its own time-limited key instead.
+   *
+   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
    *
    * @default - false
    */
@@ -1643,7 +1648,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
   public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
     // use a "weird" id that has a higher chance of being unique
@@ -1761,7 +1766,6 @@ export class Bucket extends BucketBase {
   protected disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
-  private readonly versioned?: boolean;
   private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
@@ -1802,7 +1806,6 @@ export class Bucket extends BucketBase {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
@@ -1829,7 +1832,9 @@ export class Bucket extends BucketBase {
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
-      props.serverAccessLogsBucket.allowLogDelivery();
+      props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
+    } else if (props.serverAccessLogsPrefix) {
+      this.allowLogDelivery(this, props.serverAccessLogsPrefix);
     }
 
     for (const inventory of props.inventories ?? []) {
@@ -1867,12 +1872,6 @@ export class Bucket extends BucketBase {
    * @param rule The rule to add
    */
   public addLifecycleRule(rule: LifecycleRule) {
-    if ((rule.noncurrentVersionExpiration !== undefined
-      || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
-      && !this.versioned) {
-      throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
-    }
-
     this.lifecycleRules.push(rule);
   }
 
@@ -1943,7 +1942,7 @@ export class Bucket extends BucketBase {
     }
 
     // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
       throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
@@ -1983,7 +1982,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+          },
         ],
       };
       return { bucketEncryption };
@@ -2043,6 +2045,17 @@ export class Bucket extends BucketBase {
   private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
     if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
+    }
+    if (
+      // The current bucket is being used and is configured for default SSE-KMS
+      !props.serverAccessLogsBucket && (
+        props.encryptionKey ||
+        props.encryption === BucketEncryption.KMS ||
+        props.encryption === BucketEncryption.KMS_MANAGED) ||
+      // Another bucket is being used that is configured for default SSE-KMS
+      props.serverAccessLogsBucket?.encryptionKey
+    ) {
+      throw new Error('SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets');
     }
 
     return {
@@ -2178,17 +2191,35 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Allows the LogDelivery group to write, fails if ACL was set differently.
+   * Allows Log Delivery to the S3 bucket, using a Bucket Policy if the relevant feature
+   * flag is enabled, otherwise the canned ACL is used.
+   *
+   * If log delivery is to be allowed using the ACL and an ACL has already been set, this fails.
    *
    * @see
-   * https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+   * https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
    */
-  private allowLogDelivery() {
-    if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
+  private allowLogDelivery(from: IBucket, prefix?: string) {
+    if (FeatureFlags.of(this).isEnabled(cxapi.S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY)) {
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
+        conditions: {
+          ArnLike: {
+            'aws:SourceArn': from.bucketArn,
+          },
+          StringEquals: {
+            'aws:SourceAccount': from.env.account,
+          },
+        },
+      }));
+    } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");
+    } else {
+      this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
     }
-
-    this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
   }
 
   private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
@@ -2288,17 +2319,17 @@ export enum BucketEncryption {
   /**
    * Objects in the bucket are not encrypted.
    */
-  UNENCRYPTED = 'NONE',
+  UNENCRYPTED = 'UNENCRYPTED',
 
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */
-  KMS_MANAGED = 'MANAGED',
+  KMS_MANAGED = 'KMS_MANAGED',
 
   /**
    * Server-side encryption with a master key managed by S3.
    */
-  S3_MANAGED = 'S3MANAGED',
+  S3_MANAGED = 'S3_MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.

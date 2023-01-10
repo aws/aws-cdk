@@ -1,0 +1,78 @@
+{
+ "Resources": {
+  "BusEA82B648": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "StackBusAA0A1E4B"
+   }
+  },
+  "BusPolicyCF00D793": {
+   "Type": "AWS::Events::EventBusPolicy",
+   "Properties": {
+    "StatementId": "123",
+    "EventBusName": {
+     "Ref": "BusEA82B648"
+    },
+    "Statement": {
+     "Action": "events:PutEvents",
+     "Effect": "Allow",
+     "Principal": {
+      "AWS": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:iam::",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":root"
+        ]
+       ]
+      }
+     },
+     "Resource": {
+      "Fn::GetAtt": [
+       "BusEA82B648",
+       "Arn"
+      ]
+     },
+     "Sid": "123"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

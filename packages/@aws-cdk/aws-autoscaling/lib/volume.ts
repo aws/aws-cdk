@@ -48,14 +48,14 @@ export interface EbsDeviceOptionsBase {
   /**
    * The number of I/O operations per second (IOPS) to provision for the volume.
    *
-   * Must only be set for {@link volumeType}: {@link EbsDeviceVolumeType.IO1}
+   * Must only be set for `volumeType`: `EbsDeviceVolumeType.IO1`
    *
    * The maximum ratio of IOPS to volume size (in GiB) is 50:1, so for 5,000 provisioned IOPS,
    * you need at least 100 GiB storage on the volume.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    *
-   * @default - none, required for {@link EbsDeviceVolumeType.IO1}
+   * @default - none, required for `EbsDeviceVolumeType.IO1`
    */
   readonly iops?: number;
 
@@ -63,9 +63,17 @@ export interface EbsDeviceOptionsBase {
    * The EBS volume type
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    *
-   * @default {@link EbsDeviceVolumeType.GP2}
+   * @default `EbsDeviceVolumeType.GP2`
    */
   readonly volumeType?: EbsDeviceVolumeType;
+
+  /**
+   * The throughput that the volume supports, in MiB/s
+   * Takes a minimum of 125 and maximum of 1000.
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+   * @default - 125 MiB/s. Only valid on gp3 volumes.
+   */
+  readonly throughput?: number;
 }
 
 /**

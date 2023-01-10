@@ -38,7 +38,7 @@ integ-runner [ARGS] [TEST...]
 This will look for all files that match the naming convention of `/integ.*.js$/`. Each of these files will be expected
 to be a self contained CDK app. The runner will execute the following for each file (app):
 
-1. Check if a snapshot file exists (i.e. `/*.integ.snapshot$/`)
+1. Check if a snapshot file exists (i.e. `/*.snapshot$/`)
 2. If the snapshot does not exist
 	2a. Synth the integ app which will produce the `integ.json` file
 3. Read the `integ.json` file which contains instructions on what the runner should do.
@@ -68,20 +68,43 @@ to be a self contained CDK app. The runner will execute the following for each f
   Read the list of tests from this file
 - `--disable-update-workflow` (default=`false`)
   If this is set to `true` then the [update workflow](#update-workflow) will be disabled
+- `--app`
+  The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".
+
+  Use together with `--test-regex` to fully customize how tests are run, or use with a single `--language` preset to change the command used for this language.
+- `--test-regex`
+  Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.
+
+  Use together with `--app` to fully customize how tests are run, or use with a single `--language` preset to change which files are detected for this language.
+- `--language`
+  The language presets to use. You can discover and run tests written in multiple languages by passing this flag multiple times (`--language typescript --language python`). Defaults to all supported languages. Currently supported language presets are:
+  - `javascript`:
+    - File RegExp: `^integ\..*\.js$`
+    - App run command: `node {filePath}`
+  - `typescript`:\
+    Note that for TypeScript files compiled to JavaScript, the JS tests will take precedence and the TS ones won't be evaluated.
+    - File RegExp: `^integ\..*(?<!\.d)\.ts$`
+    - App run command: `node -r ts-node/register {filePath}`
+  - `python`:
+    - File RegExp: `^integ_.*\.py$`
+    - App run command: `python {filePath}`
+  - `go`:
+    - File RegExp: `^integ_.*\.go$`
+    - App run command: `go run {filePath}`
 
 Example:
 
 ```bash
-integ-runner --update-on-failed --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./
+integ-runner --update-on-failed --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-2 --directory ./ --language python
 ```
 
-This will search for integration tests recursively from the current directory and then execute them in parallel across `us-east-1`, `us-east-2`, & `us-west-2`.
+This will search for python integration tests recursively from the current directory and then execute them in parallel across `us-east-1`, `us-east-2`, & `us-west-2`.
 
 If you are providing a list of tests to execute, either as CLI arguments or from a file, the name of the test needs to be relative to the `directory`.
 For example, if there is a test `aws-iam/test/integ.policy.js` and the current working directory is `aws-iam` you would provide `integ.policy.js`
 
 ```bash
-yarn integ integ.policy.js
+integ-runner integ.policy.js
 ```
 
 ### Common Workflow
@@ -117,7 +140,7 @@ Snapshot Results:
 
 Tests:    1 failed, 9 total
 Error: Some snapshot tests failed!
-To re-run failed tests run: yarn integ-runner --update-on-failed
+To re-run failed tests run: integ-runner --update-on-failed
     at main (packages/@aws-cdk/integ-runner/lib/cli.js:90:15)
 error Command failed with exit code 1. 
 ```
@@ -165,6 +188,8 @@ Test Results:
 Tests:    1 passed, 1 total
 ```
 
+Nested stack templates are also compared as part of the snapshot. However asset hashes are ignored by default. To enable diff for asset hashes, set `diffAssets: true` of `IntegTestProps`.
+
 #### Update Workflow
 
 By default, integration tests are run with the "update workflow" enabled. This can be disabled by using the `--disable-update-workflow` command line option.
@@ -191,7 +216,7 @@ If you are adding a new test which creates a new snapshot then you should run th
 For example, if you are working on a new test `integ.new-test.js` then you would run:
 
 ```bash
-yarn integ --update-on-failed --disable-update-workflow integ.new-test.js
+integ-runner --update-on-failed --disable-update-workflow integ.new-test.js
 ```
 
 This is because for a new test we do not need to test the update workflow (there is nothing to update).
@@ -204,3 +229,25 @@ See [@aws-cdk/cloud-assembly-schema/lib/integ-tests/schema.ts](../cloud-assembly
 
 See the `@aws-cdk/integ-tests` module for information on how to define
 integration tests for the runner to exercise.
+
+### Config file
+
+All options can be configured via the `integ.config.json` configuration file in the current working directory.
+
+```json
+{
+  "maxWorkers": 10,
+  "parallelRegions": [
+    "eu-west-1",
+    "ap-southeast-2"
+  ]
+}
+```
+
+Available options can be listed by running the following command:
+
+```sh
+integ-runner --help
+```
+
+To use a different config file, provide the `--config` command-line option.

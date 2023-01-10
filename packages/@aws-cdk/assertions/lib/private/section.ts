@@ -1,41 +1,43 @@
 import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
+import { sortKeyComparator } from './sorting';
 
-export type MatchSuccess = { match: true, matches: {[key: string]: any} };
-export type MatchFailure = { match: false, closestResult?: MatchResult, analyzedCount: number };
+export type MatchSuccess = { match: true, matches: { [key: string]: any }, analyzed: { [key: string]: any }, analyzedCount: number };
+export type MatchFailure = { match: false, closestResults: Record<string, MatchResult>, analyzed: { [key: string]: any }, analyzedCount: number };
 
 export function matchSection(section: any, props: any): MatchSuccess | MatchFailure {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
-  let closestResult: MatchResult | undefined = undefined;
-  let matching: {[key: string]: any} = {};
-  let count = 0;
+  const matching: { [key: string]: any } = {};
+  const analyzed: { [key: string]: any } = {};
+  const failures = new Array<[string, MatchResult]>();
 
   eachEntryInSection(
     section,
-
     (logicalId, entry) => {
+      analyzed[logicalId] = entry;
       const result = matcher.test(entry);
       result.finished();
       if (!result.hasFailed()) {
         matching[logicalId] = entry;
       } else {
-        count++;
-        if (closestResult === undefined || closestResult.failCount > result.failCount) {
-          closestResult = result;
-        }
+        failures.push([logicalId, result]);
       }
     },
   );
   if (Object.keys(matching).length > 0) {
-    return { match: true, matches: matching };
+    return { match: true, matches: matching, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   } else {
-    return { match: false, closestResult, analyzedCount: count };
+    // Sort by cost, use logicalId as a tie breaker. Take the 3 closest
+    // matches (helps debugging in case we get the top pick wrong).
+    failures.sort(sortKeyComparator(([logicalId, result]) => [result.failCost, logicalId]));
+    const closestResults = Object.fromEntries(failures.slice(0, 3));
+    return { match: false, closestResults, analyzedCount: Object.keys(analyzed).length, analyzed: analyzed };
   }
 }
 
 function eachEntryInSection(
   section: any,
-  cb: (logicalId: string, entry: {[key: string]: any}) => void): void {
+  cb: (logicalId: string, entry: { [key: string]: any }) => void): void {
 
   for (const logicalId of Object.keys(section ?? {})) {
     const resource: { [key: string]: any } = section[logicalId];
@@ -43,18 +45,37 @@ function eachEntryInSection(
   }
 }
 
-export function formatAllMatches(matches: {[key: string]: any}): string {
+export function formatAllMatches(matches: { [key: string]: any }): string {
   return [
     leftPad(JSON.stringify(matches, undefined, 2)),
   ].join('\n');
 }
 
-export function formatFailure(closestResult: MatchResult): string {
+export function formatAllMismatches(analyzed: { [key: string]: any }, matches: { [key: string]: any } = {}): string {
   return [
-    'The closest result is:',
-    leftPad(JSON.stringify(closestResult.target, undefined, 2)),
-    'with the following mismatches:',
-    ...closestResult.toHumanStrings().map(s => `\t${s}`),
+    'The following resources do not match the given definition:',
+    ...Object.keys(analyzed).filter(id => !(id in matches)).map(id => `\t${id}`),
+  ].join('\n');
+}
+
+export function formatSectionMatchFailure(qualifier: string, result: MatchFailure, what='Template'): string {
+  return [
+    `${what} has ${result.analyzedCount} ${qualifier}`,
+    result.analyzedCount > 0 ? ', but none match as expected' : '',
+    '.\n',
+    formatFailure(result.closestResults),
+  ].join('');
+}
+
+export function formatFailure(closestResults: Record<string, MatchResult>): string {
+  const keys = Object.keys(closestResults);
+  if (keys.length === 0) {
+    return 'No matches found';
+  }
+
+  return [
+    `The ${keys.length} closest matches:`,
+    ...keys.map(key => `${key} :: ${closestResults[key].renderMismatch()}`),
   ].join('\n');
 }
 

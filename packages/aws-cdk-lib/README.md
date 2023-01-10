@@ -167,7 +167,8 @@ Nested stacks also support the use of Docker image and file assets.
 ## Accessing resources in a different stack
 
 You can access resources in a different stack, as long as they are in the
-same account and AWS Region. The following example defines the stack `stack1`,
+same account and AWS Region (see [next section](#accessing-resources-in-a-different-stack-and-region) for an exception).
+The following example defines the stack `stack1`,
 which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
 which takes the bucket from stack1 as a constructor property.
 
@@ -191,6 +192,56 @@ in the producing stack and an
 [Fn::ImportValue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
 in the consuming stack to transfer that information from one stack to the
 other.
+
+## Accessing resources in a different stack and region
+
+> **This feature is currently experimental**
+
+You can enable the Stack property `crossRegionReferences`
+in order to access resources in a different stack _and_ region. With this feature flag
+enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
+an ACM certificate in `us-east-1`.
+
+```ts
+const stack1 = new Stack(app, 'Stack1', {
+  env: {
+    region: 'us-east-1',
+  },
+  crossRegionReferences: true,
+});
+const cert = new acm.Certificate(stack1, 'Cert', {
+  domainName: '*.example.com',
+  validation: acm.CertificateValidation.fromDns(route53.PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'Z0329774B51CGXTDQV3X')),
+});
+
+const stack2 = new Stack(app, 'Stack2', {
+  env: {
+    region: 'us-east-2',
+  },
+  crossRegionReferences: true,
+});
+new cloudfront.Distribution(stack2, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('example.com'),
+  },
+  domainNames: ['dev.example.com'],
+  certificate: cert,
+});
+```
+
+When the AWS CDK determines that the resource is in a different stack _and_ is in a different
+region, it will "export" the value by creating a custom resource in the producing stack which
+creates SSM Parameters in the consuming region for each exported value. The parameters will be
+created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
+In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
+is used to reference the SSM parameter which was created.
+
+In order to mimic strong references, a Custom Resource is also created in the consuming
+stack which marks the SSM parameters as being "imported". When a parameter has been successfully
+imported, the producing stack cannot update the value.
+
+See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
+for more details on this feature.
 
 ### Removing automatic cross-stack references
 
@@ -408,6 +459,10 @@ A stack dependency has the following implications:
   - If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
     automatically deploy `stackB`.
   - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
+
+### CfnResource Dependencies
+
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
 
 ## Custom Resources
 
@@ -834,13 +889,13 @@ rawBucket.cfnOptions.metadata = {
 ```
 
 Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
+`cfnResource.addDependency` method:
 
 ```ts
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
 const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
-resourceB.addDependsOn(resourceA);
+resourceB.addDependency(resourceA);
 ```
 
 [cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
@@ -1185,5 +1240,24 @@ _~/.cdk.json_
   }
 }
 ```
+
+## IAM Permissions Boundary
+
+It is possible to apply an [IAM permissions boundary](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+to all roles within a specific construct scope. The most common use case would
+be to apply a permissions boundary at the `Stage` level.
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+});
+```
+
+Any IAM Roles or Users created within this Stage will have the default
+permissions boundary attached.
+
+For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
 
 <!--END CORE DOCUMENTATION-->

@@ -192,9 +192,23 @@ You can also call [intrinsic functions](https://docs.aws.amazon.com/step-functio
 | Method | Purpose |
 |--------|---------|
 | `JsonPath.array(JsonPath.stringAt('$.Field'), ...)` | make an array from other elements. |
-| `JsonPath.format('The value is {}.', JsonPath.stringAt('$.Value'))` | insert elements into a format string. |
+| `JsonPath.arrayPartition(JsonPath.listAt('$.inputArray'), 4)` | partition an array. |
+| `JsonPath.arrayContains(JsonPath.listAt('$.inputArray'), 5)` | determine if a specific value is present in an array. |
+| `JsonPath.arrayRange(1, 9, 2)` | create a new array containing a specific range of elements. |
+| `JsonPath.arrayGetItem(JsonPath.listAt('$.inputArray'), 5)` | get a specified index's value in an array. |
+| `JsonPath.arrayLength(JsonPath.listAt('$.inputArray'))` | get the length of an array. |
+| `JsonPath.arrayUnique(JsonPath.listAt('$.inputArray'))` | remove duplicate values from an array. |
+| `JsonPath.base64Encode(JsonPath.stringAt('$.input'))` | encode data based on MIME Base64 encoding scheme. |
+| `JsonPath.base64Decode(JsonPath.stringAt('$.base64'))` | decode data based on MIME Base64 decoding scheme. |
+| `JsonPath.hash(JsonPath.objectAt('$.Data'), JsonPath.stringAt('$.Algorithm'))` | calculate the hash value of a given input. |
+| `JsonPath.jsonMerge(JsonPath.objectAt('$.Obj1'), JsonPath.objectAt('$.Obj2'))` | merge two JSON objects into a single object. |
 | `JsonPath.stringToJson(JsonPath.stringAt('$.ObjStr'))` | parse a JSON string to an object |
 | `JsonPath.jsonToString(JsonPath.objectAt('$.Obj'))` | stringify an object to a JSON string |
+| `JsonPath.mathRandom(1, 999)` | return a random number. |
+| `JsonPath.mathAdd(JsonPath.numberAt('$.value1'), JsonPath.numberAt('$.step'))` | return the sum of two numbers. |
+| `JsonPath.stringSplit(JsonPath.stringAt('$.inputString'), JsonPath.stringAt('$.splitter'))` | split a string into an array of values. |
+| `JsonPath.uuid()` | return a version 4 universally unique identifier (v4 UUID). |
+| `JsonPath.format('The value is {}.', JsonPath.stringAt('$.Value'))` | insert elements into a format string. |
 
 ## Amazon States Language
 
@@ -562,6 +576,34 @@ const definition = sfn.Chain
   .next(step3)
   // ...
 ```
+
+## Task Credentials
+
+Tasks are executed using the State Machine's execution role. In some cases, e.g. cross-account access, an IAM role can be assumed by the State Machine's execution role to provide access to the resource.
+This can be achieved by providing the optional `credentials` property which allows using a fixed role or a json expression to resolve the role at runtime from the task's inputs.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const submitLambda: lambda.Function;
+declare const iamRole: iam.Role;
+
+// use a fixed role for all task invocations
+const role = sfn.TaskRole.fromRole(iamRole);
+// or use a json expression to resolve the role at runtime based on task inputs
+//const role = sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn');
+
+const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
+  lambdaFunction: submitLambda,
+  outputPath: '$.Payload',
+  // use credentials
+  credentials: { role },
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-access-cross-acct-resources.html)
+to learn more about AWS Step Functions support for accessing resources in other AWS accounts.
 
 ## State Machine Fragments
 

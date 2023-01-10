@@ -1,0 +1,1350 @@
+{
+ "Resources": {
+  "EtlJob20ServiceRoleD520CA20": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EtlJob20ServiceRoleDefaultPolicy37D28060": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EtlJob20SparkUIBucketFD07FBD8",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EtlJob20SparkUIBucketFD07FBD8",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EtlJob20ServiceRoleDefaultPolicy37D28060",
+    "Roles": [
+     {
+      "Ref": "EtlJob20ServiceRoleD520CA20"
+     }
+    ]
+   }
+  },
+  "EtlJob20SparkUIBucketFD07FBD8": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "EtlJob20134354DC": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob20ServiceRoleD520CA20",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-continuous-log-filter": "true",
+     "--continuous-log-logStreamPrefix": "EtlJob",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "EtlJob20SparkUIBucketFD07FBD8"
+        }
+       ]
+      ]
+     },
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 2
+    },
+    "GlueVersion": "2.0",
+    "MaxRetries": 2,
+    "Name": "EtlJob2.0",
+    "NotificationProperty": {
+     "NotifyDelayAfter": 1
+    },
+    "NumberOfWorkers": 10,
+    "Tags": {
+     "key": "value"
+    },
+    "Timeout": 5,
+    "WorkerType": "G.2X"
+   }
+  },
+  "EtlJob20SuccessMetricRule1759F889": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Rule triggered when Glue job ",
+       {
+        "Ref": "EtlJob20134354DC"
+       },
+       " is in SUCCEEDED state"
+      ]
+     ]
+    },
+    "EventPattern": {
+     "source": [
+      "aws.glue"
+     ],
+     "detail-type": [
+      "Glue Job State Change",
+      "Glue Job Run Status"
+     ],
+     "detail": {
+      "jobName": [
+       {
+        "Ref": "EtlJob20134354DC"
+       }
+      ],
+      "state": [
+       "SUCCEEDED"
+      ]
+     }
+    },
+    "State": "ENABLED"
+   }
+  },
+  "StreamingJob20ServiceRole491E0FFF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "StreamingJob20ServiceRoleDefaultPolicy3CF74B2D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StreamingJob20ServiceRoleDefaultPolicy3CF74B2D",
+    "Roles": [
+     {
+      "Ref": "StreamingJob20ServiceRole491E0FFF"
+     }
+    ]
+   }
+  },
+  "StreamingJob20355B58C7": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "gluestreaming",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob20ServiceRole491E0FFF",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "2.0",
+    "Name": "StreamingJob2.0",
+    "Tags": {
+     "key": "value"
+    }
+   }
+  },
+  "EtlJob30ServiceRole8E675579": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EtlJob30ServiceRoleDefaultPolicyE57ADD66": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EtlJob30SparkUIBucket9D789346",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EtlJob30SparkUIBucket9D789346",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EtlJob30ServiceRoleDefaultPolicyE57ADD66",
+    "Roles": [
+     {
+      "Ref": "EtlJob30ServiceRole8E675579"
+     }
+    ]
+   }
+  },
+  "EtlJob30SparkUIBucket9D789346": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "EtlJob307A0F9470": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob30ServiceRole8E675579",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-continuous-log-filter": "true",
+     "--continuous-log-logStreamPrefix": "EtlJob",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "EtlJob30SparkUIBucket9D789346"
+        }
+       ]
+      ]
+     },
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 2
+    },
+    "GlueVersion": "3.0",
+    "MaxRetries": 2,
+    "Name": "EtlJob3.0",
+    "NotificationProperty": {
+     "NotifyDelayAfter": 1
+    },
+    "NumberOfWorkers": 10,
+    "Tags": {
+     "key": "value"
+    },
+    "Timeout": 5,
+    "WorkerType": "G.2X"
+   }
+  },
+  "EtlJob30SuccessMetricRuleF8870F8A": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Rule triggered when Glue job ",
+       {
+        "Ref": "EtlJob307A0F9470"
+       },
+       " is in SUCCEEDED state"
+      ]
+     ]
+    },
+    "EventPattern": {
+     "source": [
+      "aws.glue"
+     ],
+     "detail-type": [
+      "Glue Job State Change",
+      "Glue Job Run Status"
+     ],
+     "detail": {
+      "jobName": [
+       {
+        "Ref": "EtlJob307A0F9470"
+       }
+      ],
+      "state": [
+       "SUCCEEDED"
+      ]
+     }
+    },
+    "State": "ENABLED"
+   }
+  },
+  "StreamingJob30ServiceRole443B2FDE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "StreamingJob30ServiceRoleDefaultPolicy0C15D010": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StreamingJob30ServiceRoleDefaultPolicy0C15D010",
+    "Roles": [
+     {
+      "Ref": "StreamingJob30ServiceRole443B2FDE"
+     }
+    ]
+   }
+  },
+  "StreamingJob30E005FBEB": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "gluestreaming",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob30ServiceRole443B2FDE",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "3.0",
+    "Name": "StreamingJob3.0",
+    "Tags": {
+     "key": "value"
+    }
+   }
+  },
+  "EtlJob40ServiceRoleBDD9998A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EtlJob40ServiceRoleDefaultPolicy369BD98D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EtlJob40SparkUIBucket02F50B0D",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EtlJob40SparkUIBucket02F50B0D",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EtlJob40ServiceRoleDefaultPolicy369BD98D",
+    "Roles": [
+     {
+      "Ref": "EtlJob40ServiceRoleBDD9998A"
+     }
+    ]
+   }
+  },
+  "EtlJob40SparkUIBucket02F50B0D": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "EtlJob4046D61F0B": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob40ServiceRoleBDD9998A",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-continuous-log-filter": "true",
+     "--continuous-log-logStreamPrefix": "EtlJob",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "EtlJob40SparkUIBucket02F50B0D"
+        }
+       ]
+      ]
+     },
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 2
+    },
+    "GlueVersion": "4.0",
+    "MaxRetries": 2,
+    "Name": "EtlJob4.0",
+    "NotificationProperty": {
+     "NotifyDelayAfter": 1
+    },
+    "NumberOfWorkers": 10,
+    "Tags": {
+     "key": "value"
+    },
+    "Timeout": 5,
+    "WorkerType": "G.2X"
+   }
+  },
+  "EtlJob40SuccessMetricRule00D3EF34": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Rule triggered when Glue job ",
+       {
+        "Ref": "EtlJob4046D61F0B"
+       },
+       " is in SUCCEEDED state"
+      ]
+     ]
+    },
+    "EventPattern": {
+     "source": [
+      "aws.glue"
+     ],
+     "detail-type": [
+      "Glue Job State Change",
+      "Glue Job Run Status"
+     ],
+     "detail": {
+      "jobName": [
+       {
+        "Ref": "EtlJob4046D61F0B"
+       }
+      ],
+      "state": [
+       "SUCCEEDED"
+      ]
+     }
+    },
+    "State": "ENABLED"
+   }
+  },
+  "StreamingJob40ServiceRole034BDEBD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "StreamingJob40ServiceRoleDefaultPolicy0667C434": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StreamingJob40ServiceRoleDefaultPolicy0667C434",
+    "Roles": [
+     {
+      "Ref": "StreamingJob40ServiceRole034BDEBD"
+     }
+    ]
+   }
+  },
+  "StreamingJob40E284A782": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "gluestreaming",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob40ServiceRole034BDEBD",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "4.0",
+    "Name": "StreamingJob4.0",
+    "Tags": {
+     "key": "value"
+    }
+   }
+  },
+  "ShellJobServiceRoleCF97BC4B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ShellJobServiceRoleDefaultPolicy7F22D315": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ShellJobServiceRoleDefaultPolicy7F22D315",
+    "Roles": [
+     {
+      "Ref": "ShellJobServiceRoleCF97BC4B"
+     }
+    ]
+   }
+  },
+  "ShellJob42E81F95": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ShellJobServiceRoleCF97BC4B",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "1.0",
+    "Name": "ShellJob",
+    "Tags": {
+     "key": "value"
+    }
+   }
+  },
+  "ShellJob39ServiceRole2F6F3768": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ShellJob39ServiceRoleDefaultPolicy38A33919": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ShellJob39ServiceRoleDefaultPolicy38A33919",
+    "Roles": [
+     {
+      "Ref": "ShellJob39ServiceRole2F6F3768"
+     }
+    ]
+   }
+  },
+  "ShellJob390C141361": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3.9",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ShellJob39ServiceRole2F6F3768",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "GlueVersion": "1.0",
+    "Name": "ShellJob39",
+    "Tags": {
+     "key": "value"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

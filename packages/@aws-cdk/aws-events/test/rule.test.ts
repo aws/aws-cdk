@@ -689,15 +689,25 @@ describe('rule', () => {
       const app = new cdk.App();
 
       const sourceStack = new cdk.Stack(app, 'SourceStack');
-      const rule = new Rule(sourceStack, 'Rule');
+      const rule = new Rule(sourceStack, 'Rule', {
+        eventPattern: {
+          source: ['some-event'],
+        },
+      });
 
       const targetAccount = '234567890123';
       const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount } });
       const resource = new Construct(targetStack, 'Resource');
-
-      expect(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }).toThrow(/You need to provide a concrete region/);
+      rule.addTarget(new SomeTarget('T', resource));
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
+        'Targets': [
+          {
+            'Id': 'T',
+            'Arn': 'ARN1',
+          },
+        ],
+      });
+      Annotations.fromStack(sourceStack).hasWarning('/'+rule.node.path, Match.stringLikeRegexp('Either the Event Rule or target has an unresolved environment'));
     });
 
     test('requires that the target stack specify a concrete account', () => {
@@ -705,14 +715,24 @@ describe('rule', () => {
 
       const sourceAccount = '123456789012';
       const sourceStack = new cdk.Stack(app, 'SourceStack', { env: { account: sourceAccount } });
-      const rule = new Rule(sourceStack, 'Rule');
+      const rule = new Rule(sourceStack, 'Rule', {
+        eventPattern: {
+          source: ['some-event'],
+        },
+      });
 
       const targetStack = new cdk.Stack(app, 'TargetStack');
       const resource = new Construct(targetStack, 'Resource');
-
-      expect(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }).toThrow(/You need to provide a concrete account for the target stack when using cross-account or cross-region events/);
+      rule.addTarget(new SomeTarget('T', resource));
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
+        'Targets': [
+          {
+            'Id': 'T',
+            'Arn': 'ARN1',
+          },
+        ],
+      });
+      Annotations.fromStack(sourceStack).hasWarning('/'+rule.node.path, Match.stringLikeRegexp('Either the Event Rule or target has an unresolved environment'));
     });
 
     test('requires that the target stack specify a concrete region', () => {
@@ -933,7 +953,7 @@ describe('rule', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
-      const nodeAddr = 'c810f4680339b01edf1f157c4fd07da73469742773';
+      const uniqueName = 'SourceStackRuleD6962A13';
       const sourceStack = new cdk.Stack(app, 'SourceStack', {
         env: {
           account: sourceAccount,
@@ -1015,7 +1035,7 @@ describe('rule', () => {
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': `Allow-account-${sourceAccount}-${nodeAddr}`,
+        'StatementId': `Allow-account-${sourceAccount}-${uniqueName}`,
         'Principal': sourceAccount,
       });
     });

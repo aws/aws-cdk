@@ -119,7 +119,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -288,7 +288,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -652,7 +652,7 @@ describe('cluster', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: { 'Fn::Join': ['', ['ec2.', { Ref: 'AWS::URLSuffix' }]] },
+                Service: 'ec2.amazonaws.com',
               },
             },
           ],
@@ -1007,6 +1007,37 @@ describe('cluster', () => {
 
   });
 
+  test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: 'foo.com',
+      useForServiceConnect: true,
+    });
+
+    // THEN
+    expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+  });
+
+  test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      name: 'foo',
+      type: cloudmap.NamespaceType.HTTP,
+    });
+    // THEN
+    expect(namespace.namespaceName).toBe('foo');
+  });
+
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
@@ -1277,6 +1308,7 @@ describe('cluster', () => {
 
 
   });
+
 
   test('export/import of a cluster with a namespace', () => {
     // GIVEN
@@ -1619,17 +1651,7 @@ describe('cluster', () => {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'ec2.',
-                    {
-                      Ref: 'AWS::URLSuffix',
-                    },
-                  ],
-                ],
-              },
+              Service: 'ec2.amazonaws.com',
             },
           },
         ],

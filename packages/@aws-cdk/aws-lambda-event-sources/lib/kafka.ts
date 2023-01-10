@@ -1,9 +1,9 @@
-import * as crypto from 'crypto';
 import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
+import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 
@@ -219,9 +219,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   private mappingId(target: lambda.IFunction) {
-    let hash = crypto.createHash('md5');
-    hash.update(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers)));
-    const idHash = hash.digest('hex');
+    const idHash = md5hash(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers)));
     return `KafkaEventSource:${idHash}:${this.innerProps.topic}`;
   }
 

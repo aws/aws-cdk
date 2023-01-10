@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "aws-cdk-cluster-alb-controller/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-alb-controller-test"
+      ],
+      "assertionStack": "aws-cdk-cluster-alb-controller/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkclusteralbcontrollerDefaultTestDeployAssert78AE94CA"
+    }
+  }
+}

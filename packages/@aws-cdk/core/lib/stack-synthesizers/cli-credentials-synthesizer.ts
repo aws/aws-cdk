@@ -2,8 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { AssetManifestBuilder } from './_asset-manifest-builder';
-import { assertBound, StringSpecializer, stackTemplateFileAsset } from './_shared';
+import { assertBound, StringSpecializer } from './_shared';
+import { AssetManifestBuilder } from './asset-manifest-builder';
 import { BOOTSTRAP_QUALIFIER_CONTEXT, DefaultStackSynthesizer } from './default-synthesizer';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession } from './types';
@@ -87,7 +87,6 @@ export interface CliCredentialsStackSynthesizerProps {
  * the default names using the synthesizer's construction properties.
  */
 export class CliCredentialsStackSynthesizer extends StackSynthesizer {
-  private stack?: Stack;
   private qualifier?: string;
   private bucketName?: string;
   private repositoryName?: string;
@@ -108,7 +107,7 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer {
     function validateNoToken<A extends keyof CliCredentialsStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new Error(`DefaultSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+        throw new Error(`CliCredentialsStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
           '${Qualifier}',
           cxapi.EnvironmentPlaceholders.CURRENT_REGION,
           cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
@@ -118,12 +117,15 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer {
     }
   }
 
-  public bind(stack: Stack): void {
-    if (this.stack !== undefined) {
-      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
-    }
+  /**
+   * The qualifier used to bootstrap this stack
+   */
+  public get bootstrapQualifier(): string | undefined {
+    return this.qualifier;
+  }
 
-    this.stack = stack;
+  public bind(stack: Stack): void {
+    super.bind(stack);
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
     this.qualifier = qualifier;
@@ -139,34 +141,37 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer {
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    assertBound(this.stack);
     assertBound(this.bucketName);
-    assertBound(this.bucketPrefix);
 
-    return this.assetManifest.addFileAssetDefault(asset, this.stack, this.bucketName, this.bucketPrefix);
+    const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
+      bucketName: this.bucketName,
+      bucketPrefix: this.bucketPrefix,
+    });
+    return this.cloudFormationLocationFromFileAsset(location);
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    assertBound(this.stack);
     assertBound(this.repositoryName);
-    assertBound(this.dockerTagPrefix);
 
-    return this.assetManifest.addDockerImageAssetDefault(asset, this.stack, this.repositoryName, this.dockerTagPrefix);
+    const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
+      repositoryName: this.repositoryName,
+      dockerTagPrefix: this.dockerTagPrefix,
+    });
+    return this.cloudFormationLocationFromDockerImageAsset(location);
   }
 
   /**
    * Synthesize the associated stack to the session
    */
   public synthesize(session: ISynthesisSession): void {
-    assertBound(this.stack);
     assertBound(this.qualifier);
 
-    this.synthesizeStackTemplate(this.stack, session);
+    const templateAssetSource = this.synthesizeTemplate(session);
+    const templateAsset = this.addFileAsset(templateAssetSource);
 
-    const templateAsset = this.addFileAsset(stackTemplateFileAsset(this.stack, session));
-    const assetManifestId = this.assetManifest.writeManifest(this.stack, session);
+    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session);
 
-    this.emitStackArtifact(this.stack, session, {
+    this.emitArtifact(session, {
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
       additionalDependencies: [assetManifestId],
     });

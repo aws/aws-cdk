@@ -288,7 +288,7 @@ are written to the same output file where each stack artifact ID is a key in the
 
 
 ```console
-$ cdk deploy '*' --outputs-file "/Users/code/myproject/outputs.json"
+$ cdk deploy '**' --outputs-file "/Users/code/myproject/outputs.json"
 ```
 
 Example `outputs.json` after deployment of multiple stacks
@@ -336,19 +336,19 @@ The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 
 #### CloudFormation Change Sets vs direct stack updates
 
-By default CDK will create a CloudFormation change with the changes that will
-be deployed, and then executes it. This behavior can be controlled with the
+By default, CDK creates a CloudFormation change set with the changes that will
+be deployed and then executes it. This behavior can be controlled with the
 `--method` parameter:
 
 - `--method=change-set` (default): create and execute the change set.
-- `--method=prepare-change-set`: create teh change set but don't execute it.
+- `--method=prepare-change-set`: create the change set but don't execute it.
   This is useful if you have external tools that will inspect the change set or
   you have an approval process for change sets.
 - `--method=direct`: do not create a change set but apply the change immediately.
   This is typically a bit faster than creating a change set, but it loses
   the progress information.
 
-To have deploy faster without using change sets:
+To deploy faster without using change sets:
 
 ```console
 $ cdk deploy --method=direct
@@ -409,6 +409,8 @@ For this reason, only use it for development purposes.
 
 **⚠ Note #2**: This command is considered experimental,
 and might have breaking changes in the future.
+
+**⚠ Note #3**: Expected defaults for certain parameters may be different with the hotswap parameter. For example, an ECS service's minimum healthy percentage will currently be set to 0. Please review the source accordingly if this occurs. 
 
 ### `cdk watch`
 
@@ -550,7 +552,7 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 ### `cdk bootstrap`
 
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket
-and ECR reposity that `cdk deploy` will use to store synthesized templates and the related assets, before
+and ECR repository that `cdk deploy` will use to store synthesized templates and the related assets, before
 triggering a CloudFormation stack update. The name of the deployed stack can be configured using the
 `--toolkit-stack-name` argument. The S3 Bucket Public Access Block Configuration can be configured using
 the `--public-access-block-configuration` argument. ECR uses immutable tags for images.
@@ -566,8 +568,9 @@ $ cdk bootstrap --app='node bin/main.js' foo bar
 By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
 
-If you have specific needs, policies, or requirements not met by the default template, you can customize it
-to fit your own situation, by exporting the default one to a file and either deploying it yourself
+If you have specific prerequisites not met by the example template, you can
+[customize it](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html#bootstrapping-customizing)
+to fit your requirements, by exporting the provided one to a file and either deploying it yourself
 using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
 
 ```console
@@ -579,6 +582,19 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 # Tell CDK to use the customized template
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
+
+Out of the box customization options are also available as arguments. To use a permissions boundary:
+
+- `--example-permissions-boundary` indicates the example permissions boundary, supplied by CDK
+- `--custom-permissions-boundary` specifies, by name a predefined, customer maintained, boundary
+
+A few notes to add at this point. The CDK supplied permissions boundary policy should be regarded as
+an example. Edit the content and reference the example policy if you're testing out the feature, turn
+it into a new policy for actual deployments (if one does not already exist). The concern here is drift
+as, most likely, a permissions boundary is maintained and has dedicated conventions, naming included.
+
+For more information on configuring permissions, including using permissions
+boundaries see the [Security And Safety Dev Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
 ### `cdk doctor`
 
@@ -649,7 +665,7 @@ You can suppress warnings in a variety of ways:
   }
   ```
 
-- acknowleding individual notices via `cdk acknowledge` (see below).
+- acknowledging individual notices via `cdk acknowledge` (see below).
 
 ### `cdk acknowledge`
 

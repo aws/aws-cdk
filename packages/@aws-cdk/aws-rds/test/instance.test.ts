@@ -321,6 +321,34 @@ describe('instance', () => {
     });
   });
 
+  test('instance with IPv4 network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'IPV4',
+    });
+  });
+
+  test('instance with dual-stack network type', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      networkType: rds.NetworkType.DUAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      NetworkType: 'DUAL',
+    });
+  });
+
   describe('DatabaseInstanceFromSnapshot', () => {
     test('create an instance from snapshot', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
@@ -795,7 +823,7 @@ describe('instance', () => {
     });
   });
 
-  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
       vpcId: 'vpc-id',
@@ -806,6 +834,9 @@ describe('instance', () => {
       privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
       isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
       isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
     });
 
     // WHEN
@@ -821,6 +852,7 @@ describe('instance', () => {
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
     });
 
     // THEN
@@ -842,11 +874,17 @@ describe('instance', () => {
         },
         vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
       },
     });
   });
 
-  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters, vpcSubnets and securityGroup', () => {
     // GIVEN
     const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
       vpcId: 'vpc-id',
@@ -857,6 +895,9 @@ describe('instance', () => {
       privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
       isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
       isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpcWithIsolated,
     });
     const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
 
@@ -874,6 +915,7 @@ describe('instance', () => {
       automaticallyAfter: cdk.Duration.days(15),
       excludeCharacters: '°_@',
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup,
     });
 
     // THEN
@@ -895,6 +937,12 @@ describe('instance', () => {
         },
         vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            stack.getLogicalId(securityGroup.node.defaultChild as ec2.CfnSecurityGroup),
+            'GroupId',
+          ],
+        },
       },
     });
   });
@@ -1679,6 +1727,46 @@ describe('instance', () => {
       SourceDBInstanceIdentifier: Match.anyValue(),
       Engine: 'postgres',
     });
+  });
+
+  test('gp3 storage type', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 500,
+      storageType: rds.StorageType.GP3,
+      storageThroughput: 500,
+      iops: 4000,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageType: 'gp3',
+      StorageThroughput: 500,
+      Iops: 4000,
+    });
+  });
+
+  test('throws with storage throughput and not GP3', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      storageType: rds.StorageType.GP2,
+      storageThroughput: 500,
+    })).toThrow(/storage throughput can only be specified with GP3 storage type/);
+  });
+
+  test('throws with a ratio of storage throughput to IOPS greater than 0.25', () => {
+    expect(() => new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      allocatedStorage: 1000,
+      storageType: rds.StorageType.GP3,
+      iops: 5000,
+      storageThroughput: 2500,
+    })).toThrow(/maximum ratio of storage throughput to IOPS is 0.25/);
   });
 });
 

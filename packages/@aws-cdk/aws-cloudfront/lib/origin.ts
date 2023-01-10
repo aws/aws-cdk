@@ -4,7 +4,7 @@ import { CfnDistribution } from './cloudfront.generated';
 
 /**
  * The failover configuration used for Origin Groups,
- * returned in {@link OriginBindConfig.failoverConfig}.
+ * returned in `OriginBindConfig.failoverConfig`.
  */
 export interface OriginFailoverConfig {
   /** The origin to use as the fallback origin. */
@@ -18,7 +18,7 @@ export interface OriginFailoverConfig {
   readonly statusCodes?: number[];
 }
 
-/** The struct returned from {@link IOrigin.bind}. */
+/** The struct returned from `IOrigin.bind`. */
 export interface OriginBindConfig {
   /**
    * The CloudFormation OriginProperty configuration for this Origin.
@@ -81,6 +81,20 @@ export interface OriginOptions {
    * @default - origin shield not enabled
    */
   readonly originShieldRegion?: string;
+
+  /**
+   * Origin Shield is enabled by setting originShieldRegion to a valid region, after this to disable Origin Shield again you must set this flag to false.
+   *
+   * @default - true
+   */
+  readonly originShieldEnabled?: boolean;
+
+  /**
+   * A unique identifier for the origin. This value must be unique within the distribution.
+   *
+   * @default - an originid will be generated for you
+   */
+  readonly originId?: string;
 }
 
 /**
@@ -107,6 +121,7 @@ export interface OriginBindOptions {
   readonly originId: string;
 }
 
+
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.
@@ -117,7 +132,9 @@ export abstract class OriginBase implements IOrigin {
   private readonly connectionTimeout?: Duration;
   private readonly connectionAttempts?: number;
   private readonly customHeaders?: Record<string, string>;
-  private readonly originShieldRegion?: string
+  private readonly originShieldRegion?: string;
+  private readonly originShieldEnabled: boolean;
+  private readonly originId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
@@ -130,6 +147,8 @@ export abstract class OriginBase implements IOrigin {
     this.connectionAttempts = props.connectionAttempts;
     this.customHeaders = props.customHeaders;
     this.originShieldRegion = props.originShieldRegion;
+    this.originId = props.originId;
+    this.originShieldEnabled = props.originShieldEnabled ?? true;
   }
 
   /**
@@ -146,14 +165,14 @@ export abstract class OriginBase implements IOrigin {
     return {
       originProperty: {
         domainName: this.domainName,
-        id: options.originId,
+        id: this.originId ?? options.originId,
         originPath: this.originPath,
         connectionAttempts: this.connectionAttempts,
         connectionTimeout: this.connectionTimeout?.toSeconds(),
         originCustomHeaders: this.renderCustomHeaders(),
         s3OriginConfig,
         customOriginConfig,
-        originShield: this.renderOriginShield(this.originShieldRegion),
+        originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
       },
     };
   }
@@ -191,10 +210,11 @@ export abstract class OriginBase implements IOrigin {
   /**
    * Takes origin shield region and converts to CfnDistribution.OriginShieldProperty
    */
-  private renderOriginShield(originShieldRegion?: string): CfnDistribution.OriginShieldProperty | undefined {
-    return originShieldRegion
-      ? { enabled: true, originShieldRegion }
-      : undefined;
+  private renderOriginShield(originShieldEnabled: boolean, originShieldRegion?: string): CfnDistribution.OriginShieldProperty | undefined {
+    if (!originShieldEnabled) {
+      return { enabled: false };
+    }
+    return originShieldRegion ? { enabled: true, originShieldRegion } : undefined;
   }
 }
 

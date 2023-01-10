@@ -382,6 +382,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   }
 
   private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {
+    if (cdk.Token.isUnresolved(kafkaConsumerGroupId)) {
+      return;
+    }
+
     if (kafkaConsumerGroupId.length > 200 ||kafkaConsumerGroupId.length < 1) {
       throw new Error('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
     }
@@ -389,7 +393,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
     const patternMatch = regex.exec(kafkaConsumerGroupId);
     if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
-      throw new Error('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+      throw new Error('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
     }
   }
 }

@@ -234,6 +234,13 @@
                     "description": "Platform to build for. _Requires Docker Buildx_. (Default - current machine platform)",
                     "type": "string"
                 },
+                "outputs": {
+                    "description": "Outputs to pass to the `docker build` command. (Default - no outputs are passed to the build command (default outputs are used))",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "id": {
                     "description": "Logical identifier for the asset",
                     "type": "string"
@@ -429,42 +436,8 @@
                     "description": "The provider from which we expect this context key to be obtained."
                 },
                 "props": {
-                    "description": "A set of provider-specific options.",
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/AmiContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/AvailabilityZonesContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/HostedZoneContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/SSMParameterContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/VpcContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/LoadBalancerContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/LoadBalancerListenerContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/SecurityGroupContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/KeyContextQuery"
-                        },
-                        {
-                            "$ref": "#/definitions/PluginContextQuery"
-                        }
-                    ]
+                    "$ref": "#/definitions/ContextQueryProperties",
+                    "description": "A set of provider-specific options."
                 }
             },
             "required": [
@@ -489,6 +462,43 @@
                 "vpc-provider"
             ],
             "type": "string"
+        },
+        "ContextQueryProperties": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/AmiContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/AvailabilityZonesContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/HostedZoneContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/SSMParameterContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/VpcContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/LoadBalancerContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/LoadBalancerListenerContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/SecurityGroupContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/KeyContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/PluginContextQuery"
+                }
+            ]
         },
         "AmiContextQuery": {
             "description": "Query to AMI context provider",
@@ -639,7 +649,7 @@
                     }
                 },
                 "returnAsymmetricSubnets": {
-                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "description": "Whether to populate the subnetGroups field of the `VpcContextResponse`,\nwhich contains potentially asymmetric subnet groups.",
                     "default": false,
                     "type": "boolean"
                 },
