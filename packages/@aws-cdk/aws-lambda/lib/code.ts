@@ -92,7 +92,7 @@ export abstract class Code {
    * Creates a new Lambda source defined using CloudFormation parameters.
    *
    * @returns a new instance of `CfnParametersCode`
-   * @param props optional construction properties of {@link CfnParametersCode}
+   * @param props optional construction properties of `CfnParametersCode`
    */
   public static fromCfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
     return new CfnParametersCode(props);
@@ -318,7 +318,7 @@ export interface ResourceBindOptions {
 }
 
 /**
- * Construction properties for {@link CfnParametersCode}.
+ * Construction properties for `CfnParametersCode`.
  */
 export interface CfnParametersCodeProps {
   /**
@@ -344,7 +344,7 @@ export interface CfnParametersCodeProps {
  * Lambda code defined using 2 CloudFormation parameters.
  * Useful when you don't have access to the code of your Lambda from your CDK code, so you can't use Assets,
  * and you want to deploy the Lambda in a CodePipeline, using CloudFormation Actions -
- * you can fill the parameters using the {@link #assign} method.
+ * you can fill the parameters using the `#assign` method.
  */
 export class CfnParametersCode extends Code {
   public readonly isInline = false;
