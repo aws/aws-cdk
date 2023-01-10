@@ -746,7 +746,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "GroupPeerCustomResourceCustomResourcePolicy42EF8263",

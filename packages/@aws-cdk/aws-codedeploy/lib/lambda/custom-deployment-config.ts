@@ -151,6 +151,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });
