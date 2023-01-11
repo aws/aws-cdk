@@ -32,7 +32,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.2",
-    "@types/yargs": "^15.0.14",
+    "@types/yargs": "^15.0.15",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0"
   },
