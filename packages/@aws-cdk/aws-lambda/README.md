@@ -283,19 +283,6 @@ const version = new lambda.Version(this, 'MyVersion', {
 });
 ```
 
-Or setting the `currentVersionOptions` when creating a new lambda
-
-```ts
-new lambda.Function(this, 'MyVersionedLambda', {
-  runtime: lambda.Runtime.NODEJS_18_X,
-  handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  currentVersionOptions: {
-    provisionedConcurrentExecutions: 3,
-  },
-});
-```
-
 The major caveat to know here is that a function version must always point to a
 specific 'version' of the function. When the function is modified, the version
 will continue to point to the 'then version' of the function.
