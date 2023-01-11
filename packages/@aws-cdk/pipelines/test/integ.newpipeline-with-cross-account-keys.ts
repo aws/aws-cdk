@@ -15,7 +15,7 @@ class PipelineStack extends Stack {
       crossAccountKeys: true,
       enableKeyRotation: true,
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('rix0rrr/cdk-pipelines-demo', 'main'),
+        input: pipelines.CodePipelineSource.gitHub('tkglaser/cdk-pipelines-demo', 'main'),
         commands: [
           'npm ci',
           'npm run build',
