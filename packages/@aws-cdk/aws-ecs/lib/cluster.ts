@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, ArnFormat } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
@@ -55,8 +55,6 @@ export interface ClusterProps {
   readonly capacityProviders?: string[];
 
   /**
-<<<<<<< Updated upstream
-=======
    * The cluster default capacity provider strategy. This takes the form of a list of CapacityProviderStrategy objects.
    *
    * For example
@@ -73,7 +71,6 @@ export interface ClusterProps {
   readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
 
   /**
->>>>>>> Stashed changes
    * Whether to enable Fargate Capacity Providers
    *
    * @default false
@@ -229,6 +226,7 @@ export class Cluster extends Resource implements ICluster {
     }
 
     this._capacityProviderNames = props.capacityProviders ?? [];
+    this._defaultCapacityProviderStrategy = [];
     if (props.enableFargateCapacityProviders) {
       this.enableFargateCapacityProviders();
     }
@@ -269,7 +267,22 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviderNames, this._defaultCapacityProviderStrategy));
+    const _this = this;
+    Aspects.of(this).add({
+      visit(node: IConstruct): void {
+        if (node.node.addr === _this.node.addr) {
+          if ((_this._defaultCapacityProviderStrategy.length > 0 || _this._capacityProviderNames.length > 0)) {
+            if (!_this.node.tryFindChild(id)) {
+              new CfnClusterCapacityProviderAssociations(_this, id, {
+                cluster: _this.clusterName,
+                defaultCapacityProviderStrategy: _this._defaultCapacityProviderStrategy,
+                capacityProviders: _this._capacityProviderNames,
+              });
+            }
+          }
+        }
+      },
+    });
   }
 
   /**
@@ -1230,40 +1243,6 @@ export class AsgCapacityProvider extends Construct {
     this.capacityProviderName = capacityProvider.ref;
   }
 }
-
-/**
- * A visitor that adds a capacity provider association to a Cluster only if
- * the caller created any EC2 Capacity Providers.
- */
-class MaybeCreateCapacityProviderAssociations implements IAspect {
-  private scope: Construct;
-  private id: string;
-  private capacityProviders: string[];
-  private resource?: CfnClusterCapacityProviderAssociations;
-  private defaultCapacityProviderStrategy: CapacityProviderStrategy[];
-
-
-  constructor(scope: Construct, id: string, capacityProviders: string[], defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
-    this.scope = scope;
-    this.id = id;
-    this.capacityProviders = capacityProviders;
-    this.defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
-  }
-
-  public visit(node: IConstruct): void {
-    if (node instanceof Cluster) {
-      if ((this.defaultCapacityProviderStrategy.length > 0 || this.capacityProviders.length > 0) && !this.resource) {
-        const resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
-          cluster: node.clusterName,
-          defaultCapacityProviderStrategy: this.defaultCapacityProviderStrategy,
-          capacityProviders: Lazy.list({ produce: () => this.capacityProviders }),
-        });
-        this.resource = resource;
-      }
-    }
-  }
-}
-
 
 function isBottleRocketImage(image: ec2.IMachineImage) {
   return image instanceof BottleRocketImage;

@@ -2224,6 +2224,7 @@ describe('cluster', () => {
       ],
       DefaultCapacityProviderStrategy: [
         { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
+        { CapacityProvider: 'FARGATE_SPOT' },
       ],
     });
 
