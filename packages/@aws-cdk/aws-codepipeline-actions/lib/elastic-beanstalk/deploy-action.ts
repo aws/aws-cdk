@@ -4,7 +4,7 @@ import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
 /**
- * Construction properties of the {@link ElasticBeanstalkDeployAction Elastic Beanstalk deploy CodePipeline Action}.
+ * Construction properties of the `ElasticBeanstalkDeployAction Elastic Beanstalk deploy CodePipeline Action`.
  */
 export interface ElasticBeanstalkDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**

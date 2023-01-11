@@ -27,7 +27,7 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    * viewable in plain text in the console.
    *
    * Please provide at least one of `token` or `secretToken`.
-   * @deprecated Use {@link SplunkLogDriverProps.secretToken} instead.
+   * @deprecated Use `SplunkLogDriverProps.secretToken` instead.
    * @default - token not provided.
    */
   readonly token?: SecretValue;
