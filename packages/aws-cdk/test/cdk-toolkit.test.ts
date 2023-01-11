@@ -743,6 +743,7 @@ describe('watch', () => {
       expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: hotswapMode }));
     });
   });
+
   test('defaults to HotswapMode.CLASSIC', async () => {
     cloudExecutable.configuration.settings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();

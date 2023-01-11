@@ -537,7 +537,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
+          hotswap: determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -575,7 +575,7 @@ async function initCommandLine() {
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
+          hotswap: determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly) ?? HotswapMode.CLASSIC,
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -694,7 +694,7 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-function determineHotswapMode(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode {
+function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode | undefined {
   if (hotswap !== undefined && hotswapOnly !== undefined) {
     throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
   }
@@ -702,7 +702,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapOnly?: boolean): Hotswap
   let hotswapMode: HotswapMode | undefined = undefined;
   if (hotswap) {
     hotswapMode = HotswapMode.CLASSIC;
-  } else {
+  } else if (hotswapOnly) {
     hotswapMode = HotswapMode.HOTSWAP_ONLY;
   }
 
