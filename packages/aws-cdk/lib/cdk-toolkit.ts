@@ -779,7 +779,7 @@ export class CdkToolkit {
       cloudWatchLogMonitor,
       cacheCloudAssembly: false,
       hotswap: hotswap,
-      extraUserAgent: `cdk-watch/hotswap-${hotswap}`,
+      extraUserAgent: `cdk-watch/hotswap-${options.hotswap ? 'on' : 'off'}`,
       concurrency: options.concurrency,
     };
 

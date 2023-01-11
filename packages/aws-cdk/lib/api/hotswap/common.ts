@@ -35,7 +35,7 @@ export interface NonHotswappableChange {
 
 export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChange>;
 
-export interface AllChanges {
+export interface ClassifiedResourceChanges {
   hotswappableChanges: HotswappableChange[];
   nonHotswappableChanges: NonHotswappableChange[];
   metadataChanged: boolean;
