@@ -501,17 +501,6 @@ async function initCommandLine() {
           throw new Error('Can not supply both --[no-]execute and --method at the same time');
         }
 
-        if (args.hotswap !== undefined && args.hotswapOnly !== undefined) {
-          throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
-        }
-
-        let hotswapMode: HotswapMode | undefined = undefined;
-        if (args.hotswap) {
-          hotswapMode = HotswapMode.CLASSIC;
-        } else {
-          hotswapMode = HotswapMode.HOTSWAP_ONLY;
-        }
-
         let deploymentMethod: DeploymentMethod | undefined;
         switch (args.method) {
           case 'direct':
@@ -548,7 +537,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: hotswapMode,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -586,7 +575,7 @@ async function initCommandLine() {
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -703,6 +692,21 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
     }
     return argv;
   };
+}
+
+function determineHotswapMode(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode {
+  if (hotswap !== undefined && hotswapOnly !== undefined) {
+    throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
+  }
+
+  let hotswapMode: HotswapMode | undefined = undefined;
+  if (hotswap) {
+    hotswapMode = HotswapMode.CLASSIC;
+  } else {
+    hotswapMode = HotswapMode.HOTSWAP_ONLY;
+  }
+
+  return hotswapMode;
 }
 
 export function cli() {

@@ -779,7 +779,7 @@ export class CdkToolkit {
       cloudWatchLogMonitor,
       cacheCloudAssembly: false,
       hotswap: hotswap,
-      extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
+      extraUserAgent: `cdk-watch/hotswap-${hotswap}`,
       concurrency: options.concurrency,
     };
 
@@ -953,7 +953,7 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - undefined for regular deployments, `HotswapMode.HOTSWAP` for 'watch' deployments
+   * @default - undefined for regular deployments, `HotswapMode.CLASSIC` for 'watch' deployments
    */
   readonly hotswap?: HotswapMode;
 

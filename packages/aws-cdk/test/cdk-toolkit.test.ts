@@ -730,6 +730,31 @@ describe('watch', () => {
     expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ concurrency: 3 }));
   });
 
+  describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+    test('passes through the correct hotswap mode to deployStack()', async () => {
+      cloudExecutable.configuration.settings.set(['watch'], {});
+      const toolkit = defaultToolkitSetup();
+      const cdkDeployMock = jest.fn();
+      toolkit.deploy = cdkDeployMock;
+
+      await toolkit.watch({ selector: { patterns: [] }, hotswap: hotswapMode });
+      fakeChokidarWatcherOn.readyCallback();
+
+      expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: hotswapMode }));
+    });
+  });
+  test('defaults to HotswapMode.CLASSIC', async () => {
+    cloudExecutable.configuration.settings.set(['watch'], {});
+    const toolkit = defaultToolkitSetup();
+    const cdkDeployMock = jest.fn();
+    toolkit.deploy = cdkDeployMock;
+
+    await toolkit.watch({ selector: { patterns: [] }, hotswap: undefined });
+    fakeChokidarWatcherOn.readyCallback();
+
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.CLASSIC }));
+  });
+
   describe('with file change events', () => {
     let toolkit: CdkToolkit;
     let cdkDeployMock: jest.Mock;
