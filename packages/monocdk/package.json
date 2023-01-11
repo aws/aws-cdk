@@ -108,7 +108,7 @@
     "ignore": "^5.2.4",
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
-    "punycode": "^2.1.1",
+    "punycode": "^2.2.0",
     "semver": "^7.3.8",
     "yaml": "1.10.2"
   },
