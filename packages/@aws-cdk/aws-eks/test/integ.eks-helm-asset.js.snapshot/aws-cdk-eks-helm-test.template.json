@@ -930,7 +930,6 @@
      ]
     },
     "Release": "s3-chart",
-    "Chart": "s3-chart",
     "Version": "v0.1.0",
     "Namespace": "ack-system",
     "Repository": "oci://public.ecr.aws/aws-controllers-k8s/s3-chart",
@@ -961,7 +960,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d6d1ba3a5e916f8041c02da68c6ffa4a86b870b02df526dfde317afefb03ceeb.json"
+       "/d0ed18f830c9e49d64521037c4c2d872500fd7df2bc7d2d32ff2f59446d69f54.json"
       ]
      ]
     },
@@ -996,7 +995,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b2adfcee80934483ec1e58da698bde1057977ee0cb562ff05fedd5ea11901a25.json"
+       "/cb7b7ce7aaf111234ff8a853059444354a558d0be3dfe87e3a93e76d79e5f54f.json"
       ]
      ]
     },
