@@ -3,8 +3,8 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "myApplication",
-    "Description": "my application description"
+    "Name": "TestApplication",
+    "Description": "Test application description"
    }
   },
   "TestApplicationResourceAssociationd232b63e52a8414E905D": {
@@ -132,7 +132,7 @@
       {
        "Ref": "AWS::Region"
       },
-      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-myApplication"
+      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-TestApplication"
      ]
     ]
    }
