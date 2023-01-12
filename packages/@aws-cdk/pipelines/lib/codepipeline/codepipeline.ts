@@ -24,6 +24,7 @@ import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
 import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 
 
 /**
@@ -313,6 +314,7 @@ export class CodePipeline extends PipelineBase {
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
   private readonly cachedFnSub = new CachedFnSub();
+  private stackOutputs: StackOutputsMap;
 
   /**
    * Asset roles shared for publishing
@@ -337,6 +339,7 @@ export class CodePipeline extends PipelineBase {
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
     this.useChangeSets = props.useChangeSets ?? true;
+    this.stackOutputs = new StackOutputsMap(this);
   }
 
   /**
@@ -467,6 +470,7 @@ export class CodePipeline extends PipelineBase {
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
               variablesNamespace,
+              stackOutputsMap: this.stackOutputs,
             });
 
             if (node.data?.type === 'self-update') {
