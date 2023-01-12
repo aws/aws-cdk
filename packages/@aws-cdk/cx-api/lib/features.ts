@@ -573,7 +573,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This new implementation creates default policy names based on the constructs node path in their stack.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.60.0' },
     recommendedValue: true,
   },
 
@@ -608,7 +608,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       flag on a resource-by-resource basis to enable it if necessary.
     `,
     compatibilityWithOldBehaviorMd: 'Set installLatestAwsSdk: true on all resources that need it.',
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.60.0' },
     recommendedValue: false,
   },
 };
