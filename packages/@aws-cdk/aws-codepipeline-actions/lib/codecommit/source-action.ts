@@ -9,7 +9,7 @@ import { sourceArtifactBounds } from '../common';
 
 /**
  * How should the CodeCommit Action detect changes.
- * This is the type of the {@link CodeCommitSourceAction.trigger} property.
+ * This is the type of the `CodeCommitSourceAction.trigger` property.
  */
 export enum CodeCommitTrigger {
   /**
@@ -54,7 +54,7 @@ export interface CodeCommitSourceVariables {
 }
 
 /**
- * Construction properties of the {@link CodeCommitSourceAction CodeCommit source CodePipeline Action}.
+ * Construction properties of the `CodeCommitSourceAction CodeCommit source CodePipeline Action`.
  */
 export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -93,7 +93,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * or a link that allows CodeBuild to clone the repository before building.
    *
    * **Note**: if this option is true,
-   * then only CodeBuild actions can use the resulting {@link output}.
+   * then only CodeBuild actions can use the resulting `output`.
    *
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html

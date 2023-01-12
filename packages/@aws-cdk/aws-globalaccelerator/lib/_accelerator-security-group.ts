@@ -55,6 +55,8 @@ export class AcceleratorSecurityGroupPeer implements ec2.IPeer {
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
 
     // We add a dependency on the endpoint group, guaranteeing that CloudFormation won't
