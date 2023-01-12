@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-metricfilter-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -65,6 +59,12 @@
         ]
       },
       "displayName": "aws-cdk-metricfilter-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
