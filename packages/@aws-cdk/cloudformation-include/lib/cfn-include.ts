@@ -5,7 +5,7 @@ import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
 
 /**
- * Construction properties of {@link CfnInclude}.
+ * Construction properties of `CfnInclude`.
  */
 export interface CfnIncludeProps {
   /**
@@ -22,7 +22,7 @@ export interface CfnIncludeProps {
    * make sure to pass this as `false`.
    *
    * **Note**: regardless of whether this option is true or false,
-   * the {@link CfnInclude.getResource} and related methods always uses the original logical ID of the resource/element,
+   * the `CfnInclude.getResource` and related methods always uses the original logical ID of the resource/element,
    * as specified in the template file.
    *
    * @default true
@@ -33,8 +33,8 @@ export interface CfnIncludeProps {
    * Specifies the template files that define nested stacks that should be included.
    *
    * If your template specifies a stack that isn't included here, it won't be created as a NestedStack
-   * resource, and it won't be accessible from the {@link CfnInclude.getNestedStack} method
-   * (but will still be accessible from the {@link CfnInclude.getResource} method).
+   * resource, and it won't be accessible from the `CfnInclude.getNestedStack` method
+   * (but will still be accessible from the `CfnInclude.getResource` method).
    *
    * If you include a stack here with an ID that isn't in the template,
    * or is in the template but is not a nested stack,
@@ -69,7 +69,7 @@ export interface CfnIncludeProps {
 }
 
 /**
- * The type returned from {@link CfnInclude.getNestedStack}.
+ * The type returned from `CfnInclude.getNestedStack`.
  * Contains both the NestedStack object and
  * CfnInclude representations of the child stack.
  */
@@ -88,7 +88,7 @@ export interface IncludedNestedStack {
 
 /**
  * Construct to import an existing CloudFormation template file into a CDK application.
- * All resources defined in the template file can be retrieved by calling the {@link getResource} method.
+ * All resources defined in the template file can be retrieved by calling the `getResource` method.
  * Any modifications made on the returned resource objects will be reflected in the resulting CDK template.
  */
 export class CfnInclude extends core.CfnElement {
@@ -313,8 +313,8 @@ export class CfnInclude extends core.CfnElement {
   /**
    * Returns a loaded NestedStack with name logicalId.
    * For a nested stack to be returned by this method,
-   * it must be specified either in the {@link CfnIncludeProps.loadNestedStacks} property,
-   * or through the {@link loadNestedStack} method.
+   * it must be specified either in the `CfnIncludeProps.loadNestedStacks` property,
+   * or through the `loadNestedStack` method.
    *
    * @param logicalId the ID of the stack to retrieve, as it appears in the template
    */
@@ -336,12 +336,12 @@ export class CfnInclude extends core.CfnElement {
    * Includes a template for a child stack inside of this parent template.
    * A child with this logical ID must exist in the template,
    * and be of type AWS::CloudFormation::Stack.
-   * This is equivalent to specifying the value in the {@link CfnIncludeProps.loadNestedStacks}
+   * This is equivalent to specifying the value in the `CfnIncludeProps.loadNestedStacks`
    * property on object construction.
    *
    * @param logicalId the ID of the stack to retrieve, as it appears in the template
    * @param nestedStackProps the properties of the included child Stack
-   * @returns the same {@link IncludedNestedStack} object that {@link getNestedStack} returns for this logical ID
+   * @returns the same `IncludedNestedStack` object that `getNestedStack` returns for this logical ID
    */
   public loadNestedStack(logicalId: string, nestedStackProps: CfnIncludeProps): IncludedNestedStack {
     if (logicalId in this.nestedStacks) {

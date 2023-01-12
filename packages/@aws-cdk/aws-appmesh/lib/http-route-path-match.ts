@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnGatewayRoute, CfnRoute } from './appmesh.generated';
 
 /**
- * The type returned from the `bind()` method in {@link HttpRoutePathMatch}.
+ * The type returned from the `bind()` method in `HttpRoutePathMatch`.
  */
 export interface HttpRoutePathMatchConfig {
   /**
@@ -94,7 +94,7 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
 }
 
 /**
- * The type returned from the `bind()` method in {@link HttpGatewayRoutePathMatch}.
+ * The type returned from the `bind()` method in `HttpGatewayRoutePathMatch`.
  */
 export interface HttpGatewayRoutePathMatchConfig {
   /**

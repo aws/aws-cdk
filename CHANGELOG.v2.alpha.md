@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.60.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.59.0-alpha.0...v2.60.0-alpha.0) (2023-01-11)
+
+
+### Features
+
+* **gamelift:** add MatchmakingConfiguration L2 Construct for GameLift ([#23326](https://github.com/aws/aws-cdk/issues/23326)) ([9b2573b](https://github.com/aws/aws-cdk/commit/9b2573b32e8535d3db21f07647f099c9e01eb292))
+* **integ-runner:** support `--language` presets for JavaScript, TypeScript, Python and Go ([#22058](https://github.com/aws/aws-cdk/issues/22058)) ([22673b2](https://github.com/aws/aws-cdk/commit/22673b2ea40c13b6c10a2c7c628ce5cc534f5840)), closes [#21169](https://github.com/aws/aws-cdk/issues/21169)
+
 ## [2.59.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.58.1-alpha.0...v2.59.0-alpha.0) (2023-01-03)
 
 ## [2.58.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.58.0-alpha.0...v2.58.1-alpha.0) (2022-12-30)

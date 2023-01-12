@@ -385,6 +385,8 @@ export class Table extends Resource implements ITable {
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
     this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
 

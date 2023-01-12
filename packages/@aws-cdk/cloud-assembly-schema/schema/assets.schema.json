@@ -162,6 +162,13 @@
                 "platform": {
                     "description": "Platform to build for. _Requires Docker Buildx_.\n\nSpecify this property to build images on a specific platform/architecture. (Default - current machine platform)",
                     "type": "string"
+                },
+                "dockerOutputs": {
+                    "description": "Outputs (Default - no outputs are passed to the build command (default outputs are used))",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

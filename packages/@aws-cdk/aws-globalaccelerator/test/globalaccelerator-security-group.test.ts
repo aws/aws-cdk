@@ -42,7 +42,7 @@ test('custom resource exists', () => {
           ],
         ],
       },
-      InstallLatestAwsSdk: true,
+      InstallLatestAwsSdk: false,
     },
     DependsOn: [
       'GroupGlobalAcceleratorSGCustomResourceCustomResourcePolicy9C957AD2',

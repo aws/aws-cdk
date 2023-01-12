@@ -149,6 +149,7 @@ describe('image asset', () => {
     const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
     const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
+    const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, outputs: ['123'] });
 
     expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
     expect(asset2.assetHash).toEqual('36bf205fb9adc5e45ba1c8d534158a0aed96d190eff433af1d90f3b94f96e751');
@@ -156,6 +157,7 @@ describe('image asset', () => {
     expect(asset4.assetHash).toEqual('8a91219a7bb0f58b3282dd84acbf4c03c49c765be54ffb7b125be6a50b6c5645');
     expect(asset5.assetHash).toEqual('c02bfba13b2e7e1ff5c778a76e10296b9e8d17f7f8252d097f4170ae04ce0eb4');
     expect(asset6.assetHash).toEqual('3528d6838647a5e9011b0f35aec514d03ad11af05a94653cdcf4dacdbb070a06');
+    expect(asset7.assetHash).toEqual('ced0a3076efe217f9cbdff0943e543f36ecf77f70b9a6fe28b8633deb728a462');
 
   });
 

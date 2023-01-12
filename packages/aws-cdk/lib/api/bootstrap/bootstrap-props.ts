@@ -81,7 +81,7 @@ export interface BootstrappingParameters {
   /**
    * The ARNs of the IAM managed policies that should be attached to the role performing CloudFormation deployments.
    * In most cases, this will be the AdministratorAccess policy.
-   * At least one policy is required if {@link trustedAccounts} were passed.
+   * At least one policy is required if `trustedAccounts` were passed.
    *
    * @default - the role will have no policies attached
    */

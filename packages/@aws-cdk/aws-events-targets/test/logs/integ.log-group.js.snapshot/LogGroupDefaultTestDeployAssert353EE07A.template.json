@@ -14,14 +14,14 @@
     "parameters": {
      "Entries": [
       {
-       "Detail": "{\"date\":\"abc1663960602347\"}",
+       "Detail": "{\"date\":\"abc1673270432003\"}",
        "DetailType": "cdk-integ-custom-rule",
        "Source": "cdk-integ"
       }
      ]
     },
     "flattenResponse": "false",
-    "salt": "1663960602348"
+    "salt": "1673270432024"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -93,7 +93,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d47f7e6772bfdf47ecbc070ffe204baf53bacbfbf7814eb407bd8ea108c1c1bb.zip"
+     "S3Key": "278d42fa865f60954d898636503d0ee86a6689d73dc50eb912fac62def0ef6a4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -116,17 +116,20 @@
     },
     "service": "CloudWatchLogs",
     "api": "filterLogEvents",
-    "expected": "{\"$StringLike\":\"abc1663960602347\"}",
+    "expected": "{\"$StringLike\":\"abc1673270432003\"}",
     "actualPath": "events.0.message",
     "parameters": {
      "logGroupName": {
       "Fn::ImportValue": "log-group-events:ExportsOutputRefloggroup2F19C5C9B4F4C6918"
      },
-     "startTime": "1663960602347",
+     "startTime": "1673270432003",
      "limit": 1
     },
     "flattenResponse": "true",
-    "salt": "1663960602348"
+    "outputPaths": [
+     "events.0.message"
+    ],
+    "salt": "1673270432025"
    },
    "DependsOn": [
     "AwsApiCallEventBridgeputEvents"

@@ -591,7 +591,7 @@ export interface DatabaseInstanceNewProps {
    * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
    * AmazonRDSDirectoryServiceAccess or equivalent.
    *
-   * @default - The role will be created for you if {@link DatabaseInstanceNewProps#domain} is specified
+   * @default - The role will be created for you if `DatabaseInstanceNewProps#domain` is specified
    */
   readonly domainRole?: iam.IRole;
 

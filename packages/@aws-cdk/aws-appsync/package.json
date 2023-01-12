@@ -118,6 +118,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-opensearchservice": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -135,8 +136,8 @@
       "props-physical-name:@aws-cdk/aws-appsync.AppsyncFunctionProps"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },

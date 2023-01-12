@@ -17,6 +17,7 @@ interface BuildOptions {
   readonly buildArgs?: Record<string, string>;
   readonly networkMode?: string;
   readonly platform?: string;
+  readonly outputs?: string[];
 }
 
 export interface DockerCredentialsConfig {
@@ -58,6 +59,7 @@ export class Docker {
       ...options.file ? ['--file', options.file] : [],
       ...options.networkMode ? ['--network', options.networkMode] : [],
       ...options.platform ? ['--platform', options.platform] : [],
+      ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });

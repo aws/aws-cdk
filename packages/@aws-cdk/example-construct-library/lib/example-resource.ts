@@ -22,32 +22,32 @@ import { exampleResourceArnComponents } from './private/example-resource-common'
  *
  *   1. It can be a resource that's created and managed by the CDK.
  *     Those resources are represented by the class with the name identical to the resource -
- *     {@link ExampleResource} in our case, which implements {@link IExampleResource}.
+ *     `ExampleResource` in our case, which implements `IExampleResource`.
  *   2. It can be a resource that exists already, and is not managed by the CDK code,
  *     but needs to be referenced in your infrastructure definition code.
  *     Those kinds of instances are returned from static `fromXyz(Name/Arn/Attributes)` methods -
- *     in our case, the {@link ExampleResource.fromExampleResourceName} method.
+ *     in our case, the `ExampleResource.fromExampleResourceName` method.
  *     In general, those kinds of resources do not allow any sort of mutating operations to be performed on them
  *     (the exception is when they can be changed by creating a different resource -
  *     IAM Roles, which you can attach multiple IAM Policies to,
  *     are the canonical example of this sort of resource),
  *     as they are not part of the CloudFormation stack that is created by the CDK.
  *
- *  So, an interface like {@link IExampleResource} represents a resource that *might* be mutable,
- *  while the {@link ExampleResource} class represents a resource that definitely is mutable.
+ *  So, an interface like `IExampleResource` represents a resource that *might* be mutable,
+ *  while the `ExampleResource` class represents a resource that definitely is mutable.
  *  Whenever a type that represents this resource needs to referenced in other code,
- *  you want to use {@link IExampleResource} as the type, not {@link ExampleResource}.
+ *  you want to use `IExampleResource` as the type, not `ExampleResource`.
  *
  *  The interface for the resource should have at least 2 (readonly) properties
  *  that represent the ARN and the physical name of the resource -
- *  in our example, those are {@link exampleResourceArn} and {@link exampleResourceName}.
+ *  in our example, those are `exampleResourceArn` and `exampleResourceName`.
  *
  *  The interface defines the behaviors the resource exhibits.
  *  Common behaviors are:
- *    - {@link addToRolePolicy} for resources that are tied to an IAM Role
- *    - grantXyz() methods (represented by {@link grantRead} in this example)
- *    - onXyz() CloudWatch Events methods (represented by {@link onEvent} in this example)
- *    - metricXyz() CloudWatch Metric methods (represented by {@link metricCount} in this example)
+ *    - `addToRolePolicy` for resources that are tied to an IAM Role
+ *    - grantXyz() methods (represented by `grantRead` in this example)
+ *    - onXyz() CloudWatch Events methods (represented by `onEvent` in this example)
+ *    - metricXyz() CloudWatch Metric methods (represented by `metricCount` in this example)
  *
  *  Of course, other behaviors are possible -
  *  it all depends on the capabilities of the underlying resource that is being modeled.
@@ -98,7 +98,7 @@ export interface IExampleResource extends
    * surface that Role as a property,
    * so that other classes can add permissions to it.
    * Make it optional,
-   * as resources imported with {@link ExampleResource.fromExampleResourceName}
+   * as resources imported with `ExampleResource.fromExampleResourceName`
    * will not have this set.
    */
   readonly role?: iam.IRole;
@@ -108,10 +108,10 @@ export interface IExampleResource extends
    * surface a method that allows you to conditionally
    * add a statement to that Role if it's known.
    * This is just a convenience,
-   * so that clients of your interface don't have to check {@link role} for null.
+   * so that clients of your interface don't have to check `role` for null.
    * Many such methods in the CDK return void;
    * you can also return a boolean indicating whether the permissions were in fact added
-   * (so, when {@link role} is not null).
+   * (so, when `role` is not null).
    */
   addToRolePolicy(policyStatement: iam.PolicyStatement): boolean;
 
@@ -141,10 +141,10 @@ export interface IExampleResource extends
 }
 
 /**
- * A common abstract superclass that implements the {@link IExampleResource} interface.
- * We often have these classes to share code between the {@link ExampleResource}
- * class and the {@link IExampleResource} instances returned from methods like
- * {@link ExampleResource.fromExampleResourceName}.
+ * A common abstract superclass that implements the `IExampleResource` interface.
+ * We often have these classes to share code between the `ExampleResource`
+ * class and the `IExampleResource` instances returned from methods like
+ * `ExampleResource.fromExampleResourceName`.
  * It has to extend the Resource class from the core module.
  *
  * Notice that the class is not exported - it's not part of the public API of this module!
@@ -170,7 +170,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
     return this._connections;
   }
 
-  /** Implement the convenience {@link IExampleResource.addToRolePolicy} method. */
+  /** Implement the convenience `IExampleResource.addToRolePolicy` method. */
   public addToRolePolicy(policyStatement: iam.PolicyStatement): boolean {
     if (this.role) {
       this.role.addToPrincipalPolicy(policyStatement);
@@ -180,7 +180,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
     }
   }
 
-  /** Implement the {@link IExampleResource.grantRead} method. */
+  /** Implement the `IExampleResource.grantRead` method. */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     // usually, we would grant some service-specific permissions here,
     // but since this is just an example, let's use S3
@@ -192,7 +192,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
   }
 
   /**
-   * Implement the {@link IExampleResource.onEvent} method.
+   * Implement the `IExampleResource.onEvent` method.
    * Notice that we change 'options' from an optional argument to an argument with a default value -
    * that's a common trick in the CDK
    * (you're not allowed to have default values for arguments in interface methods in TypeScript),
@@ -211,7 +211,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
     return rule;
   }
 
-  /** Implement the {@link IExampleResource.metricCount} method. */
+  /** Implement the `IExampleResource.metricCount` method. */
   public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       // of course, you would put your resource-specific values here
@@ -224,7 +224,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
 }
 
 /**
- * Construction properties for {@link ExampleResource}.
+ * Construction properties for `ExampleResource`.
  * All constructs have the same construction pattern:
  * you provide a scope of type Construct,
  * a string identifier, and a third argument,
@@ -232,7 +232,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
  * That third type is represented in the CDK by an interface
  * with only readonly simple properties (no methods),
  * sometimes called, in JSII terminology, a 'struct'.
- * This is this struct for the {@link ExampleResource} class.
+ * This is this struct for the `ExampleResource` class.
  *
  * This interface is always called '<ResourceName>Props'.
  */
@@ -243,7 +243,7 @@ export interface ExampleResourceProps {
    * Almost all resources, with only a few exceptions,
    * allow setting their physical name.
    * The name is a little silly,
-   * because of the @resource annotation on the {@link ExampleResource} class
+   * because of the @resource annotation on the `ExampleResource` class
    * (CDK linters make sure those two names are aligned).
    *
    * @default - CloudFormation-generated name
@@ -283,7 +283,7 @@ export interface ExampleResourceProps {
 
   /**
    * Whenever you have IVpc as a property,
-   * like we have in {@link vpc},
+   * like we have in `vpc`,
    * you need to provide an optional property of type ec2.SubnetSelection,
    * which can be used to specify which subnets of the VPC should the resource use.
    * The default is usually all private subnets,
@@ -326,11 +326,11 @@ export interface ExampleResourceProps {
  * The actual L2 class for the ExampleResource.
  * Extends ExampleResourceBase.
  * Represents a resource completely managed by the CDK, and thus mutable.
- * You can add additional methods to the public API of this class not present in {@link IExampleResource},
+ * You can add additional methods to the public API of this class not present in `IExampleResource`,
  * although you should strive to minimize that as much as possible,
- * and have the entire API available in {@link IExampleResource}
+ * and have the entire API available in `IExampleResource`
  * (but perhaps some of it not having any effect,
- * like {@link IExampleResource.addToRolePolicy}).
+ * like `IExampleResource.addToRolePolicy`).
  *
  * Usually, the CDK is able to figure out what's the equivalent CloudFormation resource for this L2,
  * but sometimes (like in this example), we need to specify it explicitly.

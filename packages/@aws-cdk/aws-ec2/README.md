@@ -527,6 +527,32 @@ const vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', {
 });
 ```
 
+For each subnet group the import function accepts optional parameters for subnet
+names, route table ids and IPv4 CIDR blocks. When supplied, the length of these
+lists are required to match the length of the list of subnet ids, allowing the
+lists to be zipped together to form `ISubnet` instances.
+
+Public subnet group example (for private or isolated subnet groups, use the properties with the respective prefix):
+
+```ts
+const vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', {
+  vpcId: 'vpc-1234',
+  availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+  publicSubnetIds: ['s-12345', 's-34567', 's-56789'],
+  publicSubnetNames: ['Subnet A', 'Subnet B', 'Subnet C'],
+  publicSubnetRouteTableIds: ['rt-12345', 'rt-34567', 'rt-56789'],
+  publicSubnetIpv4CidrBlocks: ['10.0.0.0/24', '10.0.1.0/24', '10.0.2.0/24'],
+});
+```
+
+The above example will create an `IVpc` instance with three public subnets:
+
+| Subnet id | Availability zone | Subnet name | Route table id | IPv4 CIDR   |
+| --------- | ----------------- | ----------- | -------------- | ----------- |
+| s-12345   | us-east-1a        | Subnet A    | rt-12345       | 10.0.0.0/24 |
+| s-34567   | us-east-1b        | Subnet B    | rt-34567       | 10.0.1.0/24 |
+| s-56789   | us-east-1c        | Subnet B    | rt-56789       | 10.0.2.0/24 |
+
 ## Allowing Connections
 
 In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)

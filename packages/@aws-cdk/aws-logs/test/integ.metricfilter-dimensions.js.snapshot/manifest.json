@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "22.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-metricfilter-dimensions-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -112,6 +106,12 @@
         ]
       },
       "displayName": "metricfilter-dimensions/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

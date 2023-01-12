@@ -8,7 +8,7 @@ import { sourceArtifactBounds } from '../common';
 
 /**
  * How should the S3 Action detect changes.
- * This is the type of the {@link S3SourceAction.trigger} property.
+ * This is the type of the `S3SourceAction.trigger` property.
  */
 export enum S3Trigger {
   /**
@@ -43,7 +43,7 @@ export interface S3SourceVariables {
 }
 
 /**
- * Construction properties of the {@link S3SourceAction S3 source Action}.
+ * Construction properties of the `S3SourceAction S3 source Action`.
  */
 export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   /**

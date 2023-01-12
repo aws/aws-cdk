@@ -1,0 +1,262 @@
+{
+ "Resources": {
+  "LambdaInvokeb55e453397dded0a19101717f7183064": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$StringLike\":\".+\"}",
+    "actualPath": "Payload.data.addTest.id",
+    "parameters": {
+     "FunctionName": {
+      "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+     },
+     "Payload": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"hostname\":\"",
+        {
+         "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApi612CD442GraphQLUrl15495788"
+        },
+        "\",\"apiKey\":\"",
+        {
+         "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApiDefaultApiKeyBD458F31ApiKey4D429933"
+        },
+        "\"}"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Payload.data.addTest.id"
+    ],
+    "salt": "1672953452085"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvokeb55e453397dded0a19101717f7183064InvokeF9C77644": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "dynamodb:GetItem"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "278d42fa865f60954d898636503d0ee86a6689d73dc50eb912fac62def0ef6a4.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallDynamoDBgetItem": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBgetItem",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "DynamoDB",
+    "api": "getItem",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"Item\":{\"name\":{\"S\":\"123\"},\"id\":{\"S\":\"",
+       {
+        "Fn::GetAtt": [
+         "LambdaInvokeb55e453397dded0a19101717f7183064",
+         "apiCallResponse.Payload.data.addTest.id"
+        ]
+       },
+       "\"}}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "TableName": {
+      "Fn::ImportValue": "AppSyncJsResolverTestStack:ExportsOutputRefDynamoTableB2B22E1592AFC2EE"
+     },
+     "Key": {
+      "id": {
+       "S": {
+        "Fn::GetAtt": [
+         "LambdaInvokeb55e453397dded0a19101717f7183064",
+         "apiCallResponse.Payload.data.addTest.id"
+        ]
+       }
+      }
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1672953452086"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsLambdaInvokeb55e453397dded0a19101717f7183064": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvokeb55e453397dded0a19101717f7183064",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallDynamoDBgetItem": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallDynamoDBgetItem",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

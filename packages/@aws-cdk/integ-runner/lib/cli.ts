@@ -17,7 +17,7 @@ export function parseCliArgs(args: string[] = []) {
     .usage('Usage: integ-runner [TEST...]')
     .option('config', {
       config: true,
-      configParser: IntegrationTests.configFromFile,
+      configParser: configFromFile,
       default: 'integ.config.json',
       desc: 'Load options from a JSON config file. Options provided as CLI arguments take precedent.',
     })
@@ -35,6 +35,13 @@ export function parseCliArgs(args: string[] = []) {
     .options('from-file', { type: 'string', desc: 'Read TEST names from a file (one TEST per line)' })
     .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
     .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
+    .option('language', {
+      alias: 'l',
+      default: ['javascript', 'typescript', 'python', 'go'],
+      choices: ['javascript', 'typescript', 'python', 'go'],
+      type: 'array',
+      desc: 'Use these presets to run integration tests for the selected languages',
+    })
     .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
     .option('test-regex', { type: 'array', desc: 'Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.', default: [] })
     .strict()
@@ -80,6 +87,7 @@ export function parseCliArgs(args: string[] = []) {
     force: argv.force as boolean,
     dryRun: argv['dry-run'] as boolean,
     disableUpdateWorkflow: argv['disable-update-workflow'] as boolean,
+    language: arrayFromYargs(argv.language),
   };
 }
 
@@ -87,12 +95,7 @@ export function parseCliArgs(args: string[] = []) {
 export async function main(args: string[]) {
   const options = parseCliArgs(args);
 
-  const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliArgs({
-    app: options.app,
-    testRegex: options.testRegex,
-    tests: options.tests,
-    exclude: options.exclude,
-  });
+  const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(options);
 
   // List only prints the discoverd tests
   if (options.list) {
@@ -226,4 +229,22 @@ export function cli(args: string[] = process.argv.slice(2)) {
     logger.error(err);
     process.exitCode = 1;
   });
+}
+
+/**
+ * Read CLI options from a config file if provided.
+ *
+ * @param fileName
+ * @returns parsed CLI config options
+ */
+function configFromFile(fileName?: string): Record<string, any> {
+  if (!fileName) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(fs.readFileSync(fileName, { encoding: 'utf-8' }));
+  } catch {
+    return {};
+  }
 }

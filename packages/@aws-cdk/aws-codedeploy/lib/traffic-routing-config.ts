@@ -118,7 +118,7 @@ export class AllAtOnceTrafficRouting extends TrafficRouting {
 }
 
 /**
- * Construction properties for {@link TimeBasedCanaryTrafficRouting}.
+ * Construction properties for `TimeBasedCanaryTrafficRouting`.
  */
 export interface TimeBasedCanaryTrafficRoutingProps extends BaseTrafficShiftingConfigProps {}
 
@@ -156,7 +156,7 @@ export class TimeBasedCanaryTrafficRouting extends TrafficRouting {
 }
 
 /**
- * Construction properties for {@link TimeBasedLinearTrafficRouting}.
+ * Construction properties for `TimeBasedLinearTrafficRouting`.
  */
 export interface TimeBasedLinearTrafficRoutingProps extends BaseTrafficShiftingConfigProps {}
 
