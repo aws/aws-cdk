@@ -16,14 +16,14 @@ export interface ServiceAttributes {
   /**
    * The service ARN.
    *
-   * @default - either this, or {@link serviceName}, is required
+   * @default - either this, or `serviceName`, is required
    */
   readonly serviceArn?: string;
 
   /**
    * The name of the service.
    *
-   * @default - either this, or {@link serviceArn}, is required
+   * @default - either this, or `serviceArn`, is required
    */
   readonly serviceName?: string;
 }

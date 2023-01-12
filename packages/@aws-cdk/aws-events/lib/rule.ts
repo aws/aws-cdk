@@ -1,5 +1,5 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -8,7 +8,7 @@ import { EventCommonOptions } from './on-event-options';
 import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
-import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util';
+import { mergeEventPattern, renderEventPattern } from './util';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -163,7 +163,7 @@ export class Rule extends Resource implements IRule {
       // - forwarding rule in the source stack (target: default event bus of the receiver region)
       // - eventbus permissions policy (creating an extra stack)
       // - receiver rule in the target stack (target: the actual target)
-      if (!sameEnvDimension(sourceAccount, targetAccount) || !sameEnvDimension(sourceRegion, targetRegion)) {
+      if (!this.sameEnvDimension(sourceAccount, targetAccount) || !this.sameEnvDimension(sourceRegion, targetRegion)) {
         // cross-account and/or cross-region event - strap in, this works differently than regular events!
         // based on:
         // https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cross-account.html
@@ -332,7 +332,7 @@ export class Rule extends Resource implements IRule {
 
     // For some reason, cross-region requires a Role (with `PutEvents` on the
     // target event bus) while cross-account doesn't
-    const roleArn = !sameEnvDimension(targetRegion, Stack.of(this).region)
+    const roleArn = !this.sameEnvDimension(targetRegion, Stack.of(this).region)
       ? this.crossRegionPutEventsRole(eventBusArn).roleArn
       : undefined;
 
@@ -355,7 +355,7 @@ export class Rule extends Resource implements IRule {
     //
     // For different region, no need for a policy on the target event bus (but a need
     // for a role).
-    if (!sameEnvDimension(sourceAccount, targetAccount)) {
+    if (!this.sameEnvDimension(sourceAccount, targetAccount)) {
       const stackId = `EventBusPolicy-${sourceAccount}-${targetRegion}-${targetAccount}`;
       let eventBusPolicyStack: Stack = sourceApp.node.tryFindChild(stackId) as Stack;
       if (!eventBusPolicyStack) {
@@ -394,7 +394,7 @@ export class Rule extends Resource implements IRule {
   private obtainMirrorRuleScope(targetStack: Stack, targetAccount: string, targetRegion: string): Construct {
     // for cross-account or cross-region events, we cannot create new components for an imported resource
     // because we don't have the target stack
-    if (sameEnvDimension(targetStack.account, targetAccount) && sameEnvDimension(targetStack.region, targetRegion)) {
+    if (this.sameEnvDimension(targetStack.account, targetAccount) && this.sameEnvDimension(targetStack.region, targetRegion)) {
       return targetStack;
     }
 
@@ -425,6 +425,27 @@ export class Rule extends Resource implements IRule {
     }));
 
     return role;
+  }
+
+
+  /**
+   * Whether two string probably contain the same environment dimension (region or account)
+   *
+   * Used to compare either accounts or regions, and also returns true if one or both
+   * are unresolved (in which case both are expected to be "current region" or "current account").
+   */
+  private sameEnvDimension(dim1: string, dim2: string) {
+    switch (Token.compareStrings(dim1, dim2)) {
+      case TokenComparison.ONE_UNRESOLVED:
+        Annotations.of(this).addWarning('Either the Event Rule or target has an unresolved environment. \n \
+          If they are being used in a cross-environment setup you need to specify the environment for both.');
+        return true;
+      case TokenComparison.BOTH_UNRESOLVED:
+      case TokenComparison.SAME:
+        return true;
+      default:
+        return false;
+    }
   }
 }
 

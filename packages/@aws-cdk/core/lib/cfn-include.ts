@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
 
 /**
- * Construction properties for {@link CfnInclude}.
+ * Construction properties for `CfnInclude`.
  *
  * @deprecated use the CfnInclude class from the cloudformation-include module instead
  */

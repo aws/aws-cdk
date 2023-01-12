@@ -616,7 +616,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 /**
  * Represents a REST API in Amazon API Gateway, created with an OpenAPI specification.
  *
- * Some properties normally accessible on @see {@link RestApi} - such as the description -
+ * Some properties normally accessible on @see `RestApi` - such as the description -
  * must be declared in the specification. All Resources and Methods need to be defined as
  * part of the OpenAPI specification file, and cannot be added via the CDK.
  *

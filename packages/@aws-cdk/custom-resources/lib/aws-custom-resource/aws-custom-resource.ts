@@ -5,6 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { Annotations } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 
@@ -298,12 +300,18 @@ export interface AwsCustomResourceProps {
   readonly logRetention?: logs.RetentionDays;
 
   /**
-   * Whether to install the latest AWS SDK v2. Allows to use the latest API
-   * calls documented at https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html.
+   * Whether to install the latest AWS SDK v2.
    *
-   * The installation takes around 60 seconds.
+   * If not specified, this uses whatever JavaScript SDK version is the default in
+   * AWS Lambda at the time of execution.
    *
-   * @default true
+   * Otherwise, installs the latest version from 'npmjs.com'. The installation takes
+   * around 60 seconds and requires internet connectivity.
+   *
+   * The default can be controlled using the context key
+   * `@aws-cdk/customresources:installLatestAwsSdkDefault` is.
+   *
+   * @default - The value of `@aws-cdk/customresources:installLatestAwsSdkDefault`, otherwise `true`
    */
   readonly installLatestAwsSdk?: boolean;
 
@@ -407,6 +415,19 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
+    const installLatestAwsSdk = (props.installLatestAwsSdk
+      ?? this.node.tryGetContext(cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT)
+      ?? true);
+
+    if (installLatestAwsSdk && props.installLatestAwsSdk === undefined) {
+      // This is dangerous. Add a warning.
+      Annotations.of(this).addWarning([
+        'installLatestAwsSdk was not specified, and defaults to true. You probably do not want this.',
+        `Set the global context flag \'${cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT}\' to false to switch this behavior off project-wide,`,
+        'or set the property explicitly to true if you know you need to call APIs that are not in Lambda\'s built-in SDK version.',
+      ].join(' '));
+    }
+
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
@@ -416,7 +437,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         create: create && this.encodeJson(create),
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
-        installLatestAwsSdk: props.installLatestAwsSdk ?? true,
+        installLatestAwsSdk,
       },
     });
 

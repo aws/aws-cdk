@@ -171,6 +171,7 @@ class ContainerImageBuilder {
       file: source.dockerFile,
       networkMode: source.networkMode,
       platform: source.platform,
+      outputs: source.dockerOutputs,
     });
   }
 

@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-distribution-policies": {
         "id": "integ-distribution-policies",
         "path": "integ-distribution-policies",
@@ -135,6 +127,17 @@
                         },
                         "accessControlMaxAgeSec": 600,
                         "originOverride": true
+                      },
+                      "removeHeadersConfig": {
+                        "items": [
+                          {
+                            "header": "Server"
+                          }
+                        ]
+                      },
+                      "serverTimingHeadersConfig": {
+                        "enabled": true,
+                        "samplingRate": 50
                       }
                     }
                   }
@@ -159,7 +162,7 @@
                 "path": "integ-distribution-policies/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.1.189"
                 }
               },
               "Resource": {
@@ -209,17 +212,41 @@
               "fqn": "@aws-cdk/aws-cloudfront.Distribution",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-distribution-policies/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-distribution-policies/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.189"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

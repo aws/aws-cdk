@@ -1024,6 +1024,20 @@ describe('cluster', () => {
     expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
   });
 
+  test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      name: 'foo',
+      type: cloudmap.NamespaceType.HTTP,
+    });
+    // THEN
+    expect(namespace.namespaceName).toBe('foo');
+  });
+
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */

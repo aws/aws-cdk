@@ -120,7 +120,7 @@ export interface AccessPointProps extends AccessPointOptions {
 export interface AccessPointAttributes {
   /**
    * The ID of the AccessPoint
-   * One of this, or {@link accessPointArn} is required
+   * One of this, or `accessPointArn` is required
    *
    * @default - determined based on accessPointArn
    */
@@ -128,7 +128,7 @@ export interface AccessPointAttributes {
 
   /**
    * The ARN of the AccessPoint
-   * One of this, or {@link accessPointId} is required
+   * One of this, or `accessPointId` is required
    *
    * @default - determined based on accessPointId
    */

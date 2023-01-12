@@ -2623,6 +2623,37 @@ describe('ec2 service', () => {
 
     });
 
+    test('fails to enable Service Discovery with HTTP defaultCloudmapNamespace', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.NONE,
+      });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      cluster.addDefaultCloudMapNamespace({ name: 'foo.com', type: cloudmap.NamespaceType.HTTP });
+
+      // THEN
+      expect(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            name: 'myApp',
+          },
+        });
+      }).toThrow(/Cannot enable DNS service discovery for HTTP Cloudmap Namespace./);
+
+
+    });
+
     test('throws if network mode is none', () => {
       // GIVEN
       const stack = new cdk.Stack();

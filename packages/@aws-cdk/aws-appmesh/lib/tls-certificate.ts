@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 
 /**
- * A wrapper for the tls config returned by {@link TlsCertificate.bind}
+ * A wrapper for the tls config returned by `TlsCertificate.bind`
  */
 export interface TlsCertificateConfig {
   /**

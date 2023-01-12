@@ -6,7 +6,7 @@ import { EngineVersion } from './engine-version';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
 
 /**
- * The extra options passed to the {@link IClusterEngine.bindToCluster} method.
+ * The extra options passed to the `IClusterEngine.bindToCluster` method.
  */
 export interface ClusterEngineBindOptions {
   /**
@@ -32,7 +32,7 @@ export interface ClusterEngineBindOptions {
 }
 
 /**
- * The type returned from the {@link IClusterEngine.bindToCluster} method.
+ * The type returned from the `IClusterEngine.bindToCluster` method.
  */
 export interface ClusterEngineConfig {
   /**
@@ -208,7 +208,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
 
 /**
  * The versions for the Aurora cluster engine
- * (those returned by {@link DatabaseClusterEngine.aurora}).
+ * (those returned by `DatabaseClusterEngine.aurora`).
  */
 export class AuroraEngineVersion {
   /** Version "5.6.10a". */
@@ -285,7 +285,7 @@ export class AuroraEngineVersion {
 
 /**
  * Creation properties of the plain Aurora database cluster engine.
- * Used in {@link DatabaseClusterEngine.aurora}.
+ * Used in `DatabaseClusterEngine.aurora`.
  */
 export interface AuroraClusterEngineProps {
   /** The version of the Aurora cluster engine. */
@@ -315,7 +315,7 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
 
 /**
  * The versions for the Aurora MySQL cluster engine
- * (those returned by {@link DatabaseClusterEngine.auroraMysql}).
+ * (those returned by `DatabaseClusterEngine.auroraMysql`).
  *
  * https://docs.aws.amazon.com/AmazonRDS/latest/AuroraMySQLReleaseNotes/Welcome.html
  */
@@ -465,7 +465,7 @@ export class AuroraMysqlEngineVersion {
 
 /**
  * Creation properties of the Aurora MySQL database cluster engine.
- * Used in {@link DatabaseClusterEngine.auroraMysql}.
+ * Used in `DatabaseClusterEngine.auroraMysql`.
  */
 export interface AuroraMysqlClusterEngineProps {
   /** The version of the Aurora MySQL cluster engine. */
@@ -514,7 +514,7 @@ export interface AuroraPostgresEngineFeatures {
 
 /**
  * The versions for the Aurora PostgreSQL cluster engine
- * (those returned by {@link DatabaseClusterEngine.auroraPostgres}).
+ * (those returned by `DatabaseClusterEngine.auroraPostgres`).
  *
  * https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/AuroraPostgreSQL.Updates.html
  */
@@ -716,7 +716,7 @@ export class AuroraPostgresEngineVersion {
 
 /**
  * Creation properties of the Aurora PostgreSQL database cluster engine.
- * Used in {@link DatabaseClusterEngine.auroraPostgres}.
+ * Used in `DatabaseClusterEngine.auroraPostgres`.
  */
 export interface AuroraPostgresClusterEngineProps {
   /** The version of the Aurora PostgreSQL cluster engine. */
@@ -796,7 +796,7 @@ export class DatabaseClusterEngine {
    *
    * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
    *   as that can pose an availability risk.
-   *   We recommend using versioned engines created using the {@link aurora()} method
+   *   We recommend using versioned engines created using the `aurora()` method
    */
   public static readonly AURORA: IClusterEngine = new AuroraClusterEngine();
 
@@ -805,7 +805,7 @@ export class DatabaseClusterEngine {
    *
    * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
    *   as that can pose an availability risk.
-   *   We recommend using versioned engines created using the {@link auroraMysql()} method
+   *   We recommend using versioned engines created using the `auroraMysql()` method
    */
   public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMysqlClusterEngine();
 
@@ -814,7 +814,7 @@ export class DatabaseClusterEngine {
    *
    * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
    *   as that can pose an availability risk.
-   *   We recommend using versioned engines created using the {@link auroraPostgres()} method
+   *   We recommend using versioned engines created using the `auroraPostgres()` method
    */
   public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();
 

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "21.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-user-pool-idp-google.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/79536373e9b12c019b3f973b117c3673ee38c74b1d6ec98e640e039bc242cac9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3f71d591e59a499e629b4e779bfb0ca43a99273439cdca3810400c323ae66100.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,6 +51,12 @@
             "data": "pooldomain430FA744"
           }
         ],
+        "/integ-user-pool-idp-google/GoogleClientSecretValue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GoogleClientSecretValueD28C3034"
+          }
+        ],
         "/integ-user-pool-idp-google/google/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -83,6 +83,12 @@
         ]
       },
       "displayName": "integ-user-pool-idp-google"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

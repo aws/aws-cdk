@@ -93,7 +93,7 @@ describe('User Pool Client', () => {
             ],
           ],
         },
-        InstallLatestAwsSdk: true,
+        InstallLatestAwsSdk: false,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

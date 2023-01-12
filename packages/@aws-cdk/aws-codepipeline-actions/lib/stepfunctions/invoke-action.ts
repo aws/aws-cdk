@@ -63,7 +63,7 @@ export class StateMachineInput {
 }
 
 /**
- * Construction properties of the {@link StepFunctionsInvokeAction StepFunction Invoke Action}.
+ * Construction properties of the `StepFunctionsInvokeAction StepFunction Invoke Action`.
  */
 export interface StepFunctionsInvokeActionProps extends codepipeline.CommonAwsActionProps {
   /**

@@ -19,7 +19,7 @@ export enum LoadBalancerGeneration {
 /**
  * An interface of an abstract load balancer, as needed by CodeDeploy.
  * Create instances using the static factory methods:
- * {@link #classic}, {@link #application} and {@link #network}.
+ * `#classic`, `#application` and `#network`.
  */
 export abstract class LoadBalancer {
   /**
