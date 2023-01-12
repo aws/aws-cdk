@@ -82,6 +82,14 @@
                     "id": "ServiceRole",
                     "path": "aws-appsync-integ/Api/testDataSource/ServiceRole",
                     "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "aws-appsync-integ/Api/testDataSource/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-appsync-integ/Api/testDataSource/ServiceRole/Resource",
@@ -94,7 +102,7 @@
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "Service": "appsync"
+                                    "Service": "appsync.amazonaws.com"
                                   }
                                 }
                               ],
