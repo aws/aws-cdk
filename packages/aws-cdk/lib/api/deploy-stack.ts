@@ -177,7 +177,7 @@ export interface DeployStackOptions {
    *
    * @default - undefined for regular deployments, `HotswapMode.CLASSIC` for 'watch' deployments
    */
-  readonly hotswap?: HotswapMode;
+  readonly hotswap?: HotswapMode | false;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.

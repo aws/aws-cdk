@@ -560,6 +560,11 @@ async function initCommandLine() {
         });
 
       case 'watch':
+        let hotswap = determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly);
+        if (hotswap === undefined) {
+          hotswap = HotswapMode.CLASSIC;
+        }
+
         return cli.watch({
           selector,
           // parameters: parameterMap,
@@ -694,9 +699,13 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode | undefined {
-  if (hotswap !== undefined && hotswapOnly !== undefined) {
+function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode | undefined | false {
+  if (hotswap && hotswapOnly) {
     throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
+  } else if (!hotswap && !hotswapOnly) {
+    if (hotswap === false || hotswapOnly === false) {
+      return false;
+    }
   }
 
   let hotswapMode: HotswapMode | undefined = undefined;
