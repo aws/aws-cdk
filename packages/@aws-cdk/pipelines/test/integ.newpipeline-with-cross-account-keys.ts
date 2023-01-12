@@ -1,5 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as sqs from '@aws-cdk/aws-sqs';
 import { App, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';

@@ -81,6 +81,11 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
       pipelineName: 'randomName',
     }).create()).toThrowError('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
   });
+  test('Providing codePipeline parameter and enableKeyRotation parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      enableKeyRotation: true,
+    }).create()).toThrowError('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
   test('Providing codePipeline parameter and crossAccountKeys parameter should throw error', () => {
     expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
       crossAccountKeys: true,
@@ -191,6 +196,30 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
     },
   });
 });
+
+test('CodePipeline throws when key rotation is enabled without enabling cross account keys', ()=>{
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  expect(() => new CodePipeline(pipelineStack, 'Pipeline', {
+    enableKeyRotation: true,
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+  }).buildPipeline()).toThrowError('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
+});
+
 
 test('CodePipeline enables key rotation on cross account keys', ()=>{
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
@@ -388,6 +417,7 @@ class ReuseStack extends cdk.Stack {
 interface CodePipelineStackProps extends cdk.StackProps {
   pipelineName?: string;
   crossAccountKeys?: boolean;
+  enableKeyRotation?: boolean;
   reuseCrossRegionSupportStacks?: boolean;
   role?: iam.IRole;
 }
@@ -409,21 +439,28 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
     if (this.cProps.crossAccountKeys !== undefined) {
       new cdkp.CodePipeline(this, 'CodePipeline2', {
         crossAccountKeys: this.cProps.crossAccountKeys,
-        codePipeline: new Pipeline(this, 'Pipline2'),
+        codePipeline: new Pipeline(this, 'Pipeline2'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.enableKeyRotation !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline3', {
+        enableKeyRotation: this.cProps.enableKeyRotation,
+        codePipeline: new Pipeline(this, 'Pipeline3'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
     if (this.cProps.reuseCrossRegionSupportStacks !== undefined) {
-      new cdkp.CodePipeline(this, 'CodePipeline3', {
+      new cdkp.CodePipeline(this, 'CodePipeline4', {
         reuseCrossRegionSupportStacks: this.cProps.reuseCrossRegionSupportStacks,
-        codePipeline: new Pipeline(this, 'Pipline3'),
+        codePipeline: new Pipeline(this, 'Pipeline4'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
     if (this.cProps.role !== undefined) {
-      new cdkp.CodePipeline(this, 'CodePipeline4', {
+      new cdkp.CodePipeline(this, 'CodePipeline5', {
         role: this.cProps.role,
-        codePipeline: new Pipeline(this, 'Pipline4'),
+        codePipeline: new Pipeline(this, 'Pipeline5'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
