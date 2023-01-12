@@ -12,8 +12,8 @@ import * as validation from './validation';
 /**
  * A Stage in a Pipeline.
  *
- * Stages are added to a Pipeline by calling {@link Pipeline#addStage},
- * which returns an instance of {@link codepipeline.IStage}.
+ * Stages are added to a Pipeline by calling `Pipeline#addStage`,
+ * which returns an instance of `codepipeline.IStage`.
  *
  * This class is private to the CodePipeline module.
  */
