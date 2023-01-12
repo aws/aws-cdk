@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys, reportNonHotswappableChange } from './common';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -16,17 +16,8 @@ export async function isHotswappableEcsServiceChange(
   // We only allow a change in the ContainerDefinitions of the TaskDefinition for now -
   // it contains the image and environment variables, so seems like a safe bet for now.
   // We might revisit this decision in the future though!
-  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['ContainerDefinitions']);
-
-  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
-  if (nonHotswappablePropNames.length > 0) {
-    ret.push({
-      hotswappable: false,
-      rejectedChanges: nonHotswappablePropNames,
-      logicalId,
-      resourceType: change.newValue.Type,
-    });
-  }
+  const { hotswappableProps, nonHotswappableChanges } = classifyChanges(change, ['ContainerDefinitions'], logicalId, change.newValue.Type);
+  ret.push(...nonHotswappableChanges);
 
   // find all ECS Services that reference the TaskDefinition that changed
   const resourcesReferencingTaskDef = evaluateCfnTemplate.findReferencesTo(logicalId);
@@ -41,27 +32,14 @@ export async function isHotswappableEcsServiceChange(
   if (ecsServicesReferencingTaskDef.length === 0) {
     // if there are no resources referencing the TaskDefinition,
     // hotswap is not possible in either mode
-    ret.push({
-      hotswappable: false,
-      reason: 'No ECS services reference the changed task definition',
-      rejectedChanges: Object.keys(hotswappableProps),
-      logicalId,
-      resourceType: change.newValue.Type,
-    });
-
+    reportNonHotswappableChange(ret, Object.keys(hotswappableProps), logicalId, change.newValue.Type, 'No ECS services reference the changed task definition');
     return ret;
   } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
     // if something besides an ECS Service is referencing the TaskDefinition,
-    // hotswap is not possible in HOTSWAP mode
+    // hotswap is not possible in FALL_BACK mode
     const nonEcsServiceTaskDefRefs = resourcesReferencingTaskDef.filter(r => r.Type !== 'AWS::ECS::Service');
     for (const taskRef of nonEcsServiceTaskDefRefs) {
-      ret.push({
-        hotswappable: false,
-        reason: `A resource that is not an ECS Service was found referencing the changed TaskDefinition '${logicalId}'`,
-        rejectedChanges: [],
-        logicalId: taskRef.LogicalId,
-        resourceType: taskRef.Type,
-      });
+      reportNonHotswappableChange(ret, [], taskRef.LogicalId, taskRef.Type, `A resource that is not an ECS Service was found referencing the changed TaskDefinition '${logicalId}'`);
     }
   }
 

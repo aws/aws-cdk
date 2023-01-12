@@ -123,9 +123,40 @@ export function lowerCaseFirstCharacter(str: string): string {
 }
 
 export type PropDiffs = Record<string, cfn_diff.PropertyDifference<any>>;
-export type ClassifiedChanges = { hotswappableProps: PropDiffs, nonHotswappableProps: PropDiffs }
 
-export function classifyChanges(xs: HotswappableChangeCandidate, hotswappablePropNames: string[]): ClassifiedChanges {
+export class ClassifiedChanges {
+  public constructor(
+    public readonly logicalId: string,
+    public readonly type: string,
+    public readonly hotswappableProps: PropDiffs,
+    public readonly nonHotswappableProps: PropDiffs,
+  ) { }
+
+  public reportNonHotswappableChanges(ret: ChangeHotswapResult):void {
+    const namesOfNonHotswappableProps = Object.keys(this.nonHotswappableProps);
+    if (namesOfNonHotswappableProps.length > 0) {
+      ret.push({
+        hotswappable: false,
+        rejectedChanges: Object.keys(this.nonHotswappableProps),
+        logicalId: this.logicalId,
+        resourceType: this.type,
+        // todo: reason
+      });
+    }
+  }
+
+  public get namesOfHotswappableProps(): string[] {
+    return Object.keys(this.hotswappableProps);
+  }
+}
+
+export function classifyChanges(
+  xs: HotswappableChangeCandidate,
+  hotswappablePropNames: string[],
+  logicalId: string,
+  type: string,
+  ret: ChangeHotswapResult,
+): ClassifiedChanges {
   const hotswappableProps: PropDiffs = {};
   const nonHotswappableProps: PropDiffs = {};
 
@@ -137,5 +168,8 @@ export function classifyChanges(xs: HotswappableChangeCandidate, hotswappablePro
     }
   }
 
-  return { hotswappableProps, nonHotswappableProps };
+  const changes = new ClassifiedChanges(logicalId, type, hotswappableProps, nonHotswappableProps);
+  changes.reportNonHotswappableChanges(ret);
+
+  return changes;
 }

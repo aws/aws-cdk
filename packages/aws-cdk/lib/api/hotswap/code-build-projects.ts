@@ -12,23 +12,11 @@ export async function isHotswappableCodeBuildProjectChange(
 
   const ret: ChangeHotswapResult = [];
 
-  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['Source', 'Environment', 'SourceVersion']);
-
-  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
-  if (nonHotswappablePropNames.length > 0) {
-    ret.push({
-      hotswappable: false,
-      logicalId,
-      rejectedChanges: nonHotswappablePropNames,
-      resourceType: change.newValue.Type,
-    });
-  }
-
-  const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
-    name: '',
-  };
-  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
-  if (namesOfHotswappableChanges.length > 0) {
+  const classifiedChanges = classifyChanges(change, ['Source', 'Environment', 'SourceVersion'], logicalId, change.newValue.Type, ret);
+  if (classifiedChanges.namesOfHotswappableProps.length > 0) {
+    const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
+      name: '',
+    };
     let _projectName: string | undefined = undefined;
     const projectNameLazy = async () => {
       if (!_projectName) {
@@ -39,7 +27,7 @@ export async function isHotswappableCodeBuildProjectChange(
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
-      propsChanged: namesOfHotswappableChanges,
+      propsChanged: classifiedChanges.namesOfHotswappableProps,
       service: 'codebuild',
       resourceNames: [`CodeBuild Project '${await projectNameLazy()}'`],
       apply: async (sdk: ISDK) => {

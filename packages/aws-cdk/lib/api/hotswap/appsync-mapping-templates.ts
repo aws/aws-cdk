@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
 
 export async function isHotswappableAppSyncChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -12,31 +12,23 @@ export async function isHotswappableAppSyncChange(
     return [];
   }
 
-  if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
-    return [{
-      hotswappable: false,
-      logicalId,
-      reason: 'Pipeline resolvers cannot be hotswapped since they reference the FunctionId of the underlying functions, which cannot be resolved',
-      rejectedChanges: Object.keys(change.propertyUpdates),
-      resourceType: change.newValue.Type,
-    }];
-  }
-
   const ret: ChangeHotswapResult = [];
-
-  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate']);
-
-  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
-  if (nonHotswappablePropNames.length > 0) {
-    ret.push({
-      hotswappable: false,
+  // TODO: helper
+  if (isResolver && change.newValue.Properties?.Kind === 'PIPELINE') {
+    reportNonHotswappableChange(
+      ret,
+      Object.keys(change.propertyUpdates),
       logicalId,
-      rejectedChanges: nonHotswappablePropNames,
-      resourceType: change.newValue.Type,
-    });
+      change.newValue.Type,
+      'Pipeline resolvers cannot be hotswapped since they reference the FunctionId of the underlying functions, which cannot be resolved',
+    );
+    return ret;
   }
 
-  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
+  const classifiedChanges = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate'], logicalId, change.newValue.Type);
+  classifiedChanges.reportNonHotswappableChanges(ret);
+
+  const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     let _physicalName: string | undefined = undefined;
     const physicalNameLazy = async () => {

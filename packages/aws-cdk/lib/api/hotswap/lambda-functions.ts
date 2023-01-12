@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, PropDiffs, reportNonHotswappableChange } from './common';
 
 // namespace object imports won't work in the bundle for function exports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -37,17 +37,8 @@ export async function isHotswappableLambdaFunctionChange(
   }
 
   const ret: ChangeHotswapResult = [];
-  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['Code', 'Environment', 'Description']);
-
-  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
-  if (nonHotswappablePropNames.length > 0) {
-    ret.push({
-      hotswappable: false,
-      rejectedChanges: nonHotswappablePropNames,
-      resourceType: change.newValue.Type,
-      logicalId,
-    });
-  }
+  const { hotswappableProps, nonHotswappableChanges } = classifyChanges(change, ['Code', 'Environment', 'Description'], logicalId, change.newValue.Type);
+  ret.push(...nonHotswappableChanges);
 
   const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   let _functionName: string | undefined = undefined;
@@ -153,12 +144,7 @@ function classifyAliasChanges(change: HotswappableChangeCandidate, logicalId: st
 
   const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
   if (nonHotswappablePropNames.length > 0) {
-    ret.push({
-      hotswappable: false,
-      rejectedChanges: nonHotswappablePropNames,
-      resourceType: change.newValue.Type,
-      logicalId,
-    });
+    reportNonHotswappableChange(ret, nonHotswappablePropNames, logicalId, change.newValue.Type);
   }
 
   if (Object.keys(hotswappableProps).length > 0) {

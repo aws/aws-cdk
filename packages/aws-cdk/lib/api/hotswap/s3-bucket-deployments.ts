@@ -88,7 +88,7 @@ async function changeIsForS3DeployCustomResourcePolicy(
         hotswappable: false,
         reason: `could not find logicalId for role with name '${roleArn}'`,
         rejectedChanges: [],
-        logicalId: 'undefined',
+        logicalId: 'could not be found',
         resourceType: change.newValue.Type,
       }];
     }

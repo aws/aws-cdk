@@ -8,18 +8,9 @@ export async function isHotswappableStateMachineChange(
   if (change.newValue.Type !== 'AWS::StepFunctions::StateMachine') {
     return [];
   }
-  const { hotswappableProps, nonHotswappableProps } = classifyChanges(change, ['DefinitionString']);
   const ret: ChangeHotswapResult = [];
-
-  const nonHotswappablePropNames = Object.keys(nonHotswappableProps);
-  if (nonHotswappablePropNames.length > 0) {
-    ret.push({
-      hotswappable: false,
-      rejectedChanges: nonHotswappablePropNames,
-      resourceType: change.newValue.Type,
-      logicalId,
-    });
-  }
+  const { hotswappableProps, nonHotswappableChanges } = classifyChanges(change, ['DefinitionString'], logicalId, change.newValue.Type);
+  ret.push(...nonHotswappableChanges);
 
   const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
@@ -39,7 +30,7 @@ export async function isHotswappableStateMachineChange(
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
-      service: 'ecs-service',
+      service: 'stepfunctions-service',
       resourceNames: [`${change.newValue.Type} '${(await stateMachineArnLazy())?.split(':')[6]}'`],
       apply: async (sdk: ISDK) => {
         const stateMachineArn = await stateMachineArnLazy();
