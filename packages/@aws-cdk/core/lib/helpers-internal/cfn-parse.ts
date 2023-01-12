@@ -70,7 +70,7 @@ export class FromCloudFormationPropertyObject<T extends Record<string, any>> ext
 
 /**
  * This class contains static methods called when going from
- * translated values received from {@link CfnParser.parseValue}
+ * translated values received from `CfnParser.parseValue`
  * to the actual L1 properties -
  * things like changing IResolvable to the appropriate type
  * (string, string array, or number), etc.
@@ -295,7 +295,7 @@ export interface FromCloudFormationOptions {
  * Some fragments of CloudFormation templates behave differently than others
  * (for example, the 'Conditions' sections treats { "Condition": "NameOfCond" }
  * differently than the 'Resources' section).
- * This enum can be used to change the created {@link CfnParser} behavior,
+ * This enum can be used to change the created `CfnParser` behavior,
  * based on the template context.
  */
 export enum CfnParsingContext {
@@ -307,7 +307,7 @@ export enum CfnParsingContext {
 }
 
 /**
- * The options for {@link FromCloudFormation.parseValue}.
+ * The options for `FromCloudFormation.parseValue`.
  */
 export interface ParseCfnOptions {
   /**
