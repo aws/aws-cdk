@@ -77,3 +77,6 @@ new patterns.HttpsRedirect(this, 'Redirect', {
 });
 ```
 
+It is safe to upgrade to `@aws-cdk/aws-route53-patterns:useCertificate` since
+the new certificate will be created and updated on the CloudFront distribution
+before the old certificate is deleted.

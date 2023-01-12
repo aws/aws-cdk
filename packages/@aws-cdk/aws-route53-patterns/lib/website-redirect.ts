@@ -64,7 +64,7 @@ export class HttpsRedirect extends Construct {
         throw new Error(`The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
     }
-    const redirectCert = this.createCertificate(domainNames, props.zone, props.certificate);
+    const redirectCert = props.certificate ?? this.createCertificate(domainNames, props.zone);
 
     const redirectBucket = new Bucket(this, 'RedirectBucket', {
       websiteRedirect: {
@@ -107,8 +107,19 @@ export class HttpsRedirect extends Construct {
    * Gets the stack to use for creating the Certificate
    * If the current stack is not in `us-east-1` then this
    * will create a new `us-east-1` stack.
+   *
+   * CloudFront is a global resource which you can create (via CloudFormation) from
+   * _any_ region. So I could create a CloudFront distribution in `us-east-2` if I wanted
+   * to (maybe the rest of my application lives there). The problem is that some supporting resources
+   * that CloudFront uses (i.e. ACM Certificates) are required to exist in `us-east-1`. This means
+   * that if I want to create a CloudFront distribution in `us-east-2` I still need to create a ACM certificate in
+   * `us-east-1`.
+   *
+   * In order to do this correctly we need to know which region the CloudFront distribution is being created in.
+   * We have two options, either require the user to specify the region or make an assumption if they do not.
+   * This implementation requires the user specify the region.
    */
-  private get certificateScope(): Construct {
+  private certificateScope(): Construct {
     const stack = Stack.of(this);
     const parent = stack.node.scope;
     if (!parent) {
@@ -137,12 +148,13 @@ export class HttpsRedirect extends Construct {
    * This is also safe to upgrade since the new certificate will be created and updated
    * on the CloudFront distribution before the old one is deleted.
    */
-  private createCertificate(domainNames: string[], zone: IHostedZone, certificate?: ICertificate): ICertificate {
-    if (certificate) return certificate;
+  private createCertificate(domainNames: string[], zone: IHostedZone): ICertificate {
     const useCertificate = FeatureFlags.of(this).isEnabled(ROUTE53_PATTERNS_USE_CERTIFICATE);
     if (useCertificate) {
-      const id = this.certificateScope === this ? 'RedirectCertificate' : 'RedirectCertificate'+this.node.addr;
-      return new Certificate(this.certificateScope, id, {
+      // this preserves backwards compatibility. Previously the certificate was always created in `this` scope
+      // so we need to keep the name the same
+      const id = (this.certificateScope() === this) ? 'RedirectCertificate' : 'RedirectCertificate'+this.node.addr;
+      return new Certificate(this.certificateScope(), id, {
         domainName: domainNames[0],
         subjectAlternativeNames: domainNames,
         validation: CertificateValidation.fromDns(zone),
