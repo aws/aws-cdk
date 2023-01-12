@@ -1384,6 +1384,26 @@ test('can add sources with addSource', () => {
   });
 });
 
+test('if any source has markers then all sources have markers', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
+    destinationBucket: bucket,
+  });
+  deployment.addSource(s3deploy.Source.asset(path.join(__dirname, 'my-website')));
+
+  const result = app.synth();
+  const content = readDataFile(result, 'my/path.txt');
+  expect(content).toStrictEqual('helloWorld');
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      {},
+      {},
+    ],
+  });
+});
 
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
   const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));

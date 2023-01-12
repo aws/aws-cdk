@@ -3,8 +3,8 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "myCdkApplication",
-    "Description": "my application description"
+    "Name": "TestApplication",
+    "Description": "Test application description"
    }
   },
   "TestApplicationResourceAssociationd232b63e52a8414E905D": {
@@ -84,7 +84,7 @@
       "release": "go time"
      }
     },
-    "Name": "myCdkAttributeGroup",
+    "Name": "myAttributeGroup",
     "Description": "my attribute group description"
    }
   },
@@ -123,7 +123,7 @@
  },
  "Outputs": {
   "TestApplicationApplicationManagerUrlE1058321": {
-   "Description": "Application manager url for application myCdkApplication",
+   "Description": "Application manager url for the application created.",
    "Value": {
     "Fn::Join": [
      "",
@@ -132,7 +132,7 @@
       {
        "Ref": "AWS::Region"
       },
-      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-myCdkApplication"
+      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-TestApplication"
      ]
     ]
    }

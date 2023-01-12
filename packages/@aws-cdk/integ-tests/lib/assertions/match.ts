@@ -27,4 +27,12 @@ export abstract class Match {
   public static stringLikeRegexp(pattern: string): { [key: string]: string } {
     return { $StringLike: pattern };
   }
+
+  /**
+   * Matches any string-encoded JSON and applies the specified pattern after parsing it.
+   * @param pattern the pattern to match after parsing the encoded JSON.
+   */
+  public static serializedJson(pattern: { [key: string]: any }): { [key: string]: { [key: string]: any } } {
+    return { $SerializedJson: pattern };
+  }
 }

@@ -13,7 +13,7 @@ import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 
 /**
  * Possible Node Types to use in the cluster
- * used for defining {@link ClusterProps.nodeType}.
+ * used for defining `ClusterProps.nodeType`.
  */
 export enum NodeType {
   /**
@@ -56,15 +56,15 @@ export enum NodeType {
 
 /**
  * What cluster type to use.
- * Used by {@link ClusterProps.clusterType}
+ * Used by `ClusterProps.clusterType`
  */
 export enum ClusterType {
   /**
-   * single-node cluster, the {@link ClusterProps.numberOfNodes} parameter is not required
+   * single-node cluster, the `ClusterProps.numberOfNodes` parameter is not required
    */
   SINGLE_NODE = 'single-node',
   /**
-   * multi-node cluster, set the amount of nodes using {@link ClusterProps.numberOfNodes} parameter
+   * multi-node cluster, set the amount of nodes using `ClusterProps.numberOfNodes` parameter
    */
   MULTI_NODE = 'multi-node',
 }
@@ -144,7 +144,7 @@ export interface RotationMultiUserOptions {
 
 /**
  * Create a Redshift Cluster with a given number of nodes.
- * Implemented by {@link Cluster} via {@link ClusterBase}.
+ * Implemented by `Cluster` via `ClusterBase`.
  */
 export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -222,14 +222,14 @@ export interface ClusterProps {
   /**
    * The node type to be provisioned for the cluster.
    *
-   * @default {@link NodeType.DC2_LARGE}
+   * @default `NodeType.DC2_LARGE`
    */
   readonly nodeType?: NodeType;
 
   /**
    * Settings for the individual instances that are launched
    *
-   * @default {@link ClusterType.MULTI_NODE}
+   * @default `ClusterType.MULTI_NODE`
    */
   readonly clusterType?: ClusterType;
 

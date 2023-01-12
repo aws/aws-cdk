@@ -6,7 +6,7 @@ import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
 /**
- * Construction properties of the {@link CodeDeployServerDeployAction CodeDeploy server deploy CodePipeline Action}.
+ * Construction properties of the `CodeDeployServerDeployAction CodeDeploy server deploy CodePipeline Action`.
  */
 export interface CodeDeployServerDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
