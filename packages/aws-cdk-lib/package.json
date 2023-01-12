@@ -108,10 +108,10 @@
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
-    "ignore": "^5.2.1",
+    "ignore": "^5.2.4",
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
-    "punycode": "^2.1.1",
+    "punycode": "^2.2.0",
     "semver": "^7.3.8",
     "yaml": "1.10.2"
   },
@@ -377,7 +377,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
     "constructs": "^3.3.69",
-    "esbuild": "^0.16.1",
+    "esbuild": "^0.16.16",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
