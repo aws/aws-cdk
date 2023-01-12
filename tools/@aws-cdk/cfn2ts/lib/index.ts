@@ -1,4 +1,6 @@
+import * as path from 'path';
 import * as cfnSpec from '@aws-cdk/cfnspec';
+import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import { AugmentationGenerator } from './augmentation-generator';
 import { CannedMetricsGenerator } from './canned-metrics-generator';
@@ -8,7 +10,11 @@ import { packageName } from './genspec';
 export default async function(scopes: string | string[], outPath: string, options: CodeGeneratorOptions = { }): Promise<void> {
   if (outPath !== '.') { await fs.mkdirp(outPath); }
 
-  if (typeof scopes === 'string') { scopes = [scopes]; }
+  if (scopes === '*') {
+    scopes = cfnSpec.namespaces();
+  } else if (typeof scopes === 'string') {
+    scopes = [scopes];
+  }
 
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
@@ -30,6 +36,37 @@ export default async function(scopes: string | string[], outPath: string, option
     const canned = new CannedMetricsGenerator(name, scope);
     if (canned.generate()) {
       await canned.save(outPath);
+    }
+  }
+}
+
+export async function generateAll(outPath: string, options: CodeGeneratorOptions) {
+  const scopes = cfnSpec.namespaces();
+
+  for (const scope of scopes) {
+    const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
+
+    const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
+    const packagePath = path.join(outPath, module.moduleName);
+
+    if (Object.keys(spec.ResourceTypes).length === 0) {
+      throw new Error(`No resource was found for scope ${scope}`);
+    }
+    const name = packageName(scope);
+    const affix = computeAffix(scope, scopes);
+
+    const generator = new CodeGenerator(name, spec, affix, options);
+    generator.emitCode();
+    await generator.save(packagePath);
+
+    const augs = new AugmentationGenerator(name, spec, affix);
+    if (augs.emitCode()) {
+      await augs.save(packagePath);
+    }
+
+    const canned = new CannedMetricsGenerator(name, scope);
+    if (canned.generate()) {
+      await canned.save(packagePath);
     }
   }
 }

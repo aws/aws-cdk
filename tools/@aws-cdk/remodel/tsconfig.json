@@ -16,5 +16,6 @@
     "composite": true,
     "incremental": true
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "exclude": ["./lib/template/**/*"]
 }
