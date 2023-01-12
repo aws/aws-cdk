@@ -19,6 +19,7 @@ import {
   Tags,
   Token,
   Tokenization,
+  Annotations,
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -198,7 +199,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -219,7 +220,7 @@ export interface IBucket extends IResource {
    * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
    *
    * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
-   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * calling `grantWrite` or `grantReadWrite` no longer grants permissions to modify the ACLs of the objects;
    * in this case, if you need to modify object ACLs, call this method explicitly.
    *
    * @param identity The principal
@@ -249,7 +250,7 @@ export interface IBucket extends IResource {
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
    * If you've already updated, but still need the principal to have permissions to modify the ACLs,
-   * use the {@link grantPutAcl} method.
+   * use the `grantPutAcl` method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -1648,7 +1649,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Create a mutable {@link IBucket} based on a low-level {@link CfnBucket}.
+   * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
   public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
     // use a "weird" id that has a higher chance of being unique
@@ -1833,8 +1834,19 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
-    } else if (props.serverAccessLogsPrefix) {
+    // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
+    // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
+    // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
+    // For example, we should not allow log delivery to `this` if given an imported bucket or
+    // another situation that causes `instanceof` to fail
+    } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
       this.allowLogDelivery(this, props.serverAccessLogsPrefix);
+    } else if (props.serverAccessLogsBucket) {
+      // A `serverAccessLogsBucket` was provided but it is not a concrete `Bucket` and it
+      // may not be possible to configure the ACLs or bucket policy as required.
+      Annotations.of(this).addWarning(
+        `Unable to add necessary logging permissions to imported target bucket: ${props.serverAccessLogsBucket}`,
+      );
     }
 
     for (const inventory of props.inventories ?? []) {
@@ -2201,19 +2213,26 @@ export class Bucket extends BucketBase {
    */
   private allowLogDelivery(from: IBucket, prefix?: string) {
     if (FeatureFlags.of(this).isEnabled(cxapi.S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY)) {
-      this.addToResourcePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
-        actions: ['s3:PutObject'],
-        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
-        conditions: {
+      let conditions = undefined;
+      // The conditions for the bucket policy can be applied only when the buckets are in
+      // the same stack and a concrete bucket instance (not imported). Otherwise, the
+      // necessary imports may result in a cyclic dependency between the stacks.
+      if (from instanceof Bucket && Stack.of(this) === Stack.of(from)) {
+        conditions = {
           ArnLike: {
             'aws:SourceArn': from.bucketArn,
           },
           StringEquals: {
             'aws:SourceAccount': from.env.account,
           },
-        },
+        };
+      }
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
+        conditions: conditions,
       }));
     } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new Error("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed");

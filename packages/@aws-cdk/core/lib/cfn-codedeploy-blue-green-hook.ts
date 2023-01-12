@@ -6,7 +6,7 @@ import { undefinedIfAllValuesAreEmpty } from './util';
 
 /**
  * The possible types of traffic shifting for the blue-green deployment configuration.
- * The type of the {@link CfnTrafficRoutingConfig.type} property.
+ * The type of the `CfnTrafficRoutingConfig.type` property.
  */
 export enum CfnTrafficRoutingType {
   /**
@@ -27,8 +27,8 @@ export enum CfnTrafficRoutingType {
 }
 
 /**
- * The traffic routing configuration if {@link CfnTrafficRoutingConfig.type}
- * is {@link CfnTrafficRoutingType.TIME_BASED_CANARY}.
+ * The traffic routing configuration if `CfnTrafficRoutingConfig.type`
+ * is `CfnTrafficRoutingType.TIME_BASED_CANARY`.
  */
 export interface CfnTrafficRoutingTimeBasedCanary {
   /**
@@ -48,8 +48,8 @@ export interface CfnTrafficRoutingTimeBasedCanary {
 }
 
 /**
- * The traffic routing configuration if {@link CfnTrafficRoutingConfig.type}
- * is {@link CfnTrafficRoutingType.TIME_BASED_LINEAR}.
+ * The traffic routing configuration if `CfnTrafficRoutingConfig.type`
+ * is `CfnTrafficRoutingType.TIME_BASED_LINEAR`.
  */
 export interface CfnTrafficRoutingTimeBasedLinear {
   /**
@@ -70,7 +70,7 @@ export interface CfnTrafficRoutingTimeBasedLinear {
 
 /**
  * Traffic routing configuration settings.
- * The type of the {@link CfnCodeDeployBlueGreenHookProps.trafficRoutingConfig} property.
+ * The type of the `CfnCodeDeployBlueGreenHookProps.trafficRoutingConfig` property.
  */
 export interface CfnTrafficRoutingConfig {
   /**
@@ -79,16 +79,16 @@ export interface CfnTrafficRoutingConfig {
   readonly type: CfnTrafficRoutingType;
 
   /**
-   * The configuration for traffic routing when {@link type} is
-   * {@link CfnTrafficRoutingType.TIME_BASED_CANARY}.
+   * The configuration for traffic routing when `type` is
+   * `CfnTrafficRoutingType.TIME_BASED_CANARY`.
    *
    * @default - none
    */
   readonly timeBasedCanary?: CfnTrafficRoutingTimeBasedCanary;
 
   /**
-   * The configuration for traffic routing when {@link type} is
-   * {@link CfnTrafficRoutingType.TIME_BASED_LINEAR}.
+   * The configuration for traffic routing when `type` is
+   * `CfnTrafficRoutingType.TIME_BASED_LINEAR`.
    *
    * @default - none
    */
@@ -97,7 +97,7 @@ export interface CfnTrafficRoutingConfig {
 
 /**
  * Additional options for the blue/green deployment.
- * The type of the {@link CfnCodeDeployBlueGreenHookProps.additionalOptions} property.
+ * The type of the `CfnCodeDeployBlueGreenHookProps.additionalOptions` property.
  */
 export interface CfnCodeDeployBlueGreenAdditionalOptions {
   /**
@@ -110,7 +110,7 @@ export interface CfnCodeDeployBlueGreenAdditionalOptions {
 
 /**
  * Lifecycle events for blue-green deployments.
- * The type of the {@link CfnCodeDeployBlueGreenHookProps.lifecycleEventHooks} property.
+ * The type of the `CfnCodeDeployBlueGreenHookProps.lifecycleEventHooks` property.
  */
 export interface CfnCodeDeployBlueGreenLifecycleEventHooks {
   /**
@@ -151,7 +151,7 @@ export interface CfnCodeDeployBlueGreenLifecycleEventHooks {
 }
 
 /**
- * Type of the {@link CfnCodeDeployBlueGreenApplication.target} property.
+ * Type of the `CfnCodeDeployBlueGreenApplication.target` property.
  */
 export interface CfnCodeDeployBlueGreenApplicationTarget {
   /**
@@ -184,7 +184,7 @@ export interface CfnTrafficRoute {
 }
 
 /**
- * Type of the {@link CfnCodeDeployBlueGreenEcsAttributes.trafficRouting} property.
+ * Type of the `CfnCodeDeployBlueGreenEcsAttributes.trafficRouting` property.
  */
 export interface CfnTrafficRouting {
   /**
@@ -206,7 +206,7 @@ export interface CfnTrafficRouting {
 
 /**
  * The attributes of the ECS Service being deployed.
- * Type of the {@link CfnCodeDeployBlueGreenApplication.ecsAttributes} property.
+ * Type of the `CfnCodeDeployBlueGreenApplication.ecsAttributes` property.
  */
 export interface CfnCodeDeployBlueGreenEcsAttributes {
   /**
@@ -229,7 +229,7 @@ export interface CfnCodeDeployBlueGreenEcsAttributes {
 
 /**
  * The application actually being deployed.
- * Type of the {@link CfnCodeDeployBlueGreenHookProps.applications} property.
+ * Type of the `CfnCodeDeployBlueGreenHookProps.applications` property.
  */
 export interface CfnCodeDeployBlueGreenApplication {
   /**
@@ -244,7 +244,7 @@ export interface CfnCodeDeployBlueGreenApplication {
 }
 
 /**
- * Construction properties of {@link CfnCodeDeployBlueGreenHook}.
+ * Construction properties of `CfnCodeDeployBlueGreenHook`.
  */
 export interface CfnCodeDeployBlueGreenHookProps {
   /**
@@ -275,7 +275,7 @@ export interface CfnCodeDeployBlueGreenHookProps {
    * Use lifecycle event hooks to specify a Lambda function that CodeDeploy can call to validate a deployment.
    * You can use the same function or a different one for deployment lifecycle events.
    * Following completion of the validation tests,
-   * the Lambda {@link CfnCodeDeployBlueGreenLifecycleEventHooks.afterAllowTraffic}
+   * the Lambda `CfnCodeDeployBlueGreenLifecycleEventHooks.afterAllowTraffic`
    * function calls back CodeDeploy and delivers a result of 'Succeeded' or 'Failed'.
    *
    * @default - no lifecycle event hooks
@@ -451,7 +451,7 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
    * Use lifecycle event hooks to specify a Lambda function that CodeDeploy can call to validate a deployment.
    * You can use the same function or a different one for deployment lifecycle events.
    * Following completion of the validation tests,
-   * the Lambda {@link CfnCodeDeployBlueGreenLifecycleEventHooks.afterAllowTraffic}
+   * the Lambda `CfnCodeDeployBlueGreenLifecycleEventHooks.afterAllowTraffic`
    * function calls back CodeDeploy and delivers a result of 'Succeeded' or 'Failed'.
    *
    * @default - no lifecycle event hooks

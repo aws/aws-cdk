@@ -19,7 +19,7 @@ interface TaskDefinitionProps {
  * Batch Job Task Definition
  *
  * Defines a Batch Job Task Definition. The properties of this task definition mirrors
- * those of an {@link ecs.ContainerDefinition}. This class is a wrapper on that structure.
+ * those of an `ecs.ContainerDefinition`. This class is a wrapper on that structure.
  */
 class TaskDefinition {
   /**
