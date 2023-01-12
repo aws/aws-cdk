@@ -1,11 +1,27 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import { PropagatedTagSource } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerOverride } from './ecs-task-properties';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+
+/**
+ * Tag
+ */
+export interface Tag {
+
+  /**
+   * key to e tagged
+   */
+  readonly key: string;
+  /**
+   * additional value
+   */
+  readonly value: string;
+}
 
 /**
  * Properties to define an ECS Event Task
@@ -81,6 +97,20 @@ export interface EcsTaskProps extends TargetBaseProps {
    * @default - ECS will set the Fargate platform version to 'LATEST'
    */
   readonly platformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
+  readonly propagateTags?: boolean
+
+  /**
+   * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
+   *
+   * @default - No tags are applied to the task
+   */
+  readonly tagList?: Tag[]
 }
 
 /**
@@ -108,6 +138,8 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskCount: number;
   private readonly role: iam.IRole;
   private readonly platformVersion?: ecs.FargatePlatformVersion;
+  private readonly propagateTags?: ecs.PropagatedTagSource
+  private readonly tagList?: cdk.CfnTag[]
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -118,10 +150,15 @@ export class EcsTask implements events.IRuleTarget {
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
+    this.propagateTags = props.propagateTags === true ? PropagatedTagSource.TASK_DEFINITION : undefined ;
 
     this.role = props.role ?? singletonEventRole(this.taskDefinition);
     for (const stmt of this.createEventRolePolicyStatements()) {
       this.role.addToPrincipalPolicy(stmt);
+    }
+
+    if (props.tagList) {
+      this.tagList = props.tagList;
     }
 
     // Security groups are only configurable with the "awsvpc" network mode.
@@ -159,11 +196,13 @@ export class EcsTask implements events.IRuleTarget {
     const input = { containerOverrides };
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
+    const propagateTags = this.propagateTags;
+    const tagList = this.tagList;
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
     const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
 
-    const baseEcsParameters = { taskCount, taskDefinitionArn };
+    const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList };
 
     const ecsParameters: events.CfnRule.EcsParametersProperty = this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
       ? {

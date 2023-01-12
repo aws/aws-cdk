@@ -3,7 +3,7 @@ import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
+import { AsgCapacityProvider, PropagatedTagSource } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { ScheduledEc2Task } from '../../lib';
@@ -298,6 +298,88 @@ test('Scheduled Ec2 Task - with Command defined', () => {
         MemoryReservation: 512,
         Name: 'ScheduledContainer',
       },
+    ],
+  });
+});
+
+test('Scheduled Ec2 Task - with tag propagation', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    propagateTags: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          PropagateTags: PropagatedTagSource.TASK_DEFINITION,
+        }),
+      }),
+    ],
+  });
+});
+
+test('Scheduled Ec2 Task - with list of tags', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    tagList: [
+      {
+        key: 'my-tag',
+        value: 'my-tag-value',
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          TagList: [
+            {
+              Key: 'my-tag',
+              Value: 'my-tag-value',
+            },
+          ],
+        }),
+      }),
     ],
   });
 });

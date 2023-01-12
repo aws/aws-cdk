@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "testCases": {
     "publicQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
         "aws-fargate-integ"
       ],
-      "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
+      "assertionStack": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6"
     }
   }
 }

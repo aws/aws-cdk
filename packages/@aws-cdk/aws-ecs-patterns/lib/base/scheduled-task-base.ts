@@ -2,7 +2,7 @@ import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
 import { ISecurityGroup, IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Rule } from '@aws-cdk/aws-events';
-import { EcsTask } from '@aws-cdk/aws-events-targets';
+import { EcsTask, Tag } from '@aws-cdk/aws-events-targets';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -71,6 +71,20 @@ export interface ScheduledTaskBaseProps {
    * @default - a new security group will be created.
    */
   readonly securityGroups?: ISecurityGroup[]
+
+  /**
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
+  readonly propagateTags?: boolean;
+
+  /**
+   * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
+   *
+   * @default - No tags are applied to the task
+   */
+  readonly tagList?: Tag[]
 }
 
 export interface ScheduledTaskImageProps {
@@ -147,6 +161,19 @@ export abstract class ScheduledTaskBase extends Construct {
   private readonly _securityGroups?: ISecurityGroup[];
 
   /**
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   */
+  readonly propagateTags?: boolean;
+
+  /**
+   * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
+   *
+   * @default - No tags are applied to the task
+   */
+  readonly tagList?: Tag[]
+
+
+  /**
    * Constructs a new instance of the ScheduledTaskBase class.
    */
   constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
@@ -159,6 +186,8 @@ export abstract class ScheduledTaskBase extends Construct {
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_EGRESS };
     this._securityGroups = props.securityGroups;
+    this.propagateTags = props.propagateTags;
+    this.tagList = props.tagList;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
@@ -184,6 +213,8 @@ export abstract class ScheduledTaskBase extends Construct {
       taskCount: this.desiredTaskCount,
       subnetSelection: this.subnetSelection,
       securityGroups: this._securityGroups,
+      propagateTags: this.propagateTags,
+      tagList: this.tagList,
     });
 
     this.addTaskAsTarget(eventRuleTarget);

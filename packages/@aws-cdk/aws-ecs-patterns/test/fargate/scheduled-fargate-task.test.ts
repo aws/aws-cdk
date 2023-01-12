@@ -1,6 +1,7 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import { PropagatedTagSource } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { ScheduledFargateTask } from '../../lib';
@@ -412,6 +413,82 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
         Input: '{}',
         RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] },
       },
+    ],
+  });
+});
+
+test('Scheduled Fargate Task - with tag propagation', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [
+      { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
+    ],
+  });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+    },
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    propagateTags: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          PropagateTags: PropagatedTagSource.TASK_DEFINITION,
+        }),
+      }),
+    ],
+  });
+});
+
+test('Scheduled Fargate Task - with list of tags', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [
+      { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
+    ],
+  });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+    },
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    tagList: [
+      {
+        key: 'my-tag',
+        value: 'my-tag-value',
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
+          TagList: [
+            {
+              Key: 'my-tag',
+              Value: 'my-tag-value',
+            },
+          ],
+        }),
+      }),
     ],
   });
 });

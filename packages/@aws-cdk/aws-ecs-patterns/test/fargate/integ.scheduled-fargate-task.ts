@@ -26,6 +26,13 @@ class EventStack extends cdk.Stack {
       },
       desiredTaskCount: 2,
       schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
+      propagateTags: true,
+      tagList: [
+        {
+          key: 'my-tag',
+          value: 'my-tag-value',
+        },
+      ],
     });
   }
 }
