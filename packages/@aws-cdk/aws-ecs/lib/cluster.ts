@@ -226,7 +226,6 @@ export class Cluster extends Resource implements ICluster {
     }
 
     this._capacityProviderNames = props.capacityProviders ?? [];
-    this._defaultCapacityProviderStrategy = [];
     if (props.enableFargateCapacityProviders) {
       this.enableFargateCapacityProviders();
     }
@@ -313,13 +312,13 @@ export class Cluster extends Resource implements ICluster {
   public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
     defaultCapacityProviderStrategy.forEach(dcp => {
       if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
-        throw new Error(`Default capacity provider ${dcp.capacityProvider} is not present in cluster's capacity providers.`);
+        throw new Error(`Capacity provider with default strategy ${dcp.capacityProvider} is not present in cluster's capacity providers.`);
       }
     });
 
     const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
     if (defaultCapacityProvidersWithBase.length > 1) {
-      throw new Error('Only 1 default capacity provider can have a nonzero base.');
+      throw new Error('Only 1 capacity provider with default strategy can have a nonzero base.');
     }
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }

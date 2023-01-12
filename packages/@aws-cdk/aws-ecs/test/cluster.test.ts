@@ -2155,7 +2155,7 @@ describe('cluster', () => {
 
   });
 
-  test('should throw an error if default capacity provider is not present in capacity providers', () => {
+  test('should throw an error if capacity provider with default strategy is not present in capacity providers', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -2167,7 +2167,7 @@ describe('cluster', () => {
       }).addDefaultCapacityProviderStrategy([
         { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
       ]);
-    }).toThrow(/Default capacity provider test capacityProvider is not present in cluster's capacity providers./);
+    }).toThrow(/Capacity provider with default strategy test capacityProvider is not present in cluster's capacity providers./);
   });
 
   test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
@@ -2181,7 +2181,7 @@ describe('cluster', () => {
       }).addDefaultCapacityProviderStrategy([
         { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
       ]);
-    }).toThrow(/Default capacity provider test capacityProvider is not present in cluster's capacity providers./);
+    }).toThrow(/Capacity provider with default strategy test capacityProvider is not present in cluster's capacity providers./);
   });
 
   test('should throw an error when more than 1 default capacity provider have base specified', () => {
@@ -2196,22 +2196,37 @@ describe('cluster', () => {
         { capacityProvider: 'FARGATE', base: 10, weight: 50 },
         { capacityProvider: 'FARGATE_SPOT', base: 10, weight: 50 },
       ]);
-    }).toThrow(/Only 1 default capacity provider can have a nonzero base./);
+    }).toThrow(/Only 1 capacity provider with default strategy can have a nonzero base./);
   });
 
   test('can add ASG capacity via Capacity Provider with default capacity provider', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', {
       enableFargateCapacityProviders: true,
     });
 
-    // WHEN
     cluster.addDefaultCapacityProviderStrategy([
       { capacityProvider: 'FARGATE', base: 10, weight: 50 },
       { capacityProvider: 'FARGATE_SPOT' },
     ]);
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    // Ensure not added twice
+    cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
@@ -2221,13 +2236,15 @@ describe('cluster', () => {
       CapacityProviders: [
         'FARGATE',
         'FARGATE_SPOT',
+        {
+          Ref: 'providerD3FF4D3A',
+        },
       ],
       DefaultCapacityProviderStrategy: [
         { CapacityProvider: 'FARGATE', Base: 10, Weight: 50 },
         { CapacityProvider: 'FARGATE_SPOT' },
       ],
     });
-
   });
 
   test('correctly sets log configuration for execute command', () => {
