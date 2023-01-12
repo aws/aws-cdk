@@ -53,11 +53,7 @@ class AppStage extends Stage {
   }
 }
 
-const app = new App({
-  context: {
-    '@aws-cdk/core:newStyleStackSynthesis': '1',
-  },
-});
+const app = new App();
 
 const stack = new PipelineStack(app, 'PipelineStack');
 
