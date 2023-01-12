@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.60.0](https://github.com/aws/aws-cdk/compare/v2.59.0...v2.60.0) (2023-01-11)
+
+
+### Features
+
+* **appsync:** js resolver support ([#23551](https://github.com/aws/aws-cdk/issues/23551)) ([2318384](https://github.com/aws/aws-cdk/commit/231838409cc1409c137ff27086e853ce2b0fbf1c)), closes [#22921](https://github.com/aws/aws-cdk/issues/22921)
+* **appsync:** stabilize appsync module 🎆🎆 🎆  ([#23633](https://github.com/aws/aws-cdk/issues/23633)) ([e5b0230](https://github.com/aws/aws-cdk/commit/e5b023089e168c50eda83a11db0e697b96caf7e9)), closes [#6836](https://github.com/aws/aws-cdk/issues/6836)
+* **cfnspec:** cloudformation spec v106.0.0 ([#23586](https://github.com/aws/aws-cdk/issues/23586)) ([f178c98](https://github.com/aws/aws-cdk/commit/f178c98d4473d8bb8d46d80c076fa520d03c623b))
+* **cloudfront:** remove headers and server timing ([#23558](https://github.com/aws/aws-cdk/issues/23558)) ([44a4812](https://github.com/aws/aws-cdk/commit/44a4812778d87af27809e5a733c6e5ea6b65004b))
+* **cognito:** use secretsmanager secrets for clientSecretValue ([#22885](https://github.com/aws/aws-cdk/issues/22885)) ([4baea78](https://github.com/aws/aws-cdk/commit/4baea78f415566dea499f4ce49fc24d4dc7c4ef7))
+* **ec2:** subnet ipv4 cidr blocks on imported vpc ([#23317](https://github.com/aws/aws-cdk/issues/23317)) ([e0885db](https://github.com/aws/aws-cdk/commit/e0885db29c8b45cfe9da1df8b55af2bf78892a04))
+* **ecr-assets:** Support docker outputs flag ([#23304](https://github.com/aws/aws-cdk/issues/23304)) ([61e5495](https://github.com/aws/aws-cdk/commit/61e5495105e06aba4c027fb33ae031da09a3ff33)), closes [#20566](https://github.com/aws/aws-cdk/issues/20566)
+* **pipelines:** Expose stack output namespaces in custom `pipelines.Step`s ([#23110](https://github.com/aws/aws-cdk/issues/23110)) ([14f6811](https://github.com/aws/aws-cdk/commit/14f6811b89a0ae374863a3b2bdd36997ce67883e)), closes [/github.com/aws/aws-cdk/issues/23000#issuecomment-1324379670](https://github.com/aws//github.com/aws/aws-cdk/issues/23000/issues/issuecomment-1324379670)
+
+
+### Bug Fixes
+
+* **acm:** domainName length constraint failure due to Tokens ([#23567](https://github.com/aws/aws-cdk/issues/23567)) ([2d7e3c0](https://github.com/aws/aws-cdk/commit/2d7e3c0e9edfb8f3e30dc0c1efaeb03fde19db7c)), closes [#23565](https://github.com/aws/aws-cdk/issues/23565)
+* **aws-custom-resource:** switch off `installLatestAwsSdk` by default ([#23591](https://github.com/aws/aws-cdk/issues/23591)) ([c9b2548](https://github.com/aws/aws-cdk/commit/c9b2548126f01fd918009df0a42f0ab4c5e69cc3)), closes [#23113](https://github.com/aws/aws-cdk/issues/23113)
+* **bootstrap:** KMS keys cannot be tagged ([#21975](https://github.com/aws/aws-cdk/issues/21975)) ([0e552db](https://github.com/aws/aws-cdk/commit/0e552dbb63a97cd6a7a65cae80ae863609237e61)), closes [#21281](https://github.com/aws/aws-cdk/issues/21281)
+* **events:** cross stack rules require concrete environment ([#23549](https://github.com/aws/aws-cdk/issues/23549)) ([22d3341](https://github.com/aws/aws-cdk/commit/22d3341c2239b046473ded3fcbc85b5cbc4a37a1)), closes [#18405](https://github.com/aws/aws-cdk/issues/18405)
+* **iam:** create stack based default policies for roles ([#23100](https://github.com/aws/aws-cdk/issues/23100)) ([dea4216](https://github.com/aws/aws-cdk/commit/dea4216a3f2e6727a6bc49d632c03b3f0a416947))
+* **lambda:** automatic `currentVersion` conflicts with explicit `Version` resource ([#23636](https://github.com/aws/aws-cdk/issues/23636)) ([de68652](https://github.com/aws/aws-cdk/commit/de6865229ee824c01431ae27509dbcd3e1a83763)), closes [#23225](https://github.com/aws/aws-cdk/issues/23225)
+
 ## [2.59.0](https://github.com/aws/aws-cdk/compare/v2.58.1...v2.59.0) (2023-01-03)
 
 
