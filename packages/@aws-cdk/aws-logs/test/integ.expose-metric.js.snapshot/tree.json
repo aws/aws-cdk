@@ -50,8 +50,7 @@
                       {
                         "metricNamespace": "MyApp",
                         "metricName": "Latency",
-                        "metricValue": "$.latency",
-                        "unit": "None"
+                        "metricValue": "$.latency"
                       }
                     ]
                   }

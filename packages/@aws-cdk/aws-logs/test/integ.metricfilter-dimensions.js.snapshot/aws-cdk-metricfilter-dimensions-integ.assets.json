@@ -1,7 +1,7 @@
 {
   "version": "22.0.0",
   "files": {
-    "e9602f04f47f22a434d2dc90c33aa7dfc5c64346d0614b9a532349f8b8630cf6": {
+    "3d99811cf4d8b2d453d889e936569b925ead97bdb93a86d122b34d68818be01d": {
       "source": {
         "path": "aws-cdk-metricfilter-dimensions-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e9602f04f47f22a434d2dc90c33aa7dfc5c64346d0614b9a532349f8b8630cf6.json",
+          "objectKey": "3d99811cf4d8b2d453d889e936569b925ead97bdb93a86d122b34d68818be01d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

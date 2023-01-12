@@ -56,8 +56,7 @@
                             "key": "ErrorCode",
                             "value": "$.errorCode"
                           }
-                        ],
-                        "unit": "None"
+                        ]
                       }
                     ]
                   }

@@ -200,7 +200,6 @@ describe('metric filter', () => {
             Value: 'Bar',
           },
         ],
-        Unit: 'None',
       }],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },

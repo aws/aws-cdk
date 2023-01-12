@@ -547,10 +547,10 @@ export interface MetricFilterOptions {
   readonly dimensions?: Record<string, string>;
 
   /**
-   * The unit to assign to the metric. If you omit this, the unit is set as None.
+   * The unit to assign to the metric.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-unit
-   * @default - cloudwatch.Unit.NONE
+   * @default - No unit attached to metrics.
    */
   readonly unit?: cloudwatch.Unit;
 }
