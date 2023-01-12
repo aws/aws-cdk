@@ -1,0 +1,69 @@
+{
+ "Resources": {
+  "LogGroupF5B46931": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MetricFilter1B93B6E5": {
+   "Type": "AWS::Logs::MetricFilter",
+   "Properties": {
+    "FilterPattern": "{ $.latency = \"*\" }",
+    "LogGroupName": {
+     "Ref": "LogGroupF5B46931"
+    },
+    "MetricTransformations": [
+     {
+      "Dimensions": [
+       {
+        "Key": "ErrorCode",
+        "Value": "$.errorCode"
+       }
+      ],
+      "MetricName": "Latency",
+      "MetricNamespace": "MyApp",
+      "MetricValue": "$.latency",
+      "Unit": "Milliseconds"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

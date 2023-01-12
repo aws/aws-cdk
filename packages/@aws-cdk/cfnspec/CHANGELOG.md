@@ -1,3 +1,295 @@
+# CloudFormation Resource Specification v106.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.AmazonId (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Arn (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount Fingerprint (__added__)
+
+## Property Changes
+
+* AWS::IoTWireless::PartnerAccount Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__added__)
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v105.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Lambda::EventSourceMapping ScalingConfig (__deleted__)
+* AWS::SNS::Subscription FilterPolicyScope (__added__)
+* AWS::SageMaker::Domain AppSecurityGroupManagement.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__removed__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeader (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.VolumeConfiguration (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ResponseHeadersPolicyConfig RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration AutomaticTerminationMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration SessionPersistenceMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration VolumeConfiguration (__added__)
+* AWS::SageMaker::Domain.DomainSettings SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Domain.RStudioServerProDomainSettings DomainExecutionRoleArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v103.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGateway::RestApi RestApiId (__deleted__)
+* AWS::DirectoryService::SimpleAD DirectoryId (__added__)
+* AWS::EC2::Volume Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
+* AWS::EC2::Volume VolumeId (__added__)
+* AWS::FSx::FileSystem ResourceARN (__added__)
+* AWS::GameLift::Build BuildId (__added__)
+* AWS::IoT::Thing Arn (__added__)
+* AWS::IoT::Thing Id (__added__)
+* AWS::Logs::SubscriptionFilter FilterName (__deleted__)
+* AWS::RDS::DBInstance DBSystemId (__added__)
+* AWS::RedshiftServerless::Namespace Namespace (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup.ConfigParameters (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint.VpcEndpoints (__deleted__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__deleted__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi Parameters.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Function FunctionCode.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::Function FunctionConfig.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataSync::LocationEFS EfsFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DirectoryService::SimpleAD Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::Volume AutoEnableIO.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-autoenableio
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-autoenableio
+* AWS::EC2::Volume AvailabilityZone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-availabilityzone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-availabilityzone
+* AWS::EC2::Volume Encrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-encrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-encrypted
+* AWS::EC2::Volume Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-iops
+* AWS::EC2::Volume KmsKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-kmskeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-kmskeyid
+* AWS::EC2::Volume MultiAttachEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-multiattachenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-multiattachenabled
+* AWS::EC2::Volume OutpostArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-outpostarn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-outpostarn
+* AWS::EC2::Volume Size.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-size
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-size
+* AWS::EC2::Volume SnapshotId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-snapshotid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-snapshotid
+* AWS::EC2::Volume Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-tags
+* AWS::EC2::Volume Throughput.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
+* AWS::EC2::Volume VolumeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-volumetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-volumetype
+* AWS::EKS::Nodegroup Labels.PrimitiveType (__deleted__)
+* AWS::EKS::Nodegroup Labels.PrimitiveItemType (__added__)
+* AWS::EKS::Nodegroup Labels.Type (__added__)
+* AWS::EKS::Nodegroup Tags.PrimitiveType (__deleted__)
+* AWS::EKS::Nodegroup Tags.PrimitiveItemType (__added__)
+* AWS::EKS::Nodegroup Tags.Type (__added__)
+* AWS::GameLift::Build StorageLocation.Type (__changed__)
+  * Old: S3Location
+  * New: StorageLocation
+* AWS::Grafana::Workspace VpcConfiguration (__added__)
+* AWS::Logs::SubscriptionFilter Distribution (__added__)
+* AWS::Logs::SubscriptionFilter FilterName (__added__)
+* AWS::RedshiftServerless::Namespace Namespace (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__added__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__added__)
+
+## Property Type Changes
+
+* AWS::GameLift::Build.S3Location (__removed__)
+* AWS::GameLift::Build.StorageLocation (__added__)
+* AWS::Grafana::Workspace.VpcConfiguration (__added__)
+* AWS::NetworkFirewall::RuleGroup.IPSetReference (__added__)
+* AWS::NetworkFirewall::RuleGroup.ReferenceSets (__added__)
+* AWS::QuickSight::DataSource.DatabricksParameters (__added__)
+* AWS::DirectoryService::SimpleAD.VpcSettings SubnetIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::DirectoryService::SimpleAD.VpcSettings VpcId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Evidently::Experiment.MetricGoalObject EventPattern.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Evidently::Launch.MetricDefinitionObject EventPattern.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::FSx::FileSystem.OntapConfiguration RouteTableIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::Volume.OntapConfiguration CopyTagsToBackups (__added__)
+* AWS::FSx::Volume.OntapConfiguration OntapVolumeType (__added__)
+* AWS::FSx::Volume.OntapConfiguration SnapshotPolicy (__added__)
+* AWS::FSx::Volume.OntapConfiguration JunctionPath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::FSx::Volume.OntapConfiguration StorageEfficiencyEnabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoT::Thing.AttributePayload Attributes.DuplicatesAllowed (__deleted__)
+* AWS::NetworkFirewall::FirewallPolicy.StatefulEngineOptions StreamExceptionPolicy (__added__)
+* AWS::NetworkFirewall::RuleGroup.RuleGroup ReferenceSets (__added__)
+* AWS::NetworkManager::VpcAttachment.VpcOptions ApplianceModeSupport (__added__)
+* AWS::QuickSight::DataSource.DataSourceParameters DatabricksParameters (__added__)
+* AWS::RDS::DBProxy.AuthFormat ClientPasswordAuthType (__added__)
+
+
+# CloudFormation Resource Specification v102.0.0
+
+## New Resource Types
+
+* AWS::DocDBElastic::Cluster
+* AWS::IoTTwinMaker::SyncJob
+
+## Attribute Changes
+
+* AWS::CodePipeline::CustomActionType Id (__added__)
+* AWS::ElasticBeanstalk::ConfigurationTemplate TemplateName (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup TargetGroupArn (__added__)
+* AWS::Route53Resolver::ResolverEndpoint OutpostArn (__added__)
+* AWS::Route53Resolver::ResolverEndpoint PreferredInstanceType (__added__)
+* AWS::WAFv2::RuleGroup AvailableLabels (__deleted__)
+* AWS::WAFv2::RuleGroup ConsumedLabels (__deleted__)
+
+## Property Changes
+
+* AWS::EKS::Addon ConfigurationValues (__added__)
+* AWS::EMRServerless::Application Architecture (__added__)
+* AWS::M2::Application KmsKeyId (__added__)
+* AWS::M2::Environment KmsKeyId (__added__)
+* AWS::RDS::DBCluster DBSystemId (__added__)
+* AWS::RDS::DBInstance DBClusterSnapshotIdentifier (__added__)
+* AWS::RDS::DBInstance RestoreTime (__added__)
+* AWS::RDS::DBInstance SourceDBInstanceAutomatedBackupsArn (__added__)
+* AWS::RDS::DBInstance SourceDbiResourceId (__added__)
+* AWS::RDS::DBInstance UseLatestRestorableTime (__added__)
+* AWS::Route53Resolver::ResolverEndpoint OutpostArn (__added__)
+* AWS::Route53Resolver::ResolverEndpoint PreferredInstanceType (__added__)
+* AWS::SSMIncidents::ReplicationSet Tags (__added__)
+* AWS::WAFv2::RuleGroup AvailableLabels (__added__)
+* AWS::WAFv2::RuleGroup ConsumedLabels (__added__)
+* AWS::WAFv2::WebACL ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL TokenDomains (__added__)
+
+## Property Type Changes
+
+* AWS::ECS::Service.DeploymentAlarms (__added__)
+* AWS::WAFv2::RuleGroup.Challenge (__added__)
+* AWS::WAFv2::RuleGroup.ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL.AWSManagedRulesBotControlRuleSet (__added__)
+* AWS::WAFv2::WebACL.ChallengeAction (__added__)
+* AWS::WAFv2::WebACL.ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL.RuleActionOverride (__added__)
+* AWS::CodePipeline::CustomActionType.ArtifactDetails MaximumCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ArtifactDetails MinimumCount.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Description.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Key.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Queryable.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Required.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Secret.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.ConfigurationProperties Type.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings EntityUrlTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings ExecutionUrlTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings RevisionUrlTemplate.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CodePipeline::CustomActionType.Settings ThirdPartyConfigurationUrl.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ECS::Service.DeploymentConfiguration Alarms (__added__)
+* AWS::ECS::TaskDefinition.PortMapping ContainerPortRange (__added__)
+* AWS::ElasticBeanstalk::ConfigurationTemplate.SourceConfiguration ApplicationName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::ElasticBeanstalk::ConfigurationTemplate.SourceConfiguration TemplateName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::RDS::DBCluster.ScalingConfiguration SecondsBeforeTimeout (__added__)
+* AWS::WAFv2::RuleGroup.Rule ChallengeConfig (__added__)
+* AWS::WAFv2::RuleGroup.RuleAction Challenge (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupConfig AWSManagedRulesBotControlRuleSet (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement RuleActionOverrides (__added__)
+* AWS::WAFv2::WebACL.Rule ChallengeConfig (__added__)
+* AWS::WAFv2::WebACL.RuleAction Challenge (__added__)
+* AWS::WAFv2::WebACL.RuleGroupReferenceStatement RuleActionOverrides (__added__)
+
+
 # CloudFormation Resource Specification v101.0.0
 
 ## New Resource Types
