@@ -40,6 +40,8 @@ Flags come in three types:
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | (fix) |
 | [@aws-cdk/aws-iam:standardizedServicePrincipals](#aws-cdkaws-iamstandardizedserviceprincipals) | Use standardized (global) service principals everywhere | 2.51.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
+| [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
+| [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
 
 <!-- END table -->
 
@@ -70,7 +72,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
-    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true
+    "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false
   }
 }
 ```
@@ -715,6 +719,43 @@ practices for S3.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.59.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
+
+*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.* (fix)
+
+Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
+to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
+of a role using the same default policy name.
+
+This new implementation creates default policy names based on the constructs node path in their stack.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.60.0 | `false` | `true` |
+
+
+### @aws-cdk/customresources:installLatestAwsSdkDefault
+
+*Whether to install the latest SDK by default in AwsCustomResource* (default)
+
+This was originally introduced and enabled by default to not be limited by the SDK version
+that's installed on AWS Lambda. However, it creates issues for Lambdas bound to VPCs that
+do not have internet access, or in environments where 'npmjs.com' is not available.
+
+The recommended setting is to disable the default installation behavior, and pass the
+flag on a resource-by-resource basis to enable it if necessary.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.60.0 | `false` | `false` |
+
+**Compatibility with old behavior:** Set installLatestAwsSdk: true on all resources that need it.
 
 
 <!-- END details -->

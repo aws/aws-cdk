@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import { Action } from './action';
 
 /**
- * Construction properties of the {@link ManualApprovalAction}.
+ * Construction properties of the `ManualApprovalAction`.
  */
 export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionProps {
   /**
