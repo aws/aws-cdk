@@ -699,12 +699,12 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode | undefined | false {
+function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode | undefined {
   if (hotswap && hotswapOnly) {
     throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
   } else if (!hotswap && !hotswapOnly) {
     if (hotswap === false || hotswapOnly === false) {
-      return false;
+      return HotswapMode.FULL_DEPLOYMENT;
     }
   }
 

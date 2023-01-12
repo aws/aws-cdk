@@ -955,7 +955,7 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    *
    * @default - undefined for regular deployments, `HotswapMode.CLASSIC` for 'watch' deployments
    */
-  readonly hotswap?: HotswapMode | false;
+  readonly hotswap?: HotswapMode;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.

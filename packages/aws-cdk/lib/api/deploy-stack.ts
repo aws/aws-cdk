@@ -177,7 +177,7 @@ export interface DeployStackOptions {
    *
    * @default - undefined for regular deployments, `HotswapMode.CLASSIC` for 'watch' deployments
    */
-  readonly hotswap?: HotswapMode | false;
+  readonly hotswap?: HotswapMode;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -299,7 +299,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   });
 
   const hotswapMode = options.hotswap;
-  if (hotswapMode) {
+  if (hotswapMode && hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(

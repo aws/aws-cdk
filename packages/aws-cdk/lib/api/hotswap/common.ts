@@ -51,6 +51,11 @@ export enum HotswapMode {
    * Will not fall back to CloudFormation when a non-hotswappable change is detected
    */
   HOTSWAP_ONLY = 'hotswap-only',
+
+  /**
+   * Will not attempt to hotswap anything and instead go straight to CloudFormation
+   */
+  FULL_DEPLOYMENT = 'full-deployment',
 }
 
 /**
