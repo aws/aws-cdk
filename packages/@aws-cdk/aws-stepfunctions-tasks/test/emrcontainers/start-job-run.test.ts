@@ -963,7 +963,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
         ],
       },
       Create: '{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"clusterId\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}',
-      InstallLatestAwsSdk: true,
+      InstallLatestAwsSdk: false,
     });
 
     // THEN
