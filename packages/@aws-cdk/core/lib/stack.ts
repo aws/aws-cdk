@@ -259,10 +259,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * Preferably, you should use the return value as an opaque string and not
    * attempt to parse it to implement your logic. If you do, you must first
-   * check that it is a conc
-   
-   
-   rete value an not an unresolved token. If this
+   * check that it is a concrete value an not an unresolved token. If this
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
