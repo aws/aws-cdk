@@ -184,7 +184,7 @@ const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
 
 const dn = new apigwv2.DomainName(this, 'DN', {
-  domainName,
+  domainName: domainName,
   certificate: acm.Certificate.fromCertificateArn(this, 'cert', certArn),
 });
 

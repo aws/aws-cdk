@@ -105,7 +105,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": true
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DomainESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfadCustomResourcePolicy0B41F6DF"
@@ -253,7 +253,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DomainESAccessPolicyCustomResourcePolicy9747FC42"
@@ -355,7 +355,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
+     "S3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
     },
     "Role": {
      "Fn::GetAtt": [

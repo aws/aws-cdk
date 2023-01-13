@@ -5,7 +5,7 @@ import * as constructs from 'constructs';
 import { CfnSecurityConfiguration } from './glue.generated';
 
 /**
- * Interface representing a created or an imported {@link SecurityConfiguration}.
+ * Interface representing a created or an imported `SecurityConfiguration`.
  */
 export interface ISecurityConfiguration extends cdk.IResource {
   /**
@@ -110,7 +110,7 @@ export interface JobBookmarksEncryption {
 }
 
 /**
- * Constructions properties of {@link SecurityConfiguration}.
+ * Constructions properties of `SecurityConfiguration`.
  */
 export interface SecurityConfigurationProps {
   /**

@@ -65,6 +65,7 @@ export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-contai
 export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 export const ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME = '@aws-cdk/aws-ecs:arnFormatIncludesClusterName';
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
+export const IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName';
 export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
 export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
@@ -74,6 +75,8 @@ export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals'
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
 export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
+export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
+export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -557,6 +560,56 @@ export const FLAGS: Record<string, FlagInfo> = {
       `,
     introducedIn: { v2: '2.51.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.',
+    detailsMd: `
+      Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
+      to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
+      of a role using the same default policy name.
+
+      This new implementation creates default policy names based on the constructs node path in their stack.
+      `,
+    introducedIn: { v2: '2.60.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'Use S3 Bucket Policy instead of ACLs for Server Access Logging',
+    detailsMd: `
+      Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+      rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
+      enabled on the bucket.
+
+      This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
+      practices for S3.
+
+      @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+    `,
+    introducedIn: { v2: '2.59.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'Whether to install the latest SDK by default in AwsCustomResource',
+    detailsMd: `
+      This was originally introduced and enabled by default to not be limited by the SDK version
+      that's installed on AWS Lambda. However, it creates issues for Lambdas bound to VPCs that
+      do not have internet access, or in environments where 'npmjs.com' is not available.
+
+      The recommended setting is to disable the default installation behavior, and pass the
+      flag on a resource-by-resource basis to enable it if necessary.
+    `,
+    compatibilityWithOldBehaviorMd: 'Set installLatestAwsSdk: true on all resources that need it.',
+    introducedIn: { v2: '2.60.0' },
+    recommendedValue: false,
   },
 };
 
