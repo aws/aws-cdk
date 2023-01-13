@@ -24,7 +24,7 @@ const baseStack = new cdk.Stack(app, 'baseStack');
 
 const baseApi = new appsync.GraphqlApi(baseStack, 'baseApi', {
   name: 'baseApi',
-  schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
 });
 
 const stack = new cdk.Stack(app, 'stack');
@@ -43,14 +43,14 @@ const testTable = new db.Table(stack, 'TestTable', {
 
 const testDS = api.addDynamoDbDataSource('ds', testTable);
 
-testDS.createResolver({
+testDS.createResolver('QueryGetTests', {
   typeName: 'Query',
   fieldName: 'getTests',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 
-testDS.createResolver({
+testDS.createResolver('MutationAddTest', {
   typeName: 'Mutation',
   fieldName: 'addTest',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(appsync.PrimaryKey.partition('id').auto(), appsync.Values.projecting('test')),
@@ -64,7 +64,7 @@ const api2 = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'api2', {
 
 const none = api2.addNoneDataSource('none');
 
-const func = none.createFunction({
+const func = none.createFunction('PipelineFunction', {
   name: 'pipeline_function',
   requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
     version: '2017-02-28',

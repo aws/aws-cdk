@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { Stack } from '@aws-cdk/core';
+import { SecretValue, Stack } from '@aws-cdk/core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderGoogle } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
@@ -13,7 +13,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
@@ -36,7 +36,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
         scopes: ['scope1', 'scope2'],
       });
 
@@ -60,7 +60,7 @@ describe('UserPoolIdentityProvider', () => {
       const provider = new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
       });
 
       // THEN
@@ -76,7 +76,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderGoogle(stack, 'userpoolidp', {
         userPool: pool,
         clientId: 'google-client-id',
-        clientSecret: 'google-client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('google-client-secret'),
         attributeMapping: {
           givenName: ProviderAttribute.GOOGLE_NAME,
           address: ProviderAttribute.other('google-address'),

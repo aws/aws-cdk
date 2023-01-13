@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { CodeStarConnectionsSourceAction, CodeStarConnectionsSourceActionProps } from '../codestar-connections/source-action';
 
 /**
- * Construction properties for {@link BitBucketSourceAction}.
+ * Construction properties for `BitBucketSourceAction`.
  *
  * @deprecated use CodeStarConnectionsSourceActionProps instead
  */

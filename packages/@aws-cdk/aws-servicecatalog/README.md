@@ -22,6 +22,7 @@ enables organizations to create and manage catalogs of products for their end us
 - [Product](#product)
   - [Creating a product from a local asset](#creating-a-product-from-local-asset)
   - [Creating a product from a stack](#creating-a-product-from-a-stack)
+  - [Using Assets in your Product Stack](#using-aseets-in-your-product-stack)
   - [Creating a Product from a stack with a history of previous versions](#creating-a-product-from-a-stack-with-a-history-of-all-previous-versions)
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
@@ -184,6 +185,108 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
   ],
 });
 ```
+
+### Using Assets in your Product Stack
+
+You can reference assets in a Product Stack. For example, we can add a handler to a Lambda function or a S3 Asset directly from a local asset file.
+In this case, you must provide a S3 Bucket with a bucketName to store your assets.
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import { Bucket } from "@aws-cdk/aws-s3";
+
+class LambdaProduct extends servicecatalog.ProductStack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    new lambda.Function(this, 'LambdaProduct', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset("./assets"),
+      handler: 'index.handler'
+    });
+  }
+}
+
+const userDefinedBucket = new Bucket(this, `UserDefinedBucket`, {
+  bucketName: 'user-defined-bucket-for-product-stack-assets',
+});
+
+const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    {
+      productVersionName: "v1",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new LambdaProduct(this, 'LambdaFunctionProduct', {
+        assetBucket: userDefinedBucket,
+      })),
+    },
+  ],
+});
+```
+
+When a product containing an asset is shared with a spoke account, the corresponding asset bucket 
+will automatically grant read permissions to the spoke account. 
+Note, it is not recommended using a referenced bucket as permissions cannot be added from CDK. 
+In this case, it will be your responsibility to grant read permissions for the asset bucket to
+the spoke account.
+If you want to provide your own bucket policy or scope down your bucket policy further to only allow 
+reads from a specific launch role, refer to the following example policy:
+
+```ts
+new iam.PolicyStatement({
+	actions: [
+		's3:GetObject*',
+		's3:GetBucket*',
+		's3:List*', ],
+	effect: iam.Effect.ALLOW,
+	resources: [
+		bucket.bucketArn,
+		bucket.arnForObjects('*'),
+	],
+	principals: [
+		new iam.ArnPrincipal(cdk.Stack.of(this).formatArn({
+        			service: 'iam',
+        			region: '',
+        			sharedAccount,
+        			resource: 'role',
+        			resourceName: launchRoleName,
+        		}))
+	],
+	conditions: {
+		'ForAnyValue:StringEquals': {
+			'aws:CalledVia': ['cloudformation.amazonaws.com'],
+		},
+		'Bool': {
+			'aws:ViaAWSService': true,
+		},
+	},
+});
+```
+
+Furthermore, in order for a spoke account to provision a product with an asset, the role launching 
+the product needs permissions to read from the asset bucket.
+We recommend you utilize a launch role with permissions to read from the asset bucket.
+For example your launch role would need to include at least the following policy:
+
+```json
+{
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+Please refer to [Set launch role](#set-launch-role) for additional details about launch roles.
+See [Launch Constraint](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html) documentation
+to understand the permissions that launch roles need.
 
 ### Creating a Product from a stack with a history of previous versions
 

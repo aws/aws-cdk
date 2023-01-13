@@ -3,8 +3,8 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "myApplicationtest",
-    "Description": "my application description"
+    "Name": "TestApplication",
+    "Description": "Test application description"
    }
   },
   "TestApplicationResourceAssociationd232b63e52a8414E905D": {
@@ -39,10 +39,10 @@
     }
    }
   },
-  "TestApplicationRAMSharead8ba81b8cdd40199FD1": {
+  "TestApplicationRAMShare3dc6227daec11BF3E108": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMSharead8ba81b8cdd",
+    "Name": "RAMShare3dc6227daec1",
     "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
@@ -84,7 +84,7 @@
       "release": "go time"
      }
     },
-    "Name": "myAttributeGroupTest",
+    "Name": "myAttributeGroup",
     "Description": "my attribute group description"
    }
   },
@@ -118,6 +118,23 @@
      ],
      "Version": "2012-10-17"
     }
+   }
+  }
+ },
+ "Outputs": {
+  "TestApplicationApplicationManagerUrlE1058321": {
+   "Description": "Application manager url for the application created.",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-TestApplication"
+     ]
+    ]
    }
   }
  },
