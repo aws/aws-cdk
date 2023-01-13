@@ -871,9 +871,6 @@ export class Function extends FunctionBase {
     }
 
     this.currentVersionOptions = props.currentVersionOptions;
-    if (props.currentVersionOptions) {
-      this.currentVersion;
-    }
 
     if (props.filesystem) {
       if (!props.vpc) {
