@@ -40,13 +40,7 @@ export async function isHotswappableLambdaFunctionChange(
   const classifiedChanges = classifyChanges(change, ['Code', 'Environment', 'Description']);
   classifiedChanges.reportNonHotswappableChanges(ret);
 
-  let _functionName: string | undefined = undefined;
-  const functionNameLazy = async () => {
-    if (!_functionName) {
-      _functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
-    }
-    return _functionName;
-  };
+  const functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     ret.push({
@@ -55,11 +49,11 @@ export async function isHotswappableLambdaFunctionChange(
       propsChanged: namesOfHotswappableChanges,
       service: 'lambda',
       resourceNames: [
-        `Lambda Function '${await functionNameLazy()}'`,
+        `Lambda Function '${functionName}'`,
         // add Version here if we're publishing a new one
-        ...await renderVersions(logicalId, evaluateCfnTemplate, [`Lambda Version for Function '${await functionNameLazy()}'`]),
+        ...await renderVersions(logicalId, evaluateCfnTemplate, [`Lambda Version for Function '${functionName}'`]),
         // add any Aliases that we are hotswapping here
-        ...await renderAliases(logicalId, evaluateCfnTemplate, async (alias) => `Lambda Alias '${alias}' for Function '${await functionNameLazy()}'`),
+        ...await renderAliases(logicalId, evaluateCfnTemplate, async (alias) => `Lambda Alias '${alias}' for Function '${functionName}'`),
       ],
       apply: async (sdk: ISDK) => {
         const lambdaCodeChange = await evaluateLambdaFunctionProps(
@@ -69,7 +63,6 @@ export async function isHotswappableLambdaFunctionChange(
           return;
         }
 
-        const functionName = await functionNameLazy();
         if (!functionName) {
           return;
         }

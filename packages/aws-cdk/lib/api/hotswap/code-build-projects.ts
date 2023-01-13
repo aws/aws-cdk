@@ -18,21 +18,14 @@ export async function isHotswappableCodeBuildProjectChange(
     const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
       name: '',
     };
-    let _projectName: string | undefined = undefined;
-    const projectNameLazy = async () => {
-      if (!_projectName) {
-        _projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
-      }
-      return _projectName;
-    };
+    const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: classifiedChanges.namesOfHotswappableProps,
       service: 'codebuild',
-      resourceNames: [`CodeBuild Project '${await projectNameLazy()}'`],
+      resourceNames: [`CodeBuild Project '${projectName}'`],
       apply: async (sdk: ISDK) => {
-        const projectName = await projectNameLazy();
         if (!projectName) {
           return;
         }

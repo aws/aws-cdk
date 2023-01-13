@@ -30,25 +30,21 @@ export async function isHotswappableAppSyncChange(
 
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
-    let _physicalName: string | undefined = undefined;
-    const physicalNameLazy = async () => {
-      const arn = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? change.newValue.Properties?.Name : undefined);
-      if (isResolver) {
-        const arnParts = arn?.split('/');
-        _physicalName = arnParts ? `${arnParts[3]}.${arnParts[5]}` : undefined;
-      } else {
-        _physicalName = arn;
-      }
-      return _physicalName;
-    };
+    let physicalName: string | undefined = undefined;
+    const arn = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? change.newValue.Properties?.Name : undefined);
+    if (isResolver) {
+      const arnParts = arn?.split('/');
+      physicalName = arnParts ? `${arnParts[3]}.${arnParts[5]}` : undefined;
+    } else {
+      physicalName = arn;
+    }
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'appsync',
-      resourceNames: [`${change.newValue.Type} '${await physicalNameLazy()}'`],
+      resourceNames: [`${change.newValue.Type} '${physicalName}'`],
       apply: async (sdk: ISDK) => {
-        const physicalName = await physicalNameLazy();
         if (!physicalName) {
           return;
         }
