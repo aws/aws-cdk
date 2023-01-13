@@ -20,7 +20,7 @@ beforeEach(() => {
   });
 });
 
-describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('hotswaps a Version if it points to a changed Function, even if it itself is unchanged', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({

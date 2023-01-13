@@ -562,7 +562,7 @@ async function initCommandLine() {
       case 'watch':
         let hotswap = determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly);
         if (hotswap === undefined) {
-          hotswap = HotswapMode.CLASSIC;
+          hotswap = HotswapMode.FALL_BACK;
         }
 
         return cli.watch({
@@ -580,7 +580,7 @@ async function initCommandLine() {
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly) ?? HotswapMode.CLASSIC,
+          hotswap: determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly) ?? HotswapMode.FALL_BACK,
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -710,7 +710,7 @@ function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean)
 
   let hotswapMode: HotswapMode | undefined = undefined;
   if (hotswap) {
-    hotswapMode = HotswapMode.CLASSIC;
+    hotswapMode = HotswapMode.FALL_BACK;
   } else if (hotswapOnly) {
     hotswapMode = HotswapMode.HOTSWAP_ONLY;
   }

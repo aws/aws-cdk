@@ -88,7 +88,7 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.CLASSIC`", async
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: HotswapMode.CLASSIC,
+    hotswap: HotswapMode.FALL_BACK,
     extraUserAgent: 'extra-user-agent',
   });
 
@@ -135,7 +135,7 @@ test('correctly passes CFN parameters when hotswapping', async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: HotswapMode.CLASSIC,
+    hotswap: HotswapMode.FALL_BACK,
     parameters: {
       A: 'A-value',
       B: 'B=value',
@@ -145,7 +145,7 @@ test('correctly passes CFN parameters when hotswapping', async () => {
   });
 
   // THEN
-  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.CLASSIC);
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
 });
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
@@ -188,7 +188,7 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    hotswap: HotswapMode.CLASSIC,
+    hotswap: HotswapMode.FALL_BACK,
     rollback: undefined,
   });
 

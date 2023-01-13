@@ -21,7 +21,7 @@ beforeEach(() => {
   hotswapMockSdkProvider.setInvokeLambdaMock(mockLambdaInvoke);
 });
 
-describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('calls the lambdaInvoke() API when it receives only an asset difference in an S3 bucket deployment and evaluates CFN expressions in S3 Deployment Properties', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
@@ -105,7 +105,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.CLASSIC) {
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -196,7 +196,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.CLASSIC) {
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -511,7 +511,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapMode === HotswapMode.CLASSIC) {
+      if (hotswapMode === HotswapMode.FALL_BACK) {
         // WHEN
         const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -588,7 +588,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapMode === HotswapMode.CLASSIC) {
+      if (hotswapMode === HotswapMode.FALL_BACK) {
         // WHEN
         const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -761,7 +761,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapMode === HotswapMode.CLASSIC) {
+      if (hotswapMode === HotswapMode.FALL_BACK) {
         // WHEN
         const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -828,7 +828,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
         },
       });
 
-      if (hotswapMode === HotswapMode.CLASSIC) {
+      if (hotswapMode === HotswapMode.FALL_BACK) {
         // WHEN
         const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 

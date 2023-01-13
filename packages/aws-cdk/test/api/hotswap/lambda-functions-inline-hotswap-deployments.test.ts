@@ -19,7 +19,7 @@ beforeEach(() => {
   });
 });
 
-describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapMode) => {
+describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('these tests do not depend on the hotswap type', (hotswapMode) => {
   test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Node.js code)', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({

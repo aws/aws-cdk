@@ -79,7 +79,7 @@ export async function tryHotswapDeployment(
   }
 
   // preserve classic hotswap behavior
-  if (hotswapMode === HotswapMode.CLASSIC) {
+  if (hotswapMode === HotswapMode.FALL_BACK) {
     if (nonHotswappableChanges.length > 0) {
       return undefined;
     }

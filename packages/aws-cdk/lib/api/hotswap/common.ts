@@ -44,7 +44,7 @@ export enum HotswapMode {
   /**
    * Will fall back to CloudFormation when a non-hotswappable change is detected
    */
-  CLASSIC = 'classic',
+  FALL_BACK = 'fall-back',
 
   /**
    * Will not fall back to CloudFormation when a non-hotswappable change is detected

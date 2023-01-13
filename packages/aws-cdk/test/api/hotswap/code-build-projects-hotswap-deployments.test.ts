@@ -11,7 +11,7 @@ beforeEach(() => {
   hotswapMockSdkProvider.setUpdateProjectMock(mockUpdateProject);
 });
 
-describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('returns undefined when a new CodeBuild Project is added to the Stack', async () => {
     // GIVEN
     const cdkStackArtifact = setup.cdkStackArtifactOf({
@@ -24,7 +24,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.CLASSIC) {
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -573,7 +573,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.CLASSIC) {
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -627,7 +627,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
 
     setup.pushStackResourceSummaries(setup.stackSummaryOf('CodeBuildProject', 'AWS::CodeBuild::Project', 'mock-project-resource-id'));
-    if (hotswapMode === HotswapMode.CLASSIC) {
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
@@ -686,7 +686,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.CLASSIC) {
+    if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
       const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 

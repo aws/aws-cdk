@@ -416,12 +416,12 @@ describe('deploy', () => {
       await cdkToolkit.deploy({
         selector: { patterns: ['Test-Stack-A-Display-Name'] },
         requireApproval: RequireApproval.Never,
-        hotswap: HotswapMode.CLASSIC,
+        hotswap: HotswapMode.FALL_BACK,
       });
 
       // THEN
       expect(mockCfnDeployments.deployStack).toHaveBeenCalledWith(expect.objectContaining({
-        hotswap: HotswapMode.CLASSIC,
+        hotswap: HotswapMode.FALL_BACK,
       }));
     });
   });
@@ -730,7 +730,7 @@ describe('watch', () => {
     expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ concurrency: 3 }));
   });
 
-  describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+  describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
     test('passes through the correct hotswap mode to deployStack()', async () => {
       cloudExecutable.configuration.settings.set(['watch'], {});
       const toolkit = defaultToolkitSetup();
@@ -753,7 +753,7 @@ describe('watch', () => {
     await toolkit.watch({ selector: { patterns: [] }, hotswap: undefined });
     fakeChokidarWatcherOn.readyCallback();
 
-    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.CLASSIC }));
+    expect(cdkDeployMock).toBeCalledWith(expect.objectContaining({ hotswap: HotswapMode.FALL_BACK }));
   });
 
   test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
