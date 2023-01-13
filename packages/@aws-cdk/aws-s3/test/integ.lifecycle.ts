@@ -1,5 +1,5 @@
 import { App, Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { Bucket, StorageClass, TransitionMoment } from '../lib';
+import { Bucket, StorageClass, TransitionTime } from '../lib';
 
 const app = new App();
 
@@ -24,7 +24,7 @@ new Bucket(stack, 'AnotherBucket', {
   lifecycleRules: [{
     transitions: [{
       storageClass: StorageClass.GLACIER,
-      transitionMoment: TransitionMoment.after(Duration.days(30)),
+      transitionTime: TransitionTime.after(Duration.days(30)),
     }],
   }],
   removalPolicy: RemovalPolicy.DESTROY,

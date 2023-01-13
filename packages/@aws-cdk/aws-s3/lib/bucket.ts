@@ -2043,8 +2043,8 @@ export class Bucket extends BucketBase {
           assertSingleTimeDefinition(t);
           return {
             storageClass: t.storageClass.value,
-            transitionDate: t.transitionMoment?.transitionDate ?? t.transitionDate,
-            transitionInDays: (t.transitionMoment?.transitionAfter ?? t.transitionAfter)?.toDays(),
+            transitionDate: t.transitionTime?.transitionDate ?? t.transitionDate,
+            transitionInDays: (t.transitionTime?.transitionAfter ?? t.transitionAfter)?.toDays(),
           };
         }),
         expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
@@ -2057,12 +2057,12 @@ export class Bucket extends BucketBase {
     }
 
     function assertSingleTimeDefinition(t: Transition) {
-      const count = [t.transitionMoment, t.transitionAfter, t.transitionDate]
+      const count = [t.transitionTime, t.transitionAfter, t.transitionDate]
         .filter(x => x != null)
         .length;
 
       if (count !== 1) {
-        throw new Error('Exactly one of transitionMoment, transitionAfter or transitionDate should be specified when declaring a transition lifecycle rule.');
+        throw new Error('Exactly one of transitionTime, transitionAfter or transitionDate should be specified when declaring a transition lifecycle rule.');
       }
     }
   }

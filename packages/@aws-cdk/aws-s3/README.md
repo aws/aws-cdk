@@ -608,8 +608,14 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
     objectSizeLessThan: 10000, 
     transitions: [{
       storageClass: s3.StorageClass.GLACIER,
-      transitionMoment: s3.TransitionMoment.after(cdk.Duration.days(30)),
+      transitionTime: s3.TransitionTime.after(cdk.Duration.days(30)),
     }],
   }]
 });
 ```
+
+Note that, to specify the point in time when the transition will happen, we
+pass a `TransitionTime` object. There are two mutually exclusive ways to specify
+this time: by providing an absolute point in time (`TransitionTime.at()`) or by
+a providing the time elapsed since the creation of the object
+(`TransitionTime.after())`).

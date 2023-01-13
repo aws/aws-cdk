@@ -145,21 +145,21 @@ export interface LifecycleRule {
 /**
  * A point in time when an object should transition to a different storage class.
  */
-export class TransitionMoment {
+export class TransitionTime {
 
   /**
    * A moment defined by a specific date.
    *
    * The date value must be in ISO 8601 format. The time is always midnight UTC.
    */
-  public static at(date: Date): TransitionMoment {
+  public static at(date: Date): TransitionTime {
     return { transitionDate: date };
   }
 
   /**
    * A moment defined by the number of days after the object creation.
    */
-  public static after(duration: Duration): TransitionMoment {
+  public static after(duration: Duration): TransitionTime {
     return { transitionAfter: duration };
   }
 
@@ -189,7 +189,7 @@ export interface Transition {
    * The date value must be in ISO 8601 format. The time is always midnight UTC.
    *
    * @default - No transition date.
-   * @deprecated Use `transitionMoment`
+   * @deprecated Use `transitionTime`
    */
   readonly transitionDate?: Date;
 
@@ -197,7 +197,7 @@ export interface Transition {
    * Indicates the number of days after creation when objects are transitioned to the specified storage class.
    *
    * @default - No transition count.
-   * @deprecated Use `transitionMoment`
+   * @deprecated Use `transitionTime`
    */
   readonly transitionAfter?: Duration;
 
@@ -206,7 +206,7 @@ export interface Transition {
    *
    * @default - No transition moment.
    */
-  readonly transitionMoment?: TransitionMoment;
+  readonly transitionTime?: TransitionTime;
 }
 
 /**

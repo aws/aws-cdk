@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Bucket, StorageClass, TransitionMoment } from '../lib';
+import { Bucket, StorageClass, TransitionTime } from '../lib';
 
 describeDeprecated('rules', () => {
   test('Bucket with expiration days', () => {
@@ -106,7 +106,7 @@ describeDeprecated('rules', () => {
       lifecycleRules: [{
         transitions: [{
           storageClass: StorageClass.GLACIER,
-          transitionMoment: TransitionMoment.after(Duration.days(30)),
+          transitionTime: TransitionTime.after(Duration.days(30)),
         }],
       }],
     });
@@ -125,7 +125,7 @@ describeDeprecated('rules', () => {
     });
   });
 
-  test('Only one moment can be defined for transition rules', () => {
+  test('Only one time can be defined for transition rules', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -134,14 +134,14 @@ describeDeprecated('rules', () => {
       lifecycleRules: [{
         transitions: [{
           storageClass: StorageClass.GLACIER,
-          transitionMoment: TransitionMoment.after(Duration.days(30)),
+          transitionTime: TransitionTime.after(Duration.days(30)),
           transitionDate: new Date(),
         }],
       }],
     });
 
     expect(() => Template.fromStack(stack))
-      .toThrow(/Exactly one of transitionMoment, transitionAfter or transitionDate should be specified/);
+      .toThrow(/Exactly one of transitionTime, transitionAfter or transitionDate should be specified/);
   });
 
   test('Bucket with expiredObjectDeleteMarker', () => {
