@@ -178,9 +178,6 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
           { image: 'image2' },
         ],
         cpu: '256', // this uses the old value because a new value could cause a service replacement
-        //TODO: make a new unit test and run it against the original version of this code,
-        // which verifies that unchanged properties (eg, cpu) are actually passed through to the SDK call,
-        // even though they haven't been changed
       });
       expect(mockUpdateService).toBeCalledWith({
         service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
@@ -267,9 +264,6 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
           { image: 'image2' },
         ],
         cpu: '256', // this uses the old value because a new value could cause a service replacement
-        //TODO: make a new unit test and run it against the original version of this code,
-        // which verifies that unchanged properties (eg, cpu) are actually passed through to the SDK call,
-        // even though they haven't been changed
       });
       expect(mockUpdateService).toBeCalledWith({
         service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
@@ -357,7 +351,7 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
     });
   });
 
-  test('a difference just in a TaskDefinition, without any services using it, is not hotswappable', async () => {
+  test('a difference just in a TaskDefinition, without any services using it, is not hotswappable in FALL_BACK mode', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -409,8 +403,14 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
-      expect(mockRegisterTaskDef).not.toHaveBeenCalled();
-      expect(mockUpdateService).not.toHaveBeenCalled();
+      expect(mockRegisterTaskDef).toBeCalledWith({
+        family: 'my-task-def',
+        containerDefinitions: [
+          { image: 'image2' },
+        ],
+      });
+
+      expect(mockUpdateService).not.toHaveBeenCalledWith();
     }
   });
 

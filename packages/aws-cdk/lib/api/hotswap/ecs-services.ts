@@ -31,9 +31,8 @@ export async function isHotswappableEcsServiceChange(
   }
   if (ecsServicesReferencingTaskDef.length === 0) {
     // if there are no resources referencing the TaskDefinition,
-    // hotswap is not possible in either mode
-    reportNonHotswappableChange(ret, Object.keys(classifiedChanges.hotswappableProps), logicalId, change.newValue.Type, 'No ECS services reference the changed task definition');
-    return ret;
+    // hotswap is not possible in FALL_BACK mode
+    reportNonHotswappableChange(ret, ['ECS Service'], logicalId, change.newValue.Type, 'No ECS services reference the changed task definition', false);
   } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
     // if something besides an ECS Service is referencing the TaskDefinition,
     // hotswap is not possible in FALL_BACK mode
@@ -45,19 +44,22 @@ export async function isHotswappableEcsServiceChange(
 
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
+    const taskDefinitionResource = await prepareTaskDefinitionChange(evaluateCfnTemplate, logicalId, change);
     ret.push({
       hotswappable: true,
       resourceType: change.newValue.Type,
       propsChanged: namesOfHotswappableChanges,
       service: 'ecs-service',
-      resourceNames: ecsServicesReferencingTaskDef.map(ecsService => `ECS Service '${ecsService.serviceArn.split('/')[2]}'`),
+      resourceNames: [
+        `ECS Task Definition '${await taskDefinitionResource.Family}'`,
+        ...ecsServicesReferencingTaskDef.map(ecsService => `ECS Service '${ecsService.serviceArn.split('/')[2]}'`),
+      ],
       apply: async (sdk: ISDK) => {
-        const taskDefinitionResource = await prepareTaskDefinitionChange(evaluateCfnTemplate, logicalId, change);
         // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision
         // we need to lowercase the evaluated TaskDef from CloudFormation,
         // as the AWS SDK uses lowercase property names for these
 
-        // The SDK requires more properties here than its worth doing an explicit typing for
+        // The SDK requires more properties here than its worth doing explicit typing for
         // instead, just use all the old values in the diff to fill them in implicitly
         const lowercasedTaskDef = transformObjectKeys(taskDefinitionResource, lowerCaseFirstCharacter, {
           // All the properties that take arbitrary string as keys i.e. { "string" : "string" }
