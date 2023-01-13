@@ -12,7 +12,8 @@ type Logger = (x: string) => void;
 export async function zipDirectory(directory: string, outputFile: string, logger: Logger): Promise<void> {
   // We write to a temporary file and rename at the last moment. This is so that if we are
   // interrupted during this process, we don't leave a half-finished file in the target location.
-  const temporaryOutputFile = `${randomUUID()}._tmp`;
+  const outputFileDirectory = path.dirname(outputFile);
+  const temporaryOutputFile = `${outputFileDirectory}${path.sep}${randomUUID()}._tmp`;
   await writeZipFile(directory, temporaryOutputFile);
   await moveIntoPlace(temporaryOutputFile, outputFile, logger);
 }
