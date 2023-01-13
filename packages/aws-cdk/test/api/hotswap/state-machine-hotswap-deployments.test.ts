@@ -705,21 +705,12 @@ describe.each([HotswapMode.CLASSIC, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotsw
       },
     });
 
-    if (hotswapMode === HotswapMode.CLASSIC) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
-      // THEN
-      expect(deployStackResult).toBeUndefined();
-      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
-    } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-      // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
-
-      // THEN
-      expect(deployStackResult).not.toBeUndefined();
-      expect(deployStackResult?.noOp).toEqual(true);
-      expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
-    }
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(deployStackResult?.noOp).toEqual(true);
+    expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
   });
 });

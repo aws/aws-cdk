@@ -7,13 +7,35 @@ import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges } from './hotswap/common';
+import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { loadCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
+
+type HotswapDetector = (
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate
+) => Promise<ChangeHotswapResult>;
+
+const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
+  // Lambda
+  'AWS::Lambda::Function': isHotswappableLambdaFunctionChange,
+  'AWS::Lambda::Version': isHotswappableLambdaFunctionChange,
+  'AWS::Lambda::Alias': isHotswappableLambdaFunctionChange,
+  // AppSync
+  'AWS::AppSync::Resolver': isHotswappableAppSyncChange,
+  'AWS::AppSync::FunctionConfiguration': isHotswappableAppSyncChange,
+
+  'AWS::ECS::TaskDefinition': isHotswappableEcsServiceChange,
+  'AWS::CodeBuild::Project': isHotswappableCodeBuildProjectChange,
+  'AWS::StepFunctions::StateMachine': isHotswappableStateMachineChange,
+  'Custom::CDKBucketDeployment': isHotswappableS3BucketDeploymentChange,
+  'AWS::IAM::Policy': isHotswappableS3BucketDeploymentChange,
+
+  'AWS::CDK::Metadata': async () => [],
+};
 
 /**
  * Perform a hotswap deployment,
@@ -48,7 +70,7 @@ export async function tryHotswapDeployment(
 
   const currentTemplate = await loadCurrentTemplateWithNestedStacks(stackArtifact, sdk);
   const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);
-  const { hotswappableChanges, nonHotswappableChanges, metadataChanged } = await classifyResourceChanges(
+  const { hotswappableChanges, nonHotswappableChanges } = await classifyResourceChanges(
     stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames,
   );
 
@@ -58,18 +80,6 @@ export async function tryHotswapDeployment(
 
   // preserve classic hotswap behavior
   if (hotswapMode === HotswapMode.CLASSIC) {
-    // The only change detected was to CDK::Metadata, so return noOp
-    if (hotswappableChanges.length === 0 && nonHotswappableChanges.length === 0 && metadataChanged) {
-      return { noOp: true, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
-    }
-
-    // the number of hotswappable resources is less than the number of changes
-    // this means that at least one change was deemed not hotswappable by every detector function,
-    // ie they all returned { hotswappableChanges: [], ... }
-    if (hotswappableChanges.length < Object.keys(getStackResourceDifferences(stackChanges)).length) {
-      return undefined;
-    }
-
     if (nonHotswappableChanges.length > 0) {
       return undefined;
     }
@@ -93,11 +103,9 @@ async function classifyResourceChanges(
 ): Promise<ClassifiedResourceChanges> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
-  const promises: Array<() => Array<Promise<ChangeHotswapResult>>> = [];
+  const promises: Array<() => Promise<ChangeHotswapResult>> = [];
   const hotswappableResources = new Array<HotswappableChange>();
   const nonHotswappableResources = new Array<NonHotswappableChange>();
-  let metadataChanged = false;
-
   for (const logicalId of Object.keys(stackChanges.outputs.changes)) {
     nonHotswappableResources.push({
       hotswappable: false,
@@ -113,6 +121,8 @@ async function classifyResourceChanges(
       const nestedHotswappableResources = await findNestedHotswappableChanges(logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk);
       hotswappableResources.push(...nestedHotswappableResources.hotswappableChanges);
       nonHotswappableResources.push(...nestedHotswappableResources.nonHotswappableChanges);
+
+      continue;
     }
 
     const resourceHotswapEvaluation = isCandidateForHotswapping(change, logicalId);
@@ -120,51 +130,38 @@ async function classifyResourceChanges(
     if ('hotswappable' in resourceHotswapEvaluation) {
       if (!resourceHotswapEvaluation.hotswappable) {
         nonHotswappableResources.push(resourceHotswapEvaluation);
-      } else {
-        // the only hotswappable type `isCandidateForHotswapping` can return is Metadata
-        metadataChanged = true;
       }
 
       continue;
     }
 
-    // run detector functions lazily to prevent unhandled promise rejections
-    promises.push(() => [
-      // each detector function returns an array of HotswappableChanges and NonHotswappableChanges.
-      // if the array is empty, then that detector function had no opinion on that change.
-      // For example, a change to an AWS::Lambda::Function will result in every detector function
-      // except for `isHotswappableLambdaFunctionChange` returning `[]`.
-      isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-      isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-      isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-      isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-      isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-      isHotswappableAppSyncChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
-    ]);
+    const resourceType: string = resourceHotswapEvaluation.newValue.Type;
+    if (resourceType in RESOURCE_DETECTORS) {
+      // run detector functions lazily to prevent unhandled promise rejections
+      promises.push(() => RESOURCE_DETECTORS[resourceType](logicalId, resourceHotswapEvaluation, evaluateCfnTemplate));
+    } else {
+      reportNonHotswappableChange(nonHotswappableResources, Object.keys(change.propertyUpdates), logicalId, change.newValue!.Type);
+    }
   }
 
   // resolve all detector results
-  const changesDetectionResults: Array<Array<ChangeHotswapResult>> = [];
+  const changesDetectionResults: Array<ChangeHotswapResult> = [];
   for (const detectorResultPromises of promises) {
-    const hotswapDetectionResults = await Promise.all(detectorResultPromises());
+    const hotswapDetectionResults = await Promise.all(await detectorResultPromises());
     changesDetectionResults.push(hotswapDetectionResults);
   }
 
   for (const resourceDetectionResults of changesDetectionResults) {
-    for (const result of resourceDetectionResults) {
-      for (const propertyResult of result) {
-        propertyResult.hotswappable ?
-          hotswappableResources.push(propertyResult) :
-          nonHotswappableResources.push(propertyResult);
-      }
+    for (const propertyResult of resourceDetectionResults) {
+      propertyResult.hotswappable ?
+        hotswappableResources.push(propertyResult) :
+        nonHotswappableResources.push(propertyResult);
     }
   }
-
 
   return {
     hotswappableChanges: hotswappableResources,
     nonHotswappableChanges: nonHotswappableResources,
-    metadataChanged,
   };
 }
 
@@ -233,7 +230,6 @@ async function findNestedHotswappableChanges(
         rejectedChanges: [],
         resourceType: 'AWS::CloudFormation::Stack',
       }],
-      metadataChanged: false, // false, since this won't deploy anyway
     };
   }
 
@@ -313,19 +309,8 @@ function isCandidateForHotswapping(
     };
   }
 
-  // Ignore Metadata changes
-  if (change.newValue.Type === 'AWS::CDK::Metadata') {
-    return {
-      hotswappable: true,
-      resourceType: change.newValue?.Type,
-      propsChanged: [],
-      resourceNames: [],
-      service: 'cdk',
-      apply: async (_sdk: ISDK) => {},
-    };
-  }
-
   return {
+    logicalId,
     oldValue: change.oldValue,
     newValue: change.newValue,
     propertyUpdates: change.propertyUpdates,

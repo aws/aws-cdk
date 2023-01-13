@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
-import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys, reportNonHotswappableChange } from './common';
+import { ChangeHotswapResult, classifyChanges, HotswappableChangeCandidate, lowerCaseFirstCharacter, reportNonHotswappableChange, transformObjectKeys } from './common';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -16,8 +16,8 @@ export async function isHotswappableEcsServiceChange(
   // We only allow a change in the ContainerDefinitions of the TaskDefinition for now -
   // it contains the image and environment variables, so seems like a safe bet for now.
   // We might revisit this decision in the future though!
-  const { hotswappableProps, nonHotswappableChanges } = classifyChanges(change, ['ContainerDefinitions'], logicalId, change.newValue.Type);
-  ret.push(...nonHotswappableChanges);
+  const classifiedChanges = classifyChanges(change, ['ContainerDefinitions']);
+  classifiedChanges.reportNonHotswappableChanges(ret);
 
   // find all ECS Services that reference the TaskDefinition that changed
   const resourcesReferencingTaskDef = evaluateCfnTemplate.findReferencesTo(logicalId);
@@ -32,7 +32,7 @@ export async function isHotswappableEcsServiceChange(
   if (ecsServicesReferencingTaskDef.length === 0) {
     // if there are no resources referencing the TaskDefinition,
     // hotswap is not possible in either mode
-    reportNonHotswappableChange(ret, Object.keys(hotswappableProps), logicalId, change.newValue.Type, 'No ECS services reference the changed task definition');
+    reportNonHotswappableChange(ret, Object.keys(classifiedChanges.hotswappableProps), logicalId, change.newValue.Type, 'No ECS services reference the changed task definition');
     return ret;
   } if (resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
     // if something besides an ECS Service is referencing the TaskDefinition,
@@ -43,7 +43,7 @@ export async function isHotswappableEcsServiceChange(
     }
   }
 
-  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
+  const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     ret.push({
       hotswappable: true,

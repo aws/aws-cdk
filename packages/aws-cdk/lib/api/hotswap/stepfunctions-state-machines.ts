@@ -9,10 +9,10 @@ export async function isHotswappableStateMachineChange(
     return [];
   }
   const ret: ChangeHotswapResult = [];
-  const { hotswappableProps, nonHotswappableChanges } = classifyChanges(change, ['DefinitionString'], logicalId, change.newValue.Type);
-  ret.push(...nonHotswappableChanges);
+  const classifiedChanges = classifyChanges(change, ['DefinitionString']);
+  classifiedChanges.reportNonHotswappableChanges(ret);
 
-  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
+  const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     let _stateMachineArn: string | undefined = undefined;
     const stateMachineArnLazy = async () => {

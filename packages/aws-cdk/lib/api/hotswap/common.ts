@@ -38,7 +38,6 @@ export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChan
 export interface ClassifiedResourceChanges {
   hotswappableChanges: HotswappableChange[];
   nonHotswappableChanges: NonHotswappableChange[];
-  metadataChanged: boolean;
 }
 
 export enum HotswapMode {
@@ -63,20 +62,27 @@ export enum HotswapMode {
  */
 export class HotswappableChangeCandidate {
   /**
-   * The value the resource is being updated from.
+   * The logical ID of the resource which is being changed
+   */
+  public readonly logicalId: string;
+
+  /**
+   * The value the resource is being updated from
    */
   public readonly oldValue: cfn_diff.Resource;
+
   /**
-   * The value the resource is being updated to.
+   * The value the resource is being updated to
    */
   public readonly newValue: cfn_diff.Resource;
 
   /**
-   * The changes made to the resource properties.
+   * The changes made to the resource properties
    */
   public readonly propertyUpdates: PropDiffs;
 
-  public constructor(oldValue: cfn_diff.Resource, newValue: cfn_diff.Resource, propertyUpdates: PropDiffs) {
+  public constructor(logicalId: string, oldValue: cfn_diff.Resource, newValue: cfn_diff.Resource, propertyUpdates: PropDiffs) {
+    this.logicalId = logicalId;
     this.oldValue = oldValue;
     this.newValue = newValue;
     this.propertyUpdates = propertyUpdates;
@@ -153,9 +159,6 @@ export class ClassifiedChanges {
 export function classifyChanges(
   xs: HotswappableChangeCandidate,
   hotswappablePropNames: string[],
-  logicalId: string,
-  type: string,
-  ret: ChangeHotswapResult,
 ): ClassifiedChanges {
   const hotswappableProps: PropDiffs = {};
   const nonHotswappableProps: PropDiffs = {};
@@ -168,8 +171,21 @@ export function classifyChanges(
     }
   }
 
-  const changes = new ClassifiedChanges(logicalId, type, hotswappableProps, nonHotswappableProps);
-  changes.reportNonHotswappableChanges(ret);
+  return new ClassifiedChanges(xs.logicalId, xs.newValue.Type, hotswappableProps, nonHotswappableProps);
+}
 
-  return changes;
+export function reportNonHotswappableChange(
+  ret: ChangeHotswapResult,
+  nonHotswappablePropNames: string[],
+  logicalId: string,
+  type: string,
+  reason?: string,
+): void {
+  ret.push({
+    hotswappable: false,
+    rejectedChanges: Object.keys(nonHotswappablePropNames),
+    logicalId: logicalId,
+    resourceType: type,
+    reason,
+  });
 }

@@ -37,10 +37,9 @@ export async function isHotswappableLambdaFunctionChange(
   }
 
   const ret: ChangeHotswapResult = [];
-  const { hotswappableProps, nonHotswappableChanges } = classifyChanges(change, ['Code', 'Environment', 'Description'], logicalId, change.newValue.Type);
-  ret.push(...nonHotswappableChanges);
+  const classifiedChanges = classifyChanges(change, ['Code', 'Environment', 'Description']);
+  classifiedChanges.reportNonHotswappableChanges(ret);
 
-  const namesOfHotswappableChanges = Object.keys(hotswappableProps);
   let _functionName: string | undefined = undefined;
   const functionNameLazy = async () => {
     if (!_functionName) {
@@ -48,6 +47,7 @@ export async function isHotswappableLambdaFunctionChange(
     }
     return _functionName;
   };
+  const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {
     ret.push({
       hotswappable: true,
@@ -62,7 +62,9 @@ export async function isHotswappableLambdaFunctionChange(
         ...await renderAliases(logicalId, evaluateCfnTemplate, async (alias) => `Lambda Alias '${alias}' for Function '${await functionNameLazy()}'`),
       ],
       apply: async (sdk: ISDK) => {
-        const lambdaCodeChange = await evaluateLambdaFunctionProps(hotswappableProps, change.newValue.Properties?.Runtime, evaluateCfnTemplate);
+        const lambdaCodeChange = await evaluateLambdaFunctionProps(
+          classifiedChanges.hotswappableProps, change.newValue.Properties?.Runtime, evaluateCfnTemplate,
+        );
         if (lambdaCodeChange === undefined) {
           return;
         }

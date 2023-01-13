@@ -3,7 +3,7 @@ import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-templ
 import { ChangeHotswapResult, HotswappableChangeCandidate } from './common';
 
 /**
- * This means that the value is required to exist by CloudFormation's API (or our S3 Bucket Deployment Lambda)
+ * This means that the value is required to exist by CloudFormation's Custom Resource API (or our S3 Bucket Deployment Lambda's API)
  * but the actual value specified is irrelevant
  */
 export const REQUIRED_BY_CFN = 'required-to-be-present-by-cfn';
@@ -134,14 +134,7 @@ async function changeIsForS3DeployCustomResourcePolicy(
 
   // this doesn't block the hotswap, but it also isn't a hotswappable change by itself. Return
   // an empty change to signify this.
-  return [{
-    hotswappable: true,
-    resourceType: 'AWS::IAM::Policy',
-    resourceNames: [],
-    propsChanged: [],
-    service: 'iam',
-    apply: async (_sdk: ISDK) => {},
-  }];
+  return [];
 }
 
 function stringifyObject(obj: any): any {
