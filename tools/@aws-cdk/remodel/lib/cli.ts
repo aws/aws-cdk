@@ -100,6 +100,7 @@ async function makeAwsCdkLib(target: string) {
   await fs.writeFile(pkgJsonPath, JSON.stringify({
     ...pkgJson,
     scripts: {
+      ...pkgJson.scripts,
       'gen': 'ts-node scripts/gen.ts',
       'build': 'yarn gen',
     },

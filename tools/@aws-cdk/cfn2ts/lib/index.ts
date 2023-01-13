@@ -45,7 +45,6 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
 
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
-
     const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
     const packagePath = path.join(outPath, module.moduleName);
 
