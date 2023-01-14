@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -403,6 +404,109 @@ describe('proxy', () => {
         'clusterSecurityGroupfromproxyProxySecurityGroupA80F0525IndirectPortA13E5F3D',
         'clusterSecurityGroupF441DCEA',
         'clusterSubnets81E3593F',
+      ],
+    });
+  });
+});
+
+describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => {
+  test('create a DB proxy from an instance with a unique resource name', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    stack.node.setContext(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME, true);
+    vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      Auth: [
+        {
+          AuthScheme: 'SECRETS',
+          IAMAuth: 'DISABLED',
+          SecretArn: {
+            Ref: 'InstanceSecretAttachment83BEE581',
+          },
+        },
+      ],
+      DBProxyName: 'Proxy',
+      EngineFamily: 'MYSQL',
+      RequireTLS: true,
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ProxyIAMRole2FE8AB0F',
+          'Arn',
+        ],
+      },
+      VpcSubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    });
+  });
+
+  test('create a DB proxy from an instance with a proxy name in the constructor', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    stack.node.setContext(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME, true);
+    vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      dbProxyName: 'my-proxy-name',
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      Auth: [
+        {
+          AuthScheme: 'SECRETS',
+          IAMAuth: 'DISABLED',
+          SecretArn: {
+            Ref: 'InstanceSecretAttachment83BEE581',
+          },
+        },
+      ],
+      DBProxyName: 'my-proxy-name',
+      EngineFamily: 'MYSQL',
+      RequireTLS: true,
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ProxyIAMRole2FE8AB0F',
+          'Arn',
+        ],
+      },
+      VpcSubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
       ],
     });
   });

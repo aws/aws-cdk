@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
 import { IEngine } from './engine';
@@ -414,7 +415,12 @@ export class DatabaseProxy extends DatabaseProxyBase
   private readonly resource: CfnDBProxy;
 
   constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
-    super(scope, id, { physicalName: props.dbProxyName || id });
+    super(scope, id);
+
+    const physicalName = props.dbProxyName || (
+      cdk.FeatureFlags.of(this).isEnabled(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME) ?
+        cdk.Names.uniqueResourceName(this, { maxLength: 60 }) : id
+    );
 
     const role = props.role || new iam.Role(this, 'IAMRole', {
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
@@ -447,7 +453,7 @@ export class DatabaseProxy extends DatabaseProxyBase
           secretArn: _.secretArn,
         };
       }),
-      dbProxyName: this.physicalName,
+      dbProxyName: physicalName,
       debugLogging: props.debugLogging,
       engineFamily: bindResult.engineFamily,
       idleClientTimeout: props.idleClientTimeout?.toSeconds(),
