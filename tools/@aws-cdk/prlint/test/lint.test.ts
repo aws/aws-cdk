@@ -58,6 +58,63 @@ describe('breaking changes format', () => {
   });
 });
 
+describe('commit message format', () => {
+  test('valid scope', async () => {
+    const issue = {
+      number: 1,
+      title: 'chore(s3): some title',
+      body: '',
+      labels: [],
+    };
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validate()).resolves;
+  });
+
+  test('invalid scope with aws- prefix', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(aws-s3): some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+    };
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validate()).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
+  });
+
+  test('valid scope with aws- in summary and body', async () => {
+    const issue = {
+      number: 1,
+      title: 'docs(s3): something aws-s3',
+      body: 'something aws-s3',
+      labels: [],
+    };
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validate()).resolves;
+  });
+
+  test('valid with missing scope', async () => {
+    const issue = {
+      number: 1,
+      title: 'docs: something aws-s3',
+      body: '',
+      labels: [],
+    };
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validate()).resolves;
+  });
+
+  test.each(['core', 'prlint', 'awslint'])('valid scope for packages that dont use aws- prefix', async (scope) => {
+    const issue = {
+      number: 1,
+      title: `chore(${scope}): some title`,
+      body: '',
+      labels: []
+    };
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validate()).resolves;
+  })
+});
+
 describe('ban breaking changes in stable modules', () => {
   test('breaking change in stable module', async () => {
     const issue = {
