@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { CfnBucket, IBucket } from '@aws-cdk/aws-s3';
 import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
 import * as cdk from '@aws-cdk/core';
@@ -42,7 +43,11 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     const physicalName = this.physicalNameOfBucket(this.assetBucket);
 
     const bucketName = physicalName;
-    const s3Filename = asset.fileName?.split('.')[1] + '.zip';
+    if (!asset.fileName) {
+      throw new Error('Asset file name is undefined');
+    }
+    const assetFileBaseName = path.basename(asset.fileName);
+    const s3Filename = assetFileBaseName.split('.')[1] + '.zip';
     const objectKey = `${s3Filename}`;
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
     const httpUrl = `https://s3.${bucketName}/${objectKey}`;
