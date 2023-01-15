@@ -6658,7 +6658,7 @@ jest-docblock@^27.5.1:
   dependencies:
     detect-newline "^3.0.0"
 
-jest-each@^27.5.1:
+jest-each@^27.5.1, jest-each@^27.5.2:
   version "27.5.1"
   resolved "https://registry.npmjs.org/jest-each/-/jest-each-27.5.1.tgz#5bc87016f45ed9507fed6e4702a5b468a5b2c44e"
   integrity sha512-1Ff6p+FbhT/bXQnEouYy00bkNSY7OUpfIcmdl8vZ31A1UUaurOLPA8a8BbJOF2RDUElwJhmeaV7LnagI+5UwNQ==
