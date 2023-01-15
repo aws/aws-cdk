@@ -8,6 +8,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
+import each from 'jest-each';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;
@@ -29,25 +30,31 @@ const readWriteActions = [
   ...writeActions,
 ];
 
-const defaultVersion = EngineVersion.OPENSEARCH_1_0;
+const testedOpenSearchVersions = [
+  EngineVersion.OPENSEARCH_1_0,
+  EngineVersion.OPENSEARCH_1_1,
+  EngineVersion.OPENSEARCH_1_2,
+  EngineVersion.OPENSEARCH_1_3,
+  EngineVersion.OPENSEARCH_2_3,
+];
 
-test('connections throws if domain is not placed inside a vpc', () => {
+each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
 
   expect(() => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
     }).connections;
   }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
-test('subnets and security groups can be provided when vpc is used', () => {
+each(testedOpenSearchVersions).test('subnets and security groups can be provided when vpc is used', (engineVersion) => {
 
   const vpc = new Vpc(stack, 'Vpc');
   const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
     vpc,
   });
   const domain = new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
     vpc,
     vpcSubnets: [{ subnets: [vpc.privateSubnets[0]] }],
     securityGroups: [securityGroup],
@@ -74,11 +81,11 @@ test('subnets and security groups can be provided when vpc is used', () => {
 
 });
 
-test('default subnets and security group when vpc is used', () => {
+each(testedOpenSearchVersions).test('default subnets and security group when vpc is used', (engineVersion) => {
 
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
     vpc,
   });
 
@@ -109,11 +116,11 @@ test('default subnets and security group when vpc is used', () => {
 
 });
 
-test('connections has no default port if enforceHttps is false', () => {
+each(testedOpenSearchVersions).test('connections has no default port if enforceHttps is false', (engineVersion) => {
 
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
     vpc,
     enforceHttps: false,
   });
@@ -122,11 +129,11 @@ test('connections has no default port if enforceHttps is false', () => {
 
 });
 
-test('connections has default port 443 if enforceHttps is true', () => {
+each(testedOpenSearchVersions).test('connections has default port 443 if enforceHttps is true', (engineVersion) => {
 
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
     vpc,
     enforceHttps: true,
   });
@@ -135,9 +142,9 @@ test('connections has default port 443 if enforceHttps is true', () => {
 
 });
 
-test('default removalpolicy is retain', () => {
+each(testedOpenSearchVersions).test('default removalpolicy is retain', (engineVersion) => {
   new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
   });
 
   Template.fromStack(stack).hasResource('AWS::OpenSearchService::Domain', {
@@ -145,12 +152,12 @@ test('default removalpolicy is retain', () => {
   });
 });
 
-test('grants kms permissions if needed', () => {
+each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engineVersion) => {
 
   const key = new kms.Key(stack, 'Key');
 
   new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
     encryptionAtRest: {
       kmsKey: key,
     },
@@ -183,8 +190,14 @@ test('grants kms permissions if needed', () => {
 
 });
 
-test('minimal example renders correctly', () => {
-  new Domain(stack, 'Domain', { version: defaultVersion });
+each([
+  [EngineVersion.OPENSEARCH_1_0, 'OpenSearch_1.0'],
+  [EngineVersion.OPENSEARCH_1_1, 'OpenSearch_1.1'],
+  [EngineVersion.OPENSEARCH_1_2, 'OpenSearch_1.2'],
+  [EngineVersion.OPENSEARCH_1_3, 'OpenSearch_1.3'],
+  [EngineVersion.OPENSEARCH_2_3, 'OpenSearch_2.3'],
+]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
+  new Domain(stack, 'Domain', { version: engineVersion });
 
   Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
     EBSOptions: {
@@ -198,7 +211,7 @@ test('minimal example renders correctly', () => {
       InstanceType: 'r5.large.search',
       ZoneAwarenessEnabled: false,
     },
-    EngineVersion: 'OpenSearch_1.0',
+    EngineVersion: expectedCfVersion,
     EncryptionAtRestOptions: {
       Enabled: false,
     },
@@ -214,9 +227,9 @@ test('minimal example renders correctly', () => {
   });
 });
 
-test('can enable version upgrade update policy', () => {
+each([testedOpenSearchVersions]).test('can enable version upgrade update policy', (engineVersion) => {
   new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
     enableVersionUpgrade: true,
   });
 
@@ -227,9 +240,9 @@ test('can enable version upgrade update policy', () => {
   });
 });
 
-test('can set a self-referencing custom policy', () => {
+each([testedOpenSearchVersions]).test('can set a self-referencing custom policy', (engineVersion) => {
   const domain = new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
   });
 
   domain.addAccessPolicies(
@@ -287,11 +300,11 @@ test('can set a self-referencing custom policy', () => {
   });
 });
 
-describe('UltraWarm instances', () => {
+each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion) => {
 
   test('can enable UltraWarm instances', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodes: 2,
         warmNodes: 2,
@@ -310,7 +323,7 @@ describe('UltraWarm instances', () => {
 
   test('can enable UltraWarm instances with specific instance type', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodes: 2,
         warmNodes: 2,
@@ -330,9 +343,9 @@ describe('UltraWarm instances', () => {
 
 });
 
-test('can use tokens in capacity configuration', () => {
+each([testedOpenSearchVersions]).test('can use tokens in capacity configuration', (engineVersion) => {
   new Domain(stack, 'Domain', {
-    version: defaultVersion,
+    version: engineVersion,
     capacity: {
       dataNodeInstanceType: Token.asString({ Ref: 'dataNodeInstanceType' }),
       dataNodes: Token.asNumber({ Ref: 'dataNodes' }),
@@ -369,11 +382,11 @@ test('can use tokens in capacity configuration', () => {
   });
 });
 
-describe('log groups', () => {
+each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
 
   test('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         slowSearchLogEnabled: true,
       },
@@ -399,7 +412,7 @@ describe('log groups', () => {
 
   test('slowIndexLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         slowIndexLogEnabled: true,
       },
@@ -425,7 +438,7 @@ describe('log groups', () => {
 
   test('appLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         appLogEnabled: true,
       },
@@ -451,7 +464,7 @@ describe('log groups', () => {
 
   test('auditLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         auditLogEnabled: true,
       },
@@ -485,7 +498,7 @@ describe('log groups', () => {
 
   test('two domains with logging enabled can be created in same stack', () => {
     new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         appLogEnabled: true,
         slowSearchLogEnabled: true,
@@ -493,7 +506,7 @@ describe('log groups', () => {
       },
     });
     new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         appLogEnabled: true,
         slowSearchLogEnabled: true,
@@ -568,13 +581,13 @@ describe('log groups', () => {
 
   test('log group policy is uniquely named for each domain', () => {
     new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         appLogEnabled: true,
       },
     });
     new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         appLogEnabled: true,
       },
@@ -620,7 +633,7 @@ describe('log groups', () => {
 
   test('enabling audit logs throws without fine grained access control enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         auditLogEnabled: true,
       },
@@ -629,7 +642,7 @@ describe('log groups', () => {
 
   test('slowSearchLogGroup should use a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         slowSearchLogEnabled: true,
         slowSearchLogGroup: new logs.LogGroup(stack, 'SlowSearchLogs', {
@@ -658,7 +671,7 @@ describe('log groups', () => {
 
   test('slowIndexLogEnabled should use a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         slowIndexLogEnabled: true,
         slowIndexLogGroup: new logs.LogGroup(stack, 'SlowIndexLogs', {
@@ -687,7 +700,7 @@ describe('log groups', () => {
 
   test('appLogGroup should use a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       logging: {
         appLogEnabled: true,
         appLogGroup: new logs.LogGroup(stack, 'AppLogs', {
@@ -716,7 +729,7 @@ describe('log groups', () => {
 
   test('auditLOgGroup should use a custom log group', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserName: 'username',
       },
@@ -753,24 +766,25 @@ describe('log groups', () => {
 
 });
 
-describe('grants', () => {
+each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
 
   test('"grantRead" allows read actions associated with this domain resource', () => {
-    testGrant(readActions, (p, d) => d.grantRead(p));
+    testGrant(readActions, (p, d) => d.grantRead(p), engineVersion);
   });
 
   test('"grantWrite" allows write actions associated with this domain resource', () => {
-    testGrant(writeActions, (p, d) => d.grantWrite(p));
+    testGrant(writeActions, (p, d) => d.grantWrite(p), engineVersion);
   });
 
   test('"grantReadWrite" allows read and write actions associated with this domain resource', () => {
-    testGrant(readWriteActions, (p, d) => d.grantReadWrite(p));
+    testGrant(readWriteActions, (p, d) => d.grantReadWrite(p), engineVersion);
   });
 
   test('"grantIndexRead" allows read actions associated with an index in this domain resource', () => {
     testGrant(
       readActions,
       (p, d) => d.grantIndexRead('my-index', p),
+      engineVersion,
       false,
       ['/my-index', '/my-index/*'],
     );
@@ -780,6 +794,7 @@ describe('grants', () => {
     testGrant(
       writeActions,
       (p, d) => d.grantIndexWrite('my-index', p),
+      engineVersion,
       false,
       ['/my-index', '/my-index/*'],
     );
@@ -789,6 +804,7 @@ describe('grants', () => {
     testGrant(
       readWriteActions,
       (p, d) => d.grantIndexReadWrite('my-index', p),
+      engineVersion,
       false,
       ['/my-index', '/my-index/*'],
     );
@@ -798,6 +814,7 @@ describe('grants', () => {
     testGrant(
       readActions,
       (p, d) => d.grantPathRead('my-index/my-path', p),
+      engineVersion,
       false,
       ['/my-index/my-path'],
     );
@@ -807,6 +824,7 @@ describe('grants', () => {
     testGrant(
       writeActions,
       (p, d) => d.grantPathWrite('my-index/my-path', p),
+      engineVersion,
       false,
       ['/my-index/my-path'],
     );
@@ -816,6 +834,7 @@ describe('grants', () => {
     testGrant(
       readWriteActions,
       (p, d) => d.grantPathReadWrite('my-index/my-path', p),
+      engineVersion,
       false,
       ['/my-index/my-path'],
     );
@@ -882,12 +901,13 @@ describe('grants', () => {
 
 });
 
-describe('metrics', () => {
+each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
 
   test('metricClusterStatusRed', () => {
     testMetric(
       (domain) => domain.metricClusterStatusRed(),
       'ClusterStatus.red',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -896,6 +916,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricClusterStatusYellow(),
       'ClusterStatus.yellow',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -904,6 +925,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricFreeStorageSpace(),
       'FreeStorageSpace',
+      engineVersion,
       Statistic.MINIMUM,
     );
   });
@@ -912,6 +934,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricClusterIndexWritesBlocked(),
       'ClusterIndexWritesBlocked',
+      engineVersion,
       Statistic.MAXIMUM,
       Duration.minutes(1),
     );
@@ -921,6 +944,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricNodes(),
       'Nodes',
+      engineVersion,
       Statistic.MINIMUM,
       Duration.hours(1),
     );
@@ -930,6 +954,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricAutomatedSnapshotFailure(),
       'AutomatedSnapshotFailure',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -938,6 +963,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricCPUUtilization(),
       'CPUUtilization',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -946,6 +972,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricJVMMemoryPressure(),
       'JVMMemoryPressure',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -954,6 +981,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricMasterCPUUtilization(),
       'MasterCPUUtilization',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -962,6 +990,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricMasterJVMMemoryPressure(),
       'MasterJVMMemoryPressure',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -970,6 +999,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricKMSKeyError(),
       'KMSKeyError',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -978,6 +1008,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricKMSKeyInaccessible(),
       'KMSKeyInaccessible',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -986,6 +1017,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricSearchableDocuments(),
       'SearchableDocuments',
+      engineVersion,
       Statistic.MAXIMUM,
     );
   });
@@ -994,6 +1026,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricSearchLatency(),
       'SearchLatency',
+      engineVersion,
       'p99',
     );
   });
@@ -1002,6 +1035,7 @@ describe('metrics', () => {
     testMetric(
       (domain) => domain.metricIndexingLatency(),
       'IndexingLatency',
+      engineVersion,
       'p99',
     );
   });
@@ -1079,7 +1113,7 @@ describe('import', () => {
   });
 });
 
-describe('advanced security options', () => {
+each(testedOpenSearchVersions).describe('advanced security options', (engineVersion) => {
   const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
   const masterUserName = 'JohnDoe';
   const password = 'password';
@@ -1087,7 +1121,7 @@ describe('advanced security options', () => {
 
   test('enable fine-grained access control with a master user ARN', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserArn,
       },
@@ -1120,7 +1154,7 @@ describe('advanced security options', () => {
 
   test('enable fine-grained access control with a master user name and password', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserName,
         masterUserPassword,
@@ -1155,7 +1189,7 @@ describe('advanced security options', () => {
 
   test('enable fine-grained access control with a master user name and dynamically generated password', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserName,
       },
@@ -1220,7 +1254,7 @@ describe('advanced security options', () => {
 
   test('enabling fine-grained access control throws without node-to-node encryption enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserArn,
       },
@@ -1234,7 +1268,7 @@ describe('advanced security options', () => {
 
   test('enabling fine-grained access control throws without encryption-at-rest enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserArn,
       },
@@ -1248,7 +1282,7 @@ describe('advanced security options', () => {
 
   test('enabling fine-grained access control throws without enforceHttps enabled', () => {
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserArn,
       },
@@ -1261,12 +1295,12 @@ describe('advanced security options', () => {
   });
 });
 
-describe('custom endpoints', () => {
+each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
   const customDomainName = 'search.example.com';
 
   test('custom domain without hosted zone and default cert', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       nodeToNodeEncryption: true,
       enforceHttps: true,
       customEndpoint: {
@@ -1293,7 +1327,7 @@ describe('custom endpoints', () => {
   test('custom domain with hosted zone and default cert', () => {
     const zone = new route53.HostedZone(stack, 'DummyZone', { zoneName: 'example.com' });
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       nodeToNodeEncryption: true,
       enforceHttps: true,
       customEndpoint: {
@@ -1350,7 +1384,7 @@ describe('custom endpoints', () => {
     });
 
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       nodeToNodeEncryption: true,
       enforceHttps: true,
       customEndpoint: {
@@ -1389,7 +1423,7 @@ describe('custom endpoints', () => {
 
 });
 
-describe('custom error responses', () => {
+each(testedOpenSearchVersions).describe('custom error responses', (engineVersion) => {
 
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
@@ -1397,7 +1431,7 @@ describe('custom error responses', () => {
     });
 
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       zoneAwareness: {
         enabled: true,
         availabilityZoneCount: 2,
@@ -1415,7 +1449,7 @@ describe('custom error responses', () => {
     });
 
     new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       vpc,
       vpcSubnets: [subnets],
       zoneAwareness: {
@@ -1430,19 +1464,19 @@ describe('custom error responses', () => {
   test('error when master, data or Ultra Warm instance types do not end with .search', () => {
     const error = /instance types must end with ".search"/;
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodeInstanceType: 'c5.large',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         dataNodeInstanceType: 'c5.2xlarge',
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         warmInstanceType: 'ultrawarm1.medium',
       },
@@ -1452,7 +1486,7 @@ describe('custom error responses', () => {
   test('error when Ultra Warm instance types do not start with ultrawarm', () => {
     const error = /UltraWarm node instance type must start with "ultrawarm"./;
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         warmInstanceType: 't3.small.search',
       },
@@ -1548,7 +1582,7 @@ describe('custom error responses', () => {
 
   test('error when i3 or r6g instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         dataNodeInstanceType: 'i3.2xlarge.search',
       },
@@ -1558,7 +1592,7 @@ describe('custom error responses', () => {
       },
     })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
     expect(() => new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         dataNodeInstanceType: 'r6gd.large.search',
       },
@@ -1572,7 +1606,7 @@ describe('custom error responses', () => {
   test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
     const error = /M3, R3, and T2 instance types do not support encryption of data at rest/;
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodeInstanceType: 'm3.2xlarge.search',
       },
@@ -1581,7 +1615,7 @@ describe('custom error responses', () => {
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         dataNodeInstanceType: 'r3.2xlarge.search',
       },
@@ -1590,7 +1624,7 @@ describe('custom error responses', () => {
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain3', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodeInstanceType: 't2.2xlarge.search',
       },
@@ -1602,7 +1636,7 @@ describe('custom error responses', () => {
 
   test('error when t2.micro is specified with Elasticsearch version > 2.3', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodeInstanceType: 't2.micro.search',
       },
@@ -1611,7 +1645,7 @@ describe('custom error responses', () => {
 
   test('error when any instance type other than R3, I3 and R6GD are specified without EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       ebs: {
         enabled: false,
       },
@@ -1620,7 +1654,7 @@ describe('custom error responses', () => {
       },
     })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
     expect(() => new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       ebs: {
         enabled: false,
       },
@@ -1632,7 +1666,7 @@ describe('custom error responses', () => {
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
     new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       ebs: {
         enabled: false,
       },
@@ -1642,7 +1676,7 @@ describe('custom error responses', () => {
       },
     });
     new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       ebs: {
         enabled: false,
       },
@@ -1660,7 +1694,7 @@ describe('custom error responses', () => {
     const vpc = new Vpc(stack, 'Vpc');
 
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       vpc,
       zoneAwareness: {
         availabilityZoneCount: 4,
@@ -1681,14 +1715,14 @@ describe('custom error responses', () => {
   test('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {
     const error = /T2 and T3 instance types do not support UltraWarm storage/;
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodeInstanceType: 't2.2xlarge.search',
         warmNodes: 1,
       },
     })).toThrow(error);
     expect(() => new Domain(stack, 'Domain2', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         masterNodeInstanceType: 't3.2xlarge.search',
         warmNodes: 1,
@@ -1698,7 +1732,7 @@ describe('custom error responses', () => {
 
   test('error when UltraWarm instance is used and no dedicated master instance specified', () => {
     expect(() => new Domain(stack, 'Domain1', {
-      version: defaultVersion,
+      version: engineVersion,
       capacity: {
         warmNodes: 1,
         masterNodes: 0,
@@ -1716,10 +1750,10 @@ test('can specify future version', () => {
   });
 });
 
-describe('unsigned basic auth', () => {
+each(testedOpenSearchVersions).describe('unsigned basic auth', (engineVersion) => {
   test('can create a domain with unsigned basic auth', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       useUnsignedBasicAuth: true,
     });
 
@@ -1747,7 +1781,7 @@ describe('unsigned basic auth', () => {
     const masterUserArn = 'arn:aws:iam::123456789012:user/JohnDoe';
 
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserArn,
       },
@@ -1780,7 +1814,7 @@ describe('unsigned basic auth', () => {
     const masterUserPassword = SecretValue.unsafePlainText(password);
 
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       fineGrainedAccessControl: {
         masterUserName,
         masterUserPassword,
@@ -1811,7 +1845,7 @@ describe('unsigned basic auth', () => {
 
   test('fails to create a domain with unsigned basic auth when enforce HTTPS is disabled', () => {
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       useUnsignedBasicAuth: true,
       enforceHttps: false,
     })).toThrow(/You cannot disable HTTPS and use unsigned basic auth/);
@@ -1819,7 +1853,7 @@ describe('unsigned basic auth', () => {
 
   test('fails to create a domain with unsigned basic auth when node to node encryption is disabled', () => {
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       useUnsignedBasicAuth: true,
       nodeToNodeEncryption: false,
     })).toThrow(/You cannot disable node to node encryption and use unsigned basic auth/);
@@ -1827,7 +1861,7 @@ describe('unsigned basic auth', () => {
 
   test('fails to create a domain with unsigned basic auth when encryption at rest is disabled', () => {
     expect(() => new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       useUnsignedBasicAuth: true,
       encryptionAtRest: { enabled: false },
     })).toThrow(/You cannot disable encryption at rest and use unsigned basic auth/);
@@ -1841,10 +1875,10 @@ describe('unsigned basic auth', () => {
   });
 });
 
-describe('advanced options', () => {
+each(testedOpenSearchVersions).describe('advanced options', (engineVersion) => {
   test('use advanced options', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       advancedOptions: {
         'rest.action.multi.allow_explicit_index': 'true',
         'indices.fielddata.cache.size': '50',
@@ -1861,7 +1895,7 @@ describe('advanced options', () => {
 
   test('advanced options absent by default', () => {
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
@@ -1870,9 +1904,9 @@ describe('advanced options', () => {
   });
 });
 
-describe('cognito dashboards auth', () => {
+each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersion) => {
   test('cognito dashboards auth is not configured by default', () => {
-    new Domain(stack, 'Domain', { version: defaultVersion });
+    new Domain(stack, 'Domain', { version: engineVersion });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       CognitoOptions: Match.absent(),
@@ -1886,7 +1920,7 @@ describe('cognito dashboards auth', () => {
     const role = new iam.Role(stack, 'testrole', { assumedBy: user });
 
     new Domain(stack, 'Domain', {
-      version: defaultVersion,
+      version: engineVersion,
       cognitoDashboardsAuth: {
         role,
         identityPoolId,
@@ -1913,10 +1947,11 @@ describe('cognito dashboards auth', () => {
 function testGrant(
   expectedActions: string[],
   invocation: (user: iam.IPrincipal, domain: Domain) => void,
+  engineVersion: EngineVersion,
   appliesToDomainRoot: Boolean = true,
   paths: string[] = ['/*'],
 ) {
-  const domain = new Domain(stack, 'Domain', { version: defaultVersion });
+  const domain = new Domain(stack, 'Domain', { version: engineVersion });
   const user = new iam.User(stack, 'user');
 
   invocation(user, domain);
@@ -1968,10 +2003,11 @@ function testGrant(
 function testMetric(
   invocation: (domain: Domain) => Metric,
   metricName: string,
+  engineVersion: EngineVersion,
   statistic: string = Statistic.SUM,
   period: Duration = Duration.minutes(5),
 ) {
-  const domain = new Domain(stack, 'Domain', { version: defaultVersion });
+  const domain = new Domain(stack, 'Domain', { version: engineVersion });
 
   const metric = invocation(domain);
 
