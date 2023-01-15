@@ -615,7 +615,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Cluster1defaultroleCustomResourcePolicy6ECBAB35"
@@ -932,7 +932,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "Cluster2defaultroleCustomResourcePolicy042F9AF5"
