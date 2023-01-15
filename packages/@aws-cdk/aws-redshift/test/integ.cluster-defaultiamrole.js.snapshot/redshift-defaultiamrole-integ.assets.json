@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "files": {
     "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "3b8fac91d54694ce82b7d11fb7e162d77477381e3254fead4dee0509fcf0d575": {
+    "fa991089a30fe26fab8225c5ca4145a65cd9c6f1c7ebebae477f130972053ca5": {
       "source": {
         "path": "redshift-defaultiamrole-integ.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3b8fac91d54694ce82b7d11fb7e162d77477381e3254fead4dee0509fcf0d575.json",
+          "objectKey": "fa991089a30fe26fab8225c5ca4145a65cd9c6f1c7ebebae477f130972053ca5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
