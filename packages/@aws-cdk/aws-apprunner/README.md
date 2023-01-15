@@ -160,3 +160,33 @@ new apprunner.Service(this, 'Service', {
   vpcConnector,
 });
 ```
+
+## Secrets Manager
+
+To include an environment variable integrated with AWS Secrets Manager we will be using the `environmentSecrets` attribute.
+`instanceRole` attribute is mandatory when using `environmentSecrets`.
+
+```ts
+const secret = new secretsmanager.Secret(stack, 'Secret', {
+  secretObjectValue: { foo: SecretValue.unsafePlainText('mySecretVal') },
+});
+
+const role = new iam.Role(stack, 'InstanceRole', {
+  assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
+});
+
+secret.grantRead(role);
+
+new Service(stack, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: {
+      port: 8000,
+      environmentSecrets: {
+        mySecretKey: secret.secretArn,
+      },
+    },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  instanceRole: role,
+});
+```

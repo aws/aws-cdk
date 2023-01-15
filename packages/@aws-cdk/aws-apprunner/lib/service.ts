@@ -169,6 +169,14 @@ interface EnvironmentVariable {
 }
 
 /**
+ * The environment secret for the service.
+ */
+interface EnvironmentSecret {
+  readonly name: string;
+  readonly value: string;
+}
+
+/**
  * Result of binding `Source` into a `Service`.
  */
 export interface SourceConfig {
@@ -431,7 +439,14 @@ export interface ImageConfiguration {
    *
    * @default - no environment variables
    */
-  readonly environment?: { [key: string]: string };
+  readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * Environment secrets that are available to your running App Runner service.
+   *
+   * @default - no environment secrets
+   */
+  readonly environmentSecrets?: { [key: string]: string };
 
   /**
    * An optional command that App Runner runs to start the application in the source image.
@@ -667,7 +682,14 @@ export interface CodeConfigurationValues {
    *
    * @default - no environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * The environment secrets that are available to your running App Runner service.
+   *
+   * @default - no environment secrets.
+   */
+  readonly environmentSecrets?: { [key: string]: string };
 
   /**
    * The command App Runner runs to start your application.
@@ -782,7 +804,12 @@ export class Service extends cdk.Resource {
   /**
    * Environment variables for this service
    */
-  private environment?: { [key: string]: string } = {};
+  private environmentVariables?: { [key: string]: string } = {};
+
+  /**
+   * Environment secrets for this service
+   */
+  private environmentSecrets?: { [key: string]: string } = {};
 
   /**
    * The ARN of the Service.
@@ -880,33 +907,55 @@ export class Service extends cdk.Resource {
 
   }
   private renderCodeConfigurationValues(props: CodeConfigurationValues): any {
-    this.environment = props.environment;
+    this.environmentVariables = props.environmentVariables;
+    this.environmentSecrets = props.environmentSecrets;
     return {
       port: props.port,
       buildCommand: props.buildCommand,
       runtime: props.runtime.name,
       runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+      runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
       startCommand: props.startCommand,
     };
   }
   private renderImageRepository(): any {
     const repo = this.source.imageRepository!;
-    this.environment = repo.imageConfiguration?.environment;
+    this.environmentVariables = repo.imageConfiguration?.environmentVariables;
+    this.environmentSecrets = repo.imageConfiguration?.environmentSecrets;
     return Object.assign(repo, {
       imageConfiguration: {
         port: repo.imageConfiguration?.port?.toString(),
         startCommand: repo.imageConfiguration?.startCommand,
         runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+        runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
       },
     });
   }
 
   private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
-    if (this.environment) {
+    if (this.environmentVariables) {
       let env: EnvironmentVariable[] = [];
-      for (const [key, value] of Object.entries(this.environment)) {
+      for (const [key, value] of Object.entries(this.environmentVariables)) {
         if (key.startsWith('AWSAPPRUNNER')) {
           throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
+        }
+        env.push({ name: key, value: value });
+      }
+      return env;
+    } else {
+      return undefined;
+    }
+  }
+
+  private renderEnvironmentSecrets(): EnvironmentSecret[] | undefined {
+    if (this.environmentSecrets) {
+      if (!this.props.instanceRole) {
+        throw new Error('Instance Role have to be provided if passing in RuntimeEnvironmentSecrets');
+      }
+      let env: EnvironmentSecret[] = [];
+      for (const [key, value] of Object.entries(this.environmentSecrets)) {
+        if (key.startsWith('AWSAPPRUNNER')) {
+          throw new Error(`Environment secret key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
         }
         env.push({ name: key, value: value });
       }

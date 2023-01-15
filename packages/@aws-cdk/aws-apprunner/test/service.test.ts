@@ -47,7 +47,7 @@ test('custom environment variables and start commands are allowed for imageConfi
     source: Source.fromEcrPublic({
       imageConfiguration: {
         port: 8000,
-        environment: {
+        environmentVariables: {
           foo: 'fooval',
           bar: 'barval',
         },
@@ -87,6 +87,66 @@ test('custom environment variables and start commands are allowed for imageConfi
   });
 });
 
+test('custom environment secrets and start commands are allowed for imageConfiguration with defined port', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromEcrPublic({
+      imageConfiguration: {
+        port: 8000,
+        environmentSecrets: {
+          foo: 'fooval',
+          bar: 'barval',
+        },
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    instanceRole: new iam.Role(stack, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
+    }),
+  });
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          Port: '8000',
+          RuntimeEnvironmentSecrets: [
+            {
+              Name: 'foo',
+              Value: 'fooval',
+            },
+            {
+              Name: 'bar',
+              Value: 'barval',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    InstanceConfiguration: {
+      InstanceRoleArn: {
+        'Fn::GetAtt': [
+          'InstanceRole3CCE2F1D',
+          'Arn',
+        ],
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
+});
+
 test('custom environment variables and start commands are allowed for imageConfiguration with port undefined', () => {
   // GIVEN
   const app = new cdk.App();
@@ -95,7 +155,7 @@ test('custom environment variables and start commands are allowed for imageConfi
   new Service(stack, 'DemoService', {
     source: Source.fromEcrPublic({
       imageConfiguration: {
-        environment: {
+        environmentVariables: {
           foo: 'fooval',
           bar: 'barval',
         },
@@ -124,6 +184,64 @@ test('custom environment variables and start commands are allowed for imageConfi
         },
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
+});
+
+test('custom environment secrets and start commands are allowed for imageConfiguration with port undefined', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromEcrPublic({
+      imageConfiguration: {
+        environmentSecrets: {
+          foo: 'fooval',
+          bar: 'barval',
+        },
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    instanceRole: new iam.Role(stack, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
+    }),
+  });
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          RuntimeEnvironmentSecrets: [
+            {
+              Name: 'foo',
+              Value: 'fooval',
+            },
+            {
+              Name: 'bar',
+              Value: 'barval',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    InstanceConfiguration: {
+      InstanceRoleArn: {
+        'Fn::GetAtt': [
+          'InstanceRole3CCE2F1D',
+          'Arn',
+        ],
       },
     },
     NetworkConfiguration: {
@@ -368,7 +486,7 @@ test('create a service with github repository - buildCommand, environment and st
         runtime: Runtime.PYTHON_3,
         port: '8000',
         buildCommand: '/root/build.sh',
-        environment: {
+        environmentVariables: {
           foo: 'fooval',
           bar: 'barval',
         },
@@ -603,7 +721,7 @@ test('environment variable with a prefix of AWSAPPRUNNER should throw an error',
     new Service(stack, 'DemoService', {
       source: Source.fromEcrPublic({
         imageConfiguration: {
-          environment: {
+          environmentVariables: {
             AWSAPPRUNNER_FOO: 'bar',
           },
         },
