@@ -80,12 +80,17 @@ export class CallAwsService extends sfn.TaskStateBase {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
 
+    const iamServiceMap: Record<string, string> = {
+      sfn: 'states',
+    };
+    const iamService = iamServiceMap[props.service] ?? props.service;
+
     this.taskPolicies = [
       new iam.PolicyStatement({
         resources: props.iamResources,
         // The prefix and the action name are case insensitive
         // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
-        actions: [props.iamAction ?? `${props.service}:${props.action}`],
+        actions: [props.iamAction ?? `${iamService}:${props.action}`],
       }),
       ...props.additionalIamStatements ?? [],
     ];
