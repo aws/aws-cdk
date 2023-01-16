@@ -163,7 +163,7 @@ new apprunner.Service(this, 'Service', {
 
 ## Secrets Manager
 
-To include an environment variable integrated with AWS Secrets Manager we will be using the `environmentSecrets` attribute.
+To include an environment variables integrated with AWS Secrets Manager, use the `environmentSecrets` attribute.
 `instanceRole` attribute is mandatory when using `environmentSecrets`.
 
 ```ts
