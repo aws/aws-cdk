@@ -61,7 +61,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
   const parsedTimeout = parseInt(timeout);
   if (isNaN(parsedTimeout)) {
-    throw new Error(`The "Timeout" property with value ${timeout} is not a parseable to a number`);
+    throw new Error(`The "Timeout" property with value ${timeout} is not parseable to a number`);
   }
 
   const invokeResponse = await invoke(handlerArn, invocationType, parsedTimeout);
