@@ -28,4 +28,18 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
   vpc,
 });
 
+const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_14_5,
+  }),
+  instanceProps: { vpc },
+});
+
+new rds.DatabaseProxy(stack, 'Proxy', {
+  dbProxyName: 'cluster-db-proxy',
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+});
+
 app.synth();
