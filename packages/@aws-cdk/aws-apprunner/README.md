@@ -167,6 +167,12 @@ To include an environment variables integrated with AWS Secrets Manager, use the
 `instanceRole` attribute is mandatory when using `environmentSecrets`.
 
 ```ts
+
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as iam from '@aws-cdk/aws-iam';
+
+declare const stack: Stack;
+
 const secret = new secretsmanager.Secret(stack, 'Secret', {
   secretObjectValue: { foo: SecretValue.unsafePlainText('mySecretVal') },
 });
@@ -177,7 +183,7 @@ const role = new iam.Role(stack, 'InstanceRole', {
 
 secret.grantRead(role);
 
-new Service(stack, 'Service', {
+new apprunner.Service(stack, 'Service', {
   source: apprunner.Source.fromEcrPublic({
     imageConfiguration: {
       port: 8000,
