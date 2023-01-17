@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
 
@@ -354,6 +354,41 @@ describe('deployment of stack', () => {
         Name: 'App',
       }]),
     });
+  });
+});
+
+test('action name is calculated properly if it has cross-stack dependencies', () => {
+  // GIVEN
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    crossAccountKeys: true,
+  });
+
+  // WHEN
+  const s1step = new cdkp.ManualApprovalStep('S1');
+  const s2step = new cdkp.ManualApprovalStep('S2');
+  s1step.addStepDependency(s2step);
+
+  // The issue we were diagnosing only manifests if the stacks don't have
+  // a dependency on each other
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+  pipeline.addStage(stage, {
+    stackSteps: [
+      { stack: stage.stack1, post: [s1step] },
+      { stack: stage.stack2, post: [s2step] },
+    ],
+  });
+
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({ Name: 'Stack2.S2', RunOrder: 3 }),
+        Match.objectLike({ Name: 'Stack1.S1', RunOrder: 4 }),
+      ]),
+    }]),
   });
 });
 
