@@ -525,12 +525,15 @@ pipeline.
 This will encrypt the artifact bucket(s), but incurs a cost for maintaining the
 KMS key.
 
+You may also wish to enable automatic key rotation for the created KMS key.
+
 Example:
 
 ```ts
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   // Encrypt artifacts, required for cross-account deployments
   crossAccountKeys: true,
+  enableKeyRotation: true, // optional
   synth: new pipelines.ShellStep('Synth', {
     input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
       connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
