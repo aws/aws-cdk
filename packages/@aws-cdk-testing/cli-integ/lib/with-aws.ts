@@ -36,7 +36,7 @@ export function regionPool(): ResourcePool {
 }
 
 /**
- * Perform a one-time quick sanity check that the AWS clients has properly configured credentials
+ * Perform a one-time quick sanity check that the AWS clients have properly configured credentials
  *
  * If we don't do this, calls are going to fail and they'll be retried and everything will take
  * forever before the user notices a simple misconfiguration.
