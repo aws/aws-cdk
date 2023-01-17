@@ -438,6 +438,14 @@ export interface ImageConfiguration {
    * Environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables
+   * @deprecated use environmentVariables()
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
+   * Environment variables that are available to your running App Runner service.
+   *
+   * @default - no environment variables
    */
   readonly environmentVariables?: { [key: string]: string };
 
@@ -681,6 +689,14 @@ export interface CodeConfigurationValues {
    * The environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables.
+   * @deprecated use environmentVariables()
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
+   * The environment variables that are available to your running App Runner service.
+   *
+   * @default - no environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
 
@@ -801,6 +817,20 @@ export class Service extends cdk.Resource {
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
   private source: SourceConfig;
+
+  // /**
+  //  * @deprecated - Throws error in some use cases that have been enabled since this deprecation notice. Use `RestApi.urlForPath()` instead.
+  //  */
+  // public get url(): string {
+  //   return this.restApi.urlForPath(this.path);
+  // }
+
+  /**
+   * Environment variables for this service
+   * @deprecated use environmentVariables()
+   */
+  readonly environment?: { [key: string]: string } = {};
+
   /**
    * Environment variables for this service
    */
