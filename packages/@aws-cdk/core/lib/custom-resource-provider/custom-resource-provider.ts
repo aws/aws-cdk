@@ -100,7 +100,7 @@ export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
    *
-   * @deprecated Use {@link NODEJS_14_X}
+   * @deprecated Use `NODEJS_14_X`
    */
   NODEJS_12 = 'deprecated_nodejs12.x',
 

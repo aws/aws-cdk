@@ -1,3 +1,111 @@
+# CloudFormation Resource Specification v107.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGateway::RestApi RestApiId (__added__)
+* AWS::AuditManager::Assessment Delegations (__deleted__)
+* AWS::DataSync::Task ErrorCode (__deleted__)
+* AWS::DataSync::Task ErrorDetail (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest.ingestEndpoints (__deleted__)
+* AWS::RDS::DBCluster MasterUserSecret.SecretArn (__added__)
+* AWS::RDS::DBInstance MasterUserSecret.SecretArn (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi Parameters.DuplicatesAllowed (__deleted__)
+* AWS::AppSync::DataSource EventBridgeConfig (__added__)
+* AWS::AuditManager::Assessment Delegations (__added__)
+* AWS::DataSync::LocationFSxLustre FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage BucketName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::PlacementGroup PartitionCount (__added__)
+* AWS::EC2::PlacementGroup Tags (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__added__)
+* AWS::Lambda::EventSourceMapping ScalingConfig (__added__)
+* AWS::MediaPackage::Channel HlsIngest (__added__)
+* AWS::RDS::DBCluster ManageMasterUserPassword (__added__)
+* AWS::RDS::DBCluster MasterUserSecret (__added__)
+* AWS::RDS::DBInstance ManageMasterUserPassword (__added__)
+* AWS::RDS::DBInstance MasterUserSecret (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.EventBridgeConfig (__added__)
+* AWS::IoT::JobTemplate.JobExecutionsRetryConfig (__added__)
+* AWS::IoT::JobTemplate.RetryCriteria (__added__)
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__added__)
+* AWS::RDS::DBCluster.MasterUserSecret (__added__)
+* AWS::RDS::DBInstance.MasterUserSecret (__added__)
+* AWS::AppRunner::Service.CodeConfigurationValues RuntimeEnvironmentSecrets (__added__)
+* AWS::AppRunner::Service.ImageConfiguration RuntimeEnvironmentSecrets (__added__)
+* AWS::MediaPackage::Channel.IngestEndpoint Id.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Password.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Url.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Username.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeIframeOnlyStream (__added__)
+
+
+# CloudFormation Resource Specification v106.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.AmazonId (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Arn (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount Fingerprint (__added__)
+
+## Property Changes
+
+* AWS::IoTWireless::PartnerAccount Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__added__)
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v105.0.0
 
 ## New Resource Types

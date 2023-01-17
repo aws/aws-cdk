@@ -77,9 +77,9 @@ export interface AppProps {
    *
    * - The CLI via --context
    * - The `context` key in `cdk.json`
-   * - The {@link AppProps.context} property
+   * - The `AppProps.context` property
    *
-   * This property is recommended over the {@link AppProps.context} property since you
+   * This property is recommended over the `AppProps.context` property since you
    * can make final decision over which context value to take in your app.
    *
    * Context can be read from any construct using `node.getContext(key)`.

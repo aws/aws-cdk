@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
 /* eslint-disable quote-props */
@@ -910,4 +911,38 @@ test('vpcSubnets without vpc results in an error', () => {
     policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   })).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
+});
+
+test.each([
+  [undefined, true],
+  [true, true],
+  [false, false],
+])('feature flag %p, installLatestAwsSdk %p', (flag, expected) => {
+  // GIVEN
+  const app = new App({
+    context: {
+      '@aws-cdk/customresources:installLatestAwsSdkDefault': flag,
+    },
+  });
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::LogRetentionPolicy',
+    onCreate: {
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90,
+      },
+      physicalResourceId: PhysicalResourceId.of('loggroup'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+    'InstallLatestAwsSdk': expected,
+  });
 });

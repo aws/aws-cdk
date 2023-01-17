@@ -3,7 +3,7 @@ import { DefaultStackSynthesizer } from './default-synthesizer';
 import { ISynthesisSession } from './types';
 
 /**
- * Construction properties of {@link BootstraplessSynthesizer}.
+ * Construction properties of `BootstraplessSynthesizer`.
  */
 export interface BootstraplessSynthesizerProps {
   /**
