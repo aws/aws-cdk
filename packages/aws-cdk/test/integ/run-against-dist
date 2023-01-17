@@ -1,48 +1,19 @@
 #!/bin/bash
-# Run a given test against the packages found in the CDK distribution.
-#
-# - Set up verdaccio and publish all NPM tarballs found in the given directory to it.
-# - Install the CLI from that Verdaccio fixture somewhere and put it
-#   on the PATH.
-# - Prepare the various package managers to take their packages from dist/ as well.
-#
-# Parameter: DIST_ROOT, if different than the current directory.
 set -eu
-scriptdir=$(cd $(dirname $0) && pwd)
-source $scriptdir/run-against-dist.bash
+# This is a backwards compatibility script. All logic has moved to '@aws-cdk-testing/cli-integ'
+# and should be called from there directly.
 
-# If DIST_ROOT is not given, guess at a sane location.
-if [[ "${DIST_ROOT:-}" == "" && -f $scriptdir/../../../dist/build.json ]]; then
-  DIST_ROOT=$scriptdir/../../../dist
-fi
+export VERSION=$(node -pe "require('./build.json').version")
 
-dist_root=$(cd ${DIST_ROOT:-.} && pwd)
+# The package MUST be 'npm install'ed from the package repository (`npm install --production`
+# will not work because that will resolve devDependencies even though it will not install them),
+# but it may not live in a 'node_modules' directory because Jest 27 does not support that. Do contortions.
+export INTEG_TOOLS=cli_integ
+rm -rf $INTEG_TOOLS && mkdir $INTEG_TOOLS
+npm install --prefix $INTEG_TOOLS --no-save ./js/aws-cdk-testing-cli-integ-*.tgz
+mv $($INTEG_TOOLS/node_modules/.bin/test-root)/* $INTEG_TOOLS
 
-if [[ ! -f $dist_root/build.json ]]; then
-  echo "$dist_root does not seem to be a built CDK distribution (change directory or use DIST_ROOT)" >&2
-  exit 1
-fi
+# Do a breakpoint for testing
+codebuild-breakpoint
 
-export CANDIDATE_VERSION=$(node -p "require('${dist_root}/build.json').version")
-
-# FRAMEWORK_VERSION is the version that will be 'npm install'ed by the tests
-if [[ "${FRAMEWORK_VERSION:-}" = "" ]]; then
-  export FRAMEWORK_VERSION=${CANDIDATE_VERSION}
-fi
-export TEST_RUNNER=dist
-
-serve_npm_packages
-install_cli
-
-prepare_java_packages
-prepare_nuget_packages
-prepare_python_packages
-
-# Install additional tool wrappers before running the target script
-export PATH="$scriptdir/run-wrappers/dist:$PATH"
-hash -r
-
-# Run target script
-# NOTE: no 'exec' because we need to shutdown verdaccio only AFTER we've
-# run the subscript.
-"$@"
+CONCURRENCY=5 exec ${INTEG_TOOLS}/bin/stage-distribution run . "$@"

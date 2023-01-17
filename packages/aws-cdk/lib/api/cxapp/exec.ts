@@ -11,9 +11,15 @@ import { loadTree, some } from '../../tree';
 import { splitBySize } from '../../util/objects';
 import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
+import { RWLock, ILock } from '../util/rwlock';
+
+export interface ExecProgramResult {
+  readonly assembly: cxapi.CloudAssembly;
+  readonly lock: ILock;
+}
 
 /** Invokes the cloud executable and returns JSON output */
-export async function execProgram(aws: SdkProvider, config: Configuration): Promise<cxapi.CloudAssembly> {
+export async function execProgram(aws: SdkProvider, config: Configuration): Promise<ExecProgramResult> {
   const env: { [key: string]: string } = { };
 
   const context = config.context.all;
@@ -62,7 +68,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   // bypass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
     debug('--app points to a cloud assembly, so we bypass synth');
-    return createAssembly(app);
+
+    // Acquire a read lock on this directory
+    const lock = await new RWLock(app).acquireRead();
+
+    return { assembly: createAssembly(app), lock };
   }
 
   const commandLine = await guessExecutable(appToArray(app));
@@ -79,6 +89,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
+
+  // Acquire a read lock on the output directory
+  const writerLock = await new RWLock(outdir).acquireWrite();
 
   // Send version information
   env[cxapi.CLI_ASM_VERSION_ENV] = cxschema.Manifest.version();
@@ -107,7 +120,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   contextOverflowCleanup(contextOverflowLocation, assembly);
 
-  return assembly;
+  return { assembly, lock: await writerLock.convertToReaderLock() };
 
   function createAssembly(appDir: string) {
     try {

@@ -24,8 +24,9 @@ import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
-import { enableTracing } from './util/tracing';
+import { ILock } from './api/util/rwlock';
 import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -329,10 +330,19 @@ async function initCommandLine() {
 
   const cloudFormation = new CloudFormationDeployments({ sdkProvider });
 
+  let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
     configuration,
     sdkProvider,
-    synthesizer: execProgram,
+    synthesizer: async (aws, config) => {
+      // Invoke 'execProgram', and copy the lock for the directory in the global
+      // variable here. It will be released when the CLI exits. Locks are not re-entrant
+      // so release it if we have to synthesize more than once (because of context lookups).
+      await outDirLock?.release();
+      const { assembly, lock } = await execProgram(aws, config);
+      outDirLock = lock;
+      return assembly;
+    },
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -373,6 +383,10 @@ async function initCommandLine() {
   try {
     return await main(cmd, argv);
   } finally {
+    // If we locked the 'cdk.out' directory, release it here.
+    await outDirLock?.release();
+
+    // Do PSAs here
     await version.displayVersionMessage();
 
     if (shouldDisplayNotices()) {
