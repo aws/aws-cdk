@@ -50,7 +50,7 @@
     "glob": "^7.2.3",
     "p-queue": "^6.6.2",
     "fs-extra": "^9.1.0",
-    "npm": "^7.19.0"
+    "npm": "^8.11.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
