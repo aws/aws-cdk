@@ -424,7 +424,7 @@ describe('SQSEventSource', () => {
     });
   });
 
-  test('fails if maximumConcurrency < 2', () => {
+  test('fails if maxConcurrency < 2', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -432,7 +432,19 @@ describe('SQSEventSource', () => {
 
     // WHEN/THEN
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      maximumConcurrency: 1,
-    }))).toThrow(/maximumConcurrency must be between 2 and 1000 concurrent instances/);
+      maxConcurrency: 1,
+    }))).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('fails if maxConcurrency > 1001', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 1,
+    }))).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 });

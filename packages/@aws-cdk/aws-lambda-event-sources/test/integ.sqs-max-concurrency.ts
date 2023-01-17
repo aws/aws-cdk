@@ -12,7 +12,7 @@ class SqsEventSourceTest extends cdk.Stack {
 
     fn.addEventSource(new SqsEventSource(queue, {
       batchSize: 5,
-      maximumConcurrency: 5,
+      maxConcurrency: 5,
     }));
   }
 }

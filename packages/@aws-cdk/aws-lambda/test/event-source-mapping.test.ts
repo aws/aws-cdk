@@ -43,27 +43,27 @@ describe('event source mapping', () => {
     })).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
   });
 
-  test('throws if maximumConcurrency < 2 concurrent instances', () => {
+  test('throws if maxConcurrency < 2 concurrent instances', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
-      maximumConcurrency: 1,
-    })).toThrow(/maximumConcurrency must be between 2 and 1000 concurrent instances/);
+      maxConcurrency: 1,
+    })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 
-  test('throws if maximumConcurrency > 1000 concurrent instances', () => {
+  test('throws if maxConcurrency > 1000 concurrent instances', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
-      maximumConcurrency: 1001,
-    })).toThrow(/maximumConcurrency must be between 2 and 1000 concurrent instances/);
+      maxConcurrency: 1001,
+    })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 
-  test('maximumConcurrency appears in stack', () => {
+  test('maxConcurrency appears in stack', () => {
     new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
-      maximumConcurrency: 2,
+      maxConcurrency: 2,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {

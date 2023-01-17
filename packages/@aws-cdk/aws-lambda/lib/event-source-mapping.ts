@@ -164,7 +164,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - No specific limit.
    */
-  readonly maximumConcurrency?: number;
+  readonly maxConcurrency?: number;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
@@ -320,8 +320,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    if (props.maximumConcurrency && (props.maximumConcurrency < 2 || props.maximumConcurrency > 1000)) {
-      throw new Error('maximumConcurrency must be between 2 and 1000 concurrent instances');
+    if (props.maxConcurrency && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
+      throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
     }
 
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
@@ -370,8 +370,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     let scalingConfig;
-    if (props.maximumConcurrency) {
-      scalingConfig = { maximumConcurrency: props.maximumConcurrency };
+    if (props.maxConcurrency) {
+      scalingConfig = { maximumConcurrency: props.maxConcurrency };
     }
 
     let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;

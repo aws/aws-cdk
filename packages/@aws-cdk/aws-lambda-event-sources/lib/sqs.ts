@@ -56,7 +56,7 @@ export interface SqsEventSourceProps {
    *
    * @default - No specific limit.
    */
-  readonly maximumConcurrency?: number;
+  readonly maxConcurrency?: number;
 }
 
 /**
@@ -88,7 +88,7 @@ export class SqsEventSource implements lambda.IEventSource {
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
       maxBatchingWindow: this.props.maxBatchingWindow,
-      maximumConcurrency: this.props.maximumConcurrency,
+      maxConcurrency: this.props.maxConcurrency,
       reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
