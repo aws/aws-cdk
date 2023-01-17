@@ -239,14 +239,14 @@ export class Stack extends Construct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.region` when the stack is defined. This can
-   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.REGION`
+   *    either be a concrete region (e.g. `us-west-2`) or the `Aws.REGION`
    *    token.
    * 3. `Aws.REGION`, which is represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::Region" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
    * attempt to parse it to implement your logic. If you do, you must first
-   * check that it is a concerete value an not an unresolved token. If this
+   * check that it is a concrete value an not an unresolved token. If this
    * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **region-agnostic template**. In this case, your code should either
@@ -268,7 +268,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * Preferably, you should use the return value as an opaque string and not
    * attempt to parse it to implement your logic. If you do, you must first
-   * check that it is a concerete value an not an unresolved token. If this
+   * check that it is a concrete value an not an unresolved token. If this
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
