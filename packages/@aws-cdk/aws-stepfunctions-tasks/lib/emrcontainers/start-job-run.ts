@@ -340,6 +340,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
     /* We make use of custom resources to call update-roll-trust-policy as this command is only available through
      * aws cli because this is only used during the initial setup and is not available through the sdk.
