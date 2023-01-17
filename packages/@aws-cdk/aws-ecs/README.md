@@ -518,8 +518,8 @@ taskDefinition.addContainer('container', {
   memoryLimitMiB: 1024,
   systemControls: [
     {
-      namespace: 'net',
-      value: 'ipv4.tcp_tw_recycle',
+      namespace: 'net.ipv6.conf.all.default.disable_ipv6',
+      value: '1',
     },
   ],
 });
