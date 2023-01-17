@@ -254,6 +254,29 @@ integTest('add tags, left alone on re-bootstrap', withDefaultFixture(async (fixt
   ]);
 }));
 
+integTest('can add tags then update tags during re-bootstrap', withDefaultFixture(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: bootstrapStackName,
+    tags: 'Foo=Bar',
+    cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
+  });
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: bootstrapStackName,
+    tags: 'Foo=BarBaz',
+    cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
+    force: true,
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+  expect(response.Stacks?.[0].Tags).toEqual([
+    { Key: 'Foo', Value: 'BarBaz' },
+  ]);
+}));
+
 integTest('can deploy modern-synthesized stack even if bootstrap stack name is unknown', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 

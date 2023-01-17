@@ -3047,31 +3047,6 @@ describe('function', () => {
     });
   });
 
-  test('Generates a version when currentVersionOptions is set', () => {
-    const stack = new cdk.Stack();
-
-    new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
-      currentVersionOptions: {
-        provisionedConcurrentExecutions: 3,
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
-      ProvisionedConcurrencyConfig: {
-        ProvisionedConcurrentExecutions: 3,
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Code: { ZipFile: 'foo' },
-      Handler: 'index.handler',
-      Runtime: 'nodejs14.x',
-    });
-  });
-
   test('adds ADOT instrumentation to a ZIP Lambda function', () => {
     // GIVEN
     const app = new cdk.App();

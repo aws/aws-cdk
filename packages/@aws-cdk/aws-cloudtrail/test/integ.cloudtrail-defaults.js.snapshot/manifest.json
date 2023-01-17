@@ -1,27 +1,27 @@
 {
   "version": "22.0.0",
   "artifacts": {
-    "current-version-options.assets": {
+    "integ-cloudtrail-defaults.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "current-version-options.assets.json",
+        "file": "integ-cloudtrail-defaults.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "current-version-options": {
+    "integ-cloudtrail-defaults": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "current-version-options.template.json",
+        "templateFile": "integ-cloudtrail-defaults.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a37f787b341d3d57968efec7be372be0c175afbeae09ab1909503e7a7f7dc6b8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/820155cafe83250de59eadcf51df6ea51dbf430ef2ad1d8315b693f5b51137c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "current-version-options.assets"
+          "integ-cloudtrail-defaults.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,55 +30,55 @@
         }
       },
       "dependencies": [
-        "current-version-options.assets"
+        "integ-cloudtrail-defaults.assets"
       ],
       "metadata": {
-        "/current-version-options/F/ServiceRole/Resource": [
+        "/integ-cloudtrail-defaults/Trail/S3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FServiceRole3AC82EE1"
+            "data": "TrailS30071F172"
           }
         ],
-        "/current-version-options/F/Resource": [
+        "/integ-cloudtrail-defaults/Trail/S3/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FC4345940"
+            "data": "TrailS3PolicyE42170FE"
           }
         ],
-        "/current-version-options/F/CurrentVersion/Resource": [
+        "/integ-cloudtrail-defaults/Trail/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FCurrentVersion58B8A55Dc23085bc26dff8641d9434d378493303"
+            "data": "Trail022F0CF2"
           }
         ],
-        "/current-version-options/BootstrapVersion": [
+        "/integ-cloudtrail-defaults/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/current-version-options/CheckBootstrapVersion": [
+        "/integ-cloudtrail-defaults/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "current-version-options"
+      "displayName": "integ-cloudtrail-defaults"
     },
-    "CurrentVersionOptionsDefaultTestDeployAssertF66C8354.assets": {
+    "CloudTrailDefaultsTestDefaultTestDeployAssertBD9995EA.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CurrentVersionOptionsDefaultTestDeployAssertF66C8354.assets.json",
+        "file": "CloudTrailDefaultsTestDefaultTestDeployAssertBD9995EA.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CurrentVersionOptionsDefaultTestDeployAssertF66C8354": {
+    "CloudTrailDefaultsTestDefaultTestDeployAssertBD9995EA": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "CurrentVersionOptionsDefaultTestDeployAssertF66C8354.template.json",
+        "templateFile": "CloudTrailDefaultsTestDefaultTestDeployAssertBD9995EA.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -86,7 +86,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CurrentVersionOptionsDefaultTestDeployAssertF66C8354.assets"
+          "CloudTrailDefaultsTestDefaultTestDeployAssertBD9995EA.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -95,23 +95,23 @@
         }
       },
       "dependencies": [
-        "CurrentVersionOptionsDefaultTestDeployAssertF66C8354.assets"
+        "CloudTrailDefaultsTestDefaultTestDeployAssertBD9995EA.assets"
       ],
       "metadata": {
-        "/CurrentVersionOptions/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/CloudTrailDefaultsTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CurrentVersionOptions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/CloudTrailDefaultsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CurrentVersionOptions/DefaultTest/DeployAssert"
+      "displayName": "CloudTrailDefaultsTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
