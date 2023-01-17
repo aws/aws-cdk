@@ -24,7 +24,7 @@ async function main() {
     })
     .option('use-source', {
       descripton: 'Use TypeScript packages from the given source repository (or "auto")',
-      alias: 'S',
+      alias: 's',
       type: 'string',
       requiresArg: true,
     })

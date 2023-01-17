@@ -50,8 +50,6 @@ export function integTest(
       // jest and prints without a stack trace (if verbose: false).
       // eslint-disable-next-line no-console
       console.log(output.buffer().toString());
-      // await output.flushTo(process.stderr);
-      // process.stderr.write(`❌ ${e.toString()}\n`);
       throw e;
     }
   }, timeoutMillis);

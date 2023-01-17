@@ -12,7 +12,7 @@ export class XpMutexPool {
     return XpMutexPool.fromDirectory(path.join(os.tmpdir(), name));
   }
 
-  private readonly queuedResolvers = new Set<() => void>();
+  private readonly waitingResolvers = new Set<() => void>();
   private watcher: ReturnType<typeof watch> | undefined;
 
   private constructor(public readonly directory: string) {
@@ -31,7 +31,7 @@ export class XpMutexPool {
    */
   public awaitUnlock(maxWaitMs?: number): Promise<void> {
     const wait = new Promise<void>(ok => {
-      this.queuedResolvers.add(async () => {
+      this.waitingResolvers.add(async () => {
         await randomSleep(10);
         ok();
       });
@@ -67,10 +67,10 @@ export class XpMutexPool {
   }
 
   private notifyWaiters() {
-    for (const promise of this.queuedResolvers) {
+    for (const promise of this.waitingResolvers) {
       promise();
     }
-    this.queuedResolvers.clear();
+    this.waitingResolvers.clear();
   }
 }
 
