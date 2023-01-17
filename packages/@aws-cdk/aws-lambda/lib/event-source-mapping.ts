@@ -156,6 +156,17 @@ export interface EventSourceMappingOptions {
   readonly maxBatchingWindow?: cdk.Duration;
 
   /**
+   * The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency
+   *
+   * Valid Range: Minimum value of 2. Maximum value of 1000.
+   *
+   * @default - No specific limit.
+   */
+  readonly maximumConcurrency?: number;
+
+  /**
    * The maximum age of a record that Lambda sends to a function for processing.
    * Valid Range:
    * * Minimum value of 60 seconds
@@ -309,6 +320,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
+    if (props.maximumConcurrency && (props.maximumConcurrency < 2 || props.maximumConcurrency > 1000)) {
+      throw new Error('maximumConcurrency must be between 2 and 1000 concurrent instances');
+    }
+
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
       throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
@@ -354,6 +369,11 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
+    let scalingConfig;
+    if (props.maximumConcurrency) {
+      scalingConfig = { maximumConcurrency: props.maximumConcurrency };
+    }
+
     let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
@@ -372,8 +392,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
-      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+      scalingConfig,
       selfManagedEventSource,
+      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       filterCriteria: props.filters ? { filters: props.filters }: undefined,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,

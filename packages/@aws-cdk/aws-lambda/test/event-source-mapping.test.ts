@@ -43,6 +43,34 @@ describe('event source mapping', () => {
     })).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
   });
 
+  test('throws if maximumConcurrency < 2 concurrent instances', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maximumConcurrency: 1,
+    })).toThrow(/maximumConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('throws if maximumConcurrency > 1000 concurrent instances', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maximumConcurrency: 1001,
+    })).toThrow(/maximumConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('maximumConcurrency appears in stack', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maximumConcurrency: 2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 2 },
+    });
+  });
+
   test('throws if maxRecordAge is below 60 seconds', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       target: fn,

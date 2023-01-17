@@ -423,4 +423,16 @@ describe('SQSEventSource', () => {
       },
     });
   });
+
+  test('fails if maximumConcurrency < 2', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maximumConcurrency: 1,
+    }))).toThrow(/maximumConcurrency must be between 2 and 1000 concurrent instances/);
+  });
 });
