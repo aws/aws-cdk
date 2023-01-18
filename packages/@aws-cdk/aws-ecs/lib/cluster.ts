@@ -1164,7 +1164,7 @@ export class AsgCapacityProvider extends Construct {
     if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
       throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
     }
-    if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
+    if (this.enableManagedTerminationProtection) {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
     }
 
