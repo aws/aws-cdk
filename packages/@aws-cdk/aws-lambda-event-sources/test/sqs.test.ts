@@ -436,6 +436,24 @@ describe('SQSEventSource', () => {
     }))).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 
+  test('adding maxConcurrency of 5', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 5,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 5 },
+    });
+
+  });
+
   test('fails if maxConcurrency > 1001', () => {
     // GIVEN
     const stack = new cdk.Stack();

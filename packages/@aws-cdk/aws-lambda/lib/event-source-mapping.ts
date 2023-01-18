@@ -369,11 +369,6 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
-    let scalingConfig;
-    if (props.maxConcurrency) {
-      scalingConfig = { maximumConcurrency: props.maxConcurrency };
-    }
-
     let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
@@ -392,9 +387,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
-      scalingConfig,
-      selfManagedEventSource,
+      scalingConfig: props.maxConcurrency ? { maximumConcurrency: props.maxConcurrency } : undefined,
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+      selfManagedEventSource,
       filterCriteria: props.filters ? { filters: props.filters }: undefined,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,

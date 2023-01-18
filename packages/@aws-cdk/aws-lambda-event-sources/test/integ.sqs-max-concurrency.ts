@@ -1,5 +1,6 @@
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { IntegTest } from '@aws-cdk/integ-tests';
 import { SqsEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
@@ -18,5 +19,10 @@ class SqsEventSourceTest extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new SqsEventSourceTest(app, 'sqs-event-source-max-concurrency');
+const stack = new SqsEventSourceTest(app, 'sqs-event-source-max-concurrency');
+
+new IntegTest(app, 'sqs-max-concurrency-integ-test', {
+  testCases: [stack],
+});
+
 app.synth();
