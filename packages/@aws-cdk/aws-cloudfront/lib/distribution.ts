@@ -707,7 +707,7 @@ export enum LambdaEdgeEventType {
 
 /**
  * Represents a Lambda function version and event type when using Lambda@Edge.
- * The type of the {@link AddBehaviorOptions.edgeLambdas} property.
+ * The type of the `AddBehaviorOptions.edgeLambdas` property.
  */
 export interface EdgeLambda {
   /**

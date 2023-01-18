@@ -3,7 +3,7 @@ import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
 
 /**
- * The type returned from {@link IFileSystemLocation#bind}.
+ * The type returned from `IFileSystemLocation#bind`.
  */
 export interface FileSystemConfig {
   /**
@@ -15,7 +15,7 @@ export interface FileSystemConfig {
 
 /**
  * The interface of a CodeBuild FileSystemLocation.
- * Implemented by {@link EfsFileSystemLocation}.
+ * Implemented by `EfsFileSystemLocation`.
  */
 export interface IFileSystemLocation {
   /**
@@ -58,7 +58,7 @@ class EfsFileSystemLocation implements IFileSystemLocation {
 }
 
 /**
- * Construction properties for {@link EfsFileSystemLocation}.
+ * Construction properties for `EfsFileSystemLocation`.
  */
 export interface EfsFileSystemLocationProps {
   /**

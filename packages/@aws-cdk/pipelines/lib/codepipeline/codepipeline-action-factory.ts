@@ -3,6 +3,7 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildOptions, CodePipeline } from './codepipeline';
+import { StackOutputsMap } from './stack-outputs-map';
 
 /**
  * Options for the `CodePipelineActionFactory.produce()` method.
@@ -70,6 +71,18 @@ export interface ProduceActionOptions {
    * @default false
    */
   readonly beforeSelfMutation?: boolean;
+
+  /**
+   * Helper object to produce variables exported from stack deployments.
+   *
+   * If your step references outputs from a stack deployment, use
+   * this to map the output references to Codepipeline variable names.
+   *
+   * Note - Codepipeline variables can only be referenced in action
+   * configurations.
+   *
+   */
+  readonly stackOutputsMap: StackOutputsMap;
 }
 
 /**

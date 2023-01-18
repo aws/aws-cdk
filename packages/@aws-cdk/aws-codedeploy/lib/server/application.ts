@@ -1,17 +1,17 @@
-import { ArnFormat, IResource, Resource } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack, Arn } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApplication } from '../codedeploy.generated';
-import { arnForApplication, validateName } from '../utils';
+import { arnForApplication, validateName } from '../private/utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to EC2/on-premise instances.
  *
  * If you're managing the Application alongside the rest of your CDK resources,
- * use the {@link ServerApplication} class.
+ * use the `ServerApplication` class.
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link #fromServerApplicationName} method.
+ * use the `#fromServerApplicationName` method.
  */
 export interface IServerApplication extends IResource {
   /** @attribute */
@@ -22,7 +22,7 @@ export interface IServerApplication extends IResource {
 }
 
 /**
- * Construction properties for {@link ServerApplication}.
+ * Construction properties for `ServerApplication`.
  */
 export interface ServerApplicationProps {
   /**
@@ -42,6 +42,9 @@ export class ServerApplication extends Resource implements IServerApplication {
   /**
    * Import an Application defined either outside the CDK app, or in a different region.
    *
+   * The Application's account and region are assumed to be the same as the stack it is being imported
+   * into. If not, use `fromServerApplicationArn`.
+   *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
    * @param serverApplicationName the name of the application to import
@@ -49,12 +52,26 @@ export class ServerApplication extends Resource implements IServerApplication {
    */
   public static fromServerApplicationName(scope: Construct, id: string, serverApplicationName: string): IServerApplication {
     class Import extends Resource implements IServerApplication {
-      public readonly applicationArn = arnForApplication(serverApplicationName);
+      public readonly applicationArn = arnForApplication(Stack.of(scope), serverApplicationName);
       public readonly applicationName = serverApplicationName;
     }
 
     return new Import(scope, id);
+  }
 
+  /**
+   * Import an Application defined either outside the CDK, or in a different CDK Stack, by ARN.
+   *
+   * @param scope the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param serverApplicationArn the ARN of the application to import
+   * @returns a Construct representing a reference to an existing Application
+   */
+  public static fromServerApplicationArn(scope: Construct, id: string, serverApplicationArn: string): IServerApplication {
+    return new class extends Resource implements IServerApplication {
+      public applicationArn = serverApplicationArn;
+      public applicationName = Arn.split(serverApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
+    }(scope, id, { environmentFromArn: serverApplicationArn });
   }
 
   public readonly applicationArn: string;
@@ -71,7 +88,7 @@ export class ServerApplication extends Resource implements IServerApplication {
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(arnForApplication(resource.ref), {
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(scope), resource.ref), {
       service: 'codedeploy',
       resource: 'application',
       resourceName: this.physicalName,
