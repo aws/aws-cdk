@@ -566,7 +566,7 @@ describe('Job', () => {
     });
 
     test('with reserved args should throw', () => {
-      ['--conf', '--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
+      ['--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
         const defaultArguments: {[key: string]: string} = {};
         defaultArguments[arg] = 'random value';
 

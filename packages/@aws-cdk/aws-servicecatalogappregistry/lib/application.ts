@@ -277,7 +277,7 @@ export class Application extends ApplicationBase {
 
     this.applicationManagerUrl = new cdk.CfnOutput(this, 'ApplicationManagerUrl', {
       value: `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`,
-      description: `Application manager url for application ${this.applicationName}`,
+      description: 'Application manager url for the application created.',
     });
   }
 

@@ -9,7 +9,7 @@ export interface Environment {
    * indicates that account ID will only be determined during deployment (it
    * will resolve to the CloudFormation intrinsic `{"Ref":"AWS::AccountId"}`).
    * Note that certain features, such as cross-stack references and
-   * environmental context providers require concerete region information and
+   * environmental context providers require concrete region information and
    * will cause this stack to emit synthesis errors.
    *
    * @default Aws.ACCOUNT_ID which means that the stack will be account-agnostic.

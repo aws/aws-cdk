@@ -225,6 +225,16 @@ export interface CodePipelineProps {
    * @default true
    */
   readonly useChangeSets?: boolean;
+
+  /**
+   * Enable KMS key rotation for the generated KMS keys.
+   *
+   * By default KMS key rotation is disabled, but will add
+   * additional costs when enabled.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 /**
@@ -381,6 +391,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.enableKeyRotation !== undefined) {
+        throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
@@ -398,6 +411,7 @@ export class CodePipeline extends PipelineBase {
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,
         role: this.props.role,
+        enableKeyRotation: this.props.enableKeyRotation,
       });
     }
 

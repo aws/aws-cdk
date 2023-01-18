@@ -340,8 +340,8 @@ describe('with app with output', () => {
     });
 
     // WHEN
-    const graph = new PipelineGraph(blueprint).graph;
     expect(() => {
+      const graph = new PipelineGraph(blueprint).graph;
       assertGraph(nodeAt(graph, 'Alpha')).sortedLeaves();
     }).toThrow(/Dependency cycle/);
   });

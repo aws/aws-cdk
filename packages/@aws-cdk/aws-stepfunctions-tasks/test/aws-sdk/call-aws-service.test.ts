@@ -198,3 +198,34 @@ test('can pass additional IAM statements', () => {
     },
   });
 });
+
+test('IAM policy for sfn', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'SendTaskSuccess', {
+    service: 'sfn',
+    action: 'sendTaskSuccess',
+    iamResources: ['*'],
+    parameters: {
+      Output: sfn.JsonPath.objectAt('$.output'),
+      TaskToken: sfn.JsonPath.stringAt('$.taskToken'),
+    },
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definition: task,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'states:sendTaskSuccess',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});

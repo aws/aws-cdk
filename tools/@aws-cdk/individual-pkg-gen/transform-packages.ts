@@ -259,6 +259,11 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
   const devDependencies: { [dep: string]: string; } = {};
   for (const v1DevDependency of Object.keys(packageJson.devDependencies || {})) {
     switch (v1DevDependency) {
+      // @core corresponds to aws-cdk-lib
+      // this is needed for packages that only have a dev dependency on @core
+      case '@aws-cdk/core':
+        devDependencies['aws-cdk-lib'] = pkg.version;
+        break;
       case '@aws-cdk/assert-internal':
       case '@aws-cdk/assert':
         devDependencies['@aws-cdk/assert'] = packageJson.devDependencies[v1DevDependency];
