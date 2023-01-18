@@ -163,17 +163,17 @@ export class Runtime {
 }
 
 /**
- * The environment variable for the service.
+ * The environment secret for the service.
  */
-interface EnvironmentVariable {
+interface EnvironmentSecret {
   readonly name: string;
   readonly value: string;
 }
 
 /**
- * The environment secret for the service.
+ * The environment variable for the service.
  */
-interface EnvironmentSecret {
+interface EnvironmentVariable {
   readonly name: string;
   readonly value: string;
 }
@@ -934,14 +934,14 @@ export class Service extends cdk.Resource {
   private environmentSecrets?: { [key: string]: Secret; };
 
   /**
-   * Environment variables for this service
-   */
-  private readonly variables: EnvironmentVariable[] = []
-
-  /**
    * Environment secrets for this service
    */
   private readonly secrets: EnvironmentSecret[] = []
+
+  /**
+   * Environment variables for this service
+   */
+  private readonly variables: EnvironmentVariable[] = []
 
   /**
    * The ARN of the Service.
@@ -1004,10 +1004,10 @@ export class Service extends cdk.Resource {
       },
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
-        imageRepository: source.imageRepository ?
+        imageRepository: this.source.imageRepository ?
           this.renderImageRepository(this.source.imageRepository!) :
           undefined,
-        codeRepository: source.codeRepository ?
+        codeRepository: this.source.codeRepository ?
           this.renderCodeConfiguration(this.source.codeRepository!.codeConfiguration.configurationValues!) :
           undefined,
       },
@@ -1020,8 +1020,8 @@ export class Service extends cdk.Resource {
     });
 
     // grant required privileges for the role
-    if (source.ecrRepository && this.accessRole) {
-      source.ecrRepository.grantPull(this.accessRole);
+    if (this.source.ecrRepository && this.accessRole) {
+      this.source.ecrRepository.grantPull(this.accessRole);
     }
 
     this.serviceArn = resource.attrServiceArn;
@@ -1075,16 +1075,16 @@ export class Service extends cdk.Resource {
     return accessRole;
   }
 
+  private getEnvironmentSecrets(): { [key: string]: Secret } | undefined {
+    return this.source.codeRepository?.codeConfiguration.configurationValues?.environmentSecrets ||
+      this.source.imageRepository?.imageConfiguration?.environmentSecrets;
+  }
+
   private getEnvironmentVariables(): { [key: string]: string } | undefined {
     return this.source.codeRepository?.codeConfiguration.configurationValues?.environmentVariables ||
       this.source.codeRepository?.codeConfiguration.configurationValues?.environment ||
       this.source.imageRepository?.imageConfiguration?.environmentVariables ||
       this.source.imageRepository?.imageConfiguration?.environment;
-  }
-
-  private getEnvironmentSecrets(): { [key: string]: Secret } | undefined {
-    return this.source.codeRepository?.codeConfiguration.configurationValues?.environmentSecrets ||
-      this.source.imageRepository?.imageConfiguration?.environmentSecrets;
   }
 
   private renderAuthenticationConfiguration(): AuthenticationConfiguration {
@@ -1119,17 +1119,6 @@ export class Service extends cdk.Resource {
     };
   }
 
-  private renderImageRepository(repo: ImageRepository): any {
-    return Object.assign(repo, {
-      imageConfiguration: {
-        port: repo.imageConfiguration?.port?.toString(),
-        startCommand: repo.imageConfiguration?.startCommand,
-        runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
-        runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
-      },
-    });
-  }
-
   private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
     if (this.environmentVariables) {
       for (const [key, value] of Object.entries(this.environmentVariables)) {
@@ -1158,5 +1147,16 @@ export class Service extends cdk.Resource {
     } else {
       return undefined;
     }
+  }
+
+  private renderImageRepository(repo: ImageRepository): any {
+    return Object.assign(repo, {
+      imageConfiguration: {
+        port: repo.imageConfiguration?.port?.toString(),
+        startCommand: repo.imageConfiguration?.startCommand,
+        runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+        runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
+      },
+    });
   }
 }
