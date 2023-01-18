@@ -2113,6 +2113,31 @@ describe('cluster', () => {
     });
   });
 
+  test('throws helpful error, when managed termination protections is enabled and managed scaling is disabled.', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedScaling: false,
+      enableManagedTerminationProtection: true,
+    });
+
+    // Then
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrowError('Cannot enable managed termination protection on the Capacity Provider if managed scaling is disabled. Either enable managed scaling or disable managed termination protection.');
+  });
+
   test('can add ASG capacity via Capacity Provider', () => {
     // GIVEN
     const app = new cdk.App();
@@ -2599,4 +2624,3 @@ describe('Accessing container instance role', function () {
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 });
-
