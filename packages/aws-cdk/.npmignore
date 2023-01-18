@@ -11,9 +11,6 @@ dist
 .LAST_BUILD
 *.snk
 
-!test/integ/cli/**/*.js
-!test/integ/run-wrappers/dist
-
 *.tsbuildinfo
 
 jest.config.js
@@ -24,10 +21,7 @@ tsconfig.json
 !lib/init-templates/**/tsconfig.json
 !lib/init-templates/**/jest.config.js
 
-!test/integ/cli/jest.config.js
-!test/integ/uberpackage/jest.config.js
-!test/integ/cli-regression-patches/**/*
-!test/integ/cli/sam_cdk_integ_app/**/*.ts
+!test/integ/**/*
 
 .DS_Store
 

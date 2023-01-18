@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "CloudTrailDefaultsTest/DefaultTest": {
+      "stacks": [
+        "integ-cloudtrail-defaults"
+      ],
+      "assertionStack": "CloudTrailDefaultsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudTrailDefaultsTestDefaultTestDeployAssertBD9995EA"
+    }
+  }
+}
