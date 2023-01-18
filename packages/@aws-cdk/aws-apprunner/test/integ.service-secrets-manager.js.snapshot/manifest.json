@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ca68c85825bc7081452c4b5a9e83bc17c984f4b1c4abe7dec694d11162e3de2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c8d514c785fb19cbd23269b19753175ccbb3324a5998af72a0855c5dff09e83.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,16 +39,22 @@
             "data": "SecretA720EF05"
           }
         ],
-        "/integ-apprunner-secrets-manager/InstanceRole/Resource": [
+        "/integ-apprunner-secrets-manager/String/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceRole3CCE2F1D"
+            "data": "String0BA8456E"
           }
         ],
-        "/integ-apprunner-secrets-manager/InstanceRole/DefaultPolicy/Resource": [
+        "/integ-apprunner-secrets-manager/Service8/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceRoleDefaultPolicy1531605C"
+            "data": "Service8InstanceRole6CC2A03A"
+          }
+        ],
+        "/integ-apprunner-secrets-manager/Service8/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service8InstanceRoleDefaultPolicy7BC4087D"
           }
         ],
         "/integ-apprunner-secrets-manager/Service8/Resource": [

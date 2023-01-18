@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                   "aws:cdk:cloudformation:props": {
-                    "secretString": "{\"foo\":\"fooval\"}"
+                    "secretString": "{\"password\":\"mySecretPassword\",\"apikey\":\"mySecretApiKey\"}"
                   }
                 },
                 "constructInfo": {
@@ -32,90 +32,37 @@
               "version": "0.0.0"
             }
           },
-          "InstanceRole": {
-            "id": "InstanceRole",
-            "path": "integ-apprunner-secrets-manager/InstanceRole",
+          "String": {
+            "id": "String",
+            "path": "integ-apprunner-secrets-manager/String",
             "children": {
-              "ImportInstanceRole": {
-                "id": "ImportInstanceRole",
-                "path": "integ-apprunner-secrets-manager/InstanceRole/ImportInstanceRole",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
-                }
-              },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-apprunner-secrets-manager/InstanceRole/Resource",
+                "path": "integ-apprunner-secrets-manager/String/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
                   "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "tasks.apprunner.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
+                    "type": "String",
+                    "value": "Abc123",
+                    "name": "/My/Public/Parameter"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
-                  "version": "0.0.0"
-                }
-              },
-              "DefaultPolicy": {
-                "id": "DefaultPolicy",
-                "path": "integ-apprunner-secrets-manager/InstanceRole/DefaultPolicy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-apprunner-secrets-manager/InstanceRole/DefaultPolicy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "secretsmanager:DescribeSecret",
-                                "secretsmanager:GetSecretValue"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Ref": "SecretA720EF05"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "InstanceRoleDefaultPolicy1531605C",
-                        "roles": [
-                          {
-                            "Ref": "InstanceRole3CCE2F1D"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "Parameter": {
+            "id": "Parameter",
+            "path": "integ-apprunner-secrets-manager/Parameter",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -123,6 +70,122 @@
             "id": "Service8",
             "path": "integ-apprunner-secrets-manager/Service8",
             "children": {
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-apprunner-secrets-manager/Service8/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "tasks.apprunner.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-apprunner-secrets-manager/Service8/InstanceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "secretsmanager:DescribeSecret",
+                                    "secretsmanager:GetSecretValue"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "SecretA720EF05"
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "ssm:DescribeParameters",
+                                    "ssm:GetParameter",
+                                    "ssm:GetParameterHistory",
+                                    "ssm:GetParameters"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ssm:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":parameter/My/Public/Parameter"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Service8InstanceRoleDefaultPolicy7BC4087D",
+                            "roles": [
+                              {
+                                "Ref": "Service8InstanceRole6CC2A03A"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-apprunner-secrets-manager/Service8/Resource",
@@ -136,9 +199,54 @@
                           "port": "8000",
                           "runtimeEnvironmentSecrets": [
                             {
-                              "name": "foo",
+                              "name": "PASSWORD",
                               "value": {
-                                "Ref": "SecretA720EF05"
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "SecretA720EF05"
+                                    },
+                                    ":password::"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "PARAMETER",
+                              "value": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":ssm:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":parameter/My/Public/Parameter"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "API_KEY",
+                              "value": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Ref": "SecretA720EF05"
+                                    },
+                                    ":apikey::"
+                                  ]
+                                ]
                               }
                             }
                           ]
@@ -150,7 +258,7 @@
                     "instanceConfiguration": {
                       "instanceRoleArn": {
                         "Fn::GetAtt": [
-                          "InstanceRole3CCE2F1D",
+                          "Service8InstanceRole6CC2A03A",
                           "Arn"
                         ]
                       }
