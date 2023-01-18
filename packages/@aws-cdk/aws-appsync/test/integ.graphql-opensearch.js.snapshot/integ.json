@@ -1,14 +1,12 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "testCases": {
-    "integ.graphql-opensearch": {
+    "opensearch-2.3-stack/DefaultTest": {
       "stacks": [
         "appsync-opensearch"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "opensearch-2.3-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "opensearch23stackDefaultTestDeployAssert16E12129"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
