@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1241e2f1a4b20354671916c8ba1e7fac9b355073ebb58c883e17ce7a631ee117.zip"
+     "S3Key": "d51d2bfafffe9b197eb6fd9609c7e6ca6eeb3b8ecae6d781c4d3d57a51bec73f.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -58,7 +58,7 @@
     "FunctionServiceRole675BB04A"
    ]
   },
-  "FunctionCurrentVersion4E2B22618dd26ccb3af7b577163fa65856572807": {
+  "FunctionCurrentVersion4E2B226139a0cecedeb80de3a257ad93355dc3ac": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -76,10 +76,8 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "FunctionCurrentVersion4E2B22618dd26ccb3af7b577163fa65856572807"
-    },
-    "InvocationType": "RequestResponse",
-    "Timeout": 120000
+     "Ref": "FunctionCurrentVersion4E2B226139a0cecedeb80de3a257ad93355dc3ac"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -145,7 +143,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6107d66f2de5a27f48e6ffe49f091aaaad580052be56a84d02d66042308fb6fb.zip"
+     "S3Key": "ae344ba0df770ab1ea166e5b55e0ff5681c951c0a34d8e724e430b88957c50d4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
