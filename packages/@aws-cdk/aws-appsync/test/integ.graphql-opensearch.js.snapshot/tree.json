@@ -70,7 +70,7 @@
                     "encryptionAtRestOptions": {
                       "enabled": true
                     },
-                    "engineVersion": "OpenSearch_1.3",
+                    "engineVersion": "OpenSearch_2.3",
                     "logPublishingOptions": {},
                     "nodeToNodeEncryptionOptions": {
                       "enabled": true
@@ -383,12 +383,66 @@
           "version": "0.0.0"
         }
       },
+      "opensearch-2.3-stack": {
+        "id": "opensearch-2.3-stack",
+        "path": "opensearch-2.3-stack",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "opensearch-2.3-stack/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "opensearch-2.3-stack/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.209"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "opensearch-2.3-stack/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "opensearch-2.3-stack/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "opensearch-2.3-stack/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.182"
+          "version": "10.1.209"
         }
       }
     },

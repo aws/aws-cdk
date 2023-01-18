@@ -306,6 +306,9 @@ export class PullRequestLinter {
     validationCollector.validateRuleSet({
       testRuleSet: [ { test: validateTitlePrefix } ]
     });
+    validationCollector.validateRuleSet({
+      testRuleSet: [ { test: validateTitleScope } ]
+    })
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
@@ -445,6 +448,29 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
     "The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.");
   return result;
 };
+
+/**
+ * Check that the PR title uses the typical convention for package names.
+ *
+ * For example, "fix(s3)" is preferred over "fix(aws-s3)".
+ */
+function validateTitleScope(pr: GitHubPr): TestResult {
+  const result = new TestResult();
+  // Specific commit types are handled by `validateTitlePrefix`. This just checks whether
+  // the scope includes an `aws-` prefix or not.
+  // Group 1: Scope with parens - "(aws-<name>)"
+  // Group 2: Scope name - "aws-<name>"
+  // Group 3: Preferred scope name - "<name>"
+  const titleRe = /^\w+(\((aws-([\w_-]+))\))?: /;
+  const m = titleRe.exec(pr.title);
+  if (m) {
+    result.assessFailure(
+      !!(m[2] && m[3]),
+      `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
+    );
+  }
+  return result;
+}
 
 function assertStability(pr: GitHubPr, _files: GitHubFile[]): TestResult {
   const title = pr.title;

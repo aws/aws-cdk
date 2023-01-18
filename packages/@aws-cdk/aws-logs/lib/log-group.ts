@@ -554,4 +554,12 @@ export interface MetricFilterOptions {
    * @default - No dimensions attached to metrics.
    */
   readonly dimensions?: Record<string, string>;
+
+  /**
+   * The unit to assign to the metric.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-unit
+   * @default - No unit attached to metrics.
+   */
+  readonly unit?: cloudwatch.Unit;
 }

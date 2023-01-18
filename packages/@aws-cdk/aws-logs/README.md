@@ -165,7 +165,8 @@ const mf = new logs.MetricFilter(this, 'MetricFilter', {
   metricValue: '$.latency',
   dimensions: {
     ErrorCode: '$.errorCode',
-  }
+  },
+  unit: Unit.MILLISECONDS,
 });
 
 //expose a metric from the metric filter
