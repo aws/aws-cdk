@@ -7,24 +7,13 @@ import * as AWS from 'aws-sdk';
  * There are a number of issues in the upstream version of SharedIniFileCredentials
  * that need fixing:
  *
- *  1. The upstream aws-sdk contains an incorrect instantiation of an `AWS.STS`
- *     client, which *should* have taken the region from the requested profile
- *     but doesn't. It will use the region from the default profile, which
- *     may not exist, defaulting to `us-east-1` (since we switched to
- *     AWS_STS_REGIONAL_ENDPOINTS=regional, that default is not even allowed anymore
- *     and the absence of a default region will lead to an error).
+ * 1. The upstream aws-sdk does not support the 'credential_source' option. Meaning credentials
+ *    for assume-role cannot be fetched using EC2/ESC metadata.
  *
- *  2. The simple fix is to get the region from the `config` file. profiles
- *     are made up of a combination of `credentials` and `config`, and the region is
- *     generally in `config` with the rest in `credentials`. However, a bug in
- *     `getProfilesFromSharedConfig` overwrites ALL `config` data with `credentials`
- *     data, so we also need to do extra work to fish the `region` out of the config.
- *
- * 3.  The 'credential_source' option is not supported. Meaning credentials
- *     for assume-role cannot be fetched using EC2/ESC metadata.
- *
- * See https://github.com/aws/aws-sdk-js/issues/3418 for all the gory details.
- * See https://github.com/aws/aws-sdk-js/issues/1916 for some more glory details.
+ * 2. The upstream aws-sdk does not support SSO profiles as the source of RoleProfiles,
+ *    because it will always use the `SharedIniFileCredentials` provider to load
+ *    source credentials, but in order to support SSO profiles you must use a
+ *    separate class (`SsoCredentials).
  */
 export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredentials {
   declare private profile: string;
@@ -60,21 +49,29 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     var sourceProfile = roleProfile.source_profile;
     var credentialSource = roleProfile.credential_source;
 
-    const credentialError = (AWS as any).util.error(
-      new Error(`When using 'role_arn' in profile ('${this.profile}'), you must also configure exactly one of 'source_profile' or 'credential_source'`),
-      { code: 'SharedIniFileCredentialsProviderFailure' },
-    );
-
-    if (sourceProfile && credentialSource) {
-      throw credentialError;
+    if (!!sourceProfile === !!credentialSource) {
+      throw (AWS as any).util.error(
+        new Error(`When using 'role_arn' in profile ('${this.profile}'), you must also configure exactly one of 'source_profile' or 'credential_source'`),
+        { code: 'SharedIniFileCredentialsProviderFailure' },
+      );
     }
 
-    if (!sourceProfile && !credentialSource) {
-      throw credentialError;
-    }
+    // Confirmed this against AWS CLI behavior -- the region must be in the assumED profile,
+    // otherwise `us-east-1`. From the upstream comment in `aws-sdk-js`:
+    // -------- comment from aws-sdk-js -------------------
+    // Experimentation shows that the AWS CLI (tested at version 1.18.136)
+    // ignores the following potential sources of a region for the purposes of
+    // this AssumeRole call:
+    //
+    // - The [default] profile
+    // - The AWS_REGION environment variable
+    //
+    // Ignoring the [default] profile for the purposes of AssumeRole is arguably
+    // a bug in the CLI since it does use the [default] region for service
+    // calls... but right now we're matching behavior of the other tool.
+    // -------------------------------------------------
 
-    const profiles = loadProfilesProper(this.filename);
-    const region = profiles[this.profile]?.region ?? profiles.default?.region ?? 'us-east-1';
+    const region = roleProfile?.region ?? 'us-east-1';
 
     const stsCreds = sourceProfile ? this.sourceProfileCredentials(sourceProfile, creds) : this.credentialSourceCredentials(credentialSource);
 
@@ -121,7 +118,6 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
   }
 
   private sourceProfileCredentials(sourceProfile: string, profiles: Record<string, Record<string, string>>) {
-
     var sourceProfileExistanceTest = profiles[sourceProfile];
 
     if (typeof sourceProfileExistanceTest !== 'object') {
@@ -132,11 +128,23 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
       );
     }
 
-    if (sourceProfileExistanceTest.sso_start_url) {
+    // We need to do a manual check here if the source profile (providing the
+    // credentials for the AssumeRole) is an SSO profile. That's because
+    // `SharedIniFileCredentials` itself doesn't support providing credentials from
+    // arbitrary profiles, only for StaticCredentials and AssumeRole type
+    // profiles; if it's an SSO profile you need to instantiate a special
+    // Credential Provider for that.
+    //
+    // ---
+    //
+    // An SSO profile can be configured in 2 ways (put all the info in the profile
+    // section, or put half of it in an `[sso-session]` block), but in both cases
+    // the primary profile block must have the `sso_account_id` key
+    if (sourceProfileExistanceTest.sso_account_id) {
       return new AWS.SsoCredentials({ profile: sourceProfile });
     }
 
-    return new AWS.SharedIniFileCredentials(
+    return new PatchedSharedIniFileCredentials(
       (AWS as any).util.merge(this.options || {}, {
         profile: sourceProfile,
         preferStaticCredentials: true,
@@ -148,7 +156,6 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
   // the aws-sdk for js does not support 'credential_source' (https://github.com/aws/aws-sdk-js/issues/1916)
   // so unfortunately we need to implement this ourselves.
   private credentialSourceCredentials(sourceCredential: string) {
-
     // see https://docs.aws.amazon.com/credref/latest/refdocs/setting-global-credential_source.html
     switch (sourceCredential) {
       case 'Environment': {
@@ -166,36 +173,4 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
     }
 
   }
-}
-
-/**
- * A function to load profiles from disk that MERGES credentials and config instead of overwriting
- *
- * @see https://github.com/aws/aws-sdk-js/blob/5ae5a7d7d24d1000dbc089cc15f8ed2c7b06c542/lib/util.js#L956
- */
-function loadProfilesProper(filename: string) {
-  const util = (AWS as any).util; // Does exists even though there aren't any typings for it
-  const iniLoader = util.iniLoader;
-  const profiles: Record<string, Record<string, string>> = {};
-  let profilesFromConfig: Record<string, Record<string, string>> = {};
-  if (process.env[util.configOptInEnv]) {
-    profilesFromConfig = iniLoader.loadFrom({
-      isConfig: true,
-      filename: process.env[util.sharedConfigFileEnv],
-    });
-  }
-  var profilesFromCreds: Record<string, Record<string, string>> = iniLoader.loadFrom({
-    filename: filename ||
-      (process.env[util.configOptInEnv] && process.env[util.sharedCredentialsFileEnv]),
-  });
-  for (const [name, profile] of Object.entries(profilesFromConfig)) {
-    profiles[name] = profile;
-  }
-  for (const [name, profile] of Object.entries(profilesFromCreds)) {
-    profiles[name] = {
-      ...profiles[name],
-      ...profile,
-    };
-  }
-  return profiles;
 }
