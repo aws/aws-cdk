@@ -20,40 +20,8 @@ export interface ExecProgramResult {
 
 /** Invokes the cloud executable and returns JSON output */
 export async function execProgram(aws: SdkProvider, config: Configuration): Promise<ExecProgramResult> {
-  const env: { [key: string]: string } = { };
-
-  const context = config.context.all;
-  await populateDefaultEnvironmentIfNeeded(aws, env);
-
-  const debugMode: boolean = config.settings.get(['debug']) ?? true;
-  if (debugMode) {
-    env.CDK_DEBUG = 'true';
-  }
-
-  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
-  if (pathMetadata) {
-    context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
-  }
-
-  const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
-  if (assetMetadata) {
-    context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
-  }
-
-  const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
-  if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
-  // We need to keep on doing this for framework version from before this flag was deprecated.
-  if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
-
-  const stagingEnabled = config.settings.get(['staging']) ?? true;
-  if (!stagingEnabled) {
-    context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
-  }
-
-  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
-  context[cxapi.BUNDLING_STACKS] = bundlingStacks;
-
-  debug('context:', context);
+  const env = await prepareDefaultEnvironment(aws);
+  const context = await prepareContext(config, env);
 
   const build = config.settings.get(['build']);
   if (build) {
@@ -122,19 +90,6 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   return { assembly, lock: await writerLock.convertToReaderLock() };
 
-  function createAssembly(appDir: string) {
-    try {
-      return new cxapi.CloudAssembly(appDir);
-    } catch (error) {
-      if (error.message.includes(cxschema.VERSION_MISMATCH)) {
-        // this means the CLI version is too old.
-        // we instruct the user to upgrade.
-        throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
-      }
-      throw error;
-    }
-  }
-
   async function exec(commandAndArgs: string) {
     return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
@@ -171,6 +126,22 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 }
 
 /**
+ * Creates an assembly with error handling
+ */
+export function createAssembly(appDir: string) {
+  try {
+    return new cxapi.CloudAssembly(appDir);
+  } catch (error) {
+    if (error.message.includes(cxschema.VERSION_MISMATCH)) {
+      // this means the CLI version is too old.
+      // we instruct the user to upgrade.
+      throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
+    }
+    throw error;
+  }
+}
+
+/**
  * If we don't have region/account defined in context, we fall back to the default SDK behavior
  * where region is retrieved from ~/.aws/config and account is based on default credentials provider
  * chain and then STS is queried.
@@ -182,7 +153,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
  *
  * @param context The context key/value bash.
  */
-async function populateDefaultEnvironmentIfNeeded(aws: SdkProvider, env: { [key: string]: string | undefined}) {
+export async function prepareDefaultEnvironment(aws: SdkProvider): Promise<{ [key: string]: string }> {
+  const env: { [key: string]: string } = { };
+
   env[cxapi.DEFAULT_REGION_ENV] = aws.defaultRegion;
   debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 
@@ -191,6 +164,49 @@ async function populateDefaultEnvironmentIfNeeded(aws: SdkProvider, env: { [key:
     env[cxapi.DEFAULT_ACCOUNT_ENV] = accountId;
     debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
   }
+
+  return env;
+}
+
+/**
+ * Settings related to synthesis are read from context.
+ * The merging of various configuration sources like cli args or cdk.json has already happened.
+ * We now need to set the final values to the context.
+ */
+export async function prepareContext(config: Configuration, env: { [key: string]: string | undefined}) {
+  const context = config.context.all;
+
+  const debugMode: boolean = config.settings.get(['debug']) ?? true;
+  if (debugMode) {
+    env.CDK_DEBUG = 'true';
+  }
+
+  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
+  if (pathMetadata) {
+    context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
+  }
+
+  const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
+  if (assetMetadata) {
+    context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
+  }
+
+  const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
+  if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
+  // We need to keep on doing this for framework version from before this flag was deprecated.
+  if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
+
+  const stagingEnabled = config.settings.get(['staging']) ?? true;
+  if (!stagingEnabled) {
+    context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
+  }
+
+  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
+  context[cxapi.BUNDLING_STACKS] = bundlingStacks;
+
+  debug('context:', context);
+
+  return context;
 }
 
 /**
