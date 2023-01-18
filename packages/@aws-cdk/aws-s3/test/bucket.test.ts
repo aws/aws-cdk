@@ -1,5 +1,5 @@
 import { EOL } from 'os';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -2203,6 +2203,96 @@ describe('bucket', () => {
         accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
       }),
     ).toThrow(/Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
+  });
+
+  test('Bucket skips setting up access log ACL but configures delivery for an imported target bucket', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = s3.Bucket.fromBucketName(stack, 'TargetBucket', 'target-logs-bucket');
+    new s3.Bucket(stack, 'TestBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      serverAccessLogsPrefix: 'test/',
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: stack.resolve(accessLogBucket.bucketName),
+        LogFilePrefix: 'test/',
+      },
+    });
+    template.allResourcesProperties('AWS::S3::Bucket', {
+      AccessControl: Match.absent(),
+    });
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('Unable to add necessary logging permissions to imported target bucket'));
+  });
+
+  test('Bucket Allow Log delivery should use the recommended policy when flag enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const bucket = new s3.Bucket(stack, 'TestBucket', { serverAccessLogsPrefix: 'test' });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      AccessControl: Match.absent(),
+    });
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(bucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${bucket.bucketArn}/test*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(bucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': { 'Ref': 'AWS::AccountId' },
+            },
+          },
+        })]),
+      }),
+    });
+  });
+
+  test('Log Delivery bucket policy should properly set source bucket ARN/Account', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext('@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy', true);
+
+    // WHEN
+    const targetBucket = new s3.Bucket(stack, 'TargetBucket');
+    const sourceBucket = new s3.Bucket(stack, 'SourceBucket', { serverAccessLogsBucket: targetBucket });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: stack.resolve(targetBucket.bucketName),
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'logging.s3.amazonaws.com' },
+          Action: 's3:PutObject',
+          Resource: stack.resolve(`${targetBucket.bucketArn}/*`),
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': stack.resolve(sourceBucket.bucketArn),
+            },
+            StringEquals: {
+              'aws:SourceAccount': stack.resolve(sourceBucket.env.account),
+            },
+          },
+        })]),
+      }),
+    });
   });
 
   test('Defaults for an inventory bucket', () => {

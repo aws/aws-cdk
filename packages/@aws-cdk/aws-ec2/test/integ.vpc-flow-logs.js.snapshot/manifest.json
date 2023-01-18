@@ -1,6 +1,12 @@
 {
   "version": "21.0.0",
   "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
     "FlowLogsFeatureFlag.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -17,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f4f8db3ea3ad2d5f5678275c75dce7d9b67b46d8df7d92c62913bdc5a03cd3f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2db53e096625b4b167fb15dd7bdc246692b381f45e28c509614fef7d41c20bc9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -204,10 +210,7 @@
         "/FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2"
           }
         ],
         "/FlowLogsFeatureFlag/Exports/Output{\"Fn::GetAtt\":[\"VPCFlowLogsS3BucketFB7DC2BE\",\"Arn\"]}": [
@@ -283,7 +286,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23955aa16c5d59106d93ecce9cedd43aa5782fbf23bb2ef8549b2119345a6f79.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2090a74d484bc155b48d7511b99e4921b8f55e488c3fe1500cffede0cdfd33b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -546,7 +549,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd951509b1e22484b40a66a661cb8cebce3087b8cb381e3dcf02e641e5eb08cd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1dcf759cd2c8928f5b1acfbf439f1751e25367a5ac61ba5e640ff8b78fdf89f7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -601,12 +604,6 @@
         ]
       },
       "displayName": "FlowLogs/DefaultTest/DeployAssert"
-    },
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
     }
   }
 }

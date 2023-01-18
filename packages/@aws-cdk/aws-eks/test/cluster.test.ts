@@ -1566,7 +1566,7 @@ describe('cluster', () => {
     test('EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
-      const LATEST_KUBERNETES_VERSION = '1.14';
+      const LATEST_KUBERNETES_VERSION = '1.24';
 
       // WHEN
       new eks.EksOptimizedImage().getImage(stack);
