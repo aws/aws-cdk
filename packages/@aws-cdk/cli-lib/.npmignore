@@ -1,0 +1,36 @@
+# Ignore artifacts
+**/cdk.out
+.LAST_BUILD
+*.snk
+junit.xml
+coverage
+.nyc_output
+*.tgz
+dist
+.LAST_PACKAGE
+*.tsbuildinfo
+
+# Ignore configs and test files
+.eslintrc.js
+test/
+tsconfig.json
+
+# Make the linter happy, but...
+!*.js
+# ... we don't actualy want unbundled files
+*.js
+*.ts
+
+# Explicitly allow all required files
+!lib/main.js
+!lib/bridge.js
+!lib/setup-sandbox.js
+!*.d.ts
+!*.lit.ts
+!rosetta/
+!.jsii
+!.jsii.tabl.json
+!.warnings.jsii.js
+!build-info.json
+!NOTICE
+!THIRD_PARTY_LICENSES
