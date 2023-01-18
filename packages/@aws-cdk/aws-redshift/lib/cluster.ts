@@ -4,6 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -661,5 +662,57 @@ export class Cluster extends ClusterBase {
     } else {
       throw new Error('Cannot add a parameter to an imported parameter group.');
     }
+  }
+
+  /**
+   * Adds a role to the cluster
+   *
+   * @param role the role to add
+   * [disable-awslint:ref-via-interface]
+   */
+  public addIamRole(role: iam.Role): void {
+    const clusterRoleList = this.cluster.iamRoles ?? [];
+
+    if (clusterRoleList.includes(role.roleArn)) {
+      throw new Error('Role is already attached to the cluster');
+    }
+    if (clusterRoleList.length >= 10) {
+      throw new Error('Maximum number of IAM roles for a cluster is 10');
+    }
+
+    // On UPDATE or CREATE define the new list of roles. On DELETE, detech the role from the cluster
+    const roleCustomResource = new AwsCustomResource(this, `add-role-${role.node.id}`, {
+      onUpdate: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          AddIamRoles: [role.roleArn],
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${role.roleArn}-${this.cluster.ref}`,
+        ),
+      },
+      onDelete: {
+        service: 'Redshift',
+        action: 'modifyClusterIamRoles',
+        parameters: {
+          ClusterIdentifier: this.cluster.ref,
+          RemoveIamRoles: [role.roleArn],
+        },
+        physicalResourceId: PhysicalResourceId.of(
+          `${role.roleArn}-${this.cluster.ref}`,
+        ),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+      resourceType: 'Custom::ModifyClusterIamRoles',
+    });
+
+    // eslint-disable-next-line no-console
+    console.log(roleCustomResource.getResponseField('IamRoles'));
+
+    role.grantPassRole(roleCustomResource.grantPrincipal);
   }
 }
