@@ -39,18 +39,11 @@ export interface SubscriptionOptions {
   readonly filterPolicy? : { [attribute: string]: SubscriptionFilter };
 
   /**
-   * The filter policy. V2 is compatible with FilterPolicyScope set to "MessageBody"
+   * The filter policy that allows for nested properties. This will implicitly set the filter policy scope to "MessageBody".
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicyV2? : SubscriptionFilterPolicyV2;
-
-  /**
-   * The filter policy scope.
-   *
-   * @default -  Filter applied through message attributes
-   */
-  readonly filterPolicyScope?: SubscriptionFilterPolicyScope;
+  readonly filterPolicyWithMessageBody? : SubscriptionFilterPolicyWithMessageBody;
 
   /**
    * The region where the topic resides, in the case of cross-region subscriptions
@@ -99,7 +92,7 @@ export class Subscription extends Resource {
 
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
-  private readonly filterPolicyV2?: SubscriptionFilterPolicyArrayV2;
+  private readonly filterPolicyWithMessageBody?: SubscriptionFilterPolicyArrayWithMessageBody;
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
@@ -116,8 +109,6 @@ export class Subscription extends Resource {
     }
 
     if (props.filterPolicy) {
-      // eslint-disable-next-line no-console
-      console.warn('`filterPolicy` is now deprecated. Please use `filterPolicyV2` which now supports filter policy scope.');
       if (Object.keys(props.filterPolicy).length > 5) {
         throw new Error('A filter policy can have a maximum of 5 attribute names.');
       }
@@ -133,11 +124,11 @@ export class Subscription extends Resource {
       if (total > 100) {
         throw new Error(`The total combination of values (${total}) must not exceed 100.`);
       }
-    } else if (props.filterPolicyV2) {
-      if (Object.keys(props.filterPolicyV2).length > 5) {
+    } else if (props.filterPolicyWithMessageBody) {
+      if (Object.keys(props.filterPolicyWithMessageBody).length > 5) {
         throw new Error('A filter policy can have a maximum of 5 attribute names.');
       }
-      this.filterPolicyV2 = this.buildFilterPolicyV2(props.filterPolicyV2);
+      this.filterPolicyWithMessageBody = this.buildFilterPolicyWithMessageBody(props.filterPolicyWithMessageBody);
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
@@ -150,8 +141,8 @@ export class Subscription extends Resource {
       protocol: props.protocol,
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
-      filterPolicy: this.filterPolicyV2 || this.filterPolicy,
-      filterPolicyScope: props.filterPolicyScope,
+      filterPolicy: this.filterPolicyWithMessageBody || this.filterPolicy,
+      filterPolicyScope: this.filterPolicyWithMessageBody ? 'MessageBody' : undefined,
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
@@ -159,13 +150,13 @@ export class Subscription extends Resource {
 
   }
 
-  private buildFilterPolicyV2(filterPolicy: any, depth = 1, totalCombinationValues = [1]): SubscriptionFilterPolicyArrayV2 {
+  private buildFilterPolicyWithMessageBody(filterPolicy: any, depth = 1, totalCombinationValues = [1]): SubscriptionFilterPolicyArrayWithMessageBody {
     for (const [key, value] of Object.entries(filterPolicy)) {
       if (value instanceof SubscriptionFilter) {
         filterPolicy[key] = value.conditions;
         totalCombinationValues[0] *= value.conditions.length * depth;
       } else if (!(value instanceof Array)) {
-        this.buildFilterPolicyV2(value, depth + 1, totalCombinationValues);
+        this.buildFilterPolicyWithMessageBody(value, depth + 1, totalCombinationValues);
       }
     }
     if (totalCombinationValues[0] > 150) {
@@ -257,27 +248,13 @@ export enum SubscriptionProtocol {
 /**
  * The filter policy after it has had filters transformed by SubscriptionFilter
  */
-interface SubscriptionFilterPolicyArrayV2 {
-  [attribute: string]: any[] | SubscriptionFilterPolicyArrayV2;
+interface SubscriptionFilterPolicyArrayWithMessageBody {
+  [attribute: string]: any[] | SubscriptionFilterPolicyArrayWithMessageBody;
 }
 
 /**
  * The filter policy that allows for nested subscription filter policies. This is accomplished via recursive types.
  */
-export interface SubscriptionFilterPolicyV2 {
-  [attribute: string]: SubscriptionFilter | SubscriptionFilterPolicyV2;
-}
-
-/**
- * The type of subscription filter policy scope determining what field SNS messages should be filtered by.
- */
-export enum SubscriptionFilterPolicyScope {
-  /**
-   * Filter is applied through the message body
-   */
-  MESSAGE_BODY = 'MessageBody',
-  /**
-   * Filter is applied through the message attributes
-   */
-  MESSAGE_ATTRIBUTES = 'MessageAttributes'
+export interface SubscriptionFilterPolicyWithMessageBody {
+  [attribute: string]: SubscriptionFilter | SubscriptionFilterPolicyWithMessageBody;
 }

@@ -153,7 +153,7 @@ describe('Subscription', () => {
 
   });
 
-  test('with filter policy scope and filter policy V2', () => {
+  test('with filter policy and filter policy scope MessageBody', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
@@ -161,7 +161,7 @@ describe('Subscription', () => {
     // WHEN
     new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
-      filterPolicyV2: {
+      filterPolicyWithMessageBody: {
         background: {
           color: sns.SubscriptionFilter.stringFilter({
             allowlist: ['red', 'green'],
@@ -177,7 +177,6 @@ describe('Subscription', () => {
         }),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
-      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
       topic,
     });
 
@@ -220,7 +219,6 @@ describe('Subscription', () => {
           lessThanOrEqualTo: 0,
         }),
       },
-      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_ATTRIBUTES,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
     });
@@ -235,7 +233,6 @@ describe('Subscription', () => {
           { numeric: ['<=', 0] },
         ],
       },
-      FilterPolicyScope: 'MessageAttributes',
     });
 
   });
@@ -338,7 +335,7 @@ describe('Subscription', () => {
       endpoint: 'endpoint',
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
-      filterPolicyV2: {
+      filterPolicyWithMessageBody: {
         a: { b: new sns.SubscriptionFilter([...Array.from(Array(10).keys())]) },
         c: { d: new sns.SubscriptionFilter([...Array.from(Array(5).keys())]) },
       },

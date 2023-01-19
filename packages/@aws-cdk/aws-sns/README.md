@@ -93,9 +93,9 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
 }));
 ```
 
-### Filter policy scope
+### Filter policy with message body
 
-A filter policy scope can be specified along with a filter policy. The two optional scopes are `MessageAttributes` (default) or `MessageBody`.
+When using filter policy with message body, you can create filters on nested objects. This implicitly sets the filter policy scope to "MessageBody".
 
 Example with a Lambda subscription:
 
@@ -108,12 +108,13 @@ declare const fn: lambda.Function;
 // Lambda should receive only message matching the following conditions on message body:
 // color: 'red' or 'orange'
 myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
-  filterPolicyV2: {
-    color: sns.SubscriptionFilter.stringFilter({
-      allowlist: ['red', 'orange'],
-    }),
+  filterPolicyWithMessageBody: {
+    background: {
+      color: sns.SubscriptionFilter.stringFilter({
+        allowlist: ['red', 'orange'],
+      }),
+    },
   },
-  filterPolcyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
 }));
 ```
 

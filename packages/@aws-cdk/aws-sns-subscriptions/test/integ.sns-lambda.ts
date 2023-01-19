@@ -39,7 +39,23 @@ class SnsToLambda extends cdk.Stack {
           between: { start: 100, stop: 200 },
         }),
       },
-      filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_ATTRIBUTES,
+    }));
+
+    const fctionFilteredWithMessageBody = new lambda.Function(this, 'FilteredMessageBody', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
+    });
+
+    topic.addSubscription(new subs.LambdaSubscription(fctionFilteredWithMessageBody, {
+      filterPolicyWithMessageBody: {
+        background: {
+          color: sns.SubscriptionFilter.stringFilter({
+            allowlist: ['red'],
+            matchPrefixes: ['bl', 'ye'],
+          }),
+        },
+      },
     }));
   }
 }

@@ -1892,7 +1892,6 @@ test('with filter policy', () => {
         between: { start: 100, stop: 200 },
       }),
     },
-    filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_ATTRIBUTES,
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
@@ -1925,64 +1924,6 @@ test('with filter policy', () => {
         },
       ],
     },
-    FilterPolicyScope: 'MessageAttributes',
-  });
-});
-
-test('with filter policy and filter policy scope set to MessageAttributes', () => {
-  const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
-    handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
-  });
-
-  topic.addSubscription(new subs.LambdaSubscription(fction, {
-    filterPolicy: {
-      color: sns.SubscriptionFilter.stringFilter({
-        allowlist: ['red'],
-        matchPrefixes: ['bl', 'ye'],
-      }),
-      size: sns.SubscriptionFilter.stringFilter({
-        denylist: ['small', 'medium'],
-      }),
-      price: sns.SubscriptionFilter.numericFilter({
-        between: { start: 100, stop: 200 },
-      }),
-    },
-    filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_ATTRIBUTES,
-  }));
-
-  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
-    'FilterPolicy': {
-      'color': [
-        'red',
-        {
-          'prefix': 'bl',
-        },
-        {
-          'prefix': 'ye',
-        },
-      ],
-      'size': [
-        {
-          'anything-but': [
-            'small',
-            'medium',
-          ],
-        },
-      ],
-      'price': [
-        {
-          'numeric': [
-            '>=',
-            100,
-            '<=',
-            200,
-          ],
-        },
-      ],
-    },
-    FilterPolicyScope: 'MessageAttributes',
   });
 });
 
@@ -1994,7 +1935,7 @@ test('with filter policy scope MessageBody', () => {
   });
 
   topic.addSubscription(new subs.LambdaSubscription(fction, {
-    filterPolicyV2: {
+    filterPolicyWithMessageBody: {
       color: {
         background: sns.SubscriptionFilter.stringFilter({
           allowlist: ['red'],
@@ -2005,7 +1946,6 @@ test('with filter policy scope MessageBody', () => {
         denylist: ['small', 'medium'],
       }),
     },
-    filterPolicyScope: sns.SubscriptionFilterPolicyScope.MESSAGE_BODY,
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {

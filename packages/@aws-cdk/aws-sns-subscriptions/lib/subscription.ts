@@ -12,18 +12,11 @@ export interface SubscriptionProps {
    */
   readonly filterPolicy?: { [attribute: string]: sns.SubscriptionFilter };
   /**
-   * The filter policy. V2 is compatible with filter policy scope set to "MessageBody"
+   * The filter policy that allows for nested properties. This will implicitly set the filter policy scope to "MessageBody".
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicyV2?: sns.SubscriptionFilterPolicyV2;
-  /**
-   * The filter policy scope.
-   *
-   * @default - Filter applied through message attributes
-   */
-  readonly filterPolicyScope?: sns.SubscriptionFilterPolicyScope;
-
+  readonly filterPolicyWithMessageBody?: sns.SubscriptionFilterPolicyWithMessageBody;
   /**
    * Queue to be used as dead letter queue.
    * If not passed no dead letter queue is enabled.
