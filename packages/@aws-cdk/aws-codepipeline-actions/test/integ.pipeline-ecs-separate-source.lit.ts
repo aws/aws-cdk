@@ -21,7 +21,7 @@ import * as codepipeline_actions from '../lib';
 /// !show
 
 /**
- * These are the construction properties for {@link EcsAppStack}.
+ * These are the construction properties for `EcsAppStack`.
  * They extend the standard Stack properties,
  * but also require providing the ContainerImage that the service will use.
  * That Image will be provided from the Stack containing the CodePipeline.
