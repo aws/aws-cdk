@@ -333,7 +333,7 @@ export interface MultipartBodyOptions {
 }
 
 /**
- * The base class for all classes which can be used as {@link MultipartUserData}.
+ * The base class for all classes which can be used as `MultipartUserData`.
  */
 export abstract class MultipartBody {
   /**
@@ -350,7 +350,7 @@ export abstract class MultipartBody {
    * Constructs the new `MultipartBody` wrapping existing `UserData`. Modification to `UserData` are reflected
    * in subsequent renders of the part.
    *
-   * For more information about content types see {@link MultipartBodyOptions.contentType}.
+   * For more information about content types see `MultipartBodyOptions.contentType`.
    *
    * @param userData user data to wrap into body part
    * @param contentType optional content type, if default one should not be used
@@ -381,7 +381,7 @@ export abstract class MultipartBody {
 }
 
 /**
- * The raw part of multi-part user data, which can be added to {@link MultipartUserData}.
+ * The raw part of multi-part user data, which can be added to `MultipartUserData`.
  */
 class MultipartBodyRaw extends MultipartBody {
   public constructor(private readonly props: MultipartBodyOptions) {
@@ -439,7 +439,7 @@ class MultipartBodyUserDataWrapper extends MultipartBody {
 }
 
 /**
- * Options for creating {@link MultipartUserData}
+ * Options for creating `MultipartUserData`
  */
 export interface MultipartUserDataOptions {
   /**

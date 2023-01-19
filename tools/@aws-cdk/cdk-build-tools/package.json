@@ -39,7 +39,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.5.2",
     "@types/semver": "^7.3.13",
-    "@types/yargs": "^15.0.14"
+    "@types/yargs": "^15.0.15"
   },
   "dependencies": {
     "@aws-cdk/eslint-plugin": "0.0.0",
@@ -57,10 +57,10 @@
     "fs-extra": "^9.1.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.2.0",
-    "jsii": "1.72.0",
-    "jsii-pacmak": "1.72.0",
-    "jsii-reflect": "1.72.0",
-    "markdownlint-cli": "^0.32.2",
+    "jsii": "1.73.0",
+    "jsii-pacmak": "1.73.0",
+    "jsii-reflect": "1.73.0",
+    "markdownlint-cli": "^0.33.0",
     "nyc": "^15.1.0",
     "semver": "^7.3.8",
     "ts-jest": "^27.1.5",

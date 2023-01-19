@@ -1,5 +1,5 @@
 {
-  "$version": "105.0.0",
+  "$version": "107.0.0",
   "PropertyTypes": {
     "AWS::IoTWireless::DeviceProfile.LoRaWANDeviceProfile": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotwireless-deviceprofile-lorawandeviceprofile.html",
@@ -906,16 +906,7 @@
         "Arn": {
           "PrimitiveType": "String"
         },
-        "SidewalkResponse": {
-          "Type": "SidewalkAccountInfoWithFingerprint"
-        },
-        "SidewalkResponse.AmazonId": {
-          "PrimitiveType": "String"
-        },
-        "SidewalkResponse.Arn": {
-          "PrimitiveType": "String"
-        },
-        "SidewalkResponse.Fingerprint": {
+        "Fingerprint": {
           "PrimitiveType": "String"
         }
       },
@@ -924,12 +915,6 @@
         "AccountLinked": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotwireless-partneraccount.html#cfn-iotwireless-partneraccount-accountlinked",
           "PrimitiveType": "Boolean",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
-        "Fingerprint": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotwireless-partneraccount.html#cfn-iotwireless-partneraccount-fingerprint",
-          "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
         },
@@ -949,6 +934,12 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotwireless-partneraccount.html#cfn-iotwireless-partneraccount-sidewalk",
           "Required": false,
           "Type": "SidewalkAccountInfo",
+          "UpdateType": "Mutable"
+        },
+        "SidewalkResponse": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotwireless-partneraccount.html#cfn-iotwireless-partneraccount-sidewalkresponse",
+          "Required": false,
+          "Type": "SidewalkAccountInfoWithFingerprint",
           "UpdateType": "Mutable"
         },
         "SidewalkUpdate": {
