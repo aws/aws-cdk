@@ -82,7 +82,7 @@ def helm_handler(event, context):
 
         if repository is not None and repository.startswith('oci://'):
             tmpdir = tempfile.TemporaryDirectory()
-            chart_dir = get_chart_from_oci(tmpdir.name, release, repository, version)
+            chart_dir = get_chart_from_oci(tmpdir.name, repository, version)
             chart = chart_dir
 
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
@@ -123,7 +123,7 @@ def get_oci_cmd(repository, version):
     return cmnd
 
 
-def get_chart_from_oci(tmpdir, release, repository = None, version = None):
+def get_chart_from_oci(tmpdir, repository = None, version = None):
 
     cmnd = get_oci_cmd(repository, version)
 
@@ -135,7 +135,9 @@ def get_chart_from_oci(tmpdir, release, repository = None, version = None):
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=tmpdir, shell=True)
             logger.info(output)
 
-            return os.path.join(tmpdir, release)
+            # effectively returns "$tmpDir/$lastPartOfOCIUrl", because this is how helm pull saves OCI artifact. 
+            # Eg. if we have oci://9999999999.dkr.ecr.us-east-1.amazonaws.com/foo/bar/pet-service repository, helm saves artifact under $tmpDir/pet-service
+            return os.path.join(tmpdir, repository.rpartition('/')[-1])
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'Broken pipe' in output:

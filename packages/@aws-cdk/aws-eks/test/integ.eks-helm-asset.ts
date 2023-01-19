@@ -59,6 +59,15 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
     });
+
+    this.cluster.addHelmChart('test-oci-chart-different-release-name', {
+      chart: 'lambda-chart',
+      release: 'lambda-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
+      version: 'v0.1.4',
+      namespace: 'ack-system',
+      createNamespace: true,
+    });
   }
 }
 
