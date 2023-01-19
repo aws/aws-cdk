@@ -911,8 +911,6 @@ a property of the creationPolicy on the resource options. Setting it to true wil
 resources that depend on the fleet resource.
 
 ```ts
-import { CfnFleet } from 'aws-cdk-lib/aws-appstream';
-
 const fleet = new CfnFleet(stack, 'Fleet', {
   instanceType: 'stream.standard.small',
   name: 'Fleet',
