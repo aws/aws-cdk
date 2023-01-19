@@ -153,7 +153,7 @@ export interface SchemaOptions {
 /**
  * Properties of a DynamoDB Table
  *
- * Use {@link TableProps} for all table properties
+ * Use `TableProps` for all table properties
  */
 export interface TableOptions extends SchemaOptions {
   /**
@@ -566,7 +566,7 @@ export interface ITable extends IResource {
 export interface TableAttributes {
   /**
    * The ARN of the dynamodb table.
-   * One of this, or {@link tableName}, is required.
+   * One of this, or `tableName`, is required.
    *
    * @default - no table arn
    */
@@ -574,7 +574,7 @@ export interface TableAttributes {
 
   /**
    * The table name of the dynamodb table.
-   * One of this, or {@link tableArn}, is required.
+   * One of this, or `tableArn`, is required.
    *
    * @default - no table name
    */
@@ -597,7 +597,7 @@ export interface TableAttributes {
   /**
    * The name of the global indexes set for this Table.
    * Note that you need to set either this property,
-   * or {@link localIndexes},
+   * or `localIndexes`,
    * if you want methods like grantReadData()
    * to grant permissions for indexes as well as the table itself.
    *
@@ -608,7 +608,7 @@ export interface TableAttributes {
   /**
    * The name of the local indexes set for this Table.
    * Note that you need to set either this property,
-   * or {@link globalIndexes},
+   * or `globalIndexes`,
    * if you want methods like grantReadData()
    * to grant permissions for indexes as well as the table itself.
    *
@@ -619,7 +619,7 @@ export interface TableAttributes {
   /**
    * If set to true, grant methods always grant permissions for all indexes.
    * If false is provided, grant methods grant the permissions
-   * only when {@link globalIndexes} or {@link localIndexes} is specified.
+   * only when `globalIndexes` or `localIndexes` is specified.
    *
    * @default - false
    */
@@ -1026,6 +1026,9 @@ abstract class TableBase extends Resource implements ITable {
     grantee: iam.IGrantable,
     opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
   ): iam.Grant {
+    if (this.encryptionKey && opts.keyActions) {
+      this.encryptionKey.grant(grantee, ...opts.keyActions);
+    }
     if (opts.tableActions) {
       const resources = [this.tableArn,
         Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
@@ -1039,9 +1042,6 @@ abstract class TableBase extends Resource implements ITable {
         resourceArns: resources,
         scope: this,
       });
-      if (this.encryptionKey && opts.keyActions) {
-        this.encryptionKey.grant(grantee, ...opts.keyActions);
-      }
       return ret;
     }
     if (opts.streamActions) {
@@ -1076,7 +1076,7 @@ abstract class TableBase extends Resource implements ITable {
 export class Table extends TableBase {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
-   * @deprecated Use {@link #grantTableListStreams} for more granular permission
+   * @deprecated Use `#grantTableListStreams` for more granular permission
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {

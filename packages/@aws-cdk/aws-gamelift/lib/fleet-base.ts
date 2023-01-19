@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
+import { IGameSessionQueueDestination } from './game-session-queue';
 import { GameLiftMetrics } from './gamelift-canned-metrics.generated';
 import { CfnFleet } from './gamelift.generated';
 
@@ -140,7 +141,7 @@ export interface ResourceCreationLimitPolicy {
 /**
  * Represents a Gamelift fleet
  */
-export interface IFleet extends cdk.IResource, iam.IGrantable {
+export interface IFleet extends cdk.IResource, iam.IGrantable, IGameSessionQueueDestination {
   /**
    * The Identifier of the fleet.
    *
@@ -533,6 +534,13 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       ...fn({ FleetId: this.fleetId }),
       ...props,
     }).attachTo(this);
+  }
+
+  /**
+   * The ARN to put into the destination field of a game session queue
+   */
+  public get resourceArnForDestination() {
+    return this.fleetArn;
   }
 
   /**

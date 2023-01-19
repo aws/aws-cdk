@@ -276,7 +276,8 @@ export class ReadmeFile extends ValidationRule {
     if (!scopes) {
       return;
     }
-    if (pkg.packageName === '@aws-cdk/core') {
+    // elasticsearch is renamed to opensearch service, so its readme does not follow these rules
+    if (pkg.packageName === '@aws-cdk/core' || pkg.packageName === '@aws-cdk/aws-elasticsearch') {
       return;
     }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
@@ -1675,6 +1676,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     'cdk',
     'cdk-assets',
     '@aws-cdk/integ-runner',
+    '@aws-cdk-testing/cli-integ',
   ];
 
   public validate(pkg: PackageJson): void {

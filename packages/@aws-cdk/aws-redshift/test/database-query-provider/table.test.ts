@@ -225,20 +225,17 @@ describe('update', () => {
     }));
   });
 
-  test('replaces if table columns change', async () => {
-    const newTableColumnName = 'col2';
-    const newTableColumnDataType = 'varchar(1)';
-    const newTableColumns = [{ name: newTableColumnName, dataType: newTableColumnDataType }];
+  test('does not replace if table columns removed', async () => {
     const newResourceProperties = {
       ...resourceProperties,
-      tableColumns: newTableColumns,
+      tableColumns: [],
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (${newTableColumnName} ${newTableColumnDataType})`,
+      Sql: `ALTER TABLE ${physicalResourceId} DROP COLUMN col1`,
     }));
   });
 
