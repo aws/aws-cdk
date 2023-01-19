@@ -143,7 +143,7 @@ export class InitTemplate {
     await fs.writeFile(toFile, this.expand(template, language, project));
   }
 
-  private expand(template: string, language: string, project: ProjectInfo) {
+  private expand(template: string, language: string, project: ProjectInfo): string {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const manifest = require(path.join(rootDir(), 'package.json'));
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
@@ -158,6 +158,8 @@ export class InitTemplate {
       case 'python':
         constructsVersion = rangeFromSemver(constructsVersion, 'pep');
         break;
+      case 'go':
+        return this.expand(template.replace(/_name_/g, project.name), '', project);
     }
     return template.replace(/%name%/g, project.name)
       .replace(/%name\.camelCased%/g, camelCase(project.name))
