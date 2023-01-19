@@ -73,6 +73,13 @@ export interface BundleProps {
    * @default - no check.
    */
   readonly test?: string;
+
+  /**
+   * Basic sanity check to run against the created bundle.
+   *
+   * @default "inline"
+   */
+  readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';  
 }
 
 /**
@@ -148,6 +155,7 @@ export class Bundle {
   private readonly allowedLicenses: string[];
   private readonly dontAttribute?: string;
   private readonly test?: string;
+  private readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';
 
   private _bundle?: esbuild.BuildResult;
   private _dependencies?: Package[];
@@ -165,6 +173,7 @@ export class Bundle {
     this.allowedLicenses = props.allowedLicenses ?? DEFAULT_ALLOWED_LICENSES;
     this.dontAttribute = props.dontAttribute;
     this.entryPoints = {};
+    this.sourcemap = props.sourcemap;
 
     const entryPoints = props.entryPoints ?? (this.manifest.main ? [this.manifest.main] : []);
 
@@ -394,7 +403,7 @@ export class Bundle {
       bundle: true,
       target: 'node14',
       platform: 'node',
-      sourcemap: 'inline',
+      sourcemap: this.sourcemap ?? 'inline',
       metafile: true,
       treeShaking: true,
       absWorkingDir: this.packageDir,
