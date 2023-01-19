@@ -76,6 +76,8 @@ export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTarge
 export const IAM_STANDARDIZED_SERVICE_PRINCIPALS = '@aws-cdk/aws-iam:standardizedServicePrincipals';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
+export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
+export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -572,7 +574,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This new implementation creates default policy names based on the constructs node path in their stack.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.60.0' },
     recommendedValue: true,
   },
 
@@ -592,6 +594,38 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.59.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ROUTE53_PATTERNS_USE_CERTIFICATE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use the official `Certificate` resource instead of `DnsValidatedCertificate`',
+    detailsMd: `
+      Enable this feature flag to use the official CloudFormation supported \`Certificate\` resource instead
+      of the deprecated \`DnsValidatedCertificate\` construct. If this flag is enabled and you are creating
+      the stack in a region other than us-east-1 then you must also set \`crossRegionReferences=true\` on the
+      stack.
+      `,
+    introducedIn: { v2: 'V2·NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'Whether to install the latest SDK by default in AwsCustomResource',
+    detailsMd: `
+      This was originally introduced and enabled by default to not be limited by the SDK version
+      that's installed on AWS Lambda. However, it creates issues for Lambdas bound to VPCs that
+      do not have internet access, or in environments where 'npmjs.com' is not available.
+
+      The recommended setting is to disable the default installation behavior, and pass the
+      flag on a resource-by-resource basis to enable it if necessary.
+    `,
+    compatibilityWithOldBehaviorMd: 'Set installLatestAwsSdk: true on all resources that need it.',
+    introducedIn: { v2: '2.60.0' },
+    recommendedValue: false,
   },
 };
 
