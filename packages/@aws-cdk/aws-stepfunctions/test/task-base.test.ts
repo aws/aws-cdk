@@ -311,6 +311,40 @@ describe('Task base', () => {
     });
   });
 
+  test('timeout and heartbeat specified with a path', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
+      heartbeatSecondsPath: '$.heartbeat',
+      timeoutSecondsPath: '$.timeout',
+    });
+
+    // THEN
+    expect(renderGraph(task)).toEqual(expect.objectContaining({
+      States: {
+        'my-exciting-task': expect.objectContaining({
+          TimeoutSecondsPath: '$.timeout',
+          HeartbeatSecondsPath: '$.heartbeat',
+        }),
+      },
+    }));
+  });
+
+  test('throws with both timeout and timeout path', () => {
+    // WHEN
+    expect(() => new FakeTask(stack, 'my-exciting-task', {
+      timeout: cdk.Duration.minutes(10),
+      timeoutSecondsPath: '$.timeout',
+    })).toThrow(/A task cannot include both `timeout` and `timeoutSecondsPath`/);
+  });
+
+  test('throws with both heartbeat and heartbeat path', () => {
+    // WHEN
+    expect(() => new FakeTask(stack, 'my-exciting-task', {
+      heartbeat: cdk.Duration.minutes(10),
+      heartbeatSecondsPath: '$.heartbeat',
+    })).toThrow(/A task cannot include both `heartbeat` and `heartbeatSecondsPath`/);
+  });
+
   test('get named metric for this task', () => {
     // WHEN
     const metric = task.metric('my-metric');

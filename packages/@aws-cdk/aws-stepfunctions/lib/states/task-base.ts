@@ -68,11 +68,19 @@ export interface TaskStateBaseProps {
   readonly resultSelector?: { [key: string]: any };
 
   /**
-   * Timeout for the state machine
+   * Timeout for the task
    *
    * @default - None
    */
   readonly timeout?: cdk.Duration;
+
+  /**
+   * Timeout, in seconds, for the task specified by a path in the state input.
+   * When resolved, the path must select a field whose value is a positive integer.
+   *
+   * @default - None
+   */
+  readonly timeoutSecondsPath?: string;
 
   /**
    * Timeout for the heartbeat
@@ -80,6 +88,14 @@ export interface TaskStateBaseProps {
    * @default - None
    */
   readonly heartbeat?: cdk.Duration;
+
+  /**
+   * Timeout, in seconds, for the heartbeat specified by a path in the state input.
+   * When resolved, the path must select a field whose value is a positive integer.
+   *
+   * @default - None
+   */
+  readonly heartbeatSecondsPath?: string;
 
   /**
    * AWS Step Functions integrates with services directly in the Amazon States Language.
@@ -123,14 +139,27 @@ export abstract class TaskStateBase extends State implements INextable {
   protected abstract readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly timeout?: cdk.Duration;
+  private readonly timeoutSecondsPath?: string;
   private readonly heartbeat?: cdk.Duration;
+  private readonly heartbeatSecondsPath?: string;
   private readonly credentials?: Credentials;
 
   constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
+
+    if (props.timeout && props.timeoutSecondsPath) {
+      throw new Error('A task cannot include both `timeout` and `timeoutSecondsPath`');
+    }
+
+    if (props.heartbeat && props.heartbeatSecondsPath) {
+      throw new Error('A task cannot include both `heartbeat` and `heartbeatSecondsPath`');
+    }
+
     this.endStates = [this];
     this.timeout = props.timeout;
+    this.timeoutSecondsPath = props.timeoutSecondsPath;
     this.heartbeat = props.heartbeat;
+    this.heartbeatSecondsPath = props.heartbeatSecondsPath;
     this.credentials = props.credentials;
   }
 
@@ -307,7 +336,9 @@ export abstract class TaskStateBase extends State implements INextable {
       Type: 'Task',
       Comment: this.comment,
       TimeoutSeconds: this.timeout?.toSeconds(),
+      TimeoutSecondsPath: this.timeoutSecondsPath,
       HeartbeatSeconds: this.heartbeat?.toSeconds(),
+      HeartbeatSecondsPath: this.heartbeatSecondsPath,
       InputPath: renderJsonPath(this.inputPath),
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),

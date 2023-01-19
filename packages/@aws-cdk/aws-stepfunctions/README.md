@@ -68,7 +68,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
   definition,
-  timeout: Duration.minutes(5),
+  timeout: Duration.minutes(5), // or use a dynamic value from the state with `timeoutSecondsPath`
 });
 ```
 
