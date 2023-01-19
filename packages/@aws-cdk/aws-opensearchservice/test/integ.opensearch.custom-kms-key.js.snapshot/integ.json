@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "22.0.0",
   "testCases": {
     "integ.opensearch.custom-kms-key": {
       "stacks": [

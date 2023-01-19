@@ -98,20 +98,20 @@ abstract class AccessPointBase extends core.Resource implements IAccessPoint {
   public abstract readonly accessPointCreationDate: string;
   public abstract readonly accessPointName: string;
 
-  /** Implement the {@link IAccessPoint.domainName} field. */
+  /** Implement the `IAccessPoint.domainName` field. */
   get domainName(): string {
     const urlSuffix = this.stack.urlSuffix;
     return `${this.accessPointName}-${this.env.account}.s3-object-lambda.${urlSuffix}`;
   }
 
-  /** Implement the {@link IAccessPoint.regionalDomainName} field. */
+  /** Implement the `IAccessPoint.regionalDomainName` field. */
   get regionalDomainName(): string {
     const urlSuffix = this.stack.urlSuffix;
     const region = this.env.region;
     return `${this.accessPointName}-${this.env.account}.s3-object-lambda.${region}.${urlSuffix}`;
   }
 
-  /** Implement the {@link IAccessPoint.virtualHostedUrlForObject} method. */
+  /** Implement the `IAccessPoint.virtualHostedUrlForObject` method. */
   public virtualHostedUrlForObject(key?: string, options?: s3.VirtualHostedStyleUrlOptions): string {
     const domainName = options?.regional ?? true ? this.regionalDomainName : this.domainName;
     const prefix = `https://${domainName}`;
@@ -232,9 +232,9 @@ export class AccessPoint extends AccessPointBase {
           {
             actions: ['GetObject'],
             contentTransformation: {
-              awsLambda: {
-                functionArn: props.handler.functionArn,
-                functionPayload: props.payload ? JSON.stringify(props.payload) : undefined,
+              AwsLambda: {
+                FunctionArn: props.handler.functionArn,
+                FunctionPayload: props.payload ? JSON.stringify(props.payload) : undefined,
               },
             },
           },

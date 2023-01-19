@@ -36,7 +36,7 @@
     "EncryptionAtRestOptions": {
      "Enabled": true
     },
-    "EngineVersion": "OpenSearch_1.3",
+    "EngineVersion": "OpenSearch_2.3",
     "LogPublishingOptions": {},
     "NodeToNodeEncryptionOptions": {
      "Enabled": true
@@ -182,7 +182,7 @@
     }
    }
   },
-  "apidsQuerygetTestsResolver5C6FBB59": {
+  "apiQueryGetTests5F79F353": {
    "Type": "AWS::AppSync::Resolver",
    "Properties": {
     "ApiId": {

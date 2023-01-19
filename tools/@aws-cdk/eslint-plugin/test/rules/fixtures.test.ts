@@ -2,9 +2,6 @@ import { ESLint } from 'eslint';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-const rulesDirPlugin = require('eslint-plugin-rulesdir');
-rulesDirPlugin.RULES_DIR = path.join(__dirname, '../../lib/rules');
-
 let linter: ESLint;
 
 const outputRoot = path.join(process.cwd(), '.test-output');
@@ -48,7 +45,7 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
           const actual = await fs.readFile(actualFile, { encoding: 'utf8' });
           const expected = await fs.readFile(expectedFixedFilePath, { encoding: 'utf8' });
           if (actual !== expected) {
-            fail(`Linted file did not match expectations. Expected: ${expectedFixedFilePath}. Actual: ${actualFile}`);
+            fail(`Linted file did not match expectations.\n--------- Expected ----------\n${expected}\n---------- Actual ----------\n${actual}`);
           }
           return;
         } else if (checkErrors) {
@@ -93,5 +90,9 @@ async function lint(file: string) {
   if (result.length === 1) {
     return result[0].messages;
   }
-  return undefined;
+  return [];
+}
+
+function fail(x: string) {
+  throw new Error(x);
 }
