@@ -50,7 +50,8 @@
       "entryPoints": [
         "lib/index.js"
       ],
-      "sourcemap": "linked"
+      "sourcemap": "linked",
+      "minifyWhitespace": true
     }
   },
   "author": {
