@@ -125,6 +125,13 @@ export interface BranchOptions {
    * @default false
    */
   readonly performanceMode?: boolean;
+
+  /**
+   * The Framework for the branch.
+   *
+   * @default - no framework
+   */
+  readonly framework?: string;
 }
 
 /**
@@ -180,6 +187,7 @@ export class Branch extends Resource implements IBranch {
       pullRequestEnvironmentName: props.pullRequestEnvironmentName,
       stage: props.stage,
       enablePerformanceMode: props.performanceMode,
+      framework: props.framework,
     });
 
     this.arn = branch.attrArn;
