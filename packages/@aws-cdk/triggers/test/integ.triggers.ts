@@ -27,7 +27,7 @@ new triggers.TriggerFunction(stack, 'MySecondFunction', {
 
 new integ.IntegTest(app, 'TriggerTest', {
   testCases: [stack],
-  //stackUpdateWorkflow: false, // this will tell the runner to not check in assets.
+  stackUpdateWorkflow: false, // this will tell the runner to not check in assets.
 });
 
 app.synth();
