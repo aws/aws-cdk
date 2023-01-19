@@ -4,20 +4,25 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType, VpcConnector } from '../lib';
+import * as apprunner from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
       imageConfiguration: { port: 8000 },
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
   });
+
+  // THEN
   // we should have the service
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
@@ -43,19 +48,22 @@ test('custom environment variables and start commands are allowed for imageConfi
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
       imageConfiguration: {
         port: 8000,
-        environment: {
-          foo: 'fooval',
-          bar: 'barval',
+        environmentVariables: {
+          TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
         },
         startCommand: '/root/start-command.sh',
       },
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
   });
+
+  service.addEnvironmentVariable('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+
+  // THEN
   // we should have the service
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
@@ -65,12 +73,136 @@ test('custom environment variables and start commands are allowed for imageConfi
           Port: '8000',
           RuntimeEnvironmentVariables: [
             {
-              Name: 'foo',
-              Value: 'fooval',
+              Name: 'TEST_ENVIRONMENT_VARIABLE',
+              Value: 'test environment variable value',
             },
             {
-              Name: 'bar',
-              Value: 'barval',
+              Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+              Value: 'second test value',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
+});
+
+test('custom environment secrets and start commands are allowed for imageConfiguration with defined port', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
+    parameterName: '/name',
+    version: 1,
+  });
+
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: {
+        port: 8000,
+        environmentSecrets: {
+          SECRET: apprunner.Secret.fromSecretsManager(secret),
+          PARAMETER: apprunner.Secret.fromSsmParameter(parameter),
+          SECRET_ID: apprunner.Secret.fromSecretsManagerVersion(secret, { versionId: 'version-id' }),
+          SECRET_STAGE: apprunner.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }),
+        },
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
+
+  // THEN
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          Port: '8000',
+          RuntimeEnvironmentSecrets: [
+            {
+              Name: 'SECRET',
+              Value: {
+                Ref: 'SecretA720EF05',
+              },
+            },
+            {
+              Name: 'PARAMETER',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':ssm:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':parameter/name',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_ID',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':::version-id',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_STAGE',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    '::version-stage:',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'LATER_SECRET',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':field::',
+                  ],
+                ],
+              },
             },
           ],
           StartCommand: '/root/start-command.sh',
@@ -92,18 +224,21 @@ test('custom environment variables and start commands are allowed for imageConfi
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
       imageConfiguration: {
-        environment: {
-          foo: 'fooval',
-          bar: 'barval',
+        environmentVariables: {
+          TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
         },
         startCommand: '/root/start-command.sh',
       },
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
   });
+
+  service.addEnvironmentVariable('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+
+  // THEN
   // we should have the service
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
@@ -112,12 +247,134 @@ test('custom environment variables and start commands are allowed for imageConfi
         ImageConfiguration: {
           RuntimeEnvironmentVariables: [
             {
-              Name: 'foo',
-              Value: 'fooval',
+              Name: 'TEST_ENVIRONMENT_VARIABLE',
+              Value: 'test environment variable value',
             },
             {
-              Name: 'bar',
-              Value: 'barval',
+              Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+              Value: 'second test value',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'DEFAULT',
+      },
+    },
+  });
+});
+
+test('custom environment secrets and start commands are allowed for imageConfiguration with port undefined', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
+    parameterName: '/name',
+    version: 1,
+  });
+
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: {
+        environmentSecrets: {
+          SECRET: apprunner.Secret.fromSecretsManager(secret),
+          PARAMETER: apprunner.Secret.fromSsmParameter(parameter),
+          SECRET_ID: apprunner.Secret.fromSecretsManagerVersion(secret, { versionId: 'version-id' }),
+          SECRET_STAGE: apprunner.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }),
+        },
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+
+  service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
+
+  // THEN
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          RuntimeEnvironmentSecrets: [
+            {
+              Name: 'SECRET',
+              Value: {
+                Ref: 'SecretA720EF05',
+              },
+            },
+            {
+              Name: 'PARAMETER',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':ssm:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':parameter/name',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_ID',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':::version-id',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_STAGE',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    '::version-stage:',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'LATER_SECRET',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':field::',
+                  ],
+                ],
+              },
             },
           ],
           StartCommand: '/root/start-command.sh',
@@ -139,8 +396,8 @@ test('create a service from existing ECR repository(image repository type: ECR)'
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'Service', {
-    source: Source.fromEcr({
+  new apprunner.Service(stack, 'Service', {
+    source: apprunner.Source.fromEcr({
       imageConfiguration: { port: 80 },
       repository: ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx'),
     }),
@@ -215,8 +472,8 @@ test('create a service with local assets(image repository type: ECR)', () => {
   const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
     directory: path.join(__dirname, './docker.assets'),
   });
-  new Service(stack, 'DemoService', {
-    source: Source.fromAsset({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromAsset({
       imageConfiguration: { port: 8000 },
       asset: dockerAsset,
     }),
@@ -273,12 +530,12 @@ test('create a service with github repository', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromGitHub({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
       branch: 'main',
-      configurationSource: ConfigurationSourceType.REPOSITORY,
-      connection: GitHubConnection.fromConnectionArn('MOCK'),
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
 
@@ -313,15 +570,15 @@ test('create a service with github repository - undefined branch name is allowed
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromGitHub({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
-      configurationSource: ConfigurationSourceType.API,
+      configurationSource: apprunner.ConfigurationSourceType.API,
       codeConfigurationValues: {
-        runtime: Runtime.PYTHON_3,
+        runtime: apprunner.Runtime.PYTHON_3,
         port: '8000',
       },
-      connection: GitHubConnection.fromConnectionArn('MOCK'),
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
 
@@ -360,23 +617,24 @@ test('create a service with github repository - buildCommand, environment and st
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromGitHub({
+  const service = new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromGitHub({
       repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
-      configurationSource: ConfigurationSourceType.API,
+      configurationSource: apprunner.ConfigurationSourceType.API,
       codeConfigurationValues: {
-        runtime: Runtime.PYTHON_3,
+        runtime: apprunner.Runtime.PYTHON_3,
         port: '8000',
         buildCommand: '/root/build.sh',
-        environment: {
-          foo: 'fooval',
-          bar: 'barval',
+        environmentVariables: {
+          TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
         },
         startCommand: '/root/start.sh',
       },
-      connection: GitHubConnection.fromConnectionArn('MOCK'),
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
     }),
   });
+
+  service.addEnvironmentVariable('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
   // THEN
   // we should have the service with the branch value as 'main'
@@ -393,12 +651,12 @@ test('create a service with github repository - buildCommand, environment and st
             BuildCommand: '/root/build.sh',
             RuntimeEnvironmentVariables: [
               {
-                Name: 'foo',
-                Value: 'fooval',
+                Name: 'TEST_ENVIRONMENT_VARIABLE',
+                Value: 'test environment variable value',
               },
               {
-                Name: 'bar',
-                Value: 'barval',
+                Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+                Value: 'second test value',
               },
             ],
             StartCommand: '/root/start.sh',
@@ -426,7 +684,7 @@ test('import from service name', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  const svc = Service.fromServiceName(stack, 'ImportService', 'ExistingService');
+  const svc = apprunner.Service.fromServiceName(stack, 'ImportService', 'ExistingService');
   // THEN
   expect(svc).toHaveProperty('serviceName');
   expect(svc).toHaveProperty('serviceArn');
@@ -437,7 +695,7 @@ test('import from service attributes', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  const svc = Service.fromServiceAttributes(stack, 'ImportService', {
+  const svc = apprunner.Service.fromServiceAttributes(stack, 'ImportService', {
     serviceName: 'mock',
     serviceArn: 'mock',
     serviceStatus: 'mock',
@@ -456,8 +714,8 @@ test('undefined imageConfiguration port is allowed', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'Service', {
-    source: Source.fromEcrPublic({
+  new apprunner.Service(stack, 'Service', {
+    source: apprunner.Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
   });
@@ -488,8 +746,8 @@ test('custom IAM access role and instance role are allowed', () => {
   const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
     directory: path.join(__dirname, './docker.assets'),
   });
-  new Service(stack, 'DemoService', {
-    source: Source.fromAsset({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromAsset({
       asset: dockerAsset,
       imageConfiguration: { port: 8000 },
     }),
@@ -546,12 +804,12 @@ test('cpu and memory properties are allowed', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
-    cpu: Cpu.ONE_VCPU,
-    memory: Memory.THREE_GB,
+    cpu: apprunner.Cpu.ONE_VCPU,
+    memory: apprunner.Memory.THREE_GB,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
@@ -572,12 +830,12 @@ test('custom cpu and memory units are allowed', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
-    cpu: Cpu.of('Some vCPU'),
-    memory: Memory.of('Some GB'),
+    cpu: apprunner.Cpu.of('Some vCPU'),
+    memory: apprunner.Memory.of('Some GB'),
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
@@ -600,10 +858,10 @@ test('environment variable with a prefix of AWSAPPRUNNER should throw an error',
   // WHEN
   // we should have the service
   expect(() => {
-    new Service(stack, 'DemoService', {
-      source: Source.fromEcrPublic({
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
         imageConfiguration: {
-          environment: {
+          environmentVariables: {
             AWSAPPRUNNER_FOO: 'bar',
           },
         },
@@ -611,6 +869,28 @@ test('environment variable with a prefix of AWSAPPRUNNER should throw an error',
       }),
     });
   }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
+});
+
+test('environment secrets with a prefix of AWSAPPRUNNER should throw an error', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  // WHEN
+  // we should have the service
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageConfiguration: {
+          environmentSecrets: {
+            AWSAPPRUNNER_FOO: apprunner.Secret.fromSecretsManager(secret),
+          },
+        },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+  }).toThrow('Environment secret key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });
 
 test('specifying a vpcConnector should assign the service to it and set the egressType to VPC', () => {
@@ -624,15 +904,15 @@ test('specifying a vpcConnector should assign the service to it and set the egre
 
   const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
 
-  const vpcConnector = new VpcConnector(stack, 'VpcConnector', {
+  const vpcConnector = new apprunner.VpcConnector(stack, 'VpcConnector', {
     securityGroups: [securityGroup],
     vpc,
     vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
     vpcConnectorName: 'MyVpcConnector',
   });
   // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
     vpcConnector,
@@ -671,4 +951,25 @@ test('specifying a vpcConnector should assign the service to it and set the egre
     ],
     VpcConnectorName: 'MyVpcConnector',
   });
+});
+
+testDeprecated('Using both environmentVariables and environment should throw an error', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageConfiguration: {
+          environmentVariables: {
+            AWSAPPRUNNER_FOO: 'bar',
+          },
+          environment: {
+            AWSAPPRUNNER_FOO: 'bar',
+          },
+        },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+  }).toThrow(/You cannot set both \'environmentVariables\' and \'environment\' properties./);
 });

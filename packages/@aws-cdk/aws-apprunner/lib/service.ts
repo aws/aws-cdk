@@ -1,6 +1,8 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnService } from './apprunner.generated';
@@ -161,6 +163,14 @@ export class Runtime {
 }
 
 /**
+ * The environment secret for the service.
+ */
+interface EnvironmentSecret {
+  readonly name: string;
+  readonly value: string;
+}
+
+/**
  * The environment variable for the service.
  */
 interface EnvironmentVariable {
@@ -227,7 +237,6 @@ export interface GithubRepositoryProps {
   readonly connection: GitHubConnection;
 }
 
-
 /**
  * Properties of the image repository for `Source.fromEcrPublic()`
  */
@@ -238,6 +247,7 @@ export interface EcrPublicProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html#cfn-apprunner-service-imageconfiguration-port
    */
   readonly imageConfiguration?: ImageConfiguration;
+
   /**
    * The ECR Public image URI.
    */
@@ -254,16 +264,19 @@ export interface EcrProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html#cfn-apprunner-service-imageconfiguration-port
    */
   readonly imageConfiguration?: ImageConfiguration;
+
   /**
    * Represents the ECR repository.
    */
   readonly repository: ecr.IRepository;
+
   /**
    * Image tag.
    * @default - 'latest'
    * @deprecated use `tagOrDigest`
    */
   readonly tag?: string;
+
   /**
    * Image tag or digest (digests must start with `sha256:`).
    * @default - 'latest'
@@ -281,12 +294,31 @@ export interface AssetProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-imageconfiguration.html#cfn-apprunner-service-imageconfiguration-port
    */
   readonly imageConfiguration?: ImageConfiguration;
+
   /**
    * Represents the docker image asset.
    */
   readonly asset: assets.DockerImageAsset;
 }
 
+/**
+ * Specify the secret's version id or version stage
+ */
+export interface SecretVersionInfo {
+  /**
+   * version id of the secret
+   *
+   * @default - use default version id
+   */
+  readonly versionId?: string;
+
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
+  readonly versionStage?: string;
+}
 
 /**
  * Represents the App Runner service source.
@@ -298,24 +330,28 @@ export abstract class Source {
   public static fromGitHub(props: GithubRepositoryProps): GithubSource {
     return new GithubSource(props);
   }
+
   /**
    * Source from the ECR repository.
    */
   public static fromEcr(props: EcrProps): EcrSource {
     return new EcrSource(props);
   }
+
   /**
    * Source from the ECR Public repository.
    */
   public static fromEcrPublic(props: EcrPublicProps): EcrPublicSource {
     return new EcrPublicSource(props);
   }
+
   /**
    * Source from local assets.
    */
   public static fromAsset(props: AssetProps): AssetSource {
     return new AssetSource(props);
   }
+
   /**
     * Called when the Job is initialized to allow this object to bind.
     */
@@ -348,6 +384,7 @@ export class GithubSource extends Source {
     };
   }
 }
+
 /**
  * Represents the service source from ECR.
  */
@@ -430,8 +467,23 @@ export interface ImageConfiguration {
    * Environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables
+   * @deprecated use environmentVariables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string }
+
+  /**
+   * Environment variables that are available to your running App Runner service.
+   *
+   * @default - no environment variables
+   */
+  readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * Environment secrets that are available to your running App Runner service.
+   *
+   * @default - no environment secrets
+   */
+  readonly environmentSecrets?: { [key: string]: Secret; };
 
   /**
    * An optional command that App Runner runs to start the application in the source image.
@@ -666,8 +718,23 @@ export interface CodeConfigurationValues {
    * The environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables.
+   * @deprecated use environmentVariables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * The environment variables that are available to your running App Runner service.
+   *
+   * @default - no environment variables.
+   */
+  readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * The environment secrets that are available to your running App Runner service.
+   *
+   * @default - no environment secrets.
+   */
+  readonly environmentSecrets?: { [key: string]: Secret };
 
   /**
    * The command App Runner runs to start your application.
@@ -690,6 +757,7 @@ export class GitHubConnection {
   public static fromConnectionArn(arn: string): GitHubConnection {
     return new GitHubConnection(arn);
   }
+
   /**
    * The ARN of the Connection for App Runner service to connect to the repository.
    */
@@ -740,6 +808,74 @@ export interface IService extends cdk.IResource {
 }
 
 /**
+ * A secret environment variable.
+ */
+export abstract class Secret {
+  /**
+   * Creates an environment variable value from a parameter stored in AWS
+   * Systems Manager Parameter Store.
+   */
+  public static fromSsmParameter(parameter: ssm.IParameter): Secret {
+    return {
+      arn: parameter.parameterArn,
+      grantRead: grantee => parameter.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
+    return {
+      arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param versionInfo the version information to reference the secret
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+    return {
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * The ARN of the secret
+   */
+  public abstract readonly arn: string;
+
+  /**
+   * Whether this secret uses a specific JSON field
+   */
+  public abstract readonly hasField?: boolean;
+
+  /**
+   * Grants reading the secret to a principal
+   */
+  public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
+}
+
+/**
  * The App Runner Service.
  */
 export class Service extends cdk.Resource {
@@ -778,11 +914,35 @@ export class Service extends cdk.Resource {
   }
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
+  private instanceRole?: iam.IRole;
   private source: SourceConfig;
+
   /**
-   * Environment variables for this service
+   * Environment variables for this service.
+   *
+   * @deprecated use environmentVariables.
    */
-  private environment?: { [key: string]: string } = {};
+  readonly environment: { [key: string]: string } = {};
+
+  /**
+   * Environment variables for this service.
+   */
+  private environmentVariables: { [key: string]: string } = {};
+
+  /**
+   * Environment secrets for this service.
+   */
+  private environmentSecrets: { [key: string]: Secret; } = {};
+
+  /**
+   * Environment secrets for this service.
+   */
+  private readonly secrets: EnvironmentSecret[] = []
+
+  /**
+   * Environment variables for this service.
+   */
+  private readonly variables: EnvironmentVariable[] = []
 
   /**
    * The ARN of the Service.
@@ -821,25 +981,36 @@ export class Service extends cdk.Resource {
     this.source = source;
     this.props = props;
 
-    // generate an IAM role only when ImageRepositoryType is ECR and props.role is undefined
-    this.accessRole = (this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR) ?
-      this.props.accessRole ? this.props.accessRole : this.generateDefaultRole() : undefined;
+    this.environmentVariables = this.getEnvironmentVariables();
+    this.environmentSecrets = this.getEnvironmentSecrets();
 
-    if (source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
-      source.codeRepository?.codeConfiguration.configurationValues) {
+    // generate an IAM role only when ImageRepositoryType is ECR and props.accessRole is undefined
+    this.accessRole = (this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR) ?
+      this.props.accessRole ?? this.generateDefaultRole() : undefined;
+
+    // generalte an IAM role only when environmentSecrets has values and props.instanceRole is undefined
+    this.instanceRole = (Object.keys(this.environmentSecrets).length > 0 && !this.props.instanceRole) ?
+      this.createInstanceRole() : this.props.instanceRole;
+
+    if (this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
+      this.source.codeRepository?.codeConfiguration.configurationValues) {
       throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
     const resource = new CfnService(this, 'Resource', {
       instanceConfiguration: {
-        cpu: props.cpu?.unit,
-        memory: props.memory?.unit,
-        instanceRoleArn: props.instanceRole?.roleArn,
+        cpu: this.props.cpu?.unit,
+        memory: this.props.memory?.unit,
+        instanceRoleArn: this.instanceRole?.roleArn,
       },
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
-        imageRepository: source.imageRepository ? this.renderImageRepository() : undefined,
-        codeRepository: source.codeRepository ? this.renderCodeConfiguration() : undefined,
+        imageRepository: this.source.imageRepository ?
+          this.renderImageRepository(this.source.imageRepository!) :
+          undefined,
+        codeRepository: this.source.codeRepository ?
+          this.renderCodeConfiguration(this.source.codeRepository!.codeConfiguration.configurationValues!) :
+          undefined,
       },
       networkConfiguration: {
         egressConfiguration: {
@@ -850,8 +1021,8 @@ export class Service extends cdk.Resource {
     });
 
     // grant required privileges for the role
-    if (source.ecrRepository && this.accessRole) {
-      source.ecrRepository.grantPull(this.accessRole);
+    if (this.source.ecrRepository && this.accessRole) {
+      this.source.ecrRepository.grantPull(this.accessRole);
     }
 
     this.serviceArn = resource.attrServiceArn;
@@ -860,62 +1031,40 @@ export class Service extends cdk.Resource {
     this.serviceStatus = resource.attrStatus;
     this.serviceName = resource.ref;
   }
-  private renderAuthenticationConfiguration(): AuthenticationConfiguration {
-    return {
-      accessRoleArn: this.accessRole?.roleArn,
-      connectionArn: this.source.codeRepository?.connection?.connectionArn,
-    };
-  }
-  private renderCodeConfiguration() {
-    return {
-      codeConfiguration: {
-        configurationSource: this.source.codeRepository!.codeConfiguration.configurationSource,
-        // codeConfigurationValues will be ignored if configurationSource is REPOSITORY
-        codeConfigurationValues: this.source.codeRepository!.codeConfiguration.configurationValues ?
-          this.renderCodeConfigurationValues(this.source.codeRepository!.codeConfiguration.configurationValues) : undefined,
-      },
-      repositoryUrl: this.source.codeRepository!.repositoryUrl,
-      sourceCodeVersion: this.source.codeRepository!.sourceCodeVersion,
-    };
 
+  /**
+   * This method adds an environment variable to the App Runner service.
+   */
+  public addEnvironmentVariable(name: string, value: string) {
+    this.variables.push({ name: name, value: value });
   }
-  private renderCodeConfigurationValues(props: CodeConfigurationValues): any {
-    this.environment = props.environment;
-    return {
-      port: props.port,
-      buildCommand: props.buildCommand,
-      runtime: props.runtime.name,
-      runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
-      startCommand: props.startCommand,
-    };
+
+  /**
+   * This method adds a secret as environment variable to the App Runner service.
+   */
+  public addSecret(name: string, secret: Secret) {
+    if (!this.instanceRole) {
+      this.instanceRole = this.createInstanceRole();
+    }
+    secret.grantRead(this.instanceRole);
+    this.secrets.push({ name: name, value: secret.arn });
   }
-  private renderImageRepository(): any {
-    const repo = this.source.imageRepository!;
-    this.environment = repo.imageConfiguration?.environment;
-    return Object.assign(repo, {
-      imageConfiguration: {
-        port: repo.imageConfiguration?.port?.toString(),
-        startCommand: repo.imageConfiguration?.startCommand,
-        runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
-      },
+
+  /**
+   * This method generates an Instance Role. Needed if using secrets and props.instanceRole is undefined
+   * @returns iam.IRole
+   */
+  private createInstanceRole(): iam.IRole {
+    return new iam.Role(this, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('tasks.apprunner.amazonaws.com'),
+      roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });
   }
 
-  private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
-    if (this.environment) {
-      let env: EnvironmentVariable[] = [];
-      for (const [key, value] of Object.entries(this.environment)) {
-        if (key.startsWith('AWSAPPRUNNER')) {
-          throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
-        }
-        env.push({ name: key, value: value });
-      }
-      return env;
-    } else {
-      return undefined;
-    }
-  }
-
+  /**
+   * This method generates an Access Role only when ImageRepositoryType is ECR and props.accessRole is undefined
+   * @returns iam.IRole
+   */
   private generateDefaultRole(): iam.Role {
     const accessRole = new iam.Role(this, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
@@ -926,5 +1075,105 @@ export class Service extends cdk.Resource {
     }));
     this.accessRole = accessRole;
     return accessRole;
+  }
+
+  private getEnvironmentSecrets(): { [key: string]: Secret } {
+    let secrets = this.source.codeRepository?.codeConfiguration.configurationValues?.environmentSecrets ??
+      this.source.imageRepository?.imageConfiguration?.environmentSecrets;
+
+    return secrets || {};
+  }
+
+  private getEnvironmentVariables(): { [key: string]: string } {
+    let codeEnv = [
+      this.source.codeRepository?.codeConfiguration.configurationValues?.environmentVariables,
+      this.source.codeRepository?.codeConfiguration.configurationValues?.environment,
+    ];
+    let imageEnv = [
+      this.source.imageRepository?.imageConfiguration?.environmentVariables,
+      this.source.imageRepository?.imageConfiguration?.environment,
+    ];
+
+    if (codeEnv.every(el => el !== undefined) || imageEnv.every(el => el !== undefined)) {
+      throw new Error([
+        'You cannot set both \'environmentVariables\' and \'environment\' properties.',
+        'Please only use environmentVariables, as environment is deprecated.',
+      ].join(' '));
+    }
+
+    return codeEnv.find(el => el !== undefined) || imageEnv.find(el => el !== undefined) || {};
+  }
+
+  private renderAuthenticationConfiguration(): AuthenticationConfiguration {
+    return {
+      accessRoleArn: this.accessRole?.roleArn,
+      connectionArn: this.source.codeRepository?.connection?.connectionArn,
+    };
+  }
+
+  private renderCodeConfiguration(props: CodeConfigurationValues) {
+    return {
+      codeConfiguration: {
+        configurationSource: this.source.codeRepository!.codeConfiguration.configurationSource,
+        // codeConfigurationValues will be ignored if configurationSource is REPOSITORY
+        codeConfigurationValues: this.source.codeRepository!.codeConfiguration.configurationValues ?
+          this.renderCodeConfigurationValues(props) :
+          undefined,
+      },
+      repositoryUrl: this.source.codeRepository!.repositoryUrl,
+      sourceCodeVersion: this.source.codeRepository!.sourceCodeVersion,
+    };
+  }
+
+  private renderCodeConfigurationValues(props: CodeConfigurationValues): any {
+    return {
+      port: props.port,
+      buildCommand: props.buildCommand,
+      runtime: props.runtime.name,
+      runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+      runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
+      startCommand: props.startCommand,
+    };
+  }
+
+  private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
+    if (Object.keys(this.environmentVariables).length > 0) {
+      for (const [key, value] of Object.entries(this.environmentVariables)) {
+        if (key.startsWith('AWSAPPRUNNER')) {
+          throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
+        }
+        this.variables.push({ name: key, value: value });
+      }
+      return this.variables;
+    } else {
+      return undefined;
+    }
+  }
+
+  private renderEnvironmentSecrets(): EnvironmentSecret[] | undefined {
+    if (Object.keys(this.environmentSecrets).length > 0 && this.instanceRole) {
+      for (const [key, value] of Object.entries(this.environmentSecrets)) {
+        if (key.startsWith('AWSAPPRUNNER')) {
+          throw new Error(`Environment secret key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
+        }
+
+        value.grantRead(this.instanceRole);
+        this.secrets.push({ name: key, value: value.arn });
+      }
+      return this.secrets;
+    } else {
+      return undefined;
+    }
+  }
+
+  private renderImageRepository(repo: ImageRepository): any {
+    return Object.assign(repo, {
+      imageConfiguration: {
+        port: repo.imageConfiguration?.port?.toString(),
+        startCommand: repo.imageConfiguration?.startCommand,
+        runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+        runtimeEnvironmentSecrets: this.renderEnvironmentSecrets(),
+      },
+    });
   }
 }
