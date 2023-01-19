@@ -1042,10 +1042,11 @@ export class Service extends cdk.Resource {
    * This method adds a secret as environment variable to the App Runner service.
    */
   public addSecret(name: string, secret: Secret) {
-    if (this.instanceRole) {
-      secret.grantRead(this.instanceRole);
-      this.secrets.push({ name: name, value: secret.arn });
+    if (!this.instanceRole) {
+      this.instanceRole = this.createInstanceRole();
     }
+    secret.grantRead(this.instanceRole);
+    this.secrets.push({ name: name, value: secret.arn });
   }
 
   /**
