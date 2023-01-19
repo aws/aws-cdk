@@ -1,3 +1,20 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api DisableExecuteApiEndpoint (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.KinesisEvent FunctionResponseTypes (__added__)
+
 # CloudFormation Resource Specification v107.0.0
 
 ## New Resource Types
