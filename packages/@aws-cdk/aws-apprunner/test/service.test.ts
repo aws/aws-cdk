@@ -6,6 +6,7 @@ import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as apprunner from '../lib';
 
@@ -60,7 +61,7 @@ test('custom environment variables and start commands are allowed for imageConfi
     }),
   });
 
-  service.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+  service.addEnvironmentVariable('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
   // THEN
   // we should have the service
@@ -235,7 +236,7 @@ test('custom environment variables and start commands are allowed for imageConfi
     }),
   });
 
-  service.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+  service.addEnvironmentVariable('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
   // THEN
   // we should have the service
@@ -633,7 +634,7 @@ test('create a service with github repository - buildCommand, environment and st
     }),
   });
 
-  service.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+  service.addEnvironmentVariable('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
   // THEN
   // we should have the service with the branch value as 'main'
@@ -950,4 +951,25 @@ test('specifying a vpcConnector should assign the service to it and set the egre
     ],
     VpcConnectorName: 'MyVpcConnector',
   });
+});
+
+testDeprecated('Using both environmentVariables and environment should throw an error', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageConfiguration: {
+          environmentVariables: {
+            AWSAPPRUNNER_FOO: 'bar',
+          },
+          environment: {
+            AWSAPPRUNNER_FOO: 'bar',
+          },
+        },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+  }).toThrow(/You cannot set both \'environmentVariables\' and \'environment\' properties./);
 });

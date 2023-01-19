@@ -467,9 +467,9 @@ export interface ImageConfiguration {
    * Environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables
-   * @deprecated use environmentVariables()
+   * @deprecated use environmentVariables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string }
 
   /**
    * Environment variables that are available to your running App Runner service.
@@ -718,7 +718,7 @@ export interface CodeConfigurationValues {
    * The environment variables that are available to your running App Runner service.
    *
    * @default - no environment variables.
-   * @deprecated use environmentVariables()
+   * @deprecated use environmentVariables.
    */
   readonly environment?: { [key: string]: string };
 
@@ -918,28 +918,29 @@ export class Service extends cdk.Resource {
   private source: SourceConfig;
 
   /**
-   * Environment variables for this service
-   * @deprecated use environmentVariables()
+   * Environment variables for this service.
+   *
+   * @deprecated use environmentVariables.
    */
-  readonly environment?: { [key: string]: string } = {};
+  readonly environment: { [key: string]: string } = {};
 
   /**
-   * Environment variables for this service
+   * Environment variables for this service.
    */
-  private environmentVariables?: { [key: string]: string } = {};
+  private environmentVariables: { [key: string]: string } = {};
 
   /**
-   * Environment secrets for this service
+   * Environment secrets for this service.
    */
-  private environmentSecrets?: { [key: string]: Secret; };
+  private environmentSecrets: { [key: string]: Secret; } = {};
 
   /**
-   * Environment secrets for this service
+   * Environment secrets for this service.
    */
   private readonly secrets: EnvironmentSecret[] = []
 
   /**
-   * Environment variables for this service
+   * Environment variables for this service.
    */
   private readonly variables: EnvironmentVariable[] = []
 
@@ -988,7 +989,7 @@ export class Service extends cdk.Resource {
       this.props.accessRole ?? this.generateDefaultRole() : undefined;
 
     // generalte an IAM role only when environmentSecrets has values and props.instanceRole is undefined
-    this.instanceRole = (this.environmentSecrets && !this.props.instanceRole) ?
+    this.instanceRole = (Object.keys(this.environmentSecrets).length > 0 && !this.props.instanceRole) ?
       this.createInstanceRole() : this.props.instanceRole;
 
     if (this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
@@ -1034,7 +1035,7 @@ export class Service extends cdk.Resource {
   /**
    * This method adds an environment variable to the App Runner service.
    */
-  public addEnvironment(name: string, value: string) {
+  public addEnvironmentVariable(name: string, value: string) {
     this.variables.push({ name: name, value: value });
   }
 
@@ -1076,16 +1077,31 @@ export class Service extends cdk.Resource {
     return accessRole;
   }
 
-  private getEnvironmentSecrets(): { [key: string]: Secret } | undefined {
-    return this.source.codeRepository?.codeConfiguration.configurationValues?.environmentSecrets ||
+  private getEnvironmentSecrets(): { [key: string]: Secret } {
+    let secrets = this.source.codeRepository?.codeConfiguration.configurationValues?.environmentSecrets ??
       this.source.imageRepository?.imageConfiguration?.environmentSecrets;
+
+    return secrets || {};
   }
 
-  private getEnvironmentVariables(): { [key: string]: string } | undefined {
-    return this.source.codeRepository?.codeConfiguration.configurationValues?.environmentVariables ||
-      this.source.codeRepository?.codeConfiguration.configurationValues?.environment ||
-      this.source.imageRepository?.imageConfiguration?.environmentVariables ||
-      this.source.imageRepository?.imageConfiguration?.environment;
+  private getEnvironmentVariables(): { [key: string]: string } {
+    let codeEnv = [
+      this.source.codeRepository?.codeConfiguration.configurationValues?.environmentVariables,
+      this.source.codeRepository?.codeConfiguration.configurationValues?.environment,
+    ];
+    let imageEnv = [
+      this.source.imageRepository?.imageConfiguration?.environmentVariables,
+      this.source.imageRepository?.imageConfiguration?.environment,
+    ];
+
+    if (codeEnv.every(el => el !== undefined) || imageEnv.every(el => el !== undefined)) {
+      throw new Error([
+        'You cannot set both \'environmentVariables\' and \'environment\' properties.',
+        'Please only use environmentVariables, as environment is deprecated.',
+      ].join(' '));
+    }
+
+    return codeEnv.find(el => el !== undefined) || imageEnv.find(el => el !== undefined) || {};
   }
 
   private renderAuthenticationConfiguration(): AuthenticationConfiguration {
@@ -1121,7 +1137,7 @@ export class Service extends cdk.Resource {
   }
 
   private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
-    if (this.environmentVariables) {
+    if (Object.keys(this.environmentVariables).length > 0) {
       for (const [key, value] of Object.entries(this.environmentVariables)) {
         if (key.startsWith('AWSAPPRUNNER')) {
           throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
@@ -1135,7 +1151,7 @@ export class Service extends cdk.Resource {
   }
 
   private renderEnvironmentSecrets(): EnvironmentSecret[] | undefined {
-    if (this.environmentSecrets && this.instanceRole) {
+    if (Object.keys(this.environmentSecrets).length > 0 && this.instanceRole) {
       for (const [key, value] of Object.entries(this.environmentSecrets)) {
         if (key.startsWith('AWSAPPRUNNER')) {
           throw new Error(`Environment secret key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
