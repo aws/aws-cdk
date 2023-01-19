@@ -49,6 +49,7 @@ export class MetricFilter extends Resource {
         metricValue: props.metricValue ?? '1',
         defaultValue: props.defaultValue,
         dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
+        unit: props.unit,
       }],
     });
   }

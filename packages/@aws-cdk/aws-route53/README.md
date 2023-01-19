@@ -132,13 +132,18 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
-### Working with existing record sets
+### Replacing existing record sets (dangerous!)
 
 Use the `deleteExisting` prop to delete an existing record set before deploying the new one.
 This is useful if you want to minimize downtime and avoid "manual" actions while deploying a
 stack with a record set that already exists. This is typically the case for record sets that
 are not already "owned" by CloudFormation or "owned" by another stack or construct that is
 going to be deleted (migration).
+
+> **N.B.:** this feature is dangerous, use with caution! It can only be used safely when
+> `deleteExisting` is set to `true` as soon as the resource is added to the stack. Changing
+> an existing Record Set's `deleteExisting` property from `false -> true` after deployment
+> will delete the record!
 
 ```ts
 declare const myZone: route53.HostedZone;
