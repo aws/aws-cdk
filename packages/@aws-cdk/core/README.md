@@ -904,11 +904,11 @@ resourceB.addDependency(resourceA);
 
 Some resources support a [CreationPolicy][creation-policy] to be specified as a CfnOption.
 
-The creation policy is invoked only when AWS CloudFormation creates the associated resource. Currently, the only AWS CloudFormation resources that support creation policies are AWS::AutoScaling::AutoScalingGroup, AWS::EC2::Instance, AWS::CloudFormation::WaitCondition and AWS::AppStream::Fleet.
+The creation policy is invoked only when AWS CloudFormation creates the associated resource. Currently, the only AWS CloudFormation resources that support creation policies are `CfnAutoScalingGroup`, `CfnInstance`, `CfnWaitCondition` and `CfnFleet`.
 
-The CfnFleet resource from the `aws-appstream` module supports specifying `startFleet` as
+The `CfnFleet` resource from the `aws-appstream` module supports specifying `startFleet` as
 a property of the creationPolicy on the resource options. Setting it to true will make AWS CloudFormation wait until the fleet is started before continuing with the creation of
-resources that depend on the fleet.
+resources that depend on the fleet resource.
 
 ```ts
 import { CfnFleet } from 'aws-cdk-lib/aws-appstream';
@@ -927,10 +927,13 @@ fleet.cfnOptions.creationPolicy = {
 ```
 
 The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance` from the
-`aws-ec2` module abstract what is passed into the CfnOption properties `resourceSignal` and
-`autoScalingCreationPolicy`, but when using level 1 constructs you can specify these.
+`aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
+`autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
 
-Also the CfnWaitCondition from the `aws-cloudformation` module suppports the `resourceSignal`.
+The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
+3 success signals to occur within 15 minutes before the status of the resource will be set to 
+`CREATE_COMPLETE`.
 
 ```ts
 resource.cfnOptions.resourceSignal = {
@@ -938,8 +941,6 @@ resource.cfnOptions.resourceSignal = {
   timeout: 'PR15M',
 }
 ```
-
-The format of the timeout is `PT#H#M#S`.
 
 [creation-policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
 
