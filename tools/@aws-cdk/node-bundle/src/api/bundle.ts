@@ -79,7 +79,7 @@ export interface BundleProps {
    *
    * @default "inline"
    */
-  readonly sourcemap?: esbuild.CommonOptions["sourcemap"];  
+  readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';  
 }
 
 /**
@@ -155,7 +155,7 @@ export class Bundle {
   private readonly allowedLicenses: string[];
   private readonly dontAttribute?: string;
   private readonly test?: string;
-  private readonly sourcemap?: esbuild.CommonOptions["sourcemap"];
+  private readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';
 
   private _bundle?: esbuild.BuildResult;
   private _dependencies?: Package[];
