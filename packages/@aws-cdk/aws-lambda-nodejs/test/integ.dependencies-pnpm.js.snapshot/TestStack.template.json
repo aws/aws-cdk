@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d51d2bfafffe9b197eb6fd9609c7e6ca6eeb3b8ecae6d781c4d3d57a51bec73f.zip"
+     "S3Key": "43a79bfd3e6699f0b6aef116e6c8831b3d24287c96015358ba18a20e8f890d54.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -58,7 +58,7 @@
     "FunctionServiceRole675BB04A"
    ]
   },
-  "FunctionCurrentVersion4E2B226139a0cecedeb80de3a257ad93355dc3ac": {
+  "FunctionCurrentVersion4E2B2261aaa202f9dd995aa43c949ab3a1e00638": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -76,7 +76,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "FunctionCurrentVersion4E2B226139a0cecedeb80de3a257ad93355dc3ac"
+     "Ref": "FunctionCurrentVersion4E2B2261aaa202f9dd995aa43c949ab3a1e00638"
     }
    },
    "UpdateReplacePolicy": "Delete",

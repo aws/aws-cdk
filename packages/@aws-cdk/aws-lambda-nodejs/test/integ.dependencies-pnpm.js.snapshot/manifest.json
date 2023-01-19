@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f9969c7817bc0cfc6700b71c80191a41ed3e4e7fe9116505a0c67da55b340f9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13619d6f9a07516c3d7e4a80c722c26477f79b56b4da782813ecca420dbea860.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -48,7 +48,7 @@
         "/TestStack/Function/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FunctionCurrentVersion4E2B226139a0cecedeb80de3a257ad93355dc3ac"
+            "data": "FunctionCurrentVersion4E2B2261aaa202f9dd995aa43c949ab3a1e00638"
           }
         ],
         "/TestStack/Trigger/Default/Default": [
@@ -79,6 +79,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FunctionCurrentVersion4E2B226139a0cecedeb80de3a257ad93355dc3ac": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionCurrentVersion4E2B226139a0cecedeb80de3a257ad93355dc3ac",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
