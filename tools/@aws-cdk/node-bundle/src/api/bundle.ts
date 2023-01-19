@@ -75,11 +75,42 @@ export interface BundleProps {
   readonly test?: string;
 
   /**
-   * Basic sanity check to run against the created bundle.
+   * Include a sourcemap in the bundle.
    *
    * @default "inline"
    */
   readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';  
+
+  /**
+   * Minifies the bundled code.
+   *
+   * @default false
+   */
+  readonly minify?: boolean;
+
+  /**
+   * Removes whitespace from the code.
+   * This is enabled by default when `minify` is used.
+   *
+   * @default false
+   */
+  readonly minifyWhitespace?: boolean;
+
+  /**
+   * Renames local variables to be shorter.
+   * This is enabled by default when `minify` is used.
+   *
+   * @default false
+   */
+  readonly minifyIdentifiers?: boolean;
+
+  /**
+   * Rewrites syntax to a more compact format.
+   * This is enabled by default when `minify` is used.
+   *
+   * @default false
+   */
+  readonly minifySyntax?: boolean;
 }
 
 /**
@@ -156,6 +187,10 @@ export class Bundle {
   private readonly dontAttribute?: string;
   private readonly test?: string;
   private readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';
+  private readonly minify?: boolean;
+  private readonly minifyWhitespace?: boolean;
+  private readonly minifyIdentifiers?: boolean;
+  private readonly minifySyntax?: boolean;
 
   private _bundle?: esbuild.BuildResult;
   private _dependencies?: Package[];
@@ -174,6 +209,10 @@ export class Bundle {
     this.dontAttribute = props.dontAttribute;
     this.entryPoints = {};
     this.sourcemap = props.sourcemap;
+    this.minify = props.minify;
+    this.minifyWhitespace = props.minifyWhitespace;
+    this.minifyIdentifiers = props.minifyIdentifiers;
+    this.minifySyntax = props.minifySyntax;
 
     const entryPoints = props.entryPoints ?? (this.manifest.main ? [this.manifest.main] : []);
 
@@ -405,6 +444,10 @@ export class Bundle {
       platform: 'node',
       sourcemap: this.sourcemap ?? 'inline',
       metafile: true,
+      minify: this.minify,
+      minifyWhitespace: this.minifyWhitespace,
+      minifyIdentifiers: this.minifyIdentifiers,
+      minifySyntax: this.minifySyntax,
       treeShaking: true,
       absWorkingDir: this.packageDir,
       external: [...(this.externals.dependencies ?? []), ...(this.externals.optionalDependencies ?? [])],
