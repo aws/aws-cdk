@@ -941,6 +941,13 @@
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
+                "FunctionResponseTypes": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
                 "StartingPosition": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
                     "PrimitiveType": "String",
@@ -2104,6 +2111,12 @@
                 "Description": {
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-description",
                     "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "DisableExecuteApiEndpoint": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-disableexecuteapiendpoint",
+                    "PrimitiveType": "Boolean",
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
