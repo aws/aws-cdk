@@ -68,6 +68,8 @@ export interface DatabaseClusterAttributes {
    * The immutable identifier for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP.
    *
    * This AWS Region-unique identifier is used in things like IAM authentication policies.
+   *
+   * @default - none
    */
   readonly clusterResourceIdentifier?: string;
 
