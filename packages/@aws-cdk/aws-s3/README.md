@@ -645,7 +645,7 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
     enabled: true,
     defaultRetention: {
       mode: s3.ObjectLockMode.GOVERNANCE,
-      duration: cdk.Duration.years(7),
+      duration: cdk.Duration.days(7 * 365),
     }
   }
 });
