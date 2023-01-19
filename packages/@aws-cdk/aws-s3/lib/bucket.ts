@@ -1406,6 +1406,13 @@ export interface BucketProps {
   readonly versioned?: boolean;
 
   /**
+   * Enable object lock and configure the default retention settings.
+   *
+   * @default object lock is not enabled for the bucket
+   */
+  readonly objectLock?: ObjectLock;
+
+  /**
    * Whether this bucket should send notifications to Amazon EventBridge or not.
    *
    * @default false
@@ -1802,6 +1809,8 @@ export class Bucket extends BucketBase {
       ownershipControls: this.parseOwnershipControls(props),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
+      objectLockEnabled: props.objectLock ? props.objectLock.enabled : undefined,
+      objectLockConfiguration: props.objectLock?.defaultRetention ? this.parseObjectLockConfig(props) : undefined,
     });
     this._resource = resource;
 
@@ -2164,6 +2173,35 @@ export class Bucket extends BucketBase {
     });
   }
 
+  private parseObjectLockConfig({ objectLock }: BucketProps): CfnBucket.ObjectLockConfigurationProperty | undefined {
+    if (!objectLock) {
+      return undefined;
+    }
+
+    if (!objectLock.defaultRetention) {
+      return undefined;
+    }
+
+    if (!objectLock.enabled && objectLock.defaultRetention) {
+      throw new Error('Object Lock must be enabled to configure default retention settings');
+    }
+
+    const retentionDurationInDays = objectLock.defaultRetention.duration.toDays();
+    if (retentionDurationInDays < 1) {
+      throw new Error('Object Lock retention duration must be at least one day');
+    }
+
+    return {
+      objectLockEnabled: 'Enabled',
+      rule: {
+        defaultRetention: {
+          days: retentionDurationInDays,
+          mode: objectLock.defaultRetention.mode,
+        },
+      },
+    };
+  }
+
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
     if (!props.websiteErrorDocument && !props.websiteIndexDocument && !props.websiteRedirect && !props.websiteRoutingRules) {
       return undefined;
@@ -2231,7 +2269,7 @@ export class Bucket extends BucketBase {
         effect: iam.Effect.ALLOW,
         principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
         actions: ['s3:PutObject'],
-        resources: [this.arnForObjects(prefix ? `${prefix}*`: '*')],
+        resources: [this.arnForObjects(prefix ? `${prefix}*` : '*')],
         conditions: conditions,
       }));
     } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
@@ -2740,6 +2778,73 @@ export interface RoutingRule {
    * @default - No condition
    */
   readonly condition?: RoutingRuleCondition;
+}
+
+/**
+ * Modes in which S3 Object Lock retention can be configured.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes
+ */
+export enum ObjectLockMode {
+  /**
+   * The Governance retention mode.
+   *
+   * With governance mode, you protect objects against being deleted by most users, but you can
+   * still grant some users permission to alter the retention settings or delete the object if
+   * necessary. You can also use governance mode to test retention-period settings before
+   * creating a compliance-mode retention period.
+   */
+  GOVERNANCE = 'GOVERNANCE',
+
+  /**
+   * The Compliance retention mode.
+   *
+   * When an object is locked in compliance mode, its retention mode can't be changed, and
+   * its retention period can't be shortened. Compliance mode helps ensure that an object
+   * version can't be overwritten or deleted for the duration of the retention period.
+   */
+  COMPLIANCE = 'COMPLIANCE',
+}
+
+/**
+ * The default retention settings for an S3 Object Lock configuration.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-defaults
+ */
+export interface ObjectLockRetention {
+  /**
+   * The default period for which objects should be retained.
+   */
+  readonly duration: Duration,
+
+  /**
+   * The retention mode to use for the object lock configuration.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes
+   */
+  readonly mode: ObjectLockMode,
+}
+
+/**
+ * The Object Lock configuration for the bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html
+ */
+export interface ObjectLock {
+  /**
+   * Whether the object lock configuration is enabled.
+   *
+   * Object lock can only be enabled on newly created buckets. It cannot be enabled
+   * on existing buckets.
+   */
+  readonly enabled: boolean;
+
+  /**
+   * The default retention settings to apply.
+   *
+   * @default default retention is not enabled
+   */
+  readonly defaultRetention?: ObjectLockRetention;
 }
 
 /**

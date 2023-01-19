@@ -616,3 +616,41 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
   }]
 });
 ```
+
+## Object Lock Configuration
+
+[Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html)
+can be configured to enable a write-once-read-many model for an S3 bucket. Object Lock must be
+configured when a bucket is created; if a bucket is created without Object Lock, it cannot be
+enabled later via the CDK.
+
+Object Lock can be enabled on an S3 bucket by specifying:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  objectLock: {
+    enabled: true
+  }
+});
+```
+
+Usually, it is desired to not just enable Object Lock for a bucket but to also configure a
+[retention mode](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes)
+and a [retention period](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-periods).
+These can be specified by providing a `defaultRetention`:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  objectLock: {
+    enabled: true,
+    defaultRetention: {
+      mode: s3.ObjectLockMode.GOVERNANCE,
+      duration: cdk.Duration.years(7),
+    }
+  }
+});
+
+```
+
+Note that if a `duration` is specified, it must be at least one day. Additionally, it is not
+permitted to specify a retention configuration without also enabling Object Lock.
