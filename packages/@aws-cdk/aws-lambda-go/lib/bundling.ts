@@ -92,7 +92,7 @@ export class Bundling implements cdk.BundlingOptions {
         user: bundling.user,
         securityOpt: bundling.securityOpt,
         network: bundling.network,
-        fileCopyVariant: bundling.fileCopyVariant,
+        assetStagingType: bundling.assetStagingType,
       },
     });
   }
@@ -115,7 +115,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly user?: string;
   public readonly securityOpt?: string;
   public readonly network?: string;
-  public readonly fileCopyVariant?: cdk.BundlingFileCopyVariant;
+  public readonly assetStagingType?: cdk.BundlingFileCopyVariant;
 
   private readonly relativeEntryPath: string;
 
@@ -163,7 +163,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
-    this.fileCopyVariant = props.fileCopyVariant;
+    this.assetStagingType = props.fileCopyVariant;
 
     // Local bundling
     if (!props.forcedDockerBundling) { // only if Docker is not forced

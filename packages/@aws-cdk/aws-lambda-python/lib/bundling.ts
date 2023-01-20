@@ -72,7 +72,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly user?: string;
   public readonly securityOpt?: string;
   public readonly network?: string;
-  public readonly fileCopyVariant?: BundlingFileCopyVariant;
+  public readonly assetStagingType?: BundlingFileCopyVariant;
 
   constructor(props: BundlingProps) {
     const {
@@ -111,7 +111,7 @@ export class Bundling implements CdkBundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
-    this.fileCopyVariant = props.fileCopyVariant;
+    this.assetStagingType = props.fileCopyVariant;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {

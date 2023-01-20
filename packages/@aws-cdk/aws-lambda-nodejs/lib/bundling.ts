@@ -90,7 +90,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly local?: cdk.ILocalBundling;
-  public readonly fileCopyVariant?: cdk.BundlingFileCopyVariant;
+  public readonly assetStagingType?: cdk.BundlingFileCopyVariant;
 
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
@@ -162,7 +162,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
-    this.fileCopyVariant = props.fileCopyVariant;
+    this.assetStagingType = props.fileCopyVariant;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced

@@ -1293,7 +1293,7 @@ describe('staging with docker cp', () => {
       bundling: {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.VOLUME_SINGLE_ARCHIVE],
-        fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
+        assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
       },
     });
 

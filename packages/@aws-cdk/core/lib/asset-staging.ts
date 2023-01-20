@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput, AssetStagingVolumeCopy, DockerVolume } from './bundling';
+import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput, AssetStagingVolumeCopy, AssetStagingBindMount } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
@@ -448,45 +448,21 @@ export class AssetStaging extends Construct {
             : '1000:1000';
         }
 
-        let volumes: DockerVolume[] = [];
-        let volumesFrom: string[] = options.volumesFrom ?? [];
-
-        const helperContainer = new AssetStagingVolumeCopy();
-        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.VOLUME_COPY.valueOf()) {
-          volumes = options.volumes ?? [];
-          volumesFrom = [helperContainer.copyContainerName, ...options.volumesFrom ?? []];
-          helperContainer.prepareVolumes();
-          helperContainer.startHelperContainer(user);
-          helperContainer.copyInputFrom(this.sourcePath);
-        } else {
-          volumes = [
-            {
-              hostPath: this.sourcePath,
-              containerPath: AssetStaging.BUNDLING_INPUT_DIR,
-            },
-            {
-              hostPath: bundleDir,
-              containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
-            },
-            ...options.volumes ?? [],
-          ];
-        }
-
-        options.image.run({
-          command: options.command,
+        const assetStagingOptions = {
           user,
-          environment: options.environment,
-          entrypoint: options.entrypoint,
-          workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
-          securityOpt: options.securityOpt ?? '',
-          volumes,
-          volumesFrom,
-        });
+          sourcePath: this.sourcePath,
+          bundleDir,
+          ...options,
+        };
 
-        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.VOLUME_COPY.valueOf()) {
-          helperContainer.copyOutputTo(bundleDir);
-          helperContainer.cleanHelperContainer();
-          helperContainer.cleanVolumes();
+        switch (options.assetStagingType) {
+          case BundlingFileCopyVariant.VOLUME_COPY:
+            new AssetStagingVolumeCopy(assetStagingOptions).run();
+            break;
+          case BundlingFileCopyVariant.BIND_MOUNT:
+          default:
+            new AssetStagingBindMount(assetStagingOptions).run();
+            break;
         }
       }
     } catch (err) {
