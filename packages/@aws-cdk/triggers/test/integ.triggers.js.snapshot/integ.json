@@ -1,14 +1,13 @@
 {
-  "version": "21.0.0",
+  "version": "29.0.0",
   "testCases": {
-    "integ.triggers": {
+    "TriggerTest/DefaultTest": {
       "stacks": [
         "MyStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "stackUpdateWorkflow": false,
+      "assertionStack": "TriggerTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TriggerTestDefaultTestDeployAssert61636546"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
