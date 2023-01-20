@@ -177,11 +177,16 @@ export interface RecordSetOptions {
   readonly comment?: string;
 
   /**
-   * Whether to delete the same record set in the hosted zone if it already exists.
+   * Whether to delete the same record set in the hosted zone if it already exists (dangerous!)
    *
    * This allows to deploy a new record set while minimizing the downtime because the
    * new record set will be created immediately after the existing one is deleted. It
    * also avoids "manual" actions to delete existing record sets.
+   *
+   * > **N.B.:** this feature is dangerous, use with caution! It can only be used safely when
+   * > `deleteExisting` is set to `true` as soon as the resource is added to the stack. Changing
+   * > an existing Record Set's `deleteExisting` property from `false -> true` after deployment
+   * > will delete the record!
    *
    * @default false
    */

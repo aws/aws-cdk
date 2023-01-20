@@ -1,0 +1,88 @@
+{
+  "version": "29.0.0",
+  "artifacts": {
+    "sqs-event-source-max-concurrency.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "sqs-event-source-max-concurrency.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "sqs-event-source-max-concurrency": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sqs-event-source-max-concurrency.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/22b851e42ed8369bcaa049b397df6ff215217b6578ec72217a555682af809f17.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "sqs-event-source-max-concurrency.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "sqs-event-source-max-concurrency.assets"
+      ],
+      "metadata": {
+        "/sqs-event-source-max-concurrency/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/sqs-event-source-max-concurrency/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/sqs-event-source-max-concurrency/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/sqs-event-source-max-concurrency/F/SqsEventSource:sqseventsourcemaxconcurrencyQ1268C091/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FSqsEventSourcesqseventsourcemaxconcurrencyQ1268C091130BF341"
+          }
+        ],
+        "/sqs-event-source-max-concurrency/Q/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Q63C6E3AB"
+          }
+        ],
+        "/sqs-event-source-max-concurrency/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/sqs-event-source-max-concurrency/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "sqs-event-source-max-concurrency"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

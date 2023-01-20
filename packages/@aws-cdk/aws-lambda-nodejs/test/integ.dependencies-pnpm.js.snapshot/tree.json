@@ -105,7 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "58d2406e0a74fd42ac31e584a098bb581709c3de7bff389451c2a08db50c4383.zip"
+                      "s3Key": "b90974d5f9d943ad75f529ba0b8529aa1c43cbe4d63d4e0f89894d5fdcab56f9.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -126,32 +126,6 @@
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
                   "version": "0.0.0"
                 }
-              },
-              "CurrentVersion": {
-                "id": "CurrentVersion",
-                "path": "TestStack/Function/CurrentVersion",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "TestStack/Function/CurrentVersion/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::Version",
-                      "aws:cdk:cloudformation:props": {
-                        "functionName": {
-                          "Ref": "Function76856677"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnVersion",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Version",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -159,66 +133,22 @@
               "version": "0.0.0"
             }
           },
-          "Trigger": {
-            "id": "Trigger",
-            "path": "TestStack/Trigger",
+          "Exports": {
+            "id": "Exports",
+            "path": "TestStack/Exports",
             "children": {
-              "Default": {
-                "id": "Default",
-                "path": "TestStack/Trigger/Default",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "TestStack/Trigger/Default/Default",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
+              "Output{\"Ref\":\"Function76856677\"}": {
+                "id": "Output{\"Ref\":\"Function76856677\"}",
+                "path": "TestStack/Exports/Output{\"Ref\":\"Function76856677\"}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
+                  "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/triggers.Trigger",
-              "version": "0.0.0"
-            }
-          },
-          "AWSCDK.TriggerCustomResourceProviderCustomResourceProvider": {
-            "id": "AWSCDK.TriggerCustomResourceProviderCustomResourceProvider",
-            "path": "TestStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider",
-            "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "TestStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Staging",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
-                }
-              },
-              "Role": {
-                "id": "Role",
-                "path": "TestStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              },
-              "Handler": {
-                "id": "Handler",
-                "path": "TestStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Handler",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.216"
             }
           },
           "BootstrapVersion": {
@@ -256,13 +186,109 @@
                 "path": "PnpmTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.216"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "PnpmTest/DefaultTest/DeployAssert",
                 "children": {
+                  "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8": {
+                    "id": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8",
+                    "path": "PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.1.216"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default",
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/core.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "PnpmTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "PnpmTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "PnpmTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "PnpmTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/core.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.216"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "PnpmTest/DefaultTest/DeployAssert/BootstrapVersion",
@@ -302,7 +328,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.216"
         }
       }
     },

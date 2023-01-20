@@ -1,8 +1,7 @@
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
-import * as triggers from '@aws-cdk/triggers';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
 import * as lambda from '../lib';
 
 const app = new cdk.App();
@@ -23,13 +22,18 @@ const handler = new lambda.NodejsFunction(stack, 'Function', {
   depsLockFilePath: path.join(__dirname, 'integ-handlers/pnpm/pnpm-lock.yaml'),
 });
 
-new triggers.Trigger(stack, 'Trigger', {
-  handler,
-});
-
-new integ.IntegTest(app, 'PnpmTest', {
+const integ = new IntegTest(app, 'PnpmTest', {
   testCases: [stack],
   stackUpdateWorkflow: false, // this will tell the runner to not check in assets.
 });
 
-app.synth();
+
+const response = integ.assertions.invokeFunction({
+  functionName: handler.functionName,
+});
+response.expect(ExpectedResult.objectLike({
+  // expect invoking without error
+  StatusCode: 200,
+  ExecutedVersion: '$LATEST',
+  Payload: 'null',
+}));

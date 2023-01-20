@@ -123,6 +123,8 @@ Resources:
               - kms:ScheduleKeyDeletion
               - kms:CancelKeyDeletion
               - kms:GenerateDataKey
+              - kms:TagResource
+              - kms:UntagResource
             Effect: Allow
             Principal:
               AWS:
@@ -585,7 +587,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '14'
+      Value: '15'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

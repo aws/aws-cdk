@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "artifacts": {
     "TestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c51cd09452e746f11796192b2e9025f8c82de145d16aeb2e2c66c2197ecbae26.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b6922a50679c4b55d94ce943a6cc9a0e1d67006def01191f71eb7e05bfe18327.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,28 +45,10 @@
             "data": "Function76856677"
           }
         ],
-        "/TestStack/Function/CurrentVersion/Resource": [
+        "/TestStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FunctionCurrentVersion4E2B22618dd26ccb3af7b577163fa65856572807"
-          }
-        ],
-        "/TestStack/Trigger/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Trigger"
-          }
-        ],
-        "/TestStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"
-          }
-        ],
-        "/TestStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91"
+            "data": "ExportsOutputRefFunction76856677C48862D5"
           }
         ],
         "/TestStack/BootstrapVersion": [
@@ -100,7 +82,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2bd77eb3d8c517d922b9b5e7829e28b113dacc2d80176588fcc5608794a14ffb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -113,9 +95,40 @@
         }
       },
       "dependencies": [
+        "TestStack",
         "PnpmTestDefaultTestDeployAssert397EDF83.assets"
       ],
       "metadata": {
+        "/PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
+          }
+        ],
+        "/PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8InvokeA3F6E40A"
+          }
+        ],
+        "/PnpmTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
+          }
+        ],
+        "/PnpmTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/PnpmTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/PnpmTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
