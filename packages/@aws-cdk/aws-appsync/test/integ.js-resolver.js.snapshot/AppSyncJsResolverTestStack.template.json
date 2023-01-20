@@ -1,0 +1,478 @@
+{
+ "Resources": {
+  "JsResolverApiApiLogsRoleAA94FCF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "JsResolverApi612CD442": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "JsResolverApi",
+    "LogConfig": {
+     "CloudWatchLogsRoleArn": {
+      "Fn::GetAtt": [
+       "JsResolverApiApiLogsRoleAA94FCF2",
+       "Arn"
+      ]
+     },
+     "FieldLogLevel": "NONE"
+    }
+   }
+  },
+  "JsResolverApiSchema1CF261C1": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "JsResolverApi612CD442",
+      "ApiId"
+     ]
+    },
+    "Definition": "type Test {\n  id: String!\n  name: String!\n}\ntype Query {\n  getTests: [Test]!\n}\ntype Mutation {\n  addTest(name: String!): Test\n}\n"
+   }
+  },
+  "JsResolverApiDefaultApiKeyBD458F31": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "JsResolverApi612CD442",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "JsResolverApiSchema1CF261C1"
+   ]
+  },
+  "JsResolverApiLogRetention66DE3830": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/appsync/apis/",
+       {
+        "Fn::GetAtt": [
+         "JsResolverApi612CD442",
+         "ApiId"
+        ]
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   }
+  },
+  "JsResolverApiDynamoDataSourceServiceRole6406F7E8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "JsResolverApiDynamoDataSourceServiceRoleDefaultPolicy44BA5FB6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DynamoTableB2B22E15",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "JsResolverApiDynamoDataSourceServiceRoleDefaultPolicy44BA5FB6",
+    "Roles": [
+     {
+      "Ref": "JsResolverApiDynamoDataSourceServiceRole6406F7E8"
+     }
+    ]
+   }
+  },
+  "JsResolverApiDynamoDataSource58CF75DE": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "JsResolverApi612CD442",
+      "ApiId"
+     ]
+    },
+    "Name": "DynamoDataSource",
+    "Type": "AMAZON_DYNAMODB",
+    "DynamoDBConfig": {
+     "AwsRegion": {
+      "Ref": "AWS::Region"
+     },
+     "TableName": {
+      "Ref": "DynamoTableB2B22E15"
+     }
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "JsResolverApiDynamoDataSourceServiceRole6406F7E8",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "JsResolverApiAddTestFunction76B4557F": {
+   "Type": "AWS::AppSync::FunctionConfiguration",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "JsResolverApi612CD442",
+      "ApiId"
+     ]
+    },
+    "DataSourceName": "DynamoDataSource",
+    "Name": "addTestFunc",
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64f136fd66d0a20e8574eddfe2e50aa10168344ebac0f3ca03e5ae0b4b7475ec.js"
+    },
+    "FunctionVersion": "2018-05-29",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    }
+   },
+   "DependsOn": [
+    "JsResolverApiDynamoDataSource58CF75DE",
+    "JsResolverApiSchema1CF261C1"
+   ]
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteRetentionPolicy",
+        "logs:PutRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "d01c24641c7d8cb6488393ffceaefff282370a9a522bf9d77b21da73fa257347.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ]
+  },
+  "DynamoTableB2B22E15": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AddTestResolver8AF95A30": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "JsResolverApi612CD442",
+      "ApiId"
+     ]
+    },
+    "FieldName": "addTest",
+    "TypeName": "Mutation",
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/922ddc9d9563ca9402e283efe80ad2b4e00c8ddf6fbbbc2ae2b9dc6fe7107061.js"
+    },
+    "Kind": "PIPELINE",
+    "PipelineConfig": {
+     "Functions": [
+      {
+       "Fn::GetAtt": [
+        "JsResolverApiAddTestFunction76B4557F",
+        "FunctionId"
+       ]
+      }
+     ]
+    },
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    }
+   },
+   "DependsOn": [
+    "JsResolverApiSchema1CF261C1"
+   ]
+  },
+  "InvokeApiServiceRoleFB17CD97": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "InvokeApi313C8B49": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c8a056b7b029cede879af4833f48bcc456748b2f8456f85ba76393466c08693a.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "InvokeApiServiceRoleFB17CD97",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "InvokeApiServiceRoleFB17CD97"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefInvokeApi313C8B4949AC2AFC": {
+   "Value": {
+    "Ref": "InvokeApi313C8B49"
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputRefInvokeApi313C8B4949AC2AFC"
+   }
+  },
+  "ExportsOutputFnGetAttJsResolverApi612CD442GraphQLUrl15495788": {
+   "Value": {
+    "Fn::GetAtt": [
+     "JsResolverApi612CD442",
+     "GraphQLUrl"
+    ]
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApi612CD442GraphQLUrl15495788"
+   }
+  },
+  "ExportsOutputFnGetAttJsResolverApiDefaultApiKeyBD458F31ApiKey4D429933": {
+   "Value": {
+    "Fn::GetAtt": [
+     "JsResolverApiDefaultApiKeyBD458F31",
+     "ApiKey"
+    ]
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputFnGetAttJsResolverApiDefaultApiKeyBD458F31ApiKey4D429933"
+   }
+  },
+  "ExportsOutputRefDynamoTableB2B22E1592AFC2EE": {
+   "Value": {
+    "Ref": "DynamoTableB2B22E15"
+   },
+   "Export": {
+    "Name": "AppSyncJsResolverTestStack:ExportsOutputRefDynamoTableB2B22E1592AFC2EE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
