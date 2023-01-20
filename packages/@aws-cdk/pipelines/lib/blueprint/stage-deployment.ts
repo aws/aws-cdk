@@ -48,7 +48,7 @@ export class StageDeployment {
   /**
    * Create a new `StageDeployment` from a `Stage`
    *
-   * Synthesizes the target stage, and deployes the stacks found inside
+   * Synthesizes the target stage, and deploys the stacks found inside
    * in dependency order.
    */
   public static fromStage(stage: cdk.Stage, props: StageDeploymentProps = {}) {
