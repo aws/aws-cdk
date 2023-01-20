@@ -550,40 +550,4 @@ const pipelineResolver = new appsync.Resolver(this, 'pipeline', {
 });
 ```
 
-### JS Functions and Resolvers
-
-JS Functions and resolvers are also supported. You can use a `.js` file within your CDK project, or specify your function code inline.
-
-```ts
-declare const api: appsync.GraphqlApi;
-
-const myJsFunction = new appsync.AppsyncFunction(this, 'function', {
-  name: 'my_js_function',
-  api,
-  dataSource: api.addNoneDataSource('none'),
-  code: appsync.Code.fromAsset('directory/function_code.js'),
-  runtime: appsync.FunctionRuntime.JS_1_0_0,
-});
-
-new appsync.Resolver(this, 'PipelineResolver', {
-  api,
-  typeName: 'typeName',
-  fieldName: 'fieldName',
-  code: appsync.Code.fromInline(`
-    // The before step
-    export function request(...args) {
-      console.log(args);
-      return {}
-    }
-
-    // The after step
-    export function response(ctx) {
-      return ctx.prev.result
-    }
-  `),
-  runtime: appsync.FunctionRuntime.JS_1_0_0,
-  pipelineConfig: [myJsFunction],
-});
-```
-
 Learn more about Pipeline Resolvers and AppSync Functions [here](https://docs.aws.amazon.com/appsync/latest/devguide/pipeline-resolvers.html).

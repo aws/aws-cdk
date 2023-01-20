@@ -23,4 +23,3 @@ junit.xml
 !**/*.snapshot/**/asset.*/*.d.ts
 
 !**/*.snapshot/**/asset.*/**
-!test/integ-assets/**/*.js

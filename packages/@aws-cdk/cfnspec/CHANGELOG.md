@@ -1,25 +1,3 @@
-# CloudFormation Resource Specification v106.0.0
-
-## New Resource Types
-
-
-## Attribute Changes
-
-* AWS::IoTWireless::PartnerAccount SidewalkResponse (__deleted__)
-* AWS::IoTWireless::PartnerAccount SidewalkResponse.AmazonId (__deleted__)
-* AWS::IoTWireless::PartnerAccount SidewalkResponse.Arn (__deleted__)
-* AWS::IoTWireless::PartnerAccount SidewalkResponse.Fingerprint (__deleted__)
-* AWS::IoTWireless::PartnerAccount Fingerprint (__added__)
-
-## Property Changes
-
-* AWS::IoTWireless::PartnerAccount Fingerprint (__deleted__)
-* AWS::IoTWireless::PartnerAccount SidewalkResponse (__added__)
-
-## Property Type Changes
-
-
-
 # CloudFormation Resource Specification v105.0.0
 
 ## New Resource Types
