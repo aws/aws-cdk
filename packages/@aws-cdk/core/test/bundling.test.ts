@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { AssetStaging, DockerImage, DockerImageBundlingCopyHelper, FileSystem } from '../lib';
+import { AssetStaging, DockerImage, AssetStagingVolumeCopy, FileSystem } from '../lib';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -610,7 +610,7 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    const helper = new DockerImageBundlingCopyHelper();
+    const helper = new AssetStagingVolumeCopy();
     helper.prepareVolumes();
 
     // THEN
@@ -635,7 +635,7 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    const helper = new DockerImageBundlingCopyHelper();
+    const helper = new AssetStagingVolumeCopy();
     helper.cleanVolumes();
 
     // THEN
@@ -660,7 +660,7 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    const helper = new DockerImageBundlingCopyHelper();
+    const helper = new AssetStagingVolumeCopy();
     const user = '1000';
     helper.startHelperContainer(user);
 
@@ -688,7 +688,7 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    const helper = new DockerImageBundlingCopyHelper();
+    const helper = new AssetStagingVolumeCopy();
     helper.cleanHelperContainer();
 
     // THEN
@@ -708,7 +708,7 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    const helper = new DockerImageBundlingCopyHelper();
+    const helper = new AssetStagingVolumeCopy();
     const dir = '/test/dir';
     helper.copyInputFrom(dir);
 
@@ -729,7 +729,7 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    const helper = new DockerImageBundlingCopyHelper();
+    const helper = new AssetStagingVolumeCopy();
     const dir = '/test/dir';
     helper.copyOutputTo(dir);
 

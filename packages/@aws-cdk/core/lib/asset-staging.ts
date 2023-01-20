@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput, DockerImageBundlingCopyHelper, DockerVolume } from './bundling';
+import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput, AssetStagingVolumeCopy, DockerVolume } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
@@ -451,8 +451,8 @@ export class AssetStaging extends Construct {
         let volumes: DockerVolume[] = [];
         let volumesFrom: string[] = options.volumesFrom ?? [];
 
-        const helperContainer = new DockerImageBundlingCopyHelper();
-        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
+        const helperContainer = new AssetStagingVolumeCopy();
+        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.VOLUME_COPY.valueOf()) {
           volumes = options.volumes ?? [];
           volumesFrom = [helperContainer.copyContainerName, ...options.volumesFrom ?? []];
           helperContainer.prepareVolumes();
@@ -483,7 +483,7 @@ export class AssetStaging extends Construct {
           volumesFrom,
         });
 
-        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.DOCKER_COPY.valueOf()) {
+        if (options.fileCopyVariant?.valueOf() === BundlingFileCopyVariant.VOLUME_COPY.valueOf()) {
           helperContainer.copyOutputTo(bundleDir);
           helperContainer.cleanHelperContainer();
           helperContainer.cleanVolumes();

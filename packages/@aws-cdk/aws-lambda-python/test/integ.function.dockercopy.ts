@@ -22,7 +22,7 @@ class TestStack extends Stack {
       entry: path.join(__dirname, 'lambda-handler-dockercopy'),
       runtime: Runtime.PYTHON_3_9,
       bundling: {
-        fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
+        fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
       },
     });
     this.functionName = fn.functionName;

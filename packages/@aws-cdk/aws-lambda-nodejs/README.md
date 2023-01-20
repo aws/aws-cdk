@@ -344,6 +344,7 @@ By default the input and output of Docker based bundling is handled via bind mou
 In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
 
  ```ts
+import { BundlingFileCopyVariant } from '@aws-cdk/core';
  new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
     fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,

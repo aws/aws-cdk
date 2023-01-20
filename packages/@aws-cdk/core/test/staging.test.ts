@@ -1293,21 +1293,21 @@ describe('staging with docker cp', () => {
       bundling: {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.VOLUME_SINGLE_ARCHIVE],
-        fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
+        fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
       },
     });
 
     // THEN
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
-      'asset.358c99dcb340194559aa346ecba33e7f22d3e9607bb2885623325f5eb6e0389f', // this is the bundle dir
-      'asset.358c99dcb340194559aa346ecba33e7f22d3e9607bb2885623325f5eb6e0389f.zip',
+      'asset.115de8f71f52dcd3958586818e7e8e42be04db3039bc14c0501e0d26efbd653a', // this is the bundle dir
+      'asset.115de8f71f52dcd3958586818e7e8e42be04db3039bc14c0501e0d26efbd653a.zip',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
       'tree.json',
     ]);
-    expect(fs.readdirSync(path.join(assembly.directory, 'asset.358c99dcb340194559aa346ecba33e7f22d3e9607bb2885623325f5eb6e0389f'))).toEqual([
+    expect(fs.readdirSync(path.join(assembly.directory, 'asset.115de8f71f52dcd3958586818e7e8e42be04db3039bc14c0501e0d26efbd653a'))).toEqual([
       'test.zip', // bundle dir with "touched" bundled output file
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
