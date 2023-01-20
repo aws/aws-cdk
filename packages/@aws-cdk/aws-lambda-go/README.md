@@ -295,7 +295,7 @@ import { BundlingFileCopyVariant } from '@aws-cdk/core';
 new go.GoFunction(this, 'GoFunction', {
   entry: 'app/cmd/api',
   bundling: {
-       fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
+       fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
    },
 });
 ```

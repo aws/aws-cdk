@@ -347,7 +347,7 @@ In situtations where this does not work, like Docker-in-Docker setups or when us
 import { BundlingFileCopyVariant } from '@aws-cdk/core';
  new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
-    fileCopyVariant: BundlingFileCopyVariant.DOCKER_COPY,
+    fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
   },
 });
 ```
