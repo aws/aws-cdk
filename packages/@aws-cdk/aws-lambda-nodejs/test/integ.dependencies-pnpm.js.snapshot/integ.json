@@ -1,0 +1,13 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "PnpmTest/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "PnpmTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PnpmTestDefaultTestDeployAssert397EDF83"
+    }
+  }
+}
