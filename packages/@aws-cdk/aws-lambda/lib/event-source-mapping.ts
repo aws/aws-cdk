@@ -156,6 +156,17 @@ export interface EventSourceMappingOptions {
   readonly maxBatchingWindow?: cdk.Duration;
 
   /**
+   * The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency
+   *
+   * Valid Range: Minimum value of 2. Maximum value of 1000.
+   *
+   * @default - No specific limit.
+   */
+  readonly maxConcurrency?: number;
+
+  /**
    * The maximum age of a record that Lambda sends to a function for processing.
    * Valid Range:
    * * Minimum value of 60 seconds
@@ -309,6 +320,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
+    if (props.maxConcurrency && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
+      throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
+    }
+
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
       throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
@@ -372,6 +387,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
+      scalingConfig: props.maxConcurrency ? { maximumConcurrency: props.maxConcurrency } : undefined,
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
       filterCriteria: props.filters ? { filters: props.filters }: undefined,
