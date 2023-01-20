@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
+import { Architecture, Code, Runtime, RuntimeFamily } from '@aws-cdk/aws-lambda';
 import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
@@ -315,6 +315,30 @@ test('esbuild bundling source map inline', () => {
   });
 
   // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node14 --platform=node --outfile="/asset-output/index.js"',
+          '--sourcemap=inline --external:aws-sdk',
+        ].join(' '),
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling is correctly done with custom runtime matching predefined runtime', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
+    architecture: Architecture.X86_64,
+    sourceMapMode: SourceMapMode.INLINE,
+  });
+
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
