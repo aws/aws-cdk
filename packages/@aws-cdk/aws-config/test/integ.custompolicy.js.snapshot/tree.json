@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.95"
         }
       },
       "aws-cdk-config-custompolicy": {
@@ -109,7 +109,7 @@
                       "customPolicyDetails": {
                         "enableDebugLogDelivery": true,
                         "policyRuntime": "guard-2.x.x",
-                        "policyText": "\nrule hoge_rule_name when resourceType == \"AWS::EC2::IAM\" {\n  configuration.username == \"sample-user\"\n}\n"
+                        "policyText": "lazy-create-test"
                       }
                     },
                     "scope": {
@@ -152,7 +152,7 @@
                 "path": "aws-cdk-config-custompolicy-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.1.95"
                 }
               },
               "DeployAssert": {

@@ -29,16 +29,9 @@ new config.CustomPolicy(stack, 'Custom', {
   ruleScope: config.RuleScope.fromResources([config.ResourceType.DYNAMODB_TABLE]),
 });
 
-
-const samplePolicyText2 = `
-rule hoge_rule_name when resourceType == "AWS::EC2::IAM" {
-  configuration.username == "sample-user"
-}
-`;
-
 const user = new iam.User(stack, 'sample-user');
 new config.CustomPolicy(stack, 'Custom-lazy', {
-  policyText: samplePolicyText2,
+  policyText: 'lazy-create-test',
   enableDebugLog: true,
   ruleScope: config.RuleScope.fromResource(config.ResourceType.IAM_USER, user.userName),
 });

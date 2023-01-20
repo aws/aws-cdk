@@ -9,7 +9,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.95"
         }
       },
       "aws-cdk-config-rule-scoped-integ": {
@@ -181,42 +181,6 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
-        }
-      },
-      "aws-cdk-config-rule-integ": {
-        "id": "aws-cdk-config-rule-integ",
-        "path": "aws-cdk-config-rule-integ",
-        "children": {
-          "DefaultTest": {
-            "id": "DefaultTest",
-            "path": "aws-cdk-config-rule-integ/DefaultTest",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "aws-cdk-config-rule-integ/DefaultTest/Default",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.140"
-                }
-              },
-              "DeployAssert": {
-                "id": "DeployAssert",
-                "path": "aws-cdk-config-rule-integ/DefaultTest/DeployAssert",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
-              "version": "0.0.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       }

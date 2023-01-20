@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "21.0.0",
   "testCases": {
     "aws-cdk-config-custompolicy-integ/DefaultTest": {
       "stacks": [

@@ -38,7 +38,7 @@
      "CustomPolicyDetails": {
       "EnableDebugLogDelivery": true,
       "PolicyRuntime": "guard-2.x.x",
-      "PolicyText": "\nrule hoge_rule_name when resourceType == \"AWS::EC2::IAM\" {\n  configuration.username == \"sample-user\"\n}\n"
+      "PolicyText": "lazy-create-test"
      },
      "Owner": "CUSTOM_POLICY",
      "SourceDetails": [
