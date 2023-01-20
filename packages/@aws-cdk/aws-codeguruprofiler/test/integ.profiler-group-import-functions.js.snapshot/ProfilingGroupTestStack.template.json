@@ -92,6 +92,12 @@
    "Value": {
     "Ref": "ProfilingGroupWithImplicitlySetNameProfilingGroup21CDF1FC"
    }
+  },
+  "ImportedFromArnProfilingGroupName": {
+   "Value": "MyAwesomeProfilingGroup"
+  },
+  "ImportedFromArnProfilingGroupArn": {
+   "Value": "arn:aws:codeguru-profiler:a-region-1:1234567890:profilingGroup/MyAwesomeProfilingGroup"
   }
  },
  "Parameters": {

@@ -1,15 +1,15 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "files": {
-    "379c030c914943b66d3323572f1c454b9868c7d89ff12a9dbc092112c6580e80": {
+    "22b851e42ed8369bcaa049b397df6ff215217b6578ec72217a555682af809f17": {
       "source": {
-        "path": "ProfilingGroupTestStack.template.json",
+        "path": "sqs-event-source-max-concurrency.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "379c030c914943b66d3323572f1c454b9868c7d89ff12a9dbc092112c6580e80.json",
+          "objectKey": "22b851e42ed8369bcaa049b397df6ff215217b6578ec72217a555682af809f17.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

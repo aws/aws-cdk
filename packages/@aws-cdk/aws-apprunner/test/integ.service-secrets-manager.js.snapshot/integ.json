@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "AppRunnerSecretsManger/DefaultTest": {
+      "stacks": [
+        "integ-apprunner-secrets-manager"
+      ],
+      "assertionStack": "AppRunnerSecretsManger/DefaultTest/DeployAssert",
+      "assertionStackName": "AppRunnerSecretsMangerDefaultTestDeployAssert6B977D95"
+    }
+  }
+}
