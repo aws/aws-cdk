@@ -1,7 +1,7 @@
-import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
+import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
 import { SdkProvider } from '../lib/api/aws-auth';
@@ -285,6 +285,11 @@ if (!process.stdout.isTTY) {
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
   const argv = await parseCommandLineArguments(args);
+
+  if (argv.debug) {
+    enableSourceMapSupport();
+  }
+
   if (argv.verbose) {
     setLogLevel(argv.verbose);
 
