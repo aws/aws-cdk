@@ -1,3 +1,340 @@
+# CloudFormation Resource Specification v108.0.0
+
+## New Resource Types
+
+* AWS::KendraRanking::ExecutionPlan
+
+## Attribute Changes
+
+* AWS::RDS::DBInstance CertificateDetails.CAIdentifier (__added__)
+* AWS::RDS::DBInstance CertificateDetails.ValidTill (__added__)
+* AWS::SecretsManager::Secret Id (__added__)
+
+## Property Changes
+
+* AWS::BillingConductor::PricingRule Operation (__added__)
+* AWS::BillingConductor::PricingRule UsageType (__added__)
+* AWS::CE::AnomalySubscription ThresholdExpression (__added__)
+* AWS::CE::AnomalySubscription Threshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::MetricStream IncludeLinkedAccountsMetrics (__added__)
+* AWS::EKS::Addon PreserveOnDelete (__added__)
+* AWS::FMS::Policy PolicyDescription (__added__)
+* AWS::FMS::Policy ResourceSetIds (__added__)
+* AWS::FMS::Policy ResourceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBInstance CertificateDetails (__added__)
+* AWS::RDS::DBInstance CertificateRotationRestart (__added__)
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__added__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::RDS::DBInstance.CertificateDetails (__added__)
+* AWS::Transfer::Workflow.DecryptStepDetails (__added__)
+* AWS::Transfer::Workflow.EfsInputFileLocation (__added__)
+* AWS::Transfer::Workflow.S3FileLocation (__added__)
+* AWS::Transfer::Workflow.CopyStepDetails DestinationFileLocation.Type (__changed__)
+  * Old: InputFileLocation
+  * New: S3FileLocation
+* AWS::Transfer::Workflow.InputFileLocation EfsFileLocation (__added__)
+* AWS::Transfer::Workflow.WorkflowStep DecryptStepDetails (__added__)
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api DisableExecuteApiEndpoint (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.KinesisEvent FunctionResponseTypes (__added__)
+
+# CloudFormation Resource Specification v107.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGateway::RestApi RestApiId (__added__)
+* AWS::AuditManager::Assessment Delegations (__deleted__)
+* AWS::DataSync::Task ErrorCode (__deleted__)
+* AWS::DataSync::Task ErrorDetail (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest.ingestEndpoints (__deleted__)
+* AWS::RDS::DBCluster MasterUserSecret.SecretArn (__added__)
+* AWS::RDS::DBInstance MasterUserSecret.SecretArn (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi Parameters.DuplicatesAllowed (__deleted__)
+* AWS::AppSync::DataSource EventBridgeConfig (__added__)
+* AWS::AuditManager::Assessment Delegations (__added__)
+* AWS::DataSync::LocationFSxLustre FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage BucketName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::PlacementGroup PartitionCount (__added__)
+* AWS::EC2::PlacementGroup Tags (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__added__)
+* AWS::Lambda::EventSourceMapping ScalingConfig (__added__)
+* AWS::MediaPackage::Channel HlsIngest (__added__)
+* AWS::RDS::DBCluster ManageMasterUserPassword (__added__)
+* AWS::RDS::DBCluster MasterUserSecret (__added__)
+* AWS::RDS::DBInstance ManageMasterUserPassword (__added__)
+* AWS::RDS::DBInstance MasterUserSecret (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.EventBridgeConfig (__added__)
+* AWS::IoT::JobTemplate.JobExecutionsRetryConfig (__added__)
+* AWS::IoT::JobTemplate.RetryCriteria (__added__)
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__added__)
+* AWS::RDS::DBCluster.MasterUserSecret (__added__)
+* AWS::RDS::DBInstance.MasterUserSecret (__added__)
+* AWS::AppRunner::Service.CodeConfigurationValues RuntimeEnvironmentSecrets (__added__)
+* AWS::AppRunner::Service.ImageConfiguration RuntimeEnvironmentSecrets (__added__)
+* AWS::MediaPackage::Channel.IngestEndpoint Id.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Password.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Url.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Username.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeIframeOnlyStream (__added__)
+
+
+# CloudFormation Resource Specification v106.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.AmazonId (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Arn (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount Fingerprint (__added__)
+
+## Property Changes
+
+* AWS::IoTWireless::PartnerAccount Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__added__)
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v105.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Lambda::EventSourceMapping ScalingConfig (__deleted__)
+* AWS::SNS::Subscription FilterPolicyScope (__added__)
+* AWS::SageMaker::Domain AppSecurityGroupManagement.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__removed__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeader (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.VolumeConfiguration (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ResponseHeadersPolicyConfig RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration AutomaticTerminationMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration SessionPersistenceMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration VolumeConfiguration (__added__)
+* AWS::SageMaker::Domain.DomainSettings SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Domain.RStudioServerProDomainSettings DomainExecutionRoleArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v103.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGateway::RestApi RestApiId (__deleted__)
+* AWS::DirectoryService::SimpleAD DirectoryId (__added__)
+* AWS::EC2::Volume Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
+* AWS::EC2::Volume VolumeId (__added__)
+* AWS::FSx::FileSystem ResourceARN (__added__)
+* AWS::GameLift::Build BuildId (__added__)
+* AWS::IoT::Thing Arn (__added__)
+* AWS::IoT::Thing Id (__added__)
+* AWS::Logs::SubscriptionFilter FilterName (__deleted__)
+* AWS::RDS::DBInstance DBSystemId (__added__)
+* AWS::RedshiftServerless::Namespace Namespace (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup.ConfigParameters (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint (__deleted__)
+* AWS::RedshiftServerless::Workgroup Workgroup.Endpoint.VpcEndpoints (__deleted__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__deleted__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi Parameters.DuplicatesAllowed (__added__)
+* AWS::CloudFront::Function FunctionCode.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::Function FunctionConfig.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataSync::LocationEFS EfsFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DirectoryService::SimpleAD Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::Volume AutoEnableIO.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-autoenableio
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-autoenableio
+* AWS::EC2::Volume AvailabilityZone.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-availabilityzone
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-availabilityzone
+* AWS::EC2::Volume Encrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-encrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-encrypted
+* AWS::EC2::Volume Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-iops
+* AWS::EC2::Volume KmsKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-kmskeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-kmskeyid
+* AWS::EC2::Volume MultiAttachEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-multiattachenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-multiattachenabled
+* AWS::EC2::Volume OutpostArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-outpostarn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-outpostarn
+* AWS::EC2::Volume Size.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-size
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-size
+* AWS::EC2::Volume SnapshotId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-snapshotid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-snapshotid
+* AWS::EC2::Volume Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-tags
+* AWS::EC2::Volume Throughput.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-throughput
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
+* AWS::EC2::Volume VolumeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html#cfn-ec2-ebs-volume-volumetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-volumetype
+* AWS::EKS::Nodegroup Labels.PrimitiveType (__deleted__)
+* AWS::EKS::Nodegroup Labels.PrimitiveItemType (__added__)
+* AWS::EKS::Nodegroup Labels.Type (__added__)
+* AWS::EKS::Nodegroup Tags.PrimitiveType (__deleted__)
+* AWS::EKS::Nodegroup Tags.PrimitiveItemType (__added__)
+* AWS::EKS::Nodegroup Tags.Type (__added__)
+* AWS::GameLift::Build StorageLocation.Type (__changed__)
+  * Old: S3Location
+  * New: StorageLocation
+* AWS::Grafana::Workspace VpcConfiguration (__added__)
+* AWS::Logs::SubscriptionFilter Distribution (__added__)
+* AWS::Logs::SubscriptionFilter FilterName (__added__)
+* AWS::RedshiftServerless::Namespace Namespace (__added__)
+* AWS::RedshiftServerless::Workgroup Workgroup (__added__)
+* AWS::Route53RecoveryControl::Cluster ClusterEndpoints (__added__)
+
+## Property Type Changes
+
+* AWS::GameLift::Build.S3Location (__removed__)
+* AWS::GameLift::Build.StorageLocation (__added__)
+* AWS::Grafana::Workspace.VpcConfiguration (__added__)
+* AWS::NetworkFirewall::RuleGroup.IPSetReference (__added__)
+* AWS::NetworkFirewall::RuleGroup.ReferenceSets (__added__)
+* AWS::QuickSight::DataSource.DatabricksParameters (__added__)
+* AWS::DirectoryService::SimpleAD.VpcSettings SubnetIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::DirectoryService::SimpleAD.VpcSettings VpcId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Evidently::Experiment.MetricGoalObject EventPattern.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Evidently::Launch.MetricDefinitionObject EventPattern.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::FSx::FileSystem.OntapConfiguration RouteTableIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FSx::Volume.OntapConfiguration CopyTagsToBackups (__added__)
+* AWS::FSx::Volume.OntapConfiguration OntapVolumeType (__added__)
+* AWS::FSx::Volume.OntapConfiguration SnapshotPolicy (__added__)
+* AWS::FSx::Volume.OntapConfiguration JunctionPath.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::FSx::Volume.OntapConfiguration StorageEfficiencyEnabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoT::Thing.AttributePayload Attributes.DuplicatesAllowed (__deleted__)
+* AWS::NetworkFirewall::FirewallPolicy.StatefulEngineOptions StreamExceptionPolicy (__added__)
+* AWS::NetworkFirewall::RuleGroup.RuleGroup ReferenceSets (__added__)
+* AWS::NetworkManager::VpcAttachment.VpcOptions ApplianceModeSupport (__added__)
+* AWS::QuickSight::DataSource.DataSourceParameters DatabricksParameters (__added__)
+* AWS::RDS::DBProxy.AuthFormat ClientPasswordAuthType (__added__)
+
+
 # CloudFormation Resource Specification v102.0.0
 
 ## New Resource Types

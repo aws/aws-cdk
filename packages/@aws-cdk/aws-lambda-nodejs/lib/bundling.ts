@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
-import { PackageManager } from './package-manager';
+import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
 
@@ -229,12 +229,16 @@ export class Bundling implements cdk.BundlingOptions {
 
       const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
 
+      const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
+
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
+        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), ''): '', // Ensure node_modules directory is installed locally by creating local 'pnpm-workspace.yaml' file
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
+        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml')) : '', // Remove '.modules.yaml' file which changes on each deployment
       ]);
     }
 
@@ -310,13 +314,20 @@ interface BundlingCommandOptions {
 class OsCommand {
   constructor(private readonly osPlatform: NodeJS.Platform) {}
 
-  public writeJson(filePath: string, data: any): string {
-    const stringifiedData = JSON.stringify(data);
+  public write(filePath: string, data: string): string {
     if (this.osPlatform === 'win32') {
-      return `echo ^${stringifiedData}^ > "${filePath}"`;
+      if (!data) { // if `data` is empty, echo a blank line, otherwise the file will contain a `^` character
+        return `echo. > "${filePath}"`;
+      }
+      return `echo ^${data}^ > "${filePath}"`;
     }
 
-    return `echo '${stringifiedData}' > "${filePath}"`;
+    return `echo '${data}' > "${filePath}"`;
+  }
+
+  public writeJson(filePath: string, data: any): string {
+    const stringifiedData = JSON.stringify(data);
+    return this.write(filePath, stringifiedData);
   }
 
   public copy(src: string, dest: string): string {
@@ -329,6 +340,14 @@ class OsCommand {
 
   public changeDirectory(dir: string): string {
     return `cd "${dir}"`;
+  }
+
+  public remove(filePath: string): string {
+    if (this.osPlatform === 'win32') {
+      return `del "${filePath}"`;
+    }
+
+    return `rm "${filePath}"`;
   }
 }
 

@@ -18,8 +18,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
-                    "name": "myCdkApplication",
-                    "description": "my application description"
+                    "name": "TestApplication",
+                    "description": "Test application description"
                   }
                 },
                 "constructInfo": {
@@ -149,7 +149,7 @@
                         "release": "go time"
                       }
                     },
-                    "name": "myCdkAttributeGroup",
+                    "name": "myAttributeGroup",
                     "description": "my attribute group description"
                   }
                 },
@@ -249,7 +249,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.168"
+          "version": "10.1.209"
         }
       }
     },

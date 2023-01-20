@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "22.0.0",
+  "testCases": {
+    "integ-test/DefaultTest": {
+      "stacks": [
+        "integ-https-redirect-same-region"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
+    }
+  }
+}

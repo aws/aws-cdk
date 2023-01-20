@@ -1,0 +1,14 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "integ.sqs-max-concurrency": {
+      "stacks": [
+        "sqs-event-source-max-concurrency"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
