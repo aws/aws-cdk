@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as config from '../lib';
 
 const app = new cdk.App();
@@ -18,4 +19,7 @@ new config.CustomRule(stack, 'Custom', {
   ruleScope: config.RuleScope.fromResources([config.ResourceType.EC2_INSTANCE]),
 });
 
+new integ.IntegTest(app, 'aws-cdk-config-rule-integ', {
+  testCases: [stack],
+});
 app.synth();
