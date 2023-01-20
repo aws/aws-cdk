@@ -562,7 +562,7 @@ export interface DockerBuildOptions {
 /**
  * Provides a helper container for copying bundling related files to specific input and output volumes
  */
-export class DockerImageBundlingCopyHelper {
+export class AssetStagingVolumeCopy {
   /**
    * Name of the Docker volume that is used for the asset input
    */
