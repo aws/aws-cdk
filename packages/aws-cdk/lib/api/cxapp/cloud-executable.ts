@@ -11,7 +11,7 @@ import { CloudAssembly } from './cloud-assembly';
 /**
  * @returns output directory
  */
-type Synthesizer = (aws: SdkProvider, config: Configuration) => Promise<cxapi.CloudAssembly>;
+export type Synthesizer = (aws: SdkProvider, config: Configuration) => Promise<cxapi.CloudAssembly>;
 
 /**
  * The Cloud Assembly schema version where the framework started to generate analytics itself

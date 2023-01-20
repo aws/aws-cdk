@@ -1,7 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
+import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
@@ -75,9 +77,9 @@ export interface AppProps {
    *
    * - The CLI via --context
    * - The `context` key in `cdk.json`
-   * - The {@link AppProps.context} property
+   * - The `AppProps.context` property
    *
-   * This property is recommended over the {@link AppProps.context} property since you
+   * This property is recommended over the `AppProps.context` property since you
    * can make final decision over which context value to take in your app.
    *
    * Context can be read from any construct using `node.getContext(key)`.
@@ -105,6 +107,17 @@ export interface AppProps {
    * @default true
    */
   readonly treeMetadata?: boolean;
+
+  /**
+   * The stack synthesizer to use by default for all Stacks in the App
+   *
+   * The Stack Synthesizer controls aspects of synthesis and deployment,
+   * like how assets are referenced and what IAM roles to use. For more
+   * information, see the README of the main CDK package.
+   *
+   * @default - A `DefaultStackSynthesizer` with default settings
+   */
+  readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
 }
 
 /**
@@ -154,6 +167,10 @@ export class App extends Stage {
 
     if (props.stackTraces === false) {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+    }
+
+    if (props.defaultStackSynthesizer) {
+      this.node.setContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER, props.defaultStackSynthesizer);
     }
 
     const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
