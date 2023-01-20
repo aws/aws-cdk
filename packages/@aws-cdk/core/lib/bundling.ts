@@ -166,7 +166,7 @@ export enum BundlingFileCopyVariant {
    * Creates temporary volumes and docker containers
    * This is slower, but works also in more complex situations with remote or shared docker sockets.
    */
-  DOCKER_COPY = 'docker-copy',
+  VOLUME_COPY = 'VOLUME_COPY',
 
   /**
    * The source and output folders will be mounted as bind mount from the host system
