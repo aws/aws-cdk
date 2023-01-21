@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "GraphQlApiLambdaAuth/DefaultTest": {
+      "stacks": [
+        "appsync-lambda-auth"
+      ],
+      "assertionStack": "GraphQlApiLambdaAuth/DefaultTest/DeployAssert",
+      "assertionStackName": "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA"
+    }
+  }
+}
