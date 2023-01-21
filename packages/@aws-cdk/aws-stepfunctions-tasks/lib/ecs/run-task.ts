@@ -5,7 +5,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerOverride } from '..';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, validatePatternSupported, validatePropagatedTagSourceSupported } from '../private/task-utils';
 
 /**
  * Properties for ECS Tasks
@@ -70,7 +70,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    *
    * @default - No tags are propagated.
    */
-  readonly propagateTagsFrom?: ecs.PropagatedTagSource;
+  readonly propagatedTagSource?: ecs.PropagatedTagSource;
 }
 
 /**
@@ -232,6 +232,11 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     sfn.IntegrationPattern.RUN_JOB,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
+  private static readonly SUPPORTED_PROPAGATED_TAG_SOURCES: ecs.PropagatedTagSource[] = [
+    ecs.PropagatedTagSource.NONE,
+    ecs.PropagatedTagSource.SERVICE,
+    ecs.PropagatedTagSource.TASK_DEFINITION,
+  ];
 
   /**
    * Manage allowed network traffic for this service
@@ -250,6 +255,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, EcsRunTask.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePropagatedTagSourceSupported(EcsRunTask.SUPPORTED_PROPAGATED_TAG_SOURCES, this.props.propagatedTagSource);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
@@ -292,7 +298,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.family,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        PropagateTags: this.props.propagateTagsFrom,
+        PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
       }),
     };

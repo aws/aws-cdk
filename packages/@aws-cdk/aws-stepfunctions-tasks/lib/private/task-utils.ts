@@ -1,3 +1,4 @@
+import { PropagatedTagSource } from '@aws-cdk/aws-ecs';
 import {
   IntegrationPattern,
 } from '@aws-cdk/aws-stepfunctions';
@@ -10,6 +11,22 @@ import { Aws } from '@aws-cdk/core';
 export function validatePatternSupported(integrationPattern: IntegrationPattern, supportedPatterns: IntegrationPattern[]) {
   if (!supportedPatterns.includes(integrationPattern)) {
     throw new Error(`Unsupported service integration pattern. Supported Patterns: ${supportedPatterns}. Received: ${integrationPattern}`);
+  }
+}
+
+/**
+ * Verifies that a received PropagatedTagSource is supported for a service integration
+ */
+export function validatePropagatedTagSourceSupported(
+  supportedPropagatedTagSources: PropagatedTagSource[],
+  propagatedTagSource?: PropagatedTagSource,
+) {
+  if (propagatedTagSource === undefined) {
+    return;
+  }
+
+  if (!supportedPropagatedTagSources.includes(propagatedTagSource)) {
+    throw new Error(`Unsupported service PropagatedTagSource. Supported PropagatedTagSources: ${supportedPropagatedTagSources}. Received: ${propagatedTagSource}`);
   }
 }
 

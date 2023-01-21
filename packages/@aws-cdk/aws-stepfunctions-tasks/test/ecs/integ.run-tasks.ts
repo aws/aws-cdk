@@ -25,7 +25,7 @@ class EcsRunTaskStack extends cdk.Stack {
     const task = new tasks.EcsRunTask(this, 'EcsRunTask', {
       cluster,
       taskDefinition,
-      propagateTagsFrom: ecs.PropagatedTagSource.SERVICE,
+      propagatedTagSource: ecs.PropagatedTagSource.SERVICE,
       containerOverrides: [
         {
           containerDefinition: containerDefinition,
