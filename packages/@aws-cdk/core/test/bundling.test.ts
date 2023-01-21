@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { DockerImage, FileSystem } from '../lib';
+import { DockerBuildSecret, DockerImage, FileSystem } from '../lib';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -597,5 +597,13 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('ensure correct Docker CLI arguments are returned', () => {
+    // GIVEN
+    const fromSrc = DockerBuildSecret.fromSrc('path.json');
+
+    // THEN
+    expect(fromSrc).toEqual('src=path.json');
   });
 });
