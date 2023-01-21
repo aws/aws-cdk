@@ -10,23 +10,23 @@ class SnsToLambda extends cdk.Stack {
 
     const topic = new sns.Topic(this, 'MyTopic');
 
-    const fction = new lambda.Function(this, 'Echo', {
+    const func = new lambda.Function(this, 'Echo', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
 
-    topic.addSubscription(new subs.LambdaSubscription(fction, {
+    topic.addSubscription(new subs.LambdaSubscription(func, {
       deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),
     }));
 
-    const fctionFiltered = new lambda.Function(this, 'Filtered', {
+    const funcFiltered = new lambda.Function(this, 'Filtered', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
 
-    topic.addSubscription(new subs.LambdaSubscription(fctionFiltered, {
+    topic.addSubscription(new subs.LambdaSubscription(funcFiltered, {
       filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
           allowlist: ['red'],
@@ -41,13 +41,13 @@ class SnsToLambda extends cdk.Stack {
       },
     }));
 
-    const fctionFilteredWithMessageBody = new lambda.Function(this, 'FilteredMessageBody', {
+    const funcFilteredWithMessageBody = new lambda.Function(this, 'FilteredMessageBody', {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
 
-    topic.addSubscription(new subs.LambdaSubscription(fctionFilteredWithMessageBody, {
+    topic.addSubscription(new subs.LambdaSubscription(funcFilteredWithMessageBody, {
       filterPolicyWithMessageBody: {
         background: {
           color: sns.SubscriptionFilter.stringFilter({

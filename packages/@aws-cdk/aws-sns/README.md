@@ -93,9 +93,9 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
 }));
 ```
 
-### Filter policy with message body
+#### Payload-based filtering
 
-When using filter policy with message body, you can create filters on nested objects. This implicitly sets the filter policy scope to "MessageBody".
+To filter messages based on the payload or body of the message, use the `filterPolicyWithMessageBody` property. This type of filter policy supports creating filters on nested objects.
 
 Example with a Lambda subscription:
 

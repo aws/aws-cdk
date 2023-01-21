@@ -12,7 +12,8 @@ export interface SubscriptionProps {
    */
   readonly filterPolicy?: { [attribute: string]: sns.SubscriptionFilter };
   /**
-   * The filter policy that allows for nested properties. This will implicitly set the filter policy scope to "MessageBody".
+   * The filter policy that is applied on the message body.
+   * To apply a filter policy to the message attributes, use `filterPolicy`. A maximum of one of `filterPolicyWithMessageBody` and `filterPolicy` may be used.
    *
    * @default - all messages are delivered
    */
