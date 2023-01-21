@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3fdd85b84a7c6c55b0c8e21f5d862c21ff67aa326bb9b9dfb7429348ff9d034d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6318a3460f2277a0215d1d3dec988f54f73d1ebd0221c7a7cc4d2bcb6324b50f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,16 +45,16 @@
             "data": "funcC3A0C2E2"
           }
         ],
-        "/appsync-lambda-auth/func/func-api1-appsync": [
+        "/appsync-lambda-auth/func/api1-appsync": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "funcfuncapi1appsync58E50481"
+            "data": "funcapi1appsync5C5BBFA1"
           }
         ],
-        "/appsync-lambda-auth/func/func-api2-appsync": [
+        "/appsync-lambda-auth/func/api2-appsync": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "funcfuncapi2appsync8B273744"
+            "data": "funcapi2appsync0EE83EF2"
           }
         ],
         "/appsync-lambda-auth/api1/Resource": [
@@ -91,6 +91,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "funcfuncapi1appsync58E50481": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcfuncapi1appsync58E50481",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "funcfuncapi2appsync8B273744": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcfuncapi2appsync8B273744",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

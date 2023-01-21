@@ -122,9 +122,9 @@
                   "version": "0.0.0"
                 }
               },
-              "func-api1-appsync": {
-                "id": "func-api1-appsync",
-                "path": "appsync-lambda-auth/func/func-api1-appsync",
+              "api1-appsync": {
+                "id": "api1-appsync",
+                "path": "appsync-lambda-auth/func/api1-appsync",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -143,9 +143,9 @@
                   "version": "0.0.0"
                 }
               },
-              "func-api2-appsync": {
-                "id": "func-api2-appsync",
-                "path": "appsync-lambda-auth/func/func-api2-appsync",
+              "api2-appsync": {
+                "id": "api2-appsync",
+                "path": "appsync-lambda-auth/func/api2-appsync",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {

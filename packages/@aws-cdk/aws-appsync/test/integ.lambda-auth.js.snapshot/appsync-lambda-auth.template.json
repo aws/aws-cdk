@@ -53,7 +53,7 @@
     "funcServiceRoleA96CCB44"
    ]
   },
-  "funcfuncapi1appsync58E50481": {
+  "funcapi1appsync5C5BBFA1": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -66,7 +66,7 @@
     "Principal": "appsync.amazonaws.com"
    }
   },
-  "funcfuncapi2appsync8B273744": {
+  "funcapi2appsync0EE83EF2": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
