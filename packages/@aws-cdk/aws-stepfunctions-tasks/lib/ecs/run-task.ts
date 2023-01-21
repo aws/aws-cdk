@@ -64,13 +64,13 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   readonly launchTarget: IEcsLaunchTarget;
 
   /**
-   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-propagateTags
    *
-   * @default PropagatedTagSource.NONE
+   * @default - No tags are propagated.
    */
-  readonly propagateTags?: ecs.PropagatedTagSource;
+  readonly propagateTagsFrom?: ecs.PropagatedTagSource;
 }
 
 /**
@@ -292,7 +292,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.family,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        PropagateTags: this.props.propagateTags,
+        PropagateTags: this.props.propagateTagsFrom,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
       }),
     };
