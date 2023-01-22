@@ -1,3 +1,0 @@
-#!/bin/bash
-echo "$0: cannot build this kind of project against the repo. Only pure NPM projects are supported. Use 'run-against-dist' instead." >&2
-exit 1
