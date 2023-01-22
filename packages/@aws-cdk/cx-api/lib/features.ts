@@ -643,8 +643,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
     `,
     introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: false,
-    defaults: { v2: true },
+    recommendedValue: true,
   },
 };
 

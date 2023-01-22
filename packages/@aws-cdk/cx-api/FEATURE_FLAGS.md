@@ -78,7 +78,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
-    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": false
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true
   }
 }
 ```
@@ -785,7 +785,7 @@ flag on a resource-by-resource basis to enable it if necessary.
 *Use unique resource name for Database Proxy* (fix)
 
 If this flag is not set, the default behavior for `DatabaseProxy` is
-to use `id` of the constructor for `dbProxyName` when it's not specified in the argument..
+to use `id` of the constructor for `dbProxyName` when it's not specified in the argument.
 In this case, users can't deploy `DatabaseProxy`s that have the same `id` in the same region.
 
 If this flag is set, the default behavior is to use unique resource names for each `DatabaseProxy`.
@@ -796,7 +796,7 @@ This is a feature flag as the old behavior was technically incorrect, but users 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `true` | `false` |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
