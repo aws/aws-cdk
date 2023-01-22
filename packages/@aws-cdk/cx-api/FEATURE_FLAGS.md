@@ -17,6 +17,7 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
+| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -42,7 +43,6 @@ Flags come in three types:
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.59.0 | (fix) |
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
-| [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | V2NEXT | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | V2NEXT | (fix) |
 
 <!-- END table -->
@@ -76,6 +76,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
+    "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": false
   }
@@ -305,6 +306,24 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
+
+
+### @aws-cdk/aws-route53-patters:useCertificate
+
+*Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
+
+Enable this feature flag to use the official CloudFormation supported `Certificate` resource instead
+of the deprecated `DnsValidatedCertificate` construct. If this flag is enabled and you are creating
+the stack in a region other than us-east-1 then you must also set `crossRegionReferences=true` on the
+stack.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2·NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
