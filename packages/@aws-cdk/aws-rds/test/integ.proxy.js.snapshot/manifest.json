@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-rds-proxy.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f288f361e05d7a0cadc909ac72cad71f5ffa327848daac454f6f4717925e6fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eade7d2d48419acaec1228343071922ec168779f7a6dd46405c9605c5652b43e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -243,6 +237,84 @@
             "data": "dbProxyProxyTargetGroup8DA26A77"
           }
         ],
+        "/aws-cdk-rds-proxy/dbCluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSubnets03B9B0E1"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecurityGroupCAA1A91F"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/SecurityGroup/from awscdkrdsproxyProxyProxySecurityGroup9F179E6F:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecurityGroupfromawscdkrdsproxyProxyProxySecurityGroup9F179E6FIndirectPortED421002"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecretCEA6D7B6"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecretAttachmentAB67A752"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterE86E47AE"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterInstance1BCE092AC"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Instance2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterInstance20BA1ECD9"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProxyIAMRole2FE8AB0F"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProxyIAMRoleDefaultPolicy59EB0117"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy/ProxySecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProxyProxySecurityGroupC42FC3CE"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProxyCB0DFB71"
+          }
+        ],
+        "/aws-cdk-rds-proxy/Proxy/ProxyTargetGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProxyProxyTargetGroupB462B5C5"
+          }
+        ],
         "/aws-cdk-rds-proxy/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -257,6 +329,59 @@
         ]
       },
       "displayName": "aws-cdk-rds-proxy"
+    },
+    "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5.assets"
+      ],
+      "metadata": {
+        "/database-proxy-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/database-proxy-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "database-proxy-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

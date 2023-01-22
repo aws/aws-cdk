@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { RemovalPolicy } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import * as rds from '../lib';
 
 const app = new cdk.App();
@@ -42,4 +43,14 @@ new rds.DatabaseProxy(stack, 'Proxy', {
   vpc,
 });
 
-app.synth();
+new integ.IntegTest(app, 'database-proxy-integ-test', {
+  testCases: [stack],
+  diffAssets: true,
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
+});
