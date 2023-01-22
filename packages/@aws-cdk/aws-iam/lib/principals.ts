@@ -273,6 +273,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     const existingValue = this.additionalConditions[key];
     if (!existingValue) {
       this.additionalConditions[key] = value;
+      return;
     }
     validateConditionObject(existingValue);
 
