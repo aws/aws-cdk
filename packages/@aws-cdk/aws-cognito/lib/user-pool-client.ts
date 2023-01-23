@@ -461,6 +461,16 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
             },
             physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
           },
+          onUpdate: {
+            region: Stack.of(this).region,
+            service: 'CognitoIdentityServiceProvider',
+            action: 'describeUserPoolClient',
+            parameters: {
+              UserPoolId: this.userPool.userPoolId,
+              ClientId: this.userPoolClientId,
+            },
+            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
+          },
           policy: AwsCustomResourcePolicy.fromSdkCalls({
             resources: [this.userPool.userPoolArn],
           }),
