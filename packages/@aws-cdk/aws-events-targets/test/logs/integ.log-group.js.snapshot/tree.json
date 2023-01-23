@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.102"
-        }
-      },
       "log-group-events": {
         "id": "log-group-events",
         "path": "log-group-events",
@@ -236,6 +228,14 @@
                 "id": "ServiceRole",
                 "path": "log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
@@ -317,7 +317,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "105b4f39ae68785e705640aa91919e412fcba2dd454aca53412747be8d955286.zip"
+                      "s3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -663,7 +663,23 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.102"
+              "version": "10.1.189"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "log-group-events/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "log-group-events/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
@@ -685,7 +701,7 @@
                 "path": "LogGroup/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.102"
+                  "version": "10.1.189"
                 }
               },
               "DeployAssert": {
@@ -705,7 +721,7 @@
                             "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.102"
+                              "version": "10.1.189"
                             }
                           }
                         },
@@ -769,7 +785,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.102"
+                      "version": "10.1.189"
                     }
                   },
                   "AwsApiCallCloudWatchLogsfilterLogEvents": {
@@ -785,7 +801,7 @@
                             "path": "LogGroup/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.102"
+                              "version": "10.1.189"
                             }
                           }
                         },
@@ -825,6 +841,22 @@
                       "fqn": "@aws-cdk/integ-tests.AwsApiCall",
                       "version": "0.0.0"
                     }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LogGroup/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LogGroup/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -842,6 +874,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.189"
         }
       }
     },
