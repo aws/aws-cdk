@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as builtinFs from 'fs';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { IntegSnapshotRunner, IntegTest } from '../../lib/runner';
@@ -24,8 +25,10 @@ beforeEach(() => {
   jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
+
+  // fs-extra delegates to the built-in one, this also catches calls done directly
+  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => { return true; });
+  jest.spyOn(builtinFs, 'rmdirSync').mockImplementation(() => { return true; });
 });
 
 afterEach(() => {

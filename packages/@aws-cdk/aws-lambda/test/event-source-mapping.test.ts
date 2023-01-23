@@ -43,6 +43,34 @@ describe('event source mapping', () => {
     })).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
   });
 
+  test('throws if maxConcurrency < 2 concurrent instances', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maxConcurrency: 1,
+    })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('throws if maxConcurrency > 1000 concurrent instances', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maxConcurrency: 1001,
+    })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('maxConcurrency appears in stack', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maxConcurrency: 2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      ScalingConfig: { MaximumConcurrency: 2 },
+    });
+  });
+
   test('throws if maxRecordAge is below 60 seconds', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       target: fn,
@@ -159,7 +187,7 @@ describe('event source mapping', () => {
       eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
       kafkaConsumerGroupId: 'some invalid',
       target: fn,
-    })).toThrow('kafkaConsumerGroupId contain ivalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+    })).toThrow('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
   });
 
   test('throws if kafkaConsumerGroupId is too long', () => {
@@ -174,6 +202,14 @@ describe('event source mapping', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
       kafkaConsumerGroupId: '',
+      target: fn,
+    })).not.toThrow();
+  });
+
+  test('not throws if kafkaConsumerGroupId is token', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+      kafkaConsumerGroupId: cdk.Lazy.string({ produce: () => 'test' }),
       target: fn,
     })).not.toThrow();
   });

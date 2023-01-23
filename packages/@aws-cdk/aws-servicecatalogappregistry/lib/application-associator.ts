@@ -19,7 +19,7 @@ export interface ApplicationAssociatorProps {
 /**
  * An AppRegistry construct to automatically create an application with the given name and description.
  *
- * The application name must be unique at the account level and it's immutable.
+ * The application name must be unique at the account level per region and it's immutable.
  * This construct will automatically associate all stacks in the given scope, however
  * in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
  * needs to be associated separately.
@@ -42,7 +42,7 @@ export class ApplicationAssociator extends Construct {
     }
 
     const targetApplication = props.applications[0];
-    this.application = targetApplication.bind(this).application;
+    this.application = targetApplication.bind(scope).application;
     cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this));
   }
 

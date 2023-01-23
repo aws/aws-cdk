@@ -41,7 +41,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 
     debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
     if (!stack.assembly) {
-      throw new Error('Unexpected: stack assembly is required in order to find assets in assemly directory');
+      throw new Error('Unexpected: stack assembly is required in order to find assets in assembly directory');
     }
 
     Object.assign(params, await prepareAsset(asset, assetManifest, toolkitInfo));
@@ -124,6 +124,7 @@ async function prepareDockerImageAsset(
     dockerFile: asset.file,
     networkMode: asset.networkMode,
     platform: asset.platform,
+    dockerOutputs: asset.outputs,
   }, {
     repositoryName,
     imageTag,

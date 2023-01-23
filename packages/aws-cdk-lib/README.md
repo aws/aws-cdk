@@ -460,6 +460,10 @@ A stack dependency has the following implications:
     automatically deploy `stackB`.
   - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
+### CfnResource Dependencies
+
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
+
 ## Custom Resources
 
 Custom Resources are CloudFormation resources that are implemented by arbitrary
@@ -885,13 +889,13 @@ rawBucket.cfnOptions.metadata = {
 ```
 
 Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
+`cfnResource.addDependency` method:
 
 ```ts
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
 const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
-resourceB.addDependsOn(resourceA);
+resourceB.addDependency(resourceA);
 ```
 
 [cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
@@ -1236,5 +1240,24 @@ _~/.cdk.json_
   }
 }
 ```
+
+## IAM Permissions Boundary
+
+It is possible to apply an [IAM permissions boundary](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+to all roles within a specific construct scope. The most common use case would
+be to apply a permissions boundary at the `Stage` level.
+
+```ts
+declare const app: App;
+
+const prodStage = new Stage(app, 'ProdStage', {
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
+});
+```
+
+Any IAM Roles or Users created within this Stage will have the default
+permissions boundary attached.
+
+For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
 
 <!--END CORE DOCUMENTATION-->

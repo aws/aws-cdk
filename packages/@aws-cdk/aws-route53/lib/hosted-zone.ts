@@ -200,7 +200,20 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
   /**
    * A principal which is trusted to assume a role for zone delegation
    *
+   * If supplied, this will create a Role in the same account as the Hosted
+   * Zone, which can be assumed by the `CrossAccountZoneDelegationRecord` to
+   * create a delegation record to a zone in a different account.
+   *
+   * Be sure to indicate the account(s) that you trust to create delegation
+   * records, using either `iam.AccountPrincipal` or `iam.OrganizationPrincipal`.
+   *
+   * If you are planning to use `iam.ServicePrincipal`s here, be sure to include
+   * region-specific service principals for every opt-in region you are going to
+   * be delegating to; or don't use this feature and create separate roles
+   * with appropriate permissions for every opt-in region instead.
+   *
    * @default - No delegation configuration
+   * @deprecated Create the Role yourself and call `hostedZone.grantDelegation()`.
    */
   readonly crossAccountZoneDelegationPrincipal?: iam.IPrincipal;
 
@@ -208,6 +221,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * The name of the role created for cross account delegation
    *
    * @default - A role name is generated automatically
+   * @deprecated Create the Role yourself and call `hostedZone.grantDelegation()`.
    */
   readonly crossAccountZoneDelegationRoleName?: string;
 }
@@ -329,6 +343,30 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       comment: opts.comment,
       ttl: opts.ttl,
     });
+  }
+
+  /**
+   * Grant permissions to add delegation records to this zone
+   */
+  public grantDelegation(grantee: iam.IGrantable) {
+    const g1 = iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['route53:ChangeResourceRecordSets'],
+      resourceArns: [this.hostedZoneArn],
+      conditions: {
+        'ForAllValues:StringEquals': {
+          'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+          'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+        },
+      },
+    });
+    const g2 = iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['route53:ListHostedZonesByName'],
+      resourceArns: ['*'],
+    });
+
+    return g1.combine(g2);
   }
 }
 

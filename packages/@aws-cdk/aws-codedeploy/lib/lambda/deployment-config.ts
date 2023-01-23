@@ -1,19 +1,19 @@
 import { Construct } from 'constructs';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
+import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
-import { deploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of a Lambda Deployment Group.
  *
  * If you're managing the Deployment Configuration alongside the rest of your CDK resources,
- * use the {@link LambdaDeploymentConfig} class.
+ * use the `LambdaDeploymentConfig` class.
  *
  * If you want to reference an already existing deployment configuration,
  * or one defined in a different CDK Stack,
- * use the {@link LambdaDeploymentConfig#fromLambdaDeploymentConfigName} method.
+ * use the `LambdaDeploymentConfig#fromLambdaDeploymentConfigName` method.
  *
- * The default, pre-defined Configurations are available as constants on the {@link LambdaDeploymentConfig} class
+ * The default, pre-defined Configurations are available as constants on the `LambdaDeploymentConfig` class
  * (`LambdaDeploymentConfig.AllAtOnce`, `LambdaDeploymentConfig.Canary10Percent30Minutes`, etc.).
  */
 export interface ILambdaDeploymentConfig extends IBaseDeploymentConfig {
@@ -33,7 +33,7 @@ export interface LambdaDeploymentConfigImportProps {
 }
 
 /**
- * Construction properties of {@link LambdaDeploymentConfig}.
+ * Construction properties of `LambdaDeploymentConfig`.
  */
 export interface LambdaDeploymentConfigProps extends BaseDeploymentConfigOptions {
   /**

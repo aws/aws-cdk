@@ -15,7 +15,7 @@ CDK Pipelines is an *opinionated construct library*. It is purpose-built to
 deploy one or more copies of your CDK applications using CloudFormation with a
 minimal amount of effort on your part. It is *not* intended to support arbitrary
 deployment pipelines, and very specifically it is not built to use CodeDeploy to
-applications to instances, or deploy your custom-built ECR images to an ECS
+deploy applications to instances, or deploy your custom-built ECR images to an ECS
 cluster directly: use CDK file assets with CloudFormation Init for instances, or
 CDK container assets for ECS clusters instead.
 
@@ -212,7 +212,7 @@ const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
 });
 ```
 
-## Definining the pipeline
+## Defining the pipeline
 
 This section of the documentation describes the AWS CodePipeline engine,
 which comes with this library. If you want to use a different deployment
@@ -525,12 +525,15 @@ pipeline.
 This will encrypt the artifact bucket(s), but incurs a cost for maintaining the
 KMS key.
 
+You may also wish to enable automatic key rotation for the created KMS key.
+
 Example:
 
 ```ts
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   // Encrypt artifacts, required for cross-account deployments
   crossAccountKeys: true,
+  enableKeyRotation: true, // optional
   synth: new pipelines.ShellStep('Synth', {
     input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
       connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
@@ -830,7 +833,7 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
   ) {
     super('MyJenkinsStep');
 
-    // This is necessary if your step accepts parametres, like environment variables,
+    // This is necessary if your step accepts parameters, like environment variables,
     // that may contain outputs from other steps. It doesn't matter what the
     // structure is, as long as it contains the values that may contain outputs.
     this.discoverReferencedOutputs({
@@ -857,6 +860,43 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
     }));
 
     return { runOrdersConsumed: 1 };
+  }
+}
+```
+
+Another example, adding a lambda step referencing outputs from a stack:
+
+```ts
+class MyLambdaStep extends pipelines.Step implements pipelines.ICodePipelineActionFactory {
+  private stackOutputReference: pipelines.StackOutputReference
+
+  constructor(
+    private readonly function: lambda.Function,
+    stackOutput: CfnOutput,
+  ) {
+    super('MyLambdaStep');
+    this.stackOutputReference = pipelines.StackOutputReference.fromCfnOutput(stackOutput);
+  }
+
+  public produceAction(stage: codepipeline.IStage, options: pipelines.ProduceActionOptions): pipelines.CodePipelineActionFactoryResult {
+
+    stage.addAction(new cpactions.LambdaInvokeAction({
+      actionName: options.actionName,
+      runOrder: options.runOrder,
+      // Map the reference to the variable name the CDK has generated for you.
+      userParameters: {stackOutput: options.stackOutputsMap.toCodePipeline(this.stackOutputReference)},
+      lambda: this.function,
+    }));
+
+    return { runOrdersConsumed: 1 };
+  }
+
+  /**
+   * Expose stack output references, letting the CDK know
+   * we want these variables accessible for this step.
+   */
+  public get consumedStackOutputs(): pipelines.StackOutputReference[] {
+    return [this.stackOutputReference];
   }
 }
 ```
@@ -1006,7 +1046,7 @@ For authenticating to Docker registries that require a username and password com
 (like DockerHub), create a Secrets Manager Secret with fields named `username`
 and `secret`, and import it (the field names change be customized).
 
-Authentication to ECR repostories is done using the execution role of the
+Authentication to ECR repositories is done using the execution role of the
 relevant CodeBuild job. Both types of credentials can be provided with an
 optional role to assume before requesting the credentials.
 
@@ -1113,7 +1153,7 @@ These command lines explained:
   trusted account, only allowing it to look up values such as availability zones, EC2 images and
   VPCs. `--trust-for-lookup` does not give permissions to modify anything in the account.
   Note that `--trust` implies `--trust-for-lookup`, so you don't need to specify
-  the same acocunt twice.
+  the same account twice.
 - `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
 
 > Be aware that anyone who has access to the trusted Accounts **effectively has all

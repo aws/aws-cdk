@@ -1,5 +1,5 @@
 {
-  "$version": "97.0.0",
+  "$version": "108.0.0",
   "PropertyTypes": {
     "AWS::SNS::Topic.Subscription": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html",
@@ -38,6 +38,12 @@
         "FilterPolicy": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-filterpolicy",
           "PrimitiveType": "Json",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "FilterPolicyScope": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-filterpolicyscope",
+          "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
         },

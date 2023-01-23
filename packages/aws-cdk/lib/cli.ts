@@ -1,14 +1,14 @@
-import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
+import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
-import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
+import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
@@ -24,6 +24,8 @@ import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 import { DeploymentMethod } from './api';
+import { ILock } from './api/util/rwlock';
+import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
@@ -34,7 +36,7 @@ const yargs = require('yargs');
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
 
-async function parseCommandLineArguments() {
+async function parseCommandLineArguments(args: string[]) {
   // Use the following configuration for array arguments:
   //
   //     { type: 'array', default: [], nargs: 1, requiresArg: true }
@@ -92,6 +94,8 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: Argv) => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
+      .option('example-permissions-boundary', { type: 'boolean', alias: ['epb', 'example-permissions-boundary'], desc: 'Use the example permissions boundary.', default: undefined, conflicts: 'custom-permissions-boundary' })
+      .option('custom-permissions-boundary', { type: 'string', alias: ['cpb', 'custom-permissions-boundary'], desc: 'Use the permissions boundary specified by name.', default: undefined, conflicts: 'example-permissions-boundary' })
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
@@ -271,7 +275,7 @@ async function parseCommandLineArguments() {
       'If your app has a single stack, there is no need to specify the stack name',
       'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.',
     ].join('\n\n'))
-    .argv;
+    .parse(args);
 }
 
 if (!process.stdout.isTTY) {
@@ -279,8 +283,13 @@ if (!process.stdout.isTTY) {
   process.env.FORCE_COLOR = '0';
 }
 
-async function initCommandLine() {
-  const argv = await parseCommandLineArguments();
+export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
+  const argv = await parseCommandLineArguments(args);
+
+  if (argv.debug) {
+    enableSourceMapSupport();
+  }
+
   if (argv.verbose) {
     setLogLevel(argv.verbose);
 
@@ -292,6 +301,13 @@ async function initCommandLine() {
   if (argv.ci) {
     setCI(true);
   }
+
+  try {
+    await checkForPlatformWarnings();
+  } catch (e) {
+    debug(`Error while checking for platform warnings: ${e}`);
+  }
+
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
@@ -319,10 +335,19 @@ async function initCommandLine() {
 
   const cloudFormation = new CloudFormationDeployments({ sdkProvider });
 
+  let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
     configuration,
     sdkProvider,
-    synthesizer: execProgram,
+    synthesizer: synthesizer ?? (async (aws, config) => {
+      // Invoke 'execProgram', and copy the lock for the directory in the global
+      // variable here. It will be released when the CLI exits. Locks are not re-entrant
+      // so release it if we have to synthesize more than once (because of context lookups).
+      await outDirLock?.release();
+      const { assembly, lock } = await execProgram(aws, config);
+      outDirLock = lock;
+      return assembly;
+    }),
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -363,6 +388,10 @@ async function initCommandLine() {
   try {
     return await main(cmd, argv);
   } finally {
+    // If we locked the 'cdk.out' directory, release it here.
+    await outDirLock?.release();
+
+    // Do PSAs here
     await version.displayVersionMessage();
 
     if (shouldDisplayNotices()) {
@@ -462,6 +491,8 @@ async function initCommandLine() {
             createCustomerMasterKey: args.bootstrapCustomerKey,
             qualifier: args.qualifier,
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
+            examplePermissionsBoundary: argv.examplePermissionsBoundary,
+            customPermissionsBoundary: argv.customPermissionsBoundary,
             trustedAccounts: arrayFromYargs(args.trust),
             trustedAccountsForLookup: arrayFromYargs(args.trustForLookup),
             cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
@@ -674,8 +705,8 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-export function cli() {
-  initCommandLine()
+export function cli(args: string[] = process.argv.slice(2)) {
+  exec(args)
     .then(async (value) => {
       if (typeof value === 'number') {
         process.exitCode = value;

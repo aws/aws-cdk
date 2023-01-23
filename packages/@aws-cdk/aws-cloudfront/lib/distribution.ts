@@ -1,4 +1,5 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '@aws-cdk/core';
@@ -12,6 +13,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
+import { formatDistributionArn } from './private/utils';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 
 /**
@@ -39,6 +41,22 @@ export interface IDistribution extends IResource {
    * @attribute
    */
   readonly distributionId: string;
+
+  /**
+   * Adds an IAM policy statement associated with this distribution to an IAM
+   * principal's policy.
+   *
+   * @param identity The principal
+   * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
+   */
+  grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  grantCreateInvalidation(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -257,6 +275,13 @@ export class Distribution extends Resource implements IDistribution {
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
       }
+
+      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
+      }
+      public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, 'cloudfront:CreateInvalidation');
+      }
     }();
   }
 
@@ -343,6 +368,26 @@ export class Distribution extends Resource implements IDistribution {
     }
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this distribution to an IAM
+   * principal's policy.
+   *
+   * @param identity The principal
+   * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
+   */
+  public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
+  }
+
+  /**
+   * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity, 'cloudfront:CreateInvalidation');
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
@@ -662,7 +707,7 @@ export enum LambdaEdgeEventType {
 
 /**
  * Represents a Lambda function version and event type when using Lambda@Edge.
- * The type of the {@link AddBehaviorOptions.edgeLambdas} property.
+ * The type of the `AddBehaviorOptions.edgeLambdas` property.
  */
 export interface EdgeLambda {
   /**

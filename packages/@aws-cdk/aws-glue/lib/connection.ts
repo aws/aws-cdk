@@ -49,7 +49,7 @@ export class ConnectionType {
 }
 
 /**
- * Interface representing a created or an imported {@link Connection}
+ * Interface representing a created or an imported `Connection`
  */
 export interface IConnection extends cdk.IResource {
   /**
@@ -109,7 +109,7 @@ export interface ConnectionOptions {
 }
 
 /**
- * Construction properties for {@link Connection}
+ * Construction properties for `Connection`
  */
 export interface ConnectionProps extends ConnectionOptions {
   /**

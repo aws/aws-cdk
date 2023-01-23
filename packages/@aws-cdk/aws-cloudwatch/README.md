@@ -75,7 +75,7 @@ const allProblems = new cloudwatch.MathExpression({
   expression: "errors + throttles",
   usingMetrics: {
     errors: fn.metricErrors(),
-    faults: fn.metricThrottles(),
+    throttles: fn.metricThrottles(),
   }
 });
 ```
@@ -136,14 +136,17 @@ to the metric function call:
 declare const fn: lambda.Function;
 
 const minuteErrorRate = fn.metricErrors({
-  statistic: 'avg',
+  statistic: cloudwatch.Stats.AVERAGE,
   period: Duration.minutes(1),
   label: 'Lambda failure rate'
 });
 ```
 
-This function also allows changing the metric label or color (which will be
-useful when embedding them in graphs, see below).
+The `statistic` field accepts a `string`; the `cloudwatch.Stats` object has a
+number of predefined factory functions that help you constructs strings that are
+appropriate for CloudWatch. The `metricErrors` function also allows changing the
+metric label or color, which will be useful when embedding them in graphs (see
+below).
 
 > Rates versus Sums
 >
@@ -175,7 +178,7 @@ in the legend. For example, if you use:
 declare const fn: lambda.Function;
 
 const minuteErrorRate = fn.metricErrors({
-  statistic: 'sum',
+  statistic: cloudwatch.Stats.SUM,
   period: Duration.hours(1),
 
   // Show the maximum hourly error count in the legend
@@ -363,7 +366,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   left: [executionCountMetric],
 
   right: [errorCountMetric.with({
-    statistic: "average",
+    statistic: cloudwatch.Stats.AVERAGE,
     label: "Error rate",
     color: cloudwatch.Color.GREEN,
   })]
@@ -508,6 +511,17 @@ dashboard.addWidgets(new cloudwatch.TextWidget({
 }));
 ```
 
+Optionally set the TextWidget background to be transparent
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TextWidget({
+  markdown: '# Key Performance Indicators',
+  background: TextWidgetBackground.TRANSPARENT
+}));
+```
+
 ### Alarm Status widget
 
 An alarm status widget displays instantly the status of any type of alarms and gives the
@@ -600,7 +614,7 @@ you can use the following widgets to pack widgets together in different ways:
 
 ### Column widget
 
-A column widget contains other widgets and they will be laid out in a 
+A column widget contains other widgets and they will be laid out in a
 vertical column. Widgets will be put one after another in order.
 
 ```ts
@@ -615,7 +629,7 @@ You can add a widget after object instantiation with the method
 
 ### Row widget
 
-A row widget contains other widgets and they will be laid out in a 
+A row widget contains other widgets and they will be laid out in a
 horizontal row. Widgets will be put one after another in order.
 If the total width of the row exceeds the max width of the grid of 24
 columns, the row will wrap automatically and adapt its height.
