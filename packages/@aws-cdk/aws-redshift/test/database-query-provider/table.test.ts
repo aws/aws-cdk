@@ -365,17 +365,16 @@ describe('update', () => {
 
   describe('encode', () => {
     test('does not replace if encoding added', async () => {
-      const newEncoding = ColumnEncoding.RAW;
       const newResourceProperties = {
         ...resourceProperties,
-        tableColumns: [{ name: 'col1', dataType: 'varchar(1)', encoding: newEncoding }],
+        tableColumns: [{ name: 'col1', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }],
       };
 
       await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE ${newEncoding}`,
+        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW`,
       }));
     });
 
@@ -396,6 +395,28 @@ describe('update', () => {
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
         Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE AUTO`,
+      }));
+    });
+
+    test('adds a comma between multiple statements', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [{ name: 'col1', dataType: 'varchar(1)' }, { name: 'col2', dataType: 'varchar(1)' }],
+        },
+      };
+
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableColumns: [{ name: 'col1', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }, { name: 'col2', dataType: 'varchar(1)', encoding: ColumnEncoding.RAW }],
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW, ALTER COLUMN col2 ENCODE RAW`,
       }));
     });
   });

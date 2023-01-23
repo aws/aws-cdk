@@ -2,7 +2,7 @@
 import * as AWSLambda from 'aws-lambda';
 import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
-import { ClusterProps, TableAndClusterProps, TableSortStyle, ColumnEncoding } from './types';
+import { ClusterProps, ColumnEncoding, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -117,6 +117,20 @@ async function updateTable(
     alterationStatements.push(...columnAdditions.map(addition => `ALTER TABLE ${tableName} ${addition}`));
   }
 
+  const columnEncoding = tableColumns.filter(column => {
+    return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.encoding !== oldColumn.encoding);
+  }).map(column => `ALTER COLUMN ${column.name} ENCODE ${column.encoding || ColumnEncoding.AUTO}`);
+  if (columnEncoding.length > 0) {
+    alterationStatements.push(`ALTER TABLE ${tableName} ${columnEncoding.join(', ')}`);
+  }
+
+  const columnComments = tableColumns.filter(column => {
+    return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.comment !== oldColumn.comment);
+  }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS ${column.comment ? `'${column.comment}'` : 'NULL'}`);
+  if (columnComments.length > 0) {
+    alterationStatements.push(...columnComments);
+  }
+
   const oldDistStyle = oldResourceProperties.distStyle;
   if ((!oldDistStyle && tableAndClusterProps.distStyle) ||
     (oldDistStyle && !tableAndClusterProps.distStyle)) {
@@ -156,36 +170,6 @@ async function updateTable(
         break;
       }
     }
-  }
-
-  const oldEncodingColumns = oldTableColumns.filter(column => column.encoding);
-  const newEncodingColumns = tableColumns.filter(column => column.encoding);
-  if (!areColumnsEqual(oldEncodingColumns, newEncodingColumns)) {
-    // Check for any new columns that need to be encoded.
-    const encodingColumnAdditions = newEncodingColumns.filter(column => {
-      return !oldEncodingColumns.some(oldColumn => column.name === oldColumn.name && column.encoding === oldColumn.encoding);
-    }).map(column => `ALTER TABLE ${tableName} ALTER COLUMN ${column.name} ENCODE ${column.encoding}`);
-    alterationStatements.push(...encodingColumnAdditions);
-    // Check for any old columns that need to be reverted.
-    const encodingColumnDeletions = oldEncodingColumns.filter(column => {
-      return !newEncodingColumns.some(newColumn => column.name === newColumn.name && column.encoding === newColumn.encoding);
-    }).map(column => `ALTER TABLE ${tableName} ALTER COLUMN ${column.name} ENCODE ${ColumnEncoding.AUTO}`);
-    alterationStatements.push(...encodingColumnDeletions);
-  }
-
-  const oldCommentedColumns = oldTableColumns.filter(column => column.comment);
-  const newCommentedColumns = tableColumns.filter(column => column.comment);
-  if (!areColumnsEqual(oldCommentedColumns, newCommentedColumns)) {
-    // Check for any new columns that need to be commented.
-    const commentColumnAdditions = newCommentedColumns.filter(column => {
-      return !oldCommentedColumns.some(oldColumn => column.name === oldColumn.name && column.comment === oldColumn.comment);
-    }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS '${column.comment}'`);
-    alterationStatements.push(...commentColumnAdditions);
-    // Check for any old columns that need to be reverted.
-    const commentColumnDeletions = oldCommentedColumns.filter(column => {
-      return !newCommentedColumns.some(newColumn => column.name === newColumn.name && column.comment === newColumn.comment);
-    }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS NULL`);
-    alterationStatements.push(...commentColumnDeletions);
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
