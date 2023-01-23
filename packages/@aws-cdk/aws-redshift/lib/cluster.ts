@@ -709,9 +709,6 @@ export class Cluster extends ClusterBase {
       resourceType: 'Custom::ModifyClusterIamRoles',
     });
 
-    // eslint-disable-next-line no-console
-    console.log(roleCustomResource.getResponseField('IamRoles'));
-
     role.grantPassRole(roleCustomResource.grantPrincipal);
   }
 }
