@@ -1,12 +1,12 @@
 {
   "version": "29.0.0",
   "testCases": {
-    "PutEvents/DefaultTest": {
+    "PrincipalWithCondition/DefaultTest": {
       "stacks": [
         "integ-principal-with-conditions"
       ],
-      "assertionStack": "PutEvents/DefaultTest/DeployAssert",
-      "assertionStackName": "PutEventsDefaultTestDeployAssert1A6BA3F3"
+      "assertionStack": "PrincipalWithCondition/DefaultTest/DeployAssert",
+      "assertionStackName": "PrincipalWithConditionDefaultTestDeployAssertA4D5A2E9"
     }
   }
 }

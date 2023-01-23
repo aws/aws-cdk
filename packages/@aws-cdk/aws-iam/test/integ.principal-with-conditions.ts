@@ -17,7 +17,7 @@ new iam.Role(stack, 'TestRole', {
 });
 
 
-new IntegTest(app, 'PutEvents', {
+new IntegTest(app, 'PrincipalWithCondition', {
   testCases: [stack],
 });
 

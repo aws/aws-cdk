@@ -54,19 +54,19 @@
       },
       "displayName": "integ-principal-with-conditions"
     },
-    "PutEventsDefaultTestDeployAssert1A6BA3F3.assets": {
+    "PrincipalWithConditionDefaultTestDeployAssertA4D5A2E9.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "PutEventsDefaultTestDeployAssert1A6BA3F3.assets.json",
+        "file": "PrincipalWithConditionDefaultTestDeployAssertA4D5A2E9.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "PutEventsDefaultTestDeployAssert1A6BA3F3": {
+    "PrincipalWithConditionDefaultTestDeployAssertA4D5A2E9": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "PutEventsDefaultTestDeployAssert1A6BA3F3.template.json",
+        "templateFile": "PrincipalWithConditionDefaultTestDeployAssertA4D5A2E9.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -74,7 +74,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "PutEventsDefaultTestDeployAssert1A6BA3F3.assets"
+          "PrincipalWithConditionDefaultTestDeployAssertA4D5A2E9.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -83,23 +83,23 @@
         }
       },
       "dependencies": [
-        "PutEventsDefaultTestDeployAssert1A6BA3F3.assets"
+        "PrincipalWithConditionDefaultTestDeployAssertA4D5A2E9.assets"
       ],
       "metadata": {
-        "/PutEvents/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/PrincipalWithCondition/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/PutEvents/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/PrincipalWithCondition/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "PutEvents/DefaultTest/DeployAssert"
+      "displayName": "PrincipalWithCondition/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
