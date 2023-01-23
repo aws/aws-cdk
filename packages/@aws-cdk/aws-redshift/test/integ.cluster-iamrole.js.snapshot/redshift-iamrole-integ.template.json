@@ -541,7 +541,7 @@
    "DeletionPolicy": "Delete"
   },
   "ClusteraddroleRole2CCF96C23": {
-   "Type": "Custom::RedshiftAddRole",
+   "Type": "Custom::ModifyClusterIamRoles",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
