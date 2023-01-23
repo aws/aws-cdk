@@ -46,7 +46,7 @@ export interface BundlingProps extends BundlingOptions {
    * Which option to use to copy the source files to the docker container and output files back
    * @default - BundlingFileCopyVariant.BIND_MOUNT
    */
-  fileCopyVariant?: BundlingFileCopyVariant
+  assetStagingType?: BundlingFileCopyVariant
 }
 
 /**
@@ -111,7 +111,7 @@ export class Bundling implements CdkBundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
-    this.assetStagingType = props.fileCopyVariant;
+    this.assetStagingType = props.assetStagingType;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {

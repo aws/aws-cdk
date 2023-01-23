@@ -266,7 +266,7 @@ new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
-    fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
+    assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
    },
 });
 ```

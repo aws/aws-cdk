@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { AssetStaging, DockerImage, AssetStagingVolumeCopy, FileSystem } from '../lib';
+import { DockerImage, FileSystem } from '../lib';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -597,70 +597,6 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-  });
-
-  test('AssetStagingVolumeCopy bundles with volume copy ', () => {
-    // GIVEN
-    sinon.stub(process, 'platform').value('darwin');
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const options = {
-      sourcePath: '/tmp/source',
-      bundleDir: '/tmp/output',
-      image: DockerImage.fromRegistry('alpine'),
-      user: '1000',
-    };
-    const helper = new AssetStagingVolumeCopy(options);
-    helper.run();
-
-    // volume Creation
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'volume', 'create', sinon.match(/assetInput.*/g),
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'volume', 'create', sinon.match(/assetOutput.*/g),
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
-    // volume removal
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'volume', 'rm', sinon.match(/assetInput.*/g),
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'volume', 'rm', sinon.match(/assetOutput.*/g),
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
-    // prepare copy container
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'run',
-      '--name', sinon.match(/copyContainer.*/g),
-      '-v', sinon.match(/assetInput.*/g),
-      '-v', sinon.match(/assetOutput.*/g),
-      'alpine',
-      'sh',
-      '-c',
-      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'rm', sinon.match(/copyContainer.*/g),
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'cp', `${options.sourcePath}/.`, `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
-    expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, options.bundleDir,
-    ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
 
 });

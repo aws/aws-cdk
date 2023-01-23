@@ -379,13 +379,13 @@ test('Bundling with docker copy variant', () => {
   Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
-    fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
+    assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
 
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
     bundling: expect.objectContaining({
-      fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
+      assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
     }),
   }));
 });

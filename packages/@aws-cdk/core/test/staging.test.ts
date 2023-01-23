@@ -1300,14 +1300,14 @@ describe('staging with docker cp', () => {
     // THEN
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
-      'asset.115de8f71f52dcd3958586818e7e8e42be04db3039bc14c0501e0d26efbd653a', // this is the bundle dir
-      'asset.115de8f71f52dcd3958586818e7e8e42be04db3039bc14c0501e0d26efbd653a.zip',
+      'asset.812ead30bdacbf9ae61ac91c52e460755a9b072440e703620ab7f8cd09eaa78f', // this is the bundle dir
+      'asset.812ead30bdacbf9ae61ac91c52e460755a9b072440e703620ab7f8cd09eaa78f.zip',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
       'tree.json',
     ]);
-    expect(fs.readdirSync(path.join(assembly.directory, 'asset.115de8f71f52dcd3958586818e7e8e42be04db3039bc14c0501e0d26efbd653a'))).toEqual([
+    expect(fs.readdirSync(path.join(assembly.directory, 'asset.812ead30bdacbf9ae61ac91c52e460755a9b072440e703620ab7f8cd09eaa78f'))).toEqual([
       'test.zip', // bundle dir with "touched" bundled output file
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);

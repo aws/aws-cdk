@@ -469,13 +469,13 @@ test('Custom bundling file copy variant', () => {
     runtime: Runtime.GO_1_X,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
-    fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
+    assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
-      fileCopyVariant: BundlingFileCopyVariant.VOLUME_COPY,
+      assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
     }),
   });
 });
