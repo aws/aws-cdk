@@ -1180,6 +1180,7 @@ top take precedence over those below).
 
 - The `node.setContext()` method
 - The `postCliContext` prop when you create an `App`
+- The CLI via the `--context-file` file
 - The CLI via the `--context` CLI argument
 - The `cdk.json` file via the `context` key:
 - The `cdk.context.json` file:
@@ -1208,6 +1209,18 @@ new App({
   },
 });
 ```
+
+_--context-file_
+
+```json
+{
+  "@aws-cdk/core:newStyleStackSynthesis": true
+}
+```
+```console
+cdk synth --context-file cdk.context.dev.json
+```
+
 
 ```console
 cdk synth --context @aws-cdk/core:newStyleStackSynthesis=true
