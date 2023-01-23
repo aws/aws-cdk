@@ -419,5 +419,5 @@ function isSdkV2Runtime(runtime: Runtime): boolean {
     Runtime.NODEJS_14_X,
     Runtime.NODEJS_16_X,
   ];
-  return sdkV2RuntimeList.includes(runtime);
+  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }
