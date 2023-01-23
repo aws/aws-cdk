@@ -173,17 +173,27 @@ export class ClusterResourceHandler extends ResourceHandler {
         throw new Error(`Cannot obtain cluster ARN with cluster name ${this.clusterName}`);
       }
 
-      if (this.oldProps.tags) {
+      const { oldTags, newTags } = {
+        oldTags: this.oldProps.tags ?? {},
+        newTags: this.newProps.tags ?? {},
+      };
+      const { oldKeys, newKeys } = {
+        oldKeys: Object.keys(oldTags),
+        newKeys: Object.keys(newTags),
+      };
+
+      const removeKeys = oldKeys.filter((v) => !newKeys.includes(v));
+      if (removeKeys.length) {
         await this.eks.untagResource({
           resourceArn: resp.cluster.arn,
-          tagKeys: Object.keys(this.oldProps.tags),
+          tagKeys: removeKeys,
         });
       }
 
-      if (this.newProps.tags && Object.keys(this.newProps.tags).length) {
+      if (newKeys.length) {
         await this.eks.tagResource({
           resourceArn: resp.cluster.arn,
-          tags: this.newProps.tags,
+          tags: newTags,
         });
       }
 
