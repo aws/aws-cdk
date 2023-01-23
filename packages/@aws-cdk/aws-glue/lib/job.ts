@@ -692,7 +692,7 @@ export class Job extends JobBase {
    */
   private checkNoReservedArgs(defaultArguments?: { [key: string]: string }) {
     if (defaultArguments) {
-      const reservedArgs = new Set(['--conf', '--debug', '--mode', '--JOB_NAME']);
+      const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
           throw new Error(`The ${arg} argument is reserved by Glue. Don't set it`);
