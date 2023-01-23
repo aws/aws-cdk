@@ -104,56 +104,7 @@ CloudFormation allows you to create a Stack with a CloudFront distribution in an
 to create an ACM certificate in us-east-1 and reference it in a CloudFront distribution is a
 different region, it is recommended to perform a multi stack deployment.
 
-First create the certificate in `us-east-1`.
-
-```ts
-const east1Stack = new Stack(this, 'East1', {
-  env: {
-    region: 'us-east-1',
-  },
-});
-
-const cert = new acm.Certificate(east1Stack, 'Cert', {
-  domainName: '*.example.com',
-  validation: acm.CertificateValidation.fromDns(PublicHostedZone.fromHostedZoneId(east1Stack, 'Zone', 'ZONE_ID')),
-});
-
-// save the certificate in an SSM parameter so it can be looked up later
-const output = new StringParameter(east1Stack, 'CertificateArn', {
-  // generate a physical name for cross region reference
-  parameterName: `${Names.uniqueResourceName(cert, {})}Parameter`,
-  stringValue: cert.certificateArn,
-});
-```
-
-And then lookup the certificate using a Custom Resource in the CloudFront stack.
-
-```ts
-declare const output: StringParameter;
-
-const east2Stack = new Stack(this, 'East2', {
-  env: {
-    region: 'us-east-2',
-  },
-});
-
-const lookup = new AwsCustomResource(east2Stack, 'CertLookup', {
-  onUpdate: {
-    action: 'getParameter',
-    service: 'SSM',
-    region: 'us-east-1',
-    physicalResourceId: PhysicalResourceId.fromResponse('Parameter.Value'),
-    parameters: {
-      Name: output.parameterName,
-    },
-  },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: ['*'] }),
-});
-
-const lookedUpCert = acm.Certificate.fromCertificateArn(east2Stack, 'Cert', lookup.getResponseField('Parameter.Value'));
-```
-
-For a more native experience you can enable the Stack property `crossRegionReferences`
+Enable the Stack property `crossRegionReferences`
 in order to access the cross stack/region certificate.
 
 > **This feature is currently experimental**
