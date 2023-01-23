@@ -1,5 +1,6 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
+import * as os from 'os';
 import { isAbsolute, join } from 'path';
 import { AssetStaging } from './asset-staging';
 import { FileSystem } from './fs';
@@ -573,21 +574,39 @@ export interface AssetStagingCopyOptions extends BundlingOptions {
   readonly bundleDir: string;
 }
 
-/**
- * Bundles files with bind mount as copy method
- */
-export class AssetStagingBindMount {
-  private options: AssetStagingCopyOptions
+class AssetStagingBase {
+  protected options: AssetStagingCopyOptions
   constructor(options: AssetStagingCopyOptions) {
     this.options = options;
   }
+  /**
+   * Determines a useful default user if not given otherwise
+   */
+  protected getUser() {
+    let user: string;
+    if (this.options.user) {
+      user = this.options.user;
+    } else { // Default to current user
+      const userInfo = os.userInfo();
+      user = userInfo.uid !== -1 // uid is -1 on Windows
+        ? `${userInfo.uid}:${userInfo.gid}`
+        : '1000:1000';
+    }
+    return user;
+  }
+}
+
+/**
+ * Bundles files with bind mount as copy method
+ */
+export class AssetStagingBindMount extends AssetStagingBase {
   /**
    * Bundle files with bind mount as copy method
    */
   public run() {
     this.options.image.run({
       command: this.options.command,
-      user: this.options.user,
+      user: this.getUser(),
       environment: this.options.environment,
       entrypoint: this.options.entrypoint,
       workingDirectory: this.options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
@@ -611,7 +630,7 @@ export class AssetStagingBindMount {
 /**
  * Provides a helper container for copying bundling related files to specific input and output volumes
  */
-export class AssetStagingVolumeCopy {
+export class AssetStagingVolumeCopy extends AssetStagingBase {
   /**
    * Name of the Docker volume that is used for the asset input
    */
@@ -620,24 +639,23 @@ export class AssetStagingVolumeCopy {
    * Name of the Docker volume that is used for the asset output
    */
   private outputVolumeName: string;
-  private options: AssetStagingCopyOptions
   /**
    * Name of the Docker helper container to copy files into the volume
    */
   public copyContainerName: string;
 
   constructor(options: AssetStagingCopyOptions) {
+    super(options);
     const copySuffix = crypto.randomBytes(12).toString('hex');
     this.inputVolumeName = `assetInput${copySuffix}`;
     this.outputVolumeName = `assetOutput${copySuffix}`;
     this.copyContainerName = `copyContainer${copySuffix}`;
-    this.options = options;
   }
 
   /**
    * Creates volumes for asset input and output
    */
-  public prepareVolumes() {
+  private prepareVolumes() {
     dockerExec(['volume', 'create', this.inputVolumeName]);
     dockerExec(['volume', 'create', this.outputVolumeName]);
   }
@@ -645,7 +663,7 @@ export class AssetStagingVolumeCopy {
   /**
    * Removes volumes for asset input and output
    */
-  public cleanVolumes() {
+  private cleanVolumes() {
     dockerExec(['volume', 'rm', this.inputVolumeName]);
     dockerExec(['volume', 'rm', this.outputVolumeName]);
   }
@@ -654,7 +672,7 @@ export class AssetStagingVolumeCopy {
    * runs a helper container that holds volumes and does some preparation tasks
    * @param user The user that will later access these files and needs permissions to do so
    */
-  public startHelperContainer(user: string) {
+  private startHelperContainer(user: string) {
     dockerExec([
       'run',
       '--name', this.copyContainerName,
@@ -670,7 +688,7 @@ export class AssetStagingVolumeCopy {
   /**
    * removes the Docker helper container
    */
-  public cleanHelperContainer() {
+  private cleanHelperContainer() {
     dockerExec(['rm', this.copyContainerName]);
   }
 
@@ -678,7 +696,7 @@ export class AssetStagingVolumeCopy {
    * copy files from the host where this is executed into the input volume
    * @param sourcePath - path to folder where files should be copied from - without trailing slash
    */
-  public copyInputFrom(sourcePath: string) {
+  private copyInputFrom(sourcePath: string) {
     dockerExec(['cp', `${sourcePath}/.`, `${this.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`]);
 
   }
@@ -687,7 +705,7 @@ export class AssetStagingVolumeCopy {
    * copy files from the the output volume to the host where this is executed
    * @param outputPath - path to folder where files should be copied to - without trailing slash
    */
-  public copyOutputTo(outputPath: string) {
+  private copyOutputTo(outputPath: string) {
     dockerExec(['cp', `${this.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, outputPath]);
   }
 
@@ -695,13 +713,14 @@ export class AssetStagingVolumeCopy {
    * Bundle files with VOLUME_COPY method
    */
   public run() {
+    const user = this.getUser();
     this.prepareVolumes();
-    this.startHelperContainer(this.options.user ?? '1000:1000'); // TODO handle user properly
+    this.startHelperContainer(user); // TODO handle user properly
     this.copyInputFrom(this.options.sourcePath);
 
     this.options.image.run({
       command: this.options.command,
-      user: this.options.user,
+      user: user,
       environment: this.options.environment,
       entrypoint: this.options.entrypoint,
       workingDirectory: this.options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,

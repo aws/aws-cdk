@@ -1,5 +1,4 @@
 import * as crypto from 'crypto';
-import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -438,18 +437,7 @@ export class AssetStaging extends Construct {
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
-        let user: string;
-        if (options.user) {
-          user = options.user;
-        } else { // Default to current user
-          const userInfo = os.userInfo();
-          user = userInfo.uid !== -1 // uid is -1 on Windows
-            ? `${userInfo.uid}:${userInfo.gid}`
-            : '1000:1000';
-        }
-
         const assetStagingOptions = {
-          user,
           sourcePath: this.sourcePath,
           bundleDir,
           ...options,

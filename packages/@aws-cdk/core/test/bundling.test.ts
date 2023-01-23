@@ -599,7 +599,7 @@ describe('bundling', () => {
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
-  test('DockerImageBundlingCopyHelper prepareVolumes', () => {
+  test('AssetStagingVolumeCopy bundles with volume copy ', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
@@ -610,10 +610,16 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    const helper = new AssetStagingVolumeCopy();
-    helper.prepareVolumes();
+    const options = {
+      sourcePath: '/tmp/source',
+      bundleDir: '/tmp/output',
+      image: DockerImage.fromRegistry('alpine'),
+      user: '1000',
+    };
+    const helper = new AssetStagingVolumeCopy(options);
+    helper.run();
 
-    // THEN
+    // volume Creation
     expect(spawnSyncStub.calledWith('docker', sinon.match([
       'volume', 'create', sinon.match(/assetInput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
@@ -622,23 +628,7 @@ describe('bundling', () => {
       'volume', 'create', sinon.match(/assetOutput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
-  });
-
-  test('DockerImageBundlingCopyHelper cleanVolumes', () => {
-    // GIVEN
-    sinon.stub(process, 'platform').value('darwin');
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const helper = new AssetStagingVolumeCopy();
-    helper.cleanVolumes();
-
-    // THEN
+    // volume removal
     expect(spawnSyncStub.calledWith('docker', sinon.match([
       'volume', 'rm', sinon.match(/assetInput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
@@ -647,24 +637,7 @@ describe('bundling', () => {
       'volume', 'rm', sinon.match(/assetOutput.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
-  });
-
-  test('DockerImageBundlingCopyHelper startHelperContainer', () => {
-    // GIVEN
-    sinon.stub(process, 'platform').value('darwin');
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const helper = new AssetStagingVolumeCopy();
-    const user = '1000';
-    helper.startHelperContainer(user);
-
-    // THEN
+    // prepare copy container
     expect(spawnSyncStub.calledWith('docker', sinon.match([
       'run',
       '--name', sinon.match(/copyContainer.*/g),
@@ -673,70 +646,21 @@ describe('bundling', () => {
       'alpine',
       'sh',
       '-c',
-      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-  });
 
-  test('DockerImageBundlingCopyHelper cleanHelperContainer', () => {
-    // GIVEN
-    sinon.stub(process, 'platform').value('darwin');
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const helper = new AssetStagingVolumeCopy();
-    helper.cleanHelperContainer();
-
-    // THEN
     expect(spawnSyncStub.calledWith('docker', sinon.match([
       'rm', sinon.match(/copyContainer.*/g),
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-  });
 
-  test('DockerImageBundlingCopyHelper copyInputFrom', () => {
-    // GIVEN
-    sinon.stub(process, 'platform').value('darwin');
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const helper = new AssetStagingVolumeCopy();
-    const dir = '/test/dir';
-    helper.copyInputFrom(dir);
-
-    // THEN
     expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'cp', `${dir}/.`, `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+      'cp', `${options.sourcePath}/.`, `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-  });
 
-  test('DockerImageBundlingCopyHelper copyOutputTo', () => {
-    // GIVEN
-    sinon.stub(process, 'platform').value('darwin');
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    const helper = new AssetStagingVolumeCopy();
-    const dir = '/test/dir';
-    helper.copyOutputTo(dir);
-
-    // THEN
     expect(spawnSyncStub.calledWith('docker', sinon.match([
-      'cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, dir,
+      'cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, options.bundleDir,
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
   });
 
 });
