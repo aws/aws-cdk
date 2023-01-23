@@ -181,6 +181,9 @@ export class Attributions {
     const infos = fetchInfos(this.dependenciesRoot, packages);
 
     for (const dep of this.dependencies) {
+      // skip invalid package.jsons like in the case of minimatch/dist/cjs/package.json
+      if (!dep.name) { continue; }
+
       const key = pkg(dep);
 
       // sometimes the dependency might not exist from fetching information globally,
