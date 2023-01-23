@@ -668,9 +668,8 @@ export class Cluster extends ClusterBase {
    * Adds a role to the cluster
    *
    * @param role the role to add
-   * [disable-awslint:ref-via-interface]
    */
-  public addIamRole(role: iam.Role): void {
+  public addIamRole(role: iam.IRole): void {
     const clusterRoleList = this.cluster.iamRoles ?? [];
 
     if (clusterRoleList.includes(role.roleArn)) {
