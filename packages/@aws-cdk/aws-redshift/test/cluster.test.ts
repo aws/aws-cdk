@@ -630,7 +630,7 @@ describe('IAM role', () => {
     }));
 
     // THEN
-    Template.fromStack(stack).hasResource('Custom::RedshiftAddRole', {});
+    Template.fromStack(stack).hasResource('Custom::ModifyClusterIamRoles', {});
   });
 
   test('throws when adding more than 10 roles to cluster', () => {
