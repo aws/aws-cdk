@@ -15928,7 +15928,7 @@
       "properties": {
         "AllocationStrategy": "The strategy that determines how to allocate the target Spot Instance capacity across the Spot Instance pools specified by the Spot Fleet launch configuration. For more information, see [Allocation strategies for Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-allocation-strategy.html) in the *Amazon EC2 User Guide* .\n\n- **priceCapacityOptimized (recommended)** - Spot Fleet identifies the pools with the highest capacity availability for the number of instances that are launching. This means that we will request Spot Instances from the pools that we believe have the lowest chance of interruption in the near term. Spot Fleet then requests Spot Instances from the lowest priced of these pools.\n- **capacityOptimized** - Spot Fleet identifies the pools with the highest capacity availability for the number of instances that are launching. This means that we will request Spot Instances from the pools that we believe have the lowest chance of interruption in the near term. To give certain instance types a higher chance of launching first, use `capacityOptimizedPrioritized` . Set a priority for each instance type by using the `Priority` parameter for `LaunchTemplateOverrides` . You can assign the same priority to different `LaunchTemplateOverrides` . EC2 implements the priorities on a best-effort basis, but optimizes for capacity first. `capacityOptimizedPrioritized` is supported only if your Spot Fleet uses a launch template. Note that if the `OnDemandAllocationStrategy` is set to `prioritized` , the same priority is applied when fulfilling On-Demand capacity.\n- **diversified** - Spot Fleet requests instances from all of the Spot Instance pools that you specify.\n- **lowestPrice** - Spot Fleet requests instances from the lowest priced Spot Instance pool that has available capacity. If the lowest priced pool doesn't have available capacity, the Spot Instances come from the next lowest priced pool that has available capacity. If a pool runs out of capacity before fulfilling your desired capacity, Spot Fleet will continue to fulfill your request by drawing from the next lowest priced pool. To ensure that your desired capacity is met, you might receive Spot Instances from several pools. Because this strategy only considers instance price and not capacity availability, it might lead to high interruption rates.\n\nDefault: `lowestPrice`",
         "Context": "Reserved.",
-        "ExcessCapacityTerminationPolicy": "Indicates whether running Spot Instances should be terminated if you decrease the target capacity of the Spot Fleet request below the current size of the Spot Fleet.\n\nSupported only for fleets of type `maintain` .",
+        "ExcessCapacityTerminationPolicy": "Indicates whether running instances should be terminated if you decrease the target capacity of the Spot Fleet request below the current size of the Spot Fleet.\n\nSupported only for fleets of type `maintain` .",
         "IamFleetRole": "The Amazon Resource Name (ARN) of an AWS Identity and Access Management (IAM) role that grants the Spot Fleet the permission to request, launch, terminate, and tag instances on your behalf. For more information, see [Spot Fleet Prerequisites](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-requests.html#spot-fleet-prerequisites) in the *Amazon EC2 User Guide for Linux Instances* . Spot Fleet can terminate Spot Instances on your behalf when you cancel its Spot Fleet request or when the Spot Fleet request expires, if you set `TerminateInstancesWithExpiration` .",
         "InstanceInterruptionBehavior": "The behavior when a Spot Instance is interrupted. The default is `terminate` .",
         "InstancePoolsToUseCount": "The number of Spot pools across which to allocate your target Spot capacity. Valid only when Spot *AllocationStrategy* is set to `lowest-price` . Spot Fleet selects the cheapest Spot pools and evenly allocates your target Spot capacity across the number of Spot pools that you specify.\n\nNote that Spot Fleet attempts to draw Spot Instances from the number of pools that you specify on a best effort basis. If a pool runs out of Spot capacity before fulfilling your target capacity, Spot Fleet will continue to fulfill your request by drawing from the next cheapest pool. To ensure that your target capacity is met, you might receive Spot Instances from more than the number of pools that you specified. Similarly, if most of the pools have no Spot capacity, you might receive your full target capacity from fewer than the number of pools that you specified.",
@@ -16728,7 +16728,7 @@
       "properties": {
         "AutoScalingGroupArn": "The Amazon Resource Name (ARN) or short name that identifies the Auto Scaling group.",
         "ManagedScaling": "The managed scaling settings for the Auto Scaling group capacity provider.",
-        "ManagedTerminationProtection": "The managed termination protection setting to use for the Auto Scaling group capacity provider. This determines whether the Auto Scaling group has managed termination protection. The default is disabled.\n\n> When using managed termination protection, managed scaling must also be used otherwise managed termination protection doesn't work. \n\nWhen managed termination protection is enabled, Amazon ECS prevents the Amazon EC2 instances in an Auto Scaling group that contain tasks from being terminated during a scale-in action. The Auto Scaling group and each instance in the Auto Scaling group must have instance protection from scale-in actions enabled as well. For more information, see [Instance Protection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html#instance-protection) in the *AWS Auto Scaling User Guide* .\n\nWhen managed termination protection is disabled, your Amazon EC2 instances aren't protected from termination when the Auto Scaling group scales in."
+        "ManagedTerminationProtection": "The managed termination protection setting to use for the Auto Scaling group capacity provider. This determines whether the Auto Scaling group has managed termination protection. The default is off.\n\n> When using managed termination protection, managed scaling must also be used otherwise managed termination protection doesn't work. \n\nWhen managed termination protection is on, Amazon ECS prevents the Amazon EC2 instances in an Auto Scaling group that contain tasks from being terminated during a scale-in action. The Auto Scaling group and each instance in the Auto Scaling group must have instance protection from scale-in actions enabled as well. For more information, see [Instance Protection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html#instance-protection) in the *AWS Auto Scaling User Guide* .\n\nWhen managed termination protection is off, your Amazon EC2 instances aren't protected from termination when the Auto Scaling group scales in."
       }
     },
     "AWS::ECS::CapacityProvider.ManagedScaling": {
@@ -16795,7 +16795,7 @@
       "attributes": {},
       "description": "The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.",
       "properties": {
-        "CloudWatchEncryptionEnabled": "Determines whether to use encryption on the CloudWatch logs. If not specified, encryption will be disabled.",
+        "CloudWatchEncryptionEnabled": "Determines whether to use encryption on the CloudWatch logs. If not specified, encryption will be off.",
         "CloudWatchLogGroupName": "The name of the CloudWatch log group to send logs to.\n\n> The CloudWatch log group must already be created.",
         "S3BucketName": "The name of the S3 bucket to send logs to.\n\n> The S3 bucket must already be created.",
         "S3EncryptionEnabled": "Determines whether to use encryption on the S3 logs. If not specified, encryption is not used.",
@@ -17052,7 +17052,7 @@
         "Command": "The command that's passed to the container. This parameter maps to `Cmd` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `COMMAND` parameter to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) . For more information, see [https://docs.docker.com/engine/reference/builder/#cmd](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/builder/#cmd) . If there are multiple arguments, each argument is a separated string in the array.",
         "Cpu": "The number of `cpu` units reserved for the container. This parameter maps to `CpuShares` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--cpu-shares` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nThis field is optional for tasks using the Fargate launch type, and the only requirement is that the total amount of CPU reserved for all containers within a task be lower than the task-level `cpu` value.\n\n> You can determine the number of CPU units that are available per EC2 instance type by multiplying the vCPUs listed for that instance type on the [Amazon EC2 Instances](https://docs.aws.amazon.com/ec2/instance-types/) detail page by 1,024. \n\nLinux containers share unallocated CPU units with other containers on the container instance with the same ratio as their allocated amount. For example, if you run a single-container task on a single-core instance type with 512 CPU units specified for that container, and that's the only task running on the container instance, that container could use the full 1,024 CPU unit share at any given time. However, if you launched another copy of the same task on that container instance, each task is guaranteed a minimum of 512 CPU units when needed. Moreover, each container could float to higher CPU usage if the other container was not using it. If both tasks were 100% active all of the time, they would be limited to 512 CPU units.\n\nOn Linux container instances, the Docker daemon on the container instance uses the CPU value to calculate the relative CPU share ratios for running containers. For more information, see [CPU share constraint](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#cpu-share-constraint) in the Docker documentation. The minimum valid CPU share value that the Linux kernel allows is 2. However, the CPU parameter isn't required, and you can use CPU values below 2 in your container definitions. For CPU values below 2 (including null), the behavior varies based on your Amazon ECS container agent version:\n\n- *Agent versions less than or equal to 1.1.0:* Null and zero CPU values are passed to Docker as 0, which Docker then converts to 1,024 CPU shares. CPU values of 1 are passed to Docker as 1, which the Linux kernel converts to two CPU shares.\n- *Agent versions greater than or equal to 1.2.0:* Null, zero, and CPU values of 1 are passed to Docker as 2.\n\nOn Windows container instances, the CPU limit is enforced as an absolute limit, or a quota. Windows containers only have access to the specified amount of CPU that's described in the task definition. A null or zero CPU value is passed to Docker as `0` , which Windows interprets as 1% of one CPU.",
         "DependsOn": "The dependencies defined for container startup and shutdown. A container can contain multiple dependencies. When a dependency is defined for container startup, for container shutdown it is reversed.\n\nFor tasks using the EC2 launch type, the container instances require at least version 1.26.0 of the container agent to turn on container dependencies. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nIf the task definition is used in a blue/green deployment that uses [AWS::CodeDeploy::DeploymentGroup BlueGreenDeploymentConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-bluegreendeploymentconfiguration.html) , the `dependsOn` parameter is not supported. For more information see [Issue #680](https://docs.aws.amazon.com/https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/680) on the on the GitHub website.",
-        "DisableNetworking": "When this parameter is true, networking is disabled within the container. This parameter maps to `NetworkDisabled` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) .\n\n> This parameter is not supported for Windows containers.",
+        "DisableNetworking": "When this parameter is true, networking is off within the container. This parameter maps to `NetworkDisabled` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) .\n\n> This parameter is not supported for Windows containers.",
         "DnsSearchDomains": "A list of DNS search domains that are presented to the container. This parameter maps to `DnsSearch` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--dns-search` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> This parameter is not supported for Windows containers.",
         "DnsServers": "A list of DNS servers that are presented to the container. This parameter maps to `Dns` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--dns` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> This parameter is not supported for Windows containers.",
         "DockerLabels": "A key/value map of labels to add to the container. This parameter maps to `Labels` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--label` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) . This parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version --format '{{.Server.APIVersion}}'`",
@@ -17159,7 +17159,7 @@
         "Command": "A string array representing the command that the container runs to determine if it is healthy. The string array must start with `CMD` to run the command arguments directly, or `CMD-SHELL` to run the command with the container's default shell.\n\nWhen you use the AWS Management Console JSON panel, the AWS Command Line Interface , or the APIs, enclose the list of commands in double quotes and brackets.\n\n`[ \"CMD-SHELL\", \"curl -f http://localhost/ || exit 1\" ]`\n\nYou don't include the double quotes and brackets when you use the AWS Management Console.\n\n`CMD-SHELL, curl -f http://localhost/ || exit 1`\n\nAn exit code of 0 indicates success, and non-zero exit code indicates failure. For more information, see `HealthCheck` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) .",
         "Interval": "The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.",
         "Retries": "The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is 3.",
-        "StartPeriod": "The optional grace period to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You can specify between 0 and 300 seconds. By default, the `startPeriod` is disabled.\n\n> If a health check succeeds within the `startPeriod` , then the container is considered healthy and any subsequent failures count toward the maximum number of retries.",
+        "StartPeriod": "The optional grace period to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You can specify between 0 and 300 seconds. By default, the `startPeriod` is off.\n\n> If a health check succeeds within the `startPeriod` , then the container is considered healthy and any subsequent failures count toward the maximum number of retries.",
         "Timeout": "The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5."
       }
     },
@@ -23650,7 +23650,7 @@
         "DetectorId": "The unique ID of the detector of the GuardDuty account that you want to create an IPSet for.",
         "Format": "The format of the file that contains the IPSet.",
         "Location": "The URI of the file that contains the IPSet.",
-        "Name": "The user-friendly name to identify the IPSet.\n\nAllowed characters are alphanumerics, spaces, hyphens (-), and underscores (_).",
+        "Name": "The user-friendly name to identify the IPSet.\n\nAllowed characters are alphanumeric, whitespace, dash (-), and underscores (_).",
         "Tags": "The tags to be added to a new IP set resource. Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -41609,42 +41609,42 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "The state of the certificate revocation list (CRL) after a read or write operation.",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The revocation record for a certificate, following the x509 v3 standard.",
-        "Enabled": "Indicates whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the CRL.",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
     "AWS::RolesAnywhere::Profile": {
       "attributes": {
-        "ProfileArn": "The ARN of the profile.",
+        "ProfileArn": "",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "A list of tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
       "attributes": {
         "Ref": "`Ref` returns `TrustAnchorId` .",
         "TrustAnchorArn": "The ARN of the trust anchor.",
-        "TrustAnchorId": "The unique primary identifier of the TrustAnchor"
+        "TrustAnchorId": ""
       },
-      "description": "The state of the trust anchor after a read or write operation.",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -41654,15 +41654,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the trust anchor."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
