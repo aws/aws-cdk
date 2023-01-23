@@ -153,6 +153,39 @@ const lookup = new AwsCustomResource(east2Stack, 'CertLookup', {
 const lookedUpCert = acm.Certificate.fromCertificateArn(east2Stack, 'Cert', lookup.getResponseField('Parameter.Value'));
 ```
 
+For a more native experience you can enable the Stack property `crossRegionReferences`
+in order to access the cross stack/region certificate.
+
+> **This feature is currently experimental**
+
+```ts
+const stack1 = new Stack(app, 'Stack1', {
+  env: {
+    region: 'us-east-1',
+  },
+  crossRegionReferences: true,
+});
+const cert = new acm.Certificate(east1Stack, 'Cert', {
+  domainName: '*.example.com',
+  validation: acm.CertificateValidation.fromDns(PublicHostedZone.fromHostedZoneId(east1Stack, 'Zone', 'ZONE_ID')),
+});
+
+const stack2 = new Stack(app, 'Stack2', {
+  env: {
+    region: 'us-east-2',
+  },
+  crossRegionReferences: true,
+});
+
+new cloudfront.Distribution(stack2, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('example.com'),
+  },
+  domainNames: ['dev.example.com'],
+  certificate: cert,
+});
+```
+
 ## Requesting private certificates
 
 AWS Certificate Manager can create [private certificates](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-private.html) issued by [Private Certificate Authority (PCA)](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaWelcome.html). Validation of private certificates is not necessary.
