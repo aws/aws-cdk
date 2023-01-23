@@ -247,7 +247,9 @@ export class Settings {
    * @returns a new Settings object.
    */
   public static fromCommandLineArguments(argv: Arguments): Settings {
-    const context = this.parseStringContextListToObject(argv);
+    const context1 = this.loadLocalContextFile(argv);
+    const context2 = this.parseStringContextListToObject(argv);
+    const context = Object.assign(context1, context2);
     const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
 
     // Determine bundling stacks
@@ -300,6 +302,25 @@ export class Settings {
       ret = ret.merge(setting);
     }
     return ret;
+  }
+
+  private static loadLocalContextFile(argv: Arguments): any {
+    let context: any = {};
+    let fileName = (argv as any).contextFile;
+    if (fileName != null) {
+
+      const expanded = expandHomeDir(fileName);
+      if (fs.pathExistsSync(expanded)) {
+        context = fs.readJsonSync(expanded);
+
+        for (const contextKey of Object.keys(context)) {
+          if (contextKey.startsWith('aws:')) {
+            throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${contextKey} was provided.`);
+          }
+        }
+      }
+    }
+    return context;
   }
 
   private static parseStringContextListToObject(argv: Arguments): any {

@@ -61,6 +61,7 @@ async function parseCommandLineArguments(args: string[]) {
     .usage('Usage: cdk -a <cdk-app> COMMAND')
     .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED WHEN RUNNING APP: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js"). Can also be specified in cdk.json or ~/.cdk.json', requiresArg: true })
     .option('build', { type: 'string', desc: 'Command-line for a pre-synth build' })
+    .option('context-file', { type: 'string', desc: 'Add contextual local json config', requiresArg: true })
     .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
