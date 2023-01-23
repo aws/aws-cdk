@@ -109,7 +109,7 @@
     "decamelize": "^5.0.1",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
-    "json-diff": "^0.10.0",
+    "json-diff": "^1.0.0",
     "minimatch": ">=3.1",
     "p-queue": "^6.6.2",
     "promptly": "^3.2.0",
