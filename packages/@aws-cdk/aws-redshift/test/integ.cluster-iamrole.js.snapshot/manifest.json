@@ -254,6 +254,33 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "Role1ABCC5F0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusteraddroleRoleAA246548": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusteraddroleRoleAA246548",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusteraddroleRoleCustomResourcePolicy9F03684E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusteraddroleRoleCustomResourcePolicy9F03684E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "redshift-iamrole-integ"
