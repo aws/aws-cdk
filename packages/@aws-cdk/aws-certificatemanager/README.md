@@ -116,9 +116,9 @@ const stack1 = new Stack(app, 'Stack1', {
   },
   crossRegionReferences: true,
 });
-const cert = new acm.Certificate(east1Stack, 'Cert', {
+const cert = new acm.Certificate(stack1, 'Cert', {
   domainName: '*.example.com',
-  validation: acm.CertificateValidation.fromDns(PublicHostedZone.fromHostedZoneId(east1Stack, 'Zone', 'ZONE_ID')),
+  validation: acm.CertificateValidation.fromDns(PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'ZONE_ID')),
 });
 
 const stack2 = new Stack(app, 'Stack2', {
