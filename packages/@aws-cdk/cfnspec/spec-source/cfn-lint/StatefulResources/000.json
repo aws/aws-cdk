@@ -18,6 +18,7 @@
     "AWS::Neptune::DBCluster" : {},
     "AWS::Neptune::DBInstance" : {},
     "AWS::OpenSearchService::Domain" : {},
+    "AWS::Organizations::Account" : {},
     "AWS::QLDB::Ledger" : {},
     "AWS::RDS::DBCluster" : {},
     "AWS::RDS::DBInstance" : {},
