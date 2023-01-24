@@ -34,6 +34,26 @@ test('Basic canary properties work', () => {
   });
 });
 
+test('Canary deletion leads to lambda resource deletion property is set', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code'),
+    }),
+    deleteLambdaResourcesOnCanaryDeletion: true,
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    DeleteLambdaResourcesOnCanaryDeletion: true,
+  });
+});
+
 test('Canary can have generated name', () => {
   // GIVEN
   const stack = new Stack();
