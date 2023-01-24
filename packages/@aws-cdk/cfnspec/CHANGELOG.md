@@ -1,3 +1,23 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.HttpApiEvent (__added__)
+* AWS::Serverless::Function.HttpApiFunctionAuth (__added__)
+* AWS::Serverless::Function.RouteSettings (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added HttpApiEvent
+
 # CloudFormation Resource Specification v108.0.0
 
 ## New Resource Types
