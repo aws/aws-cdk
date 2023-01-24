@@ -2,11 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { integTest, randomString, withDefaultFixture } from '../../lib';
 
-const timeout = process.env.CODEBUILD_BUILD_ID ? // if the process is running in CodeBuild
-  3_600_000 : // 1 hour
-  600_000; // 10 minutes
-jest.setTimeout(timeout); // Includes the time to acquire locks
-process.stdout.write(`bootstrapping.integtest.ts: Setting jest time out to ${timeout} ms`);
+jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
 integTest('can bootstrap without execution', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
