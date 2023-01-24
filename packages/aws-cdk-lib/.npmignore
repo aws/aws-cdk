@@ -31,3 +31,9 @@ junit.xml
 
 # exclude source maps as they only work locally
 *.map
+
+# exclude tempory export files
+exports.ts
+exports.d.ts
+exports.js
+exports.js.map

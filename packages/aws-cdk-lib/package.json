@@ -38,6 +38,8 @@
     "stripDeprecated": true,
     "compressAssembly": true,
     "post": [
+      "cp exports.js index.js",
+      "cp exports.js.map index.js.map",
       "node ./scripts/verify-imports-resolve-same.js",
       "node ./scripts/verify-imports-shielded.js",
       "/bin/bash ./scripts/minify-sources.sh"

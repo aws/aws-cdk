@@ -280,7 +280,14 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     './.warnings.jsii.js': './.warnings.jsii.js',
   };
 
+  // We use the index.ts to compile type definitions.
+  // At the very end we replace the compiled index.js file with our fixed version exports.js.
+  // exports.js has the top level submodules exports defined as a getter function,
+  // so they are not automatically loaded when importing from `aws-cdk-lib`.
+  // This improves AWS CDK app performance by ~400ms.
   const indexStatements = new Array<string>();
+  const exportsStatements = new Array<string>();
+
   for (const library of libraries) {
     const libDir = path.join(libRoot, library.shortName);
     const copied = await transformPackage(library, packageJson, libDir, libraries);
@@ -290,13 +297,19 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     }
     if (library.shortName === 'core') {
       indexStatements.push(`export * from './${library.shortName}';`);
+      exportsStatements.unshift(`export * from './${library.shortName}';`);
     } else {
       indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
+      exportsStatements.push(`Object.defineProperty(exports, '${library.shortName.replace(/-/g, '_')}', { get: function () { return require('./${library.shortName}'); } });`);
     }
     copySubmoduleExports(packageJson.exports, library, library.shortName);
   }
 
+  // make the exports.ts file pass linting
+  exportsStatements.unshift('/* eslint-disable @typescript-eslint/no-require-imports */');
+
   await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
+  await fs.writeFile(path.join(libRoot, 'exports.ts'), exportsStatements.join('\n'), { encoding: 'utf8' });
 
   console.log('\t🍺 Success!');
 }
