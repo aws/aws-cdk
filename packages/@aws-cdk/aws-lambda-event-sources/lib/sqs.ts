@@ -46,6 +46,17 @@ export interface SqsEventSourceProps {
    * @default - None
    */
   readonly filters?: Array<{[key: string]: any}>;
+
+  /**
+   * The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency
+   *
+   * Valid Range: Minimum value of 2. Maximum value of 1000.
+   *
+   * @default - No specific limit.
+   */
+  readonly maxConcurrency?: number;
 }
 
 /**
@@ -77,6 +88,7 @@ export class SqsEventSource implements lambda.IEventSource {
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
       maxBatchingWindow: this.props.maxBatchingWindow,
+      maxConcurrency: this.props.maxConcurrency,
       reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,

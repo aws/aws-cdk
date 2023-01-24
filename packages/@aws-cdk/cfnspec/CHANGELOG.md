@@ -1,3 +1,85 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.HttpApiEvent (__added__)
+* AWS::Serverless::Function.HttpApiFunctionAuth (__added__)
+* AWS::Serverless::Function.RouteSettings (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added HttpApiEvent
+
+# CloudFormation Resource Specification v108.0.0
+
+## New Resource Types
+
+* AWS::KendraRanking::ExecutionPlan
+
+## Attribute Changes
+
+* AWS::RDS::DBInstance CertificateDetails.CAIdentifier (__added__)
+* AWS::RDS::DBInstance CertificateDetails.ValidTill (__added__)
+* AWS::SecretsManager::Secret Id (__added__)
+
+## Property Changes
+
+* AWS::BillingConductor::PricingRule Operation (__added__)
+* AWS::BillingConductor::PricingRule UsageType (__added__)
+* AWS::CE::AnomalySubscription ThresholdExpression (__added__)
+* AWS::CE::AnomalySubscription Threshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::MetricStream IncludeLinkedAccountsMetrics (__added__)
+* AWS::EKS::Addon PreserveOnDelete (__added__)
+* AWS::FMS::Policy PolicyDescription (__added__)
+* AWS::FMS::Policy ResourceSetIds (__added__)
+* AWS::FMS::Policy ResourceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBInstance CertificateDetails (__added__)
+* AWS::RDS::DBInstance CertificateRotationRestart (__added__)
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__added__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::RDS::DBInstance.CertificateDetails (__added__)
+* AWS::Transfer::Workflow.DecryptStepDetails (__added__)
+* AWS::Transfer::Workflow.EfsInputFileLocation (__added__)
+* AWS::Transfer::Workflow.S3FileLocation (__added__)
+* AWS::Transfer::Workflow.CopyStepDetails DestinationFileLocation.Type (__changed__)
+  * Old: InputFileLocation
+  * New: S3FileLocation
+* AWS::Transfer::Workflow.InputFileLocation EfsFileLocation (__added__)
+* AWS::Transfer::Workflow.WorkflowStep DecryptStepDetails (__added__)
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api DisableExecuteApiEndpoint (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.KinesisEvent FunctionResponseTypes (__added__)
+
 # CloudFormation Resource Specification v107.0.0
 
 ## New Resource Types
