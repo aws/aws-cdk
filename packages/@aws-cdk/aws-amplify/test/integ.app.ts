@@ -32,7 +32,9 @@ class TestStack extends Stack {
       target: '/target',
     });
 
-    const mainBranch = amplifyApp.addBranch('main');
+    const mainBranch = amplifyApp.addBranch('main', {
+      framework: 'TestFramework',
+    });
     mainBranch.addEnvironment('key', 'value');
   }
 }

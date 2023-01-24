@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "29.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-amplify-codecommit-app.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -83,6 +77,12 @@
         ]
       },
       "displayName": "cdk-amplify-codecommit-app"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

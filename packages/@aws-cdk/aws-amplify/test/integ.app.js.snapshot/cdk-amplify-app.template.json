@@ -99,7 +99,8 @@
       "Name": "key",
       "Value": "value"
      }
-    ]
+    ],
+    "Framework": "TestFramework"
    }
   }
  },
