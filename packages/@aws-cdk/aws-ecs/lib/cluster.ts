@@ -259,7 +259,7 @@ export class Cluster extends Resource implements ICluster {
     }
   }
 
-  private renderExecuteCommandConfiguration() : CfnCluster.ClusterConfigurationProperty {
+  private renderExecuteCommandConfiguration(): CfnCluster.ClusterConfigurationProperty {
     return {
       executeCommandConfiguration: {
         kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
@@ -377,7 +377,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions= {}) {
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
@@ -1072,14 +1072,25 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
   readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
 
   /**
-   * Whether to enable managed scaling
+   * When enabled the scale-in and scale-out actions of the cluster's Auto Scaling Group will be managed for you.
+   * This means your cluster will automatically scale instances based on the load your tasks put on the cluster.
+   * For more information, see [Using Managed Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling) in the ECS Developer Guide.
    *
    * @default true
    */
   readonly enableManagedScaling?: boolean;
 
   /**
-   * Whether to enable managed termination protection
+   * When enabled the Auto Scaling Group will only terminate EC2 instances that no longer have running non-daemon
+   * tasks.
+   *
+   * Scale-in protection will be automatically enabled on instances. When all non-daemon tasks are
+   * stopped on an instance, ECS initiates the scale-in process and turns off scale-in protection for the
+   * instance. The Auto Scaling Group can then terminate the instance. For more information see [Managed termination
+   *  protection](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-termination-protection)
+   * in the ECS Developer Guide.
+   *
+   * Managed scaling must also be enabled.
    *
    * @default true
    */
@@ -1132,7 +1143,7 @@ export class AsgCapacityProvider extends Construct {
   readonly machineImageType: MachineImageType;
 
   /**
-   * Whether managed termination protection is enabled
+   * Whether managed termination protection is enabled.
    */
   readonly enableManagedTerminationProtection?: boolean;
 
@@ -1145,19 +1156,18 @@ export class AsgCapacityProvider extends Construct {
 
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
-
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
-
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
-
     this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
+    this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
 
-    this.enableManagedTerminationProtection =
-      props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
-
+    if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
+      throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }
     if (this.enableManagedTerminationProtection) {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
     }
+
     if (props.capacityProviderName) {
       if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
         throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
@@ -1191,7 +1201,7 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
   private capacityProviders: string[]
   private resource?: CfnClusterCapacityProviderAssociations
 
-  constructor(scope: Construct, id: string, capacityProviders: string[] ) {
+  constructor(scope: Construct, id: string, capacityProviders: string[]) {
     this.scope = scope;
     this.id = id;
     this.capacityProviders = capacityProviders;

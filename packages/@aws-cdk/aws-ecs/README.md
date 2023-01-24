@@ -95,7 +95,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-The following code imports an existing cluster using the ARN which can be used to 
+The following code imports an existing cluster using the ARN which can be used to
 import an Amazon ECS service either EC2 or Fargate.
 
 ```ts
@@ -518,8 +518,8 @@ taskDefinition.addContainer('container', {
   memoryLimitMiB: 1024,
   systemControls: [
     {
-      namespace: 'net',
-      value: 'ipv4.tcp_tw_recycle',
+      namespace: 'net.ipv6.conf.all.default.disable_ipv6',
+      value: '1',
     },
   ],
 });
@@ -547,7 +547,7 @@ taskDefinition.addContainer('windowsservercore', {
 });
 ```
 
-### Using Graviton2 with Fargate  
+### Using Graviton2 with Fargate
 
 AWS Graviton2 supports AWS Fargate. For more details, please see this [blog post](https://aws.amazon.com/blogs/aws/announcing-aws-graviton2-support-for-aws-fargate-get-up-to-40-better-price-performance-for-your-serverless-containers/)
 
@@ -729,7 +729,7 @@ There are two higher-level constructs available which include a load balancer fo
 `Ec2Service` and `FargateService` provide methods to import existing EC2/Fargate services.
 The ARN of the existing service has to be specified to import the service.
 
-Since AWS has changed the [ARN format for ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids), 
+Since AWS has changed the [ARN format for ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids),
 feature flag `@aws-cdk/aws-ecs:arnFormatIncludesClusterName` must be enabled to use the new ARN format.
 The feature flag changes behavior for the entire CDK project. Therefore it is not possible to mix the old and the new format in one CDK project.
 
@@ -1094,11 +1094,25 @@ it in the constructor. Then add the Capacity Provider to the cluster. Finally,
 you can refer to the Provider by its name in your service's or task's Capacity
 Provider strategy.
 
-By default, an Auto Scaling Group Capacity Provider will manage the Auto Scaling
-Group's size for you. It will also enable managed termination protection, in
-order to prevent EC2 Auto Scaling from terminating EC2 instances that have tasks
-running on them. If you want to disable this behavior, set both
-`enableManagedScaling` to and `enableManagedTerminationProtection` to `false`.
+By default, Auto Scaling Group Capacity Providers will manage the scale-in and
+scale-out behavior of the auto scaling group based on the load your tasks put on
+the cluster, this is called [Managed Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling). If you'd
+rather manage scaling behavior yourself set `enableManagedScaling` to `false`.
+
+Additionally [Managed Termination Protection](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-termination-protection) is enabled by default to
+prevent scale-in behavior from terminating instances that have non-daemon tasks
+running on them. This is ideal for tasks that should be ran to completion. If your
+tasks are safe to interrupt then this protection can be disabled by setting
+`enableManagedTerminationProtection` to `false`. Managed Scaling must be enabled for
+Managed Termination Protection to work.
+
+> Currently there is a known [CloudFormation issue](https://github.com/aws/containers-roadmap/issues/631)
+> that prevents CloudFormation from automatically deleting Auto Scaling Groups that
+> have Managed Termination Protection enabled. To work around this issue you could set
+> `enableManagedTerminationProtection` to `false` on the Auto Scaling Group Capacity
+> Provider. If you'd rather not disable Managed Termination Protection, you can [manually
+> delete the Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-process-shutdown.html).
+> For other workarounds, see [this GitHub issue](https://github.com/aws/aws-cdk/issues/18179).
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1236,11 +1250,11 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 
 ## Amazon ECS Service Connect
 
-Service Connect is a managed AWS mesh network offering. It simplifies DNS queries and inter-service communication for 
+Service Connect is a managed AWS mesh network offering. It simplifies DNS queries and inter-service communication for
 ECS Services by allowing customers to set up simple DNS aliases for their services, which are accessible to all
 services that have enabled Service Connect.
 
-To enable Service Connect, you must have created a CloudMap namespace. The CDK can infer your cluster's default CloudMap namespace, 
+To enable Service Connect, you must have created a CloudMap namespace. The CDK can infer your cluster's default CloudMap namespace,
 or you can specify a custom namespace. You must also have created a named port mapping on at least one container in your Task Definition.
 
 ```ts
@@ -1274,7 +1288,7 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
-Service Connect-enabled services may now reach this service at `http-api:80`. Traffic to this endpoint will 
+Service Connect-enabled services may now reach this service at `http-api:80`. Traffic to this endpoint will
 be routed to the container's port 8080.
 
 To opt a service into using service connect without advertising a port, simply call the 'enableServiceConnect' method on an initialized service.

@@ -2037,7 +2037,7 @@ describe('cluster', () => {
 
   });
 
-  test('can disable managed scaling for ASG capacity provider', () => {
+  test('can disable Managed Scaling and Managed Termination Protection for ASG capacity provider', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -2052,6 +2052,7 @@ describe('cluster', () => {
     new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
       enableManagedScaling: false,
+      enableManagedTerminationProtection: false,
     });
 
     // THEN
@@ -2061,10 +2062,82 @@ describe('cluster', () => {
           Ref: 'asgASG4D014670',
         },
         ManagedScaling: Match.absent(),
-        ManagedTerminationProtection: 'ENABLED',
+        ManagedTerminationProtection: 'DISABLED',
       },
     });
+  });
 
+  test('can disable Managed Termination Protection for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
+        ManagedTerminationProtection: 'DISABLED',
+      },
+    });
+  });
+
+  test('throws error, when ASG capacity provider has Managed Scaling disabled and Managed Termination Protection is undefined (defaults to true)', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // THEN
+    expect(() => {
+      new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+        enableManagedScaling: false,
+      });
+    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+  });
+
+  test('throws error, when Managed Scaling is disabled and Managed Termination Protection is enabled.', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // THEN
+    expect(() => {
+      new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+        enableManagedScaling: false,
+        enableManagedTerminationProtection: true,
+      });
+    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('capacity provider enables ASG new instance scale-in protection by default', () => {
@@ -2599,4 +2672,3 @@ describe('Accessing container instance role', function () {
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
 });
-

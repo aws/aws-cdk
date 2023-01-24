@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.61.1](https://github.com/aws/aws-cdk/compare/v2.61.0...v2.61.1) (2023-01-20)
+
+
+### Bug Fixes
+
+* **lambda:** lambda functions that use triggers error when invoked ([#23728](https://github.com/aws/aws-cdk/issues/23728)) ([5fd9135](https://github.com/aws/aws-cdk/commit/5fd91352e4b625e003ee359563850852a50112ec)), closes [#23062](https://github.com/aws/aws-cdk/issues/23062) [#23062](https://github.com/aws/aws-cdk/issues/23062) [#23407](https://github.com/aws/aws-cdk/issues/23407) [#23407](https://github.com/aws/aws-cdk/issues/23407)
+
+## [2.61.0](https://github.com/aws/aws-cdk/compare/v2.60.0...v2.61.0) (2023-01-18)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v107.0.0 ([#23698](https://github.com/aws/aws-cdk/issues/23698)) ([aca8a25](https://github.com/aws/aws-cdk/commit/aca8a256dcaf89b53f7af4f308b2f23e2e766902))
+* **core:** stack synthesizers can be shared between stacks ([#23571](https://github.com/aws/aws-cdk/issues/23571)) ([0ce19f0](https://github.com/aws/aws-cdk/commit/0ce19f0e1217a4a41a3a9c27049ab73c7fbc320d))
+* **logs:** add unit to metric filter ([#23608](https://github.com/aws/aws-cdk/issues/23608)) ([7cbe8ac](https://github.com/aws/aws-cdk/commit/7cbe8ac9286e5f7c3efb7f75aa859bf6b3bffecf))
+* **opensearch:** add support for latest amazon opensearch service 2.3 ([#22943](https://github.com/aws/aws-cdk/issues/22943)) ([0303d6f](https://github.com/aws/aws-cdk/commit/0303d6f7a71d2c70443df4433f0ff7554bcc4e56))
+* **pipeline:** enable key rotation ([#23620](https://github.com/aws/aws-cdk/issues/23620)) ([29d7336](https://github.com/aws/aws-cdk/commit/29d733677c4962199a848933a7415b47abb23a2f))
+* **route53-patterns:** use `Certificate` as the default certificate (under feature flag) ([#23575](https://github.com/aws/aws-cdk/issues/23575)) ([77709c8](https://github.com/aws/aws-cdk/commit/77709c8328fe664c1fca50223c8e64325cb70461))
+
+
+### Bug Fixes
+
+* **aws-s3:** log delivery may be incorrectly configured when target bucket is imported ([#23552](https://github.com/aws/aws-cdk/issues/23552)) ([41327d8](https://github.com/aws/aws-cdk/commit/41327d8e815b80c9148bd33751fdf1b70c3bc9cd)), closes [#23547](https://github.com/aws/aws-cdk/issues/23547) [#23588](https://github.com/aws/aws-cdk/issues/23588)
+* **cdk-assets:** concurrent asset builds can leave a corrupted archive ([#23677](https://github.com/aws/aws-cdk/issues/23677)) ([18e0481](https://github.com/aws/aws-cdk/commit/18e0481a3bbcb92bd22ce4e83d4f02e03e484307)), closes [#23290](https://github.com/aws/aws-cdk/issues/23290)
+* **cli:** can not assume role from 2-level SSO ([#23702](https://github.com/aws/aws-cdk/issues/23702)) ([c3a345b](https://github.com/aws/aws-cdk/commit/c3a345be0eeb26e1b410d68643740f0aea8af4d7)), closes [#23520](https://github.com/aws/aws-cdk/issues/23520)
+* **cloudtrail:** Trail fails during resource creation due to invalid template properties when management events are 'None'  ([#23569](https://github.com/aws/aws-cdk/issues/23569)) ([15ced88](https://github.com/aws/aws-cdk/commit/15ced888718531ddc59402f0c886c9b4f1fea67b)), closes [#16387](https://github.com/aws/aws-cdk/issues/16387) [#15488](https://github.com/aws/aws-cdk/issues/15488)
+* **lambda:** ever-changing Version hash with LayerVersion from tokens ([#23629](https://github.com/aws/aws-cdk/issues/23629)) ([88fc62d](https://github.com/aws/aws-cdk/commit/88fc62d215d8c4aa3a4c423a06571ec45b51cec6))
+* **pipelines:** cross-stack step dependencies have wrong name ([#23594](https://github.com/aws/aws-cdk/issues/23594)) ([0d8142b](https://github.com/aws/aws-cdk/commit/0d8142bf6860cbebab9c1704f6ebf59b17a5704f)), closes [#21843](https://github.com/aws/aws-cdk/issues/21843)
+* **servicecatalog:** incorrect objectkey produced from asset relative… ([#23580](https://github.com/aws/aws-cdk/issues/23580)) ([b4a6120](https://github.com/aws/aws-cdk/commit/b4a6120af01b46bc688eebb8f8bb6fbde7f481fe)), closes [#23560](https://github.com/aws/aws-cdk/issues/23560)
+* **stepfunctions-tasks:** fix IAM policy statements for step functions API calls ([#22959](https://github.com/aws/aws-cdk/issues/22959)) ([dce662c](https://github.com/aws/aws-cdk/commit/dce662cae6eb493770d3c6f700c92a0b6c235195))
+
 ## [2.60.0](https://github.com/aws/aws-cdk/compare/v2.59.0...v2.60.0) (2023-01-11)
 
 
