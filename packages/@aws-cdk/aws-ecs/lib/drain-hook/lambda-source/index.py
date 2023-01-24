@@ -1,6 +1,7 @@
 import boto3, json, os, time
 
 ecs = boto3.client('ecs')
+sns = boto3.client('sns')
 autoscaling = boto3.client('autoscaling')
 
 
@@ -25,17 +26,23 @@ def lambda_handler(event, context):
   if task_arns:
     print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))
 
-  while has_tasks(cluster, instance_arn, task_arns):
-    time.sleep(10)
-
-  try:
-    print('Terminating instance %s' % instance_id)
-    autoscaling.complete_lifecycle_action(
-        LifecycleActionResult='CONTINUE',
-        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))
-  except Exception as e:
-    # Lifecycle action may have already completed.
-    print(str(e))
+  if has_tasks(cluster, instance_arn, task_arns):
+    time.sleep(5)
+    sns_resp = sns.publish(
+      TopicArn=snsTopicArn,
+      Message=json.dumps(lifecycle_event),
+      Subject='Publishing SNS msg to invoke Lambda again.'
+    )
+    print('Posted msg %s to SNS topic.' % (sns_resp['MessageId']))
+  else:
+    try:
+      print('Terminating instance %s' % instance_id)
+      autoscaling.complete_lifecycle_action(
+          LifecycleActionResult='CONTINUE',
+          **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))
+    except Exception as e:
+      # Lifecycle action may have already completed.
+      print(str(e))
 
 
 def container_instance_arn(cluster, instance_id):
