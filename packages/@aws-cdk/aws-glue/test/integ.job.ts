@@ -38,8 +38,9 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
     timeout: cdk.Duration.minutes(5),
     notifyDelayAfter: cdk.Duration.minutes(1),
     defaultArguments: {
-      arg1: 'value1',
-      arg2: 'value2',
+      'arg1': 'value1',
+      'arg2': 'value2',
+      '--conf': 'valueConf',
     },
     sparkUI: {
       enabled: true,
