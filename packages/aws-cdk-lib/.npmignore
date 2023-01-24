@@ -33,7 +33,6 @@ junit.xml
 *.map
 
 # exclude tempory export files
-exports.ts
 exports.d.ts
 exports.js
 exports.js.map
