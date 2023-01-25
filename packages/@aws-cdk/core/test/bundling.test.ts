@@ -598,5 +598,4 @@ describe('bundling', () => {
       'cool', 'command',
     ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
-
 });
