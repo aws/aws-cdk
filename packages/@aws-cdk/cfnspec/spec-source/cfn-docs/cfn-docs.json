@@ -15928,7 +15928,7 @@
       "properties": {
         "AllocationStrategy": "The strategy that determines how to allocate the target Spot Instance capacity across the Spot Instance pools specified by the Spot Fleet launch configuration. For more information, see [Allocation strategies for Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-allocation-strategy.html) in the *Amazon EC2 User Guide* .\n\n- **priceCapacityOptimized (recommended)** - Spot Fleet identifies the pools with the highest capacity availability for the number of instances that are launching. This means that we will request Spot Instances from the pools that we believe have the lowest chance of interruption in the near term. Spot Fleet then requests Spot Instances from the lowest priced of these pools.\n- **capacityOptimized** - Spot Fleet identifies the pools with the highest capacity availability for the number of instances that are launching. This means that we will request Spot Instances from the pools that we believe have the lowest chance of interruption in the near term. To give certain instance types a higher chance of launching first, use `capacityOptimizedPrioritized` . Set a priority for each instance type by using the `Priority` parameter for `LaunchTemplateOverrides` . You can assign the same priority to different `LaunchTemplateOverrides` . EC2 implements the priorities on a best-effort basis, but optimizes for capacity first. `capacityOptimizedPrioritized` is supported only if your Spot Fleet uses a launch template. Note that if the `OnDemandAllocationStrategy` is set to `prioritized` , the same priority is applied when fulfilling On-Demand capacity.\n- **diversified** - Spot Fleet requests instances from all of the Spot Instance pools that you specify.\n- **lowestPrice** - Spot Fleet requests instances from the lowest priced Spot Instance pool that has available capacity. If the lowest priced pool doesn't have available capacity, the Spot Instances come from the next lowest priced pool that has available capacity. If a pool runs out of capacity before fulfilling your desired capacity, Spot Fleet will continue to fulfill your request by drawing from the next lowest priced pool. To ensure that your desired capacity is met, you might receive Spot Instances from several pools. Because this strategy only considers instance price and not capacity availability, it might lead to high interruption rates.\n\nDefault: `lowestPrice`",
         "Context": "Reserved.",
-        "ExcessCapacityTerminationPolicy": "Indicates whether running instances should be terminated if you decrease the target capacity of the Spot Fleet request below the current size of the Spot Fleet.\n\nSupported only for fleets of type `maintain` .",
+        "ExcessCapacityTerminationPolicy": "Indicates whether running Spot Instances should be terminated if you decrease the target capacity of the Spot Fleet request below the current size of the Spot Fleet.\n\nSupported only for fleets of type `maintain` .",
         "IamFleetRole": "The Amazon Resource Name (ARN) of an AWS Identity and Access Management (IAM) role that grants the Spot Fleet the permission to request, launch, terminate, and tag instances on your behalf. For more information, see [Spot Fleet Prerequisites](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-requests.html#spot-fleet-prerequisites) in the *Amazon EC2 User Guide for Linux Instances* . Spot Fleet can terminate Spot Instances on your behalf when you cancel its Spot Fleet request or when the Spot Fleet request expires, if you set `TerminateInstancesWithExpiration` .",
         "InstanceInterruptionBehavior": "The behavior when a Spot Instance is interrupted. The default is `terminate` .",
         "InstancePoolsToUseCount": "The number of Spot pools across which to allocate your target Spot capacity. Valid only when Spot *AllocationStrategy* is set to `lowest-price` . Spot Fleet selects the cheapest Spot pools and evenly allocates your target Spot capacity across the number of Spot pools that you specify.\n\nNote that Spot Fleet attempts to draw Spot Instances from the number of pools that you specify on a best effort basis. If a pool runs out of Spot capacity before fulfilling your target capacity, Spot Fleet will continue to fulfill your request by drawing from the next cheapest pool. To ensure that your target capacity is met, you might receive Spot Instances from more than the number of pools that you specified. Similarly, if most of the pools have no Spot capacity, you might receive your full target capacity from fewer than the number of pools that you specified.",
@@ -27217,24 +27217,6 @@
         "ProjectDescription": "A description for the project.",
         "ProjectName": "A friendly name for the project.",
         "Tags": "A list of key-value pairs that contain metadata for the project. For more information, see [Tagging your AWS IoT SiteWise resources](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/tag-resources.html) in the *AWS IoT SiteWise User Guide* ."
-      }
-    },
-    "AWS::IoTThingsGraph::FlowTemplate": {
-      "attributes": {
-        "Ref": "When you pass the logical ID of this resource to the intrinsic Ref function, Ref returns the URN of the workflow template, such as `urn:tdm:us-west-2/123456789101/default:workflow:flowname` ."
-      },
-      "description": "Represents a workflow template. Workflows can be created only in the user's namespace. (The public namespace contains only entities.) The workflow can contain only entities in the specified namespace. The workflow is validated against the entities in the latest version of the user's namespace unless another namespace version is specified in the request.",
-      "properties": {
-        "CompatibleNamespaceVersion": "The version of the user's namespace against which the workflow was validated. Use this value in your system instance.",
-        "Definition": "A workflow's definition document."
-      }
-    },
-    "AWS::IoTThingsGraph::FlowTemplate.DefinitionDocument": {
-      "attributes": {},
-      "description": "A document that defines an entity.",
-      "properties": {
-        "Language": "The language used to define the entity. `GRAPHQL` is the only valid value.",
-        "Text": "The GraphQL text that defines the entity."
       }
     },
     "AWS::IoTTwinMaker::ComponentType": {
