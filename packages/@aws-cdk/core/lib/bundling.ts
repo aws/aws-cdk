@@ -163,7 +163,7 @@ export interface ILocalBundling {
  */
 export enum BundlingFileCopyVariant {
   /**
-   * Creates temporary volumes and docker containers
+   * Creates temporary volumes and containers to copy files from the host to the bundling container and back.
    * This is slower, but works also in more complex situations with remote or shared docker sockets.
    */
   VOLUME_COPY = 'VOLUME_COPY',
