@@ -110,6 +110,27 @@ const schedule = synthetics.Schedule.cron({
 
 If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
 
+
+### Canary DeleteLambdaResourcesOnCanaryDeletion
+
+You can specify whether the AWS CloudFormation is to also delete the Lambda functions and layers used by this canary, when the canary is deleted.
+
+This can be provisioned by setting the `DeleteLambdaResourcesOnCanaryDeletion` property to `true` when we define the canary.
+
+```ts
+const canary = new synthetics.Canary(stack, 'Canary', {
+  test: synthetics.Test.custom({
+    handler: 'index.handler',
+    code: synthetics.Code.fromInline('/* Synthetics handler code'),
+  }),
+  deleteLambdaResourcesOnCanaryDeletion: true,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+});
+```
+
+Even when set to `true` there are resources such as S3 buckets/logs that do NOT get deleted and are to be deleted manually.
+
+
 ### Configuring the Canary Script
 
 To configure the script the canary executes, use the `test` property. The `test` property accepts a `Test` instance that can be initialized by the `Test` class static methods. Currently, the only implemented method is `Test.custom()`, which allows you to bring your own code. In the future, other methods will be added. `Test.custom()` accepts `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf.

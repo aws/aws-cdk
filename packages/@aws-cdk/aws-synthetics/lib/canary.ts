@@ -206,7 +206,7 @@ export interface CanaryProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Whether or not the lambda resources are to be deleted when the canary is deleted
+   * Whether or not to delete the lambda resources when the canary is deleted
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion
    *
