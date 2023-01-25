@@ -10,7 +10,6 @@ echo "$@" > /tmp/docker-stub-cp.input
 if echo "$@" | grep "cp"| grep "/asset-output"; then
   outdir=$(echo "$@" | grep cp | grep "/asset-output" | xargs -n1 | grep "cdk.out" | head -n1 | cut -d":" -f1)
   if [ -n  "$outdir" ]; then
-    echo "${outdir}" >> /tmp/docker-stub.input.concat.output.txt
     touch "${outdir}/test.zip"
   fi
 fi

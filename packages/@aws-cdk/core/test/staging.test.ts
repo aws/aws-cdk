@@ -11,6 +11,9 @@ import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, Bundlin
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
 
+const STUB_INPUT_CP_FILE = '/tmp/docker-stub-cp.input';
+const STUB_INPUT_CP_CONCAT_FILE = '/tmp/docker-stub-cp.input.concat';
+
 enum DockerStubCommand {
   SUCCESS = 'DOCKER_STUB_SUCCESS',
   FAIL = 'DOCKER_STUB_FAIL',
@@ -1272,11 +1275,11 @@ describe('staging with docker cp', () => {
 
   afterEach(() => {
     AssetStaging.clearAssetHashCache();
-    if (fs.existsSync(STUB_INPUT_FILE)) {
-      fs.unlinkSync(STUB_INPUT_FILE);
+    if (fs.existsSync(STUB_INPUT_CP_FILE)) {
+      fs.unlinkSync(STUB_INPUT_CP_FILE);
     }
-    if (fs.existsSync(STUB_INPUT_CONCAT_FILE)) {
-      fs.unlinkSync(STUB_INPUT_CONCAT_FILE);
+    if (fs.existsSync(STUB_INPUT_CP_CONCAT_FILE)) {
+      fs.unlinkSync(STUB_INPUT_CP_CONCAT_FILE);
     }
     sinon.restore();
   });
@@ -1312,7 +1315,7 @@ describe('staging with docker cp', () => {
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(true);
-    const dockerCalls: string[] = readDockerStubInputConcat().split(/\r?\n/);
+    const dockerCalls: string[] = readDockerStubInputConcat(STUB_INPUT_CP_CONCAT_FILE).split(/\r?\n/);
     expect(dockerCalls).toEqual(expect.arrayContaining([
       expect.stringContaining('volume create assetInput'),
       expect.stringContaining('volume create assetOutput'),
@@ -1337,10 +1340,10 @@ function readAndCleanDockerStubInput(file: string) {
 }
 
 // Last docker input since last teardown
-function readDockerStubInput() {
-  return readAndCleanDockerStubInput(STUB_INPUT_FILE);
+function readDockerStubInput(file?: string) {
+  return readAndCleanDockerStubInput(file ?? STUB_INPUT_FILE);
 }
 // Concatenated docker inputs since last teardown
-function readDockerStubInputConcat() {
-  return readAndCleanDockerStubInput(STUB_INPUT_CONCAT_FILE);
+function readDockerStubInputConcat(file?: string) {
+  return readAndCleanDockerStubInput(file ?? STUB_INPUT_CONCAT_FILE);
 }
