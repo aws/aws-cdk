@@ -125,7 +125,7 @@ const canary = new synthetics.Canary(stack, 'Canary', {
     handler: 'index.handler',
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
-  deleteLambdaResourcesOnCanaryDeletion: true,
+  enableAutoDeleteLambdas: true,
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
 });
 ```
