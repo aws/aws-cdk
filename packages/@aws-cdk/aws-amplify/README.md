@@ -236,7 +236,8 @@ const amplifyApp = new amplify.App(this, 'App', {
 Use the `framework` property on `BranchOptions` to pass in an optional value for the framework:
 
 ```ts
-const amplifyApp = new amplify.App(this, 'MyApp', {
+declare const amplifyApp: amplify.App;
+amplifyApp.addBranch('feature/next', {
   framework: 'ExampleFramework',
 });
 ```

@@ -4,6 +4,14 @@
     "id": "App",
     "path": "",
     "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.92"
+        }
+      },
       "cdk-amplify-app-asset-deployment": {
         "id": "cdk-amplify-app-asset-deployment",
         "path": "cdk-amplify-app-asset-deployment",
@@ -16,14 +24,6 @@
                 "id": "Role",
                 "path": "cdk-amplify-app-asset-deployment/App/Role",
                 "children": {
-                  "ImportRole": {
-                    "id": "ImportRole",
-                    "path": "cdk-amplify-app-asset-deployment/App/Role/ImportRole",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-amplify-app-asset-deployment/App/Role/Resource",
@@ -80,23 +80,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "cdk-amplify-app-asset-deployment/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "cdk-amplify-app-asset-deployment/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "@aws-cdk/aws-amplify.App",
               "version": "0.0.0"
             }
           }
@@ -104,14 +88,6 @@
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
-        }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.209"
         }
       }
     },
