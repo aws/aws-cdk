@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR } from '../../lib';
 
-jest.setTimeout(60 * 60_000); // Includes the time to acquire locks
+jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
 describe('ci', () => {
   integTest('output to stderr', withDefaultFixture(async (fixture) => {
