@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.62.0](https://github.com/aws/aws-cdk/compare/v2.61.1...v2.62.0) (2023-01-25)
+
+
+### Features
+
+* **certificatemanager:** deprecate DnsValidatedCertificate ([#21982](https://github.com/aws/aws-cdk/issues/21982)) ([64bfbf9](https://github.com/aws/aws-cdk/commit/64bfbf9b981a32a4db1b07476144d280d6eced32)), closes [#8934](https://github.com/aws/aws-cdk/issues/8934) [#2914](https://github.com/aws/aws-cdk/issues/2914) [#20698](https://github.com/aws/aws-cdk/issues/20698) [#17349](https://github.com/aws/aws-cdk/issues/17349) [#15217](https://github.com/aws/aws-cdk/issues/15217) [#14519](https://github.com/aws/aws-cdk/issues/14519)
+* **cfnspec:** cloudformation spec v107.0.0 ([#23750](https://github.com/aws/aws-cdk/issues/23750)) ([3dc40b4](https://github.com/aws/aws-cdk/commit/3dc40b4c9b660a8d50bc07646fa63ecbee6df958))
+* **cfnspec:** cloudformation spec v108.0.0 ([#23769](https://github.com/aws/aws-cdk/issues/23769)) ([ff0070d](https://github.com/aws/aws-cdk/commit/ff0070d61f18a6cdd77b027a7f6cd2baf976c3c9))
+* **cfnspec:** cloudformation spec v108.0.0 ([#23808](https://github.com/aws/aws-cdk/issues/23808)) ([858ff23](https://github.com/aws/aws-cdk/commit/858ff2363e110b355c2e9823664d087af991bb55))
+* **lambda-event-sources:** events source mapping support for sqs max concurrency ([#23714](https://github.com/aws/aws-cdk/issues/23714)) ([6dcec2d](https://github.com/aws/aws-cdk/commit/6dcec2d00363a286906dab19647816ddfd58f33a))
+* **logs:** add grantRead function to LogGroup ([#23280](https://github.com/aws/aws-cdk/issues/23280)) ([42ef507](https://github.com/aws/aws-cdk/commit/42ef50706f60a7f452698166fa2d9c93ca54bc0d))
+
+
+### Bug Fixes
+
+* **appsync:** Populate construct name dynamically for lambda authorizer permission in appsync ([#23777](https://github.com/aws/aws-cdk/issues/23777)) ([92f02e9](https://github.com/aws/aws-cdk/commit/92f02e92905252ee7e4fff32751e76da5052b14b))
+* importing `aws-cdk-lib` is slow ([#23813](https://github.com/aws/aws-cdk/issues/23813)) ([8aaeffb](https://github.com/aws/aws-cdk/commit/8aaeffbbb86e8a80cb87fa3314880bd7c2a893be))
+* **bootstrap:** bootstrap stack version was not bumped during previous update ([#23669](https://github.com/aws/aws-cdk/issues/23669)) ([f56cb70](https://github.com/aws/aws-cdk/commit/f56cb7004cc4f1017ded4b6a0593a744e8f6271e))
+* **cfnspec:** incorrectly handling array result from jsondiff ([#23795](https://github.com/aws/aws-cdk/issues/23795)) ([4a701f1](https://github.com/aws/aws-cdk/commit/4a701f1668177a509f1e2f7f3c5d2249070ec666)), closes [/github.com/andreyvit/json-diff/blob/35582a9d19f8b0b2773360d67937e57ce2866781/test/diff_test.coffee#L78](https://github.com/aws//github.com/andreyvit/json-diff/blob/35582a9d19f8b0b2773360d67937e57ce2866781/test/diff_test.coffee/issues/L78)
+* **cli:** only load sourcemap when `--debug` flag is enabled ([#23752](https://github.com/aws/aws-cdk/issues/23752)) ([94102c1](https://github.com/aws/aws-cdk/commit/94102c1210a4d7906a03c81a1845466c988c06e7))
+* **codeguruprofiler:** imported profiling group environment configured with stack region ([#23568](https://github.com/aws/aws-cdk/issues/23568)) ([8bfa695](https://github.com/aws/aws-cdk/commit/8bfa695881f6b78a052ca5276a63d78c1a8c0dda))
+* **lambda:** lambda functions that use triggers error when invoked ([#23728](https://github.com/aws/aws-cdk/issues/23728)) ([37974ed](https://github.com/aws/aws-cdk/commit/37974ed91fda77a31aa99da75c1d7fb301135a5f)), closes [#23062](https://github.com/aws/aws-cdk/issues/23062) [#23062](https://github.com/aws/aws-cdk/issues/23062) [#23407](https://github.com/aws/aws-cdk/issues/23407) [#23407](https://github.com/aws/aws-cdk/issues/23407)
+* **lambda-nodejs:** aws-sdk version detection broken for self-defined runtimes ([#23416](https://github.com/aws/aws-cdk/issues/23416)) ([8a7dffd](https://github.com/aws/aws-cdk/commit/8a7dffdd056ad6e4e1609deb43ba790a020b4997)), closes [#22989](https://github.com/aws/aws-cdk/issues/22989) [/github.com/aws/aws-cdk/pull/22989/files#diff-cd86fbd4f2bbefcbcffc2143adccabafa1debe5981edbcdfcc766b5a705fe770R371-R383](https://github.com/aws//github.com/aws/aws-cdk/pull/22989/files/issues/diff-cd86fbd4f2bbefcbcffc2143adccabafa1debe5981edbcdfcc766b5a705fe770R371-R383)
+
 ## [2.61.1](https://github.com/aws/aws-cdk/compare/v2.61.0...v2.61.1) (2023-01-20)
 
 
