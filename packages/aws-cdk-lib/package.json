@@ -252,6 +252,7 @@
     "@aws-cdk/aws-ivs": "0.0.0",
     "@aws-cdk/aws-kafkaconnect": "0.0.0",
     "@aws-cdk/aws-kendra": "0.0.0",
+    "@aws-cdk/aws-kendraranking": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics-flink": "0.0.0",
