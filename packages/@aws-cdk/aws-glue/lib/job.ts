@@ -736,6 +736,8 @@ export class Job extends JobBase {
   private setupSparkUI(executable: JobExecutableConfig, role: iam.IRole, props: SparkUIProps) {
     if (JobType.PYTHON_SHELL === executable.type) {
       throw new Error('Spark UI is not available for JobType.PYTHON_SHELL jobs');
+    } else if (JobType.RAY === executable.type) {
+      throw new Error('Spark UI is not available for JobType.RAY jobs');
     }
 
     const bucket = props.bucket ?? new s3.Bucket(this, 'SparkUIBucket');

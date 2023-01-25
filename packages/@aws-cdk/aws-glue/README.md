@@ -100,7 +100,7 @@ new glue.Job(stack, 'RayJob', {
   executable: glue.JobExecutable.pythonRay({
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
-    script,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
   }),
   workerType: glue.WorkerType.Z_2X,
   workerCount: 2,
