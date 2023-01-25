@@ -41,7 +41,7 @@ new synthetics.Canary(stack, 'MyCanaryOne', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
-  deleteLambdaResourcesOnCanaryDeletion: true,
+  enableAutoDeleteLambdas: true,
 });
 
 new synthetics.Canary(stack, 'MyCanaryTwo', {

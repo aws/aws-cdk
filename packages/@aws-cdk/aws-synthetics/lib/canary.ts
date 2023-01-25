@@ -212,7 +212,7 @@ export interface CanaryProps {
    *
    * @default false
    */
-  readonly deleteLambdaResourcesOnCanaryDeletion?: boolean;
+  readonly enableAutoDeleteLambdas?: boolean;
 }
 
 /**
@@ -290,7 +290,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       code: this.createCode(props),
       runConfig: this.createRunConfig(props),
       vpcConfig: this.createVpcConfig(props),
-      deleteLambdaResourcesOnCanaryDeletion: props.deleteLambdaResourcesOnCanaryDeletion,
+      deleteLambdaResourcesOnCanaryDeletion: props.enableAutoDeleteLambdas,
     });
 
     this.canaryId = resource.attrId;

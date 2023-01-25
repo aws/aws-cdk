@@ -118,6 +118,8 @@ You can specify whether the AWS CloudFormation is to also delete the Lambda func
 This can be provisioned by setting the `DeleteLambdaResourcesOnCanaryDeletion` property to `true` when we define the canary.
 
 ```ts
+const stack = new Stack();
+
 const canary = new synthetics.Canary(stack, 'Canary', {
   test: synthetics.Test.custom({
     handler: 'index.handler',
