@@ -1,11 +1,12 @@
 import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { HostedZone } from '@aws-cdk/aws-route53';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
 import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '@aws-cdk/cx-api';
 import { HttpsRedirect } from '../lib';
 
-test('create HTTPS redirect', () => {
+testDeprecated('create HTTPS redirect', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });
@@ -63,7 +64,7 @@ test('create HTTPS redirect', () => {
   });
 });
 
-test('create HTTPS redirect for apex', () => {
+testDeprecated('create HTTPS redirect for apex', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });
@@ -96,7 +97,7 @@ test('create HTTPS redirect for apex', () => {
   });
 });
 
-test('create HTTPS redirect with existing cert', () => {
+testDeprecated('create HTTPS redirect with existing cert', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });

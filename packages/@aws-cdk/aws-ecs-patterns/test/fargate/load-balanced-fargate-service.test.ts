@@ -1,6 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager';
+import { Certificate, CertificateValidation } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -1013,9 +1013,9 @@ test('domainName and domainZone not required for HTTPS listener with provided ce
   const exampleDotComZone = new route53.PublicHostedZone(stack, 'ExampleDotCom', {
     zoneName: 'example.com',
   });
-  const certificate = new DnsValidatedCertificate(stack, 'Certificate', {
+  const certificate = new Certificate(stack, 'Certificate', {
     domainName: 'test.example.com',
-    hostedZone: exampleDotComZone,
+    validation: CertificateValidation.fromDns(exampleDotComZone),
   });
 
   // WHEN
