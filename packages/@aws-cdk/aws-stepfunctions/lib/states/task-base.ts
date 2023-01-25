@@ -71,6 +71,7 @@ export interface TaskStateBaseProps {
    * Timeout for the task
    *
    * @default - None
+   * @deprecated use `taskTimeout`
    */
   readonly timeout?: cdk.Duration;
 
@@ -80,12 +81,13 @@ export interface TaskStateBaseProps {
    *
    * @default - None
    */
-  readonly timeoutSecondsPath?: string;
+  readonly taskTimeout?: Timeout;
 
   /**
    * Timeout for the heartbeat
    *
    * @default - None
+   * @deprecated use `heartbeatTimeout`
    */
   readonly heartbeat?: cdk.Duration;
 
@@ -95,7 +97,7 @@ export interface TaskStateBaseProps {
    *
    * @default - None
    */
-  readonly heartbeatSecondsPath?: string;
+  readonly heartbeatTimeout?: Timeout;
 
   /**
    * AWS Step Functions integrates with services directly in the Amazon States Language.
@@ -139,27 +141,19 @@ export abstract class TaskStateBase extends State implements INextable {
   protected abstract readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly timeout?: cdk.Duration;
-  private readonly timeoutSecondsPath?: string;
+  private readonly taskTimeout?: Timeout;
   private readonly heartbeat?: cdk.Duration;
-  private readonly heartbeatSecondsPath?: string;
+  private readonly heartbeatTimeout?: Timeout;
   private readonly credentials?: Credentials;
 
   constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
 
-    if (props.timeout && props.timeoutSecondsPath) {
-      throw new Error('A task cannot include both `timeout` and `timeoutSecondsPath`');
-    }
-
-    if (props.heartbeat && props.heartbeatSecondsPath) {
-      throw new Error('A task cannot include both `heartbeat` and `heartbeatSecondsPath`');
-    }
-
     this.endStates = [this];
     this.timeout = props.timeout;
-    this.timeoutSecondsPath = props.timeoutSecondsPath;
+    this.taskTimeout = props.taskTimeout;
     this.heartbeat = props.heartbeat;
-    this.heartbeatSecondsPath = props.heartbeatSecondsPath;
+    this.heartbeatTimeout = props.heartbeatTimeout;
     this.credentials = props.credentials;
   }
 
@@ -335,10 +329,10 @@ export abstract class TaskStateBase extends State implements INextable {
     return {
       Type: 'Task',
       Comment: this.comment,
-      TimeoutSeconds: this.timeout?.toSeconds(),
-      TimeoutSecondsPath: this.timeoutSecondsPath,
-      HeartbeatSeconds: this.heartbeat?.toSeconds(),
-      HeartbeatSecondsPath: this.heartbeatSecondsPath,
+      TimeoutSeconds: this.timeout?.toSeconds() ?? this.taskTimeout?.seconds,
+      TimeoutSecondsPath: this.taskTimeout?.path,
+      HeartbeatSeconds: this.heartbeat?.toSeconds() ?? this.heartbeatTimeout?.seconds,
+      HeartbeatSecondsPath: this.heartbeatTimeout?.path,
       InputPath: renderJsonPath(this.inputPath),
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),
@@ -404,4 +398,35 @@ export enum IntegrationPattern {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token
    */
   WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN'
+}
+
+/**
+ * Timeout for a task or heartbeat
+ */
+export abstract class Timeout {
+  /**
+   * Use a duration as timeout
+   */
+  public static duration(duration: cdk.Duration): Timeout {
+    return { seconds: duration.toSeconds() };
+  }
+
+  /**
+   * Use a dynamic timeout specified by a path in the state input.
+   *
+   * The path must select a field whose value is a positive integer.
+   */
+  public static at(path: string): Timeout {
+    return { path };
+  }
+
+  /**
+   * Seconds for this timeout
+   */
+  public abstract readonly seconds?: number;
+
+  /**
+   * Path for this timeout
+   */
+  public abstract readonly path?: string;
 }

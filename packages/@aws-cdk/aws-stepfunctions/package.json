@@ -114,7 +114,9 @@
     "exclude": [
       "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.TIMEOUT",
       "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.HEARTBEAT_TIMEOUT",
-      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern"
+      "no-unused-type:@aws-cdk/aws-stepfunctions.ServiceIntegrationPattern",
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.TaskStateBaseProps.heartbeatTimeout",
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.TaskStateBaseProps.taskTimeout"
     ]
   },
   "stability": "stable",

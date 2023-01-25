@@ -53,7 +53,7 @@ const definition = new sfn.Pass(stack, 'Start', {
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }),
-    timeoutSecondsPath: '$.Timeout',
+    taskTimeout: sfn.Timeout.at('$.Timeout'),
   }),
 );
 
