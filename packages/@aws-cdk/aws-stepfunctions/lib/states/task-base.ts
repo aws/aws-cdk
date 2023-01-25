@@ -76,8 +76,7 @@ export interface TaskStateBaseProps {
   readonly timeout?: cdk.Duration;
 
   /**
-   * Timeout, in seconds, for the task specified by a path in the state input.
-   * When resolved, the path must select a field whose value is a positive integer.
+   * Timeout for the task
    *
    * @default - None
    */
@@ -92,8 +91,7 @@ export interface TaskStateBaseProps {
   readonly heartbeat?: cdk.Duration;
 
   /**
-   * Timeout, in seconds, for the heartbeat specified by a path in the state input.
-   * When resolved, the path must select a field whose value is a positive integer.
+   * Timeout for the heartbeat
    *
    * @default - None
    */
