@@ -355,7 +355,7 @@ export class Bundle {
     }
     const inputs = Object.keys(this.bundle.metafile!.inputs);
     const packages = new Set(Array.from(inputs).map(i => this.closestPackagePath(path.join(this.packageDir, i))));
-    this._dependencies = Array.from(packages).map(p => this.createPackage(p)).filter(d => d.name !== this.manifest.name);
+    this._dependencies = Array.from(packages).map(p => this.createPackage(p)).filter(d => d.name !== undefined && d.name !== this.manifest.name);
     return this._dependencies;
   }
 
