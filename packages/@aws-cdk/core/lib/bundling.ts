@@ -409,7 +409,6 @@ export class DockerImage extends BundlingDockerImage {
     reset(deprecated);
     return result;
   }
-
 }
 
 /**
