@@ -515,7 +515,7 @@ const chain = sfn.Chain.start(custom)
 
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
-  timeout: sfn.Timeout.duration(Duration.seconds(30)),
+  taskTimeout: sfn.Timeout.duration(Duration.seconds(30)),
 });
 
 // don't forget permissions. You need to assign them
