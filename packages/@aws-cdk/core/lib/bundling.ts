@@ -111,7 +111,7 @@ export interface BundlingOptions {
   readonly network?: string;
 
   /**
-   * The Which option to use to copy the source files to the docker container and output files back
+   * The access mechanism used to make source files available to the bundling container and to return the bundling output back to the host.
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly assetStagingType?: BundlingFileAccess;
