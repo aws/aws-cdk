@@ -4,11 +4,11 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingFileCopyVariant, BundlingOptions, BundlingOutput } from './bundling';
+import { BundlingFileAccess, BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
-import { AssetStagingVolumeCopy, AssetStagingBindMount } from './private/asset-staging';
+import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
@@ -445,12 +445,12 @@ export class AssetStaging extends Construct {
         };
 
         switch (options.assetStagingType) {
-          case BundlingFileCopyVariant.VOLUME_COPY:
-            new AssetStagingVolumeCopy(assetStagingOptions).run();
+          case BundlingFileAccess.VOLUME_COPY:
+            new AssetBundlingVolumeCopy(assetStagingOptions).run();
             break;
-          case BundlingFileCopyVariant.BIND_MOUNT:
+          case BundlingFileAccess.BIND_MOUNT:
           default:
-            new AssetStagingBindMount(assetStagingOptions).run();
+            new AssetBundlingBindMount(assetStagingOptions).run();
             break;
         }
       }

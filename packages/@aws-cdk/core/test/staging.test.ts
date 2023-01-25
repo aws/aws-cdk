@@ -6,7 +6,7 @@ import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileCopyVariant } from '../lib';
+import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -1296,7 +1296,7 @@ describe('staging with docker cp', () => {
       bundling: {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.VOLUME_SINGLE_ARCHIVE],
-        assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
+        assetStagingType: BundlingFileAccess.VOLUME_COPY,
       },
     });
 

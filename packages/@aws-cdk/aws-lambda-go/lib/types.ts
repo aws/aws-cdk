@@ -1,4 +1,4 @@
-import { AssetHashType, BundlingFileCopyVariant, DockerImage, DockerRunOptions } from '@aws-cdk/core';
+import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from '@aws-cdk/core';
 
 /**
  * Bundling options
@@ -114,9 +114,9 @@ export interface BundlingOptions extends DockerRunOptions {
 
   /**
    * Which option to use to copy the source files to the docker container and output files back
-   * @default - BundlingFileCopyVariant.BIND_MOUNT
+   * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly assetStagingType?: BundlingFileCopyVariant;
+  readonly assetStagingType?: BundlingFileAccess;
 }
 
 /**

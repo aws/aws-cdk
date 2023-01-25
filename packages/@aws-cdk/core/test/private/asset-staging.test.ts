@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as sinon from 'sinon';
 import { AssetStaging, DockerImage } from '../../lib';
-import { AssetStagingBindMount, AssetStagingVolumeCopy } from '../../lib/private/asset-staging';
+import { AssetBundlingBindMount, AssetBundlingVolumeCopy } from '../../lib/private/asset-staging';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -9,7 +9,7 @@ describe('bundling', () => {
 
   });
 
-  test('AssetStagingVolumeCopy bundles with volume copy ', () => {
+  test('AssetBundlingVolumeCopy bundles with volume copy ', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
@@ -26,7 +26,7 @@ describe('bundling', () => {
       image: DockerImage.fromRegistry('alpine'),
       user: '1000',
     };
-    const helper = new AssetStagingVolumeCopy(options);
+    const helper = new AssetBundlingVolumeCopy(options);
     helper.run();
 
     // volume Creation
@@ -83,7 +83,7 @@ describe('bundling', () => {
 
   });
 
-  test('AssetStagingBindMount bundles with bind mount ', () => {
+  test('AssetBundlingBindMount bundles with bind mount ', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
@@ -100,7 +100,7 @@ describe('bundling', () => {
       image: DockerImage.fromRegistry('alpine'),
       user: '1000',
     };
-    const helper = new AssetStagingBindMount(options);
+    const helper = new AssetBundlingBindMount(options);
     helper.run();
 
     // actual docker run with bind mount is called

@@ -3,7 +3,7 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Stack, StackProps, BundlingFileCopyVariant } from '@aws-cdk/core';
+import { App, CfnOutput, Stack, StackProps, BundlingFileAccess } from '@aws-cdk/core';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
@@ -22,7 +22,7 @@ class TestStack extends Stack {
       entry: path.join(__dirname, 'lambda-handler-dockercopy'),
       runtime: Runtime.PYTHON_3_9,
       bundling: {
-        assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
+        assetStagingType: BundlingFileAccess.VOLUME_COPY,
       },
     });
     this.functionName = fn.functionName;

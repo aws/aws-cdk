@@ -112,9 +112,9 @@ export interface BundlingOptions {
 
   /**
    * The Which option to use to copy the source files to the docker container and output files back
-   * @default - BundlingFileCopyVariant.BIND_MOUNT
+   * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly assetStagingType?: BundlingFileCopyVariant;
+  readonly assetStagingType?: BundlingFileAccess;
 }
 
 /**
@@ -161,7 +161,7 @@ export interface ILocalBundling {
 /**
  * The type of file copy that should be used for bundling
  */
-export enum BundlingFileCopyVariant {
+export enum BundlingFileAccess {
   /**
    * Creates temporary volumes and containers to copy files from the host to the bundling container and back.
    * This is slower, but works also in more complex situations with remote or shared docker sockets.
@@ -173,9 +173,7 @@ export enum BundlingFileCopyVariant {
    * This is faster and simpler, but less portable than the other option.
    */
   BIND_MOUNT = 'BIND_MOUNT',
-
 }
-
 
 /**
  * A Docker image used for asset bundling

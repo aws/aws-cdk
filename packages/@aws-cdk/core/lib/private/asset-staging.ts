@@ -7,7 +7,7 @@ import { BundlingOptions } from '../bundling';
 /**
  * Options for Docker based bundling of assets
  */
-interface AssetStagingCopyOptions extends BundlingOptions {
+interface AssetBundlingOptions extends BundlingOptions {
   /**
    * Path where the source files are located
    */
@@ -18,9 +18,9 @@ interface AssetStagingCopyOptions extends BundlingOptions {
   readonly bundleDir: string;
 }
 
-class AssetStagingBase {
-  protected options: AssetStagingCopyOptions;
-  constructor(options: AssetStagingCopyOptions) {
+abstract class AssetBundlingBase {
+  protected options: AssetBundlingOptions;
+  constructor(options: AssetBundlingOptions) {
     this.options = options;
   }
   /**
@@ -45,7 +45,7 @@ class AssetStagingBase {
 /**
  * Bundles files with bind mount as copy method
  */
-export class AssetStagingBindMount extends AssetStagingBase {
+export class AssetBundlingBindMount extends AssetBundlingBase {
   /**
    * Bundle files with bind mount as copy method
    */
@@ -77,7 +77,7 @@ export class AssetStagingBindMount extends AssetStagingBase {
 /**
  * Provides a helper container for copying bundling related files to specific input and output volumes
  */
-export class AssetStagingVolumeCopy extends AssetStagingBase {
+export class AssetBundlingVolumeCopy extends AssetBundlingBase {
   /**
    * Name of the Docker volume that is used for the asset input
    */
@@ -91,7 +91,7 @@ export class AssetStagingVolumeCopy extends AssetStagingBase {
    */
   public copyContainerName: string;
 
-  constructor(options: AssetStagingCopyOptions) {
+  constructor(options: AssetBundlingOptions) {
     super(options);
     const copySuffix = crypto.randomBytes(12).toString('hex');
     this.inputVolumeName = `assetInput${copySuffix}`;

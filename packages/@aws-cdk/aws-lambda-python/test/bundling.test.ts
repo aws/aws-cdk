@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
-import { BundlingFileCopyVariant, DockerImage } from '@aws-cdk/core';
+import { BundlingFileAccess, DockerImage } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
@@ -379,13 +379,13 @@ test('Bundling with docker copy variant', () => {
   Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
-    assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
+    assetStagingType: BundlingFileAccess.VOLUME_COPY,
 
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
     bundling: expect.objectContaining({
-      assetStagingType: BundlingFileCopyVariant.VOLUME_COPY,
+      assetStagingType: BundlingFileAccess.VOLUME_COPY,
     }),
   }));
 });
