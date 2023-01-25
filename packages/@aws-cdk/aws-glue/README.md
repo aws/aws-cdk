@@ -90,6 +90,24 @@ new glue.Job(this, 'PythonShellJob', {
 });
 ```
 
+### Ray Jobs
+
+These jobs run in a Ray environment managed by AWS Glue.
+
+```ts
+new glue.Job(stack, 'RayJob', {
+  jobName: 'RayJob',
+  executable: glue.JobExecutable.pythonRay({
+    glueVersion: glue.GlueVersion.V4_0,
+    pythonVersion: glue.PythonVersion.THREE_NINE,
+    script,
+  }),
+  workerType: glue.WorkerType.Z_2X,
+  workerCount: 2,
+  description: 'an example Ray job'
+});
+```
+
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/add-job.html) for more information on adding jobs in Glue.
 
 ## Connection
