@@ -3170,9 +3170,9 @@ camelcase@^6.2.0, camelcase@^6.3.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001400:
-  version "1.0.30001447"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001447.tgz#ef1f39ae38d839d7176713735a8e467a0a2523bd"
-  integrity sha512-bdKU1BQDPeEXe9A39xJnGtY0uRq/z5osrnXUw0TcK+EYno45Y+U7QU9HhHEyzvMDffpYadFXi3idnSNkcwLkTw==
+  version "1.0.30001448"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001448.tgz#ca7550b1587c92a392a2b377cd9c508b3b4395bf"
+  integrity sha512-tq2YI+MJnooG96XpbTRYkBxLxklZPOdLmNIOdIhvf7SNJan6u5vCKum8iT7ZfCt70m1GPkuC7P3TtX6UuhupuA==
 
 case@1.6.3, case@^1.6.3:
   version "1.6.3"
@@ -3184,10 +3184,10 @@ caseless@~0.12.0:
   resolved "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==
 
-cdk-generate-synthetic-examples@^0.1.132:
-  version "0.1.132"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.132.tgz#ae88a6f0a19bf70ce5abb1a64567bbe8b4cb8b65"
-  integrity sha512-t/7bp0KokN0uCX+Z7lRH2mJyuuZv40xDsu5kH130xZJqWtEzOUZHF0Dmdpu/PlDbv1oHcPj3mFny+jKSYfLYZA==
+cdk-generate-synthetic-examples@^0.1.133:
+  version "0.1.133"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.133.tgz#9a5c092e01b5a2103aa80c0451f42bae3f550b71"
+  integrity sha512-hxSDxNHJneuFI15Z4CKdU+unNmEYIekg9yTX3MAeQgVgftsSNpvPij626DX1gRhqfbfnRfyOjtMECUmm1ujEpw==
   dependencies:
     "@jsii/spec" "^1.73.0"
     fs-extra "^10.1.0"
@@ -3203,10 +3203,10 @@ cdk8s-plus-21@^1.0.0-beta.186:
   dependencies:
     minimatch "^3.1.2"
 
-cdk8s@^1.9.28:
-  version "1.9.28"
-  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.9.28.tgz#fbc64596074e8ee50145c84f0093b64277da0180"
-  integrity sha512-Wdr674Xxm6ZCi9VcbfVJhk9beEeS4yNiOl00QIgRSlGB2l5CjDVZ0BNn3h4/EYBPDy7INrpNJFVWk+GD7MgDlw==
+cdk8s@^1.9.29:
+  version "1.9.29"
+  resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.9.29.tgz#5cd8a4e78810474cf3a157b7e1a9bba6d89f4e29"
+  integrity sha512-4wBMpKOrp/ETEtqxumnUedYpREnVZWeGYVQ8sGasW3vqpenBn1665/TxTpUDXt8Vej2COdSMo15B6NCvMy1eJA==
   dependencies:
     fast-json-patch "^3.1.1"
     follow-redirects "^1.15.2"
@@ -3575,9 +3575,9 @@ console-control-strings@^1.0.0, console-control-strings@^1.1.0, console-control-
   integrity sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==
 
 constructs@^3.3.69:
-  version "3.4.224"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-3.4.224.tgz#3654fb1cd3d711eaf4ca056563369e1b12d77454"
-  integrity sha512-cwmg2cOXAmRlO5Iv+VBeD5zVFwVgmZM6S21IHyw3gqmYw/sjI7sIU/f0dYXH5MnELty5uKUCn2gjcnSbCHNxRg==
+  version "3.4.225"
+  resolved "https://registry.npmjs.org/constructs/-/constructs-3.4.225.tgz#f3b90f9e7381c371da6eab9f5a3ca11ca7b1cac1"
+  integrity sha512-ln3RCM2uAG5bY5whD8R6ITOoTk/OFQ76HU8VKhmbDTO2uNtTm50qoQZOCTskA3JgzJxL1PIxjYmgj7Cwnb6w+w==
 
 conventional-changelog-angular@^5.0.12:
   version "5.0.13"
@@ -9118,10 +9118,10 @@ progress@^2.0.0, progress@^2.0.3:
   resolved "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.67.12:
-  version "0.67.12"
-  resolved "https://registry.npmjs.org/projen/-/projen-0.67.12.tgz#5ab139439f9700859c2173ba50af20016e998e81"
-  integrity sha512-s3EMtgCCW438s6TaQPN+8bbnVFMfgHOq3hwsdteyrHt7ZlMCUMM/1rJ6F5RBPQDazZw6a9JqrbWsfPZhH1kehQ==
+projen@^0.67.13:
+  version "0.67.13"
+  resolved "https://registry.npmjs.org/projen/-/projen-0.67.13.tgz#036b8566e852ec57db3c30a03eb9898095a52200"
+  integrity sha512-8TQebNLf8chxVFpCnS/Kpi2ioY9eX5i6Dpb0ly72L038BkSNxOJRH+1OMGPPk+D2UBbSQFluDNPHl1v3maNsWg==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
