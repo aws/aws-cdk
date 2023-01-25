@@ -103,9 +103,9 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput({
-    timestamp: events.EventField.from('$.time'),
-    message: events.EventField.from('$.detail-type'),
+  logEvent: targets.LogGroupTargetInput.fromObject({
+    timestamp: events.EventField.time,
+    message: events.EventField.detailType,
   }),
 }));
 ```
@@ -119,7 +119,7 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput({
+  logEvent: targets.LogGroupTargetInput.fromObject({
     message: JSON.stringify({
 	  CustomField: 'CustomValue',
 	}),
@@ -321,7 +321,7 @@ const destination = new events.ApiDestination(this, 'Destination', {
 });
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
   targets: [new targets.ApiDestination(destination)],
 });
 ```
@@ -344,4 +344,34 @@ rule.addTarget(new targets.EventBus(
     `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
   ),
 ));
+```
+
+## Run an ECS Task
+
+Use the `EcsTask` target to run an ECS Task.
+
+The code snippet below creates a scheduled event rule that will run the task described in `taskDefinition` every hour.
+
+```ts
+import * as ecs from "@aws-cdk/aws-ecs"
+declare const cluster: ecs.ICluster
+declare const taskDefinition: ecs.TaskDefinition
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(
+  new targets.EcsTask( {
+      cluster: cluster,
+      taskDefinition: taskDefinition,
+      propagateTags: true,
+      tagList: [
+        {
+          key: 'my-tag',
+          value: 'my-tag-value',
+        },
+      ],
+    })
+);
 ```
