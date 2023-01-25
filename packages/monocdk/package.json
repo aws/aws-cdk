@@ -108,7 +108,7 @@
     "ignore": "^5.2.4",
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
-    "punycode": "^2.2.0",
+    "punycode": "^2.3.0",
     "semver": "^7.3.8",
     "yaml": "1.10.2"
   },
@@ -247,6 +247,7 @@
     "@aws-cdk/aws-ivs": "0.0.0",
     "@aws-cdk/aws-kafkaconnect": "0.0.0",
     "@aws-cdk/aws-kendra": "0.0.0",
+    "@aws-cdk/aws-kendraranking": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics-flink": "0.0.0",
