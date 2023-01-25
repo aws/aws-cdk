@@ -321,7 +321,7 @@ const destination = new events.ApiDestination(this, 'Destination', {
 });
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   targets: [new targets.ApiDestination(destination)],
 });
 ```
