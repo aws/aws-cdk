@@ -95,8 +95,7 @@ new glue.Job(this, 'PythonShellJob', {
 These jobs run in a Ray environment managed by AWS Glue.
 
 ```ts
-new glue.Job(stack, 'RayJob', {
-  jobName: 'RayJob',
+new glue.Job(this, 'RayJob', {
   executable: glue.JobExecutable.pythonRay({
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
