@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.190.0](https://github.com/aws/aws-cdk/compare/v1.189.0...v1.190.0) (2023-01-25)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v107.0.0 ([#23749](https://github.com/aws/aws-cdk/issues/23749)) ([1875220](https://github.com/aws/aws-cdk/commit/18752202770629335aded8e04b54b2449ae6e0b8))
+* **cfnspec:** cloudformation spec v108.0.0 ([#23768](https://github.com/aws/aws-cdk/issues/23768)) ([b39b089](https://github.com/aws/aws-cdk/commit/b39b08925cd5ea1e23a7c005f2bd1fb3354bcee3))
+* **cfnspec:** cloudformation spec v108.0.0 ([#23809](https://github.com/aws/aws-cdk/issues/23809)) ([613ec61](https://github.com/aws/aws-cdk/commit/613ec619e8639d0b4d4da02505889046609d7319))
+
+
+### Bug Fixes
+
+* **cfnspec:** incorrectly handling array result from jsondiff (backport [#23795](https://github.com/aws/aws-cdk/issues/23795)) ([#23800](https://github.com/aws/aws-cdk/issues/23800)) ([ee911ec](https://github.com/aws/aws-cdk/commit/ee911ec8abb147d378e0e8f287d131dbfab9501f))
+
 ## [1.189.0](https://github.com/aws/aws-cdk/compare/v1.188.0...v1.189.0) (2023-01-18)
 
 
