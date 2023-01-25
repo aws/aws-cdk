@@ -3,7 +3,6 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { BatchSubmitJob } from '../../lib';
 
@@ -67,7 +66,7 @@ test('Task with only the required parameters', () => {
   });
 });
 
-testDeprecated('Task with all the parameters', () => {
+test('Task with all the parameters', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {
     jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
@@ -87,7 +86,7 @@ testDeprecated('Task with all the parameters', () => {
       foo: sfn.JsonPath.stringAt('$.bar'),
     }),
     attempts: 3,
-    timeout: cdk.Duration.seconds(60),
+    taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(60)),
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -126,14 +125,14 @@ testDeprecated('Task with all the parameters', () => {
   });
 });
 
-testDeprecated('supports tokens', () => {
+test('supports tokens', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {
     jobName: sfn.JsonPath.stringAt('$.jobName'),
     jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
     jobQueueArn: batchJobQueue.jobQueueArn,
     arraySize: sfn.JsonPath.numberAt('$.arraySize'),
-    timeout: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout')),
+    taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout'))),
     attempts: sfn.JsonPath.numberAt('$.attempts'),
   });
 
@@ -323,13 +322,13 @@ test('Task throws if attempts is out of limits 1-10', () => {
   );
 });
 
-testDeprecated('Task throws if attempt duration is less than 60 sec', () => {
+test('Task throws if attempt duration is less than 60 sec', () => {
   expect(() => {
     new BatchSubmitJob(stack, 'Task', {
       jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
       jobName: 'JobName',
       jobQueueArn: batchJobQueue.jobQueueArn,
-      timeout: cdk.Duration.seconds(59),
+      taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(59)),
     });
   }).toThrow(
     /attempt duration must be greater than 60 seconds./,

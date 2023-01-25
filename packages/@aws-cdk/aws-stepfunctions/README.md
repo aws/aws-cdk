@@ -68,7 +68,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
   definition,
-  taskTimeout: sfn.Timeout.duration(Duration.minutes(5)), // or use a dynamic value from the state with `sfn.Timeout.at()`
+  timeout: Duration.minutes(5),
 });
 ```
 
@@ -515,7 +515,7 @@ const chain = sfn.Chain.start(custom)
 
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
-  taskTimeout: sfn.Timeout.duration(Duration.seconds(30)),
+  timeout: Duration.seconds(30),
 });
 
 // don't forget permissions. You need to assign them

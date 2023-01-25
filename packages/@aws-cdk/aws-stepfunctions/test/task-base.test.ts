@@ -330,7 +330,7 @@ describe('Task base', () => {
     }));
   });
 
-  testDeprecated('timeout and heartbeat', () => {
+  testDeprecated('deprecated props timeout and heartbeat still work', () => {
     // WHEN
     task = new FakeTask(stack, 'my-exciting-task', {
       heartbeat: cdk.Duration.seconds(10),
