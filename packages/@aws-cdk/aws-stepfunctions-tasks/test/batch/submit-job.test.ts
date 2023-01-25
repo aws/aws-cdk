@@ -3,6 +3,7 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { BatchSubmitJob } from '../../lib';
 
@@ -66,7 +67,7 @@ test('Task with only the required parameters', () => {
   });
 });
 
-test('Task with all the parameters', () => {
+testDeprecated('Task with all the parameters', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {
     jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
@@ -125,7 +126,7 @@ test('Task with all the parameters', () => {
   });
 });
 
-test('supports tokens', () => {
+testDeprecated('supports tokens', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {
     jobName: sfn.JsonPath.stringAt('$.jobName'),
@@ -322,7 +323,7 @@ test('Task throws if attempts is out of limits 1-10', () => {
   );
 });
 
-test('Task throws if attempt duration is less than 60 sec', () => {
+testDeprecated('Task throws if attempt duration is less than 60 sec', () => {
   expect(() => {
     new BatchSubmitJob(stack, 'Task', {
       jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
