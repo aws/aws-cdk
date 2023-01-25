@@ -16,7 +16,7 @@
 scriptdir=$(cd $(dirname $0) && pwd)
 cd ${scriptdir}/..
 
-find . -name '*.js' ! -name '.eslintrc.js' ! -path '*node_modules*' | xargs npx esbuild \
+find . -name '*.js' ! -name 'exports.js' ! -name '.eslintrc.js' ! -path '*node_modules*' | xargs npx esbuild \
   --sourcemap \
   --platform=node \
   --format=cjs \
