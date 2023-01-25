@@ -40,29 +40,50 @@ var Matcher = class {
 };
 var MatchResult = class {
   constructor(target) {
-    this.failures = [];
+    this.failuresHere = /* @__PURE__ */ new Map();
     this.captures = /* @__PURE__ */ new Map();
     this.finalized = false;
+    this.innerMatchFailures = /* @__PURE__ */ new Map();
+    this._hasFailed = false;
+    this._failCount = 0;
+    this._cost = 0;
     this.target = target;
   }
   push(matcher, path, message) {
     return this.recordFailure({ matcher, path, message });
   }
   recordFailure(failure) {
-    this.failures.push(failure);
+    const failKey = failure.path.join(".");
+    let list = this.failuresHere.get(failKey);
+    if (!list) {
+      list = [];
+      this.failuresHere.set(failKey, list);
+    }
+    this._failCount += 1;
+    this._cost += failure.cost ?? 1;
+    list.push(failure);
+    this._hasFailed = true;
     return this;
   }
+  get isSuccess() {
+    return !this._hasFailed;
+  }
   hasFailed() {
-    return this.failures.length !== 0;
+    return this._hasFailed;
   }
   get failCount() {
-    return this.failures.length;
+    return this._failCount;
+  }
+  get failCost() {
+    return this._cost;
   }
   compose(id, inner) {
-    const innerF = inner.failures;
-    this.failures.push(...innerF.map((f) => {
-      return { path: [id, ...f.path], message: f.message, matcher: f.matcher };
-    }));
+    if (inner.hasFailed()) {
+      this._hasFailed = true;
+      this._failCount += inner.failCount;
+      this._cost += inner._cost;
+      this.innerMatchFailures.set(id, inner);
+    }
     inner.captures.forEach((vals, capture) => {
       vals.forEach((value) => this.recordCapture({ capture, value }));
     });
@@ -79,10 +100,154 @@ var MatchResult = class {
     return this;
   }
   toHumanStrings() {
-    return this.failures.map((r) => {
-      const loc = r.path.length === 0 ? "" : ` at ${r.path.join("")}`;
+    const failures = new Array();
+    debugger;
+    recurse(this, []);
+    return failures.map((r) => {
+      const loc = r.path.length === 0 ? "" : ` at /${r.path.join("/")}`;
       return "" + r.message + loc + ` (using ${r.matcher.name} matcher)`;
     });
+    function recurse(x, prefix) {
+      for (const fail of Array.from(x.failuresHere.values()).flat()) {
+        failures.push({
+          matcher: fail.matcher,
+          message: fail.message,
+          path: [...prefix, ...fail.path]
+        });
+      }
+      for (const [key, inner] of x.innerMatchFailures.entries()) {
+        recurse(inner, [...prefix, key]);
+      }
+    }
+  }
+  renderMismatch() {
+    if (!this.hasFailed()) {
+      return "<match>";
+    }
+    const parts = new Array();
+    const indents = new Array();
+    emitFailures(this, "");
+    recurse(this);
+    return moveMarkersToFront(parts.join("").trimEnd());
+    function emit(x) {
+      if (x === void 0) {
+        debugger;
+      }
+      parts.push(x.replace(/\n/g, `
+${indents.join("")}`));
+    }
+    function emitFailures(r, path, scrapSet) {
+      for (const fail of r.failuresHere.get(path) ?? []) {
+        emit(`!! ${fail.message}
+`);
+      }
+      scrapSet == null ? void 0 : scrapSet.delete(path);
+    }
+    function recurse(r) {
+      const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter((x) => x !== ""));
+      if (Array.isArray(r.target)) {
+        indents.push("  ");
+        emit("[\n");
+        for (const [first, i] of enumFirst(range(r.target.length))) {
+          if (!first) {
+            emit(",\n");
+          }
+          emitFailures(r, `${i}`, remainingFailures);
+          const innerMatcher = r.innerMatchFailures.get(`${i}`);
+          if (innerMatcher) {
+            emitFailures(innerMatcher, "");
+            recurseComparingValues(innerMatcher, r.target[i]);
+          } else {
+            emit(renderAbridged(r.target[i]));
+          }
+        }
+        emitRemaining();
+        indents.pop();
+        emit("\n]");
+        return;
+      }
+      if (r.target && typeof r.target === "object") {
+        indents.push("  ");
+        emit("{\n");
+        const keys = Array.from(/* @__PURE__ */ new Set([
+          ...Object.keys(r.target),
+          ...Array.from(remainingFailures)
+        ])).sort();
+        for (const [first, key] of enumFirst(keys)) {
+          if (!first) {
+            emit(",\n");
+          }
+          emitFailures(r, key, remainingFailures);
+          const innerMatcher = r.innerMatchFailures.get(key);
+          if (innerMatcher) {
+            emitFailures(innerMatcher, "");
+            emit(`${jsonify(key)}: `);
+            recurseComparingValues(innerMatcher, r.target[key]);
+          } else {
+            emit(`${jsonify(key)}: `);
+            emit(renderAbridged(r.target[key]));
+          }
+        }
+        emitRemaining();
+        indents.pop();
+        emit("\n}");
+        return;
+      }
+      emitRemaining();
+      emit(jsonify(r.target));
+      function emitRemaining() {
+        if (remainingFailures.size > 0) {
+          emit("\n");
+        }
+        for (const key of remainingFailures) {
+          emitFailures(r, key);
+        }
+      }
+    }
+    function recurseComparingValues(inner, actualValue) {
+      if (inner.target === actualValue) {
+        return recurse(inner);
+      }
+      emit(renderAbridged(actualValue));
+      emit(" <*> ");
+      recurse(inner);
+    }
+    function renderAbridged(x) {
+      if (Array.isArray(x)) {
+        switch (x.length) {
+          case 0:
+            return "[]";
+          case 1:
+            return `[ ${renderAbridged(x[0])} ]`;
+          case 2:
+            if (x.every((e) => ["number", "boolean", "string"].includes(typeof e))) {
+              return `[ ${x.map(renderAbridged).join(", ")} ]`;
+            }
+            return "[ ... ]";
+          default:
+            return "[ ... ]";
+        }
+      }
+      if (x && typeof x === "object") {
+        const keys = Object.keys(x);
+        switch (keys.length) {
+          case 0:
+            return "{}";
+          case 1:
+            return `{ ${JSON.stringify(keys[0])}: ${renderAbridged(x[keys[0]])} }`;
+          default:
+            return "{ ... }";
+        }
+      }
+      return jsonify(x);
+    }
+    function jsonify(x) {
+      return JSON.stringify(x) ?? "undefined";
+    }
+    function moveMarkersToFront(x) {
+      const re = /^(\s+)!!/gm;
+      return x.replace(re, (_, spaces) => `!!${spaces.substring(0, spaces.length - 2)}`);
+    }
   }
   recordCapture(options) {
     let values = this.captures.get(options.capture);
@@ -93,6 +258,18 @@ var MatchResult = class {
     this.captures.set(options.capture, values);
   }
 };
+function* range(n) {
+  for (let i = 0; i < n; i++) {
+    yield i;
+  }
+}
+function* enumFirst(xs) {
+  let first = true;
+  for (const x of xs) {
+    yield [first, x];
+    first = false;
+  }
+}
 
 // ../assertions/lib/private/matchers/absent.ts
 var AbsentMatch = class extends Matcher {
@@ -110,6 +287,51 @@ var AbsentMatch = class extends Matcher {
       });
     }
     return result;
+  }
+};
+
+// ../assertions/lib/private/sorting.ts
+function sortKeyComparator(keyFn) {
+  return (a, b) => {
+    const ak = keyFn(a);
+    const bk = keyFn(b);
+    for (let i = 0; i < ak.length && i < bk.length; i++) {
+      const av = ak[i];
+      const bv = bk[i];
+      let diff = 0;
+      if (typeof av === "number" && typeof bv === "number") {
+        diff = av - bv;
+      } else if (typeof av === "string" && typeof bv === "string") {
+        diff = av.localeCompare(bv);
+      }
+      if (diff !== 0) {
+        return diff;
+      }
+    }
+    return bk.length - ak.length;
+  };
+}
+
+// ../assertions/lib/private/sparse-matrix.ts
+var SparseMatrix = class {
+  constructor() {
+    this.matrix = /* @__PURE__ */ new Map();
+  }
+  get(row, col) {
+    var _a;
+    return (_a = this.matrix.get(row)) == null ? void 0 : _a.get(col);
+  }
+  row(row) {
+    var _a;
+    return Array.from(((_a = this.matrix.get(row)) == null ? void 0 : _a.entries()) ?? []);
+  }
+  set(row, col, value) {
+    let r = this.matrix.get(row);
+    if (!r) {
+      r = /* @__PURE__ */ new Map();
+      this.matrix.set(row, r);
+    }
+    r.set(col, value);
   }
 };
 
@@ -203,40 +425,85 @@ var ArrayMatch = class extends Matcher {
         message: `Expected type array but received ${getType(actual)}`
       });
     }
-    if (!this.subsequence && this.pattern.length !== actual.length) {
-      return new MatchResult(actual).recordFailure({
+    return this.subsequence ? this.testSubsequence(actual) : this.testFullArray(actual);
+  }
+  testFullArray(actual) {
+    const result = new MatchResult(actual);
+    let i = 0;
+    for (; i < this.pattern.length && i < actual.length; i++) {
+      const patternElement = this.pattern[i];
+      const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement, { partialObjects: this.partialObjects });
+      const innerResult = matcher.test(actual[i]);
+      result.compose(`${i}`, innerResult);
+    }
+    if (i < this.pattern.length) {
+      result.recordFailure({
         matcher: this,
-        path: [],
-        message: `Expected array of length ${this.pattern.length} but received ${actual.length}`
+        message: `Not enough elements in array (expecting ${this.pattern.length}, got ${actual.length})`,
+        path: [`${i}`]
       });
     }
+    if (i < actual.length) {
+      result.recordFailure({
+        matcher: this,
+        message: `Too many elements in array (expecting ${this.pattern.length}, got ${actual.length})`,
+        path: [`${i}`]
+      });
+    }
+    return result;
+  }
+  testSubsequence(actual) {
+    const result = new MatchResult(actual);
     let patternIdx = 0;
     let actualIdx = 0;
-    const result = new MatchResult(actual);
+    const matches = new SparseMatrix();
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
       const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement, { partialObjects: this.partialObjects });
       const matcherName = matcher.name;
-      if (this.subsequence && (matcherName == "absent" || matcherName == "anyValue")) {
+      if (matcherName == "absent" || matcherName == "anyValue") {
         throw new Error(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
       }
       const innerResult = matcher.test(actual[actualIdx]);
-      if (!this.subsequence || !innerResult.hasFailed()) {
-        result.compose(`[${actualIdx}]`, innerResult);
+      matches.set(patternIdx, actualIdx, innerResult);
+      actualIdx++;
+      if (innerResult.isSuccess) {
+        result.compose(`${actualIdx}`, innerResult);
         patternIdx++;
-        actualIdx++;
-      } else {
-        actualIdx++;
       }
     }
-    for (; patternIdx < this.pattern.length; patternIdx++) {
-      const pattern = this.pattern[patternIdx];
-      const element = Matcher.isMatcher(pattern) || typeof pattern === "object" ? " " : ` [${pattern}] `;
-      result.recordFailure({
-        matcher: this,
-        path: [],
-        message: `Missing element${element}at pattern index ${patternIdx}`
-      });
+    if (patternIdx < this.pattern.length) {
+      for (let spi = 0; spi < patternIdx; spi++) {
+        const foundMatch = matches.row(spi).find(([, r]) => r.isSuccess);
+        if (!foundMatch) {
+          continue;
+        }
+        const [index] = foundMatch;
+        result.compose(`${index}`, new MatchResult(actual[index]).recordFailure({
+          matcher: this,
+          message: `arrayWith pattern ${spi} matched here`,
+          path: [],
+          cost: 0
+        }));
+      }
+      const failedMatches = matches.row(patternIdx);
+      failedMatches.sort(sortKeyComparator(([i, r]) => [r.failCost, i]));
+      if (failedMatches.length > 0) {
+        const [index, innerResult] = failedMatches[0];
+        result.recordFailure({
+          matcher: this,
+          message: `Could not match arrayWith pattern ${patternIdx}. This is the closest match`,
+          path: [`${index}`],
+          cost: 0
+        });
+        result.compose(`${index}`, innerResult);
+      } else {
+        result.recordFailure({
+          matcher: this,
+          message: `Could not match arrayWith pattern ${patternIdx}. No more elements to try`,
+          path: [`${actual.length}`]
+        });
+      }
     }
     return result;
   }
@@ -262,8 +529,8 @@ var ObjectMatch = class extends Matcher {
         if (!(a in this.pattern)) {
           result.recordFailure({
             matcher: this,
-            path: [`/${a}`],
-            message: "Unexpected key"
+            path: [a],
+            message: `Unexpected key ${a}`
           });
         }
       }
@@ -272,14 +539,14 @@ var ObjectMatch = class extends Matcher {
       if (!(patternKey in actual) && !(patternVal instanceof AbsentMatch)) {
         result.recordFailure({
           matcher: this,
-          path: [`/${patternKey}`],
-          message: `Missing key '${patternKey}' among {${Object.keys(actual).join(",")}}`
+          path: [patternKey],
+          message: `Missing key '${patternKey}'`
         });
         continue;
       }
       const matcher = Matcher.isMatcher(patternVal) ? patternVal : new LiteralMatch(this.name, patternVal, { partialObjects: this.partial });
       const inner = matcher.test(actual[patternKey]);
-      result.compose(`/${patternKey}`, inner);
+      result.compose(patternKey, inner);
     }
     return result;
   }
@@ -291,34 +558,37 @@ var SerializedJson = class extends Matcher {
     this.pattern = pattern;
   }
   test(actual) {
-    const result = new MatchResult(actual);
     if (getType(actual) !== "string") {
-      result.recordFailure({
+      return new MatchResult(actual).recordFailure({
         matcher: this,
         path: [],
         message: `Expected JSON as a string but found ${getType(actual)}`
       });
-      return result;
     }
     let parsed;
     try {
       parsed = JSON.parse(actual);
     } catch (err) {
       if (err instanceof SyntaxError) {
-        result.recordFailure({
+        return new MatchResult(actual).recordFailure({
           matcher: this,
           path: [],
           message: `Invalid JSON string: ${actual}`
         });
-        return result;
       } else {
         throw err;
       }
     }
     const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);
-    result.compose(`(${this.name})`, innerResult);
-    return result;
+    if (innerResult.hasFailed()) {
+      innerResult.recordFailure({
+        matcher: this,
+        path: [],
+        message: "Encoded JSON value does not match"
+      });
+    }
+    return innerResult;
   }
 };
 var NotMatch = class extends Matcher {
@@ -507,10 +777,7 @@ var AssertionHandler = class extends CustomResourceHandler {
         failed: true,
         assertion: JSON.stringify({
           status: "fail",
-          message: [
-            ...matchResult.toHumanStrings(),
-            JSON.stringify(matchResult.target, void 0, 2)
-          ].join("\n")
+          message: matchResult.renderMismatch()
         })
       };
       if (request2.failDeployment) {
@@ -543,6 +810,8 @@ var MatchCreator = class {
             return Match.objectLike(v[nested]);
           case "$StringLike":
             return Match.stringLikeRegexp(v[nested]);
+          case "$SerializedJson":
+            return Match.serializedJson(v[nested]);
           default:
             return v;
         }
@@ -614,11 +883,26 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     const flatData = {
       ...flatten(respond)
     };
-    const resp = request2.flattenResponse === "true" ? flatData : respond;
+    let resp = respond;
+    if (request2.outputPaths) {
+      resp = filterKeys(flatData, request2.outputPaths);
+    } else if (request2.flattenResponse === "true") {
+      resp = flatData;
+    }
     console.log(`Returning result ${JSON.stringify(resp)}`);
     return resp;
   }
 };
+function filterKeys(object, searchStrings) {
+  return Object.entries(object).reduce((filteredObject, [key, value]) => {
+    for (const searchString of searchStrings) {
+      if (key.startsWith(`apiCallResponse.${searchString}`)) {
+        filteredObject[key] = value;
+      }
+    }
+    return filteredObject;
+  }, {});
+}
 function isJsonString(value) {
   try {
     return JSON.parse(value);

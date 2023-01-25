@@ -46,7 +46,7 @@
     "build+test": "yarn build && yarn test",
     "build+test+extract": "yarn build+test && yarn rosetta:extract",
     "build+test+package": "yarn build+test && yarn package",
-    "bundle": "esbuild --bundle lib/index.ts --target=node14 --platform=node --external:fsevents --outfile=lib/main.js",
+    "bundle": "esbuild --bundle lib/index.ts --target=node14 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
     "compat": "cdk-compat",
     "gen": "../../../packages/aws-cdk/generate.sh",
     "lint": "cdk-lint",
