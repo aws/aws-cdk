@@ -54,6 +54,56 @@ describe('None Data Source configuration', () => {
     });
   });
 
+  test('appsync data source exports sanitised name', () => {
+    // WHEN
+    const ds = api.addNoneDataSource('ds', {
+      name: 'Produce-Custom',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'NONE',
+      Name: 'ProduceCustom',
+    });
+    expect(ds.name).toBe('ProduceCustom');
+  });
+
+  // This test doesn't pass yet.
+  // eslint-disable-next-line jest/no-disabled-tests
+  test.skip('name is still sanitised from static part of name when passing a token', () => {
+    // WHEN
+    const produceCustom = cdk.Lazy.string({ produce(): string { return 'Produce'; } });
+    const ds = api.addNoneDataSource('ds', {
+      name: `${produceCustom}-Custom`,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'NONE',
+      Name: 'ProduceCustom',
+    });
+    expect(ds.name).toBe('ProductCustom');
+
+  });
+
+  // This test doesn't pass yet.
+  // eslint-disable-next-line jest/no-disabled-tests
+  test.skip('name is still sanitised when a token returns content that needs to be sanitised', () => {
+    // WHEN
+    const produceCustom = cdk.Lazy.string({ produce(): string { return 'Produce-'; } });
+    const ds = api.addNoneDataSource('ds', {
+      name: `${produceCustom}Custom`,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'NONE',
+      Name: 'ProduceCustom',
+    });
+
+    expect(ds.name).toBe('ProduceCustom');
+  });
+
   test('appsync configures name and description correctly', () => {
     // WHEN
     api.addNoneDataSource('ds', {
@@ -116,5 +166,3 @@ describe('adding none data source from imported api', () => {
     });
   });
 });
-
-
