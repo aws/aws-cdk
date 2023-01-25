@@ -170,7 +170,7 @@ export enum BundlingFileAccess {
 
   /**
    * The source and output folders will be mounted as bind mount from the host system
-   * This is faster and simpler, but less portable than the other option.
+   * This is faster and simpler, but less portable than `VOLUME_COPY`.
    */
   BIND_MOUNT = 'BIND_MOUNT',
 }
