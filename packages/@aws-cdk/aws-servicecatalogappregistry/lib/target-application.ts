@@ -10,7 +10,7 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
     * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
     * refer to it in the [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html).
     *
-    * @default - references the application name for CreateTargetApplicationOptions, 
+    * @default - references the application name for CreateTargetApplicationOptions,
     *            or application id for ExistingTargetApplicationOptions
     */
   readonly stackId?: string;
