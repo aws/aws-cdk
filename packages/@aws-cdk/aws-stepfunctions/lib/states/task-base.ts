@@ -78,6 +78,9 @@ export interface TaskStateBaseProps {
   /**
    * Timeout for the task
    *
+   * [disable-awslint:duration-prop-type] is needed because all props interface in
+   * aws-stepfunctions-tasks extend this interface
+   *
    * @default - None
    */
   readonly taskTimeout?: Timeout;
@@ -92,6 +95,9 @@ export interface TaskStateBaseProps {
 
   /**
    * Timeout for the heartbeat
+   *
+   * [disable-awslint:duration-prop-type] is needed because all props interface in
+   * aws-stepfunctions-tasks extend this interface
    *
    * @default - None
    */
