@@ -70,7 +70,7 @@ test('Invoke glue job with full properties', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::glue:startJobRun',
+          ':states:::glue:startJobRun.sync',
         ],
       ],
     },
@@ -106,7 +106,7 @@ test('Invoke glue job with Timeout.at()', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::glue:startJobRun.sync',
+          ':states:::glue:startJobRun',
         ],
       ],
     },

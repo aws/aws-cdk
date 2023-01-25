@@ -132,7 +132,7 @@ test('supports tokens', () => {
     jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
     jobQueueArn: batchJobQueue.jobQueueArn,
     arraySize: sfn.JsonPath.numberAt('$.arraySize'),
-    taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout'))),
+    taskTimeout: sfn.Timeout.at('$.timeout'),
     attempts: sfn.JsonPath.numberAt('$.attempts'),
   });
 
