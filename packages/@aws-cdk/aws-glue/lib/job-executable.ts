@@ -95,12 +95,12 @@ export enum PythonVersion {
  */
 export class JobType {
   /**
-   * Command for running a Glue ETL job.
+   * Command for running a Glue Spark job.
    */
   public static readonly ETL = new JobType('glueetl');
 
   /**
-   * Command for running a Glue streaming job.
+   * Command for running a Glue Spark streaming job.
    */
   public static readonly STREAMING = new JobType('gluestreaming');
 
@@ -108,6 +108,11 @@ export class JobType {
    * Command for running a Glue python shell job.
    */
   public static readonly PYTHON_SHELL = new JobType('pythonshell');
+
+  /**
+   * Command for running a Glue Ray job.
+   */
+  public static readonly RAY = new JobType('glueray');
 
   /**
    * Custom type name
@@ -212,6 +217,11 @@ export interface PythonSparkJobExecutableProps extends SharedSparkJobExecutableP
 export interface PythonShellExecutableProps extends SharedJobExecutableProps, PythonExecutableProps {}
 
 /**
+ * Props for creating a Python Ray job executable
+ */
+export interface PythonRayExecutableProps extends SharedJobExecutableProps, PythonExecutableProps {}
+
+/**
  * The executable properties related to the Glue job's GlueVersion, JobType and code
  */
 export class JobExecutable {
@@ -282,6 +292,19 @@ export class JobExecutable {
   }
 
   /**
+   * Create Python executable props for Ray jobs.
+   *
+   * @param props Ray Job props.
+   */
+  public static pythonRay(props: PythonRayExecutableProps): JobExecutable {
+    return new JobExecutable({
+      ...props,
+      type: JobType.RAY,
+      language: JobLanguage.PYTHON,
+    });
+  }
+
+  /**
    * Create a custom JobExecutable.
    *
    * @param config custom job executable configuration.
@@ -310,8 +333,11 @@ export class JobExecutable {
     if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
       throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
     }
-    if (config.pythonVersion === PythonVersion.THREE_NINE && config.type !== JobType.PYTHON_SHELL) {
-      throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell');
+    if (config.pythonVersion === PythonVersion.THREE_NINE && config.type !== JobType.PYTHON_SHELL && config.type !== JobType.RAY) {
+      throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell and Ray');
+    }
+    if (config.pythonVersion === PythonVersion.THREE && config.type === JobType.RAY) {
+      throw new Error('Specified PythonVersion PythonVersion.THREE is not supported for Ray');
     }
     this.config = config;
   }
