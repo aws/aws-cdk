@@ -383,8 +383,7 @@
     "esbuild": "^0.16.16",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
-    "typescript": "~3.8.3",
-    "cjs-module-lexer": "^1.2.2"
+    "typescript": "~3.8.3"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"
