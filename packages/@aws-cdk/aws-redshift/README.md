@@ -200,7 +200,7 @@ new Table(this, 'Table', {
 });
 ```
 
-Both the table and their respective columns can be configured to contain comments:
+Table columns can be configured to contain comments:
 
 ```ts fixture=cluster
 new Table(this, 'Table', {
@@ -210,7 +210,6 @@ new Table(this, 'Table', {
   ],
   cluster: cluster,
   databaseName: 'databaseName',
-  comment: 'This is a comment',
 });
 ```
 
