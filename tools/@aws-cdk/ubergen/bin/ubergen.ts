@@ -47,6 +47,11 @@ interface LibraryReference {
   readonly shortName: string;
 }
 
+type Export = string | {
+  readonly import?: string;
+  readonly require?: string;
+};
+
 interface PackageJson {
   readonly main?: string;
   readonly description?: string;
@@ -103,7 +108,7 @@ interface PackageJson {
      */
     readonly exports?: Record<string, string>;
   };
-  exports?: Record<string, string>;
+  exports?: Record<string, Export>;
 }
 
 /**
@@ -269,7 +274,10 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   // Control 'exports' field of the 'package.json'. This will control what kind of 'import' statements are
   // allowed for this package: we only want to allow the exact import statements that we want to support.
   packageJson.exports = {
-    '.': './index.js',
+    '.': {
+      import: './index.js',
+      require: './lazy-index.js',
+    },
 
     // We need to expose 'package.json' and '.jsii' because 'jsii' and 'jsii-reflect' load them using
     // require(). (-_-). Can be removed after https://github.com/aws/jsii/pull/3205 gets merged.
@@ -281,12 +289,15 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   };
 
   // We use the index.ts to compile type definitions.
-  // At the very end we replace the compiled index.js file with our fixed version exports.js.
-  // exports.js has the top level submodules exports defined as a getter function,
-  // so they are not automatically loaded when importing from `aws-cdk-lib`.
+  //
+  // We build two indexes: one for eager loading (used by ESM modules), and one
+  // for lazy loading (used by CJS modules). The lazy loading will result in faster
+  // loading times, because we don't have to load and parse all submodules right away,
+  // but is not compatible with ESM's loading algorithm.
+  //
   // This improves AWS CDK app performance by ~400ms.
   const indexStatements = new Array<string>();
-  const exportsStatements = new Array<string>();
+  const lazyExports = new Array<string>();
 
   for (const library of libraries) {
     const libDir = path.join(libRoot, library.shortName);
@@ -297,58 +308,23 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     }
     if (library.shortName === 'core') {
       indexStatements.push(`export * from './${library.shortName}';`);
-      exportsStatements.unshift(`export * from './${library.shortName}';`);
+      lazyExports.unshift(`export * from './${library.shortName}';`);
     } else {
       const exportName = library.shortName.replace(/-/g, '_');
 
       indexStatements.push(`export * as ${exportName} from './${library.shortName}';`);
-      addLazyExport(exportsStatements, `./${library.shortName}`, exportName);
+      lazyExports.push(`Object.defineProperty(exports, '${exportName}', { get: function () { return require('./${library.shortName}'); } });`);
     }
     copySubmoduleExports(packageJson.exports, library, library.shortName);
   }
 
   // make the exports.ts file pass linting
-  exportsStatements.unshift('const DUMMY = undefined;');
-  exportsStatements.unshift('/* eslint-disable @typescript-eslint/no-require-imports */');
+  lazyExports.unshift('/* eslint-disable @typescript-eslint/no-require-imports */');
 
   await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
-  await fs.writeFile(path.join(libRoot, 'exports.ts'), exportsStatements.join('\n'), { encoding: 'utf8' });
+  await fs.writeFile(path.join(libRoot, 'lazy-index.ts'), lazyExports.join('\n'), { encoding: 'utf8' });
 
   console.log('\t🍺 Success!');
-}
-
-
-/**
- * Make this module available under the given exportName, but make it lazily loaded
- *
- * If we don't do this, Node is going to load all submodules upon import (even if you don't use
- * any of their contents), which takes a long time.
- *
- * We need to do a little hack here to support this export style from ESM modules. The
- * ESM loader will lex any imported CJS files to detect named exports using a NPM package
- * called `cjs-module-lexer` (source: https://nodejs.org/api/packages.html#modules-loaders). This
- * lexer tries to avoid recognizing exports that may have side effects, and it will refuse to
- * recognize:
- *
- *    Object.defineProperty(..., 'myExport', get: () => require('./module'))
- *
- * Because we know our exports are safe and side-effect free, we trick it by hiding the
- * name in a string concatenation, and then add a plain export of something it WILL
- * recognize, but make sure it's a no-op:
- *
- *    Object.defineProperty(..., 'my' + 'Export', get: () => require('./module'))
- *    if (false) {
- *       exports.myExport = DUMMY;
- *    }
- *
- * The effect is the same but we bypass the lexer and everything works out at runtime.
- */
-function addLazyExport(into: string[], moduleName: string, exportName: string) {
-  const firstChar = exportName.substr(0, 1);
-  const rest = exportName.substr(1);
-
-  into.push(`Object.defineProperty(exports, '${firstChar}' + '${rest}', { get: function () { return require('${moduleName}'); } });`);
-  into.push(`if (false) { exports.${exportName} = DUMMY; }`);
 }
 
 /**
@@ -357,13 +333,21 @@ function addLazyExport(into: string[], moduleName: string, exportName: string) {
  * Replace the original 'main' export with an export of the new '<submodule>/index.ts` file we've written
  * in 'transformPackage'.
  */
-function copySubmoduleExports(targetExports: Record<string, string>, library: LibraryReference, subdirectory: string) {
+function copySubmoduleExports(targetExports: Record<string, Export>, library: LibraryReference, subdirectory: string) {
   const visibleName = library.shortName;
 
   // Do both REAL "exports" section, as well as virtual, ubergen-only "exports" section
   for (const exportSet of [library.packageJson.exports, library.packageJson.ubergen?.exports]) {
     for (const [relPath, relSource] of Object.entries(exportSet ?? {})) {
-      targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+      targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = resolveExport(relSource);
+    }
+  }
+
+  function resolveExport<A extends Export>(exp: A): A {
+    if (typeof exp === 'string') {
+      return `./${unixPath(path.join(subdirectory, exp))}` as any;
+    } else {
+      return Object.fromEntries(Object.entries(exp).map(([k, v]) => [k, v ? resolveExport(v) : undefined])) as any;
     }
   }
 
