@@ -4,9 +4,10 @@ import { Construct } from 'constructs';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { FileAssetParameters } from '../private/asset-parameters';
+import { Stack } from '../stack';
 import { assertBound } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
-import { ISynthesisSession } from './types';
+import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -44,7 +45,7 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
-export class LegacyStackSynthesizer extends StackSynthesizer {
+export class LegacyStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
   private cycle = false;
 
   /**
@@ -107,6 +108,18 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
 
     // Just do the default stuff, nothing special
     this.emitArtifact(session);
+  }
+
+  /**
+   * Produce a bound Stack Synthesizer for the given stack.
+   *
+   * This method may be called more than once on the same object.
+   */
+  public reusableBind(stack: Stack): IBoundStackSynthesizer {
+    // Create a copy of the current object and bind that
+    const copy = Object.create(this);
+    copy.bind(stack);
+    return copy;
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
