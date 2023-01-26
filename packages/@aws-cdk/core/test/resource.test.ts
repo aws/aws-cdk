@@ -192,7 +192,10 @@ describe('resource', () => {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
-    r1.cfnOptions.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
+    r1.cfnOptions.creationPolicy = {
+      autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 },
+      startFleet: true,
+    };
     // eslint-disable-next-line max-len
     r1.cfnOptions.updatePolicy = {
       autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
@@ -210,7 +213,10 @@ describe('resource', () => {
       Resources: {
         Resource: {
           Type: 'Type',
-          CreationPolicy: { AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 } },
+          CreationPolicy: {
+            AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 },
+            StartFleet: true,
+          },
           UpdatePolicy: {
             AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: false },
             AutoScalingReplacingUpdate: { WillReplace: true },

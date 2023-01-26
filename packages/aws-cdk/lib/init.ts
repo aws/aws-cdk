@@ -197,13 +197,17 @@ interface ProjectInfo {
 
 export async function availableInitTemplates(): Promise<InitTemplate[]> {
   return new Promise(async resolve => {
-    const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
-    const templateNames = await listDirectory(templatesDir);
-    const templates = new Array<InitTemplate>();
-    for (const templateName of templateNames) {
-      templates.push(await InitTemplate.fromName(templatesDir, templateName));
+    try {
+      const templatesDir = path.join(rootDir(), 'lib', 'init-templates');
+      const templateNames = await listDirectory(templatesDir);
+      const templates = new Array<InitTemplate>();
+      for (const templateName of templateNames) {
+        templates.push(await InitTemplate.fromName(templatesDir, templateName));
+      }
+      resolve(templates);
+    } catch {
+      resolve([]);
     }
-    resolve(templates);
   });
 }
 export async function availableInitLanguages(): Promise<string[]> {
