@@ -1004,7 +1004,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8359857aa9b7c3fbc8bba9a505282ba848915383c4549f21b9f93f9f35b56415.zip"
+     "S3Key": "4508d52ecab2a818efc3262cc12de3340159df975cc0709d374c6a5a2a84b148.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1176,7 +1176,8 @@
      }
     ],
     "distStyle": "KEY",
-    "sortStyle": "INTERLEAVED"
+    "sortStyle": "INTERLEAVED",
+    "comment": "A test table"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

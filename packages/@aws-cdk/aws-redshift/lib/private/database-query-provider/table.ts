@@ -60,6 +60,11 @@ async function createTable(
   }
 
   await executeStatement(statement, tableAndClusterProps);
+
+  if (tableAndClusterProps.comment) {
+    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.comment}'`, tableAndClusterProps);
+  }
+
   return tableName;
 }
 
@@ -141,6 +146,12 @@ async function updateTable(
         break;
       }
     }
+  }
+
+  const oldComment = oldResourceProperties.comment;
+  const newComment = tableAndClusterProps.comment;
+  if (oldComment !== newComment) {
+    alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
