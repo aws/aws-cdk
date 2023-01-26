@@ -24,6 +24,8 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
+import { PluginManager } from './api/validation/_manager';
+import { ValidationPlugin } from './api/validation/validation';
 
 export interface CdkToolkitProps {
 
@@ -722,6 +724,16 @@ export class CdkToolkit {
       strict: this.props.strict,
       verbose: this.props.verbose,
     });
+
+    // Hardcoding some path here for now. We don't want to bother with this
+    // until we have an integration working.
+    const manager = new PluginManager('/Users/<username>/plugins');
+
+    // TODO Load a fake plugin here
+    // const validator = ValidationPlugin.load();
+    // validator.validate(stacks.assembly).then((result) => {
+
+    // }).catch((e) => { throw e; }); };
   }
 
   /**
