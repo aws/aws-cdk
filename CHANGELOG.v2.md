@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.62.1](https://github.com/aws/aws-cdk/compare/v2.62.0...v2.62.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* `aws-cdk-lib` imports from ESM modules are broken ([#23846](https://github.com/aws/aws-cdk/issues/23846)) ([46b93a9](https://github.com/aws/aws-cdk/commit/46b93a913743ab5791b9ae722293dfbeb9692eef)), closes [#23813](https://github.com/aws/aws-cdk/issues/23813)
+
 ## [2.62.0](https://github.com/aws/aws-cdk/compare/v2.61.1...v2.62.0) (2023-01-25)
 
 
