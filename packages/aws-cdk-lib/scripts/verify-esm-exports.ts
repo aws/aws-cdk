@@ -13,13 +13,11 @@ async function main() {
 
   const result = lexer.parse(indexJs);
 
-  const allExports = [...result.exports, ...result.reexports];
-
-  if (!allExports.includes('aws_cognito')) {
+  if (!result.exports.includes('aws_cognito')) {
     throw new Error('The lexer did not find aws_cognito in the set of exports of index.js');
   }
-  if (!allExports.includes('Stack')) {
-    throw new Error('The lexer did not find Stack in the set of exports of index.js');
+  if (!result.reexports.includes('./core')) {
+    throw new Error('The lexer did not find ./core in the set of -reexports of index.js');
   }
 }
 
