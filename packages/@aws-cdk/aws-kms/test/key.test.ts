@@ -1046,7 +1046,7 @@ describe('hmac keys', () => {
   test('grantDecrypt grants kms:VerifyMac', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'Key', { 
+    const key = new kms.Key(stack, 'Key', {
       keySpec: KeySpec.HMAC_256,
     });
     const user = new iam.User(stack, 'User');
@@ -1072,7 +1072,7 @@ describe('hmac keys', () => {
   test('grantEncrypt grants kms:GenerateMac', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'Key', { 
+    const key = new kms.Key(stack, 'Key', {
       keySpec: KeySpec.HMAC_256,
     });
     const user = new iam.User(stack, 'User');
