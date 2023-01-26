@@ -21,6 +21,7 @@ export const ENCRYPT_ACTIONS = [
   'kms:Encrypt',
   'kms:ReEncrypt*',
   'kms:GenerateDataKey*',
+  'kms:GenerateMac',
 ];
 
 export const ENCRYPT_ACTIONS_HMAC = [
@@ -29,6 +30,7 @@ export const ENCRYPT_ACTIONS_HMAC = [
 
 export const DECRYPT_ACTIONS = [
   'kms:Decrypt',
+  'kms:VerifyMac',
 ];
 
 export const DECRYPT_ACTIONS_HMAC = [

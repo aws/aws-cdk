@@ -373,11 +373,6 @@ export enum KeyUsage {
    * Signing and verification
    */
   SIGN_VERIFY = 'SIGN_VERIFY',
-
-  /**
-   * Generating and verifying
-   */
-  GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
 }
 
 /**
@@ -431,7 +426,7 @@ export interface KeyProps {
    * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
    * and a new key is created with the specified value.
    *
-   * @default KeyUsage.ENCRYPT_DECRYPT for non HMAC keys KeyUsage.GENERATE_VERIFY_MAC for HMAC keys.
+   * @default KeyUsage.ENCRYPT_DECRYPT
    */
   readonly keyUsage?: KeyUsage;
 
@@ -664,39 +659,19 @@ export class Key extends KeyBase {
         KeySpec.ECC_NIST_P384,
         KeySpec.ECC_NIST_P521,
         KeySpec.ECC_SECG_P256K1,
-        KeySpec.HMAC_224,
-        KeySpec.HMAC_256,
-        KeySpec.HMAC_384,
-        KeySpec.HMAC_512,
       ],
       [KeyUsage.SIGN_VERIFY]: [
-        KeySpec.SYMMETRIC_DEFAULT,
-        KeySpec.HMAC_224,
-        KeySpec.HMAC_256,
-        KeySpec.HMAC_384,
-        KeySpec.HMAC_512,
-      ],
-      [KeyUsage.GENERATE_VERIFY_MAC]: [
-        KeySpec.ECC_NIST_P256,
-        KeySpec.ECC_NIST_P384,
-        KeySpec.ECC_NIST_P521,
-        KeySpec.ECC_SECG_P256K1,
-        KeySpec.RSA_2048,
-        KeySpec.RSA_3072,
-        KeySpec.RSA_4096,
         KeySpec.SYMMETRIC_DEFAULT,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
-    this.isHmacKey = keySpec == KeySpec.HMAC_224 || keySpec == KeySpec.HMAC_256 || keySpec == KeySpec.HMAC_384 || keySpec == KeySpec.HMAC_512;
-    const keyUsageDefault = this.isHmacKey ? KeyUsage.GENERATE_VERIFY_MAC : KeyUsage.ENCRYPT_DECRYPT;
-    const keyUsage = props.keyUsage ?? keyUsageDefault;
+    const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
       throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
-      throw new Error('key rotation cannot be enabled on asymmetric or hmac keys');
+      throw new Error('key rotation cannot be enabled on asymmetric keys');
     }
 
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
@@ -734,7 +709,7 @@ export class Key extends KeyBase {
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
       keySpec: props.keySpec,
-      keyUsage: this.isHmacKey ? keyUsage : props.keyUsage,
+      keyUsage: props.keyUsage,
       keyPolicy: this.policy,
       pendingWindowInDays: pendingWindowInDays,
     });
