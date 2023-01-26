@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as kms from '../lib';
+import { KeySpec } from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
   'kms:Create*',
@@ -142,7 +143,7 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: Match.arrayWith(['kms:Decrypt']),
+            Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
           },
@@ -181,7 +182,7 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: Match.arrayWith(['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*']),
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
           },
@@ -209,11 +210,11 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: Match.arrayWith([
+            Action: [
               'kms:Encrypt',
               'kms:ReEncrypt*',
               'kms:GenerateDataKey*',
-            ]),
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::ImportValue': 'KeyStack:ExportsOutputFnGetAttKey961B73FDArn5A860C43',
@@ -242,11 +243,11 @@ describe('key policies', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           {
-            Action: Match.arrayWith([
+            Action: [
               'kms:Encrypt',
               'kms:ReEncrypt*',
               'kms:GenerateDataKey*',
-            ]),
+            ],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/MyRolePhysicalName']] } },
             Resource: '*',
@@ -259,11 +260,11 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: Match.arrayWith([
+            Action: [
               'kms:Encrypt',
               'kms:ReEncrypt*',
               'kms:GenerateDataKey*',
-            ]),
+            ],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -289,11 +290,11 @@ describe('key policies', () => {
     Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: Match.arrayWith([{
-          Action: Match.arrayWith([
+          Action: [
             'kms:Encrypt',
             'kms:ReEncrypt*',
             'kms:GenerateDataKey*',
-          ]),
+          ],
           Effect: 'Allow',
           Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']] } },
           Resource: '*',
@@ -305,11 +306,11 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: Match.arrayWith([
+            Action: [
               'kms:Encrypt',
               'kms:ReEncrypt*',
               'kms:GenerateDataKey*',
-            ]),
+            ],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -341,11 +342,11 @@ describe('key policies', () => {
           Resource: '*',
         },
         {
-          Action: Match.arrayWith([
+          Action: [
             'kms:Encrypt',
             'kms:ReEncrypt*',
             'kms:GenerateDataKey*',
-          ]),
+          ],
           Effect: 'Allow',
           Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:root']] } },
           Resource: '*',
@@ -734,7 +735,7 @@ describe('fromCfnKey()', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: Match.arrayWith(['kms:Decrypt']),
+                Action: 'kms:Decrypt',
                 Effect: 'Allow',
                 Resource: {
                   'Fn::GetAtt': ['CfnKey', 'Arn'],
@@ -766,7 +767,7 @@ describe('fromCfnKey()', () => {
                 Resource: '*',
               },
               {
-                Action: Match.arrayWith(['kms:Decrypt']),
+                Action: 'kms:Decrypt',
                 Effect: 'Allow',
                 Principal: {
                   AWS: {
@@ -1045,7 +1046,9 @@ describe('hmac keys', () => {
   test('grantDecrypt grants kms:VerifyMac', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'Key');
+    const key = new kms.Key(stack, 'Key', { 
+      keySpec: KeySpec.HMAC_256,
+    });
     const user = new iam.User(stack, 'User');
 
     // WHEN
@@ -1056,7 +1059,7 @@ describe('hmac keys', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: Match.arrayWith(['kms:VerifyMac']),
+            Action: 'kms:VerifyMac',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
           },
@@ -1069,7 +1072,9 @@ describe('hmac keys', () => {
   test('grantEncrypt grants kms:GenerateMac', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'Key');
+    const key = new kms.Key(stack, 'Key', { 
+      keySpec: KeySpec.HMAC_256,
+    });
     const user = new iam.User(stack, 'User');
 
     // WHEN
@@ -1080,7 +1085,7 @@ describe('hmac keys', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: Match.arrayWith(['kms:GenerateMac']),
+            Action: 'kms:GenerateMac',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
           },
