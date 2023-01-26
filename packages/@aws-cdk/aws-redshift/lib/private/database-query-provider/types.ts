@@ -27,7 +27,6 @@ export enum TableSortStyle {
 
 /**
  * The compression encoding of a column.
- * This has been duplicated here to exporting private types.
  *
  * @see https://docs.aws.amazon.com/redshift/latest/dg/c_Compression_encodings.html
  */
