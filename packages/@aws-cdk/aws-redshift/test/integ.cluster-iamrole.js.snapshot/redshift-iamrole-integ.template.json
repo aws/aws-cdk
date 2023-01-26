@@ -391,7 +391,7 @@
     }
    }
   },
-  "Role291939BC6": {
+  "RoleA3119C8FE": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -408,7 +408,7 @@
     }
    }
   },
-  "Role13A5C70C1": {
+  "RoleB318292C8": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -521,7 +521,7 @@
     "IamRoles": [
      {
       "Fn::GetAtt": [
-       "Role13A5C70C1",
+       "RoleB318292C8",
        "Arn"
       ]
      }
@@ -540,7 +540,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusteraddroleRole2CCF96C23": {
+  "ClusteraddroleRoleAA2FB3227": {
    "Type": "Custom::ModifyClusterIamRoles",
    "Properties": {
     "ServiceToken": {
@@ -560,14 +560,14 @@
        "\",\"AddIamRoles\":[\"",
        {
         "Fn::GetAtt": [
-         "Role291939BC6",
+         "RoleA3119C8FE",
          "Arn"
         ]
        },
        "\"]},\"physicalResourceId\":{\"id\":\"",
        {
         "Fn::GetAtt": [
-         "Role291939BC6",
+         "RoleA3119C8FE",
          "Arn"
         ]
        },
@@ -590,14 +590,14 @@
        "\",\"AddIamRoles\":[\"",
        {
         "Fn::GetAtt": [
-         "Role291939BC6",
+         "RoleA3119C8FE",
          "Arn"
         ]
        },
        "\"]},\"physicalResourceId\":{\"id\":\"",
        {
         "Fn::GetAtt": [
-         "Role291939BC6",
+         "RoleA3119C8FE",
          "Arn"
         ]
        },
@@ -620,14 +620,14 @@
        "\",\"RemoveIamRoles\":[\"",
        {
         "Fn::GetAtt": [
-         "Role291939BC6",
+         "RoleA3119C8FE",
          "Arn"
         ]
        },
        "\"]},\"physicalResourceId\":{\"id\":\"",
        {
         "Fn::GetAtt": [
-         "Role291939BC6",
+         "RoleA3119C8FE",
          "Arn"
         ]
        },
@@ -642,12 +642,12 @@
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
-    "ClusteraddroleRole2CustomResourcePolicyFE1C6F0D"
+    "ClusteraddroleRoleACustomResourcePolicyB2DE8E3F"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusteraddroleRole2CustomResourcePolicyFE1C6F0D": {
+  "ClusteraddroleRoleACustomResourcePolicyB2DE8E3F": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -660,7 +660,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusteraddroleRole2CustomResourcePolicyFE1C6F0D",
+    "PolicyName": "ClusteraddroleRoleACustomResourcePolicyB2DE8E3F",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -709,7 +709,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "Role291939BC6",
+         "RoleA3119C8FE",
          "Arn"
         ]
        }

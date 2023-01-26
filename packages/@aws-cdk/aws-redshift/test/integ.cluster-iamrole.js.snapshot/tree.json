@@ -651,13 +651,13 @@
               "version": "0.0.0"
             }
           },
-          "Role2": {
-            "id": "Role2",
-            "path": "redshift-iamrole-integ/Role2",
+          "RoleA": {
+            "id": "RoleA",
+            "path": "redshift-iamrole-integ/RoleA",
             "children": {
-              "ImportRole2": {
-                "id": "ImportRole2",
-                "path": "redshift-iamrole-integ/Role2/ImportRole2",
+              "ImportRoleA": {
+                "id": "ImportRoleA",
+                "path": "redshift-iamrole-integ/RoleA/ImportRoleA",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -665,7 +665,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "redshift-iamrole-integ/Role2/Resource",
+                "path": "redshift-iamrole-integ/RoleA/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -694,13 +694,13 @@
               "version": "0.0.0"
             }
           },
-          "Role1": {
-            "id": "Role1",
-            "path": "redshift-iamrole-integ/Role1",
+          "RoleB": {
+            "id": "RoleB",
+            "path": "redshift-iamrole-integ/RoleB",
             "children": {
-              "ImportRole1": {
-                "id": "ImportRole1",
-                "path": "redshift-iamrole-integ/Role1/ImportRole1",
+              "ImportRoleB": {
+                "id": "ImportRoleB",
+                "path": "redshift-iamrole-integ/RoleB/ImportRoleB",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
@@ -708,7 +708,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "redshift-iamrole-integ/Role1/Resource",
+                "path": "redshift-iamrole-integ/RoleB/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -908,7 +908,7 @@
                     "iamRoles": [
                       {
                         "Fn::GetAtt": [
-                          "Role13A5C70C1",
+                          "RoleB318292C8",
                           "Arn"
                         ]
                       }
@@ -930,13 +930,13 @@
                   "version": "0.0.0"
                 }
               },
-              "add-role-Role2": {
-                "id": "add-role-Role2",
-                "path": "redshift-iamrole-integ/Cluster/add-role-Role2",
+              "add-role-RoleA": {
+                "id": "add-role-RoleA",
+                "path": "redshift-iamrole-integ/Cluster/add-role-RoleA",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "redshift-iamrole-integ/Cluster/add-role-Role2/Provider",
+                    "path": "redshift-iamrole-integ/Cluster/add-role-RoleA/Provider",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -944,11 +944,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "redshift-iamrole-integ/Cluster/add-role-Role2/Resource",
+                    "path": "redshift-iamrole-integ/Cluster/add-role-RoleA/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "redshift-iamrole-integ/Cluster/add-role-Role2/Resource/Default",
+                        "path": "redshift-iamrole-integ/Cluster/add-role-RoleA/Resource/Default",
                         "constructInfo": {
                           "fqn": "@aws-cdk/core.CfnResource",
                           "version": "0.0.0"
@@ -962,11 +962,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "redshift-iamrole-integ/Cluster/add-role-Role2/CustomResourcePolicy",
+                    "path": "redshift-iamrole-integ/Cluster/add-role-RoleA/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "redshift-iamrole-integ/Cluster/add-role-Role2/CustomResourcePolicy/Resource",
+                        "path": "redshift-iamrole-integ/Cluster/add-role-RoleA/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -980,7 +980,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusteraddroleRole2CustomResourcePolicyFE1C6F0D",
+                            "policyName": "ClusteraddroleRoleACustomResourcePolicyB2DE8E3F",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1083,7 +1083,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "Role291939BC6",
+                                      "RoleA3119C8FE",
                                       "Arn"
                                     ]
                                   }

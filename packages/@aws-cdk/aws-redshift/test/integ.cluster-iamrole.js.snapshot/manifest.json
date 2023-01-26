@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6035d2777d8aeb95ba80e06333d6e26f89087f242e2a859011c969eb2293a3c3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62416b81b75b2f3e2aaef03c6ebb06cbc9c9643581cb32402fc66b56d05e79d1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,16 +171,16 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/redshift-iamrole-integ/Role2/Resource": [
+        "/redshift-iamrole-integ/RoleA/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Role291939BC6"
+            "data": "RoleA3119C8FE"
           }
         ],
-        "/redshift-iamrole-integ/Role1/Resource": [
+        "/redshift-iamrole-integ/RoleB/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Role13A5C70C1"
+            "data": "RoleB318292C8"
           }
         ],
         "/redshift-iamrole-integ/Cluster/Subnets/Default": [
@@ -213,16 +213,16 @@
             "data": "ClusterEB0386A7"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/add-role-Role2/Resource/Default": [
+        "/redshift-iamrole-integ/Cluster/add-role-RoleA/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusteraddroleRole2CCF96C23"
+            "data": "ClusteraddroleRoleAA2FB3227"
           }
         ],
-        "/redshift-iamrole-integ/Cluster/add-role-Role2/CustomResourcePolicy/Resource": [
+        "/redshift-iamrole-integ/Cluster/add-role-RoleA/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusteraddroleRole2CustomResourcePolicyFE1C6F0D"
+            "data": "ClusteraddroleRoleACustomResourcePolicyB2DE8E3F"
           }
         ],
         "/redshift-iamrole-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -253,33 +253,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "Role1ABCC5F0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusteraddroleRoleAA246548": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusteraddroleRoleAA246548",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusteraddroleRoleCustomResourcePolicy9F03684E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusteraddroleRoleCustomResourcePolicy9F03684E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

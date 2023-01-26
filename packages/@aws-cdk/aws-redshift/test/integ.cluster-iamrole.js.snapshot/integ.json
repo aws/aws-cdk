@@ -5,6 +5,7 @@
       "stacks": [
         "redshift-iamrole-integ"
       ],
+      "diffAssets": true,
       "assertionStack": "IamRoleInteg/DefaultTest/DeployAssert",
       "assertionStackName": "IamRoleIntegDefaultTestDeployAssertBEF20992"
     }

@@ -10,7 +10,7 @@ class RedshiftEnv extends Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'VPC');
-    const role = new iam.Role(this, 'Role2', {
+    const role = new iam.Role(this, 'RoleA', {
       assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
     });
 
@@ -23,7 +23,7 @@ class RedshiftEnv extends Stack {
       masterUser: {
         masterUsername: 'admin',
       },
-      roles: [new iam.Role(this, 'Role1', {
+      roles: [new iam.Role(this, 'RoleB', {
         assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
       })],
       removalPolicy: RemovalPolicy.DESTROY,
@@ -37,6 +37,7 @@ const app = new App();
 
 new integ.IntegTest(app, 'IamRoleInteg', {
   testCases: [new RedshiftEnv(app, 'redshift-iamrole-integ')],
+  diffAssets: true,
 });
 
 app.synth();
