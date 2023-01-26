@@ -45,7 +45,7 @@ rule.addTarget(new targets.EcsTask({
     ],
   }],
   deadLetterQueue,
-  propagateTags: true,
+  propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
   tagList: [
     {
       key: 'my-tag',

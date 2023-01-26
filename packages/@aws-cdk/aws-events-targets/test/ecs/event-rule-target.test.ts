@@ -799,7 +799,7 @@ test('sets the propagate tags flag', () => {
       containerName: 'TheContainer',
       command: ['echo', events.EventField.fromPath('$.detail.event')],
     }],
-    propagateTags: true,
+    propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
   }));
 
   // THEN
@@ -812,6 +812,32 @@ test('sets the propagate tags flag', () => {
       }),
     ],
   });
+});
+
+test('throws an error when trying to pass a disallowed value for propagateTags', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+      propagateTags: ecs.PropagatedTagSource.SERVICE, // propagateTags must be TASK_DEFINITION or NONE
+    }));
+  }).toThrowError('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
 });
 
 test('sets tag lists', () => {

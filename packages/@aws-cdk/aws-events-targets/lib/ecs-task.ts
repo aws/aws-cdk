@@ -101,7 +101,7 @@ export interface EcsTaskProps extends TargetBaseProps {
     *
     * @default - Tags will not be propagated
     */
-  readonly propagateTags?: boolean
+  readonly propagateTags?: ecs.PropagatedTagSource
 
   /**
      * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
@@ -148,7 +148,12 @@ export class EcsTask implements events.IRuleTarget {
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
-    this.propagateTags = props.propagateTags === true ? ecs.PropagatedTagSource.TASK_DEFINITION : undefined ;
+
+    const propagateTagsValidValues = [ecs.PropagatedTagSource.TASK_DEFINITION, ecs.PropagatedTagSource.NONE];
+    if (props.propagateTags && !propagateTagsValidValues.includes(props.propagateTags)) {
+      throw new Error('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
+    }
+    this.propagateTags = props.propagateTags;
 
     this.role = props.role ?? singletonEventRole(this.taskDefinition);
     for (const stmt of this.createEventRolePolicyStatements()) {

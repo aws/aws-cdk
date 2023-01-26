@@ -365,7 +365,7 @@ rule.addTarget(
   new targets.EcsTask( {
       cluster: cluster,
       taskDefinition: taskDefinition,
-      propagateTags: true,
+      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
       tagList: [
         {
           key: 'my-tag',
