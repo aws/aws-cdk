@@ -1859,7 +1859,7 @@ export class ManagedRuleIdentifiers {
    * and object-level actions on resources in the bucket for principals from other AWS accounts.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-blacklisted-actions-prohibited.html
    */
-  public static readonly S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED = 'S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED';
+  public static readonly S3_BUCKET_BLOCKED_ACTIONS_PROHIBITED = 'S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED';
   /**
    * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-level-public-access-prohibited.html
