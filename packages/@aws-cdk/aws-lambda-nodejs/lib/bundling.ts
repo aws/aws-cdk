@@ -6,7 +6,6 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
-import { BundlingFileAccess } from '@aws-cdk/core';
 
 const ESBUILD_MAJOR_VERSION = '0';
 
@@ -48,8 +47,7 @@ export interface BundlingProps extends BundlingOptions {
    * Which option to use to copy the source files to the docker container and output files back
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly bundlingFileAccess?: BundlingFileAccess;
-
+  readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 }
 
 /**

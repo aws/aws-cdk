@@ -258,15 +258,14 @@ container for Docker bundling or on the host OS for local bundling.
 By default the input and output of Docker based bundling is handled via bind mounts.
 In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
 
- ```ts
- import { BundlingFileAccess } from '@aws-cdk/core';
- const entry = '/path/to/function';
+```ts
+const entry = '/path/to/function';
 
 new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
-   },
+  },
 });
 ```

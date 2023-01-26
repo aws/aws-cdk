@@ -6,7 +6,6 @@ import { AssetBundlingBindMount, AssetBundlingVolumeCopy } from '../../lib/priva
 describe('bundling', () => {
   afterEach(() => {
     sinon.restore();
-
   });
 
   test('AssetBundlingVolumeCopy bundles with volume copy ', () => {
@@ -109,7 +108,5 @@ describe('bundling', () => {
       '-v',
       'alpine',
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
   });
-
 });

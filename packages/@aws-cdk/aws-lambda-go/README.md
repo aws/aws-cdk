@@ -291,7 +291,6 @@ By default the input and output of Docker based bundling is handled via bind mou
 In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
 
  ```ts
-import { BundlingFileAccess } from '@aws-cdk/core';
 new go.GoFunction(this, 'GoFunction', {
   entry: 'app/cmd/api',
   bundling: {

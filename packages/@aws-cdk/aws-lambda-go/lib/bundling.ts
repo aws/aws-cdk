@@ -2,7 +2,6 @@ import * as os from 'os';
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { BundlingFileAccess } from '@aws-cdk/core';
 import { BundlingOptions } from './types';
 import { exec, findUp, getGoBuildVersion } from './util';
 
@@ -66,7 +65,7 @@ export interface BundlingProps extends BundlingOptions {
    * Which option to use to copy the source files to the docker container and output files back
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly bundlingFileAccess?: BundlingFileAccess;
+  readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 }
 
 /**
