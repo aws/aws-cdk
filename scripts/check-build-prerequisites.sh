@@ -75,18 +75,18 @@ else
 fi
 
 # [Docker >= 19.03]
-app="docker"
+app=${CDK_DOCKER:-docker}
 app_min="19.03.0"
 check_which $app $app_min
 
 # Make sure docker is running
-echo -e "Checking if docker is running... \c"
-docker_running=$(docker ps)
+echo -e "Checking if $app is running... \c"
+docker_running=$($app ps)
 if [ $? -eq 0 ]
 then
     echo "Ok"
 else
-    die "Docker is not running"
+    die "$app is not running"
 fi
 
 # [.NET == 3.1.x, == 5.x]
