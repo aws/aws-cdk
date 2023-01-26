@@ -551,23 +551,23 @@ describe('update', () => {
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
         Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS '${newComment}'`,
       }));
+    });
 
-      test('does not replace if comment removed on table', async () => {
-        const newEvent = {
-          ...event,
-          OldResourceProperties: {
-            ...event.OldResourceProperties,
-            comment: 'oldComment',
-          },
-        };
+    test('does not replace if comment removed on column', async () => {
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableColumns: [{ name: 'col1', dataType: 'varchar(1)', comment: 'oldComment' }],
+        },
+      };
 
-        await expect(manageTable(resourceProperties, newEvent)).resolves.toMatchObject({
-          PhysicalResourceId: physicalResourceId,
-        });
-        expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-          Sql: `COMMENT ON TABLE ${physicalResourceId} IS NULL`,
-        }));
+      await expect(manageTable(resourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
       });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS NULL`,
+      }));
     });
   });
 
