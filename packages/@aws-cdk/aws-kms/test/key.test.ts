@@ -1018,3 +1018,90 @@ describe('Key.fromKeyArn()', () => {
     });
   });
 });
+
+
+describe('hmac keys', () => {
+  test('usage defaults to GENERATE_VERIFY_MAC', () => {
+    const stack = new cdk.Stack();
+    new kms.Key(stack, 'Key', { keySpec: kms.KeySpec.HMAC_224 });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeySpec: 'HMAC_224',
+      KeyUsage: 'GENERATE_VERIFY_MAC',
+    });
+  });
+
+  test('usage other than GENERATE_VERIFY_MAC raises error', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new kms.Key(stack, 'Key1', {
+      keySpec: kms.KeySpec.HMAC_224,
+      keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT,
+    })).toThrow('key spec \'HMAC_224\' is not valid with usage \'ENCRYPT_DECRYPT\'');
+    expect(() => new kms.Key(stack, 'Key2', {
+      keySpec: kms.KeySpec.HMAC_224,
+      keyUsage: kms.KeyUsage.SIGN_VERIFY,
+    })).toThrow('key spec \'HMAC_224\' is not valid with usage \'SIGN_VERIFY\'');
+  });
+
+  test('grantDecrypt grants kms:VerifyMac', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.HMAC_256,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantDecrypt(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:VerifyMac',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grantEncrypt grants kms:GenerateMac', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.HMAC_256,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantEncrypt(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:GenerateMac',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('rotation not allowed', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new kms.Key(stack, 'Key1', {
+      keySpec: kms.KeySpec.HMAC_224,
+      enableKeyRotation: true,
+    })).toThrow('key rotation cannot be enabled on asymmetric or hmac keys');
+  });
+});
