@@ -408,7 +408,7 @@
   "exports": {
     ".": {
       "import": "./index.js",
-      "require": "./exports.js"
+      "require": "./lazy-index.js"
     },
     "./package.json": "./package.json",
     "./.jsii": "./.jsii",
