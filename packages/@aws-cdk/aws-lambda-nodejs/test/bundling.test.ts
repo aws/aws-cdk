@@ -835,13 +835,13 @@ test('Custom bundling file copy variant', () => {
     runtime: Runtime.NODEJS_14_X,
     architecture: Architecture.X86_64,
     forceDockerBundling: true,
-    assetStagingType: BundlingFileAccess.VOLUME_COPY,
+    bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
-      assetStagingType: BundlingFileAccess.VOLUME_COPY,
+      bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
     }),
   });
 });

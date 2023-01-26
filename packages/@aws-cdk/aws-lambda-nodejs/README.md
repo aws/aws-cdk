@@ -347,7 +347,7 @@ In situtations where this does not work, like Docker-in-Docker setups or when us
 import { BundlingFileAccess } from '@aws-cdk/core';
  new nodejs.NodejsFunction(this, 'my-handler', {
   bundling: {
-    assetStagingType: BundlingFileAccess.VOLUME_COPY,
+    bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
   },
 });
 ```

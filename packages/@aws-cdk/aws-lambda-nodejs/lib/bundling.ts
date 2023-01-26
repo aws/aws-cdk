@@ -48,7 +48,7 @@ export interface BundlingProps extends BundlingOptions {
    * Which option to use to copy the source files to the docker container and output files back
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly assetStagingType?: BundlingFileAccess;
+  readonly bundlingFileAccess?: BundlingFileAccess;
 
 }
 
@@ -90,7 +90,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly local?: cdk.ILocalBundling;
-  public readonly assetStagingType?: cdk.BundlingFileAccess;
+  public readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
@@ -162,7 +162,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
-    this.assetStagingType = props.assetStagingType;
+    this.bundlingFileAccess = props.bundlingFileAccess;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced

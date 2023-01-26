@@ -295,7 +295,7 @@ import { BundlingFileAccess } from '@aws-cdk/core';
 new go.GoFunction(this, 'GoFunction', {
   entry: 'app/cmd/api',
   bundling: {
-       assetStagingType: BundlingFileAccess.VOLUME_COPY,
+       bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
    },
 });
 ```

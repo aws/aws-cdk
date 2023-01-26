@@ -114,7 +114,7 @@ export interface BundlingOptions {
    * The access mechanism used to make source files available to the bundling container and to return the bundling output back to the host.
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly assetStagingType?: BundlingFileAccess;
+  readonly bundlingFileAccess?: BundlingFileAccess;
 }
 
 /**

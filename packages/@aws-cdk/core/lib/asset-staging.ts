@@ -444,7 +444,7 @@ export class AssetStaging extends Construct {
           ...options,
         };
 
-        switch (options.assetStagingType) {
+        switch (options.bundlingFileAccess) {
           case BundlingFileAccess.VOLUME_COPY:
             new AssetBundlingVolumeCopy(assetStagingOptions).run();
             break;
