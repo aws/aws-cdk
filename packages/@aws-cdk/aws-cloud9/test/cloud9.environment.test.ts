@@ -79,9 +79,9 @@ test('throw error when subnetSelection not specified and the provided VPC has no
 test('can use CodeCommit repositories', () => {
   // WHEN
   const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
-
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
+    owner: 'xyz',
     clonedRepositories: [
       cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
     ],
@@ -90,6 +90,7 @@ test('can use CodeCommit repositories', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     InstanceType: 't2.micro',
+    OwnerArn: 'xyz',
     Repositories: [
       {
         PathComponent: '/src',

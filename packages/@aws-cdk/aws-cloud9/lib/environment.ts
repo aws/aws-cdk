@@ -59,6 +59,11 @@ export enum ImageId {
  */
 export interface Ec2EnvironmentProps {
   /**
+   * OwnerArn
+   * @default
+   */
+  readonly owner?: string;
+  /**
    * The type of instance to connect to the environment.
    *
    * @default - t2.micro
@@ -182,6 +187,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.ec2EnvironmentName,
       description: props.description,
+      ownerArn: props.owner,
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
       subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0],
       repositories: props.clonedRepositories ? props.clonedRepositories.map(r => ({
