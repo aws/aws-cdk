@@ -48,7 +48,6 @@ const table = new redshift.Table(stack, 'Table', {
   ],
   distStyle: redshift.TableDistStyle.KEY,
   sortStyle: redshift.TableSortStyle.INTERLEAVED,
-  comment: 'A test table',
 });
 table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
 
