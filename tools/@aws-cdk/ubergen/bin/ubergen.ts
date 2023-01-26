@@ -299,19 +299,56 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
       indexStatements.push(`export * from './${library.shortName}';`);
       exportsStatements.unshift(`export * from './${library.shortName}';`);
     } else {
-      indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
-      exportsStatements.push(`Object.defineProperty(exports, '${library.shortName.replace(/-/g, '_')}', { get: function () { return require('./${library.shortName}'); } });`);
+      const exportName = library.shortName.replace(/-/g, '_');
+
+      indexStatements.push(`export * as ${exportName} from './${library.shortName}';`);
+      addLazyExport(exportsStatements, `./${library.shortName}`, exportName);
     }
     copySubmoduleExports(packageJson.exports, library, library.shortName);
   }
 
   // make the exports.ts file pass linting
+  exportsStatements.unshift('const DUMMY = undefined;');
   exportsStatements.unshift('/* eslint-disable @typescript-eslint/no-require-imports */');
 
   await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
   await fs.writeFile(path.join(libRoot, 'exports.ts'), exportsStatements.join('\n'), { encoding: 'utf8' });
 
   console.log('\t🍺 Success!');
+}
+
+
+/**
+ * Make this module available under the given exportName, but make it lazily loaded
+ *
+ * If we don't do this, Node is going to load all submodules upon import (even if you don't use
+ * any of their contents), which takes a long time.
+ *
+ * We need to do a little hack here to support this export style from ESM modules. The
+ * ESM loader will lex any imported CJS files to detect named exports using a NPM package
+ * called `cjs-module-lexer` (source: https://nodejs.org/api/packages.html#modules-loaders). This
+ * lexer tries to avoid recognizing exports that may have side effects, and it will refuse to
+ * recognize:
+ *
+ *    Object.defineProperty(..., 'myExport', get: () => require('./module'))
+ *
+ * Because we know our exports are safe and side-effect free, we trick it by hiding the
+ * name in a string concatenation, and then add a plain export of something it WILL
+ * recognize, but make sure it's a no-op:
+ *
+ *    Object.defineProperty(..., 'my' + 'Export', get: () => require('./module'))
+ *    if (false) {
+ *       exports.myExport = DUMMY;
+ *    }
+ *
+ * The effect is the same but we bypass the lexer and everything works out at runtime.
+ */
+function addLazyExport(into: string[], moduleName: string, exportName: string) {
+  const firstChar = exportName.substr(0, 1);
+  const rest = exportName.substr(1);
+
+  into.push(`Object.defineProperty(exports, '${firstChar}' + '${rest}', { get: function () { return require('${moduleName}'); } });`);
+  into.push(`if (false) { exports.${exportName} = DUMMY; }`);
 }
 
 /**

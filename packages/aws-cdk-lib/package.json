@@ -41,7 +41,8 @@
       "cp exports.js index.js",
       "node ./scripts/verify-imports-resolve-same.js",
       "node ./scripts/verify-imports-shielded.js",
-      "/bin/bash ./scripts/minify-sources.sh"
+      "/bin/bash ./scripts/minify-sources.sh",
+      "node ./scripts/verify-esm-exports.js"
     ]
   },
   "cdk-package": {
@@ -384,7 +385,8 @@
     "esbuild": "^0.16.16",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
-    "typescript": "~3.8.3"
+    "typescript": "~3.8.3",
+    "cjs-module-lexer": "^1.2.2"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"
