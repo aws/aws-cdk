@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "hmac-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kms-1"
+      ],
+      "assertionStack": "hmac-test/DefaultTest/DeployAssert",
+      "assertionStackName": "hmactestDefaultTestDeployAssert11368140"
+    }
+  }
+}
