@@ -50,6 +50,8 @@ const key = new kms.Key(this, 'MyKey', {
 });
 ```
 
+When creating HMAC keys the `keyUsage` will default to `GENERATE_VERIFY_MAC`.
+
 ## Sharing keys between stacks
 
 To use a KMS key in a different stack in the same CDK application,
@@ -168,6 +170,8 @@ solves many issues around cyclic dependencies between stacks.
 Without this default key policy, future permissions must be added to both the key policy and IAM principal policy,
 which can cause cyclic dependencies if the permissions cross stack boundaries.
 (For example, an encrypted bucket in one stack, and Lambda function that accesses it in another.)
+
+For HMAC keys `grantEncrypt` will allow `GenerateMac`, `grantDecrypt` will allow `ValidateMac`.
 
 ### Appending to or replacing the default key policy
 
