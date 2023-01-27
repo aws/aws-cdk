@@ -407,6 +407,7 @@
   },
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./index.js",
       "require": "./lazy-index.js"
     },
