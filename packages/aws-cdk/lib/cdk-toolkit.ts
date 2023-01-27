@@ -725,6 +725,10 @@ export class CdkToolkit {
       verbose: this.props.verbose,
     });
 
+
+    // This might not be the best place to put this logic. Leaving it here
+    // for now until we have a better idea of how we want to do this.
+
     // Hardcoding some path here for now. We don't want to bother with this
     // until we have an integration working.
     const manager = new PluginManager('/Users/<username>/plugins');
