@@ -87,6 +87,8 @@ abstract class KeyBase extends Resource implements IKey {
    */
   protected abstract readonly trustAccountIdentities: boolean;
 
+  protected abstract readonly isHmacKey?: boolean;
+
   /**
    * Collection of aliases added to the key
    *
@@ -176,21 +178,45 @@ abstract class KeyBase extends Resource implements IKey {
    * Grant decryption permissions using this key to the given principal
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
+    let actions: string[];
+    if (typeof this.isHmacKey == 'undefined') {
+      actions = [...perms.DECRYPT_ACTIONS, ...perms.DECRYPT_ACTIONS_HMAC];
+    } else if (this.isHmacKey) {
+      actions = [...perms.DECRYPT_ACTIONS_HMAC];
+    } else {
+      actions = [...perms.DECRYPT_ACTIONS];
+    }
+    return this.grant(grantee, ...actions);
   }
 
   /**
    * Grant encryption permissions using this key to the given principal
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
+    let actions: string[];
+    if (typeof this.isHmacKey == 'undefined') {
+      actions = [...perms.ENCRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS_HMAC];
+    } else if (this.isHmacKey) {
+      actions = [...perms.ENCRYPT_ACTIONS_HMAC];
+    } else {
+      actions = [...perms.ENCRYPT_ACTIONS];
+    }
+    return this.grant(grantee, ...actions);
   }
 
   /**
    * Grant encryption and decryption permissions using this key to the given principal
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+    let actions: string[];
+    if (typeof this.isHmacKey == 'undefined') {
+      actions = [...perms.ENCRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS_HMAC, ...perms.DECRYPT_ACTIONS, ...perms.DECRYPT_ACTIONS_HMAC];
+    } else if (this.isHmacKey) {
+      actions = [...perms.ENCRYPT_ACTIONS_HMAC, ...perms.DECRYPT_ACTIONS_HMAC];
+    } else {
+      actions = [...perms.ENCRYPT_ACTIONS, ...perms.DECRYPT_ACTIONS];
+    }
+    return this.grant(grantee, ...actions);
   }
 
   /**
@@ -300,6 +326,38 @@ export enum KeySpec {
    * Valid usage: SIGN_VERIFY
    */
   ECC_SECG_P256K1 = 'ECC_SECG_P256K1',
+
+  /**
+   * Hash-Based Message Authentication Code (HMAC) KMS keys are symmetric keys that you use to generate
+   * and verify HMACs within AWS KMS. In general, longer keys are more secure.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_224 = 'HMAC_224',
+
+  /**
+   * Hash-Based Message Authentication Code (HMAC) KMS keys are symmetric keys that you use to generate
+   * and verify HMACs within AWS KMS. In general, longer keys are more secure.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_256 = 'HMAC_256',
+
+  /**
+   * Hash-Based Message Authentication Code (HMAC) KMS keys are symmetric keys that you use to generate
+   * and verify HMACs within AWS KMS. In general, longer keys are more secure.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_384 = 'HMAC_384',
+
+  /**
+   * Hash-Based Message Authentication Code (HMAC) KMS keys are symmetric keys that you use to generate
+   * and verify HMACs within AWS KMS. In general, longer keys are more secure.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_512 = 'HMAC_512'
 }
 
 /**
@@ -315,6 +373,11 @@ export enum KeyUsage {
    * Signing and verification
    */
   SIGN_VERIFY = 'SIGN_VERIFY',
+
+  /**
+   * Generating and verifying
+   */
+  GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
 }
 
 /**
@@ -438,6 +501,19 @@ export interface KeyProps {
   readonly pendingWindow?: Duration;
 }
 
+
+/**
+ * Options allowing customizing the behavior of `Key.fromKeyArn`.
+ */
+export interface FromKeyArnOptions {
+  /**
+   * Whether the imported key is a hmac key.
+   *
+   * @default false
+   */
+  readonly isHmacKey?: boolean;
+}
+
 /**
  * Defines a KMS key.
  *
@@ -447,15 +523,18 @@ export class Key extends KeyBase {
   /**
    * Import an externally defined KMS Key using its ARN.
    *
-   * @param scope  the construct that will "own" the imported key.
-   * @param id     the id of the imported key in the construct tree.
-   * @param keyArn the ARN of an existing KMS key.
+   * @param scope   the construct that will "own" the imported key.
+   * @param id      the id of the imported key in the construct tree.
+   * @param keyArn  the ARN of an existing KMS key.
+   * @param options allow customizing the behavior of the returned key
    */
-  public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
+  public static fromKeyArn(scope: Construct, id: string, keyArn: string, options: FromKeyArnOptions = {}): IKey {
     class Import extends KeyBase {
       public readonly keyArn = keyArn;
       public readonly keyId: string;
       protected readonly policy?: iam.PolicyDocument | undefined = undefined;
+      // defaulting undefined: this will make grants add both normal and hmac actions
+      protected readonly isHmacKey?: boolean | undefined = options.isHmacKey;
       // defaulting true: if we are importing the key the key policy is
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
@@ -524,6 +603,7 @@ export class Key extends KeyBase {
       public readonly keyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
+      protected readonly isHmacKey?: boolean | undefined = cfnKey.keySpec ? cfnKey.keySpec.startsWith('HMAC') : false;
     }(cfnKey, id);
   }
 
@@ -555,12 +635,15 @@ export class Key extends KeyBase {
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
-
-      constructor(keyId: string, keyArn: string) {
+      // defaulting undefined: this will make grants add both normal and hmac actions
+      // this could be improved by returning the KeySpec in KeyContextResponse
+      protected readonly isHmacKey?: boolean | undefined = undefined;
+      constructor(keyId: string, keyArn: string, keySpec: string) {
         super(scope, id);
 
         this.keyId = keyId;
         this.keyArn = keyArn;
+        this.isHmacKey = keySpec.startsWith('HMAC');
       }
     }
     if (Token.isUnresolved(options.aliasName)) {
@@ -574,17 +657,21 @@ export class Key extends KeyBase {
       } as cxschema.KeyContextQuery,
       dummyValue: {
         keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+        keySpec: 'DEFAULT',
       },
     }).value;
 
-    return new Import(attributes.keyId,
-      Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
+    return new Import(
+      attributes.keyId,
+      Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)),
+      attributes.keySpec);
   }
 
   public readonly keyArn: string;
   public readonly keyId: string;
   protected readonly policy?: iam.PolicyDocument;
   protected readonly trustAccountIdentities: boolean;
+  protected readonly isHmacKey?: boolean | undefined;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
@@ -595,19 +682,39 @@ export class Key extends KeyBase {
         KeySpec.ECC_NIST_P384,
         KeySpec.ECC_NIST_P521,
         KeySpec.ECC_SECG_P256K1,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
       ],
       [KeyUsage.SIGN_VERIFY]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
+      ],
+      [KeyUsage.GENERATE_VERIFY_MAC]: [
+        KeySpec.ECC_NIST_P256,
+        KeySpec.ECC_NIST_P384,
+        KeySpec.ECC_NIST_P521,
+        KeySpec.ECC_SECG_P256K1,
+        KeySpec.RSA_2048,
+        KeySpec.RSA_3072,
+        KeySpec.RSA_4096,
         KeySpec.SYMMETRIC_DEFAULT,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
-    const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
+    const isHmacKey = keySpec == KeySpec.HMAC_224 || keySpec == KeySpec.HMAC_256 || keySpec == KeySpec.HMAC_384 || keySpec == KeySpec.HMAC_512;
+    const keyUsageDefault = isHmacKey ? KeyUsage.GENERATE_VERIFY_MAC : KeyUsage.ENCRYPT_DECRYPT;
+    const keyUsage = props.keyUsage ?? keyUsageDefault;
     if (denyLists[keyUsage].includes(keySpec)) {
       throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
-      throw new Error('key rotation cannot be enabled on asymmetric keys');
+      throw new Error('key rotation cannot be enabled on asymmetric or hmac keys');
     }
 
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
@@ -645,13 +752,14 @@ export class Key extends KeyBase {
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
       keySpec: props.keySpec,
-      keyUsage: props.keyUsage,
+      keyUsage: isHmacKey ? keyUsage : props.keyUsage,
       keyPolicy: this.policy,
       pendingWindowInDays: pendingWindowInDays,
     });
 
     this.keyArn = resource.attrArn;
     this.keyId = resource.ref;
+    this.isHmacKey = isHmacKey;
     resource.applyRemovalPolicy(props.removalPolicy);
 
     (props.admins ?? []).forEach((p) => this.grantAdmin(p));

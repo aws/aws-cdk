@@ -50,6 +50,8 @@ const key = new kms.Key(this, 'MyKey', {
 });
 ```
 
+When creating HMAC keys the `keyUsage` will default to `GENERATE_VERIFY_MAC`.
+
 ## Sharing keys between stacks
 
 To use a KMS key in a different stack in the same CDK application,
@@ -75,6 +77,13 @@ myKeyImported.addAlias('alias/foo');
 Note that a call to `.addToResourcePolicy(statement)` on `myKeyImported` will not have
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
+
+If you want to use the `grant*` methods on a key imported using `fromKeyArn` you have to
+specify the fact that you are importing a HMAC key in the options:
+
+```ts
+const myHmacKey = kms.Key.fromKeyArn(this, 'MyImportedKey', 'arn:aws:...', { isHmacKey: true });
+```
 
 ### Import key by alias
 
@@ -168,6 +177,8 @@ solves many issues around cyclic dependencies between stacks.
 Without this default key policy, future permissions must be added to both the key policy and IAM principal policy,
 which can cause cyclic dependencies if the permissions cross stack boundaries.
 (For example, an encrypted bucket in one stack, and Lambda function that accesses it in another.)
+
+For HMAC keys `grantEncrypt` will allow `kms:GenerateMac`, `grantDecrypt` will allow `kms:ValidateMac`.
 
 ### Appending to or replacing the default key policy
 

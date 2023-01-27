@@ -48,15 +48,21 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
     throw new Error(`Could not find any key with alias named ${args.aliasName}`);
   }
 
-  private async readKeyProps(alias: AWS.KMS.AliasListEntry, args: cxschema.KeyContextQuery): Promise<cxapi.KeyContextResponse> {
+  private async readKeyProps(kms: AWS.KMS, alias: AWS.KMS.AliasListEntry, args: cxschema.KeyContextQuery): Promise<cxapi.KeyContextResponse> {
     if (!alias.TargetKeyId) {
       throw new Error(`Could not find any key with alias named ${args.aliasName}`);
     }
+
+    let response: PromiseResult<AWS.KMS.DescribeKeyResponse, AWS.AWSError>;
+    response = await kms.describeKey({
+      KeyId: alias.TargetKeyId,
+    }).promise();
 
     debug(`Key found ${alias.TargetKeyId}`);
 
     return {
       keyId: alias.TargetKeyId,
+      keySpec: response.KeyMetadata?.KeySpec ?? 'DEFAULT',
     };
   }
 

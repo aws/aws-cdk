@@ -1,3 +1,5 @@
+import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -18,6 +20,7 @@ test('requires concrete values', () => {
 test('return correct key', () => {
   const previous = mockKeyContextProviderWith({
     keyId: '12345678-1234-1234-1234-123456789012',
+    keySpec: 'DEFAULT',
   }, options => {
     expect(options.aliasName).toEqual('alias/foo');
   });
@@ -39,8 +42,43 @@ test('return correct key', () => {
   restoreContextProvider(previous);
 });
 
+test('return keyspec', () => {
+  const previous = mockKeyContextProviderWith({
+    keyId: '12345678-1234-1234-1234-123456789012',
+    keySpec: 'HMAC_512',
+  }, options => {
+    expect(options.aliasName).toEqual('alias/foo');
+  });
+
+  const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+  const key = Key.fromLookup(stack, 'Key', {
+    aliasName: 'alias/foo',
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AnyPrincipal(),
+  });
+  key.grantEncryptDecrypt(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: ['kms:GenerateMac', 'kms:VerifyMac'],
+          Effect: 'Allow',
+          Resource: stack.resolve(key.keyArn),
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+
+  restoreContextProvider(previous);
+});
+
 interface MockKeyContextResponse {
   readonly keyId: string;
+  readonly keySpec?: string;
 }
 
 function mockKeyContextProviderWith(

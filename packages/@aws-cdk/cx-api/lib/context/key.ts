@@ -8,4 +8,8 @@ export interface KeyContextResponse {
    */
   readonly keyId: string;
 
+  /**
+   * Type of the key
+   */
+  readonly keySpec: string;
 }
