@@ -59,6 +59,7 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
     });
+
     // there is no opinionated way of testing charts from private ECR, so there is description of manual steps needed to reproduce:
     // 1. `export AWS_PROFILE=youraccountprofile; aws ecr create-repository --repository-name helm-charts-test/s3-chart --region YOUR_REGION`
     // 2. `helm pull oci://public.ecr.aws/aws-controllers-k8s/s3-chart --version v0.1.0`
@@ -67,6 +68,14 @@ class EksClusterStack extends Stack {
     // 5. Change `repository` in above test to oci://YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/helm-charts-test
     // 6. Run integration tests as usual
 
+    this.cluster.addHelmChart('test-oci-chart-different-release-name', {
+      chart: 'lambda-chart',
+      release: 'lambda-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/lambda-chart',
+      version: 'v0.1.4',
+      namespace: 'ack-system',
+      createNamespace: true,
+    });
   }
 }
 

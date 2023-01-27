@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.62.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.62.0-alpha.0...v2.62.1-alpha.0) (2023-01-26)
+
+## [2.62.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.61.1-alpha.0...v2.62.0-alpha.0) (2023-01-25)
+
+
+### Features
+
+* **apprunner:** apprunner secrets manager ([#23692](https://github.com/aws/aws-cdk/issues/23692)) ([a914fc0](https://github.com/aws/aws-cdk/commit/a914fc0614cd9aa634c5724c3474c99fd3888d98))
+
+
+### Bug Fixes
+
+* **integ-runner:** cleanup tmp snapshot before running test ([#23773](https://github.com/aws/aws-cdk/issues/23773)) ([366f2ab](https://github.com/aws/aws-cdk/commit/366f2ab6fbedaf33630a40d5306746c6d363f05c))
+
 ## [2.61.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.61.0-alpha.0...v2.61.1-alpha.0) (2023-01-20)
 
 ## [2.61.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.60.0-alpha.0...v2.61.0-alpha.0) (2023-01-18)
