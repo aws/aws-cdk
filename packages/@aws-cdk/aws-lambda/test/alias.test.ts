@@ -452,7 +452,7 @@ describe('alias', () => {
       MinCapacity: 1,
       MaxCapacity: 5,
       ResourceId: Match.objectLike({
-        'Fn::Join': Match.arrayWith([Match.arrayWith([
+        'Fn::Join': Match.arrayWith([Match.arrayEquals([
           'function:',
           Match.objectLike({
             'Fn::Select': Match.arrayWith([
