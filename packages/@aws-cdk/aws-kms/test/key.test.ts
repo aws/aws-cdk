@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as kms from '../lib';
+import { KeySpec, KeyUsage } from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
   'kms:Create*',
@@ -966,16 +967,40 @@ describe('key specs and key usages', () => {
     });
   });
 
-  test('invalid combinations of key specs and key usages', () => {
+  test.each([
+    [kms.KeySpec.SM2, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.SYMMETRIC_DEFAULT, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
+    [kms.KeySpec.SYMMETRIC_DEFAULT, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.ECC_NIST_P256, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.ECC_NIST_P521, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.ECC_NIST_P384, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.ECC_SECG_P256K1, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.ECC_NIST_P256, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.ECC_NIST_P521, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.ECC_NIST_P384, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.ECC_SECG_P256K1, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.RSA_2048, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.RSA_3072, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.RSA_4096, kms.KeyUsage.GENERATE_VERIFY_MAC, 'GENERATE_VERIFY_MAC'],
+    [kms.KeySpec.HMAC_224, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.HMAC_224, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
+    [kms.KeySpec.HMAC_256, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.HMAC_256, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
+    [kms.KeySpec.HMAC_384, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.HMAC_384, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
+    [kms.KeySpec.HMAC_512, kms.KeyUsage.ENCRYPT_DECRYPT, 'ENCRYPT_DECRYPT'],
+    [kms.KeySpec.HMAC_512, kms.KeyUsage.SIGN_VERIFY, 'SIGN_VERIFY'],
+  ])('invalid combinations of key specs and key usages', (keySpec, keyUsage, expected) => {
     const stack = new cdk.Stack();
 
-    expect(() => new kms.Key(stack, 'Key1', { keySpec: kms.KeySpec.ECC_NIST_P256 }))
-      .toThrow('key spec \'ECC_NIST_P256\' is not valid with usage \'ENCRYPT_DECRYPT\'');
-    expect(() => new kms.Key(stack, 'Key2', { keySpec: kms.KeySpec.ECC_SECG_P256K1, keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT }))
-      .toThrow('key spec \'ECC_SECG_P256K1\' is not valid with usage \'ENCRYPT_DECRYPT\'');
-    expect(() => new kms.Key(stack, 'Key3', { keySpec: kms.KeySpec.SYMMETRIC_DEFAULT, keyUsage: kms.KeyUsage.SIGN_VERIFY }))
-      .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
-    expect(() => new kms.Key(stack, 'Key4', { keyUsage: kms.KeyUsage.SIGN_VERIFY }))
+    expect(() => new kms.Key(stack, 'Key1', { keySpec, keyUsage }))
+      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'${expected}\'`);
+  });
+
+  test('invalid combinations of default key spec and key usage SIGN_VERIFY', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new kms.Key(stack, 'Key1', { keyUsage: KeyUsage.SIGN_VERIFY }))
       .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
   });
 
@@ -1014,6 +1039,71 @@ describe('Key.fromKeyArn()', () => {
 
     test("the key's account is taken from the ARN", () => {
       expect(key.env.account).toBe('222222222222');
+    });
+  });
+});
+
+describe('HMAC', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test.each([
+    [KeySpec.HMAC_224, 'HMAC_224'],
+    [KeySpec.HMAC_256, 'HMAC_256'],
+    [KeySpec.HMAC_384, 'HMAC_384'],
+    [KeySpec.HMAC_512, 'HMAC_512'],
+  ])('%s is not valid for default usage', (keySpec: KeySpec) => {
+    expect(() => new kms.Key(stack, 'Key1', { keySpec }))
+      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'ENCRYPT_DECRYPT\'`);
+  });
+
+  test.each([
+    [KeySpec.HMAC_224, 'HMAC_224'],
+    [KeySpec.HMAC_256, 'HMAC_256'],
+    [KeySpec.HMAC_384, 'HMAC_384'],
+    [KeySpec.HMAC_512, 'HMAC_512'],
+  ])('%s can not be used with key rotation', (keySpec: KeySpec) => {
+    expect(() => new kms.Key(stack, 'Key', {
+      keySpec,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+      enableKeyRotation: true,
+    })).toThrow('key rotation cannot be enabled on HMAC keys');
+  });
+
+  test.each([
+    [KeySpec.HMAC_224, 'HMAC_224'],
+    [KeySpec.HMAC_256, 'HMAC_256'],
+    [KeySpec.HMAC_384, 'HMAC_384'],
+    [KeySpec.HMAC_512, 'HMAC_512'],
+  ])('%s can be used for KMS key creation', (keySpec: KeySpec, expected: string) => {
+    new kms.Key(stack, 'Key', {
+      keySpec,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeySpec: expected,
+      KeyUsage: 'GENERATE_VERIFY_MAC',
+    });
+  });
+});
+
+describe('SM2', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('can be used for KMS key creation', () => {
+    new kms.Key(stack, 'Key1', {
+      keySpec: KeySpec.SM2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeySpec: 'SM2',
     });
   });
 });

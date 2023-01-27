@@ -1,0 +1,19 @@
+{
+  "version": "29.0.0",
+  "files": {
+    "3928eb374e1a346d096f0bc065ed551424c933f58e1da0ba247df8a6565783ea": {
+      "source": {
+        "path": "aws-cdk-kms-hmac.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3928eb374e1a346d096f0bc065ed551424c933f58e1da0ba247df8a6565783ea.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
