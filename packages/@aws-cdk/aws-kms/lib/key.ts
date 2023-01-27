@@ -194,6 +194,20 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   /**
+   * Grant permissions to generating MACs to the given principal
+   */
+  public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+  }
+
+  /**
+   * Grant permissions to verifying MACs to the given principal
+   */
+  public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
+  }
+
+  /**
    * Checks whether the grantee belongs to a stack that will be deployed
    * after the stack containing this key.
    *

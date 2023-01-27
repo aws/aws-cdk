@@ -1088,6 +1088,80 @@ describe('HMAC', () => {
       KeyUsage: 'GENERATE_VERIFY_MAC',
     });
   });
+
+  test('grant generate mac policy', () => {
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.HMAC_256,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+    });
+    const user = new iam.User(stack, 'User');
+
+    key.grantGenerateMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:GenerateMac',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant verify mac policy', () => {
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.HMAC_256,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+    });
+    const user = new iam.User(stack, 'User');
+
+    key.grantVerifyMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:VerifyMac',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
 });
 
 describe('SM2', () => {
