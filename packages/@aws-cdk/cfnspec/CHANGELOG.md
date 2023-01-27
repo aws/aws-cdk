@@ -1,3 +1,227 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.HttpApiEvent (__added__)
+* AWS::Serverless::Function.HttpApiFunctionAuth (__added__)
+* AWS::Serverless::Function.RouteSettings (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added HttpApiEvent
+
+# CloudFormation Resource Specification v108.0.0
+
+## New Resource Types
+
+* AWS::KendraRanking::ExecutionPlan
+
+## Attribute Changes
+
+* AWS::RDS::DBInstance CertificateDetails.CAIdentifier (__added__)
+* AWS::RDS::DBInstance CertificateDetails.ValidTill (__added__)
+* AWS::SecretsManager::Secret Id (__added__)
+
+## Property Changes
+
+* AWS::BillingConductor::PricingRule Operation (__added__)
+* AWS::BillingConductor::PricingRule UsageType (__added__)
+* AWS::CE::AnomalySubscription ThresholdExpression (__added__)
+* AWS::CE::AnomalySubscription Threshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::MetricStream IncludeLinkedAccountsMetrics (__added__)
+* AWS::EKS::Addon PreserveOnDelete (__added__)
+* AWS::FMS::Policy PolicyDescription (__added__)
+* AWS::FMS::Policy ResourceSetIds (__added__)
+* AWS::FMS::Policy ResourceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBInstance CertificateDetails (__added__)
+* AWS::RDS::DBInstance CertificateRotationRestart (__added__)
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__added__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::RDS::DBInstance.CertificateDetails (__added__)
+* AWS::Transfer::Workflow.DecryptStepDetails (__added__)
+* AWS::Transfer::Workflow.EfsInputFileLocation (__added__)
+* AWS::Transfer::Workflow.S3FileLocation (__added__)
+* AWS::Transfer::Workflow.CopyStepDetails DestinationFileLocation.Type (__changed__)
+  * Old: InputFileLocation
+  * New: S3FileLocation
+* AWS::Transfer::Workflow.InputFileLocation EfsFileLocation (__added__)
+* AWS::Transfer::Workflow.WorkflowStep DecryptStepDetails (__added__)
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api DisableExecuteApiEndpoint (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.KinesisEvent FunctionResponseTypes (__added__)
+
+# CloudFormation Resource Specification v107.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGateway::RestApi RestApiId (__added__)
+* AWS::AuditManager::Assessment Delegations (__deleted__)
+* AWS::DataSync::Task ErrorCode (__deleted__)
+* AWS::DataSync::Task ErrorDetail (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest.ingestEndpoints (__deleted__)
+* AWS::RDS::DBCluster MasterUserSecret.SecretArn (__added__)
+* AWS::RDS::DBInstance MasterUserSecret.SecretArn (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi Parameters.DuplicatesAllowed (__deleted__)
+* AWS::AppSync::DataSource EventBridgeConfig (__added__)
+* AWS::AuditManager::Assessment Delegations (__added__)
+* AWS::DataSync::LocationFSxLustre FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage BucketName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::PlacementGroup PartitionCount (__added__)
+* AWS::EC2::PlacementGroup Tags (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__added__)
+* AWS::Lambda::EventSourceMapping ScalingConfig (__added__)
+* AWS::MediaPackage::Channel HlsIngest (__added__)
+* AWS::RDS::DBCluster ManageMasterUserPassword (__added__)
+* AWS::RDS::DBCluster MasterUserSecret (__added__)
+* AWS::RDS::DBInstance ManageMasterUserPassword (__added__)
+* AWS::RDS::DBInstance MasterUserSecret (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.EventBridgeConfig (__added__)
+* AWS::IoT::JobTemplate.JobExecutionsRetryConfig (__added__)
+* AWS::IoT::JobTemplate.RetryCriteria (__added__)
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__added__)
+* AWS::RDS::DBCluster.MasterUserSecret (__added__)
+* AWS::RDS::DBInstance.MasterUserSecret (__added__)
+* AWS::AppRunner::Service.CodeConfigurationValues RuntimeEnvironmentSecrets (__added__)
+* AWS::AppRunner::Service.ImageConfiguration RuntimeEnvironmentSecrets (__added__)
+* AWS::MediaPackage::Channel.IngestEndpoint Id.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Password.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Url.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Username.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeIframeOnlyStream (__added__)
+
+
+# CloudFormation Resource Specification v106.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.AmazonId (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Arn (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse.Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount Fingerprint (__added__)
+
+## Property Changes
+
+* AWS::IoTWireless::PartnerAccount Fingerprint (__deleted__)
+* AWS::IoTWireless::PartnerAccount SidewalkResponse (__added__)
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v105.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Lambda::EventSourceMapping ScalingConfig (__deleted__)
+* AWS::SNS::Subscription FilterPolicyScope (__added__)
+* AWS::SageMaker::Domain AppSecurityGroupManagement.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__removed__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeader (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.VolumeConfiguration (__added__)
+* AWS::CloudFront::ResponseHeadersPolicy.ResponseHeadersPolicyConfig RemoveHeadersConfig (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration AutomaticTerminationMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration SessionPersistenceMode (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration VolumeConfiguration (__added__)
+* AWS::SageMaker::Domain.DomainSettings SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Domain.RStudioServerProDomainSettings DomainExecutionRoleArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
 # CloudFormation Resource Specification v103.0.0
 
 ## New Resource Types

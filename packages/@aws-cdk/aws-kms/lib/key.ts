@@ -479,14 +479,14 @@ export class Key extends KeyBase {
   }
 
   /**
-   * Create a mutable {@link IKey} based on a low-level {@link CfnKey}.
+   * Create a mutable `IKey` based on a low-level `CfnKey`.
    * This is most useful when combined with the cloudformation-include module.
-   * This method is different than {@link fromKeyArn()} because the {@link IKey}
+   * This method is different than `fromKeyArn()` because the `IKey`
    * returned from this method is mutable;
    * meaning, calling any mutating methods on it,
-   * like {@link IKey.addToResourcePolicy()},
+   * like `IKey.addToResourcePolicy()`,
    * will actually be reflected in the resulting template,
-   * as opposed to the object returned from {@link fromKeyArn()},
+   * as opposed to the object returned from `fromKeyArn()`,
    * on which calling those methods would have no effect.
    */
   public static fromCfnKey(cfnKey: CfnKey): IKey {

@@ -973,6 +973,10 @@ export abstract class BaseService extends Resource
       throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
     }
 
+    if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
+      throw new Error('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.');
+    }
+
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {

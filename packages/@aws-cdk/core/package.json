@@ -126,6 +126,8 @@
       "construct-interface-extends-iconstruct:@aws-cdk/core.ICustomResourceProvider",
       "props-physical-name:@aws-cdk/core.CustomResourceProps",
       "integ-return-type:@aws-cdk/core.IStackSynthesizer.bind",
+      "integ-return-type:@aws-cdk/core.IBoundStackSynthesizer.bind",
+      "integ-return-type:@aws-cdk/core.IReusableStackSynthesizer.bind",
       "props-no-any:@aws-cdk/core.CfnJsonProps.value"
     ]
   },
@@ -190,7 +192,7 @@
     "@types/lodash": "^4.14.191",
     "@types/minimatch": "^3.0.5",
     "aws-sdk": "^2.928.0",
-    "@types/node": "^14.18.34",
+    "@types/node": "^14.18.36",
     "@types/sinon": "^9.0.11",
     "fast-check": "^2.25.0",
     "jest": "^27.5.1",
@@ -205,7 +207,7 @@
     "@balena/dockerignore": "^1.0.2",
     "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
-    "ignore": "^5.2.1",
+    "ignore": "^5.2.4",
     "minimatch": "^3.1.2"
   },
   "bundledDependencies": [

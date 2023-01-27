@@ -41,7 +41,7 @@ enum AdotLambdaLayerType {
 }
 
 /**
- * Config returned from {@link AdotLambdaLayerVersion._bind}
+ * Config returned from `AdotLambdaLayerVersion._bind`
  */
 interface AdotLambdaLayerBindConfig {
   /**

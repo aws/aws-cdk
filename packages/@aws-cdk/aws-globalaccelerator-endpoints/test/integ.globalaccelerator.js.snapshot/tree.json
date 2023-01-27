@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "integ-globalaccelerator": {
         "id": "integ-globalaccelerator",
         "path": "integ-globalaccelerator",
@@ -884,6 +876,14 @@
                 "id": "InstanceRole",
                 "path": "integ-globalaccelerator/Instance0/InstanceRole",
                 "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-globalaccelerator/Instance0/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-globalaccelerator/Instance0/InstanceRole/Resource",
@@ -1057,6 +1057,14 @@
                 "id": "InstanceRole",
                 "path": "integ-globalaccelerator/Instance1/InstanceRole",
                 "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-globalaccelerator/Instance1/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-globalaccelerator/Instance1/InstanceRole/Resource",
@@ -1311,6 +1319,14 @@
                 "id": "ServiceRole",
                 "path": "integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
@@ -1415,11 +1431,35 @@
               "fqn": "@aws-cdk/aws-lambda.Function",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-globalaccelerator/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-globalaccelerator/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.189"
         }
       }
     },

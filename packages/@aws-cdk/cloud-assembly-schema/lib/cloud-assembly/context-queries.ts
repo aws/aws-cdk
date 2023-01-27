@@ -219,7 +219,7 @@ export interface VpcContextQuery {
   readonly filter: {[key: string]: string};
 
   /**
-   * Whether to populate the subnetGroups field of the {@link VpcContextResponse},
+   * Whether to populate the subnetGroups field of the `VpcContextResponse`,
    * which contains potentially asymmetric subnet groups.
    *
    * @default false

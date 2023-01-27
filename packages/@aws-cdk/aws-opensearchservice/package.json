@@ -91,7 +91,8 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
-    "@types/jest": "^27.5.2"
+    "@types/jest": "^27.5.2",
+    "jest-each": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",

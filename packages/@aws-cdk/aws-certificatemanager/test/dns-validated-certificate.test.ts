@@ -1,10 +1,11 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack, Token, Tags, RemovalPolicy } from '@aws-cdk/core';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { App, Stack, Token, Tags, RemovalPolicy, Aws } from '@aws-cdk/core';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
-test('creates CloudFormation Custom Resource', () => {
+testDeprecated('creates CloudFormation Custom Resource', () => {
   const stack = new Stack();
 
   const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
@@ -94,7 +95,7 @@ test('creates CloudFormation Custom Resource', () => {
   });
 });
 
-test('adds validation error on domain mismatch', () => {
+testDeprecated('adds validation error on domain mismatch', () => {
   const stack = new Stack();
 
   const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
@@ -111,7 +112,7 @@ test('adds validation error on domain mismatch', () => {
   }).toThrow(/DNS zone hello.com is not authoritative for certificate domain name example.com/);
 });
 
-test('does not try to validate unresolved tokens', () => {
+testDeprecated('does not try to validate unresolved tokens', () => {
   const stack = new Stack();
 
   const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
@@ -126,7 +127,7 @@ test('does not try to validate unresolved tokens', () => {
   Template.fromStack(stack); // does not throw
 });
 
-test('test root certificate', () => {
+testDeprecated('test root certificate', () => {
   const stack = new Stack();
 
   const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
@@ -152,7 +153,7 @@ test('test root certificate', () => {
   });
 });
 
-test('test tags are passed to customresource', () => {
+testDeprecated('test tags are passed to customresource', () => {
   const stack = new Stack();
   Tags.of(stack).add('Key1', 'Value1');
 
@@ -182,7 +183,7 @@ test('test tags are passed to customresource', () => {
   });
 });
 
-test('works with imported zone', () => {
+testDeprecated('works with imported zone', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack', {
@@ -213,7 +214,7 @@ test('works with imported zone', () => {
   });
 });
 
-test('works with imported role', () => {
+testDeprecated('works with imported role', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack', {
@@ -238,7 +239,7 @@ test('works with imported role', () => {
 });
 
 
-test('throws when domain name is longer than 64 characters', () => {
+testDeprecated('throws when domain name is longer than 64 characters', () => {
   const stack = new Stack();
 
   const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
@@ -252,7 +253,48 @@ test('throws when domain name is longer than 64 characters', () => {
   }).toThrow(/Domain name must be 64 characters or less/);
 }),
 
-test('test transparency logging settings is passed to the custom resource', () => {
+testDeprecated('does not throw when domain name is longer than 64 characters with tokens', () => {
+  const stack = new Stack();
+  const zoneName = 'example.com';
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName,
+  });
+  const embededToken = Aws.REGION;
+  const baseSubDomain = 'a'.repeat(65 - embededToken.length -1 -zoneName.length);
+  const domainName = `${embededToken}${baseSubDomain}.${zoneName}`;
+
+  new DnsValidatedCertificate(stack, 'Cert', {
+    domainName,
+    hostedZone: exampleDotComZone,
+    transparencyLoggingEnabled: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'CertCertificateRequestorFunction98FDF273',
+        'Arn',
+      ],
+    },
+    DomainName: {
+      'Fn::Join': [
+        '',
+        [
+          {
+            Ref: 'AWS::Region',
+          },
+          `${baseSubDomain}.${zoneName}`,
+        ],
+      ],
+    },
+    HostedZoneId: {
+      Ref: 'ExampleDotCom4D1B83AA',
+    },
+    CertificateTransparencyLoggingPreference: 'DISABLED',
+  });
+});
+
+testDeprecated('test transparency logging settings is passed to the custom resource', () => {
   const stack = new Stack();
 
   const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
@@ -280,7 +322,7 @@ test('test transparency logging settings is passed to the custom resource', () =
   });
 });
 
-test('can set removal policy', () => {
+testDeprecated('can set removal policy', () => {
   const stack = new Stack();
 
   const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {

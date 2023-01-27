@@ -4,7 +4,7 @@ import { CfnDistribution } from './cloudfront.generated';
 
 /**
  * The failover configuration used for Origin Groups,
- * returned in {@link OriginBindConfig.failoverConfig}.
+ * returned in `OriginBindConfig.failoverConfig`.
  */
 export interface OriginFailoverConfig {
   /** The origin to use as the fallback origin. */
@@ -18,7 +18,7 @@ export interface OriginFailoverConfig {
   readonly statusCodes?: number[];
 }
 
-/** The struct returned from {@link IOrigin.bind}. */
+/** The struct returned from `IOrigin.bind`. */
 export interface OriginBindConfig {
   /**
    * The CloudFormation OriginProperty configuration for this Origin.

@@ -138,7 +138,7 @@ export interface EndpointConfigProps {
 
   /**
    * A list of instance production variants. You can always add more variants later by calling
-   * {@link EndpointConfig#addInstanceProductionVariant}.
+   * `EndpointConfig#addInstanceProductionVariant`.
    *
    * @default - none
    */

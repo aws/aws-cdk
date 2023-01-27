@@ -24,6 +24,7 @@ import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
 import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 
 
 /**
@@ -224,6 +225,16 @@ export interface CodePipelineProps {
    * @default true
    */
   readonly useChangeSets?: boolean;
+
+  /**
+   * Enable KMS key rotation for the generated KMS keys.
+   *
+   * By default KMS key rotation is disabled, but will add
+   * additional costs when enabled.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 /**
@@ -313,6 +324,7 @@ export class CodePipeline extends PipelineBase {
   private _myCxAsmRoot?: string;
   private readonly dockerCredentials: DockerCredential[];
   private readonly cachedFnSub = new CachedFnSub();
+  private stackOutputs: StackOutputsMap;
 
   /**
    * Asset roles shared for publishing
@@ -337,6 +349,7 @@ export class CodePipeline extends PipelineBase {
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
     this.cliVersion = props.cliVersion ?? preferredCliVersion();
     this.useChangeSets = props.useChangeSets ?? true;
+    this.stackOutputs = new StackOutputsMap(this);
   }
 
   /**
@@ -378,6 +391,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.enableKeyRotation !== undefined) {
+        throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
@@ -395,6 +411,7 @@ export class CodePipeline extends PipelineBase {
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,
         role: this.props.role,
+        enableKeyRotation: this.props.enableKeyRotation,
       });
     }
 
@@ -467,6 +484,7 @@ export class CodePipeline extends PipelineBase {
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
               variablesNamespace,
+              stackOutputsMap: this.stackOutputs,
             });
 
             if (node.data?.type === 'self-update') {
