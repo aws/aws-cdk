@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { Architecture, Code, Runtime, RuntimeFamily } from '@aws-cdk/aws-lambda';
-import { AssetHashType, DockerImage } from '@aws-cdk/core';
+import { AssetHashType, BundlingFileAccess, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
@@ -823,6 +823,25 @@ test('Custom bundling network', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       network: 'host',
+    }),
+  });
+});
+
+test('Custom bundling file copy variant', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
     }),
   });
 });
