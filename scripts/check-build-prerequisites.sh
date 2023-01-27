@@ -74,19 +74,40 @@ else
     wrong_version
 fi
 
-# [Docker >= 19.03]
-app=${CDK_DOCKER:-docker}
-app_min="19.03.0"
-check_which $app $app_min
+# Container Client
+container_client=${CDK_DOCKER:-docker}
+docker_min="19.03.0"
+finch_min="0.3.0"
 
-# Make sure docker is running
-echo -e "Checking if $app is running... \c"
-docker_running=$($app ps)
-if [ $? -eq 0 ]
-then
-    echo "Ok"
+# [Docker >= 19.03]
+if [ "$container_client" == "docker" ]; then
+    check_which $container_client $docker_min
+
+    # Make sure docker is running
+    echo -e "Checking if Docker is running... \c"
+    docker_running=$(docker ps)
+    if [ $? -eq 0 ]
+    then
+        echo "Ok"
+    else
+        die "Docker is not running"
+    fi
+
+# [finch >= 0.3.0]
+elif [ "$container_client" == "finch" ]; then
+    check_which $container_client $finch_min
+
+    # Make sure docker is running
+    echo -e "Checking if finch is running... \c"
+    finch_running=$($container_client ps)
+    if [ $? -eq 0 ]
+    then
+        echo "Ok"
+    else
+        die "Finch is not running"
+    fi
 else
-    die "$app is not running"
+    die "Missing dependency: containerd client. Install docker >= $docker_min or finch >= $finch_min"
 fi
 
 # [.NET == 3.1.x, == 5.x]
