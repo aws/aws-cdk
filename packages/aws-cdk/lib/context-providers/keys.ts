@@ -21,7 +21,7 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
 
     const aliasListEntry = await this.findKey(kms, args);
 
-    return this.readKeyProps(aliasListEntry, args);
+    return this.readKeyProps(kms, aliasListEntry, args);
   }
 
   private async findKey(kms: AWS.KMS, args: cxschema.KeyContextQuery): Promise<AWS.KMS.AliasListEntry> {
