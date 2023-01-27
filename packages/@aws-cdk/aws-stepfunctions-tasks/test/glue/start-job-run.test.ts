@@ -52,7 +52,7 @@ test('Invoke glue job with full properties', () => {
     glueJobName,
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     arguments: sfn.TaskInput.fromObject(jobArguments),
-    timeout: glueJobTimeout,
+    taskTimeout: sfn.Timeout.duration(glueJobTimeout),
     securityConfiguration,
     notifyDelayAfter,
   });
@@ -83,6 +83,37 @@ test('Invoke glue job with full properties', () => {
       NotificationProperty: {
         NotifyDelayAfter: notifyDelayAfterMinutes,
       },
+    },
+  });
+});
+
+test('Invoke glue job with Timeout.at()', () => {
+  const task = new GlueStartJobRun(stack, 'Task', {
+    glueJobName,
+    taskTimeout: sfn.Timeout.at('$.timeout'),
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::glue:startJobRun',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'JobName': glueJobName,
+      'Timeout.$': '$.timeout',
     },
   });
 });
