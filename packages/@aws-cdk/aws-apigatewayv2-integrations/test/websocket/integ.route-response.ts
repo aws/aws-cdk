@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2';
 import * as cdk from '@aws-cdk/core';
 import { IntegTest } from '@aws-cdk/integ-tests';
