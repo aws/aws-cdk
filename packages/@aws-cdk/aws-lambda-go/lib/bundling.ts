@@ -60,6 +60,12 @@ export interface BundlingProps extends BundlingOptions {
    * The system architecture of the lambda function
    */
   readonly architecture: Architecture;
+
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 }
 
 /**
@@ -85,6 +91,7 @@ export class Bundling implements cdk.BundlingOptions {
         user: bundling.user,
         securityOpt: bundling.securityOpt,
         network: bundling.network,
+        bundlingFileAccess: bundling.bundlingFileAccess,
       },
     });
   }
@@ -107,6 +114,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly user?: string;
   public readonly securityOpt?: string;
   public readonly network?: string;
+  public readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 
   private readonly relativeEntryPath: string;
 
@@ -154,6 +162,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
+    this.bundlingFileAccess = props.bundlingFileAccess;
 
     // Local bundling
     if (!props.forcedDockerBundling) { // only if Docker is not forced

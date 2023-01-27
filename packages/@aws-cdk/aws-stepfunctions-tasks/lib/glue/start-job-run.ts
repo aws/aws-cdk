@@ -83,16 +83,27 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
+
+    let timeout: number | undefined = undefined;
+    if (this.props.timeout) {
+      timeout = this.props.timeout.toMinutes();
+    } else if (this.props.taskTimeout?.seconds) {
+      timeout = Duration.seconds(this.props.taskTimeout.seconds).toMinutes();
+    } else if (this.props.taskTimeout?.path) {
+      timeout = sfn.JsonPath.numberAt(this.props.taskTimeout.path);
+    }
+
     return {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         JobName: this.props.glueJobName,
         Arguments: this.props.arguments?.value,
-        Timeout: this.props.timeout?.toMinutes(),
+        Timeout: timeout,
         SecurityConfiguration: this.props.securityConfiguration,
         NotificationProperty: notificationProperty,
       }),
       TimeoutSeconds: undefined,
+      TimeoutSecondsPath: undefined,
     };
   }
 

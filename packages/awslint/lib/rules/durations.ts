@@ -3,6 +3,7 @@ import { Linter } from '../linter';
 
 const DURATION_FQN = '@aws-cdk/core.Duration';
 const DURATION_SUFFIX = /(Days|Milli(?:(?:S|s)econd)?s?|Sec(?:ond)?s?)$/;
+const EXCLUDE_ANNOTATION_DURATION_PROP_TYPE = '[disable-awslint:duration-prop-type]';
 
 export const durationsLinter = new Linter(assm => {
   const result = new Array<Property>();
@@ -12,7 +13,8 @@ export const durationsLinter = new Linter(assm => {
     if (type.fqn.startsWith(generatedClassesPrefix)) { continue; }
     if (!type.isClassType() && !type.isDataType() && !type.isInterfaceType()) { continue; }
     for (const property of type.allProperties) {
-      if (isDurationProperty(property)) {
+      if (isDurationProperty(property)
+          && !property.docs.toString().includes(EXCLUDE_ANNOTATION_DURATION_PROP_TYPE)) {
         result.push(property);
       }
     }
