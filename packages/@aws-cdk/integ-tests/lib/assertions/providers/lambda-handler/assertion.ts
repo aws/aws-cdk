@@ -57,6 +57,7 @@ class MatchCreator {
    *   Messages: [{
    *     Body: Match.objectLike({
    *       Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *       Items: Match.arrayEquals(['c', 'd', 'k']),
    *       Payload: Match.serializedJson({ key: 'value' }),
    *     }),
    *   }],
@@ -70,6 +71,9 @@ class MatchCreator {
    *         $ObjectLike: {
    *           Elements: {
    *             $ArrayWith: [{ Asdf: 3 }],
+   *           },
+   *           Items: {
+   *             $ArrayEquals: ['c', 'd', 'k'],
    *           },
    *           Payload: {
    *             $SerializedJson: { key: 'value' }
@@ -90,6 +94,9 @@ class MatchCreator {
    *       Elements: {
    *         $ArrayWith: [{ Asdf: 3 }],
    *       },
+   *       Items: {
+   *         $ArrayEquals: ['c', 'd', 'k'],
+   *       },
    *       Payload: {
    *         $SerializedJson: { key: 'value' }
    *       }
@@ -101,6 +108,7 @@ class MatchCreator {
    * {
    *   Body: Match.objectLike({
    *     Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *     Items: Match.arrayEquals(['c', 'd', 'k']),
    *     Payload: Match.serializedJson({ key: 'value' }),
    *   }),
    * }
@@ -112,6 +120,8 @@ class MatchCreator {
         switch (nested) {
           case '$ArrayWith':
             return Match.arrayWith(v[nested]);
+          case '$ArrayEquals':
+            return Match.arrayEquals(v[nested]);
           case '$ObjectLike':
             return Match.objectLike(v[nested]);
           case '$StringLike':

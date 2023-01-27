@@ -13,6 +13,15 @@ export abstract class Match {
   }
 
   /**
+   * Matches the specified pattern with the array found in the same relative path of the target.
+   * The set of elements (or matchers) must be in the same order as would be found.
+   * @param pattern the pattern to match
+   */
+  public static arrayEquals(pattern: any[]): { [key: string]: any[] } {
+    return { $ArrayEquals: pattern };
+  }
+
+  /**
    * Matches the specified pattern to an object found in the same relative path of the target.
    * The keys and their values (or matchers) must be present in the target but the target can be a superset.
    * @param pattern the pattern to match

@@ -116,6 +116,54 @@ export abstract class ExpectedResult {
       }),
     };
   }
+
+  /**
+   * The actual results must be a list and all items must match exactly
+   * and in the same order the items of expected results.
+   *
+   * @example
+   * // actual results
+   * const actual = [
+   *   {
+   *     stringParam: 'hello',
+   *   },
+   *   {
+   *     stringParam: 'world',
+   *   },
+   * ];
+   * // pass
+   * ExpectedResult.arrayEquals([
+   *   {
+   *     stringParam: 'hello',
+   *   },
+   *   {
+   *     stringParam: 'world',
+   *   },
+   * ]);
+   * // fail - missing one element
+   * ExpectedResult.arrayEquals([
+   *   {
+   *     stringParam: 'hello',
+   *   },
+   * ]);
+   * // fail - incorrect order
+   * ExpectedResult.arrayEquals([
+   *   {
+   *     stringParam: 'world',
+   *   },
+   *   {
+   *     stringParam: 'hello',
+   *   },
+   * ]);
+   */
+  public static arrayEquals(expected: any[]): ExpectedResult {
+    return {
+      result: JSON.stringify({
+        $ArrayEquals: expected,
+      }),
+    };
+  }
+
   /**
    * Actual results is a string that matches
    * the Expected result regex

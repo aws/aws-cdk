@@ -128,6 +128,98 @@ describe('AssertionHandler', () => {
     });
   });
 
+  describe('arrayEquals', () => {
+    test('pass', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: [
+          {
+            Elements: [{ Asdf: 3 }, { Asdf: 4 }],
+          },
+          {
+            Elements: [{ Asdf: 2 }, { Asdf: 1 }],
+          },
+        ],
+        expected: ExpectedResult.arrayEquals([
+          {
+            Elements: Match.arrayEquals([{ Asdf: 3 }, { Asdf: 4 }]),
+          },
+          {
+            Elements: [{ Asdf: 2 }, { Asdf: 1 }],
+          },
+        ]).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(response.assertion).toEqual('{"status":"success"}');
+    });
+
+    test('fail - element missing', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: [
+          {
+            Elements: [{ Asdf: 5 }, { Asdf: 4 }],
+          },
+          {
+            Elements: [{ Asdf: 2 }, { Asdf: 1 }],
+          },
+        ],
+        expected: ExpectedResult.arrayEquals([
+          {
+            Elements: [{ Asdf: 5 }, { Asdf: 4 }],
+          },
+        ]).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(JSON.parse(response.assertion)).toEqual({
+        status: 'fail',
+        message: expect.stringMatching(/.*Too many elements in array \(expecting 1, got 2\).*/),
+      });
+    });
+
+    test('fail - elements in incorrect order', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: [
+          {
+            Elements: [{ Asdf: 5 }, { Asdf: 4 }],
+          },
+          {
+            Elements: [{ Asdf: 2 }, { Asdf: 1 }],
+          },
+        ],
+        expected: ExpectedResult.arrayEquals([
+          {
+            Elements: [{ Asdf: 2 }, { Asdf: 1 }],
+          },
+          {
+            Elements: [{ Asdf: 5 }, { Asdf: 4 }],
+          },
+        ]).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(JSON.parse(response.assertion)).toEqual({
+        status: 'fail',
+        message: expect.stringMatching(/.*Expected 2 but received 5.*Expected 1 but received 4.*Expected 5 but received 2.*Expected 4 but received 1.*/s),
+      });
+    });
+  });
+
   describe('objectLike', () => {
     test('pass', async () => {
       // GIVEN

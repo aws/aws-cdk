@@ -349,7 +349,7 @@ message.assertAtPath('Messages.0.Body', ExpectedResult.objectLike({
 #### Match
 
 `integ-tests` also provides a `Match` utility similar to the `@aws-cdk/assertions` module. `Match`
-can be used to construct the `ExpectedResult`. While the utility is similar, only a subset of methods are currently available on the `Match` utility of this module: `arrayWith`, `objectLike`, `stringLikeRegexp` and `serializedJson`.
+can be used to construct the `ExpectedResult`. While the utility is similar, only a subset of methods are currently available on the `Match` utility of this module: `arrayWith`, `arrayEquals`, `objectLike`, `stringLikeRegexp` and `serializedJson`.
 
 ```ts
 declare const message: AwsApiCall;
@@ -360,10 +360,11 @@ message.expect(ExpectedResult.objectLike({
       Payload: Match.serializedJson({ key: 'value' }),
     },
     {
-	  Body: {
-	    Values: Match.arrayWith([{ Asdf: 3 }]),
-		Message: Match.stringLikeRegexp('message'),
-	  },
+      Body: {
+        Values: Match.arrayWith([{ Asdf: 3 }]),
+        Items: Match.arrayEquals(["c", "d", "k"]),
+        Message: Match.stringLikeRegexp('message'),
+      },
     },
   ]),
 }));
