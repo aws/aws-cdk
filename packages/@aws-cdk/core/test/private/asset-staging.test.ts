@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as sinon from 'sinon';
 import { AssetStaging, DockerImage } from '../../lib';
-import { AssetBundlingBindMount, AssetBundlingVolumeCopy } from '../../lib/private/asset-staging';
+import { AssetBundlingBindMount, AssetBundlingVolumeCopy, dockerExec } from '../../lib/private/asset-staging';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -108,5 +108,26 @@ describe('bundling', () => {
       '-v',
       'alpine',
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('dockerExec with empty options ', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    sinon.stub(child_process, 'spawnSync').returns({
+      status: null,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+      error: new Error('something error'),
+    });
+    const logStub = sinon.stub(console, 'log');
+
+    // THEN
+    expect(() => dockerExec(['run', '--rm', '-v', 'alpine'], {})).toThrow(/something error/);
+    expect(logStub.calledWith('[Process failed] stdout: %s\n\n\nstderr: %s', 'stdout', 'stderr')).toEqual(true);
+
+    logStub.restore();
   });
 });
