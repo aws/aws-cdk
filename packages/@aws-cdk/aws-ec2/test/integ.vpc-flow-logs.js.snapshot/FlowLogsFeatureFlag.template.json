@@ -524,7 +524,6 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
-    "TrafficType": "ALL",
     "LogDestination": {
      "Fn::GetAtt": [
       "VPCFlowLogsS3BucketFB7DC2BE",
@@ -537,8 +536,12 @@
       "Key": "Name",
       "Value": "FlowLogsFeatureFlag/VPC"
      }
-    ]
-   }
+    ],
+    "TrafficType": "ALL"
+   },
+   "DependsOn": [
+    "VPCFlowLogsS3BucketPolicyB2C2A045"
+   ]
   },
   "VPCFlowLogsS3WithDestinationOptionsBucket1B7AC456": {
    "Type": "AWS::S3::Bucket",
@@ -673,7 +676,6 @@
      "Ref": "VPCB9E5F0B4"
     },
     "ResourceType": "VPC",
-    "TrafficType": "ALL",
     "DestinationOptions": {
      "fileFormat": "plain-text",
      "perHourPartition": false,
@@ -691,8 +693,12 @@
       "Key": "Name",
       "Value": "FlowLogsFeatureFlag/VPC"
      }
-    ]
-   }
+    ],
+    "TrafficType": "ALL"
+   },
+   "DependsOn": [
+    "VPCFlowLogsS3WithDestinationOptionsBucketPolicy35257B71"
+   ]
   },
   "FlowLogsInstanceInstanceSecurityGroupF61782E0": {
    "Type": "AWS::EC2::SecurityGroup",
