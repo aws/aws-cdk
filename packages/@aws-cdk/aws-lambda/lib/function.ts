@@ -26,6 +26,7 @@ import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
+import { RuntimeManagement } from './runtime-management';
 import { addAlias } from './util';
 
 /**
@@ -359,6 +360,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * Sets the runtime management configuration for a function's version.
+   * @default Auto
+   */
+  readonly runtimeManagement?: RuntimeManagement;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -779,6 +786,14 @@ export class Function extends FunctionBase {
       throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
     }
 
+    let rmc = undefined;
+    if (props.runtimeManagement) {
+      rmc = {
+        RuntimeVersionArn: props.runtimeManagement.arn,
+        UpdateRuntimeOn: props.runtimeManagement.mode,
+      };
+    }
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -814,6 +829,7 @@ export class Function extends FunctionBase {
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
+      runtimeManagementConfig: rmc,
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
