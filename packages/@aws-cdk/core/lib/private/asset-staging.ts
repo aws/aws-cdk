@@ -207,6 +207,10 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   });
 
   if (proc.error) {
+    if (proc.stdout || proc.stderr) {
+      // eslint-disable-next-line no-console
+      console.log('[Process failed] stdout: %s\n\n\nstderr: %s', proc.stdout?.toString().trim(), proc.stderr?.toString().trim());
+    }
     throw proc.error;
   }
 
