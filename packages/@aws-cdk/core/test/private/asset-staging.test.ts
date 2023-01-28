@@ -110,7 +110,7 @@ describe('bundling', () => {
     ]), { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
-  test('dockerExec with empty options ', () => {
+  test('fails when process failed', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('darwin');
     sinon.stub(child_process, 'spawnSync').returns({
