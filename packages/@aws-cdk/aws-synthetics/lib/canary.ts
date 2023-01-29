@@ -204,6 +204,15 @@ export interface CanaryProps {
    * not specified a dedicated security group will be created for this canary.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Whether or not to delete the lambda resources when the canary is deleted
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-deletelambdaresourcesoncanarydeletion
+   *
+   * @default false
+   */
+  readonly enableAutoDeleteLambdas?: boolean;
 }
 
 /**
@@ -281,6 +290,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       code: this.createCode(props),
       runConfig: this.createRunConfig(props),
       vpcConfig: this.createVpcConfig(props),
+      deleteLambdaResourcesOnCanaryDeletion: props.enableAutoDeleteLambdas,
     });
 
     this.canaryId = resource.attrId;
