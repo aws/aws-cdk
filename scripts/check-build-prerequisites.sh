@@ -107,7 +107,18 @@ elif [ "$container_client" == "finch" ]; then
         die "Finch is not running"
     fi
 else
-    die "Missing dependency: containerd client. Install docker >= $docker_min or finch >= $finch_min"
+    echo "⚠️ Dependency warning: Unknown container client detected. You have set \"CDK_DOCKER=$CDK_DOCKER\"."
+    check_which $container_client "(unknown version requirement)"
+    echo "While any docker compatible client can be used as a drop-in replacement, support for \"$CDK_DOCKER\" is unknown."
+    echo "Proceed with caution." 
+    echo -e "Checking if $container_client is running... \c"
+    client_running=$($container_client ps)
+    if [ $? -eq 0 ]
+    then
+        echo "Ok"
+    else
+        die "$CDK_DOCKER is not running"
+    fi
 fi
 
 # [.NET == 3.1.x, == 5.x]
