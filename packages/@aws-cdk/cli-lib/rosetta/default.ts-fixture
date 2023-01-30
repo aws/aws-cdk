@@ -1,0 +1,13 @@
+// Fixture with an AwsCdkCli set up
+import * as cdk from '@aws-cdk/core';
+import { AwsCdkCli } from '@aws-cdk/cli-lib';
+
+const cli = AwsCdkCli.fromCloudAssemblyDirectoryProducer({
+    produce: async (context: Record<string, any>) => {
+        const app = new cdk.App({ context });
+        const stack = new cdk.Stack(app, 'MyTestStack');
+        return app.synth().directory;
+    }
+});
+
+/// here

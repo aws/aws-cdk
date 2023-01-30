@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { createWriteStream, promises as fs } from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
@@ -11,7 +12,7 @@ type Logger = (x: string) => void;
 export async function zipDirectory(directory: string, outputFile: string, logger: Logger): Promise<void> {
   // We write to a temporary file and rename at the last moment. This is so that if we are
   // interrupted during this process, we don't leave a half-finished file in the target location.
-  const temporaryOutputFile = `${outputFile}._tmp`;
+  const temporaryOutputFile = `${outputFile}.${randomUUID()}._tmp`;
   await writeZipFile(directory, temporaryOutputFile);
   await moveIntoPlace(temporaryOutputFile, outputFile, logger);
 }
