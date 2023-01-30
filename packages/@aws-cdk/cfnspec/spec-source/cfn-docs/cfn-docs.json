@@ -2139,6 +2139,7 @@
         "GoogleAnalytics": "The connector-specific credentials required when using Google Analytics.",
         "InforNexus": "The connector-specific credentials required when using Infor Nexus.",
         "Marketo": "The connector-specific credentials required when using Marketo.",
+        "Pardot": "The connector-specific credentials required when using Salesforce Pardot.",
         "Redshift": "The connector-specific credentials required when using Amazon Redshift.",
         "SAPOData": "The connector-specific profile credentials required when using SAPOData.",
         "Salesforce": "The connector-specific credentials required when using Salesforce.",
@@ -2160,6 +2161,7 @@
         "Dynatrace": "The connector-specific properties required by Dynatrace.",
         "InforNexus": "The connector-specific properties required by Infor Nexus.",
         "Marketo": "The connector-specific properties required by Marketo.",
+        "Pardot": "The connector-specific properties required by Salesforce Pardot.",
         "Redshift": "The connector-specific properties required by Amazon Redshift.",
         "SAPOData": "The connector-specific profile properties required when using SAPOData.",
         "Salesforce": "The connector-specific properties required by Salesforce.",
@@ -2309,6 +2311,25 @@
         "AuthCodeUrl": "The authorization code url required to redirect to SAP Login Page to fetch authorization code for OAuth type authentication.",
         "OAuthScopes": "The OAuth scopes required for OAuth type authentication.",
         "TokenUrl": "The token url required to fetch access/refresh tokens using authorization code and also to refresh expired access token using refresh token."
+      }
+    },
+    "AWS::AppFlow::ConnectorProfile.PardotConnectorProfileCredentials": {
+      "attributes": {},
+      "description": "The connector-specific profile credentials required when using Salesforce Pardot.",
+      "properties": {
+        "AccessToken": "The credentials used to access protected Salesforce Pardot resources.",
+        "ClientCredentialsArn": "The secret manager ARN, which contains the client ID and client secret of the connected app.",
+        "ConnectorOAuthRequest": "",
+        "RefreshToken": "The credentials used to acquire new access tokens."
+      }
+    },
+    "AWS::AppFlow::ConnectorProfile.PardotConnectorProfileProperties": {
+      "attributes": {},
+      "description": "The connector-specific profile properties required when using Salesforce Pardot.",
+      "properties": {
+        "BusinessUnitId": "The business unit id of Salesforce Pardot instance.",
+        "InstanceUrl": "The location of the Salesforce Pardot resource.",
+        "IsSandboxEnvironment": "Indicates whether the connector profile applies to a sandbox or production environment."
       }
     },
     "AWS::AppFlow::ConnectorProfile.RedshiftConnectorProfileCredentials": {
@@ -2516,6 +2537,7 @@
         "GoogleAnalytics": "The operation to be performed on the provided Google Analytics source fields.",
         "InforNexus": "The operation to be performed on the provided Infor Nexus source fields.",
         "Marketo": "The operation to be performed on the provided Marketo source fields.",
+        "Pardot": "The operation to be performed on the provided Salesforce Pardot source fields.",
         "S3": "The operation to be performed on the provided Amazon S3 source fields.",
         "SAPOData": "The operation to be performed on the provided SAPOData source fields.",
         "Salesforce": "The operation to be performed on the provided Salesforce source fields.",
@@ -2661,6 +2683,13 @@
       "description": "Specifies the configuration that Amazon AppFlow uses when it catalogs your data. When Amazon AppFlow catalogs your data, it stores metadata in a data catalog.",
       "properties": {
         "GlueDataCatalog": "Specifies the configuration that Amazon AppFlow uses when it catalogs your data with the AWS Glue Data Catalog ."
+      }
+    },
+    "AWS::AppFlow::Flow.PardotSourceProperties": {
+      "attributes": {},
+      "description": "The properties that are applied when Salesforce Pardot is being used as a source.",
+      "properties": {
+        "Object": "The object specified in the Salesforce Pardot flow source."
       }
     },
     "AWS::AppFlow::Flow.PrefixConfig": {
@@ -2812,6 +2841,7 @@
         "GoogleAnalytics": "Specifies the information that is required for querying Google Analytics.",
         "InforNexus": "Specifies the information that is required for querying Infor Nexus.",
         "Marketo": "Specifies the information that is required for querying Marketo.",
+        "Pardot": "Specifies the information that is required for querying Salesforce Pardot.",
         "S3": "Specifies the information that is required for querying Amazon S3.",
         "SAPOData": "The properties that are applied when using SAPOData as a flow source.",
         "Salesforce": "Specifies the information that is required for querying Salesforce.",
@@ -6967,13 +6997,13 @@
         "Description": "The pricing rule description.",
         "ModifierPercentage": "A percentage modifier applied on the public pricing rates.",
         "Name": "The name of a pricing rule.",
-        "Operation": "Operation is the specific AWS action covered by this line item. This describes the specific usage of the line item.\n\nIf the `Scope` attribute is set to `SKU` , this attribute indicates which operation the `PricingRule` is modifying. For example, a value of `RunInstances:0202` indicates the operation of running an Amazon EC2 instance.",
+        "Operation": "",
         "Scope": "The scope of pricing rule that indicates if it is globally applicable, or if it is service-specific.",
         "Service": "If the `Scope` attribute is `SERVICE` , this attribute indicates which service the `PricingRule` is applicable for.",
         "Tags": "A map that contains tag keys and tag values that are attached to a pricing rule.",
         "Tiering": "The set of tiering configurations for the pricing rule.",
         "Type": "The type of pricing rule.",
-        "UsageType": "Usage type is the unit that each service uses to measure the usage of a specific type of resource.\n\nIf the `Scope` attribute is set to `SKU` , this attribute indicates which usage type the `PricingRule` is modifying. For example, `USW2-BoxUsage:m2.2xlarge` describes an `M2 High Memory Double Extra Large` instance in the US West (Oregon) Region."
+        "UsageType": "Usage Type is the unit that each service uses to measure the usage of a specific type of resource."
       }
     },
     "AWS::BillingConductor::PricingRule.FreeTier": {
@@ -10672,6 +10702,16 @@
         "Tags": "An array of key-value pairs to apply to this resource."
       }
     },
+    "AWS::Connect::ApprovedOrigin": {
+      "attributes": {
+        "Ref": ""
+      },
+      "description": "",
+      "properties": {
+        "InstanceId": "",
+        "Origin": ""
+      }
+    },
     "AWS::Connect::ContactFlow": {
       "attributes": {
         "ContactFlowArn": "`Ref` returns the Amazon Resource Name (ARN) of the flow. For example:\n\n`{ \"Ref\": \"myFlowArn\" }`",
@@ -10822,6 +10862,18 @@
         "EncryptionConfig": "The Amazon S3 encryption configuration."
       }
     },
+    "AWS::Connect::IntegrationAssociation": {
+      "attributes": {
+        "IntegrationAssociationId": "",
+        "Ref": ""
+      },
+      "description": "Creates an AWS resource association with an Amazon Connect instance.",
+      "properties": {
+        "InstanceId": "The identifier of the Amazon Connect instance. You can find the instanceId in the ARN of the instance.",
+        "IntegrationArn": "The Amazon Resource Name (ARN) for the AppIntegration.",
+        "IntegrationType": "The integration type."
+      }
+    },
     "AWS::Connect::PhoneNumber": {
       "attributes": {
         "Address": "The phone number, in E.164 format.",
@@ -10961,6 +11013,17 @@
         "Description": "The description. Supports variable injection. For more information, see [JSONPath reference](https://docs.aws.amazon.com/connect/latest/adminguide/contact-lens-variable-injection.html) in the *Amazon Connect Administrators Guide* .",
         "Name": "The name. Supports variable injection. For more information, see [JSONPath reference](https://docs.aws.amazon.com/connect/latest/adminguide/contact-lens-variable-injection.html) in the *Amazon Connect Administrators Guide* .",
         "References": "Information about the reference when the `referenceType` is `URL` . Otherwise, null. `URL` is the only accepted type. (Supports variable injection in the `Value` field.)"
+      }
+    },
+    "AWS::Connect::SecurityKey": {
+      "attributes": {
+        "AssociationId": "",
+        "Ref": ""
+      },
+      "description": "Configuration information of the security key.",
+      "properties": {
+        "InstanceId": "",
+        "Key": "The key of the security key."
       }
     },
     "AWS::Connect::TaskTemplate": {
@@ -13974,6 +14037,7 @@
       "description": "Specifies a customer gateway.",
       "properties": {
         "BgpAsn": "For devices that support BGP, the customer gateway's BGP ASN.\n\nDefault: 65000",
+        "DeviceName": "The name of customer gateway device.",
         "IpAddress": "IPv4 address for the customer gateway device's outside interface. The address must be static.",
         "Tags": "One or more tags for the customer gateway.",
         "Type": "The type of VPN connection that this customer gateway supports ( `ipsec.1` )."
@@ -14396,7 +14460,6 @@
         "IpamScopeId": "The ID of the scope in which you would like to create the IPAM pool.",
         "Locale": "The locale of the IPAM pool. In IPAM, the locale is the AWS Region where you want to make an IPAM pool available for allocations. Only resources in the same Region as the locale of the pool can get IP address allocations from the pool. You can only allocate a CIDR for a VPC, for example, from an IPAM pool that shares a locale with the VPC\u2019s Region. Note that once you choose a Locale for a pool, you cannot modify it. If you choose an AWS Region for locale that has not been configured as an operating Region for the IPAM, you'll get an error.",
         "ProvisionedCidrs": "Information about the CIDRs provisioned to an IPAM pool.",
-        "PublicIpSource": "The IP address source for pools in the public scope. Only used for provisioning IP address CIDRs to pools in the public scope. Default is `BYOIP` . For more information, see [Create IPv6 pools](https://docs.aws.amazon.com//vpc/latest/ipam/intro-create-ipv6-pools.html) in the *Amazon VPC IPAM User Guide* . By default, you can add only one Amazon-provided IPv6 CIDR block to a top-level IPv6 pool. For information on increasing the default limit, see [Quotas for your IPAM](https://docs.aws.amazon.com//vpc/latest/ipam/quotas-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "PubliclyAdvertisable": "Determines if a pool is publicly advertisable. This option is not available for pools with AddressFamily set to `ipv4` .",
         "SourceIpamPoolId": "The ID of the source IPAM pool. You can use this option to create an IPAM pool within an existing source pool.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
@@ -14407,60 +14470,6 @@
       "description": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` .",
       "properties": {
         "Cidr": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` ."
-      }
-    },
-    "AWS::EC2::IPAMPoolCidr": {
-      "attributes": {
-        "IpamPoolCidrId": "",
-        "Ref": "",
-        "State": ""
-      },
-      "description": "A CIDR provisioned to an IPAM pool.",
-      "properties": {
-        "Cidr": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` .",
-        "IpamPoolId": "",
-        "NetmaskLength": "The netmask length of the CIDR you'd like to provision to a pool. Can be used for provisioning Amazon-provided IPv6 CIDRs to top-level pools and for provisioning CIDRs to pools with source pools. Cannot be used to provision BYOIP CIDRs to top-level pools. \"NetmaskLength\" or \"Cidr\" is required."
-      }
-    },
-    "AWS::EC2::IPAMResourceDiscovery": {
-      "attributes": {
-        "IpamResourceDiscoveryArn": "",
-        "IpamResourceDiscoveryId": "",
-        "IpamResourceDiscoveryRegion": "",
-        "IsDefault": "",
-        "OwnerId": "",
-        "Ref": "",
-        "State": ""
-      },
-      "description": "A resource discovery is an IPAM component that enables IPAM Service to manage and monitor resources that belong to the owning account.",
-      "properties": {
-        "Description": "The resource discovery description.",
-        "OperatingRegions": "The operating Regions for the resource discovery. Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs. IPAM only discovers and monitors resources in the AWS Regions you select as operating Regions.",
-        "Tags": "A tag is a label that you assign to an AWS resource. Each tag consists of a key and an optional value. You can use tags to search and filter your resources or track your AWS costs."
-      }
-    },
-    "AWS::EC2::IPAMResourceDiscovery.IpamOperatingRegion": {
-      "attributes": {},
-      "description": "The operating Regions for an IPAM. Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs. IPAM only discovers and monitors resources in the AWS Regions you select as operating Regions.\n\nFor more information about operating Regions, see [Create an IPAM](https://docs.aws.amazon.com//vpc/latest/ipam/create-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-      "properties": {
-        "RegionName": "The name of the operating Region."
-      }
-    },
-    "AWS::EC2::IPAMResourceDiscoveryAssociation": {
-      "attributes": {
-        "IpamResourceDiscoveryAssociationArn": "",
-        "IpamResourceDiscoveryAssociationId": "",
-        "IsDefault": "",
-        "OwnerId": "",
-        "Ref": "",
-        "State": "",
-        "Status": ""
-      },
-      "description": "An IPAM resource discovery association. An associated resource discovery is a resource discovery that has been associated with an IPAM. IPAM aggregates the resource CIDRs discovered by the associated resource discovery.",
-      "properties": {
-        "IpamId": "The IPAM ID.",
-        "IpamResourceDiscoveryId": "The resource discovery ID.",
-        "Tags": "A tag is a label that you assign to an AWS resource. Each tag consists of a key and an optional value. You can use tags to search and filter your resources or track your AWS costs."
       }
     },
     "AWS::EC2::IPAMScope": {
@@ -14688,18 +14697,6 @@
         "VolumeId": "The ID of the EBS volume. The volume and instance must be within the same Availability Zone."
       }
     },
-    "AWS::EC2::InstanceConnectEndpoint": {
-      "attributes": {
-        "Id": "",
-        "Ref": ""
-      },
-      "description": "",
-      "properties": {
-        "ClientToken": "",
-        "SubnetId": "",
-        "Tags": ""
-      }
-    },
     "AWS::EC2::InternetGateway": {
       "attributes": {
         "InternetGatewayId": "The ID of the internet gateway.",
@@ -14920,7 +14917,7 @@
         "EnclaveOptions": "Indicates whether the instance is enabled for AWS Nitro Enclaves. For more information, see [What is AWS Nitro Enclaves?](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) in the *AWS Nitro Enclaves User Guide* .\n\nYou can't enable AWS Nitro Enclaves and hibernation on the same instance.",
         "HibernationOptions": "Indicates whether an instance is enabled for hibernation. This parameter is valid only if the instance meets the [hibernation prerequisites](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hibernating-prerequisites.html) . For more information, see [Hibernate your instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) in the *Amazon Elastic Compute Cloud User Guide* .",
         "IamInstanceProfile": "The name or Amazon Resource Name (ARN) of an IAM instance profile.",
-        "ImageId": "The ID of the AMI. Alternatively, you can specify a Systems Manager parameter, which will resolve to an AMI ID on launch.\n\nValid formats:\n\n- `ami-17characters00000`\n- `resolve:ssm:parameter-name`\n- `resolve:ssm:parameter-name:version-number`\n- `resolve:ssm:parameter-name:label`\n\nFor more information, see [Use a Systems Manager parameter instead of an AMI ID](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html#use-an-ssm-parameter-instead-of-an-ami-id) in the *Amazon Elastic Compute Cloud User Guide* .",
+        "ImageId": "The ID of the AMI. Alternatively, you can specify a Systems Manager parameter, which will resolve to an AMI ID on launch.\n\nValid formats:\n\n- `ami-17characters00000`\n- `resolve:ssm:parameter-name`\n- `resolve:ssm:parameter-name:version-number`\n- `resolve:ssm:parameter-name:label`\n\nFor more information, see [Use a Systems Manager parameter to find an AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html#using-systems-manager-parameter-to-find-AMI) in the *Amazon Elastic Compute Cloud User Guide* .",
         "InstanceInitiatedShutdownBehavior": "Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).\n\nDefault: `stop`",
         "InstanceMarketOptions": "The market (purchasing) option for the instances.",
         "InstanceRequirements": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nIf you specify `InstanceRequirements` , you can't specify `InstanceType` .",
@@ -15150,7 +15147,11 @@
       "properties": {
         "AllocationId": "[Public NAT gateway only] The allocation ID of the Elastic IP address that's associated with the NAT gateway. This property is required for a public NAT gateway and cannot be specified with a private NAT gateway.",
         "ConnectivityType": "Indicates whether the NAT gateway supports public or private connectivity. The default is public connectivity.",
+        "MaxDrainDurationSeconds": "",
         "PrivateIpAddress": "The private IPv4 address to assign to the NAT gateway. If you don't provide an address, a private IPv4 address will be automatically assigned.",
+        "SecondaryAllocationIds": "",
+        "SecondaryPrivateIpAddressCount": "",
+        "SecondaryPrivateIpAddresses": "",
         "SubnetId": "The ID of the subnet in which the NAT gateway is located.",
         "Tags": "The tags for the NAT gateway."
       }
@@ -17588,7 +17589,7 @@
         "AddonVersion": "The version of the add-on.",
         "ClusterName": "The name of the cluster.",
         "ConfigurationValues": "The configuration values that you provided.",
-        "PreserveOnDelete": "",
+        "PreserveOnDelete": "Specifying this option preserves the add-on software on your cluster but Amazon EKS stops managing any settings for the add-on. If an IAM account is associated with the add-on, it isn't removed.",
         "ResolveConflicts": "How to resolve field value conflicts for an Amazon EKS add-on. Conflicts are handled based on the value you choose:\n\n- *None* \u2013 If the self-managed version of the add-on is installed on your cluster, Amazon EKS doesn't change the value. Creation of the add-on might fail.\n- *Overwrite* \u2013 If the self-managed version of the add-on is installed on your cluster and the Amazon EKS default value is different than the existing value, Amazon EKS changes the value to the Amazon EKS default value.\n- *Preserve* \u2013 Not supported. You can set this value when updating an add-on though. For more information, see [UpdateAddon](https://docs.aws.amazon.com/eks/latest/APIReference/API_UpdateAddon.html) .\n\nIf you don't currently have the self-managed version of the add-on installed on your cluster, the Amazon EKS add-on is installed. Amazon EKS sets all values to default values, regardless of the option that you specify.",
         "ServiceAccountRoleArn": "The Amazon Resource Name (ARN) of an existing IAM role to bind to the add-on's service account. The role must be assigned the IAM permissions required by the add-on. If you don't specify an existing IAM role, then the add-on uses the permissions assigned to the node IAM role. For more information, see [Amazon EKS node IAM role](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html) in the *Amazon EKS User Guide* .\n\n> To specify an existing IAM role, you must have an IAM OpenID Connect (OIDC) provider created for your cluster. For more information, see [Enabling IAM roles for service accounts on your cluster](https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html) in the *Amazon EKS User Guide* .",
         "Tags": "The metadata that you apply to the add-on to assist with categorization and organization. Each tag consists of a key and an optional value, both of which you define. Add-on tags do not propagate to any other resources associated with the cluster."
@@ -17628,9 +17629,9 @@
     },
     "AWS::EKS::Cluster.ControlPlanePlacement": {
       "attributes": {},
-      "description": "",
+      "description": "The placement configuration for all the control plane instances of your local Amazon EKS cluster on an AWS Outpost. For more information, see [Capacity considerations](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts-capacity-considerations.html) in the *Amazon EKS User Guide*",
       "properties": {
-        "GroupName": ""
+        "GroupName": "The name of the placement group for the Kubernetes control plane instances."
       }
     },
     "AWS::EKS::Cluster.EncryptionConfig": {
@@ -17669,7 +17670,7 @@
       "description": "The configuration of your local Amazon EKS cluster on an AWS Outpost. Before creating a cluster on an Outpost, review [Creating a local cluster on an Outpost](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts-local-cluster-create.html) in the *Amazon EKS User Guide* . This API isn't available for Amazon EKS clusters on the AWS cloud.",
       "properties": {
         "ControlPlaneInstanceType": "The Amazon EC2 instance type that you want to use for your local Amazon EKS cluster on Outposts. Choose an instance type based on the number of nodes that your cluster will have. For more information, see [Capacity considerations](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts-capacity-considerations.html) in the *Amazon EKS User Guide* .\n\nThe instance type that you specify is used for all Kubernetes control plane instances. The instance type can't be changed after cluster creation. The control plane is not automatically scaled by Amazon EKS.",
-        "ControlPlanePlacement": "",
+        "ControlPlanePlacement": "An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an AWS Outpost. For more information, see [Capacity considerations](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts-capacity-considerations.html) in the *Amazon EKS User Guide* .",
         "OutpostArns": "The ARN of the Outpost that you want to use for your local Amazon EKS cluster on Outposts. Only a single Outpost ARN is supported."
       }
     },
@@ -18488,13 +18489,15 @@
         "Architecture": "The CPU architecture type of the application. Allowed values: `X86_64` or `ARM64`",
         "AutoStartConfiguration": "The configuration for an application to automatically start on job submission.",
         "AutoStopConfiguration": "The configuration for an application to automatically stop after a certain amount of time being idle.",
+        "ImageConfiguration": "The image configuration applied to all worker types.",
         "InitialCapacity": "The initial capacity of the application.",
         "MaximumCapacity": "The maximum capacity of the application. This is cumulative across all workers at any given point in time during the lifespan of the application is created. No new resources will be created once any one of the defined limits is hit.",
         "Name": "The name of the application.\n\n*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._\\\\/#-]+$`",
         "NetworkConfiguration": "The network configuration for customer VPC connectivity for the application.",
         "ReleaseLabel": "The EMR release version associated with the application.\n\n*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._/-]+$`",
         "Tags": "The tags assigned to the application.",
-        "Type": "The type of application, such as Spark or Hive."
+        "Type": "The type of application, such as Spark or Hive.",
+        "WorkerTypeSpecifications": "The specification applied to each worker type."
       }
     },
     "AWS::EMRServerless::Application.AutoStartConfiguration": {
@@ -18510,6 +18513,13 @@
       "properties": {
         "Enabled": "Enables the application to automatically stop after a certain amount of time being idle. Defaults to true.",
         "IdleTimeoutMinutes": "The amount of idle time in minutes after which your application will automatically stop. Defaults to 15 minutes.\n\n*Minimum* : 1\n\n*Maximum* : 10080"
+      }
+    },
+    "AWS::EMRServerless::Application.ImageConfigurationInput": {
+      "attributes": {},
+      "description": "The image configuration.",
+      "properties": {
+        "ImageUri": "The URI of an image in the Amazon ECR registry. This field is required when you create a new application. If you leave this field blank in an update, Amazon EMR will remove the image configuration."
       }
     },
     "AWS::EMRServerless::Application.InitialCapacityConfig": {
@@ -18552,6 +18562,13 @@
         "Cpu": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(vCPU|vcpu|VCPU)?$`",
         "Disk": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)$\"`",
         "Memory": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)?$`"
+      }
+    },
+    "AWS::EMRServerless::Application.WorkerTypeSpecificationInput": {
+      "attributes": {},
+      "description": "The specifications for a worker type.",
+      "properties": {
+        "ImageConfiguration": "The image configuration for a worker type."
       }
     },
     "AWS::ElastiCache::CacheCluster": {
@@ -23552,6 +23569,8 @@
       },
       "description": "Creates a Dataflow Endpoint Group request.\n\nDataflow endpoint groups contain a list of endpoints. When the name of a dataflow endpoint group is specified in a mission profile, the Ground Station service will connect to the endpoints and flow data during a contact.\n\nFor more information about dataflow endpoint groups, see [Dataflow Endpoint Groups](https://docs.aws.amazon.com/ground-station/latest/ug/dataflowendpointgroups.html) .",
       "properties": {
+        "ContactPostPassDurationSeconds": "",
+        "ContactPrePassDurationSeconds": "",
         "EndpointDetails": "List of Endpoint Details, containing address and port for each endpoint.",
         "Tags": "Tags assigned to a resource."
       }
@@ -23957,7 +23976,9 @@
       }
     },
     "AWS::IAM::ServiceLinkedRole": {
-      "attributes": {},
+      "attributes": {
+        "Ref": "`Ref` returns the `RoleName` created for the service-linked role appended with an underscore followed by the `CustomSuffix` . For example: `AWSServiceRoleForAutoScaling_TestSuffix` ."
+      },
       "description": "Creates an IAM role that is linked to a specific AWS service. The service controls the attached policies and when the role can be deleted. This helps ensure that the service is not broken by an unexpectedly changed or deleted role, which could put your AWS resources into an unknown state. Allowing the service to control the role helps improve service stability and proper cleanup when a service and its role are no longer needed. For more information, see [Using service-linked roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html) in the *IAM User Guide* .\n\nTo attach a policy to this service-linked role, you must make the request using the AWS service that depends on this role.",
       "properties": {
         "AWSServiceName": "The service principal for the AWS service to which this role is attached. You use a string similar to a URL but without the http:// in front. For example: `elasticbeanstalk.amazonaws.com` .\n\nService principals are unique and case-sensitive. To find the exact service principal for your service-linked role, see [AWS services that work with IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_aws-services-that-work-with-iam.html) in the *IAM User Guide* . Look for the services that have *Yes* in the *Service-Linked Role* column. Choose the *Yes* link to view the service-linked role documentation for that service.",
@@ -24349,9 +24370,26 @@
         "DistributionConfigurationArn": "The Amazon Resource Name (ARN) of the distribution configuration.",
         "EnhancedImageMetadataEnabled": "Indicates whether Image Builder collects additional information about the image, such as the operating system (OS) version and package list.",
         "ImageRecipeArn": "The Amazon Resource Name (ARN) of the image recipe.",
+        "ImageScanningConfiguration": "",
         "ImageTestsConfiguration": "The configuration settings for your image test components, which includes a toggle that allows you to turn off tests, and a timeout setting.",
         "InfrastructureConfigurationArn": "The Amazon Resource Name (ARN) of the infrastructure configuration associated with this image pipeline.",
         "Tags": "The tags of the image."
+      }
+    },
+    "AWS::ImageBuilder::Image.EcrConfiguration": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ContainerTags": "",
+        "RepositoryName": ""
+      }
+    },
+    "AWS::ImageBuilder::Image.ImageScanningConfiguration": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "EcrConfiguration": "",
+        "ImageScanningEnabled": ""
       }
     },
     "AWS::ImageBuilder::Image.ImageTestsConfiguration": {
@@ -24375,12 +24413,29 @@
         "DistributionConfigurationArn": "The Amazon Resource Name (ARN) of the distribution configuration associated with this image pipeline.",
         "EnhancedImageMetadataEnabled": "Collects additional information about the image being created, including the operating system (OS) version and package list. This information is used to enhance the overall experience of using EC2 Image Builder. Enabled by default.",
         "ImageRecipeArn": "The Amazon Resource Name (ARN) of the image recipe associated with this image pipeline.",
+        "ImageScanningConfiguration": "",
         "ImageTestsConfiguration": "The configuration of the image tests that run after image creation to ensure the quality of the image that was created.",
         "InfrastructureConfigurationArn": "The Amazon Resource Name (ARN) of the infrastructure configuration associated with this image pipeline.",
         "Name": "The name of the image pipeline.",
         "Schedule": "The schedule of the image pipeline. A schedule configures how often and when a pipeline automatically creates a new image.",
         "Status": "The status of the image pipeline.",
         "Tags": "The tags of this image pipeline."
+      }
+    },
+    "AWS::ImageBuilder::ImagePipeline.EcrConfiguration": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ContainerTags": "",
+        "RepositoryName": ""
+      }
+    },
+    "AWS::ImageBuilder::ImagePipeline.ImageScanningConfiguration": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "EcrConfiguration": "",
+        "ImageScanningEnabled": ""
       }
     },
     "AWS::ImageBuilder::ImagePipeline.ImageTestsConfiguration": {
@@ -28833,7 +28888,7 @@
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the rescore execution plan.",
         "Id": "The identifier of the rescore execution plan.",
-        "Ref": ""
+        "Ref": "`Ref` returns the rescore execution plan ID. For example:\n\n`{\"Ref\": \"rescore-execution-plan-id\"}`"
       },
       "description": "Creates a rescore execution plan. A rescore execution plan is an Amazon Kendra Intelligent Ranking resource used for provisioning the `Rescore` API. You set the number of capacity units that you require for Amazon Kendra Intelligent Ranking to rescore or re-rank a search service's results.\n\nFor an example of using the `CreateRescoreExecutionPlan` API, including using the Python and Java SDKs, see [Semantically ranking a search service's results](https://docs.aws.amazon.com/kendra/latest/dg/search-service-rerank.html) .",
       "properties": {
@@ -30493,7 +30548,7 @@
         "MaximumRetryAttempts": "(Streams only) Discard records after the specified number of retries. The default value is -1,\nwhich sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, Lambda retries failed records until the record expires in the event source.",
         "ParallelizationFactor": "(Streams only) The number of batches to process concurrently from each shard. The default value is 1.",
         "Queues": "(Amazon MQ) The name of the Amazon MQ broker destination queue to consume.",
-        "ScalingConfig": "(Amazon SQS only) The scaling configuration for the event source. For more information, see [Configuring maximum concurrency for Amazon SQS event sources](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency) .",
+        "ScalingConfig": "( Amazon Simple Queue Service only) The scaling configuration for the event source. For more information, see [Configuring maximum concurrency for Amazon SQS event sources](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency) .",
         "SelfManagedEventSource": "The self-managed Apache Kafka cluster for your event source.",
         "SelfManagedKafkaEventSourceConfig": "Specific configuration settings for a self-managed Apache Kafka event source.",
         "SourceAccessConfigurations": "An array of the authentication protocol, VPC components, or virtual host to secure and define your event source.",
@@ -30547,7 +30602,7 @@
     },
     "AWS::Lambda::EventSourceMapping.ScalingConfig": {
       "attributes": {},
-      "description": "(Amazon SQS only) The scaling configuration for the event source. To remove the configuration, pass an empty value.",
+      "description": "( Amazon Simple Queue Service only) The scaling configuration for the event source. For more information, see [Configuring maximum concurrency for Amazon SQS event sources](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-max-concurrency) .",
       "properties": {
         "MaximumConcurrency": "Limits the number of concurrent instances that the Amazon SQS event source can invoke."
       }
@@ -30602,7 +30657,7 @@
         "ReservedConcurrentExecutions": "The number of simultaneous executions to reserve for the function.",
         "Role": "The Amazon Resource Name (ARN) of the function's execution role.",
         "Runtime": "The identifier of the function's [runtime](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html) . Runtime is required if the deployment package is a .zip file archive.",
-        "RuntimeManagementConfig": "",
+        "RuntimeManagementConfig": "Sets the runtime management configuration for a function's version. For more information, see [Runtime updates](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html) .",
         "SnapStart": "The function's [AWS Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) setting.",
         "Tags": "A list of [tags](https://docs.aws.amazon.com/lambda/latest/dg/tagging.html) to apply to the function.",
         "Timeout": "The amount of time (in seconds) that Lambda allows a function to run before stopping it. The default is 3 seconds. The maximum allowed value is 900 seconds. For more information, see [Lambda execution environment](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-context.html) .",
@@ -30661,10 +30716,10 @@
     },
     "AWS::Lambda::Function.RuntimeManagementConfig": {
       "attributes": {},
-      "description": "",
+      "description": "Sets the runtime management configuration for a function's version. For more information, see [Runtime updates](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html) .",
       "properties": {
-        "RuntimeVersionArn": "",
-        "UpdateRuntimeOn": ""
+        "RuntimeVersionArn": "The ARN of the runtime version you want the function to use.\n\n> This is only required if you're using the *Manual* runtime update mode.",
+        "UpdateRuntimeOn": "Specify the runtime update mode.\n\n- *Auto (default)* - Automatically update to the most recent and secure runtime version using a [Two-phase runtime version rollout](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-two-phase) . This is the best choice for most customers to ensure they always benefit from runtime updates.\n- *Function update* - Lambda updates the runtime of you function to the most recent and secure runtime version when you update your function. This approach synchronizes runtime updates with function deployments, giving you control over when runtime updates are applied and allowing you to detect and mitigate rare runtime update incompatibilities early. When using this setting, you need to regularly update your functions to keep their runtime up-to-date.\n- *Manual* - You specify a runtime version in your function configuration. The function will use this runtime version indefinitely. In the rare case where a new runtime version is incompatible with an existing function, this allows you to roll back your function to an earlier runtime version. For more information, see [Roll back a runtime version](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-rollback) .\n\n*Valid Values* : `Auto` | `Function update` | `Manual`"
       }
     },
     "AWS::Lambda::Function.SnapStart": {
@@ -30676,10 +30731,10 @@
     },
     "AWS::Lambda::Function.SnapStartResponse": {
       "attributes": {},
-      "description": "The function's [SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) setting.",
+      "description": "",
       "properties": {
-        "ApplyOn": "When set to `PublishedVersions` , Lambda creates a snapshot of the execution environment when you publish a function version.",
-        "OptimizationStatus": "When you provide a [qualified Amazon Resource Name (ARN)](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html#versioning-versions-using) , this response element indicates whether SnapStart is activated for the specified function version."
+        "ApplyOn": "",
+        "OptimizationStatus": ""
       }
     },
     "AWS::Lambda::Function.TracingConfig": {
@@ -30912,6 +30967,32 @@
         "LambdaCodeHook": "Specifies a Lambda function that verifies requests to a bot or fulfills the user's request to a bot."
       }
     },
+    "AWS::Lex::Bot.Condition": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ExpressionString": ""
+      }
+    },
+    "AWS::Lex::Bot.ConditionalBranch": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Condition": "",
+        "Name": "",
+        "NextStep": "",
+        "Response": ""
+      }
+    },
+    "AWS::Lex::Bot.ConditionalSpecification": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ConditionalBranches": "",
+        "DefaultBranch": "",
+        "IsActive": ""
+      }
+    },
     "AWS::Lex::Bot.ConversationLogSettings": {
       "attributes": {},
       "description": "Specifies settings that manage logging that saves audio, text, and metadata for the conversations with your users.",
@@ -30959,11 +31040,55 @@
         "ChildDirected": ""
       }
     },
+    "AWS::Lex::Bot.DefaultConditionalBranch": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "NextStep": "",
+        "Response": ""
+      }
+    },
+    "AWS::Lex::Bot.DialogAction": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "SlotToElicit": "",
+        "SuppressNextMessage": "",
+        "Type": ""
+      }
+    },
+    "AWS::Lex::Bot.DialogCodeHookInvocationSetting": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "EnableCodeHookInvocation": "",
+        "InvocationLabel": "",
+        "IsActive": "",
+        "PostCodeHookSpecification": ""
+      }
+    },
     "AWS::Lex::Bot.DialogCodeHookSetting": {
       "attributes": {},
       "description": "Specifies whether an intent uses the dialog code hook during conversations with a user.",
       "properties": {
         "Enabled": "Indicates whether an intent uses the dialog code hook during a conversation with a user."
+      }
+    },
+    "AWS::Lex::Bot.DialogState": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "DialogAction": "",
+        "Intent": "",
+        "SessionAttributes": ""
+      }
+    },
+    "AWS::Lex::Bot.ElicitationCodeHookInvocationSetting": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "EnableCodeHookInvocation": "",
+        "InvocationLabel": ""
       }
     },
     "AWS::Lex::Bot.ExternalSourceSetting": {
@@ -30979,6 +31104,7 @@
       "properties": {
         "Enabled": "Indicates whether a Lambda function should be invoked for fulfill a specific intent.",
         "FulfillmentUpdatesSpecification": "Provides settings for update messages sent to the user for long-running Lambda fulfillment functions. Fulfillment updates can be used only with streaming conversations.",
+        "IsActive": "",
         "PostFulfillmentStatusSpecification": "Provides settings for messages sent to the user for after the Lambda fulfillment function completes. Post-fulfillment messages can be sent for both streaming and non-streaming conversations."
       }
     },
@@ -31036,6 +31162,16 @@
         "Title": "The title to display on the response card. The format of the title is determined by the platform displaying the response card."
       }
     },
+    "AWS::Lex::Bot.InitialResponseSetting": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "CodeHook": "",
+        "Conditional": "",
+        "InitialResponse": "",
+        "NextStep": ""
+      }
+    },
     "AWS::Lex::Bot.InputContext": {
       "attributes": {},
       "description": "The name of a context that must be active for an intent to be selected by Amazon Lex .",
@@ -31050,6 +31186,7 @@
         "Description": "A description of the intent. Use the description to help identify the intent in lists.",
         "DialogCodeHook": "Specifies that Amazon Lex invokes the alias Lambda function for each user input. You can invoke this Lambda function to personalize user interaction.",
         "FulfillmentCodeHook": "Specifies that Amazon Lex invokes the alias Lambda function when the intent is ready for fulfillment. You can invoke this function to complete the bot's transaction with the user.",
+        "InitialResponseSetting": "",
         "InputContexts": "A list of contexts that must be active for this intent to be considered by Amazon Lex .",
         "IntentClosingSetting": "Sets the response that Amazon Lex sends to the user when the intent is closed.",
         "IntentConfirmationSetting": "Provides prompts that Amazon Lex sends to the user to confirm the completion of an intent. If the user answers \"no,\" the settings contain a statement that is sent to the user to end the intent.",
@@ -31067,16 +31204,36 @@
       "description": "Provides a statement the Amazon Lex conveys to the user when the intent is successfully fulfilled.",
       "properties": {
         "ClosingResponse": "The response that Amazon Lex sends to the user when the intent is complete.",
-        "IsActive": "Specifies whether an intent's closing response is used. When this field is false, the closing response isn't sent to the user and no closing input from the user is used. If the IsActive field isn't specified, the default is true."
+        "Conditional": "",
+        "IsActive": "Specifies whether an intent's closing response is used. When this field is false, the closing response isn't sent to the user and no closing input from the user is used. If the IsActive field isn't specified, the default is true.",
+        "NextStep": ""
       }
     },
     "AWS::Lex::Bot.IntentConfirmationSetting": {
       "attributes": {},
       "description": "Provides a prompt for making sure that the user is ready for the intent to be fulfilled.",
       "properties": {
+        "CodeHook": "",
+        "ConfirmationConditional": "",
+        "ConfirmationNextStep": "",
+        "ConfirmationResponse": "",
+        "DeclinationConditional": "",
+        "DeclinationNextStep": "",
         "DeclinationResponse": "When the user answers \"no\" to the question defined in PromptSpecification, Amazon Lex responds with this response to acknowledge that the intent was canceled.",
+        "ElicitationCodeHook": "",
+        "FailureConditional": "",
+        "FailureNextStep": "",
+        "FailureResponse": "",
         "IsActive": "Specifies whether the intent's confirmation is sent to the user. When this field is false, confirmation and declination responses aren't sent and processing continues as if the responses aren't present. If the active field isn't specified, the default is true.",
         "PromptSpecification": "Prompts the user to confirm the intent. This question should have a yes or no answer."
+      }
+    },
+    "AWS::Lex::Bot.IntentOverride": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Name": "",
+        "Slots": ""
       }
     },
     "AWS::Lex::Bot.KendraConfiguration": {
@@ -31144,12 +31301,33 @@
         "Value": "The message to send to the user."
       }
     },
+    "AWS::Lex::Bot.PostDialogCodeHookInvocationSpecification": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "FailureConditional": "",
+        "FailureNextStep": "",
+        "FailureResponse": "",
+        "SuccessConditional": "",
+        "SuccessNextStep": "",
+        "SuccessResponse": "",
+        "TimeoutConditional": "",
+        "TimeoutNextStep": "",
+        "TimeoutResponse": ""
+      }
+    },
     "AWS::Lex::Bot.PostFulfillmentStatusSpecification": {
       "attributes": {},
       "description": "Provides a setting that determines whether the post-fulfillment response is sent to the user. For more information, see [Post-fulfillment response](https://docs.aws.amazon.com/lex/latest/dg/streaming-progress.html#progress-complete) in the *Amazon Lex developer guide* .",
       "properties": {
+        "FailureConditional": "",
+        "FailureNextStep": "",
         "FailureResponse": "Specifies a list of message groups that Amazon Lex uses to respond when fulfillment isn't successful.",
+        "SuccessConditional": "",
+        "SuccessNextStep": "",
         "SuccessResponse": "Specifies a list of message groups that Amazon Lex uses to respond when the fulfillment is successful.",
+        "TimeoutConditional": "",
+        "TimeoutNextStep": "",
         "TimeoutResponse": "Specifies a list of message groups that Amazon Lex uses to respond when fulfillment isn't completed within the timeout period."
       }
     },
@@ -31228,6 +31406,14 @@
         "DetectSentiment": ""
       }
     },
+    "AWS::Lex::Bot.SessionAttribute": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Key": "",
+        "Value": ""
+      }
+    },
     "AWS::Lex::Bot.Slot": {
       "attributes": {},
       "description": "Specifies the definition of a slot. Amazon Lex elicits slot values from uses to fulfill the user's intent.",
@@ -31238,6 +31424,20 @@
         "ObfuscationSetting": "Determines whether the contents of the slot are obfuscated in Amazon CloudWatch Logs logs. Use obfuscated slots to protect information such as personally identifiable information (PII) in logs.",
         "SlotTypeName": "The name of the slot type that this slot is based on. The slot type defines the acceptable values for the slot.",
         "ValueElicitationSetting": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- OriginalValue - Returns the value entered by the user, if the user value is similar to a slot value.\n- TopResolution - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the valueSelectionStrategy, the default is OriginalValue."
+      }
+    },
+    "AWS::Lex::Bot.SlotCaptureSetting": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "CaptureConditional": "",
+        "CaptureNextStep": "",
+        "CaptureResponse": "",
+        "CodeHook": "",
+        "ElicitationCodeHook": "",
+        "FailureConditional": "",
+        "FailureNextStep": "",
+        "FailureResponse": ""
       }
     },
     "AWS::Lex::Bot.SlotDefaultValue": {
@@ -31282,6 +31482,13 @@
         "Synonyms": "Additional values related to the slot type entry."
       }
     },
+    "AWS::Lex::Bot.SlotValue": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "InterpretedValue": ""
+      }
+    },
     "AWS::Lex::Bot.SlotValueElicitationSetting": {
       "attributes": {},
       "description": "Settings that you can use for eliciting a slot value.",
@@ -31289,8 +31496,26 @@
         "DefaultValueSpecification": "A list of default values for a slot. Default values are used when Amazon Lex hasn't determined a value for a slot. You can specify default values from context variables, session attributes, and defined values.",
         "PromptSpecification": "The prompt that Amazon Lex uses to elicit the slot value from the user.",
         "SampleUtterances": "If you know a specific pattern that users might respond to an Amazon Lex request for a slot value, you can provide those utterances to improve accuracy. This is optional. In most cases Amazon Lex is capable of understanding user utterances.",
+        "SlotCaptureSetting": "",
         "SlotConstraint": "Specifies whether the slot is required or optional.",
         "WaitAndContinueSpecification": "Specifies the prompts that Amazon Lex uses while a bot is waiting for customer input."
+      }
+    },
+    "AWS::Lex::Bot.SlotValueOverride": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Shape": "",
+        "Value": "",
+        "Values": ""
+      }
+    },
+    "AWS::Lex::Bot.SlotValueOverrideMap": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "SlotName": "",
+        "SlotValueOverride": ""
       }
     },
     "AWS::Lex::Bot.SlotValueRegexFilter": {
@@ -32105,9 +32330,7 @@
       "properties": {
         "CollectionName": "A custom name for the geofence collection.\n\nRequirements:\n\n- Contain only alphanumeric characters (A\u2013Z, a\u2013z, 0\u20139), hyphens (-), periods (.), and underscores (_).\n- Must be a unique geofence collection name.\n- No spaces allowed. For example, `ExampleGeofenceCollection` .",
         "Description": "An optional description for the geofence collection.",
-        "KmsKeyId": "A key identifier for an [AWS KMS customer managed key](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html) . Enter a key ID, key ARN, alias name, or alias ARN.",
-        "PricingPlan": "No longer used. If included, the only allowed value is `RequestBasedUsage` .\n\n*Allowed Values* : `RequestBasedUsage`",
-        "PricingPlanDataSource": "This parameter is no longer used."
+        "KmsKeyId": "A key identifier for an [AWS KMS customer managed key](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html) . Enter a key ID, key ARN, alias name, or alias ARN."
       }
     },
     "AWS::Location::Map": {
@@ -32231,6 +32454,7 @@
     },
     "AWS::Logs::LogStream": {
       "attributes": {
+        "Id": "",
         "Ref": "`Ref` returns the resource name, such as `MyAppLogStream` ."
       },
       "description": "The `AWS::Logs::LogStream` resource specifies an Amazon CloudWatch Logs log stream in a specific log group. A log stream represents the sequence of events coming from an application instance or resource that you are monitoring.\n\nThere is no limit on the number of log streams that you can create for a log group.\n\nYou must use the following guidelines when naming a log stream:\n\n- Log stream names must be unique within the log group.\n- Log stream names can be between 1 and 512 characters long.\n- The ':' (colon) and '*' (asterisk) characters are not allowed.",
@@ -36518,21 +36742,21 @@
     },
     "AWS::NetworkManager::TransitGatewayPeering": {
       "attributes": {
-        "CoreNetworkArn": "",
-        "CreatedAt": "",
-        "EdgeLocation": "",
-        "OwnerAccountId": "",
-        "PeeringId": "",
-        "PeeringType": "",
-        "Ref": "",
-        "ResourceArn": "",
-        "State": "",
-        "TransitGatewayPeeringAttachmentId": ""
+        "CoreNetworkArn": "The ARN of the core network.",
+        "CreatedAt": "The timestamp when the core network peering was created.",
+        "EdgeLocation": "The edge location for the peer.",
+        "OwnerAccountId": "The ID of the account owner.",
+        "PeeringId": "The ID of the peering.",
+        "PeeringType": "The peering type. This will be `TRANSIT_GATEWAY` .",
+        "Ref": "`Ref` returns the `peeringId` . For example: `peering-01234ab1234a12a12` .",
+        "ResourceArn": "The ARN of the resource peered to a core network.",
+        "State": "The current state of the peer. This can be `CREATING` | `FAILED` | `AVAILABLE` | `DELETING` .",
+        "TransitGatewayPeeringAttachmentId": "The ID of the peering attachment."
       },
       "description": "Creates a transit gateway peering connection.",
       "properties": {
-        "CoreNetworkId": "",
-        "Tags": "",
+        "CoreNetworkId": "The ID of the core network.",
+        "Tags": "The list of key-value tags associated with the peering.",
         "TransitGatewayArn": "The ARN of the transit gateway."
       }
     },
@@ -36892,7 +37116,7 @@
     },
     "AWS::OpenSearchService::Domain": {
       "attributes": {
-        "AdvancedSecurityOptions.AnonymousAuthDisableDate": "Date and time when the migration period will be disabled. Only necessary when enabling fine-grained access control on an existing domain.",
+        "AdvancedSecurityOptions.AnonymousAuthDisableDate": "Date and time when the migration period will be disabled. Only necessary when [enabling fine-grained access control on an existing domain](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html#fgac-enabling-existing) .",
         "Arn": "The Amazon Resource Name (ARN) of the domain, such as `arn:aws:es:us-west-2:123456789012:domain/mystack-1ab2cdefghij` .",
         "DomainArn": "The Amazon Resource Name (ARN) of the domain.",
         "DomainEndpoint": "The domain-specific endpoint used for requests to the OpenSearch APIs, such as `search-mystack-1ab2cdefghij-ab1c2deckoyb3hofw7wpqa3cm.us-west-1.es.amazonaws.com` .",
@@ -36913,7 +37137,7 @@
       "properties": {
         "AccessPolicies": "An AWS Identity and Access Management ( IAM ) policy document that specifies who can access the OpenSearch Service domain and their permissions. For more information, see [Configuring access policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ac.html#ac-creating) in the *Amazon OpenSearch Service Developer Guide* .",
         "AdvancedOptions": "Additional options to specify for the OpenSearch Service domain. For more information, see [AdvancedOptions](https://docs.aws.amazon.com/opensearch-service/latest/APIReference/API_CreateDomain.html#API_CreateDomain_RequestBody) in the OpenSearch Service API reference.",
-        "AdvancedSecurityOptions": "Specifies options for fine-grained access control. If you specify advanced security options, you must also enable node-to-node encryption ( [NodeToNodeEncryptionOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-nodetonodeencryptionoptions.html) ) and encryption at rest ( [EncryptionAtRestOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-encryptionatrestoptions.html) ). You must also enable `EnforceHTTPS` within [DomainEndpointOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-domainendpointoptions.html) , which requires HTTPS for all traffic to the domain.",
+        "AdvancedSecurityOptions": "Specifies options for fine-grained access control and SAML authentication.\n\nIf you specify advanced security options, you must also enable node-to-node encryption ( [NodeToNodeEncryptionOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-nodetonodeencryptionoptions.html) ) and encryption at rest ( [EncryptionAtRestOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-encryptionatrestoptions.html) ). You must also enable `EnforceHTTPS` within [DomainEndpointOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-domainendpointoptions.html) , which requires HTTPS for all traffic to the domain.",
         "ClusterConfig": "Container for the cluster configuration of a domain.",
         "CognitoOptions": "Configures OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.",
         "DomainEndpointOptions": "Specifies additional options for the domain endpoint, such as whether to require HTTPS for all traffic or whether to use a custom endpoint rather than the default endpoint.",
@@ -36930,9 +37154,9 @@
     },
     "AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput": {
       "attributes": {},
-      "description": "Specifies options for fine-grained access control. If you specify advanced security options, you must also enable node-to-node encryption ( [NodeToNodeEncryptionOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-nodetonodeencryptionoptions.html) ) and encryption at rest ( [EncryptionAtRestOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-encryptionatrestoptions.html) ). You must also enable `EnforceHTTPS` within [DomainEndpointOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-domainendpointoptions.html) , which requires HTTPS for all traffic to the domain.",
+      "description": "Specifies options for fine-grained access control.\n\nIf you specify advanced security options, you must also enable node-to-node encryption ( [NodeToNodeEncryptionOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-nodetonodeencryptionoptions.html) ) and encryption at rest ( [EncryptionAtRestOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-encryptionatrestoptions.html) ). You must also enable `EnforceHTTPS` within [DomainEndpointOptions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-domainendpointoptions.html) , which requires HTTPS for all traffic to the domain.",
       "properties": {
-        "AnonymousAuthDisableDate": "",
+        "AnonymousAuthDisableDate": "Date and time when the migration period will be disabled. Only necessary when [enabling fine-grained access control on an existing domain](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html#fgac-enabling-existing) .",
         "AnonymousAuthEnabled": "True to enable a 30-day migration period during which administrators can create role mappings. Only necessary when [enabling fine-grained access control on an existing domain](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html#fgac-enabling-existing) .",
         "Enabled": "True to enable fine-grained access control. You must also enable encryption of data at rest and node-to-node encryption. See [Fine-grained access control in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/fgac.html) .",
         "InternalUserDatabaseEnabled": "True to enable the internal user database.",
@@ -36998,10 +37222,10 @@
     },
     "AWS::OpenSearchService::Domain.Idp": {
       "attributes": {},
-      "description": "",
+      "description": "The SAML Identity Provider's information.",
       "properties": {
-        "EntityId": "",
-        "MetadataContent": ""
+        "EntityId": "The unique entity ID of the application in the SAML identity provider.",
+        "MetadataContent": "The metadata of the SAML application, in XML format."
       }
     },
     "AWS::OpenSearchService::Domain.LogPublishingOption": {
@@ -37030,15 +37254,15 @@
     },
     "AWS::OpenSearchService::Domain.SAMLOptions": {
       "attributes": {},
-      "description": "",
+      "description": "Container for information about the SAML configuration for OpenSearch Dashboards.",
       "properties": {
-        "Enabled": "",
-        "Idp": "",
-        "MasterBackendRole": "",
-        "MasterUserName": "",
-        "RolesKey": "",
-        "SessionTimeoutMinutes": "",
-        "SubjectKey": ""
+        "Enabled": "True to enable SAML authentication for a domain.",
+        "Idp": "The SAML Identity Provider's information.",
+        "MasterBackendRole": "The backend role that the SAML master user is mapped to.",
+        "MasterUserName": "The SAML master user name, which is stored in the domain's internal user database.",
+        "RolesKey": "Element of the SAML assertion to use for backend roles. Default is `roles` .",
+        "SessionTimeoutMinutes": "The duration, in minutes, after which a user session becomes inactive. Acceptable values are between 1 and 1440, and the default value is 60.",
+        "SubjectKey": "Element of the SAML assertion to use for the user name. Default is `NameID` ."
       }
     },
     "AWS::OpenSearchService::Domain.ServiceSoftwareOptions": {
@@ -40782,7 +41006,7 @@
       "description": "Creates a CloudWatch RUM app monitor, which you can use to collect telemetry data from your application and send it to CloudWatch RUM. The data includes performance and reliability information such as page load time, client-side errors, and user behavior.\n\nAfter you create an app monitor, sign in to the CloudWatch RUM console to get the JavaScript code snippet to add to your web application. For more information, see [How do I find a code snippet that I've already generated?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-find-code-snippet.html)",
       "properties": {
         "AppMonitorConfiguration": "A structure that contains much of the configuration data for the app monitor. If you are using Amazon Cognito for authorization, you must include this structure in your request, and it must include the ID of the Amazon Cognito identity pool to use for authorization. If you don't include `AppMonitorConfiguration` , you must set up your own authorization method. For more information, see [Authorize your application to send data to AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-get-started-authorization.html) .\n\nIf you omit this argument, the sample rate used for CloudWatch RUM is set to 10% of the user sessions.",
-        "CustomEvents": "",
+        "CustomEvents": "Specifies whether this app monitor allows the web client to define and send custom events. If you omit this parameter, custom events are `DISABLED` .",
         "CwLogEnabled": "Data collected by CloudWatch RUM is kept by RUM for 30 days and then deleted. This parameter specifies whether CloudWatch RUM sends a copy of this telemetry data to Amazon CloudWatch Logs in your account. This enables you to keep the telemetry data for more than 30 days, but it does incur Amazon CloudWatch Logs charges.\n\nIf you omit this parameter, the default is `false` .",
         "Domain": "The top-level internet domain name for which your application has administrative authority. This parameter is required.",
         "Name": "A name for the app monitor. This parameter is required.",
@@ -40807,9 +41031,9 @@
     },
     "AWS::RUM::AppMonitor.CustomEvents": {
       "attributes": {},
-      "description": "",
+      "description": "This structure specifies whether this app monitor allows the web client to define and send custom events.",
       "properties": {
-        "Status": ""
+        "Status": "Set this to `ENABLED` to allow the web client to send custom events for this app monitor.\n\nValid values are `ENABLED` and `DISABLED` ."
       }
     },
     "AWS::RUM::AppMonitor.MetricDefinition": {
@@ -42360,7 +42584,8 @@
         "OutpostArn": "",
         "PreferredInstanceType": "",
         "Ref": "`Ref` returns the `ResolverEndpoint` object.",
-        "ResolverEndpointId": "The ID of the resolver endpoint."
+        "ResolverEndpointId": "The ID of the resolver endpoint.",
+        "ResolverEndpointType": ""
       },
       "description": "Creates a Resolver endpoint. There are two types of Resolver endpoints, inbound and outbound:\n\n- An *inbound Resolver endpoint* forwards DNS queries to the DNS service for a VPC from your network.\n- An *outbound Resolver endpoint* forwards DNS queries from the DNS service for a VPC to your network.",
       "properties": {
@@ -42369,6 +42594,7 @@
         "Name": "A friendly name that lets you easily find a configuration in the Resolver dashboard in the Route 53 console.",
         "OutpostArn": "",
         "PreferredInstanceType": "",
+        "ResolverEndpointType": "",
         "SecurityGroupIds": "The ID of one or more security groups that control access to this VPC. The security group must include one or more inbound rules (for inbound endpoints) or outbound rules (for outbound endpoints). Inbound and outbound rules must allow TCP and UDP access. For inbound access, open port 53. For outbound access, open the port that you're using for DNS queries on your network.",
         "Tags": "Route 53 Resolver doesn't support updating tags through CloudFormation."
       }
@@ -42378,6 +42604,7 @@
       "description": "In a [CreateResolverEndpoint](https://docs.aws.amazon.com/Route53/latest/APIReference/API_route53resolver_CreateResolverEndpoint.html) request, the IP address that DNS queries originate from (for outbound endpoints) or that you forward DNS queries to (for inbound endpoints). `IpAddressRequest` also includes the ID of the subnet that contains the IP address.",
       "properties": {
         "Ip": "The IP address that you want to use for DNS queries.",
+        "Ipv6": "",
         "SubnetId": "The ID of the subnet that contains the IP address."
       }
     },
@@ -44868,6 +45095,7 @@
         "AppNetworkAccessType": "Specifies the VPC used for non-EFS traffic. The default value is `PublicInternetOnly` .\n\n- `PublicInternetOnly` - Non-EFS traffic is through a VPC managed by Amazon SageMaker , which allows direct internet access\n- `VpcOnly` - All Studio traffic is through the specified VPC and subnets\n\n*Valid Values* : `PublicInternetOnly | VpcOnly`",
         "AppSecurityGroupManagement": "The entity that creates and manages the required security groups for inter-app communication in `VpcOnly` mode. Required when `CreateDomain.AppNetworkAccessType` is `VpcOnly` and `DomainSettings.RStudioServerProDomainSettings.DomainExecutionRoleArn` is provided.",
         "AuthMode": "The mode of authentication that members use to access the Domain.\n\n*Valid Values* : `SSO | IAM`",
+        "DefaultSpaceSettings": "",
         "DefaultUserSettings": "The default user settings.",
         "DomainName": "The domain name.",
         "DomainSettings": "A collection of settings that apply to the `SageMaker Domain` . These settings are specified through the `CreateDomain` API call.",
@@ -44884,6 +45112,16 @@
         "AppImageConfigName": "The name of the AppImageConfig.",
         "ImageName": "The name of the CustomImage. Must be unique to your account.",
         "ImageVersionNumber": "The version number of the CustomImage."
+      }
+    },
+    "AWS::SageMaker::Domain.DefaultSpaceSettings": {
+      "attributes": {},
+      "description": "A collection of settings that apply to spaces created in the Domain.",
+      "properties": {
+        "ExecutionRole": "The execution role for the space.",
+        "JupyterServerAppSettings": "",
+        "KernelGatewayAppSettings": "",
+        "SecurityGroups": "The security groups for the Amazon Virtual Private Cloud that the space uses for communication."
       }
     },
     "AWS::SageMaker::Domain.DomainSettings": {
@@ -46931,7 +47169,6 @@
     },
     "AWS::SecretsManager::Secret": {
       "attributes": {
-        "Id": "",
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::Secret` resource to the intrinsic `Ref` function, the function returns the ARN of the secret configured such as:\n\n`arn:aws:secretsmanager:us-west-2:123456789012:secret:my-path/my-secret-name-1a2b3c`\n\nIf you know the ARN of a secret, you can reference a secret you created in one part of the stack template from within the definition of another resource in the same template. You typically use the `Ref` function with the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type to get references to both the secret and its associated database.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
       "description": "Creates a new secret. A *secret* can be a password, a set of credentials such as a user name and password, an OAuth token, or other secret information that you store in an encrypted form in Secrets Manager.\n\nTo retrieve a secret in a CloudFormation template, use a *dynamic reference* . For more information, see [Retrieve a secret in an AWS CloudFormation resource](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html) .\n\nA common scenario is to first create a secret with `GenerateSecretString` , which generates a password, and then use a dynamic reference to retrieve the username and password from the secret to use as credentials for a new database. Follow these steps, as shown in the examples below:\n\n- Define the secret without referencing the service or database. You can't reference the service or database because it doesn't exist yet. The secret must contain a username and password.\n- Next, define the service or database. Include the reference to the secret to use stored credentials to define the database admin user and password.\n- Finally, define a `SecretTargetAttachment` resource type to finish configuring the secret with the required database engine type and the connection details of the service or database. The rotation function requires the details, if you attach one later by defining a [AWS::SecretsManager::RotationSchedule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-rotationschedule.html) resource type.\n\nFor information about creating a secret in the console, see [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html) . For information about creating a secret using the CLI or SDK, see [CreateSecret](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html) .\n\nFor information about retrieving a secret in code, see [Retrieve secrets from Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html) .\n\n> Do not create a dynamic reference using a backslash `(\\)` as the final value. AWS CloudFormation cannot resolve those references, which causes a resource failure.",
@@ -47134,12 +47371,12 @@
       "attributes": {
         "Ref": "`Ref` returns a unique identifier for the association."
       },
-      "description": "Associates the specified principal ARN with the specified portfolio.\n\nIf you share the portfolio with principal name sharing enabled, the `PrincipalARN` association is included in the share.\n\nThe `PortfolioID` , `PrincipalARN` , and `PrincipalType` parameters are required.\n\nYou can associate a maximum of 10 Principals with a portfolio using `PrincipalType` as `IAM_PATTERN`\n\n> When you associate a principal with portfolio, a potential privilege escalation path may occur when that portfolio is then shared with other accounts. For a user in a recipient account who is *not* an AWS Service Catalog Admin, but still has the ability to create Principals (Users/Groups/Roles), that user could create a role that matches a principal name association for the portfolio. Although this user may not know which principal names are associated through AWS Service Catalog , they may be able to guess the user. If this potential escalation path is a concern, then AWS Service Catalog recommends using `PrincipalType` as `IAM` . With this configuration, the `PrincipalARN` must already exist in the recipient account before it can be associated.",
+      "description": "Associates the specified principal ARN with the specified portfolio.",
       "properties": {
         "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
         "PortfolioId": "The portfolio identifier.",
-        "PrincipalARN": "The ARN of the principal (IAM user, role, or group). This field allows an ARN with no `accountID` if `PrincipalType` is `IAM_PATTERN` .\n\nYou can associate multiple `IAM` patterns even if the account has no principal with that name. This is useful in Principal Name Sharing if you want to share a principal without creating it in the account that owns the portfolio.",
-        "PrincipalType": "The principal type. The supported value is `IAM` if you use a fully defined ARN, or `IAM_PATTERN` if you use an ARN with no `accountID` ."
+        "PrincipalARN": "The ARN of the principal (IAM user, role, or group).",
+        "PrincipalType": "The principal type. The supported value is `IAM` ."
       }
     },
     "AWS::ServiceCatalog::PortfolioProductAssociation": {
