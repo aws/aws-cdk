@@ -1614,10 +1614,10 @@ export class Bucket extends BucketBase {
       'ap-south-1', 'ap-northeast-3', 'ap-northeast-2', 'ca-central-1', 'cn-northwest-1', 'eu-central-1', 'eu-west-2', 'eu-south-1',
       'eu-west-3', 'eu-north-1', 'eu-south-2', 'eu-central-2', 'me-south-1', 'me-central-1', 'us-gov-east-1']);
 
-    const newUrlFormat = newUrlFormatRegions.has(region) || 
-      attrs.bucketWebsiteNewUrlFormat === undefined 
-        ? false
-        : attrs.bucketWebsiteNewUrlFormat;
+    const newUrlFormat = newUrlFormatRegions.has(region) ||
+      attrs.bucketWebsiteNewUrlFormat === undefined
+      ? false
+      : attrs.bucketWebsiteNewUrlFormat;
 
     const websiteDomain = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`
