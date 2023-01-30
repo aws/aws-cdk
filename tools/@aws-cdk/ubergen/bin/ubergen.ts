@@ -48,6 +48,7 @@ interface LibraryReference {
 }
 
 type Export = string | {
+  readonly types?: string;
   readonly import?: string;
   readonly require?: string;
 };
@@ -275,6 +276,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   // allowed for this package: we only want to allow the exact import statements that we want to support.
   packageJson.exports = {
     '.': {
+      types: './index.d.ts',
       import: './index.js',
       require: './lazy-index.js',
     },
