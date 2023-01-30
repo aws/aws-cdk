@@ -13,7 +13,7 @@ export async function isHotswappableCodeBuildProjectChange(
   const ret: ChangeHotswapResult = [];
 
   const classifiedChanges = classifyChanges(change, ['Source', 'Environment', 'SourceVersion']);
-  classifiedChanges.reportNonHotswappableChanges(ret);
+  classifiedChanges.reportNonHotswappablePropertyChanges(ret);
   if (classifiedChanges.namesOfHotswappableProps.length > 0) {
     const updateProjectInput: AWS.CodeBuild.UpdateProjectInput = {
       name: '',

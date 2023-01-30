@@ -26,7 +26,7 @@ export async function isHotswappableAppSyncChange(
   }
 
   const classifiedChanges = classifyChanges(change, ['RequestMappingTemplate', 'ResponseMappingTemplate']);
-  classifiedChanges.reportNonHotswappableChanges(ret);
+  classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {

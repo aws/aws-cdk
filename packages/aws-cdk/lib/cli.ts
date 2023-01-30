@@ -556,7 +556,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly),
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -579,7 +579,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'watch':
-        let hotswap = determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly);
+        let hotswap = determineHotswapMode(args.hotswap, args.hotswapOnly);
         if (hotswap === undefined) {
           hotswap = HotswapMode.FALL_BACK;
         }
@@ -599,7 +599,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: determineHotswapModeForDeploy(args.hotswap, args.hotswapOnly) ?? HotswapMode.FALL_BACK,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapOnly),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -718,7 +718,7 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode | undefined {
+function determineHotswapMode(hotswap?: boolean, hotswapOnly?: boolean): HotswapMode {
   if (hotswap && hotswapOnly) {
     throw new Error('Can not supply both --hotswap and --hotswap-only at the same time');
   } else if (!hotswap && !hotswapOnly) {
@@ -727,10 +727,10 @@ function determineHotswapModeForDeploy(hotswap?: boolean, hotswapOnly?: boolean)
     }
   }
 
-  let hotswapMode: HotswapMode | undefined = undefined;
+  let hotswapMode: HotswapMode;
   if (hotswap) {
     hotswapMode = HotswapMode.FALL_BACK;
-  } else if (hotswapOnly) {
+  } else /*if (hotswapOnly)*/ {
     hotswapMode = HotswapMode.HOTSWAP_ONLY;
   }
 

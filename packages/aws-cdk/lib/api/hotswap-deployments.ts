@@ -75,7 +75,7 @@ export async function tryHotswapDeployment(
   );
 
   if (nonHotswappableChanges.length > 0) {
-    logNonHotswappableChanges(nonHotswappableChanges);
+    logNonHotswappableChanges(nonHotswappableChanges, hotswapMode);
   }
 
   // preserve classic hotswap behavior
@@ -346,17 +346,27 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: Hotswappable
   sdk.removeCustomUserAgent(customUserAgent);
 }
 
-function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[]): void {
+function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[], hotswapMode: HotswapMode): void {
+  /**
+   * EKS Services can have a task definition that doesn't refer to the task definition being updated.
+   * We have to log this as a non-hotswappable change to the task definition, but when we do,
+   * we wind up hotswapping the task definition and logging it as a non-hotswappable change.
+   *
+   * This logic prevents us from logging that change as non-hotswappable when we hotswap it.
+   */
+  if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
+    nonHotswappableChanges = nonHotswappableChanges.filter((change) => change.hotswapOnlyVisible === true);
+
+    if (nonHotswappableChanges.length === 0) {
+      return;
+    }
+  }
   print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
 
   for (const change of nonHotswappableChanges) {
-    let reason = change.reason;
-    if (!reason) {
-      reason = `resource properties '${change.rejectedChanges}' are not hotswappable on this resource type`;
-    }
     change.rejectedChanges.length > 0 ?
-      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(reason)):
-      print('    logicalID: %s, type: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(reason));
+      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason)):
+      print('    logicalID: %s, type: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(change.reason));
   }
 
   print(''); // newline

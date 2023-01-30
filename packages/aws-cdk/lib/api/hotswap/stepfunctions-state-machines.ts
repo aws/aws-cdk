@@ -10,7 +10,7 @@ export async function isHotswappableStateMachineChange(
   }
   const ret: ChangeHotswapResult = [];
   const classifiedChanges = classifyChanges(change, ['DefinitionString']);
-  classifiedChanges.reportNonHotswappableChanges(ret);
+  classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);
   if (namesOfHotswappableChanges.length > 0) {

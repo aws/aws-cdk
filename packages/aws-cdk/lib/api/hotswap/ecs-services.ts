@@ -17,7 +17,7 @@ export async function isHotswappableEcsServiceChange(
   // it contains the image and environment variables, so seems like a safe bet for now.
   // We might revisit this decision in the future though!
   const classifiedChanges = classifyChanges(change, ['ContainerDefinitions']);
-  classifiedChanges.reportNonHotswappableChanges(ret);
+  classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
   // find all ECS Services that reference the TaskDefinition that changed
   const resourcesReferencingTaskDef = evaluateCfnTemplate.findReferencesTo(logicalId);

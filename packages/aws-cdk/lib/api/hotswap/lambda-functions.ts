@@ -38,7 +38,7 @@ export async function isHotswappableLambdaFunctionChange(
 
   const ret: ChangeHotswapResult = [];
   const classifiedChanges = classifyChanges(change, ['Code', 'Environment', 'Description']);
-  classifiedChanges.reportNonHotswappableChanges(ret);
+  classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
   const functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
   const namesOfHotswappableChanges = Object.keys(classifiedChanges.hotswappableProps);

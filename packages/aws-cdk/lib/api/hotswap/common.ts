@@ -31,6 +31,13 @@ export interface NonHotswappableChange {
    * If not specified, `reason` will be autofilled to state that the properties listed in `rejectedChanges` are not hotswappable.
    */
   readonly reason?: string;
+  /**
+   * Whether or not to show this change when listing non-hotswappable changes in HOTSWAP_ONLY mode. Does not affect
+   * listing in FALL_BACK mode.
+   *
+   * @default true
+   */
+  readonly hotswapOnlyVisible?: boolean;
 }
 
 export type ChangeHotswapResult = Array<HotswappableChange | NonHotswappableChange>;
@@ -138,16 +145,16 @@ export class ClassifiedChanges {
     public readonly nonHotswappableProps: PropDiffs,
   ) { }
 
-  public reportNonHotswappableChanges(ret: ChangeHotswapResult):void {
-    const namesOfNonHotswappableProps = Object.keys(this.nonHotswappableProps);
-    if (namesOfNonHotswappableProps.length > 0) {
-      ret.push({
-        hotswappable: false,
-        rejectedChanges: Object.keys(this.nonHotswappableProps),
-        logicalId: this.logicalId,
-        resourceType: this.type,
-        // todo: reason
-      });
+  public reportNonHotswappablePropertyChanges(ret: ChangeHotswapResult):void {
+    const nonHotswappablePropNames = Object.keys(this.nonHotswappableProps);
+    if (nonHotswappablePropNames.length > 0) {
+      reportNonHotswappableChange(
+        ret,
+        nonHotswappablePropNames,
+        this.logicalId,
+        this.type,
+        `resource properties '${nonHotswappablePropNames}' are not hotswappable on this resource type`,
+      );
     }
   }
 
@@ -180,12 +187,18 @@ export function reportNonHotswappableChange(
   logicalId: string,
   type: string,
   reason?: string,
+  hotswapOnlyVisible?: boolean,
 ): void {
+  let hotswapOnlyVisibility = true;
+  if (hotswapOnlyVisible === false) {
+    hotswapOnlyVisibility = false;
+  }
   ret.push({
     hotswappable: false,
-    rejectedChanges: Object.keys(nonHotswappablePropNames),
+    rejectedChanges: nonHotswappablePropNames,
     logicalId: logicalId,
     resourceType: type,
     reason,
+    hotswapOnlyVisible: hotswapOnlyVisibility,
   });
 }
