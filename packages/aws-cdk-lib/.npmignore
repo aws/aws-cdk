@@ -14,6 +14,7 @@ coverage
 # Build gear
 build-tools
 dist
+scripts
 .LAST_BUILD
 .LAST_PACKAGE
 
@@ -23,6 +24,7 @@ tsconfig.json
 !.jsii
 !.jsii.gz
 .eslintrc.js
+
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
