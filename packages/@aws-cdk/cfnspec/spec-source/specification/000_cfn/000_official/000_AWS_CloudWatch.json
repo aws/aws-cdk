@@ -1,5 +1,5 @@
 {
-  "$version": "106.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::CloudWatch::Alarm.Dimension": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html",
@@ -739,6 +739,12 @@
           "ItemType": "MetricStreamFilter",
           "Required": false,
           "Type": "List",
+          "UpdateType": "Mutable"
+        },
+        "IncludeLinkedAccountsMetrics": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-metricstream.html#cfn-cloudwatch-metricstream-includelinkedaccountsmetrics",
+          "PrimitiveType": "Boolean",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "Name": {

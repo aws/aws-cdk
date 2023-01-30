@@ -207,16 +207,15 @@ describe('CLI creds synthesis', () => {
     expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
 
-  test('cannot use same synthesizer for multiple stacks', () => {
+  test('can use same synthesizer for multiple stacks', () => {
     // GIVEN
     const synthesizer = new CliCredentialsStackSynthesizer();
 
     // WHEN
     new Stack(app, 'Stack2', { synthesizer });
-    expect(() => {
-      new Stack(app, 'Stack3', { synthesizer });
-    }).toThrow(/A StackSynthesizer can only be used for one Stack/);
+    new Stack(app, 'Stack3', { synthesizer });
 
+    app.synth();
   });
 });
 

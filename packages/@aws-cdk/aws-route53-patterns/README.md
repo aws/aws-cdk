@@ -51,3 +51,32 @@ new patterns.HttpsRedirect(this, 'Redirect', {
   }),
 });
 ```
+
+To have `HttpsRedirect` use the `Certificate` construct as the default
+created certificate instead of the deprecated `DnsValidatedCertificate`
+construct, enable the `@aws-cdk/aws-route53-patters:useCertificate`
+feature flag. If you are creating the stack in a region other than `us-east-1`
+you must also enable `crossRegionReferences` on the stack.
+
+```ts
+declare const app: App;
+const stack = new Stack(app, 'Stack', {
+  crossRegionReferences: true,
+  env: {
+    region: 'us-east-2',
+  },
+});
+
+new patterns.HttpsRedirect(this, 'Redirect', {
+  recordNames: ['foo.example.com'],
+  targetDomain: 'bar.example.com',
+  zone: route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+    hostedZoneId: 'ID',
+    zoneName: 'example.com',
+  }),
+});
+```
+
+It is safe to upgrade to `@aws-cdk/aws-route53-patterns:useCertificate` since
+the new certificate will be created and updated on the CloudFront distribution
+before the old certificate is deleted.

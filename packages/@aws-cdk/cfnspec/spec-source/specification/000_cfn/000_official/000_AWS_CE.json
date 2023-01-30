@@ -1,5 +1,5 @@
 {
-  "$version": "106.0.0",
+  "$version": "109.0.0",
   "PropertyTypes": {
     "AWS::CE::AnomalyMonitor.ResourceTag": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalymonitor-resourcetag.html",
@@ -164,7 +164,13 @@
         "Threshold": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-threshold",
           "PrimitiveType": "Double",
-          "Required": true,
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "ThresholdExpression": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-thresholdexpression",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         }
       }

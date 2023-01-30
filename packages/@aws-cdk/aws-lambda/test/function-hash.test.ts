@@ -1,4 +1,6 @@
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
+import * as ssm from '@aws-cdk/aws-ssm';
 import { resourceSpecification } from '@aws-cdk/cfnspec';
 import { App, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -439,4 +441,85 @@ describe('function hash', () => {
       expect(actual).toEqual(expected);
     });
   });
+});
+
+test('imported layer hashes are consistent', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
+    },
+  });
+
+  // WHEN
+  const stack1 = new Stack(app, 'Stack1');
+  const param1 = ssm.StringParameter.fromStringParameterName(stack1, 'Param', 'ParamName');
+  const fn1 = new lambda.Function(stack1, 'Fn', {
+    code: lambda.Code.fromInline('asdf'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_18_X,
+    layers: [
+      lambda.LayerVersion.fromLayerVersionArn(stack1, 'MyLayer',
+        `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param1.stringValue}`),
+    ],
+  });
+  fn1.currentVersion; // Force creation of version
+
+  const stack2 = new Stack(app, 'Stack2');
+  const param2 = ssm.StringParameter.fromStringParameterName(stack2, 'Param', 'ParamName');
+  const fn2 = new lambda.Function(stack2, 'Fn', {
+    code: lambda.Code.fromInline('asdf'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_18_X,
+    layers: [
+      lambda.LayerVersion.fromLayerVersionArn(stack2, 'MyLayer',
+        `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param2.stringValue}`),
+    ],
+  });
+  fn2.currentVersion; // Force creation of version
+
+  // THEN
+  const template1 = Template.fromStack(stack1);
+  const template2 = Template.fromStack(stack2);
+
+  expect(template1.toJSON()).toEqual(template2.toJSON());
+});
+
+test.each([false, true])('can invalidate version hash using invalidateVersionBasedOn: %p', (doIt) => {
+  // GIVEN
+  const app = new App();
+
+  // WHEN
+  const stack1 = new Stack(app, 'Stack1');
+  const fn1 = new lambda.Function(stack1, 'Fn', {
+    code: lambda.Code.fromInline('asdf'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_18_X,
+  });
+  if (doIt) {
+    fn1.invalidateVersionBasedOn('abc');
+  }
+  fn1.currentVersion; // Force creation of version
+
+  const stack2 = new Stack(app, 'Stack2');
+  const fn2 = new lambda.Function(stack2, 'Fn', {
+    code: lambda.Code.fromInline('asdf'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_18_X,
+  });
+  if (doIt) {
+    fn1.invalidateVersionBasedOn('xyz');
+  }
+  fn2.currentVersion; // Force creation of version
+
+  // THEN
+  const template1 = Template.fromStack(stack1);
+  const template2 = Template.fromStack(stack2);
+
+  if (doIt) {
+    expect(template1.toJSON()).not.toEqual(template2.toJSON());
+  } else {
+    expect(template1.toJSON()).toEqual(template2.toJSON());
+  }
+
 });

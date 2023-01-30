@@ -1,0 +1,290 @@
+{
+ "Resources": {
+  "redirectRedirectBucketAA44E2FE": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "WebsiteConfiguration": {
+     "RedirectAllRequestsTo": {
+      "HostName": "aws.amazon.com",
+      "Protocol": "https"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "redirectRedirectDistributionCFDistribution1A4C48E3": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "Aliases": [
+      "integ.example.com"
+     ],
+     "Comment": "Redirect to aws.amazon.com from integ.example.com",
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "CachedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "Compress": true,
+      "ForwardedValues": {
+       "Cookies": {
+        "Forward": "none"
+       },
+       "QueryString": false
+      },
+      "TargetOriginId": "origin1",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "ConnectionAttempts": 3,
+       "ConnectionTimeout": 10,
+       "CustomOriginConfig": {
+        "HTTPPort": 80,
+        "HTTPSPort": 443,
+        "OriginKeepaliveTimeout": 5,
+        "OriginProtocolPolicy": "http-only",
+        "OriginReadTimeout": 30,
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Fn::GetAtt": [
+             "redirectRedirectBucketAA44E2FE",
+             "WebsiteURL"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "Id": "origin1"
+      }
+     ],
+     "PriceClass": "PriceClass_All",
+     "ViewerCertificate": {
+      "AcmCertificateArn": {
+       "Fn::GetAtt": [
+        "ExportsReader8B249524",
+        "/cdk/exports/integ-https-redirect/certificateredirectstackc8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61useast1RefRedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76D1272753FE4DCC12"
+       ]
+      },
+      "SslSupportMethod": "sni-only"
+     }
+    }
+   }
+  },
+  "redirectRedirectAliasRecord700dc535A8D685": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "integ.example.com.",
+    "Type": "A",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "redirectRedirectDistributionCFDistribution1A4C48E3",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B"
+   }
+  },
+  "redirectRedirectAliasRecordSix700dc5B6BB8C6E": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "Name": "integ.example.com.",
+    "Type": "AAAA",
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "redirectRedirectDistributionCFDistribution1A4C48E3",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B"
+   }
+  },
+  "ExportsReader8B249524": {
+   "Type": "Custom::CrossRegionExportReader",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68",
+      "Arn"
+     ]
+    },
+    "ReaderProps": {
+     "region": "us-east-2",
+     "prefix": "integ-https-redirect",
+     "imports": {
+      "/cdk/exports/integ-https-redirect/certificateredirectstackc8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61useast1RefRedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76D1272753FE4DCC12": "{{resolve:ssm:/cdk/exports/integ-https-redirect/certificateredirectstackc8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61useast1RefRedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76D1272753FE4DCC12}}"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ssm:us-east-2:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/cdk/exports/integ-https-redirect/*"
+           ]
+          ]
+         },
+         "Action": [
+          "ssm:AddTagsToResource",
+          "ssm:RemoveTagsFromResource",
+          "ssm:GetParameters"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+     },
+     "S3Key": "881fb88a24d47c6beb950259ab9414e1d83df8f26c3d62891d2872b4e71648d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+   ]
+  }
+ },
+ "Mappings": {
+  "AWSCloudFrontPartitionHostedZoneIdMap": {
+   "aws": {
+    "zoneId": "Z2FDTNDATAQYW2"
+   },
+   "aws-cn": {
+    "zoneId": "Z3RFFRIM2A3IF5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

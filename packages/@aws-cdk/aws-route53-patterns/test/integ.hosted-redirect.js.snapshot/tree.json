@@ -1,0 +1,537 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-https-redirect": {
+        "id": "integ-https-redirect",
+        "path": "integ-https-redirect",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "integ-https-redirect/HostedZone",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "redirect": {
+            "id": "redirect",
+            "path": "integ-https-redirect/redirect",
+            "children": {
+              "RedirectBucket": {
+                "id": "RedirectBucket",
+                "path": "integ-https-redirect/redirect/RedirectBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-https-redirect/redirect/RedirectBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "publicAccessBlockConfiguration": {
+                          "blockPublicAcls": true,
+                          "blockPublicPolicy": true,
+                          "ignorePublicAcls": true,
+                          "restrictPublicBuckets": true
+                        },
+                        "websiteConfiguration": {
+                          "redirectAllRequestsTo": {
+                            "hostName": "aws.amazon.com",
+                            "protocol": "https"
+                          }
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
+              "RedirectDistribution": {
+                "id": "RedirectDistribution",
+                "path": "integ-https-redirect/redirect/RedirectDistribution",
+                "children": {
+                  "CFDistribution": {
+                    "id": "CFDistribution",
+                    "path": "integ-https-redirect/redirect/RedirectDistribution/CFDistribution",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                      "aws:cdk:cloudformation:props": {
+                        "distributionConfig": {
+                          "comment": "Redirect to aws.amazon.com from integ.example.com",
+                          "enabled": true,
+                          "defaultRootObject": "",
+                          "httpVersion": "http2",
+                          "priceClass": "PriceClass_All",
+                          "ipv6Enabled": true,
+                          "origins": [
+                            {
+                              "id": "origin1",
+                              "domainName": {
+                                "Fn::Select": [
+                                  2,
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "redirectRedirectBucketAA44E2FE",
+                                          "WebsiteURL"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "customOriginConfig": {
+                                "httpPort": 80,
+                                "httpsPort": 443,
+                                "originKeepaliveTimeout": 5,
+                                "originReadTimeout": 30,
+                                "originProtocolPolicy": "http-only",
+                                "originSslProtocols": [
+                                  "TLSv1.2"
+                                ]
+                              },
+                              "connectionAttempts": 3,
+                              "connectionTimeout": 10
+                            }
+                          ],
+                          "defaultCacheBehavior": {
+                            "allowedMethods": [
+                              "GET",
+                              "HEAD"
+                            ],
+                            "cachedMethods": [
+                              "GET",
+                              "HEAD"
+                            ],
+                            "compress": true,
+                            "forwardedValues": {
+                              "queryString": false,
+                              "cookies": {
+                                "forward": "none"
+                              }
+                            },
+                            "targetOriginId": "origin1",
+                            "viewerProtocolPolicy": "redirect-to-https"
+                          },
+                          "aliases": [
+                            "integ.example.com"
+                          ],
+                          "viewerCertificate": {
+                            "acmCertificateArn": {
+                              "Fn::GetAtt": [
+                                "ExportsReader8B249524",
+                                "/cdk/exports/integ-https-redirect/certificateredirectstackc8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61useast1RefRedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76D1272753FE4DCC12"
+                              ]
+                            },
+                            "sslSupportMethod": "sni-only"
+                          }
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CloudFrontWebDistribution",
+                  "version": "0.0.0"
+                }
+              },
+              "RedirectAliasRecord700dc5": {
+                "id": "RedirectAliasRecord700dc5",
+                "path": "integ-https-redirect/redirect/RedirectAliasRecord700dc5",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-https-redirect/redirect/RedirectAliasRecord700dc5/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                      "aws:cdk:cloudformation:props": {
+                        "name": "integ.example.com.",
+                        "type": "A",
+                        "aliasTarget": {
+                          "hostedZoneId": {
+                            "Fn::FindInMap": [
+                              "AWSCloudFrontPartitionHostedZoneIdMap",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "zoneId"
+                            ]
+                          },
+                          "dnsName": {
+                            "Fn::GetAtt": [
+                              "redirectRedirectDistributionCFDistribution1A4C48E3",
+                              "DomainName"
+                            ]
+                          }
+                        },
+                        "hostedZoneId": "Z23ABC4XYZL05B"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.ARecord",
+                  "version": "0.0.0"
+                }
+              },
+              "RedirectAliasRecordSix700dc5": {
+                "id": "RedirectAliasRecordSix700dc5",
+                "path": "integ-https-redirect/redirect/RedirectAliasRecordSix700dc5",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-https-redirect/redirect/RedirectAliasRecordSix700dc5/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                      "aws:cdk:cloudformation:props": {
+                        "name": "integ.example.com.",
+                        "type": "AAAA",
+                        "aliasTarget": {
+                          "hostedZoneId": {
+                            "Fn::FindInMap": [
+                              "AWSCloudFrontPartitionHostedZoneIdMap",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "zoneId"
+                            ]
+                          },
+                          "dnsName": {
+                            "Fn::GetAtt": [
+                              "redirectRedirectDistributionCFDistribution1A4C48E3",
+                              "DomainName"
+                            ]
+                          }
+                        },
+                        "hostedZoneId": "Z23ABC4XYZL05B"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-route53.CfnRecordSet",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-route53.AaaaRecord",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-route53-patterns.HttpsRedirect",
+              "version": "0.0.0"
+            }
+          },
+          "AWSCloudFrontPartitionHostedZoneIdMap": {
+            "id": "AWSCloudFrontPartitionHostedZoneIdMap",
+            "path": "integ-https-redirect/AWSCloudFrontPartitionHostedZoneIdMap",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "ExportsReader": {
+            "id": "ExportsReader",
+            "path": "integ-https-redirect/ExportsReader",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-https-redirect/ExportsReader/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-https-redirect/ExportsReader/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.168"
+            }
+          },
+          "Custom::CrossRegionExportReaderCustomResourceProvider": {
+            "id": "Custom::CrossRegionExportReaderCustomResourceProvider",
+            "path": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-https-redirect/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-https-redirect/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61": {
+        "id": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61",
+        "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61",
+        "children": {
+          "RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76": {
+            "id": "RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76",
+            "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
+                  "aws:cdk:cloudformation:props": {
+                    "domainName": "integ.example.com",
+                    "domainValidationOptions": [
+                      {
+                        "domainName": "integ.example.com",
+                        "hostedZoneId": "Z23ABC4XYZL05B"
+                      },
+                      {
+                        "domainName": "integ.example.com",
+                        "hostedZoneId": "Z23ABC4XYZL05B"
+                      }
+                    ],
+                    "subjectAlternativeNames": [
+                      "integ.example.com"
+                    ],
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/RedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76"
+                      }
+                    ],
+                    "validationMethod": "DNS"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-certificatemanager.CfnCertificate",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-certificatemanager.Certificate",
+              "version": "0.0.0"
+            }
+          },
+          "ExportsWriteruseast2828FA26B": {
+            "id": "ExportsWriteruseast2828FA26B",
+            "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/ExportsWriteruseast2828FA26B",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/ExportsWriteruseast2828FA26B/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/ExportsWriteruseast2828FA26B/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.168"
+            }
+          },
+          "Custom::CrossRegionExportWriterCustomResourceProvider": {
+            "id": "Custom::CrossRegionExportWriterCustomResourceProvider",
+            "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/Custom::CrossRegionExportWriterCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "certificate-redirect-stack-c8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-test": {
+        "id": "integ-test",
+        "path": "integ-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integ-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integ-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.168"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integ-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.168"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
+    }
+  }
+}

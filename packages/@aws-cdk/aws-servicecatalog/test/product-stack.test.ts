@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
@@ -32,13 +34,69 @@ describe('ProductStack', () => {
       assetBucket: testAssetBucket,
     });
 
-    // WHEN
-    new s3_assets.Asset(productStack, 'testAsset', {
-      path: path.join(__dirname, 'assets'),
+    new lambda.Function(productStack, 'HelloHandler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+      handler: 'index.handler',
     });
+
+    // WHEN
+    const assembly = app.synth();
 
     // THEN
     expect(productStack._getAssetBucket()).toBeDefined();
+    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
+    Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
+      Code: {
+        S3Bucket: 'test-asset-bucket',
+        S3Key: 'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
+      },
+    });
+  });
+
+  test('Used defined Asset bucket in product stack with nested assets', () => {
+    // GIVEN
+    const app = new cdk.App(
+      { outdir: 'cdk.out' },
+    );
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    let templateFileUrl = '';
+    class PortfolioStage extends cdk.Stage {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        const portfolioStack: cdk.Stack = new cdk.Stack(this, 'NestedStack');
+
+        const testAssetBucket = new s3.Bucket(portfolioStack, 'TestAssetBucket', {
+          bucketName: 'test-asset-bucket',
+        });
+        const productStack = new servicecatalog.ProductStack(portfolioStack, 'MyProductStack', {
+          assetBucket: testAssetBucket,
+        });
+
+        new lambda.Function(productStack, 'HelloHandler', {
+          runtime: lambda.Runtime.PYTHON_3_9,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'assets')),
+          handler: 'index.handler',
+        });
+
+        expect(productStack._getAssetBucket()).toBeDefined();
+        templateFileUrl = productStack.templateFile;
+      }
+    }
+    const portfolioStage = new PortfolioStage(mainStack, 'PortfolioStage');
+
+    // WHEN
+    app.synth();
+
+    //THEN
+    const template = JSON.parse(fs.readFileSync(path.join(portfolioStage.outdir, templateFileUrl), 'utf-8'));
+    Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
+      Code: {
+        S3Bucket: 'test-asset-bucket',
+        S3Key: 'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip',
+      },
+    });
   });
 
   test('fails if bucketName is not specified in product stack with assets', () => {

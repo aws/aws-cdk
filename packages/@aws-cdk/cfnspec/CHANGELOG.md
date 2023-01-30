@@ -1,3 +1,289 @@
+# CloudFormation Resource Specification v109.0.0
+
+## New Resource Types
+
+* AWS::Connect::ApprovedOrigin
+* AWS::Connect::IntegrationAssociation
+* AWS::Connect::SecurityKey
+
+## Attribute Changes
+
+* AWS::Logs::LogStream Id (__added__)
+* AWS::OpenSearchService::Domain AdvancedSecurityOptions.AnonymousAuthDisableDate (__added__)
+* AWS::Route53Resolver::ResolverEndpoint ResolverEndpointType (__added__)
+* AWS::SecretsManager::Secret Id (__deleted__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::ApiMapping ApiId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::EventSubscription Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationInstance Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationTask Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::CustomerGateway DeviceName (__added__)
+* AWS::EC2::NatGateway MaxDrainDurationSeconds (__added__)
+* AWS::EC2::NatGateway SecondaryAllocationIds (__added__)
+* AWS::EC2::NatGateway SecondaryPrivateIpAddressCount (__added__)
+* AWS::EC2::NatGateway SecondaryPrivateIpAddresses (__added__)
+* AWS::EMRServerless::Application ImageConfiguration (__added__)
+* AWS::EMRServerless::Application WorkerTypeSpecifications (__added__)
+* AWS::GroundStation::DataflowEndpointGroup ContactPostPassDurationSeconds (__added__)
+* AWS::GroundStation::DataflowEndpointGroup ContactPrePassDurationSeconds (__added__)
+* AWS::ImageBuilder::Image ImageScanningConfiguration (__added__)
+* AWS::ImageBuilder::ImagePipeline ImageScanningConfiguration (__added__)
+* AWS::Lambda::Function RuntimeManagementConfig (__added__)
+* AWS::Location::GeofenceCollection PricingPlan (__deleted__)
+* AWS::Location::GeofenceCollection PricingPlanDataSource (__deleted__)
+* AWS::RUM::AppMonitor CustomEvents (__added__)
+* AWS::Route53Resolver::ResolverEndpoint ResolverEndpointType (__added__)
+* AWS::SageMaker::Domain DefaultSpaceSettings (__added__)
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__deleted__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::AppFlow::ConnectorProfile.PardotConnectorProfileCredentials (__added__)
+* AWS::AppFlow::ConnectorProfile.PardotConnectorProfileProperties (__added__)
+* AWS::AppFlow::Flow.PardotSourceProperties (__added__)
+* AWS::EMRServerless::Application.ImageConfigurationInput (__added__)
+* AWS::EMRServerless::Application.WorkerTypeSpecificationInput (__added__)
+* AWS::ImageBuilder::Image.EcrConfiguration (__added__)
+* AWS::ImageBuilder::Image.ImageScanningConfiguration (__added__)
+* AWS::ImageBuilder::ImagePipeline.EcrConfiguration (__added__)
+* AWS::ImageBuilder::ImagePipeline.ImageScanningConfiguration (__added__)
+* AWS::Lambda::Function.RuntimeManagementConfig (__added__)
+* AWS::Lex::Bot.Condition (__added__)
+* AWS::Lex::Bot.ConditionalBranch (__added__)
+* AWS::Lex::Bot.ConditionalSpecification (__added__)
+* AWS::Lex::Bot.DefaultConditionalBranch (__added__)
+* AWS::Lex::Bot.DialogAction (__added__)
+* AWS::Lex::Bot.DialogCodeHookInvocationSetting (__added__)
+* AWS::Lex::Bot.DialogState (__added__)
+* AWS::Lex::Bot.ElicitationCodeHookInvocationSetting (__added__)
+* AWS::Lex::Bot.InitialResponseSetting (__added__)
+* AWS::Lex::Bot.IntentOverride (__added__)
+* AWS::Lex::Bot.PostDialogCodeHookInvocationSpecification (__added__)
+* AWS::Lex::Bot.SessionAttribute (__added__)
+* AWS::Lex::Bot.SlotCaptureSetting (__added__)
+* AWS::Lex::Bot.SlotValue (__added__)
+* AWS::Lex::Bot.SlotValueOverride (__added__)
+* AWS::Lex::Bot.SlotValueOverrideMap (__added__)
+* AWS::OpenSearchService::Domain.Idp (__added__)
+* AWS::OpenSearchService::Domain.SAMLOptions (__added__)
+* AWS::RUM::AppMonitor.CustomEvents (__added__)
+* AWS::SageMaker::Domain.DefaultSpaceSettings (__added__)
+* AWS::AppFlow::ConnectorProfile.ConnectorProfileCredentials Pardot (__added__)
+* AWS::AppFlow::ConnectorProfile.ConnectorProfileProperties Pardot (__added__)
+* AWS::AppFlow::Flow.ConnectorOperator Pardot (__added__)
+* AWS::AppFlow::Flow.SourceConnectorProperties Pardot (__added__)
+* AWS::Lex::Bot.FulfillmentCodeHookSetting IsActive (__added__)
+* AWS::Lex::Bot.Intent InitialResponseSetting (__added__)
+* AWS::Lex::Bot.IntentClosingSetting Conditional (__added__)
+* AWS::Lex::Bot.IntentClosingSetting NextStep (__added__)
+* AWS::Lex::Bot.IntentClosingSetting ClosingResponse.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lex::Bot.IntentConfirmationSetting CodeHook (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ConfirmationConditional (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ConfirmationNextStep (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ConfirmationResponse (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting DeclinationConditional (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting DeclinationNextStep (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ElicitationCodeHook (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting FailureConditional (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting FailureNextStep (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting FailureResponse (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting DeclinationResponse.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification FailureConditional (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification FailureNextStep (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification SuccessConditional (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification SuccessNextStep (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification TimeoutConditional (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification TimeoutNextStep (__added__)
+* AWS::Lex::Bot.SlotValueElicitationSetting SlotCaptureSetting (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput AnonymousAuthDisableDate (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput AnonymousAuthEnabled (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput SAMLOptions (__added__)
+* AWS::Route53Resolver::ResolverEndpoint.IpAddressRequest Ipv6 (__added__)
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.HttpApiEvent (__added__)
+* AWS::Serverless::Function.HttpApiFunctionAuth (__added__)
+* AWS::Serverless::Function.RouteSettings (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added HttpApiEvent
+
+# CloudFormation Resource Specification v108.0.0
+
+## New Resource Types
+
+* AWS::KendraRanking::ExecutionPlan
+
+## Attribute Changes
+
+* AWS::RDS::DBInstance CertificateDetails.CAIdentifier (__added__)
+* AWS::RDS::DBInstance CertificateDetails.ValidTill (__added__)
+* AWS::SecretsManager::Secret Id (__added__)
+
+## Property Changes
+
+* AWS::BillingConductor::PricingRule Operation (__added__)
+* AWS::BillingConductor::PricingRule UsageType (__added__)
+* AWS::CE::AnomalySubscription ThresholdExpression (__added__)
+* AWS::CE::AnomalySubscription Threshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::MetricStream IncludeLinkedAccountsMetrics (__added__)
+* AWS::EKS::Addon PreserveOnDelete (__added__)
+* AWS::FMS::Policy PolicyDescription (__added__)
+* AWS::FMS::Policy ResourceSetIds (__added__)
+* AWS::FMS::Policy ResourceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBInstance CertificateDetails (__added__)
+* AWS::RDS::DBInstance CertificateRotationRestart (__added__)
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__added__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::RDS::DBInstance.CertificateDetails (__added__)
+* AWS::Transfer::Workflow.DecryptStepDetails (__added__)
+* AWS::Transfer::Workflow.EfsInputFileLocation (__added__)
+* AWS::Transfer::Workflow.S3FileLocation (__added__)
+* AWS::Transfer::Workflow.CopyStepDetails DestinationFileLocation.Type (__changed__)
+  * Old: InputFileLocation
+  * New: S3FileLocation
+* AWS::Transfer::Workflow.InputFileLocation EfsFileLocation (__added__)
+* AWS::Transfer::Workflow.WorkflowStep DecryptStepDetails (__added__)
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api DisableExecuteApiEndpoint (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.KinesisEvent FunctionResponseTypes (__added__)
+
+# CloudFormation Resource Specification v107.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::ApiGateway::RestApi RestApiId (__added__)
+* AWS::AuditManager::Assessment Delegations (__deleted__)
+* AWS::DataSync::Task ErrorCode (__deleted__)
+* AWS::DataSync::Task ErrorDetail (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest.ingestEndpoints (__deleted__)
+* AWS::RDS::DBCluster MasterUserSecret.SecretArn (__added__)
+* AWS::RDS::DBInstance MasterUserSecret.SecretArn (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::RestApi Parameters.DuplicatesAllowed (__deleted__)
+* AWS::AppSync::DataSource EventBridgeConfig (__added__)
+* AWS::AuditManager::Assessment Delegations (__added__)
+* AWS::DataSync::LocationFSxLustre FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows FsxFilesystemArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationFSxWindows Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationNFS Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage BucketName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationObjectStorage ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Password.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB ServerHostname.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DataSync::LocationSMB Subdirectory.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::PlacementGroup PartitionCount (__added__)
+* AWS::EC2::PlacementGroup Tags (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__added__)
+* AWS::Lambda::EventSourceMapping ScalingConfig (__added__)
+* AWS::MediaPackage::Channel HlsIngest (__added__)
+* AWS::RDS::DBCluster ManageMasterUserPassword (__added__)
+* AWS::RDS::DBCluster MasterUserSecret (__added__)
+* AWS::RDS::DBInstance ManageMasterUserPassword (__added__)
+* AWS::RDS::DBInstance MasterUserSecret (__added__)
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.EventBridgeConfig (__added__)
+* AWS::IoT::JobTemplate.JobExecutionsRetryConfig (__added__)
+* AWS::IoT::JobTemplate.RetryCriteria (__added__)
+* AWS::Lambda::EventSourceMapping.ScalingConfig (__added__)
+* AWS::RDS::DBCluster.MasterUserSecret (__added__)
+* AWS::RDS::DBInstance.MasterUserSecret (__added__)
+* AWS::AppRunner::Service.CodeConfigurationValues RuntimeEnvironmentSecrets (__added__)
+* AWS::AppRunner::Service.ImageConfiguration RuntimeEnvironmentSecrets (__added__)
+* AWS::MediaPackage::Channel.IngestEndpoint Id.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Password.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Url.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::Channel.IngestEndpoint Username.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaPackage::PackagingConfiguration.DashPackage IncludeIframeOnlyStream (__added__)
+
+
 # CloudFormation Resource Specification v106.0.0
 
 ## New Resource Types

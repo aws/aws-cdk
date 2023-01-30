@@ -43,6 +43,11 @@ export interface BundlingProps extends BundlingOptions {
    */
   readonly preCompilation?: boolean
 
+  /**
+   * Which option to use to copy the source files to the docker container and output files back
+   * @default - BundlingFileAccess.BIND_MOUNT
+   */
+  readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 }
 
 /**
@@ -83,6 +88,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly local?: cdk.ILocalBundling;
+  public readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
@@ -154,6 +160,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.user = props.user;
     this.securityOpt = props.securityOpt;
     this.network = props.network;
+    this.bundlingFileAccess = props.bundlingFileAccess;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
@@ -410,5 +417,5 @@ function isSdkV2Runtime(runtime: Runtime): boolean {
     Runtime.NODEJS_14_X,
     Runtime.NODEJS_16_X,
   ];
-  return sdkV2RuntimeList.includes(runtime);
+  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }

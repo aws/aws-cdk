@@ -6,6 +6,7 @@
     "packages/*",
     "packages/@aws-cdk/*",
     "packages/@aws-cdk-containers/*",
+    "packages/@aws-cdk-testing/*",
     "packages/@aws-cdk/*/lambda-packages/*",
     "tools/*",
     "tools/@aws-cdk/*",

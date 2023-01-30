@@ -173,7 +173,8 @@
       ]
      },
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--conf": "valueConf"
     },
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
@@ -527,7 +528,8 @@
       ]
      },
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--conf": "valueConf"
     },
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2
@@ -881,7 +883,8 @@
       ]
      },
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--conf": "valueConf"
     },
     "ExecutionProperty": {
      "MaxConcurrentRuns": 2

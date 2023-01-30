@@ -123,8 +123,17 @@ export interface StackProps {
   /**
    * Synthesis method to use while deploying this stack
    *
-   * @default - `DefaultStackSynthesizer` if the `@aws-cdk/core:newStyleStackSynthesis` feature flag
-   * is set, `LegacyStackSynthesizer` otherwise.
+   * The Stack Synthesizer controls aspects of synthesis and deployment,
+   * like how assets are referenced and what IAM roles to use. For more
+   * information, see the README of the main CDK package.
+   *
+   * If not specified, the `defaultStackSynthesizer` from `App` will be used.
+   * If that is not specified, `DefaultStackSynthesizer` is used if
+   * `@aws-cdk/core:newStyleStackSynthesis` is set to `true` or the CDK major
+   * version is v2. In CDK v1 `LegacyStackSynthesizer` is the default if no
+   * other synthesizer is specified.
+   *
+   * @default - The synthesizer specified on `App`, or `DefaultStackSynthesizer` otherwise.
    */
   readonly synthesizer?: IStackSynthesizer;
 
@@ -230,14 +239,14 @@ export class Stack extends Construct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.region` when the stack is defined. This can
-   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.REGION`
+   *    either be a concrete region (e.g. `us-west-2`) or the `Aws.REGION`
    *    token.
    * 3. `Aws.REGION`, which is represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::Region" }` encoded as a string token.
    *
    * Preferably, you should use the return value as an opaque string and not
    * attempt to parse it to implement your logic. If you do, you must first
-   * check that it is a concerete value an not an unresolved token. If this
+   * check that it is a concrete value an not an unresolved token. If this
    * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **region-agnostic template**. In this case, your code should either
@@ -259,7 +268,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * Preferably, you should use the return value as an opaque string and not
    * attempt to parse it to implement your logic. If you do, you must first
-   * check that it is a concerete value an not an unresolved token. If this
+   * check that it is a concrete value an not an unresolved token. If this
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
    * into a **account-agnostic template**. In this case, your code should either
@@ -427,10 +436,18 @@ export class Stack extends Construct implements ITaggable {
     this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
       && !this.nestedStackParent;
 
-    this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
-      ? new DefaultStackSynthesizer()
-      : new LegacyStackSynthesizer());
-    this.synthesizer.bind(this);
+    const synthesizer = (props.synthesizer
+      ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
+      ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
+
+    if (isReusableStackSynthesizer(synthesizer)) {
+      // Produce a fresh instance for each stack (should have been the default behavior)
+      this.synthesizer = synthesizer.reusableBind(this);
+    } else {
+      // Bind the single instance in-place to the current stack (backwards compat)
+      this.synthesizer = synthesizer;
+      this.synthesizer.bind(this);
+    }
 
     props.permissionsBoundary?._bind(this);
 
@@ -1691,7 +1708,7 @@ import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT } from './stack-synthesizers';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer, BOOTSTRAP_QUALIFIER_CONTEXT, isReusableStackSynthesizer } from './stack-synthesizers';
 import { StringSpecializer } from './stack-synthesizers/_shared';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
@@ -1699,4 +1716,5 @@ import { Token, Tokenization } from './token';
 import { getExportable } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
-import { makeUniqueResourceName } from './private/unique-resource-name';
+import { makeUniqueResourceName } from './private/unique-resource-name';import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
+

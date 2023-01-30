@@ -53,7 +53,7 @@ class RunBatchStack extends cdk.Stack {
         foo: sfn.JsonPath.stringAt('$.bar'),
       }),
       attempts: 3,
-      timeout: cdk.Duration.seconds(60),
+      taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(60)),
     });
 
     const definition = new sfn.Pass(this, 'Start', {

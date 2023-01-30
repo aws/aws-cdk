@@ -284,3 +284,17 @@ and Go only includes dependencies that are used in the executable. So in this ca
 if `cmd/api` used the `auth` & `middleware` packages, but `cmd/anotherApi` did not, then
 an update to `auth` or `middleware` would only trigger an update to the `cmd/api` Lambda
 Function.
+
+## Docker based bundling in complex Docker configurations
+
+By default the input and output of Docker based bundling is handled via bind mounts.
+In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
+
+ ```ts
+new go.GoFunction(this, 'GoFunction', {
+  entry: 'app/cmd/api',
+  bundling: {
+       bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
+   },
+});
+```
