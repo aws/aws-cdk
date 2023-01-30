@@ -111,11 +111,11 @@
     "ignore": "^5.2.4",
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
-    "punycode": "^2.2.0",
+    "punycode": "^2.3.0",
     "semver": "^7.3.8",
     "yaml": "1.10.2",
-    "@aws-cdk/asset-awscli-v1": "^2.2.49",
-    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.38",
+    "@aws-cdk/asset-awscli-v1": "^2.2.52",
+    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.42",
     "@aws-cdk/asset-kubectl-v20": "^2.1.1"
   },
   "devDependencies": {
@@ -380,7 +380,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^14.18.36",
     "constructs": "^10.0.0",
-    "esbuild": "^0.16.16",
+    "esbuild": "^0.17.5",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
