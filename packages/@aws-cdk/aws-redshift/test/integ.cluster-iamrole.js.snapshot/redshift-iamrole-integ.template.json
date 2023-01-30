@@ -639,7 +639,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": true
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "ClusteraddroleRoleACustomResourcePolicyB2DE8E3F"

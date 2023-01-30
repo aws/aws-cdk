@@ -707,6 +707,8 @@ export class Cluster extends ClusterBase {
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
       resourceType: 'Custom::ModifyClusterIamRoles',
+      // Latest SDK version for AWS Lambda is 2.x/3.x, so we do not need to install a later version
+      installLatestAwsSdk: false,
     });
 
     role.grantPassRole(roleCustomResource.grantPrincipal);
