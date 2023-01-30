@@ -715,6 +715,19 @@ describe('bucket', () => {
       expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
     });
 
+    test('new bucketWebsiteUrl format for specific region', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-2' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'mybucket',
+      });
+
+      expect(bucket.bucketWebsiteUrl).toEqual(`mybucket.s3-website.us-east-2.${stack.urlSuffix}`);
+      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website.us-east-2.${stack.urlSuffix}`);
+    });
+
     test('import needs to specify a valid bucket name', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { region: 'us-east-1' },
