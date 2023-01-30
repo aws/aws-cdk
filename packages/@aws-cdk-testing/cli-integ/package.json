@@ -32,7 +32,7 @@
     "@types/node": "^14.18.36",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@types/semver": "^7.3.13",
-    "@types/yargs": "^17.0.20",
+    "@types/yargs": "^15.0.15",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
     "@types/npm": "^7.19.0",
