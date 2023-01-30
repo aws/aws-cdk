@@ -109,6 +109,20 @@ Packaging is executed using the `Packaging` class, which:
 ├── poetry.lock # your poetry lock file has to be present at the entry path
 ```
 
+If using `poetry`, particularly with `virtualenvs.in-project = true`, you can exclude specific files from the copied files using the optional bundling string array parameter `poetryAssetExcludes`
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/poetry-function',
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    // translates to `rsync --exclude='.venv'`
+    poetryAssetExcludes: ['.venv'],
+  },
+});
+```
+
+
 ## Custom Bundling
 
 Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:

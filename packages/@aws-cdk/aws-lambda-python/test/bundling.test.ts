@@ -37,7 +37,7 @@ test('Bundling a function without dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output && cd /asset-output',
+        'rsync -rLv /asset-input/ /asset-output && cd /asset-output',
       ],
     }),
   }));
@@ -66,7 +66,7 @@ test('Bundling a function with requirements.txt', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
+        'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
       ],
     }),
   }));
@@ -89,7 +89,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
+        'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
       ],
     }),
   }));
@@ -109,7 +109,7 @@ test('Bundling a layer with dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
+        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -129,7 +129,7 @@ test('Bundling a python code layer', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python',
+        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python',
       ],
     }),
   }));
@@ -149,7 +149,7 @@ test('Bundling a function with pipenv dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
+        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -176,7 +176,7 @@ test('Bundling a function with poetry dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
+        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -187,6 +187,48 @@ test('Bundling a function with poetry dependencies', () => {
   expect(files).toContain('poetry.lock');
   // Contains hidden files.
   expect(files).toContain('.ignorefile');
+});
+
+test('Bundling a function with poetry and assetExcludes', () => {
+  const entry = path.join(__dirname, 'lambda-handler-poetry');
+
+  Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_9,
+    architecture: Architecture.X86_64,
+    outputPathSuffix: 'python',
+    assetExcludes: ['.ignorefile'],
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python",
+      ],
+    }),
+  }));
+
+});
+
+test('Bundling a function with poetry and no assetExcludes', () => {
+  const entry = path.join(__dirname, 'lambda-handler-poetry');
+
+  Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_9,
+    architecture: Architecture.X86_64,
+    outputPathSuffix: 'python',
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        expect.not.stringContaining('--exclude'),
+      ],
+    }),
+  }));
 });
 
 test('Bundling a function with poetry dependencies, with hashes', () => {
@@ -204,7 +246,7 @@ test('Bundling a function with poetry dependencies, with hashes', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
+        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -234,7 +276,7 @@ test('Bundling a function with custom bundling image', () => {
       image,
       command: [
         'bash', '-c',
-        'cp -rTL /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
+        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));

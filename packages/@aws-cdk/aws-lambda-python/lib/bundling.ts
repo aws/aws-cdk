@@ -47,6 +47,12 @@ export interface BundlingProps extends BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   bundlingFileAccess?: BundlingFileAccess
+
+  /**
+ * List of file patterns to exclude when copying assets for bundling
+ * @default - Empty list
+ */
+  readonly assetExcludes?: string[];
 }
 
 /**
@@ -83,6 +89,7 @@ export class Bundling implements CdkBundlingOptions {
       image,
       poetryIncludeHashes,
       commandHooks,
+      assetExcludes = [],
     } = props;
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -93,6 +100,7 @@ export class Bundling implements CdkBundlingOptions {
       outputDir: outputPath,
       poetryIncludeHashes,
       commandHooks,
+      assetExcludes,
     });
 
     this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
@@ -118,7 +126,10 @@ export class Bundling implements CdkBundlingOptions {
     const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes);
     let bundlingCommands: string[] = [];
     bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
-    bundlingCommands.push(`cp -rTL ${options.inputDir}/ ${options.outputDir}`);
+    const exclusionStr = options.assetExcludes?.map(item => `--exclude='${item}'`).join(' ');
+    bundlingCommands.push([
+      'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
+    ].filter(item => item).join(' '));
     bundlingCommands.push(`cd ${options.outputDir}`);
     bundlingCommands.push(packaging.exportCommand ?? '');
     if (packaging.dependenciesFile) {
@@ -134,7 +145,8 @@ interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
   readonly poetryIncludeHashes?: boolean;
-  readonly commandHooks?: ICommandHooks
+  readonly commandHooks?: ICommandHooks;
+  readonly assetExcludes?: string[];
 }
 
 /**
