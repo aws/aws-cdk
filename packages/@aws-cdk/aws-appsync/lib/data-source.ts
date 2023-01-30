@@ -125,7 +125,7 @@ export abstract class BaseDataSource extends Construct {
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
-    this.name = name;
+    this.name = supportedName;
     this.api = props.api;
   }
 
