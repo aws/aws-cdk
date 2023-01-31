@@ -187,6 +187,7 @@
     "@aws-cdk/aws-datasync": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
     "@aws-cdk/aws-detective": "0.0.0",
+    "@aws-cdk/aws-devicefarm": "0.0.0",
     "@aws-cdk/aws-devopsguru": "0.0.0",
     "@aws-cdk/aws-directoryservice": "0.0.0",
     "@aws-cdk/aws-dlm": "0.0.0",
