@@ -393,6 +393,24 @@ describe('tests', () => {
     expect(alb.env.region).toEqual('us-west-2');
   });
 
+  test('imported load balancer can have metrics', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const arn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188';
+    const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
+      loadBalancerArn: arn,
+    });
+
+    const metric = nlb.metrics.custom('MetricName');
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/NetworkELB');
+    expect(stack.resolve(metric.dimensions)).toEqual({
+      LoadBalancer: 'network/my-load-balancer/50dc6c495c0c9188',
+    });
+  });
+
   test('Trivial construction: internal with Isolated subnets only', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -606,6 +624,31 @@ describe('tests', () => {
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer', 0);
       Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
+    });
+    test('Can create metrics from a looked-up NetworkLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const loadBalancer = elbv2.NetworkLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      const metric = loadBalancer.metrics.custom('MetricName');
+
+      // THEN
+      expect(metric.namespace).toEqual('AWS/NetworkELB');
+      expect(stack.resolve(metric.dimensions)).toEqual({
+        LoadBalancer: 'network/my-load-balancer/50dc6c495c0c9188',
+      });
     });
   });
 });
