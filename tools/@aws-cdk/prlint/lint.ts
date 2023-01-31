@@ -19,6 +19,9 @@ export interface GitHubPr {
   readonly title: string;
   readonly body: string | null;
   readonly labels: GitHubLabel[];
+  readonly user?: {
+    login: string;
+  }
 }
 
 export interface GitHubLabel {
@@ -32,7 +35,7 @@ export interface GitHubFile {
 export interface Review {
   id: number;
   user: {
-    login: string
+    login: string;
   };
   body: string;
   state: string;
@@ -272,7 +275,7 @@ export class PullRequestLinter {
     const number = this.props.number;
 
     console.log(`⌛  Fetching PR number ${number}`);
-    const pr = (await this.client.pulls.get(this.prParams)).data;
+    const pr = (await this.client.pulls.get(this.prParams)).data as GitHubPr;
 
     console.log(`⌛  Fetching files for PR number ${number}`);
     const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
@@ -317,7 +320,7 @@ export class PullRequestLinter {
     });
 
     validationCollector.validateRuleSet({
-      exemption: (pr) => hasLabel(pr, Exemption.CLI_INTEG_TESTED),
+      exemption: shouldExemptCliIntegTested,
       testRuleSet: [ { test: noCliChanges } ],
     });
 
@@ -407,6 +410,10 @@ function shouldExemptIntegTest(pr: GitHubPr): boolean {
 function shouldExemptBreakingChange(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.BREAKING_CHANGE);
 };
+
+function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
+  return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
+}
 
 function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
