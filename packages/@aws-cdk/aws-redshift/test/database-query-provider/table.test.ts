@@ -139,7 +139,7 @@ describe('create', () => {
     const event = baseEvent;
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
-      comment: 'table comment',
+      tableComment: 'table comment',
     };
 
     await manageTable(newResourceProperties, event);
@@ -521,7 +521,7 @@ describe('update', () => {
       const newComment = 'newComment';
       const newResourceProperties = {
         ...resourceProperties,
-        comment: newComment,
+        tableComment: newComment,
       };
 
       await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
@@ -537,7 +537,7 @@ describe('update', () => {
         ...event,
         OldResourceProperties: {
           ...event.OldResourceProperties,
-          comment: 'oldComment',
+          tableComment: 'oldComment',
         },
       };
       const newResourceProperties = {

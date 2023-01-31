@@ -123,7 +123,7 @@ export interface TableProps extends DatabaseOptions {
      *
      * @default - no comment
      */
-  readonly comment?: string;
+  readonly tableComment?: string;
 }
 
 /**
@@ -241,7 +241,7 @@ export class Table extends TableBase {
         tableColumns: this.tableColumns,
         distStyle: props.distStyle,
         sortStyle: props.sortStyle ?? this.getDefaultSortStyle(props.tableColumns),
-        comment: props.comment,
+        tableComment: props.tableComment,
       },
     });
 

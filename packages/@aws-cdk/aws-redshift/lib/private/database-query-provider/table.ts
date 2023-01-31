@@ -61,8 +61,8 @@ async function createTable(
 
   await executeStatement(statement, tableAndClusterProps);
 
-  if (tableAndClusterProps.comment) {
-    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.comment}'`, tableAndClusterProps);
+  if (tableAndClusterProps.tableComment) {
+    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.tableComment}'`, tableAndClusterProps);
   }
 
   return tableName;
@@ -148,8 +148,8 @@ async function updateTable(
     }
   }
 
-  const oldComment = oldResourceProperties.comment;
-  const newComment = tableAndClusterProps.comment;
+  const oldComment = oldResourceProperties.tableComment;
+  const newComment = tableAndClusterProps.tableComment;
   if (oldComment !== newComment) {
     alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
   }
