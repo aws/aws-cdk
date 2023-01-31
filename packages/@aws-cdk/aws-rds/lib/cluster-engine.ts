@@ -678,7 +678,7 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_14_4 = AuroraPostgresEngineVersion.of('14.4', '14', { s3Import: true, s3Export: true });
   /** Version "14.5". */
   public static readonly VER_14_5 = AuroraPostgresEngineVersion.of('14.5', '14', { s3Import: true, s3Export: true });
-    /** Version "14.6". */
+  /** Version "14.6". */
   public static readonly VER_14_6 = AuroraPostgresEngineVersion.of('14.6', '14', { s3Import: true, s3Export: true });
 
   /**
