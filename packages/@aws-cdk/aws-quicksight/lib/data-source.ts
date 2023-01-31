@@ -281,6 +281,10 @@ export class DataSource extends Resource {
           function (err, data) {
             if (!err && data.DataSource) {
               dataSource = data.DataSource;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('DataSource does not exist.');
             }
           });
 
@@ -303,6 +307,10 @@ export class DataSource extends Resource {
           function (err, data) {
             if (!err && data.Permissions) {
               permissions = data.Permissions;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Permissions does not exist.');
             }
           });
 
@@ -324,6 +332,10 @@ export class DataSource extends Resource {
           function (err, data) {
             if (!err && data.Tags) {
               tags = data.Tags;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Tags does not exist.');
             }
           });
 

@@ -172,6 +172,10 @@ export class Template extends Resource {
           function (err, data) {
             if (!err && data.Template) {
               template = data.Template;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Template does not exist.');
             }
           });
 
@@ -194,6 +198,10 @@ export class Template extends Resource {
           function (err, data) {
             if (!err && data.Permissions) {
               permissions = data.Permissions;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Permissions does not exist.');
             }
           });
 
@@ -215,6 +223,10 @@ export class Template extends Resource {
           function (err, data) {
             if (!err && data.Tags) {
               tags = data.Tags;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Tags does not exist.');
             }
           });
 

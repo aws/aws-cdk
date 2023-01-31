@@ -264,6 +264,10 @@ export class DataSet extends Resource {
           function (err, data) {
             if (!err && data.DataSet) {
               dataSet = data.DataSet;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('DataSet does not exist.');
             }
           });
 
@@ -286,6 +290,10 @@ export class DataSet extends Resource {
           function (err, data) {
             if (!err && data.Permissions) {
               permissions = data.Permissions;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Permissions does not exist.');
             }
           });
 
@@ -307,6 +315,10 @@ export class DataSet extends Resource {
           function (err, data) {
             if (!err && data.Tags) {
               tags = data.Tags;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Tags does not exist.');
             }
           });
 

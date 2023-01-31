@@ -204,6 +204,10 @@ export class Dashboard extends Resource {
           function (err, data) {
             if (!err && data.Dashboard) {
               dashboard = data.Dashboard;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Dashboard does not exist.');
             }
           });
 
@@ -226,6 +230,10 @@ export class Dashboard extends Resource {
           function (err, data) {
             if (!err && data.Permissions) {
               permissions = data.Permissions;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Permissions does not exist.');
             }
           });
 
@@ -247,6 +255,10 @@ export class Dashboard extends Resource {
           function (err, data) {
             if (!err && data.Tags) {
               tags = data.Tags;
+            } else if (err) {
+              throw new Error(err.message);
+            } else {
+              throw new Error('Tags does not exist.');
             }
           });
 
