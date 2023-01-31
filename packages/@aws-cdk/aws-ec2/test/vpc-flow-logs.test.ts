@@ -2,7 +2,7 @@ import { Template, Match } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack } from '@aws-cdk/core';
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc } from '../lib';
 
 describe('vpc flow logs', () => {
@@ -341,6 +341,28 @@ describe('vpc flow logs', () => {
             },
           ],
         },
+      });
+    });
+
+    test('adds necessary dependencies', () => {
+      const stack = new Stack();
+      stack.node.setContext('@aws-cdk/aws-s3:createDefaultLoggingPolicy', true);
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        removalPolicy: RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      });
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+        destination: FlowLogDestination.toS3(bucket),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResource('AWS::EC2::FlowLog', {
+        Properties: Match.anyValue(),
+        DependsOn: [
+          'BucketAutoDeleteObjectsCustomResourceBAFD23C2',
+          'BucketPolicyE9A3008A',
+        ],
       });
     });
 

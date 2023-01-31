@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.102"
-        }
-      },
       "FlowLogsTestStack": {
         "id": "FlowLogsTestStack",
         "path": "FlowLogsTestStack",
@@ -827,7 +819,6 @@
                           "Ref": "VPCB9E5F0B4"
                         },
                         "resourceType": "VPC",
-                        "trafficType": "ALL",
                         "logDestination": {
                           "Fn::GetAtt": [
                             "VPCFlowLogsS3BucketFB7DC2BE",
@@ -841,7 +832,8 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC"
                           }
-                        ]
+                        ],
+                        "trafficType": "ALL"
                       }
                     },
                     "constructInfo": {
@@ -851,7 +843,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.FlowLog",
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -869,7 +861,6 @@
                           "Ref": "VPCB9E5F0B4"
                         },
                         "resourceType": "VPC",
-                        "trafficType": "ALL",
                         "logDestination": {
                           "Fn::Join": [
                             "",
@@ -890,7 +881,8 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC"
                           }
-                        ]
+                        ],
+                        "trafficType": "ALL"
                       }
                     },
                     "constructInfo": {
@@ -900,7 +892,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.FlowLog",
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "0.0.0"
                 }
               }
@@ -918,6 +910,14 @@
                 "id": "IAMRole",
                 "path": "FlowLogsTestStack/FlowLogsCW/IAMRole",
                 "children": {
+                  "ImportIAMRole": {
+                    "id": "ImportIAMRole",
+                    "path": "FlowLogsTestStack/FlowLogsCW/IAMRole/ImportIAMRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "FlowLogsTestStack/FlowLogsCW/IAMRole/Resource",
@@ -1041,7 +1041,6 @@
                       "Ref": "VPCB9E5F0B4"
                     },
                     "resourceType": "VPC",
-                    "trafficType": "ALL",
                     "deliverLogsPermissionArn": {
                       "Fn::GetAtt": [
                         "FlowLogsCWIAMRole017AD736",
@@ -1052,7 +1051,8 @@
                     "logGroupName": {
                       "Ref": "FlowLogsCWLogGroup0398E8F8"
                     },
-                    "maxAggregationInterval": 600
+                    "maxAggregationInterval": 600,
+                    "trafficType": "ALL"
                   }
                 },
                 "constructInfo": {
@@ -1062,7 +1062,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.FlowLog",
+              "fqn": "@aws-cdk/core.Resource",
               "version": "0.0.0"
             }
           },
@@ -1335,6 +1335,22 @@
               "fqn": "@aws-cdk/core.CustomResourceProvider",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "FlowLogsTestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "FlowLogsTestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -1355,12 +1371,30 @@
                 "path": "FlowLogs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.102"
+                  "version": "10.1.216"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "FlowLogs/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "FlowLogs/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "FlowLogs/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -1376,6 +1410,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.216"
         }
       }
     },
