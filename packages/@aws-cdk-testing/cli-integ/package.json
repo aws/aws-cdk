@@ -41,7 +41,7 @@
   "dependencies": {
     "@octokit/rest": "^18.12.0",
     "jest": "^27.5.1",
-    "aws-sdk": "^2.1211.0",
+    "aws-sdk": "^2.1305.0",
     "axios": "^0.27.2",
     "jest-junit": "^14.0.0",
     "semver": "^7.3.8",
