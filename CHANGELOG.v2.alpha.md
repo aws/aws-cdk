@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * **synthetics:** Adding DeleteLambdaResourcesOnCanaryDeletion prop to the canary L2 ([#23820](https://github.com/aws/aws-cdk/issues/23820)) ([45c191e](https://github.com/aws/aws-cdk/commit/45c191efa865e0aef6fc9d7fa4cd9d56d98a7cc9))
+* **redshift:** support default role for redshift clusters ([#22551](https://github.com/aws/aws-cdk/issues/22551))
 
 ## [2.62.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.62.1-alpha.0...v2.62.2-alpha.0) (2023-01-27)
 
