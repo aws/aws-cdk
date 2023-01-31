@@ -23,6 +23,7 @@ import {
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
+import { regionsBefore, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN } from '@aws-cdk/region-info/lib/aws-entities';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -1610,14 +1611,12 @@ export class Bucket extends BucketBase {
     }
     Bucket.validateBucketName(bucketName);
 
-    const newUrlFormatRegions = new Set<string>(['us-east-2', 'af-south-1', 'ap-east-1', 'ap-south-2', 'ap-southeast-3', 'ap-southeast-4',
-      'ap-south-1', 'ap-northeast-3', 'ap-northeast-2', 'ca-central-1', 'cn-northwest-1', 'eu-central-1', 'eu-west-2', 'eu-south-1',
-      'eu-west-3', 'eu-north-1', 'eu-south-2', 'eu-central-2', 'me-south-1', 'me-central-1', 'us-gov-east-1']);
+    const oldUrlFormatRegions = new Set(regionsBefore(RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN));
 
-    const newUrlFormat = newUrlFormatRegions.has(region) ||
-      attrs.bucketWebsiteNewUrlFormat === undefined
-      ? false
-      : attrs.bucketWebsiteNewUrlFormat;
+    const newUrlFormat = !oldUrlFormatRegions.has(region) ||
+      (attrs.bucketWebsiteNewUrlFormat === undefined
+        ? false
+        : attrs.bucketWebsiteNewUrlFormat);
 
     const websiteDomain = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`

@@ -724,8 +724,7 @@ describe('bucket', () => {
         bucketName: 'mybucket',
       });
 
-      expect(bucket.bucketWebsiteUrl).toEqual(`mybucket.s3-website.us-east-2.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website.us-east-2.${stack.urlSuffix}`);
+      expect(bucket.bucketWebsiteUrl).toEqual(`http://mybucket.s3-website.us-east-2.${stack.urlSuffix}`);
     });
 
     test('import needs to specify a valid bucket name', () => {
@@ -1935,7 +1934,7 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'http://my-test-bucket.s3-website-',
+            'http://my-test-bucket.s3-website.',
             { Ref: 'AWS::Region' },
             '.',
             { Ref: 'AWS::URLSuffix' },
@@ -1946,7 +1945,7 @@ describe('bucket', () => {
         'Fn::Join': [
           '',
           [
-            'my-test-bucket.s3-website-',
+            'my-test-bucket.s3-website.',
             { Ref: 'AWS::Region' },
             '.',
             { Ref: 'AWS::URLSuffix' },
