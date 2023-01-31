@@ -53,7 +53,8 @@ export interface EventBridgePutEventsEntry {
  */
 export interface EventBridgePutEventsProps extends sfn.TaskStateBaseProps {
   /**
-   * The entries that will be sent (must be at least 1)
+   * The entries that will be sent. Minimum number of entries is 1 and maximum is 10,
+   * unless [PutEvents API limit](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html#API_PutEvents_RequestSyntax) has changed.
    */
   readonly entries: EventBridgePutEventsEntry[];
 }

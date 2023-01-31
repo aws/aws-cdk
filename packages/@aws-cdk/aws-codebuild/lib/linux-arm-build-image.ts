@@ -5,8 +5,8 @@ import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType } from './project';
 
 /**
- * Construction properties of {@link LinuxArmBuildImage}.
- * Module-private, as the constructor of {@link LinuxArmBuildImage} is private.
+ * Construction properties of `LinuxArmBuildImage`.
+ * Module-private, as the constructor of `LinuxArmBuildImage` is private.
  */
 interface LinuxArmBuildImageProps {
   readonly imageId: string;

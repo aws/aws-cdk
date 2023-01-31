@@ -3,8 +3,8 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "myApplication",
-    "Description": "my application description"
+    "Name": "TestApplication",
+    "Description": "Test application description"
    }
   },
   "TestApplicationResourceAssociationd232b63e52a8414E905D": {
@@ -123,7 +123,7 @@
  },
  "Outputs": {
   "TestApplicationApplicationManagerUrlE1058321": {
-   "Description": "Application manager url for application myApplication",
+   "Description": "Application manager url for the application created.",
    "Value": {
     "Fn::Join": [
      "",
@@ -132,7 +132,7 @@
       {
        "Ref": "AWS::Region"
       },
-      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-myApplication"
+      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-TestApplication"
      ]
     ]
    }

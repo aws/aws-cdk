@@ -6,7 +6,7 @@ import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
 
 /**
- * The options passed to {@link IInstanceEngine.bind}.
+ * The options passed to `IInstanceEngine.bind`.
  */
 export interface InstanceEngineBindOptions {
   /**
@@ -46,7 +46,7 @@ export interface InstanceEngineBindOptions {
 }
 
 /**
- * The type returned from the {@link IInstanceEngine.bind} method.
+ * The type returned from the `IInstanceEngine.bind` method.
  */
 export interface InstanceEngineConfig {
   /**
@@ -158,7 +158,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
 
 /**
  * The versions for the MariaDB instance engines
- * (those returned by {@link DatabaseInstanceEngine.mariaDb}).
+ * (those returned by `DatabaseInstanceEngine.mariaDb`).
  */
 export class MariaDbEngineVersion {
   /**
@@ -392,7 +392,7 @@ export class MariaDbEngineVersion {
 
 /**
  * Properties for MariaDB instance engines.
- * Used in {@link DatabaseInstanceEngine.mariaDb}.
+ * Used in `DatabaseInstanceEngine.mariaDb`.
  */
 export interface MariaDbInstanceEngineProps {
   /** The exact version of the engine to use. */
@@ -426,7 +426,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
 
 /**
  * The versions for the MySQL instance engines
- * (those returned by {@link DatabaseInstanceEngine.mysql}).
+ * (those returned by `DatabaseInstanceEngine.mysql`).
  */
 export class MysqlEngineVersion {
   /**
@@ -627,7 +627,7 @@ export class MysqlEngineVersion {
 
 /**
  * Properties for MySQL instance engines.
- * Used in {@link DatabaseInstanceEngine.mysql}.
+ * Used in `DatabaseInstanceEngine.mysql`.
  */
 export interface MySqlInstanceEngineProps {
   /** The exact version of the engine to use. */
@@ -674,7 +674,7 @@ export interface PostgresEngineFeatures {
 
 /**
  * The versions for the PostgreSQL instance engines
- * (those returned by {@link DatabaseInstanceEngine.postgres}).
+ * (those returned by `DatabaseInstanceEngine.postgres`).
  */
 export class PostgresEngineVersion {
   /**
@@ -1059,7 +1059,7 @@ export class PostgresEngineVersion {
 
 /**
  * Properties for PostgreSQL instance engines.
- * Used in {@link DatabaseInstanceEngine.postgres}.
+ * Used in `DatabaseInstanceEngine.postgres`.
  */
 export interface PostgresInstanceEngineProps {
   /** The exact version of the engine to use. */
@@ -1091,8 +1091,8 @@ class PostgresInstanceEngine extends InstanceEngineBase {
 
 /**
  * The versions for the legacy Oracle instance engines
- * (those returned by {@link DatabaseInstanceEngine.oracleSe}
- * and {@link DatabaseInstanceEngine.oracleSe1}).
+ * (those returned by `DatabaseInstanceEngine.oracleSe`
+ * and `DatabaseInstanceEngine.oracleSe1`).
  * Note: RDS will stop allowing creating new databases with this version in August 2020.
  *
  * @deprecated instances can no longer be created with these engine versions. See https://forums.aws.amazon.com/ann.jspa?annID=7341
@@ -1169,10 +1169,10 @@ export class OracleLegacyEngineVersion {
 /**
  * The versions for the Oracle instance engines.
  * Those returned by the following list.
- * - {@link DatabaseInstanceEngine.oracleSe2}
- * - {@link DatabaseInstanceEngine.oracleSe2Cdb}
- * - {@link DatabaseInstanceEngine.oracleEe}
- * - {@link DatabaseInstanceEngine.oracleEeCdb}.
+ * - `DatabaseInstanceEngine.oracleSe2`
+ * - `DatabaseInstanceEngine.oracleSe2Cdb`
+ * - `DatabaseInstanceEngine.oracleEe`
+ * - `DatabaseInstanceEngine.oracleEeCdb`.
  */
 export class OracleEngineVersion {
   /** Version "12.1" (only a major version, without a specific minor version). */
@@ -1404,7 +1404,7 @@ interface OracleInstanceEngineProps {
 
 /**
  * Properties for Oracle Standard Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleSe}.
+ * Used in `DatabaseInstanceEngine.oracleSe`.
  *
  * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
@@ -1432,7 +1432,7 @@ class OracleSeInstanceEngine extends OracleInstanceEngineBase {
 
 /**
  * Properties for Oracle Standard Edition 1 instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleSe1}.
+ * Used in `DatabaseInstanceEngine.oracleSe1`.
  *
  * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
@@ -1460,7 +1460,7 @@ class OracleSe1InstanceEngine extends OracleInstanceEngineBase {
 
 /**
  * Properties for Oracle Standard Edition 2 instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleSe2}.
+ * Used in `DatabaseInstanceEngine.oracleSe2`.
  */
 export interface OracleSe2InstanceEngineProps extends OracleInstanceEngineProps {
 }
@@ -1481,7 +1481,7 @@ class OracleSe2InstanceEngine extends OracleInstanceEngineBase {
 
 /**
  * Properties for Oracle Standard Edition 2 (CDB) instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleSe2Cdb}.
+ * Used in `DatabaseInstanceEngine.oracleSe2Cdb`.
  */
 export interface OracleSe2CdbInstanceEngineProps extends OracleInstanceEngineProps {
 }
@@ -1502,7 +1502,7 @@ class OracleSe2CdbInstanceEngine extends OracleInstanceEngineBase {
 
 /**
  * Properties for Oracle Enterprise Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleEe}.
+ * Used in `DatabaseInstanceEngine.oracleEe`.
  */
 export interface OracleEeInstanceEngineProps extends OracleInstanceEngineProps {
 }
@@ -1523,7 +1523,7 @@ class OracleEeInstanceEngine extends OracleInstanceEngineBase {
 
 /**
  * Properties for Oracle Enterprise Edition (CDB) instance engines.
- * Used in {@link DatabaseInstanceEngine.oracleEeCdb}.
+ * Used in `DatabaseInstanceEngine.oracleEeCdb`.
  */
 export interface OracleEeCdbInstanceEngineProps extends OracleInstanceEngineProps {
 }
@@ -1544,9 +1544,9 @@ class OracleEeCdbInstanceEngine extends OracleInstanceEngineBase {
 
 /**
  * The versions for the SQL Server instance engines
- * (those returned by {@link DatabaseInstanceEngine.sqlServerSe},
- * {@link DatabaseInstanceEngine.sqlServerEx}, {@link DatabaseInstanceEngine.sqlServerWeb}
- * and {@link DatabaseInstanceEngine.sqlServerEe}).
+ * (those returned by `DatabaseInstanceEngine.sqlServerSe`,
+ * `DatabaseInstanceEngine.sqlServerEx`, `DatabaseInstanceEngine.sqlServerWeb`
+ * and `DatabaseInstanceEngine.sqlServerEe`).
  */
 export class SqlServerEngineVersion {
   /** Version "11.00" (only a major version, without a specific minor version). */
@@ -1650,7 +1650,7 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4043_16_V1 = SqlServerEngineVersion.of('15.00.4043.16.v1', '15.00');
   /**
    * Version "15.00.4043.23.v1".
-   * @deprecated This version is erroneous. You might be looking for {@link SqlServerEngineVersion.VER_15_00_4073_23_V1}, instead.
+   * @deprecated This version is erroneous. You might be looking for `SqlServerEngineVersion.VER_15_00_4073_23_V1`, instead.
    */
   public static readonly VER_15_00_4043_23_V1 = SqlServerEngineVersion.of('15.00.4043.23.v1', '15.00');
   /** Version "15.00.4073.23.v1". */
@@ -1756,7 +1756,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
 
 /**
  * Properties for SQL Server Standard Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerSe}.
+ * Used in `DatabaseInstanceEngine.sqlServerSe`.
  */
 export interface SqlServerSeInstanceEngineProps extends SqlServerInstanceEngineProps {
 }
@@ -1772,7 +1772,7 @@ class SqlServerSeInstanceEngine extends SqlServerInstanceEngineBase {
 
 /**
  * Properties for SQL Server Express Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerEx}.
+ * Used in `DatabaseInstanceEngine.sqlServerEx`.
  */
 export interface SqlServerExInstanceEngineProps extends SqlServerInstanceEngineProps {
 }
@@ -1788,7 +1788,7 @@ class SqlServerExInstanceEngine extends SqlServerInstanceEngineBase {
 
 /**
  * Properties for SQL Server Web Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerWeb}.
+ * Used in `DatabaseInstanceEngine.sqlServerWeb`.
  */
 export interface SqlServerWebInstanceEngineProps extends SqlServerInstanceEngineProps {
 }
@@ -1804,7 +1804,7 @@ class SqlServerWebInstanceEngine extends SqlServerInstanceEngineBase {
 
 /**
  * Properties for SQL Server Enterprise Edition instance engines.
- * Used in {@link DatabaseInstanceEngine.sqlServerEe}.
+ * Used in `DatabaseInstanceEngine.sqlServerEe`.
  */
 export interface SqlServerEeInstanceEngineProps extends SqlServerInstanceEngineProps {
 }
@@ -1827,7 +1827,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'mariadb' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link mariaDb()} method
+   *   We recommend using versioned engines created using the `mariaDb()` method
    */
   public static readonly MARIADB: IInstanceEngine = new MariaDbInstanceEngine();
 
@@ -1835,7 +1835,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'mysql' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link mysql()} method
+   *   We recommend using versioned engines created using the `mysql()` method
    */
   public static readonly MYSQL: IInstanceEngine = new MySqlInstanceEngine();
 
@@ -1843,7 +1843,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'oracle-ee' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleEe()} method
+   *   We recommend using versioned engines created using the `oracleEe()` method
    */
   public static readonly ORACLE_EE: IInstanceEngine = new OracleEeInstanceEngine();
 
@@ -1851,7 +1851,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'oracle-ee-cdb' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleEeCdb()} method
+   *   We recommend using versioned engines created using the `oracleEeCdb()` method
    */
   public static readonly ORACLE_EE_CDB: IInstanceEngine = new OracleEeCdbInstanceEngine();
 
@@ -1859,7 +1859,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'oracle-se2' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleSe2()} method
+   *   We recommend using versioned engines created using the `oracleSe2()` method
    */
   public static readonly ORACLE_SE2: IInstanceEngine = new OracleSe2InstanceEngine();
 
@@ -1867,7 +1867,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'oracle-se2-cdb' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleSe2Cdb()} method
+   *   We recommend using versioned engines created using the `oracleSe2Cdb()` method
    */
   public static readonly ORACLE_SE2_CDB: IInstanceEngine = new OracleSe2CdbInstanceEngine();
 
@@ -1889,7 +1889,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'postgres' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link postgres()} method
+   *   We recommend using versioned engines created using the `postgres()` method
    */
   public static readonly POSTGRES: IInstanceEngine = new PostgresInstanceEngine();
 
@@ -1897,7 +1897,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'sqlserver-ee' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link sqlServerEe()} method
+   *   We recommend using versioned engines created using the `sqlServerEe()` method
    */
   public static readonly SQL_SERVER_EE: IInstanceEngine = new SqlServerEeInstanceEngine();
 
@@ -1905,7 +1905,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'sqlserver-se' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link sqlServerSe()} method
+   *   We recommend using versioned engines created using the `sqlServerSe()` method
    */
   public static readonly SQL_SERVER_SE: IInstanceEngine = new SqlServerSeInstanceEngine();
 
@@ -1913,7 +1913,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'sqlserver-ex' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link sqlServerEx()} method
+   *   We recommend using versioned engines created using the `sqlServerEx()` method
    */
   public static readonly SQL_SERVER_EX: IInstanceEngine = new SqlServerExInstanceEngine();
 
@@ -1921,7 +1921,7 @@ export class DatabaseInstanceEngine {
    * The unversioned 'sqlserver-web' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link sqlServerWeb()} method
+   *   We recommend using versioned engines created using the `sqlServerWeb()` method
    */
   public static readonly SQL_SERVER_WEB: IInstanceEngine = new SqlServerWebInstanceEngine();
 

@@ -110,7 +110,7 @@ export enum MetricType {
 }
 
 /**
- * Interface representing a created or an imported {@link Job}.
+ * Interface representing a created or an imported `Job`.
  */
 export interface IJob extends cdk.IResource, iam.IGrantable {
   /**
@@ -419,7 +419,7 @@ export interface ContinuousLoggingProps {
 }
 
 /**
- * Attributes for importing {@link Job}.
+ * Attributes for importing `Job`.
  */
 export interface JobAttributes {
   /**
@@ -436,7 +436,7 @@ export interface JobAttributes {
 }
 
 /**
- * Construction properties for {@link Job}.
+ * Construction properties for `Job`.
  */
 export interface JobProps {
   /**
@@ -504,14 +504,14 @@ export interface JobProps {
   readonly workerType?: WorkerType;
 
   /**
-   * The number of workers of a defined {@link WorkerType} that are allocated when a job runs.
+   * The number of workers of a defined `WorkerType` that are allocated when a job runs.
    *
    * @default - differs based on specific Glue version/worker type
    */
   readonly workerCount?: number;
 
   /**
-   * The {@link Connection}s used for this job.
+   * The `Connection`s used for this job.
    *
    * Connections are used to connect to other AWS Service or resources within a VPC.
    *
@@ -520,7 +520,7 @@ export interface JobProps {
   readonly connections?: IConnection[];
 
   /**
-   * The {@link SecurityConfiguration} to use for this job.
+   * The `SecurityConfiguration` to use for this job.
    *
    * @default - no security configuration.
    */
@@ -692,7 +692,7 @@ export class Job extends JobBase {
    */
   private checkNoReservedArgs(defaultArguments?: { [key: string]: string }) {
     if (defaultArguments) {
-      const reservedArgs = new Set(['--conf', '--debug', '--mode', '--JOB_NAME']);
+      const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
           throw new Error(`The ${arg} argument is reserved by Glue. Don't set it`);

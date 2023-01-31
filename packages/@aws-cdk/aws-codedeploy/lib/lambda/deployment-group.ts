@@ -38,7 +38,7 @@ export interface ILambdaDeploymentGroup extends cdk.IResource {
 }
 
 /**
- * Construction properties for {@link LambdaDeploymentGroup}.
+ * Construction properties for `LambdaDeploymentGroup`.
  */
 export interface LambdaDeploymentGroupProps {
   /**
@@ -67,7 +67,7 @@ export interface LambdaDeploymentGroupProps {
    * CodeDeploy will stop (and optionally roll back)
    * a deployment if during it any of the alarms trigger.
    *
-   * Alarms can also be added after the Deployment Group is created using the {@link #addAlarm} method.
+   * Alarms can also be added after the Deployment Group is created using the `#addAlarm` method.
    *
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html

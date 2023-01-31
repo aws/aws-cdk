@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "49f6e7e838beb118afcdc5a5082ed92c402292f42c290c4ac272b74e6f3a48a7": {
+      "source": {
+        "path": "aws-gamelift-standalone-matchmaking-configuration.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "49f6e7e838beb118afcdc5a5082ed92c402292f42c290c4ac272b74e6f3a48a7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

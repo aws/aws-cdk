@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { Action } from '../action';
 
 /**
- * Construction properties of the {@link ServiceCatalogDeployActionBeta1 ServiceCatalog deploy CodePipeline Action}.
+ * Construction properties of the `ServiceCatalogDeployActionBeta1 ServiceCatalog deploy CodePipeline Action`.
  */
 export interface ServiceCatalogDeployActionBeta1Props extends codepipeline.CommonAwsActionProps {
   /**

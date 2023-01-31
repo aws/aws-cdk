@@ -9,13 +9,7 @@
 >
 > [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -264,7 +258,7 @@ import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
 const user = new iam.User(this, 'User');
 const domain = new opensearch.Domain(this, 'Domain', {
-  version: opensearch.EngineVersion.OPENSEARCH_1_3,
+  version: opensearch.EngineVersion.OPENSEARCH_2_3,
   removalPolicy: RemovalPolicy.DESTROY,
   fineGrainedAccessControl: { masterUserArn: user.userArn },
   encryptionAtRest: { enabled: true },
@@ -547,6 +541,42 @@ const pipelineResolver = new appsync.Resolver(this, 'pipeline', {
   requestMappingTemplate: appsync.MappingTemplate.fromFile('beforeRequest.vtl'),
   pipelineConfig: [appsyncFunction],
   responseMappingTemplate: appsync.MappingTemplate.fromFile('afterResponse.vtl'),
+});
+```
+
+### JS Functions and Resolvers
+
+JS Functions and resolvers are also supported. You can use a `.js` file within your CDK project, or specify your function code inline.
+
+```ts
+declare const api: appsync.GraphqlApi;
+
+const myJsFunction = new appsync.AppsyncFunction(this, 'function', {
+  name: 'my_js_function',
+  api,
+  dataSource: api.addNoneDataSource('none'),
+  code: appsync.Code.fromAsset('directory/function_code.js'),
+  runtime: appsync.FunctionRuntime.JS_1_0_0,
+});
+
+new appsync.Resolver(this, 'PipelineResolver', {
+  api,
+  typeName: 'typeName',
+  fieldName: 'fieldName',
+  code: appsync.Code.fromInline(`
+    // The before step
+    export function request(...args) {
+      console.log(args);
+      return {}
+    }
+
+    // The after step
+    export function response(ctx) {
+      return ctx.prev.result
+    }
+  `),
+  runtime: appsync.FunctionRuntime.JS_1_0_0,
+  pipelineConfig: [myJsFunction],
 });
 ```
 

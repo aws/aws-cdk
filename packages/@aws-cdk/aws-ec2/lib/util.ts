@@ -46,20 +46,24 @@ export class ImportSubnetGroup {
   private readonly subnetIds: string[];
   private readonly names: string[];
   private readonly routeTableIds: string[];
+  private readonly ipv4CidrBlocks: string[];
   private readonly groups: number;
 
   constructor(
     subnetIds: string[] | undefined,
     names: string[] | undefined,
     routeTableIds: string[] | undefined,
+    ipv4CidrBlocks: string[] | undefined,
     type: SubnetType,
     private readonly availabilityZones: string[],
     idField: string,
     nameField: string,
-    routeTableIdField: string) {
+    routeTableIdField: string,
+    ipv4CidrBlockField: string) {
 
     this.subnetIds = subnetIds || [];
     this.routeTableIds = routeTableIds || [];
+    this.ipv4CidrBlocks = ipv4CidrBlocks || [];
     this.groups = this.subnetIds.length / this.availabilityZones.length;
 
     if (Math.floor(this.groups) !== this.groups) {
@@ -70,6 +74,11 @@ export class ImportSubnetGroup {
       // We don't err if no routeTableIds were provided to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       /* eslint-disable max-len */
       throw new Error(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+    }
+    if (this.ipv4CidrBlocks.length !== this.subnetIds.length && ipv4CidrBlocks != null) {
+      // We don't err if no ipv4CidrBlocks were provided to maintain backwards-compatibility.
+      /* eslint-disable max-len */
+      throw new Error(`Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
 
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
@@ -82,6 +91,7 @@ export class ImportSubnetGroup {
         availabilityZone: this.pickAZ(i),
         subnetId: this.subnetIds[i],
         routeTableId: this.routeTableIds[i],
+        ipv4CidrBlock: this.ipv4CidrBlocks[i],
       });
     });
   }
