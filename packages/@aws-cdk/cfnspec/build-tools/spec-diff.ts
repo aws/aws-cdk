@@ -18,6 +18,15 @@ async function main() {
   const newSpec = await fs.readJSON(newSpecFile);
   const oldSpec = await fs.readJSON(oldSpecFile);
 
+  // Diff operates on PropertyTypes & ResourceTypes
+  // Ensure they always exist in the old spec
+  if (!oldSpec.PropertyTypes) {
+    oldSpec.PropertyTypes = {};
+  }
+  if (!oldSpec.ResourceTypes) {
+    oldSpec.ResourceTypes = {};
+  }
+
   const out = jsonDiff(oldSpec, newSpec);
 
   // Here's the magic output format of this thing
