@@ -1,5 +1,6 @@
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { IUser } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
@@ -53,16 +54,17 @@ export enum ImageId {
    */
   UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
 }
-
 /**
  * Properties for Ec2Environment
  */
 export interface Ec2EnvironmentProps {
   /**
-   * OwnerArn
-   * @default
+   * The type of owner environment.
+   *
+   * @default - string
    */
-  readonly owner?: string;
+  readonly owner?: Owner;
+
   /**
    * The type of instance to connect to the environment.
    *
@@ -143,6 +145,13 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
   }
 
   /**
+   * The Environment Owner of the ownerarn
+   *
+   * @attribute
+   */
+  public readonly owner?: Owner;
+
+  /**
    * The environment name of this Cloud9 environment
    *
    * @attribute
@@ -175,6 +184,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     super(scope, id);
 
     this.vpc = props.vpc;
+    this.owner = props.owner;
     if (!props.subnetSelection && this.vpc.publicSubnets.length === 0) {
       throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
     }
@@ -187,7 +197,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     const c9env = new CfnEnvironmentEC2(this, 'Resource', {
       name: props.ec2EnvironmentName,
       description: props.description,
-      ownerArn: props.owner,
+      ownerArn: props.owner?.ownerArn,
       instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
       subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0],
       repositories: props.clonedRepositories ? props.clonedRepositories.map(r => ({
@@ -223,3 +233,34 @@ export class CloneRepository {
 
   private constructor(public readonly repositoryUrl: string, public readonly pathComponent: string) {}
 }
+
+/**
+ * The class for different types of owners
+ */
+export class Owner {
+  /**
+   * import from Owner Iuser
+   *
+   * @param user environment owner can be an IAM user.
+   */
+  public static user(user: IUser): Owner {
+    return { ownerArn: user.userArn };
+  }
+
+  /**
+   * import from Owner account root
+   *
+   * @param accountId environment owner can be a root account.
+   */
+  public static accountRoot(accountId: string): Owner {
+    return { ownerArn: `arn:aws:iam::${accountId}:root` };
+  }
+
+  /**
+   * import owenrArn
+   *
+   * @param ownerArn of environment owner.
+   */
+  private constructor(public readonly ownerArn: string) {}
+}
+

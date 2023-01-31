@@ -1,9 +1,10 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as cloud9 from '../lib';
-import { ConnectionType, ImageId } from '../lib';
+import { ConnectionType, ImageId, Owner } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -79,9 +80,49 @@ test('throw error when subnetSelection not specified and the provided VPC has no
 test('can use CodeCommit repositories', () => {
   // WHEN
   const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
+  const user = new iam.User(stack, 'User');
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
-    owner: 'xyz',
+    clonedRepositories: [
+      cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
+    ],
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    owner: Owner.user(user),
+  });
+  // THEN
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    InstanceType: 't2.micro',
+    Repositories: [
+      {
+        PathComponent: '/src',
+        RepositoryUrl: {
+          'Fn::Join': [
+            '',
+            [
+              'https://git-codecommit.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+              '/v1/repos/foo',
+            ],
+          ],
+        },
+      },
+    ],
+  });
+});
+
+test('can use CodeCommit repo', () => {
+  // WHEN
+  const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    owner: Owner.accountRoot('12345678'),
     clonedRepositories: [
       cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
     ],
@@ -90,7 +131,6 @@ test('can use CodeCommit repositories', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     InstanceType: 't2.micro',
-    OwnerArn: 'xyz',
     Repositories: [
       {
         PathComponent: '/src',
