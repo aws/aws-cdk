@@ -87,16 +87,29 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.2"
+    "@types/jest": "^27.5.2",
+    "@aws-cdk/integ-tests": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3-deployment": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "aws-sdk": "^2.1242.0",
     "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^10.0.0"
   },
+  "bundledDependencies": [
+    "aws-sdk"
+  ],
   "engines": {
     "node": ">= 14.15.0"
   },
