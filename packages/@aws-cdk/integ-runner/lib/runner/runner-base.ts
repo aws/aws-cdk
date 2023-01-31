@@ -33,7 +33,7 @@ export interface IntegRunnerOptions {
    *
    * @default - no additional environment variables
    */
-  readonly env?: { [name: string]: string },
+  readonly env?: { [name: string]: string | undefined },
 
   /**
    * tmp cdk.out directory

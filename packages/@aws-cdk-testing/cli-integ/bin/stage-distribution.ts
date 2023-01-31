@@ -143,7 +143,6 @@ async function main() {
     })
     .demandCommand(1, 'You must supply a command')
     .help()
-    .strictOptions()
     .showHelpOnFail(false)
     .parse();
 }
