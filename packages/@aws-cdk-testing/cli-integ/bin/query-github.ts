@@ -24,8 +24,6 @@ async function main() {
         requiresArg: true,
       }))
     .demandCommand()
-    .strict()
-    .strictCommands(false)
     .help()
     .showHelpOnFail(false)
     .argv;
