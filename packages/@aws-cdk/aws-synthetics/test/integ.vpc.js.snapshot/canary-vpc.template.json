@@ -610,7 +610,7 @@
      ]
     },
     "Name": "canary-vpc",
-    "RuntimeVersion": "syn-nodejs-puppeteer-3.3",
+    "RuntimeVersion": "syn-nodejs-puppeteer-3.8",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"

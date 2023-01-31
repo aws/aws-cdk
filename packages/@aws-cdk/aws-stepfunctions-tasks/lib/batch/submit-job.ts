@@ -191,11 +191,14 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     });
 
     // validate timeout
-    props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
-      if (timeout < 60) {
-        throw new Error(`attempt duration must be greater than 60 seconds. Received ${timeout} seconds.`);
-      }
-    });
+    (props.timeout !== undefined || props.taskTimeout !== undefined) && withResolved(
+      props.timeout?.toSeconds(),
+      props.taskTimeout?.seconds, (timeout, taskTimeout) => {
+        const definedTimeout = timeout ?? taskTimeout;
+        if (definedTimeout && definedTimeout < 60) {
+          throw new Error(`attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`);
+        }
+      });
 
     // This is required since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
@@ -216,6 +219,15 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+    let timeout: number | undefined = undefined;
+    if (this.props.timeout) {
+      timeout = this.props.timeout.toSeconds();
+    } else if (this.props.taskTimeout?.seconds) {
+      timeout = this.props.taskTimeout.seconds;
+    } else if (this.props.taskTimeout?.path) {
+      timeout = sfn.JsonPath.numberAt(this.props.taskTimeout.path);
+    }
+
     return {
       Resource: integrationResourceArn('batch', 'submitJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
@@ -244,11 +256,12 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
             ? { Attempts: this.props.attempts }
             : undefined,
 
-        Timeout: this.props.timeout
-          ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
+        Timeout: timeout
+          ? { AttemptDurationSeconds: timeout }
           : undefined,
       }),
       TimeoutSeconds: undefined,
+      TimeoutSecondsPath: undefined,
     };
   }
 

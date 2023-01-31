@@ -62,7 +62,6 @@ async function main() {
       requiresArg: false,
     })
     .help()
-    .strictOptions()
     .showHelpOnFail(false)
     .argv;
 

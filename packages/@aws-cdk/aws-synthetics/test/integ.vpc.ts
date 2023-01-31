@@ -22,7 +22,7 @@ new synthetics.Canary(stack, 'MyVpcCanary', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   vpc,
 });
 

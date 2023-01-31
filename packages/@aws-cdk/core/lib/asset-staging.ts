@@ -1,14 +1,14 @@
 import * as crypto from 'crypto';
-import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingOptions, BundlingOutput } from './bundling';
+import { BundlingFileAccess, BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
+import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
@@ -432,45 +432,27 @@ export class AssetStaging extends Construct {
     // Chmod the bundleDir to full access.
     fs.chmodSync(bundleDir, 0o777);
 
-    // Always mount input and output dir
-    const volumes = [
-      {
-        hostPath: this.sourcePath,
-        containerPath: AssetStaging.BUNDLING_INPUT_DIR,
-      },
-      {
-        hostPath: bundleDir,
-        containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
-      },
-      ...options.volumes ?? [],
-    ];
-
     let localBundling: boolean | undefined;
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
-        let user: string;
-        if (options.user) {
-          user = options.user;
-        } else { // Default to current user
-          const userInfo = os.userInfo();
-          user = userInfo.uid !== -1 // uid is -1 on Windows
-            ? `${userInfo.uid}:${userInfo.gid}`
-            : '1000:1000';
-        }
+        const assetStagingOptions = {
+          sourcePath: this.sourcePath,
+          bundleDir,
+          ...options,
+        };
 
-        options.image.run({
-          command: options.command,
-          user,
-          volumes,
-          environment: options.environment,
-          entrypoint: options.entrypoint,
-          workingDirectory: options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
-          securityOpt: options.securityOpt ?? '',
-          volumesFrom: options.volumesFrom,
-        });
+        switch (options.bundlingFileAccess) {
+          case BundlingFileAccess.VOLUME_COPY:
+            new AssetBundlingVolumeCopy(assetStagingOptions).run();
+            break;
+          case BundlingFileAccess.BIND_MOUNT:
+          default:
+            new AssetBundlingBindMount(assetStagingOptions).run();
+            break;
+        }
       }
     } catch (err) {
       // When bundling fails, keep the bundle output for diagnosability, but
@@ -641,3 +623,4 @@ function getExtension(source: string): string {
 
   return path.extname(source);
 };
+
