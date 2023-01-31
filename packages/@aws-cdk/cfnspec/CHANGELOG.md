@@ -1,3 +1,25 @@
+
+# CloudFormation Resource Specification (us-west-2) v109.0.0
+
+## New Resource Types
+
+* AWS::DeviceFarm::DevicePool
+* AWS::DeviceFarm::InstanceProfile
+* AWS::DeviceFarm::NetworkProfile
+* AWS::DeviceFarm::Project
+* AWS::DeviceFarm::TestGridProject
+* AWS::DeviceFarm::VPCEConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v109.0.0
 
 ## New Resource Types
