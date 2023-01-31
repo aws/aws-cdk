@@ -79,7 +79,7 @@ export interface BundleProps {
    *
    * @default "inline"
    */
-  readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';  
+  readonly sourcemap?: 'linked' | 'inline' | 'external' | 'both';
 
   /**
    * Minifies the bundled code.
