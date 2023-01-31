@@ -534,7 +534,7 @@ export class GraphqlApi extends GraphqlApiBase {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
       })?.lambdaAuthorizerConfig;
-      config?.handler.addPermission('appsync', {
+      config?.handler.addPermission(`${id}-appsync`, {
         principal: new ServicePrincipal('appsync.amazonaws.com'),
         action: 'lambda:InvokeFunction',
       });
