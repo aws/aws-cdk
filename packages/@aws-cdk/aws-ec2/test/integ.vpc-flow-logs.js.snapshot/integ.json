@@ -4,7 +4,8 @@
     "FlowLogs/DefaultTest": {
       "stacks": [
         "FlowLogsTestStack",
-        "FlowLogsFeatureFlag"
+        "FlowLogsFeatureFlag",
+        "DependencyTestStack"
       ],
       "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
       "assertionStackName": "FlowLogsDefaultTestDeployAssert6AFD1854"
