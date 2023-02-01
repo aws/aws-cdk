@@ -455,23 +455,122 @@ describe('log group', () => {
     });
   });
 
-  test('set data protection policy', () => {
+  test('set data protection policy with custom name and description and no audit destinations', () => {
     // GIVEN
     const stack = new Stack();
 
     const dataProtectionPolicy = new DataProtectionPolicy({
-      identifiers: ['EmailAddress', 'DriversLicense-US'],
-      cloudWatchLogsAuditDestination: 'logGroupName',
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: ['EmailAddress'],
     });
 
     // WHEN
+    const logGroupName = 'test-log-group';
     new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
       dataProtectionPolicy: dataProtectionPolicy,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      DataProtectionPolicy: dataProtectionPolicy,
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy with audit destinations', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const auditLogGroupName = 'audit-log-group';
+    const auditS3BucketName = 'audit-bucket';
+    const auditDeliveryStreamName = 'delivery-stream-name';
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      identifiers: ['EmailAddress'],
+      logGroupNameAuditDestination: auditLogGroupName,
+      s3BucketNameAuditDestination: auditS3BucketName,
+      deliveryStreamNameAuditDestination: auditDeliveryStreamName,
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'data-protection-policy-cdk',
+        description: 'cdk generated data protection policy',
+        version: '2021-06-01',
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {
+                  cloudWatchLogs: {
+                    logGroup: auditLogGroupName,
+                  },
+                  firehose: {
+                    deliveryStream: auditDeliveryStreamName,
+                  },
+                  s3: {
+                    bucket: auditS3BucketName,
+                  },
+                },
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              'arn:aws:dataprotection::aws:data-identifier/EmailAddress',
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
     });
   });
 });

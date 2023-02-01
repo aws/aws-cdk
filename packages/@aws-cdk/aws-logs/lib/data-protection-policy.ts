@@ -38,21 +38,21 @@ export class DataProtectionPolicy {
 
     var findingsDestination: FindingsDestination = {};
 
-    if (props.cloudWatchLogsAuditDestination) {
+    if (props.logGroupNameAuditDestination) {
       findingsDestination.cloudWatchLogs = {
-        logGroup: props.cloudWatchLogsAuditDestination,
+        logGroup: props.logGroupNameAuditDestination,
       };
     }
 
-    if (props.s3AuditDestination) {
+    if (props.s3BucketNameAuditDestination) {
       findingsDestination.s3 = {
-        bucket: props.s3AuditDestination,
+        bucket: props.s3BucketNameAuditDestination,
       };
     }
 
-    if (props.firehoseAuditDestination) {
+    if (props.deliveryStreamNameAuditDestination) {
       findingsDestination.firehose = {
-        deliveryStream: props.firehoseAuditDestination,
+        deliveryStream: props.deliveryStreamNameAuditDestination,
       };
     }
 
@@ -157,24 +157,24 @@ export interface DataProtectionPolicyProps {
   readonly identifiers: string[];
 
   /**
-   * CloudWatch Logs log group to send audit findings to. The log group must already exist.
+   * CloudWatch Logs log group name to send audit findings to. The log group must already exist prior to creating the data protection policy.
    *
    * @default - no CloudWatch Logs audit destination
    */
-  readonly cloudWatchLogsAuditDestination?: string;
+  readonly logGroupNameAuditDestination?: string;
 
   /**
-   * S3 bucket to send audit findings to. The bucket must already exist.
+   * S3 bucket name to send audit findings to. The bucket must already exist.
    *
    * @default - no S3 bucket audit destination
    */
-  readonly s3AuditDestination?: string;
+  readonly s3BucketNameAuditDestination?: string;
 
   /**
-   * Amazon Kinesis Data Firehose stream to send audit findings to. The delivery stream must already exist.
+   * Amazon Kinesis Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
    *
    * @default - no firehose delivery stream audit destination
    */
-  readonly firehoseAuditDestination?: string;
+  readonly deliveryStreamNameAuditDestination?: string;
 }
 

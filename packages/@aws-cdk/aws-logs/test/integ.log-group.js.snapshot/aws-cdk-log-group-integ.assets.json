@@ -1,7 +1,7 @@
 {
   "version": "29.0.0",
   "files": {
-    "e242f881378fed3c95d7cfeb0a7dc9b0cead0859ed28d71a81b75f8a84b5bb09": {
+    "e01dcf80b7fc4b68ca216db199267e5dc3a5ee2c8748190b8fb4edececd34f3a": {
       "source": {
         "path": "aws-cdk-log-group-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e242f881378fed3c95d7cfeb0a7dc9b0cead0859ed28d71a81b75f8a84b5bb09.json",
+          "objectKey": "e01dcf80b7fc4b68ca216db199267e5dc3a5ee2c8748190b8fb4edececd34f3a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

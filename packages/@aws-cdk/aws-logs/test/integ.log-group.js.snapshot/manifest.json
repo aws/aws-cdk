@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e242f881378fed3c95d7cfeb0a7dc9b0cead0859ed28d71a81b75f8a84b5bb09.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e01dcf80b7fc4b68ca216db199267e5dc3a5ee2c8748190b8fb4edececd34f3a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,6 +37,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LogGroupLambdaAuditF8F47F46"
+          }
+        ],
+        "/aws-cdk-log-group-integ/audit-bucket-id/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "auditbucketidE6660EBD"
           }
         ],
         "/aws-cdk-log-group-integ/LogGroupLambda/Resource": [

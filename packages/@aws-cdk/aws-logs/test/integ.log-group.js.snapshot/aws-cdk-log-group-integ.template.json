@@ -3,9 +3,13 @@
   "LogGroupLambdaAuditF8F47F46": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "auditDestinationForCDK",
     "RetentionInDays": 731
    },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "auditbucketidE6660EBD": {
+   "Type": "AWS::S3::Bucket",
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -13,8 +17,8 @@
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "DataProtectionPolicy": {
-     "name": "data-protection-policy-cdk",
-     "description": "cdk generated data protection policy",
+     "name": "policy-name",
+     "description": "policy description",
      "version": "2021-06-01",
      "statement": [
       {
@@ -29,6 +33,11 @@
           "cloudWatchLogs": {
            "logGroup": {
             "Ref": "LogGroupLambdaAuditF8F47F46"
+           }
+          },
+          "s3": {
+           "bucket": {
+            "Ref": "auditbucketidE6660EBD"
            }
           }
          }
@@ -49,7 +58,6 @@
       }
      ]
     },
-    "LogGroupName": "cdkIntegLogGroup",
     "RetentionInDays": 731
    },
    "UpdateReplacePolicy": "Retain",
