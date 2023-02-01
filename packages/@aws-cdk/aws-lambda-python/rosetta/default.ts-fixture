@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
-import { DockerImage, Stack } from '@aws-cdk/core';
+import { DockerImage, Stack, BundlingFileAccess } from '@aws-cdk/core';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import * as python from '@aws-cdk/aws-lambda-python';
 

@@ -17,10 +17,11 @@ cp ${script_dir}/test_index.py $PWD
 cp ${script_dir}/Dockerfile $PWD
 
 NOTIFICATIONS_RESOURCE_TEST_NO_DOCKER=${NOTIFICATIONS_RESOURCE_TEST_NO_DOCKER:-""}
+DOCKER_CMD=${CDK_DOCKER:-docker}
 
 if [ -z ${NOTIFICATIONS_RESOURCE_TEST_NO_DOCKER} ]; then
   # this will run our tests inside the right environment
-  docker build .
+  $DOCKER_CMD build .
 else
   python test_index.py
 fi
