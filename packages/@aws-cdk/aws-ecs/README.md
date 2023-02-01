@@ -1142,7 +1142,7 @@ new ecs.Ec2Service(this, 'EC2Service', {
 ### Cluster Default Provider Strategy
 
 When the service does not have a capacity provider strategy, the cluster's default capacity provider strategy will be used.
-In case of fargate service, if the cluster enableFargateCapacityProviders is false then the default capacity provider strategy will be used.
+Default Capacity Provider Strategy can be added by using the method addDefaultCapacityProviderStrategy.
 
 ```ts
 declare const capacityProvider: ecs.CapacityProvider;
