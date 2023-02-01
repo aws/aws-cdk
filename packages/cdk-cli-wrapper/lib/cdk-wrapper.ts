@@ -70,6 +70,15 @@ export interface SynthFastOptions {
 }
 
 /**
+ * Additional environment variables to set
+ * in the execution environment that will be running
+ * the cdk commands
+ */
+export interface Environment {
+  [key: string]: string | undefined
+}
+
+/**
  * AWS CDK client that provides an API to programatically execute the CDK CLI
  * by wrapping calls to exec the CLI
  */
@@ -86,7 +95,7 @@ export interface CdkCliWrapperOptions {
    *
    * @default - no additional env vars
    */
-  readonly env?: { [key: string]: string },
+  readonly env?: Environment,
 
   /**
    * The path to the cdk executable
@@ -109,7 +118,7 @@ export interface CdkCliWrapperOptions {
  */
 export class CdkCliWrapper implements ICdk {
   private readonly directory: string;
-  private readonly env?: { [key: string]: string };
+  private readonly env?: Environment;
   private readonly cdk: string;
   private readonly showOutput: boolean;
 
