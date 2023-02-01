@@ -614,6 +614,40 @@ test('elastic ip address', () => {
   });
 });
 
+describe('default IAM role', () => {
+
+  test('Default role not in role list', () => {
+    // GIVEN
+    const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        roles: [clusterRole1],
+        defaultRole: defaultRole1,
+      });
+    }).toThrow(/Default role must be included in role list./);
+  });
+
+  test('throws error when default role not attached to cluster when adding default role post creation', () => {
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') } );
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    expect(() => {
+      cluster.addDefaultIamRole(defaultRole1);
+    }).toThrow(/Default role must be associated to the Redshift cluster to be set as the default role./);
+  });
+});
+
 describe('IAM role', () => {
   test('adding a role after cluster declaration creates a custom resource', () => {
     // GIVEN

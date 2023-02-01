@@ -1,10 +1,11 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as cb from '@aws-cdk/aws-codebuild';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Duration, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
@@ -225,6 +226,16 @@ export interface CodePipelineProps {
    * @default true
    */
   readonly useChangeSets?: boolean;
+
+  /**
+   * Enable KMS key rotation for the generated KMS keys.
+   *
+   * By default KMS key rotation is disabled, but will add
+   * additional costs when enabled.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 /**
@@ -381,6 +392,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.enableKeyRotation !== undefined) {
+        throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
@@ -398,6 +412,7 @@ export class CodePipeline extends PipelineBase {
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,
         role: this.props.role,
+        enableKeyRotation: this.props.enableKeyRotation,
       });
     }
 
@@ -409,6 +424,10 @@ export class CodePipeline extends PipelineBase {
     this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
 
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
+
+    // Write a dotfile for the pipeline layout
+    const dotFile = `${Names.uniqueId(this)}.dot`;
+    fs.writeFileSync(path.join(this.myCxAsmRoot, dotFile), graphFromBp.graph.renderDot().replace(/input\.dot/, dotFile), { encoding: 'utf-8' });
   }
 
   private get myCxAsmRoot(): string {
