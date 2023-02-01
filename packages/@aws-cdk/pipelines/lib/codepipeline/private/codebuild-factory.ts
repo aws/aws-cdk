@@ -429,6 +429,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
+      logging: b.logging ?? a.logging,
       cache: b.cache ?? a.cache,
     };
   }
