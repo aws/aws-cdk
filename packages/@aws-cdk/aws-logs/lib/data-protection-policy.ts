@@ -29,7 +29,7 @@ export class DataProtectionPolicy {
    *
    * @default - one AuditStatement and one RedactStatement
    */
-  public readonly statement: any[];
+  public statement: readonly [AuditStatement, RedactStatement];
 
   constructor(props: DataProtectionPolicyProps) {
     this.name = props.name || 'data-protection-policy-cdk';
