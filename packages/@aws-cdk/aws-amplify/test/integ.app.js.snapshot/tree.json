@@ -136,7 +136,8 @@
                         "AppRole1AF9B530",
                         "Arn"
                       ]
-                    }
+                    },
+                    "platform": "WEB"
                   }
                 },
                 "constructInfo": {
@@ -179,13 +180,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "@aws-cdk/aws-amplify.Branch",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-amplify.App",
               "version": "0.0.0"
             }
           },
@@ -216,7 +217,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.209"
+          "version": "10.1.237"
         }
       }
     },
