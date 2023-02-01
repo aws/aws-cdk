@@ -1,5 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ApplicationProtocol, Protocol } from './enums';
+import { Arn, ArnFormat } from '@aws-cdk/core';
 
 export type Attributes = { [key: string]: string | undefined };
 
@@ -89,4 +90,12 @@ export function validateNetworkProtocol(protocol: Protocol) {
 export function mapTagMapToCxschema(tagMap: Record<string, string>): cxschema.Tag[] {
   return Object.entries(tagMap)
     .map(([key, value]) => ({ key, value }));
+}
+
+export function parseLoadBalancerFullName(loadBalancerArn: string): string {
+  const arnComponents = Arn.split(loadBalancerArn, ArnFormat.SLASH_RESOURCE_NAME);
+  if (!arnComponents.resourceName) {
+    throw new Error(`Provided ARN does not belong to a load balancer: ${loadBalancerArn}`);
+  }
+  return arnComponents.resourceName;
 }
