@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.63.0](https://github.com/aws/aws-cdk/compare/v2.62.2...v2.63.0) (2023-01-31)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v109.0.0 ([#23868](https://github.com/aws/aws-cdk/issues/23868)) ([8ee97b0](https://github.com/aws/aws-cdk/commit/8ee97b039fd6e26fc8a305f285c61a08da4bfdc4))
+* **cfnspec:** cloudformation spec v109.0.0 ([#23929](https://github.com/aws/aws-cdk/issues/23929)) ([39f8a30](https://github.com/aws/aws-cdk/commit/39f8a304dfc68c0cbe3bab0b1d567b8d361c99ab))
+* **core:** add creation policy configuration for appstream ([#23607](https://github.com/aws/aws-cdk/issues/23607)) ([8909a04](https://github.com/aws/aws-cdk/commit/8909a04e13aa55eb102eac9f9f9ce74721e3fffc)), closes [#23604](https://github.com/aws/aws-cdk/issues/23604)
+* **core:** allow asset bundling on docker remote host / docker in docker ([#23576](https://github.com/aws/aws-cdk/issues/23576)) ([afce30a](https://github.com/aws/aws-cdk/commit/afce30a6e84a2f7e4eba499d3e71365a7939bef5)), closes [#8799](https://github.com/aws/aws-cdk/issues/8799)
+* **stepfunctions:** task and heartbeat timeout specified by a path ([#23755](https://github.com/aws/aws-cdk/issues/23755)) ([26e48c7](https://github.com/aws/aws-cdk/commit/26e48c7b36fecf114ff771909b377a2570aa36b3)), closes [#15531](https://github.com/aws/aws-cdk/issues/15531)
+
+
+### Bug Fixes
+
+* **appsync:** sanitized datasource name isn't exported ([#23802](https://github.com/aws/aws-cdk/issues/23802)) ([0b25265](https://github.com/aws/aws-cdk/commit/0b25265e5105d03fe6290e24462e45398695a11e))
+* imports from ESM modules cannot find correct type definitions ([#23870](https://github.com/aws/aws-cdk/issues/23870)) ([356a128](https://github.com/aws/aws-cdk/commit/356a128c78b78154ef01ee81ea9d8a60fc569939))
+* **eks:** reuse chart name as chart dir for helmchart deployment from OCI repository ([#23392](https://github.com/aws/aws-cdk/issues/23392)) ([070f5ec](https://github.com/aws/aws-cdk/commit/070f5ecebfba8a3f9b5771b251ee9b584aa89b67))
+* `aws-cdk-lib` imports from ESM modules are broken ([#23846](https://github.com/aws/aws-cdk/issues/23846)) ([cf2e498](https://github.com/aws/aws-cdk/commit/cf2e498d66f4e2c806ef473414b61e5748d41c7b)), closes [#23813](https://github.com/aws/aws-cdk/issues/23813)
+
 ## [2.62.2](https://github.com/aws/aws-cdk/compare/v2.62.1...v2.62.2) (2023-01-27)
 
 
