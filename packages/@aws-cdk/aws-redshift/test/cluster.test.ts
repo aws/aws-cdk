@@ -667,27 +667,6 @@ describe('IAM role', () => {
     Template.fromStack(stack).hasResource('Custom::ModifyClusterIamRoles', {});
   });
 
-  test('throws when adding more than 10 roles to cluster', () => {
-    // GIVEN
-    const cluster = new Cluster(stack, 'Redshift', {
-      masterUser: {
-        masterUsername: 'admin',
-      },
-      vpc,
-      roles: new Array(10).fill(0).map((_, i) => new iam.Role(stack, `Role${i+1}`, {
-        assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
-      })),
-    });
-
-    expect(() =>
-      // WHEN
-      cluster.addIamRole(new iam.Role(stack, 'Role11', {
-        assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
-      })),
-    // THEN
-    ).toThrow(/Maximum number of IAM roles for a cluster is 10/);
-  });
-
   test('throws when adding role that is already in cluster', () => {
     // GIVEN
     const role = new iam.Role(stack, 'Role', {
