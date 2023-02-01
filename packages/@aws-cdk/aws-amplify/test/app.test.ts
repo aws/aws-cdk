@@ -442,3 +442,19 @@ test('with custom headers', () => {
     },
   });
 });
+
+test('create an amplify app with platform ', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    platform: amplify.Platform.WEB,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: 'WEB',
+  });
+});
