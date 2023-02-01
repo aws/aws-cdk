@@ -705,7 +705,7 @@ describe('IAM role', () => {
       // WHEN
       cluster.addIamRole(role),
     // THEN
-    ).toThrow(/Role is already attached to the cluster/);
+    ).toThrow(`Role '${role.roleArn}' is already attached to the cluster`);
   });
 });
 

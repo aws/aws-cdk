@@ -743,10 +743,7 @@ export class Cluster extends ClusterBase {
     const clusterRoleList = this.cluster.iamRoles ?? [];
 
     if (clusterRoleList.includes(role.roleArn)) {
-      throw new Error('Role is already attached to the cluster');
-    }
-    if (clusterRoleList.length >= 10) {
-      throw new Error('Maximum number of IAM roles for a cluster is 10');
+      throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
     }
 
     // On UPDATE or CREATE define the new list of roles. On DELETE, detech the role from the cluster
