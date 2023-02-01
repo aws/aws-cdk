@@ -435,7 +435,7 @@ export interface BucketAttributes {
    * regions launched since 2014.
    *
    * @default false
-   * 
+   *
    * @deprecated not needed to specify anymore - proper website url format is derived from the bucket region.
    * If specified though, old behaviour is applied and format is not derived from the region.
    */
