@@ -1,4 +1,5 @@
 import { App, Stack } from '@aws-cdk/core';
+import * as integ from '@aws-cdk/integ-tests';
 import { Function, InlineCode, Runtime, UpdateRuntimeOn } from '../lib';
 
 const app = new App();
@@ -13,4 +14,9 @@ new Function(stack, 'Lambda', {
     mode: UpdateRuntimeOn.AUTO,
   },
 });
+
+new integ.IntegTest(app, 'lambda-runtime-management', {
+  testCases: [stack],
+});
+
 app.synth();

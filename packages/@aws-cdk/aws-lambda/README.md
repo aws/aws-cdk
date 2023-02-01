@@ -1044,6 +1044,7 @@ new lambda.Function(this, 'Function', {
 ```
 
 ## Runtime updates
+
 Lambda runtime management controls help reduce the risk of impact to your workloads in the rare event of a runtime version incompatibility.
 For more information, see [Runtime management controls](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html#runtime-management-controls)
 

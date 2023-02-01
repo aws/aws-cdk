@@ -26,7 +26,7 @@ import { CfnFunction } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
-import { RuntimeManagement } from './runtime-management';
+import { RuntimeManagement, UpdateRuntimeOn } from './runtime-management';
 import { addAlias } from './util';
 
 /**
@@ -788,12 +788,17 @@ export class Function extends FunctionBase {
 
     let rmc = undefined;
     if (props.runtimeManagement) {
-      rmc = {
-        RuntimeVersionArn: props.runtimeManagement.arn,
-        UpdateRuntimeOn: props.runtimeManagement.mode,
-      };
+      if (props.runtimeManagement.mode === UpdateRuntimeOn.MANUAL) {
+        rmc = {
+          runtimeVersionArn: props.runtimeManagement.arn,
+          updateRuntimeOn: props.runtimeManagement.mode,
+        };
+      } else {
+        rmc = {
+          updateRuntimeOn: props.runtimeManagement.mode,
+        };
+      }
     }
-
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,

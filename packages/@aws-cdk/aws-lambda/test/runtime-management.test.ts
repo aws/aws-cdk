@@ -31,14 +31,12 @@ describe('runtime', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       runtimeManagement: {
-        arn: 'arn:aws:lambda:ap-northeast-1::runtime:07a48df201798d627f2b950f03bb227aab4a655a1d019c3296406f95937e2525',
         mode: lambda.UpdateRuntimeOn.FUNCTION_UPDATE,
       },
     });
     // WHEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       RuntimeManagementConfig: {
-        RuntimeVersionArn: 'arn:aws:lambda:ap-northeast-1::runtime:07a48df201798d627f2b950f03bb227aab4a655a1d019c3296406f95937e2525',
         UpdateRuntimeOn: 'Function update',
       },
     });
