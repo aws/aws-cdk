@@ -435,6 +435,9 @@ export interface BucketAttributes {
    * regions launched since 2014.
    *
    * @default false
+   * 
+   * @deprecated not needed to specify anymore - proper website url format is derived from the bucket region.
+   * If specified though, old behaviour is applied and format is not derived from the region.
    */
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
@@ -1613,10 +1616,9 @@ export class Bucket extends BucketBase {
 
     const oldUrlFormatRegions = new Set(regionsBefore(RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN));
 
-    const newUrlFormat = !oldUrlFormatRegions.has(region) ||
-      (attrs.bucketWebsiteNewUrlFormat === undefined
-        ? false
-        : attrs.bucketWebsiteNewUrlFormat);
+    const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
+      ? !oldUrlFormatRegions.has(region)
+      : attrs.bucketWebsiteNewUrlFormat;
 
     const websiteDomain = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`
