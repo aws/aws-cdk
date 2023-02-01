@@ -197,6 +197,15 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly timeout?: Duration;
 
+  /**
+   * Information about logs for the build project.
+   *
+   * A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: codebuild.LoggingOptions;
+
   private _project?: codebuild.IProject;
   private _partialBuildSpec?: codebuild.BuildSpec;
   private readonly exportedVariables = new Set<string>();

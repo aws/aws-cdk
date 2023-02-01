@@ -17,6 +17,7 @@ import { CodeBuildStep } from '../codebuild-step';
 import { CodeBuildOptions } from '../codepipeline';
 import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
 import { mergeBuildSpecs } from './buildspecs';
+import { mergeLoggings } from './logging';
 
 export interface CodeBuildFactoryProps {
   /**
@@ -162,6 +163,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         subnetSelection: step.subnetSelection,
         cache: step.cache,
         timeout: step.timeout,
+        logging: step.logging,
       }),
     });
 
@@ -429,7 +431,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
-      logging: b.logging ?? a.logging,
+      logging: mergeLoggings(a.logging, b.logging),
       cache: b.cache ?? a.cache,
     };
   }
