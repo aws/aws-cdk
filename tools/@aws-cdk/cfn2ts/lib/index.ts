@@ -42,6 +42,17 @@ export default async function(scopes: string | string[], outPath: string, option
 
 export async function generateAll(outPath: string, options: CodeGeneratorOptions) {
   const scopes = cfnSpec.namespaces();
+  const awsCdkLibDir = path.join(outPath, '..');
+
+  const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const pkgJson = require(pkgJsonPath);
+
+  const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
+  const topLevelIndexFileEntries: string[] = [];
+  if (fs.existsSync(topLevelIndexFilePath)) {
+    topLevelIndexFileEntries.push(...(await fs.readFile(topLevelIndexFilePath)).toString('utf-8').split('\n'));
+  }
 
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
@@ -69,14 +80,19 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
     }
 
 
-    // Add export to the aws-cdk-lib package.json if it's not there yet.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pkgJson = require(path.join(outPath, '..', 'package.json'));
+    // Add export to top-level index.ts if it's not there yet.
+    if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
+      topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './lib/${module.moduleName}';`);
+    }
+
+    // Add export to the package.json if it's not there yet.
     if (!pkgJson.exports[`./${module.moduleName}`]) {
-      pkgJson.exports[`./${module.moduleName}`] = `./${module.moduleName}/index.js`;
-      await fs.writeJson(path.join(outPath, '..', 'package.json'), pkgJson, { spaces: 2 });
+      pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
     }
   }
+
+  await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
+  await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n')+'\n');
 }
 
 /**
