@@ -12,6 +12,7 @@ const app = new App({
 class ProducerStack extends Stack {
   public readonly queue: IQueue;
   public readonly nestedQueue: IQueue;
+  public readonly manyQueues: IQueue[];
   constructor(scope: Construct, id: string) {
     super(scope, id, {
       env: {
@@ -22,6 +23,7 @@ class ProducerStack extends Stack {
     const nested = new NestedStack(this, 'IntegNested');
     this.queue = new Queue(this, 'IntegQueue');
     this.nestedQueue = new Queue(nested, 'NestedIntegQueue');
+    this.manyQueues = [0,1,2,3,4,5,6,7,8,9,10].map((i) => new Queue(this, `IntegQueue-${i}`))
   }
 }
 
@@ -59,7 +61,7 @@ class TestCase extends Construct {
     super(scope, id);
     this.producer = new ProducerStack(app, 'cross-region-producer');
     this.testCase = new ConsumerStack(app, 'cross-region-consumer', {
-      queues: [this.producer.queue, this.producer.nestedQueue],
+      queues: [this.producer.queue, this.producer.nestedQueue, ...this.producer.manyQueues],
     });
   }
 }
@@ -70,7 +72,6 @@ const integ = new IntegTest(app, 'cross-region-references', {
   testCases: [testCase1.testCase],
   stackUpdateWorkflow: false,
 });
-
 
 /**
  * Test that if the references are still in use, deleting the producer
@@ -94,3 +95,9 @@ integ.assertions.awsApiCall('CloudFormation', 'deleteStack', {
     ]),
   })).waitForAssertions(),
 );
+
+/**
+ * Test that if we delete more than 10 exports that the
+ * stack will update correctly.
+ */
+// TODO: how can I do this?
