@@ -33,8 +33,8 @@ import { SpecName } from './spec-utils';
  * ```
  */
 export class AugmentationGenerator {
+  public readonly outputFile: string;
   private readonly code = new CodeMaker();
-  private readonly outputFile: string;
 
   constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
     this.outputFile = `${moduleName}-augmentations.generated.ts`;
