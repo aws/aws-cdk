@@ -696,7 +696,7 @@ export class Cluster extends ClusterBase {
    */
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
     // Get list of IAM roles attached to cluster
-    const clusterRoleList = this.cluster.iamRoles ?? [];
+    const clusterRoleList = this.roleArns ?? [];
 
     // Check to see if default role is included in list of cluster IAM roles
     var roleAlreadyOnCluster = false;
@@ -748,7 +748,7 @@ export class Cluster extends ClusterBase {
    * @param role the role to add
    */
   public addIamRole(role: iam.IRole): void {
-    const clusterRoleList = this.cluster.iamRoles ?? [];
+    const clusterRoleList = this.roleArns;
 
     if (clusterRoleList.includes(role.roleArn)) {
       throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
