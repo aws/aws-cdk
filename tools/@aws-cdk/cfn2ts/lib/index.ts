@@ -47,6 +47,7 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
     const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
     const packagePath = path.join(outPath, module.moduleName);
+    const libPath = path.join(packagePath, '/lib');
 
     if (Object.keys(spec.ResourceTypes).length === 0) {
       throw new Error(`No resource was found for scope ${scope}`);
@@ -56,16 +57,48 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
 
     const generator = new CodeGenerator(name, spec, affix, options);
     generator.emitCode();
-    await generator.save(packagePath);
+    await generator.save(libPath);
+    const outputFiles = [generator.outputFile];
 
     const augs = new AugmentationGenerator(name, spec, affix);
     if (augs.emitCode()) {
-      await augs.save(packagePath);
+      await augs.save(libPath);
+      outputFiles.push(augs.outputFile);
     }
 
     const canned = new CannedMetricsGenerator(name, scope);
     if (canned.generate()) {
-      await canned.save(packagePath);
+      await canned.save(libPath);
+      outputFiles.push(canned.outputFile);
+    }
+
+    // Create index.ts files if needed
+    if (!fs.existsSync(path.join(packagePath, 'index.ts'))) {
+      await fs.writeFile(path.join(packagePath, 'index.ts'), 'export * from ./lib;\n');
+    }
+    if (!fs.existsSync(path.join(libPath, 'index.ts'))) {
+      const lines = [`// ${scope} CloudFormation Resources:`];
+      lines.push(...outputFiles.map((f) => `export * from './${f.replace('.ts', '')}'`));
+
+      await fs.writeFile(path.join(libPath, 'index.ts'), lines.join('\n') + '\n');
+    }
+
+    // Create .jsiirc.json files if needed
+    if (!fs.existsSync(path.join(packagePath, '.jsiirc.json'))) {
+      const jsiirc = {
+        targets: {
+          java: {
+            package: module.javaPackage,
+          },
+          dotnet: {
+            package: module.dotnetPackage,
+          },
+          python: {
+            module: module.pythonModuleName,
+          },
+        },
+      };
+      await fs.writeJson(path.join(packagePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
     }
   }
 }
