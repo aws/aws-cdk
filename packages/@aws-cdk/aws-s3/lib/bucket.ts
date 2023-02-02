@@ -23,6 +23,7 @@ import {
 } from '@aws-cdk/core';
 import { CfnReference } from '@aws-cdk/core/lib/private/cfn-reference';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as regionInfo from '@aws-cdk/region-info';
 import { regionsBefore, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN } from '@aws-cdk/region-info/lib/aws-entities';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
@@ -1614,15 +1615,21 @@ export class Bucket extends BucketBase {
     }
     Bucket.validateBucketName(bucketName);
 
+    const _regionInfo = regionInfo.RegionInfo.get(region);
+
     const oldUrlFormatRegions = new Set(regionsBefore(RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN));
 
     const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
       ? !oldUrlFormatRegions.has(region)
       : attrs.bucketWebsiteNewUrlFormat;
 
-    const websiteDomain = newUrlFormat
-      ? `${bucketName}.s3-website.${region}.${urlSuffix}`
-      : `${bucketName}.s3-website-${region}.${urlSuffix}`;
+    const websiteDomain = attrs.bucketWebsiteNewUrlFormat === undefined
+      ? (_regionInfo.s3StaticWebsiteEndpoint !== undefined
+        ? `${bucketName}.${_regionInfo.s3StaticWebsiteEndpoint}`
+        : (oldUrlFormatRegions.has(region)
+          ? `${bucketName}.s3-website-${region}.${urlSuffix}`
+          : `${bucketName}.s3-website.${region}.${urlSuffix}`))
+      : (attrs.bucketWebsiteNewUrlFormat ? `${bucketName}.s3-website.${region}.${urlSuffix}` : `${bucketName}.s3-website-${region}.${urlSuffix}`);
 
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;
