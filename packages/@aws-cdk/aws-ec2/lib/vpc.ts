@@ -1828,7 +1828,6 @@ export class Subnet extends Resource implements ISubnet {
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
-    // Default VPC name if tag "Name" not present
     Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
