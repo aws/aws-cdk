@@ -674,6 +674,21 @@ abstract class VpcBase extends Resource implements IVpc {
 
     return rest;
   }
+
+  /**
+   * Assign tags to the VPC resource. "Name" is a reserved case sensitive tag name displayed in the AWS console
+   * NOTES: Tags can be empty strings. More detailed information here:
+   *        https://docs.aws.amazon.com/kms/latest/APIReference/API_Tag.html
+   */
+  public addTags(tags: { [id: string]: string }) {
+    for (const tagKey of Object.keys(tags)) {
+      const tagValue = tags[tagKey];
+      if (tagKey !== 'Name' && tagKey.toLowerCase() === 'name') {
+        Annotations.of(this).addWarning(`Use tag "Name" instead of "${tagKey}" if you want to define the VPC name`);
+      }
+      Tags.of(this).add(tagKey, tagValue);
+    }
+  }
 }
 
 /**
@@ -1078,6 +1093,13 @@ export interface VpcProps {
    * @default this.node.path
    */
   readonly vpcName?: string;
+
+  /**
+   * A map of tags to assign to the VPC resource. Use reserved tag 'Name' if you want to assign a name to your VPC.
+   *
+   * @default - No parameters
+   */
+  readonly tags?: { [id: string]: string };
 }
 
 /**
@@ -1437,6 +1459,8 @@ export class Vpc extends VpcBase {
 
     Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
 
+    this.addTags(props.tags || {});
+
     if (props.availabilityZones) {
       // If given AZs and stack AZs are both resolved, then validate their compatibility.
       const resolvedStackAzs = stack.availabilityZones.filter(az => !Token.isUnresolved(az));
@@ -1717,13 +1741,6 @@ export interface SubnetProps {
    * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
   readonly mapPublicIpOnLaunch?: boolean;
-
-  /**
-   * A map of tags to assign to the VPC resource. Use reserved tag 'Name' if you want to assign a name to your VPC.
-   *
-   * @default - No parameters
-   */
-  readonly tags?: { [id: string]: string };
 }
 
 /**
@@ -1813,8 +1830,6 @@ export class Subnet extends Resource implements ISubnet {
 
     // Default VPC name if tag "Name" not present
     Tags.of(this).add(NAME_TAG, this.node.path);
-
-    this.addTags(props.tags || {});
 
     this.availabilityZone = props.availabilityZone;
     this.ipv4CidrBlock = props.cidrBlock;
@@ -1926,21 +1941,6 @@ export class Subnet extends Resource implements ISubnet {
       networkAcl,
       subnet: this,
     });
-  }
-
-  /**
-   * Assign tags to the VPC resource. "Name" is a reserved case sensitive tag name displayed in the AWS console
-   * NOTES: Tags can be empty strings. More detailed information here:
-   *        https://docs.aws.amazon.com/kms/latest/APIReference/API_Tag.html
-   */
-  private addTags(tags: { [id: string]: string }) {
-    for (const tagKey of Object.keys(tags)) {
-      const tagValue = tags[tagKey];
-      if (tagKey !== 'Name' && tagKey.toLowerCase() === 'name') {
-        Annotations.of(this).addWarning(`Use tag "Name" instead of "${tagKey}" if you want to define the VPC name`);
-      }
-      Tags.of(this).add(tagKey, tagValue);
-    }
   }
 }
 

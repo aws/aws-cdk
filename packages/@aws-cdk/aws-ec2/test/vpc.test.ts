@@ -577,6 +577,30 @@ describe('vpc', () => {
         MapPublicIpOnLaunch: false,
       });
     });
+
+    test('with public subnets MapPublicIpOnLaunch is false if parameter mapPublicIpOnLaunch is false', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: false,
+          },
+        ],
+        tags: {
+          Name: 'test',
+        },
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: false,
+      });
+    });
+
     test('with private subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
       const stack = getTestStack();
       expect(() => {
