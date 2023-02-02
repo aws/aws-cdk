@@ -30,7 +30,7 @@
         }
       },
       "dependencies": [
-        "CreateTargetApplicationAppRegistryAssociatedApplication",
+        "ApplicationAssociatorStack",
         "integservicecatalogappregistryapplicationresourcesStack4399A149.assets"
       ],
       "metadata": {
@@ -94,7 +94,7 @@
         }
       },
       "dependencies": [
-        "CreateTargetApplicationAppRegistryAssociatedApplication",
+        "ApplicationAssociatorStack",
         "integ-servicecatalogappregistry-application.assets"
       ],
       "metadata": {
@@ -129,19 +129,19 @@
       },
       "displayName": "integ-servicecatalogappregistry-application"
     },
-    "CreateTargetApplicationAppRegistryAssociatedApplication.assets": {
+    "ApplicationAssociatorStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CreateTargetApplicationAppRegistryAssociatedApplication.assets.json",
+        "file": "ApplicationAssociatorStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CreateTargetApplicationAppRegistryAssociatedApplication": {
+    "ApplicationAssociatorStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://416623072619/us-east-1",
       "properties": {
-        "templateFile": "CreateTargetApplicationAppRegistryAssociatedApplication.template.json",
+        "templateFile": "ApplicationAssociatorStack.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::416623072619:role/cdk-hnb659fds-deploy-role-416623072619-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::416623072619:role/cdk-hnb659fds-cfn-exec-role-416623072619-us-east-1",
@@ -149,50 +149,51 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CreateTargetApplicationAppRegistryAssociatedApplication.assets"
+          "ApplicationAssociatorStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::416623072619:role/cdk-hnb659fds-lookup-role-416623072619-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
+        },
+        "stackName": "Application-AppRegistryAssociatedApplication-Stack"
       },
       "dependencies": [
-        "CreateTargetApplicationAppRegistryAssociatedApplication.assets"
+        "ApplicationAssociatorStack.assets"
       ],
       "metadata": {
-        "/CreateTargetApplicationAppRegistryAssociatedApplication/DefaultCdkApplication/Resource": [
+        "/ApplicationAssociatorStack/DefaultCdkApplication/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultCdkApplication4573D5A3"
           }
         ],
-        "/CreateTargetApplicationAppRegistryAssociatedApplication/DefaultCdkApplication/ApplicationManagerUrl": [
+        "/ApplicationAssociatorStack/DefaultCdkApplication/ApplicationManagerUrl": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultCdkApplicationApplicationManagerUrl27C138EF"
           }
         ],
-        "/CreateTargetApplicationAppRegistryAssociatedApplication/AppRegistryAssociation": [
+        "/ApplicationAssociatorStack/AppRegistryAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AppRegistryAssociation"
           }
         ],
-        "/CreateTargetApplicationAppRegistryAssociatedApplication/BootstrapVersion": [
+        "/ApplicationAssociatorStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CreateTargetApplicationAppRegistryAssociatedApplication/CheckBootstrapVersion": [
+        "/ApplicationAssociatorStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CreateTargetApplicationAppRegistryAssociatedApplication"
+      "displayName": "ApplicationAssociatorStack"
     },
     "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9.assets": {
       "type": "cdk:asset-manifest",
@@ -223,7 +224,7 @@
         }
       },
       "dependencies": [
-        "CreateTargetApplicationAppRegistryAssociatedApplication",
+        "ApplicationAssociatorStack",
         "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9.assets"
       ],
       "metadata": {

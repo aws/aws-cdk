@@ -3,7 +3,7 @@
   "files": {
     "c4d674e9642d6dbbd0df5c93890473101fc95bbc70de7e28d79ba771b5284de8": {
       "source": {
-        "path": "CreateTargetApplicationAppRegistryAssociatedApplication.template.json",
+        "path": "ApplicationAssociatorStack.template.json",
         "packaging": "file"
       },
       "destinations": {

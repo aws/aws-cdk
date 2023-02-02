@@ -100,17 +100,17 @@
           "version": "0.0.0"
         }
       },
-      "CreateTargetApplicationAppRegistryAssociatedApplication": {
-        "id": "CreateTargetApplicationAppRegistryAssociatedApplication",
-        "path": "CreateTargetApplicationAppRegistryAssociatedApplication",
+      "ApplicationAssociatorStack": {
+        "id": "ApplicationAssociatorStack",
+        "path": "ApplicationAssociatorStack",
         "children": {
           "DefaultCdkApplication": {
             "id": "DefaultCdkApplication",
-            "path": "CreateTargetApplicationAppRegistryAssociatedApplication/DefaultCdkApplication",
+            "path": "ApplicationAssociatorStack/DefaultCdkApplication",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "CreateTargetApplicationAppRegistryAssociatedApplication/DefaultCdkApplication/Resource",
+                "path": "ApplicationAssociatorStack/DefaultCdkApplication/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
@@ -128,7 +128,7 @@
               },
               "ApplicationManagerUrl": {
                 "id": "ApplicationManagerUrl",
-                "path": "CreateTargetApplicationAppRegistryAssociatedApplication/DefaultCdkApplication/ApplicationManagerUrl",
+                "path": "ApplicationAssociatorStack/DefaultCdkApplication/ApplicationManagerUrl",
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
@@ -142,7 +142,7 @@
           },
           "AppRegistryAssociation": {
             "id": "AppRegistryAssociation",
-            "path": "CreateTargetApplicationAppRegistryAssociatedApplication/AppRegistryAssociation",
+            "path": "ApplicationAssociatorStack/AppRegistryAssociation",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
               "aws:cdk:cloudformation:props": {
@@ -165,7 +165,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "CreateTargetApplicationAppRegistryAssociatedApplication/BootstrapVersion",
+            "path": "ApplicationAssociatorStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
@@ -173,7 +173,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "CreateTargetApplicationAppRegistryAssociatedApplication/CheckBootstrapVersion",
+            "path": "ApplicationAssociatorStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
