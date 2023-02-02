@@ -470,6 +470,13 @@ export class Cluster extends ClusterBase {
    */
   protected parameterGroup?: IClusterParameterGroup;
 
+  /**
+   * The ARNs of the roles that will be attached to the cluster.
+   *
+   * **NOTE** Please do not access this directly, use the `addIamRole` method instead.
+   */
+  private readonly roleArns: string[];
+
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
@@ -478,6 +485,7 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
     this.parameterGroup = props.parameterGroup;
+    this.roleArns = props.roles?.map(role => role.roleArn) ?? [];
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
@@ -557,7 +565,7 @@ export class Cluster extends ClusterBase {
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: props?.roles?.map(role => role.roleArn),
+      iamRoles: Lazy.list({ produce: () => this.roleArns }, { omitEmpty: true }),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
