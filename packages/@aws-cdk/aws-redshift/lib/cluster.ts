@@ -754,38 +754,6 @@ export class Cluster extends ClusterBase {
       throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
     }
 
-    // On UPDATE or CREATE define the new list of roles. On DELETE, detech the role from the cluster
-    const roleCustomResource = new AwsCustomResource(this, `add-role-${role.node.id}`, {
-      onUpdate: {
-        service: 'Redshift',
-        action: 'modifyClusterIamRoles',
-        parameters: {
-          ClusterIdentifier: this.cluster.ref,
-          AddIamRoles: [role.roleArn],
-        },
-        physicalResourceId: PhysicalResourceId.of(
-          `${role.roleArn}-${this.cluster.ref}`,
-        ),
-      },
-      onDelete: {
-        service: 'Redshift',
-        action: 'modifyClusterIamRoles',
-        parameters: {
-          ClusterIdentifier: this.cluster.ref,
-          RemoveIamRoles: [role.roleArn],
-        },
-        physicalResourceId: PhysicalResourceId.of(
-          `${role.roleArn}-${this.cluster.ref}`,
-        ),
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-      resourceType: 'Custom::ModifyClusterIamRoles',
-      // Latest SDK version for AWS Lambda is 2.x/3.x, so we do not need to install a later version
-      installLatestAwsSdk: false,
-    });
-
-    role.grantPassRole(roleCustomResource.grantPrincipal);
+    clusterRoleList.push(role.roleArn);
   }
 }
