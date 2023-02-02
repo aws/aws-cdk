@@ -3,5 +3,5 @@ import * as path from 'path';
 
 const srcDir = path.join(__dirname, '..');
 generateAll(srcDir, {
-  coreImport: 'aws-cdk-lib',
+  coreImport: '../../core',
 });
