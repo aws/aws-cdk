@@ -31,7 +31,10 @@ beforeEach(() => {
   jest.spyOn(console, 'info').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
   mockPutParameter = jest.fn();
-  mockDeleteParameters = jest.fn().mockImplementation(() => {
+  mockDeleteParameters = jest.fn().mockImplementation(({ Names }: { Names: string[] }) => {
+    if (Names.length > 10) {
+      throw new Error('SSM DeleteParameters: Names.length cannot be more than 10');
+    }
     return {};
   });
   mocklistTagsForResource = jest.fn().mockImplementation(() => {
@@ -221,6 +224,54 @@ describe('cross-region-ssm-writer entrypoint', () => {
       expect(mockDeleteParameters).toHaveBeenCalledWith({
         Names: ['/cdk/exports/MyStack/RemovedExport'],
       });
+    });
+
+    test('>10 removed exports are deleted without throwing', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Update',
+        OldResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport1': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport2': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport3': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport4': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport5': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport6': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport7': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport8': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport9': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport10': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport11': 'MyExistingValue',
+            },
+          },
+        },
+        ResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+            },
+          },
+        },
+      });
+
+      // WHEN
+      await handler(event);
+
+      let err;
+      try {
+        await handler(event);
+      } catch (e) {
+        err = e;
+      }
+      // THEN
+      expect(err).toBeUndefined();
     });
 
     test('update throws if params already exist', async () => {
