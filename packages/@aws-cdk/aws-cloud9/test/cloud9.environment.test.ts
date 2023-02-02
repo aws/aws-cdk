@@ -80,17 +80,14 @@ test('throw error when subnetSelection not specified and the provided VPC has no
 test('can use CodeCommit repositories', () => {
   // WHEN
   const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
-  const user = new iam.User(stack, 'User');
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     clonedRepositories: [
       cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
     ],
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
-    owner: Owner.user(user),
   });
   // THEN
-
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     InstanceType: 't2.micro',
     Repositories: [
@@ -117,41 +114,34 @@ test('can use CodeCommit repositories', () => {
   });
 });
 
-test('can use CodeCommit repo', () => {
+test('environment owner can be an IAM user', () => {
   // WHEN
-  const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
+  const user = new iam.User(stack, 'User', {
+    userName: 'testUser',
+  });
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
-    owner: Owner.accountRoot('12345678'),
-    clonedRepositories: [
-      cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
-    ],
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    owner: Owner.User(user),
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
-    InstanceType: 't2.micro',
-    Repositories: [
-      {
-        PathComponent: '/src',
-        RepositoryUrl: {
-          'Fn::Join': [
-            '',
-            [
-              'https://git-codecommit.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/v1/repos/foo',
-            ],
-          ],
-        },
-      },
-    ],
+    OwnerArn: {
+      'Fn::GetAtt': ['User00B015A1', 'Arn'],
+    },
+  });
+});
+
+test('environment owner can be account root', () => {
+  // WHEN
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    owner: Owner.AccountRoot('12345678'),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    OwnerArn: 'arn:aws:iam::12345678:root',
   });
 });
 

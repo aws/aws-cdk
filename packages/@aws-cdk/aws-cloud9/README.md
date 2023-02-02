@@ -23,19 +23,19 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a 
-browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular 
-programming languages, including JavaScript, Python, PHP, and more, so you don’t need to install files or configure your 
-development machine to start new projects. Since your Cloud9 IDE is cloud-based, you can work on your projects from your 
-office, home, or anywhere using an internet-connected machine. Cloud9 also provides a seamless experience for developing 
-serverless applications enabling you to easily define resources, debug, and switch between local and remote execution of 
-serverless applications. With Cloud9, you can quickly share your development environment with your team, enabling you to pair 
+AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a
+browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular
+programming languages, including JavaScript, Python, PHP, and more, so you don’t need to install files or configure your
+development machine to start new projects. Since your Cloud9 IDE is cloud-based, you can work on your projects from your
+office, home, or anywhere using an internet-connected machine. Cloud9 also provides a seamless experience for developing
+serverless applications enabling you to easily define resources, debug, and switch between local and remote execution of
+serverless applications. With Cloud9, you can quickly share your development environment with your team, enabling you to pair
 program and track each other's inputs in real time.
 
 
 ## Creating EC2 Environment
 
-EC2 Environments are defined with `Ec2Environment`. To create an EC2 environment in the private subnet, specify 
+EC2 Environments are defined with `Ec2Environment`. To create an EC2 environment in the private subnet, specify
 `subnetSelection` with private `subnetType`.
 
 
@@ -52,7 +52,7 @@ new cloud9.Ec2Environment(this, 'Cloud9Env2', {
   imageId: cloud9.ImageId.AMAZON_LINUX_2,
 });
 
-// or specify in a different subnetSelection 
+// or specify in a different subnetSelection
 const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
   vpc,
   subnetSelection: {
@@ -102,5 +102,41 @@ new cloud9.Ec2Environment(this, 'C9Env', {
     cloud9.CloneRepository.fromCodeCommit(repoExisting, '/src/existing-repo'),
   ],
   imageId: cloud9.ImageId.AMAZON_LINUX_2,
+});
+```
+
+## Specifying Owners
+`Owner` is a user that owns a Cloud9 environment . `Owner` has their own access permissions, resources. And we can specify an `Owner`in an Ec2 environment which could be of two types, 1. AccountRoot and 2. Iam User. It allows AWS to determine who has permissions to manage the environment, either an IAM user or the account root user
+
+### AccountRoot
+
+```ts
+new cloud9.Ec2Environment(this, 'C9Env', {
+  // provides root account id.
+  owner: cloud9.Owner.AccountRoot('root account id')
+})
+```
+
+### Iam User
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+
+const user = new iam.User(stack, 'User');
+// provides an iam user.
+new cloud9.Ec2Environment(this, 'C9Env', {
+  owner: cloud9.Owner.User(user)
+})
+```
+
+### create a new Cloud9 environment with an owner as an Iam User.
+
+```ts
+const user = new iam.User(stack, 'User');
+declare const vpc: ec2.Vpc;
+new cloud9.Ec2Environment(this, 'C9Env', {
+  vpc,
+  imageId: cloud9.ImageId.AMAZON_LINUX_2,
+  owner: cloud9.Owner.User(user)
 });
 ```

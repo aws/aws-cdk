@@ -59,9 +59,8 @@ export enum ImageId {
  */
 export interface Ec2EnvironmentProps {
   /**
-   * The type of owner environment.
+   * Owner of the environment.
    *
-   * @default - string
    */
   readonly owner?: Owner;
 
@@ -143,14 +142,6 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     }
     return new Import(scope, id);
   }
-
-  /**
-   * The Environment Owner of the ownerarn
-   *
-   * @attribute
-   */
-  public readonly owner?: Owner;
-
   /**
    * The environment name of this Cloud9 environment
    *
@@ -184,7 +175,6 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.owner = props.owner;
     if (!props.subnetSelection && this.vpc.publicSubnets.length === 0) {
       throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
     }
@@ -236,31 +226,35 @@ export class CloneRepository {
 
 /**
  * The class for different types of owners
+ *
+ *
  */
 export class Owner {
   /**
    * import from Owner Iuser
    *
-   * @param user environment owner can be an IAM user.
+   * User need to have AWSCloud9Administrator permissions
+   * @see https://docs.aws.amazon.com/cloud9/latest/user-guide/share-environment.html#share-environment-about
+   *
+   * @param user the User object to use as the environment owner
    */
-  public static user(user: IUser): Owner {
+  public static User(user: IUser): Owner {
     return { ownerArn: user.userArn };
   }
+
 
   /**
    * import from Owner account root
    *
-   * @param accountId environment owner can be a root account.
+   * @param accountId the AccountId to use as the environment owner.
    */
-  public static accountRoot(accountId: string): Owner {
+  public static AccountRoot(accountId: string): Owner {
     return { ownerArn: `arn:aws:iam::${accountId}:root` };
   }
 
   /**
-   * import owenrArn
    *
    * @param ownerArn of environment owner.
    */
   private constructor(public readonly ownerArn: string) {}
 }
-
