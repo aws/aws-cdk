@@ -67,6 +67,15 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
     if (canned.generate()) {
       await canned.save(packagePath);
     }
+
+
+    // Add export to the aws-cdk-lib package.json if it's not there yet.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pkgJson = require(path.join(outPath, '..', 'package.json'));
+    if (!pkgJson.exports[`./${module.moduleName}`]) {
+      pkgJson.exports[`./${module.moduleName}`] = `./${module.moduleName}/index.js`;
+      await fs.writeJson(path.join(outPath, '..', 'package.json'), pkgJson, { spaces: 2 });
+    }
   }
 }
 
