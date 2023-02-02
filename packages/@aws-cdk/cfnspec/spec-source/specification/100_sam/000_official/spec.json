@@ -2255,7 +2255,7 @@
                 },
                 "Models": {
                     "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-api.html#sam-api-models",
-                    "PrimitiveItemType": "String",
+                    "PrimitiveItemType": "Map",
                     "Required": false,
                     "Type": "Map",
                     "UpdateType": "Immutable"
