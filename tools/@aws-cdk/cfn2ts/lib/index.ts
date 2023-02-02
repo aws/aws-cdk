@@ -92,7 +92,7 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
   }
 
   await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-  await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n')+'\n');
+  await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
 }
 
 /**
