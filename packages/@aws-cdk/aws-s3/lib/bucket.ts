@@ -2022,6 +2022,10 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
 
+      if ((rule.expirationDate || rule.expiration || rule.tagFilters) && rule.expiredObjectDeleteMarker) {
+        throw new Error('expiredObjectDeleteMarker cannot be true if expirationDate, expiration, or tagFilters are specified');
+      }
+
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,

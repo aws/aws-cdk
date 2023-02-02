@@ -2852,4 +2852,67 @@ describe('bucket', () => {
       },
     });
   });
+
+  describe('expiredObjectDeleteMarker constraints', () => {
+    test('Incompatible with expiration', () => {
+      const stack = new cdk.Stack();
+
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [{
+          expiration: cdk.Duration.days(30),
+          expiredObjectDeleteMarker: true,
+        }],
+      });
+
+
+      expect(()=> {
+        Template.fromStack(stack);
+      }).toThrow(/expiredObjectDeleteMarker cannot be true if expirationDate, expiration, or tagFilters are specified/);
+    });
+
+    test('Incompatible with expirationDate', () => {
+      const stack = new cdk.Stack();
+
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [{
+          expirationDate: new Date(),
+          expiredObjectDeleteMarker: true,
+        }],
+      });
+
+
+      expect(()=> {
+        Template.fromStack(stack);
+      }).toThrow(/expiredObjectDeleteMarker cannot be true if expirationDate, expiration, or tagFilters are specified/);
+    });
+
+    test('Incompatible with tagFilters', () => {
+      const stack = new cdk.Stack();
+
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [{
+          tagFilters: [{ key: 'foo', value: 'bar' }],
+          expiredObjectDeleteMarker: true,
+        }],
+      });
+
+      expect(()=> {
+        Template.fromStack(stack);
+      }).toThrow(/expiredObjectDeleteMarker cannot be true if expirationDate, expiration, or tagFilters are specified/);
+    });
+
+    test('expiration can be passed if expiredObjectDeleteMarker is false', () => {
+      const stack = new cdk.Stack();
+
+      new s3.Bucket(stack, 'MyBucket', {
+        lifecycleRules: [{
+          // tagFilters: [{ key: 'foo', value: 'bar' }],
+          expiration: cdk.Duration.days(30),
+          expiredObjectDeleteMarker: false,
+        }],
+      });
+
+      expect(()=> Template.fromStack(stack)).not.toThrow();
+    });
+  });
 });
