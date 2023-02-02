@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
