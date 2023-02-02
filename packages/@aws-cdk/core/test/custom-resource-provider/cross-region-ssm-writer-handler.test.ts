@@ -274,6 +274,67 @@ describe('cross-region-ssm-writer entrypoint', () => {
       expect(err).toBeUndefined();
     });
 
+    test('>10 removed exports are deleted by batching to SSM', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Update',
+        OldResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport1': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport2': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport3': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport4': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport5': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport6': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport7': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport8': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport9': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport10': 'MyExistingValue',
+              '/cdk/exports/MyStack/RemovedExport11': 'MyExistingValue',
+            },
+          },
+        },
+        ResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+            },
+          },
+        },
+      });
+
+      // WHEN
+      await handler(event);
+
+      // THEN
+      expect(mockDeleteParameters).toHaveBeenCalledTimes(2);
+      expect(mockDeleteParameters).toHaveBeenCalledWith({
+        Names: [
+          '/cdk/exports/MyStack/RemovedExport1',
+          '/cdk/exports/MyStack/RemovedExport2',
+          '/cdk/exports/MyStack/RemovedExport3',
+          '/cdk/exports/MyStack/RemovedExport4',
+          '/cdk/exports/MyStack/RemovedExport5',
+          '/cdk/exports/MyStack/RemovedExport6',
+          '/cdk/exports/MyStack/RemovedExport7',
+          '/cdk/exports/MyStack/RemovedExport8',
+          '/cdk/exports/MyStack/RemovedExport9',
+          '/cdk/exports/MyStack/RemovedExport10',
+        ],
+      });
+      expect(mockDeleteParameters).toHaveBeenCalledWith({
+        Names: [
+          '/cdk/exports/MyStack/RemovedExport11',
+        ],
+      });
+    });
+
     test('update throws if params already exist', async () => {
       // GIVEN
       const event = makeEvent({

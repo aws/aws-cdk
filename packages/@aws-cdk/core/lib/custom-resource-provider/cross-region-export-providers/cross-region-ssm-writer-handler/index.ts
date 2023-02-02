@@ -1,6 +1,6 @@
 /*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
-import { SSM } from 'aws-sdk';
+import { AWSError, SSM } from 'aws-sdk';
 import { CrossRegionExports, ExportWriterCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -33,9 +33,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // skip if no export names are to be deleted
         const removedExportsNames = Object.keys(removedExports);
         if (removedExportsNames.length > 0) {
-          await ssm.deleteParameters({
-            Names: removedExportsNames,
-          }).promise();
+          await deleteParameters(ssm, removedExportsNames);
         }
 
         // also throw an error if we are creating a new export that already exists for some reason
@@ -48,9 +46,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // the stack deletion.
         await throwIfAnyInUse(ssm, exports);
         // if none are in use then delete all of them
-        await ssm.deleteParameters({
-          Names: Object.keys(exports),
-        }).promise();
+        await deleteParameters(ssm, Object.keys(exports));
         return;
       default:
         return;
@@ -60,6 +56,26 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     throw e;
   }
 };
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  return arr.length > size
+    ? [arr.slice(0, size), ...chunkArray(arr.slice(size), size)]
+    : [arr];
+}
+
+async function deleteParameters(ssm: SSM, names: string[]): Promise<void> {
+  if (names.length === 0) {
+    return;
+  }
+
+  await Promise.all(
+    chunkArray(names, 10)
+      .map((namesChunk) => {
+        return ssm.deleteParameters({
+          Names: namesChunk,
+        }).promise();
+      }));
+}
 
 /**
  * Create parameters for existing exports
@@ -113,7 +129,7 @@ async function isInUse(ssm: SSM, parameterName: string): Promise<Set<string>> {
   } catch (e) {
     // an InvalidResourceId means that the parameter doesn't exist
     // which we should ignore since that means it's not in use
-    if (e.code === 'InvalidResourceId') {
+    if ((e as AWSError).code === 'InvalidResourceId') {
       return new Set();
     }
     throw e;
