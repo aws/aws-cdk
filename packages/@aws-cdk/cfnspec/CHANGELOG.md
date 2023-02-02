@@ -1,4 +1,163 @@
 
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Models.PrimitiveItemType (__changed__)
+  * Old: String
+  * New: Map
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification (us-west-2) v109.0.0
+
+## New Resource Types
+
+* AWS::DeviceFarm::DevicePool
+* AWS::DeviceFarm::InstanceProfile
+* AWS::DeviceFarm::NetworkProfile
+* AWS::DeviceFarm::Project
+* AWS::DeviceFarm::TestGridProject
+* AWS::DeviceFarm::VPCEConfiguration
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v109.0.0
+
+## New Resource Types
+
+* AWS::Connect::ApprovedOrigin
+* AWS::Connect::IntegrationAssociation
+* AWS::Connect::SecurityKey
+
+## Attribute Changes
+
+* AWS::Logs::LogStream Id (__added__)
+* AWS::OpenSearchService::Domain AdvancedSecurityOptions.AnonymousAuthDisableDate (__added__)
+* AWS::Route53Resolver::ResolverEndpoint ResolverEndpointType (__added__)
+* AWS::SecretsManager::Secret Id (__deleted__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::ApiMapping ApiId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::EventSubscription Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationInstance Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationTask Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::CustomerGateway DeviceName (__added__)
+* AWS::EC2::NatGateway MaxDrainDurationSeconds (__added__)
+* AWS::EC2::NatGateway SecondaryAllocationIds (__added__)
+* AWS::EC2::NatGateway SecondaryPrivateIpAddressCount (__added__)
+* AWS::EC2::NatGateway SecondaryPrivateIpAddresses (__added__)
+* AWS::EMRServerless::Application ImageConfiguration (__added__)
+* AWS::EMRServerless::Application WorkerTypeSpecifications (__added__)
+* AWS::GroundStation::DataflowEndpointGroup ContactPostPassDurationSeconds (__added__)
+* AWS::GroundStation::DataflowEndpointGroup ContactPrePassDurationSeconds (__added__)
+* AWS::ImageBuilder::Image ImageScanningConfiguration (__added__)
+* AWS::ImageBuilder::ImagePipeline ImageScanningConfiguration (__added__)
+* AWS::Lambda::Function RuntimeManagementConfig (__added__)
+* AWS::Location::GeofenceCollection PricingPlan (__deleted__)
+* AWS::Location::GeofenceCollection PricingPlanDataSource (__deleted__)
+* AWS::RUM::AppMonitor CustomEvents (__added__)
+* AWS::Route53Resolver::ResolverEndpoint ResolverEndpointType (__added__)
+* AWS::SageMaker::Domain DefaultSpaceSettings (__added__)
+* AWS::SecretsManager::Secret ReplicaRegions.DuplicatesAllowed (__deleted__)
+* AWS::SecretsManager::Secret Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::AppFlow::ConnectorProfile.PardotConnectorProfileCredentials (__added__)
+* AWS::AppFlow::ConnectorProfile.PardotConnectorProfileProperties (__added__)
+* AWS::AppFlow::Flow.PardotSourceProperties (__added__)
+* AWS::EMRServerless::Application.ImageConfigurationInput (__added__)
+* AWS::EMRServerless::Application.WorkerTypeSpecificationInput (__added__)
+* AWS::ImageBuilder::Image.EcrConfiguration (__added__)
+* AWS::ImageBuilder::Image.ImageScanningConfiguration (__added__)
+* AWS::ImageBuilder::ImagePipeline.EcrConfiguration (__added__)
+* AWS::ImageBuilder::ImagePipeline.ImageScanningConfiguration (__added__)
+* AWS::Lambda::Function.RuntimeManagementConfig (__added__)
+* AWS::Lex::Bot.Condition (__added__)
+* AWS::Lex::Bot.ConditionalBranch (__added__)
+* AWS::Lex::Bot.ConditionalSpecification (__added__)
+* AWS::Lex::Bot.DefaultConditionalBranch (__added__)
+* AWS::Lex::Bot.DialogAction (__added__)
+* AWS::Lex::Bot.DialogCodeHookInvocationSetting (__added__)
+* AWS::Lex::Bot.DialogState (__added__)
+* AWS::Lex::Bot.ElicitationCodeHookInvocationSetting (__added__)
+* AWS::Lex::Bot.InitialResponseSetting (__added__)
+* AWS::Lex::Bot.IntentOverride (__added__)
+* AWS::Lex::Bot.PostDialogCodeHookInvocationSpecification (__added__)
+* AWS::Lex::Bot.SessionAttribute (__added__)
+* AWS::Lex::Bot.SlotCaptureSetting (__added__)
+* AWS::Lex::Bot.SlotValue (__added__)
+* AWS::Lex::Bot.SlotValueOverride (__added__)
+* AWS::Lex::Bot.SlotValueOverrideMap (__added__)
+* AWS::OpenSearchService::Domain.Idp (__added__)
+* AWS::OpenSearchService::Domain.SAMLOptions (__added__)
+* AWS::RUM::AppMonitor.CustomEvents (__added__)
+* AWS::SageMaker::Domain.DefaultSpaceSettings (__added__)
+* AWS::AppFlow::ConnectorProfile.ConnectorProfileCredentials Pardot (__added__)
+* AWS::AppFlow::ConnectorProfile.ConnectorProfileProperties Pardot (__added__)
+* AWS::AppFlow::Flow.ConnectorOperator Pardot (__added__)
+* AWS::AppFlow::Flow.SourceConnectorProperties Pardot (__added__)
+* AWS::Lex::Bot.FulfillmentCodeHookSetting IsActive (__added__)
+* AWS::Lex::Bot.Intent InitialResponseSetting (__added__)
+* AWS::Lex::Bot.IntentClosingSetting Conditional (__added__)
+* AWS::Lex::Bot.IntentClosingSetting NextStep (__added__)
+* AWS::Lex::Bot.IntentClosingSetting ClosingResponse.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lex::Bot.IntentConfirmationSetting CodeHook (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ConfirmationConditional (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ConfirmationNextStep (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ConfirmationResponse (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting DeclinationConditional (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting DeclinationNextStep (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting ElicitationCodeHook (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting FailureConditional (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting FailureNextStep (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting FailureResponse (__added__)
+* AWS::Lex::Bot.IntentConfirmationSetting DeclinationResponse.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification FailureConditional (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification FailureNextStep (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification SuccessConditional (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification SuccessNextStep (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification TimeoutConditional (__added__)
+* AWS::Lex::Bot.PostFulfillmentStatusSpecification TimeoutNextStep (__added__)
+* AWS::Lex::Bot.SlotValueElicitationSetting SlotCaptureSetting (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput AnonymousAuthDisableDate (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput AnonymousAuthEnabled (__added__)
+* AWS::OpenSearchService::Domain.AdvancedSecurityOptionsInput SAMLOptions (__added__)
+* AWS::Route53Resolver::ResolverEndpoint.IpAddressRequest Ipv6 (__added__)
+
+
+
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 
 ## New Resource Types
