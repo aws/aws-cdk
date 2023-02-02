@@ -737,6 +737,7 @@ export class Cluster extends ClusterBase {
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      installLatestAwsSdk: false,
     });
 
     defaultIamRole.grantPassRole(defaultRoleCustomResource.grantPrincipal);
