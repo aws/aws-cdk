@@ -1,6 +1,18 @@
 
 import * as os from 'os';
 import { table } from 'table';
+import { FileAssetSource } from '../assets';
+import { ISynthesisSession } from '../stack-synthesizers';
+
+/**
+   * TODO docs
+   */
+export interface IValidationPlugin {
+/**
+   * TODO docs
+   */
+  validate(session: ISynthesisSession, source: FileAssetSource): Promise<ValidationReport>;
+}
 
 /**
  * Context available to plugins during validation.
@@ -22,8 +34,18 @@ export class ValidationContext {
   public readonly logger: ValidationLogger;
 
   constructor(
+
+    /**
+   * TODO docs
+   */
     public readonly pluginName: string,
+    /**
+   * TODO docs
+   */
     public readonly template: {readonly [key: string]: any},
+    /**
+   * TODO docs
+   */
     public readonly templatePath: string,
 
     /**
@@ -53,7 +75,7 @@ export class ValidationLogger {
 /**
  * Contract between cdk8s and third-parties looking to implement validation plugins.
  */
-export interface Validation {
+export interface IValidation {
 
   /**
    * Run the validation logic.
@@ -80,7 +102,7 @@ export interface ValidationViolatingResource {
   /**
    * The locations in its config that pose the violations.
    */
-  readonly locations: readonly string[];
+  readonly locations: string[];
 
   /**
    * The manifest this resource is defined in.
@@ -96,6 +118,8 @@ export interface ValidationViolatingConstruct extends ValidationViolatingResourc
 
   /**
    * The construct path as defined in the application.
+   *
+   * @default - TODO
    */
   readonly constructPath?: string;
 
@@ -120,18 +144,22 @@ export interface ValidationViolation {
    * How to fix the recommendation.
    */
   readonly fix: string;
+}
 
+/**
+ * TODO docs
+ */
+export interface ValidationViolationResourceAware extends ValidationViolation {
   /**
    * The resources violating this rule.
    */
   readonly violatingResource: ValidationViolatingResource;
-
 }
 
 /**
  * Validation produced by the validation plugin, in construct terms.
  */
-export interface ValidationViolationConstructAware extends Omit<ValidationViolation, 'violatingResource'> {
+export interface ValidationViolationConstructAware extends ValidationViolation {
 
   /**
    * The constructs violating this rule.
@@ -148,8 +176,14 @@ export type ValidationReportStatus = 'success' | 'failure';
  */
 export interface ValidationReportSummary {
 
+  /**
+   * TODO docs
+   */
   readonly status: ValidationReportStatus;
 
+  /**
+   * TODO docs
+   */
   readonly plugin: string;
 }
 
@@ -166,7 +200,7 @@ export interface ValidationReportJson {
   /**
    * List of violations in the rerpot.
    */
-  readonly violations: readonly ValidationViolationConstructAware[];
+  readonly violations: ValidationViolationConstructAware[];
 
   /**
    * Report summary.
@@ -194,7 +228,7 @@ export class ValidationReport {
   /**
    * Add a violation to the report.
    */
-  public addViolation(violation: ValidationViolation) {
+  public addViolation(violation: ValidationViolationResourceAware) {
     if (this._summary) {
       throw new Error('Violations cannot be added to report after its submitted');
     }
@@ -324,11 +358,31 @@ function bright(s: string) {
 }
 
 
+/**
+ * TODO docs
+ */
 export interface ValidationConfig {
 
+  /**
+   * TODO docs
+   */
   readonly package: string;
+  /**
+   * TODO docs
+   */
   readonly version: string;
+  /**
+   * TODO docs
+   */
   readonly class: string;
+  /**
+   * TODO docs
+   * @default - TODO
+   */
   readonly installEnv?: { [key: string]: any };
+  /**
+   * TODO docs
+   * @default - TODO
+   */
   readonly properties?: { [key: string]: any };
 }

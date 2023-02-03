@@ -1,15 +1,12 @@
-import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { assertBound, StringSpecializer } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import { App } from '../app';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { CheckovValiation } from '../validation/checkov';
-import { ValidationContext } from '../validation/validation';
-import * as fs from 'fs';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -430,13 +427,19 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
 
     const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn);
 
-    const templateAbsolutePath = path.join(process.cwd(), session.outdir, templateAssetSource.fileName ?? '');
-    const template = JSON.parse(fs.readFileSync(templateAbsolutePath, { encoding: 'utf-8' }));
-    const validationContext = new ValidationContext('Checkov', template, templateAbsolutePath);
-    new CheckovValiation().validate(validationContext).finally(() => {
-      // eslint-disable-next-line no-console
-      console.log(validationContext.report.toString());
-    });
+    const app = App.of(this.boundStack);
+    if (App.isApp(app)) {
+      // TODO - We probably need to find a better place to add the validationPlugins
+      for (const plugin of app.validationPlugins) {
+        plugin.validate(session, templateAssetSource).then(report => {
+          // eslint-disable-next-line no-console
+          console.log(report.toString());
+        }).finally(() => {
+          // eslint-disable-next-line no-console
+          console.log('Validation complete');
+        });
+      }
+    }
 
     const templateAsset = this.addFileAsset(templateAssetSource);
 

@@ -5,6 +5,7 @@ import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-con
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
+import { IValidationPlugin } from './validation/validation';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -118,6 +119,12 @@ export interface AppProps {
    * @default - A `DefaultStackSynthesizer` with default settings
    */
   readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
+
+  /**
+   * TODO
+   * @default - TODO
+   */
+  readonly validationPlugins?: IValidationPlugin[];
 }
 
 /**
@@ -153,6 +160,11 @@ export class App extends Stage {
   public readonly _treeMetadata: boolean;
 
   /**
+   * TODO docs
+   */
+  public readonly validationPlugins: IValidationPlugin[] = [];
+
+  /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
@@ -184,6 +196,10 @@ export class App extends Stage {
       // synth() guarantuees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
       process.once('beforeExit', () => this.synth());
+    }
+
+    if (props.validationPlugins) {
+      this.validationPlugins = props.validationPlugins;
     }
 
     this._treeMetadata = props.treeMetadata ?? true;
