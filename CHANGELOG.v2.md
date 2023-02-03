@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.63.1](https://github.com/aws/aws-cdk/compare/v2.63.0...v2.63.1) (2023-02-03)
+
+
+### Reverts
+
+* **cdk-assets:** packaging assets is broken on Node older than 14.17 ([#23994](https://github.com/aws/aws-cdk/issues/23994)) ([1976f1a](https://github.com/aws/aws-cdk/commit/1976f1a7f585b1adb582c5cb557b96ed38418fca)), closes [#23859](https://github.com/aws/aws-cdk/issues/23859)
+
 ## [2.63.0](https://github.com/aws/aws-cdk/compare/v2.62.2...v2.63.0) (2023-01-31)
 
 
