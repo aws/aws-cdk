@@ -46,7 +46,8 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
     const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
-    const packagePath = path.join(outPath, module.moduleName, 'lib');
+    const packagePath = path.join(outPath, module.moduleName);
+    const libPath = path.join(packagePath, 'lib');
 
     if (Object.keys(spec.ResourceTypes).length === 0) {
       throw new Error(`No resource was found for scope ${scope}`);
@@ -56,18 +57,18 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
 
     const generator = new CodeGenerator(name, spec, affix, options);
     generator.emitCode();
-    await generator.save(packagePath);
+    await generator.save(libPath);
     const outputFiles = [generator.outputFile];
 
     const augs = new AugmentationGenerator(name, spec, affix);
     if (augs.emitCode()) {
-      await augs.save(packagePath);
+      await augs.save(libPath);
       outputFiles.push(augs.outputFile);
     }
 
     const canned = new CannedMetricsGenerator(name, scope);
     if (canned.generate()) {
-      await canned.save(packagePath);
+      await canned.save(libPath);
       outputFiles.push(canned.outputFile);
     }
 
