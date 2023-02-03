@@ -488,28 +488,28 @@ function buildLogicalTableMap(dataSetId: string): QuickSight.LogicalTableMap {
 // General
 const mockListTagsForResource = jest.fn((
   params: QuickSight.ListTagsForResourceRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.ListTagsForResourceResponse) => void) | undefined) => {
+  callback?: ((err?: AWSError, data?: QuickSight.ListTagsForResourceResponse) => QuickSight.ListTagsForResourceResponse) | undefined) => {
+
+  let response = {
+    Tags: [
+      {
+        Key: 'ResourceArn',
+        Value: params.ResourceArn,
+      },
+    ],
+  };
 
   if (callback) {
-    callback(undefined, {
-      Tags: [
-        {
-          Key: 'ResourceArn',
-          Value: params.ResourceArn,
-        },
-      ],
-    });
+    callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 // DataSource
 const mockDescribeDataSource = jest.fn((
   params: QuickSight.DescribeDataSourceRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSourceResponse) => void)) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSourceResponse) => QuickSight.DescribeDataSourceResponse)) => {
 
   let response: QuickSight.DescribeDataSourceResponse = {
     DataSource: {
@@ -538,39 +538,38 @@ const mockDescribeDataSource = jest.fn((
     callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 const mockDescribeDataSourcePermissions = jest.fn((
   params: QuickSight.DescribeDataSourcePermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSourcePermissionsResponse) => void) | undefined) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSourcePermissionsResponse) =>
+  QuickSight.DescribeDataSourcePermissionsResponse) | undefined) => {
+
+  let response = {
+    DataSourceId: params.DataSourceId,
+    DataSourceArn: `arn:aws:quicksight:region:${params.AwsAccountId}:datasource/${params.DataSourceId}`,
+    Permissions: [
+      {
+        Principal: 'DataSourcePermissionsPrincipal',
+        Actions: [
+          'DataSourcePermissionsAction',
+        ],
+      },
+    ],
+  };
 
   if (callback) {
-    callback(undefined, {
-      DataSourceId: params.DataSourceId,
-      DataSourceArn: `arn:aws:quicksight:region:${params.AwsAccountId}:datasource/${params.DataSourceId}`,
-      Permissions: [
-        {
-          Principal: 'DataSourcePermissionsPrincipal',
-          Actions: [
-            'DataSourcePermissionsAction',
-          ],
-        },
-      ],
-    });
+    callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 // DataSet
 const mockDescribeDataSet = jest.fn((
   params: QuickSight.DescribeDataSetRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSetResponse) => void)) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSetResponse) => QuickSight.DescribeDataSetResponse)) => {
 
   let response: QuickSight.DescribeDataSetResponse = {
     DataSet: {
@@ -653,39 +652,38 @@ const mockDescribeDataSet = jest.fn((
     callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 const mockDescribeDataSetPermissions = jest.fn((
   params: QuickSight.DescribeDataSetPermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSetPermissionsResponse) => void) | undefined) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeDataSetPermissionsResponse) =>
+  QuickSight.DescribeDataSetPermissionsResponse) | undefined) => {
+
+  let response = {
+    DataSetId: params.DataSetId,
+    DataSetArn: `arn:aws:quicksight:region:${params.AwsAccountId}:dataset/${params.DataSetId}`,
+    Permissions: [
+      {
+        Principal: 'DataSetPermissionsPrincipal',
+        Actions: [
+          'DataSetPermissionsAction',
+        ],
+      },
+    ],
+  };
 
   if (callback) {
-    callback(undefined, {
-      DataSetId: params.DataSetId,
-      DataSetArn: `arn:aws:quicksight:region:${params.AwsAccountId}:dataset/${params.DataSetId}`,
-      Permissions: [
-        {
-          Principal: 'DataSetPermissionsPrincipal',
-          Actions: [
-            'DataSetPermissionsAction',
-          ],
-        },
-      ],
-    });
+    callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 // Template
 const mockDescribeTemplate = jest.fn((
   params: QuickSight.DescribeTemplateRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeTemplateResponse) => void)) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeTemplateResponse) => QuickSight.DescribeTemplateResponse)) => {
 
   let sourceEntityArn: string;
 
@@ -761,39 +759,38 @@ const mockDescribeTemplate = jest.fn((
     callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 const mockDescribeTemplatePermissions = jest.fn((
   params: QuickSight.DescribeTemplatePermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeTemplatePermissionsResponse) => void) | undefined) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeTemplatePermissionsResponse) =>
+  QuickSight.DescribeTemplatePermissionsResponse) | undefined) => {
+
+  let response = {
+    TemplateId: params.TemplateId,
+    TemplateArn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${params.TemplateId}`,
+    Permissions: [
+      {
+        Principal: 'TemplatePermissionsPrincipal',
+        Actions: [
+          'TemplatePermissionsAction',
+        ],
+      },
+    ],
+  };
 
   if (callback) {
-    callback(undefined, {
-      TemplateId: params.TemplateId,
-      TemplateArn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${params.TemplateId}`,
-      Permissions: [
-        {
-          Principal: 'TemplatePermissionsPrincipal',
-          Actions: [
-            'TemplatePermissionsAction',
-          ],
-        },
-      ],
-    });
+    callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 //Theme
 const mockDescribeTheme = jest.fn((
   params: QuickSight.DescribeThemeRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeThemeResponse) => void)) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeThemeResponse) => QuickSight.DescribeThemeResponse)) => {
 
   let response: QuickSight.DescribeThemeResponse = {
     Theme: {
@@ -881,39 +878,37 @@ const mockDescribeTheme = jest.fn((
     callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 const mockDescribeThemePermissions = jest.fn((
   params: QuickSight.DescribeThemePermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeThemePermissionsResponse) => void) | undefined) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeThemePermissionsResponse) => QuickSight.DescribeThemePermissionsResponse) | undefined) => {
+
+  let response = {
+    ThemeId: params.ThemeId,
+    ThemeArn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${params.ThemeId}`,
+    Permissions: [
+      {
+        Principal: 'ThemePermissionsPrincipal',
+        Actions: [
+          'ThemePermissionsAction',
+        ],
+      },
+    ],
+  };
 
   if (callback) {
-    callback(undefined, {
-      ThemeId: params.ThemeId,
-      ThemeArn: `arn:aws:quicksight:region:${params.AwsAccountId}:template/${params.ThemeId}`,
-      Permissions: [
-        {
-          Principal: 'ThemePermissionsPrincipal',
-          Actions: [
-            'ThemePermissionsAction',
-          ],
-        },
-      ],
-    });
+    callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 // Analysis
 const mockDescribeAnalysis = jest.fn((
   params: QuickSight.DescribeAnalysisRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeAnalysisResponse) => void)) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeAnalysisResponse) => QuickSight.DescribeAnalysisResponse)) => {
 
   let response: QuickSight.DescribeAnalysisResponse = {
     Analysis: {
@@ -948,39 +943,38 @@ const mockDescribeAnalysis = jest.fn((
     callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 const mockDescribeAnalysisPermissions = jest.fn((
   params: QuickSight.DescribeAnalysisPermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeAnalysisPermissionsResponse) => void) | undefined) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeAnalysisPermissionsResponse) =>
+  QuickSight.DescribeAnalysisPermissionsResponse) | undefined) => {
+
+  let response = {
+    AnalysisId: params.AnalysisId,
+    AnalysisArn: `arn:aws:quicksight:region:${params.AwsAccountId}:analysis/${params.AnalysisId}`,
+    Permissions: [
+      {
+        Principal: 'AnalysisPermissionsPrincipal',
+        Actions: [
+          'AnalysisPermissionsAction',
+        ],
+      },
+    ],
+  };
 
   if (callback) {
-    callback(undefined, {
-      AnalysisId: params.AnalysisId,
-      AnalysisArn: `arn:aws:quicksight:region:${params.AwsAccountId}:analysis/${params.AnalysisId}`,
-      Permissions: [
-        {
-          Principal: 'AnalysisPermissionsPrincipal',
-          Actions: [
-            'AnalysisPermissionsAction',
-          ],
-        },
-      ],
-    });
+    callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 // Dashboard
 const mockDescribeDashboard = jest.fn((
   params: QuickSight.DescribeDashboardRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDashboardResponse) => void)) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeDashboardResponse) => QuickSight.DescribeDashboardResponse)) => {
 
   let response: QuickSight.DescribeDashboardResponse = {
     Dashboard: {
@@ -1024,33 +1018,32 @@ const mockDescribeDashboard = jest.fn((
     callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 const mockDescribeDashboardPermissions = jest.fn((
   params: QuickSight.DescribeDashboardPermissionsRequest,
-  callback?: ((err?: AWSError, data?: QuickSight.DescribeDashboardPermissionsResponse) => void) | undefined) => {
+  callback?: ((err?: AWSError, data?: QuickSight.DescribeDashboardPermissionsResponse) =>
+  QuickSight.DescribeDashboardPermissionsResponse) | undefined) => {
+
+  let response = {
+    DashboardId: params.DashboardId,
+    DashboardArn: `arn:aws:quicksight:region:${params.AwsAccountId}:dashboard/${params.DashboardId}`,
+    Permissions: [
+      {
+        Principal: 'DashboardPermissionsPrincipal',
+        Actions: [
+          'DashboardPermissionsAction',
+        ],
+      },
+    ],
+  };
 
   if (callback) {
-    callback(undefined, {
-      DashboardId: params.DashboardId,
-      DashboardArn: `arn:aws:quicksight:region:${params.AwsAccountId}:dashboard/${params.DashboardId}`,
-      Permissions: [
-        {
-          Principal: 'DashboardPermissionsPrincipal',
-          Actions: [
-            'DashboardPermissionsAction',
-          ],
-        },
-      ],
-    });
+    callback(undefined, response);
   }
 
-  return {
-    promise: () => { },
-  };
+  return response;
 });
 
 export const mockQuickSight = {

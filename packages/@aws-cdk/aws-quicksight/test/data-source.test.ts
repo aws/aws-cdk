@@ -8,6 +8,7 @@ jest.mock('aws-sdk', () => {
   };
 });
 
+// eslint-disable-next-line import/order
 import { Stack } from '@aws-cdk/core';
 import { DataSource } from '../lib';
 
@@ -30,7 +31,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_AMAZON_ELASTICSEARCH)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack,
@@ -48,7 +54,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_AMAZON_OPENSEARCH)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_AMAZON_OPENSEARCH);
@@ -63,7 +74,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_ATHENA)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_ATHENA);
@@ -78,7 +94,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_AURORA)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_AURORA);
@@ -93,7 +114,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_AURORA_POSTGRESQL)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_AURORA_POSTGRESQL);
@@ -108,7 +134,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_MARIADB)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_MARIADB);
@@ -123,7 +154,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_MYSQL)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_MYSQL);
@@ -138,7 +174,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_ORACLE)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_ORACLE);
@@ -153,7 +194,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_POSTGRESQL)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_POSTGRESQL);
@@ -168,7 +214,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_PRESTO)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_PRESTO);
@@ -183,7 +234,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_RDS)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_RDS);
@@ -198,7 +254,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_REDSHIFT)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_REDSHIFT);
@@ -213,7 +274,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_S3)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_S3);
@@ -228,7 +294,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_SNOWFLAKE)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_SNOWFLAKE);
@@ -243,7 +314,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_SPARK)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_SPARK);
@@ -258,7 +334,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_SQLSERVER)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_SQLSERVER);
@@ -273,7 +354,12 @@ describe('datasource', () => {
 
   test(`import a ${Mock.getDataSourceType(Mock.DATA_SOURCE_ID_TERADATA)} data source`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_TERADATA);
@@ -289,7 +375,12 @@ describe('datasource', () => {
   // General tests
   test('fromId', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = DataSource.fromId(stack, 'ImportedDataSource', Mock.DATA_SOURCE_ID_AURORA);
@@ -309,7 +400,12 @@ describe('datasource', () => {
 
   test('newDataSource', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSource = new DataSource(stack, 'TestDashboard', {

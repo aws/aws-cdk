@@ -8,6 +8,7 @@ jest.mock('aws-sdk', () => {
   };
 });
 
+// eslint-disable-next-line import/order
 import { Stack } from '@aws-cdk/core';
 import { Analysis, IAnalysis, ITemplate, Template } from '../lib';
 
@@ -39,7 +40,12 @@ describe('template', () => {
 
   test('fromId: source analysis', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let template = Template.fromId(stack, 'ImportedTemplate', Mock.SOURCE_ANALYSIS);
@@ -56,7 +62,12 @@ describe('template', () => {
 
   test('fromId: source template', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let template = Template.fromId(stack, 'ImportedTemplate', Mock.SOURCE_TEMPLATE);
@@ -72,7 +83,12 @@ describe('template', () => {
 
   test('new Template from Analysis', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let analysis = Analysis.fromId(stack, 'ImportedAnalysis', Mock.ANALYSIS_ID);
@@ -90,7 +106,12 @@ describe('template', () => {
 
   test('new Template from Template', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let importedTemplate = Template.fromId(stack, 'ImportedTemplate', Mock.SOURCE_TEMPLATE);
@@ -107,7 +128,12 @@ describe('template', () => {
 
   test('new Template from nothing', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     // THEN

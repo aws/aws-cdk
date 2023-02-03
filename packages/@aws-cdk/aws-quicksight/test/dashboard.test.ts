@@ -8,6 +8,7 @@ jest.mock('aws-sdk', () => {
   };
 });
 
+// eslint-disable-next-line import/order
 import { Stack } from '@aws-cdk/core';
 import { Dashboard, DataSet, Template } from '../lib';
 
@@ -30,7 +31,12 @@ describe('dashboard', () => {
 
   test('fromId', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dashboard = Dashboard.fromId(stack, 'ImportedDashboard', Mock.DASHBOARD_ID);
@@ -48,7 +54,12 @@ describe('dashboard', () => {
 
   test('fromId: no version description', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dashboard = Dashboard.fromId(stack, 'ImportedDashboard', Mock.NO_VERSION_DESCRIPTION);
@@ -60,7 +71,12 @@ describe('dashboard', () => {
 
   test('new Dashboard from Template', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let template = Template.fromId(stack, 'ImportedTemplate', Mock.SOURCE_TEMPLATE);
@@ -79,7 +95,12 @@ describe('dashboard', () => {
 
   test('new Dashboard from Template and DataSet', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let template = Template.fromId(stack, 'ImportedTemplate', Mock.SOURCE_TEMPLATE);
@@ -105,7 +126,12 @@ describe('dashboard', () => {
 
   test('new Dashboard from Template and DataSet (invalid)', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let template = Template.fromId(stack, 'ImportedTemplate', Mock.SOURCE_TEMPLATE);

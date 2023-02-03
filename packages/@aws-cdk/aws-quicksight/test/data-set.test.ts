@@ -8,6 +8,7 @@ jest.mock('aws-sdk', () => {
   };
 });
 
+// eslint-disable-next-line import/order
 import { Stack } from '@aws-cdk/core';
 import { CfnDataSet, DataSet } from '../lib';
 
@@ -35,7 +36,12 @@ describe('dataset', () => {
 
   test(`import a ${Mock.RELATIONAL_TABLE} ${Mock.PROJECT_OPERATION} data set`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = DataSet.fromId(stack, 'ImportedDataSet',
@@ -56,7 +62,12 @@ describe('dataset', () => {
 
   test(`import a ${Mock.RELATIONAL_TABLE} ${Mock.FILTER_OPERATION} data set`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = DataSet.fromId(stack, 'ImportedDataSet',
@@ -77,7 +88,12 @@ describe('dataset', () => {
 
   test(`import a ${Mock.CUSTOM_SQL} ${Mock.CREATE_COLUMNS_OPERATION} data set`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = DataSet.fromId(stack, 'ImportedDataSet',
@@ -98,7 +114,12 @@ describe('dataset', () => {
 
   test(`import a ${Mock.S3_SOURCE} ${Mock.RENAME_COLUMN_OPERATION} data set`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = DataSet.fromId(stack, 'ImportedDataSet',
@@ -119,7 +140,12 @@ describe('dataset', () => {
 
   test(`import a ${Mock.RELATIONAL_TABLE} ${Mock.CAST_COLUMN_TYPE_OPERATION} data set`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = DataSet.fromId(stack, 'ImportedDataSet',
@@ -140,7 +166,12 @@ describe('dataset', () => {
 
   test(`import a ${Mock.CUSTOM_SQL} ${Mock.TAG_COLUMN_OPERATION} data set`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = DataSet.fromId(stack, 'ImportedDataSet',
@@ -161,7 +192,12 @@ describe('dataset', () => {
 
   test(`import a ${Mock.S3_SOURCE} ${Mock.UNTAG_COLUMN_OPERATION} data set`, () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = DataSet.fromId(stack, 'ImportedDataSet',
@@ -182,7 +218,12 @@ describe('dataset', () => {
 
   test('fromId', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let resourceId: string = Mock.DATA_SET_ID + '$' + Mock.RELATIONAL_TABLE + '$' + Mock.PROJECT_OPERATION;
@@ -204,7 +245,12 @@ describe('dataset', () => {
 
   test('newDataSet', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let dataSet = new DataSet(stack, 'TestId', {

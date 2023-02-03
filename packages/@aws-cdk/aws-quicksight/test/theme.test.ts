@@ -8,6 +8,7 @@ jest.mock('aws-sdk', () => {
   };
 });
 
+// eslint-disable-next-line import/order
 import { Stack } from '@aws-cdk/core';
 import { CfnTheme, Theme } from '../lib';
 
@@ -35,7 +36,12 @@ describe('analysis', () => {
 
   test('fromId: Custom Theme', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let theme = Theme.fromId(stack, 'ImportedTheme', Mock.CUSTOM_THEME);
@@ -52,7 +58,12 @@ describe('analysis', () => {
 
   test('fromId: Managed Theme', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let theme = Theme.fromId(stack, 'ImportedTheme', Mock.MANAGED_THEME);
@@ -63,7 +74,12 @@ describe('analysis', () => {
 
   test('fromId: No Description', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let theme = Theme.fromId(stack, 'ImportedTheme', Mock.NO_VERSION_DESCRIPTION);
@@ -74,7 +90,12 @@ describe('analysis', () => {
 
   test('new Theme from Theme', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '0123456789',
+        region: 'us-east-1',
+      },
+    });
 
     // WHEN
     let importedTheme = Theme.fromId(stack, 'ImportedTheme', Mock.MANAGED_THEME);
