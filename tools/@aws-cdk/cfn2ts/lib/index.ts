@@ -57,15 +57,44 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
     const generator = new CodeGenerator(name, spec, affix, options);
     generator.emitCode();
     await generator.save(packagePath);
+    const outputFiles = [generator.outputFile];
 
     const augs = new AugmentationGenerator(name, spec, affix);
     if (augs.emitCode()) {
       await augs.save(packagePath);
+      outputFiles.push(augs.outputFile);
     }
 
     const canned = new CannedMetricsGenerator(name, scope);
     if (canned.generate()) {
       await canned.save(packagePath);
+      outputFiles.push(canned.outputFile);
+    }
+
+    // Create index.ts file if needed
+    if (!fs.existsSync(path.join(packagePath, 'index.ts'))) {
+      const lines = [`// ${scope} CloudFormation Resources:`];
+      lines.push(...outputFiles.map((f) => `export * from './${f.replace('.ts', '')}'`));
+
+      await fs.writeFile(path.join(packagePath, 'index.ts'), lines.join('\n') + '\n');
+    }
+
+    // Create .jsiirc.json file if needed
+    if (!fs.existsSync(path.join(packagePath, '.jsiirc.json'))) {
+      const jsiirc = {
+        targets: {
+          java: {
+            package: module.javaPackage,
+          },
+          dotnet: {
+            package: module.dotnetPackage,
+          },
+          python: {
+            module: module.pythonModuleName,
+          },
+        },
+      };
+      await fs.writeJson(path.join(packagePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
     }
   }
 }
