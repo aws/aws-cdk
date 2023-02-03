@@ -1050,9 +1050,7 @@ For more information, see [Runtime management controls](https://docs.aws.amazon.
 
 ```ts
 new Function(stack, 'Lambda', {
-  runtimeManagement: {
-    mode: UpdateRuntimeOn.AUTO,
-  },
+  runtimeManagementMode: UpdateRuntimeOn.AUTO,
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
