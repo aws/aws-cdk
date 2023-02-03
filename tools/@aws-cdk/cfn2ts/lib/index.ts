@@ -40,23 +40,14 @@ export default async function(scopes: string | string[], outPath: string, option
   }
 }
 
-export async function generateAll(outPath: string, options: CodeGeneratorOptions) {
+export async function generateAll(outPath: string, options: CodeGeneratorOptions): Promise<pkglint.ModuleDefinition[]> {
   const scopes = cfnSpec.namespaces();
-  const awsCdkLibDir = path.join(outPath, '..');
 
-  const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const pkgJson = require(pkgJsonPath);
-
-  const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
-  const topLevelIndexFileEntries: string[] = [];
-  if (fs.existsSync(topLevelIndexFilePath)) {
-    topLevelIndexFileEntries.push(...(await fs.readFile(topLevelIndexFilePath)).toString('utf-8').split('\n'));
-  }
-
+  const modulesGenerated: pkglint.ModuleDefinition[] = [];
   for (const scope of scopes) {
     const spec = cfnSpec.filteredSpecification(s => s.startsWith(`${scope}::`));
     const module = pkglint.createModuleDefinitionFromCfnNamespace(scope);
+    modulesGenerated.push(module);
     const packagePath = path.join(outPath, module.moduleName);
 
     if (Object.keys(spec.ResourceTypes).length === 0) {
@@ -78,21 +69,9 @@ export async function generateAll(outPath: string, options: CodeGeneratorOptions
     if (canned.generate()) {
       await canned.save(packagePath);
     }
-
-
-    // Add export to top-level index.ts if it's not there yet.
-    if (!topLevelIndexFileEntries.find(e => e.includes(module.moduleName))) {
-      topLevelIndexFileEntries.push(`export * as ${module.submoduleName} from './lib/${module.moduleName}';`);
-    }
-
-    // Add export to the package.json if it's not there yet.
-    if (!pkgJson.exports[`./${module.moduleName}`]) {
-      pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
-    }
   }
 
-  await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-  await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
+  return modulesGenerated;
 }
 
 /**
