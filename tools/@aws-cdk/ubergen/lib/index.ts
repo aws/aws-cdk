@@ -506,7 +506,13 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
   return result;
 }
 
-export async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson, monoPackageRoot: string) {
+export async function copyOrTransformFiles(
+  from: string,
+  to: string,
+  libraries: readonly LibraryReference[],
+  uberPackageJson: PackageJson,
+  monoPackageRoot: string,
+) {
   const libRoot = resolveLibRoot(uberPackageJson, monoPackageRoot);
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
@@ -566,7 +572,13 @@ export async function copyOrTransformFiles(from: string, to: string, libraries: 
   await Promise.all(promises);
 }
 
-export async function copyLiterateSources(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson, monoPackageRoot: string) {
+export async function copyLiterateSources(
+  from: string,
+  to: string,
+  libraries: readonly LibraryReference[],
+  uberPackageJson: PackageJson,
+  monoPackageRoot: string,
+) {
   const libRoot = resolveLibRoot(uberPackageJson, monoPackageRoot);
   await Promise.all((await fs.readdir(from)).flatMap(async name => {
     const source = path.join(from, name);
