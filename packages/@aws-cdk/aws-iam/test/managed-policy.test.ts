@@ -614,7 +614,7 @@ describe('managed policy', () => {
     });
   });
 
-  test('can be passed as a grantee to Grant.addToPrincipal', () => {
+  test('Policies can be granted principal permissions', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -633,7 +633,7 @@ describe('managed policy', () => {
     });
   });
 
-  test('can be passed as a grantee to Grant.addToPrincipalOrResource', () => {
+  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -659,7 +659,7 @@ describe('managed policy', () => {
     });
   });
 
-  test('fails when passed as a grantee to Grant.addToPrincipalOrResource when corss account', () => {
+  test('Policies cannot be granted principal permissions across accounts', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -673,10 +673,10 @@ describe('managed policy', () => {
 
     expect(() => {
       Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a ManagedPolicy MyStack\/Policy/);
+    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
   });
 
-  test('fails when passed as a grantee to Grant.addToPrincipalAndResource', () => {
+  test('Policies cannot be granted resource permissions', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -690,7 +690,7 @@ describe('managed policy', () => {
 
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a ManagedPolicy MyStack\/Policy/);
+    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
   });
 
   test('prevent creation when customizeRoles is configured', () => {

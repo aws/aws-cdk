@@ -441,7 +441,7 @@ describe('IAM policy', () => {
     expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
   });
 
-  test('can be passed as a grantee to Grant.addToPrincipal', () => {
+  test('Policies can be granted principal permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
@@ -459,7 +459,7 @@ describe('IAM policy', () => {
     });
   });
 
-  test('can be passed as a grantee to Grant.addToPrincipalOrResource', () => {
+  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
@@ -484,7 +484,7 @@ describe('IAM policy', () => {
     });
   });
 
-  test('fails when passed as a grantee to Grant.addToPrincipalOrResource when corss account', () => {
+  test('Policies cannot be granted principal permissions across accounts', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
@@ -498,10 +498,10 @@ describe('IAM policy', () => {
 
     expect(() => {
       Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a Policy MyStack\/Policy/);
+    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
   });
 
-  test('fails when passed as a grantee to Grant.addToPrincipalAndResource', () => {
+  test('Policies cannot be granted resource permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
     });
@@ -515,7 +515,7 @@ describe('IAM policy', () => {
 
     expect(() => {
       Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a Policy MyStack\/Policy/);
+    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
   });
 });
 
