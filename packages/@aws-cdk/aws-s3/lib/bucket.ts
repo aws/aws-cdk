@@ -1401,16 +1401,33 @@ export interface BucketProps {
   /**
    * Whether this bucket should have versioning turned on or not.
    *
-   * @default false
+   * @default false (unless object lock is enabled, then true)
    */
   readonly versioned?: boolean;
 
   /**
-   * Enable object lock and configure the default retention settings.
+   * Enable object lock on the bucket.
    *
-   * @default object lock is not enabled for the bucket
+   * Enabling object lock for existing buckets is not supported. Object lock must be
+   * enabled when the bucket is created.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-enable
+   *
+   * @default false, unless objectLockDefaultRetention is set (then, true)
    */
-  readonly objectLock?: ObjectLock;
+  readonly objectLockEnabled?: boolean;
+
+  /**
+   * The default retention mode and rules for S3 Object Lock.
+   *
+   * Default retention can be configured after a bucket is created if the bucket already
+   * has object lock enabled. Enabling object lock for existing buckets is not supported.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-enable
+   *
+   * @default no default retention period
+   */
+  readonly objectLockDefaultRetention?: ObjectLockRetention;
 
   /**
    * Whether this bucket should send notifications to Amazon EventBridge or not.
@@ -1794,6 +1811,8 @@ export class Bucket extends BucketBase {
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
+    const objectLockConfiguration = this.parseObjectLockConfig(props);
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
@@ -1809,8 +1828,8 @@ export class Bucket extends BucketBase {
       ownershipControls: this.parseOwnershipControls(props),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
-      objectLockEnabled: props.objectLock ? props.objectLock.enabled : undefined,
-      objectLockConfiguration: props.objectLock?.defaultRetention ? this.parseObjectLockConfig(props) : undefined,
+      objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
+      objectLockConfiguration: objectLockConfiguration,
     });
     this._resource = resource;
 
@@ -2173,30 +2192,22 @@ export class Bucket extends BucketBase {
     });
   }
 
-  private parseObjectLockConfig({ objectLock }: BucketProps): CfnBucket.ObjectLockConfigurationProperty | undefined {
-    if (!objectLock) {
+  private parseObjectLockConfig(props: BucketProps): CfnBucket.ObjectLockConfigurationProperty | undefined {
+    const { objectLockEnabled, objectLockDefaultRetention } = props;
+
+    if (!objectLockDefaultRetention) {
       return undefined;
     }
-
-    if (!objectLock.defaultRetention) {
-      return undefined;
-    }
-
-    if (!objectLock.enabled && objectLock.defaultRetention) {
+    if (objectLockEnabled === false && objectLockDefaultRetention) {
       throw new Error('Object Lock must be enabled to configure default retention settings');
-    }
-
-    const retentionDurationInDays = objectLock.defaultRetention.duration.toDays();
-    if (retentionDurationInDays < 1) {
-      throw new Error('Object Lock retention duration must be at least one day');
     }
 
     return {
       objectLockEnabled: 'Enabled',
       rule: {
         defaultRetention: {
-          days: retentionDurationInDays,
-          mode: objectLock.defaultRetention.mode,
+          days: objectLockDefaultRetention.duration.toDays(),
+          mode: objectLockDefaultRetention.mode,
         },
       },
     };
@@ -2811,40 +2822,49 @@ export enum ObjectLockMode {
  *
  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-bucket-config-defaults
  */
-export interface ObjectLockRetention {
+export class ObjectLockRetention {
+  /**
+   * Configure for Governance retention for a specified duration.
+   *
+   * @param duration the length of time for which objects should retained
+   * @returns the ObjectLockRetention configuration
+   */
+  public static governance(duration: Duration): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.GOVERNANCE, duration);
+  }
+
+  /**
+   * Configure for Compliance retention for a specified duration.
+   *
+   * @param duration the length of time for which objects should be retained
+   * @returns the ObjectLockRetention configuration
+   */
+  public static compliance(duration: Duration): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.COMPLIANCE, duration);
+  }
+
   /**
    * The default period for which objects should be retained.
    */
-  readonly duration: Duration,
+  public readonly duration: Duration;
 
   /**
    * The retention mode to use for the object lock configuration.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html#object-lock-retention-modes
    */
-  readonly mode: ObjectLockMode,
-}
+  public readonly mode: ObjectLockMode;
 
-/**
- * The Object Lock configuration for the bucket.
- *
- * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html
- */
-export interface ObjectLock {
-  /**
-   * Whether the object lock configuration is enabled.
-   *
-   * Object lock can only be enabled on newly created buckets. It cannot be enabled
-   * on existing buckets.
-   */
-  readonly enabled: boolean;
-
-  /**
-   * The default retention settings to apply.
-   *
-   * @default default retention is not enabled
-   */
-  readonly defaultRetention?: ObjectLockRetention;
+  private constructor(mode: ObjectLockMode, duration: Duration) {
+    if (duration.toDays() > 365 * 100) {
+      throw new Error('Object Lock retention duration must be less than 100 years');
+    }
+    if (duration.toDays() < 1) {
+      throw new Error('Object Lock retention duration must be at least 1 day');
+    }
+    this.mode = mode;
+    this.duration = duration;
+  }
 }
 
 /**

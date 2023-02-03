@@ -7,19 +7,11 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-s3-bucket-object-lock');
 
 new s3.Bucket(stack, 'ObjectLockBucket', {
-  objectLock: {
-    enabled: true,
-  },
+  objectLockEnabled: true,
 });
 
 new s3.Bucket(stack, 'ObjectLockWithRetentionBucket', {
-  objectLock: {
-    enabled: true,
-    defaultRetention: {
-      mode: s3.ObjectLockMode.GOVERNANCE,
-      duration: cdk.Duration.days(2),
-    },
-  },
+  objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(2)),
 });
 
 new integ.IntegTest(app, 'ServerAccessLogsImportTest', {
