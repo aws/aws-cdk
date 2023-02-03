@@ -1231,6 +1231,132 @@ describe('cluster', () => {
     });
   });
 
+  test('create a cluster with lambda invocation role', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const associatedRole = new Role(stack, 'AssociatedRole', {
+      assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      lambdaInvocationRole: associatedRole,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      AssociatedRoles: [{
+        RoleArn: {
+          'Fn::GetAtt': [
+            'AssociatedRole824CFCD3',
+            'Arn',
+          ],
+        },
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        aws_default_lambda_role: {
+          'Fn::GetAtt': [
+            'AssociatedRole824CFCD3',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
+
+  test('create a cluster with lambda invocation role - auroramysql', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const associatedRole = new Role(stack, 'AssociatedRole', {
+      assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({
+        version: AuroraMysqlEngineVersion.VER_3_02_0,
+      }),
+      instances: 1,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      lambdaInvocationRole: associatedRole,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      AssociatedRoles: [{
+        RoleArn: {
+          'Fn::GetAtt': [
+            'AssociatedRole824CFCD3',
+            'Arn',
+          ],
+        },
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora-mysql8.0',
+      Parameters: {
+        aws_default_lambda_role: {
+          'Fn::GetAtt': [
+            'AssociatedRole824CFCD3',
+            'Arn',
+          ],
+        },
+      },
+    });
+  });
+
+  test('throws when lambda invocation role is supplied for a Postgres version that does not support it', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const associatedRole = new Role(stack, 'AssociatedRole', {
+      assumedBy: new ServicePrincipal('rds.amazonaws.com'),
+    });
+
+    // WHEN / THEN
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_10_4,
+        }),
+        instances: 1,
+        credentials: {
+          username: 'admin',
+        },
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        },
+        lambdaInvocationRole: associatedRole,
+      });
+    }).toThrow(/Lambda is not supported for Postgres version: 10.4. Use a version that supports the Lambda feature./);
+  });
+
   test('create a cluster with s3 import buckets', () => {
     // GIVEN
     const stack = testStack();

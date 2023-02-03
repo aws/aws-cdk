@@ -24,6 +24,13 @@ export interface ClusterEngineBindOptions {
   readonly s3ExportRole?: iam.IRole;
 
   /**
+   * The role used for invoking a lambda function.
+   *
+   *  @default - none
+   */
+  readonly lambdaInvocationRole?: iam.IRole;
+
+  /**
    * The customer-provided ParameterGroup.
    *
    * @default - none
@@ -79,6 +86,14 @@ export interface ClusterEngineFeatures {
    * @default - no s3Export feature name
    */
   readonly s3Export?: string;
+
+  /**
+   * Feature name for the DB instance that the IAM role to invoke a lambda function is to
+   * be associated with.
+   *
+   * @default - no Lambda feature name
+   */
+  readonly lambda?: string;
 }
 
 /**
@@ -160,12 +175,14 @@ interface MysqlClusterEngineBaseProps {
   readonly engineVersion?: EngineVersion;
   readonly defaultMajorVersion: string;
   readonly combineImportAndExportRoles?: boolean;
+  readonly supportsLambda?: boolean;
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   public readonly engineFamily = 'MYSQL';
   public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
   public readonly combineImportAndExportRoles?: boolean;
+  public readonly supportsLambda?: boolean;
 
   constructor(props: MysqlClusterEngineBaseProps) {
     super({
@@ -175,11 +192,12 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
       engineVersion: props.engineVersion ? props.engineVersion : { majorVersion: props.defaultMajorVersion },
     });
     this.combineImportAndExportRoles = props.combineImportAndExportRoles;
+    this.supportsLambda = props.supportsLambda;
   }
 
   public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
-    const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
+    const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole || options.lambdaInvocationRole
       ? new ParameterGroup(scope, 'ClusterParameterGroup', {
         engine: this,
       })
@@ -197,6 +215,17 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
         ? 'aws_default_s3_role'
         : 'aurora_select_into_s3_role';
       parameterGroup?.addParameter(s3ExportParam, options.s3ExportRole.roleArn);
+    }
+
+    // Validate that the version supports the native lambda invoke function
+    if (this.engineVersion?.fullVersion) {
+      if (options.lambdaInvocationRole && !this.supportsLambda) {
+        throw new Error(`Lambda native function is not supported for MySQL version: ${this.engineVersion.fullVersion}. Use a version that supports the Lambda native function.`);
+      }
+    }
+
+    if (options.lambdaInvocationRole) {
+      parameterGroup?.addParameter('aws_default_lambda_role', options.lambdaInvocationRole.roleArn);
     }
 
     return {
@@ -367,51 +396,51 @@ export class AuroraMysqlEngineVersion {
    * Version "5.7.mysql_aurora.2.06.0".
    * @deprecated Version 5.7.mysql_aurora.2.06.0 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_2_06_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.06.0');
+  public static readonly VER_2_06_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.06.0', true);
   /** Version "5.7.mysql_aurora.2.07.0". */
-  public static readonly VER_2_07_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.0');
+  public static readonly VER_2_07_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.0', true);
   /** Version "5.7.mysql_aurora.2.07.1". */
-  public static readonly VER_2_07_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.1');
+  public static readonly VER_2_07_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.1', true);
   /** Version "5.7.mysql_aurora.2.07.2". */
-  public static readonly VER_2_07_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.2');
+  public static readonly VER_2_07_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.2', true);
   /** Version "5.7.mysql_aurora.2.07.3". */
-  public static readonly VER_2_07_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.3');
+  public static readonly VER_2_07_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.3', true);
   /** Version "5.7.mysql_aurora.2.07.4". */
-  public static readonly VER_2_07_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.4');
+  public static readonly VER_2_07_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.4', true);
   /** Version "5.7.mysql_aurora.2.07.5". */
-  public static readonly VER_2_07_5 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.5');
+  public static readonly VER_2_07_5 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.5', true);
   /** Version "5.7.mysql_aurora.2.07.6". */
-  public static readonly VER_2_07_6 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.6');
+  public static readonly VER_2_07_6 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.6', true);
   /** Version "5.7.mysql_aurora.2.07.7". */
-  public static readonly VER_2_07_7 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.7');
+  public static readonly VER_2_07_7 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.7', true);
   /** Version "5.7.mysql_aurora.2.07.8". */
-  public static readonly VER_2_07_8 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.8');
+  public static readonly VER_2_07_8 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.8', true);
   /** Version "5.7.mysql_aurora.2.08.0". */
-  public static readonly VER_2_08_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.0');
+  public static readonly VER_2_08_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.0', true);
   /** Version "5.7.mysql_aurora.2.08.1". */
-  public static readonly VER_2_08_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.1');
+  public static readonly VER_2_08_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.1', true);
   /** Version "5.7.mysql_aurora.2.08.2". */
-  public static readonly VER_2_08_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.2');
+  public static readonly VER_2_08_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.2', true);
   /** Version "5.7.mysql_aurora.2.08.3". */
-  public static readonly VER_2_08_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.3');
+  public static readonly VER_2_08_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.3', true);
   /** Version "5.7.mysql_aurora.2.08.4". */
-  public static readonly VER_2_08_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.4');
+  public static readonly VER_2_08_4 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.4', true);
   /** Version "5.7.mysql_aurora.2.09.0". */
-  public static readonly VER_2_09_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.0');
+  public static readonly VER_2_09_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.0', true);
   /** Version "5.7.mysql_aurora.2.09.1". */
-  public static readonly VER_2_09_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.1');
+  public static readonly VER_2_09_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.1', true);
   /** Version "5.7.mysql_aurora.2.09.2". */
-  public static readonly VER_2_09_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.2');
+  public static readonly VER_2_09_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.2', true);
   /** Version "5.7.mysql_aurora.2.09.3". */
-  public static readonly VER_2_09_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.3');
+  public static readonly VER_2_09_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.3', true);
   /** Version "5.7.mysql_aurora.2.10.0". */
-  public static readonly VER_2_10_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.0');
+  public static readonly VER_2_10_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.0', true);
   /** Version "5.7.mysql_aurora.2.10.1". */
-  public static readonly VER_2_10_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.1');
+  public static readonly VER_2_10_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.1', true);
   /** Version "5.7.mysql_aurora.2.10.2". */
-  public static readonly VER_2_10_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.2');
+  public static readonly VER_2_10_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.2', true);
   /** Version "5.7.mysql_aurora.2.10.3". */
-  public static readonly VER_2_10_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.3');
+  public static readonly VER_2_10_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.3', true);
   /** Version "8.0.mysql_aurora.3.01.0". */
   public static readonly VER_3_01_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.01.0');
   /** Version "8.0.mysql_aurora.3.01.1". */
@@ -429,17 +458,17 @@ export class AuroraMysqlEngineVersion {
    * @param auroraMysqlMajorVersion the major version of the engine,
    *   defaults to "5.7"
    */
-  public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(auroraMysqlFullVersion, auroraMysqlMajorVersion);
+  public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string, supportsLambdaFunction?: boolean): AuroraMysqlEngineVersion {
+    return new AuroraMysqlEngineVersion(auroraMysqlFullVersion, auroraMysqlMajorVersion, supportsLambdaFunction);
   }
 
-  private static builtIn_5_7(minorVersion: string, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(`5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`);
+  private static builtIn_5_7(minorVersion: string, supportsLambdaFunction?: boolean, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {
+    return new AuroraMysqlEngineVersion(`5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`, '5.7', supportsLambdaFunction);
   }
 
   private static builtIn_8_0(minorVersion: string): AuroraMysqlEngineVersion {
     // 8.0 of the MySQL engine needs to combine the import and export Roles
-    return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0', true);
+    return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0', true, true);
   }
 
   /** The full version string, for example, "5.7.mysql_aurora.1.78.3.6". */
@@ -453,13 +482,21 @@ export class AuroraMysqlEngineVersion {
    */
   public readonly _combineImportAndExportRoles?: boolean;
 
+  /**
+   * Whether this version supports the native lambda_sync and lambda_async functions.
+   *
+   * @internal
+   */
+  public readonly _supportsLambdaFunction?: boolean;
+
   private constructor(
     auroraMysqlFullVersion: string, auroraMysqlMajorVersion: string = '5.7',
-    combineImportAndExportRoles?: boolean,
+    supportsLambdaFunction?: boolean, combineImportAndExportRoles?: boolean,
   ) {
     this.auroraMysqlFullVersion = auroraMysqlFullVersion;
     this.auroraMysqlMajorVersion = auroraMysqlMajorVersion;
     this._combineImportAndExportRoles = combineImportAndExportRoles;
+    this._supportsLambdaFunction = supportsLambdaFunction;
   }
 }
 
@@ -484,6 +521,7 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
         : undefined,
       defaultMajorVersion: '5.7',
       combineImportAndExportRoles: version?._combineImportAndExportRoles,
+      supportsLambda: version?._supportsLambdaFunction,
     });
   }
 
@@ -510,6 +548,13 @@ export interface AuroraPostgresEngineFeatures {
    * @default false
    */
   readonly s3Export?: boolean;
+
+  /**
+   * Whether this version of the Aurora Postgres cluster engine supports the lambda invocation feature.
+   *
+   * @default - false
+   */
+  readonly lambda?: boolean;
 }
 
 /**
@@ -648,38 +693,38 @@ export class AuroraPostgresEngineVersion {
   /** Version "12.4". */
   public static readonly VER_12_4 = AuroraPostgresEngineVersion.of('12.4', '12', { s3Import: true, s3Export: true });
   /** Version "12.6". */
-  public static readonly VER_12_6 = AuroraPostgresEngineVersion.of('12.6', '12', { s3Import: true, s3Export: true });
+  public static readonly VER_12_6 = AuroraPostgresEngineVersion.of('12.6', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.7". */
-  public static readonly VER_12_7 = AuroraPostgresEngineVersion.of('12.7', '12', { s3Import: true, s3Export: true });
+  public static readonly VER_12_7 = AuroraPostgresEngineVersion.of('12.7', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.8". */
-  public static readonly VER_12_8 = AuroraPostgresEngineVersion.of('12.8', '12', { s3Import: true, s3Export: true });
+  public static readonly VER_12_8 = AuroraPostgresEngineVersion.of('12.8', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.9". */
-  public static readonly VER_12_9 = AuroraPostgresEngineVersion.of('12.9', '12', { s3Import: true, s3Export: true });
+  public static readonly VER_12_9 = AuroraPostgresEngineVersion.of('12.9', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.10". */
-  public static readonly VER_12_10 = AuroraPostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true });
+  public static readonly VER_12_10 = AuroraPostgresEngineVersion.of('12.10', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "12.11". */
-  public static readonly VER_12_11 = AuroraPostgresEngineVersion.of('12.11', '12', { s3Import: true, s3Export: true });
+  public static readonly VER_12_11 = AuroraPostgresEngineVersion.of('12.11', '12', { s3Import: true, s3Export: true, lambda: true });
   /** Version "13.3". */
-  public static readonly VER_13_3 = AuroraPostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true });
+  public static readonly VER_13_3 = AuroraPostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true, lambda: true });
   /** Version "13.4". */
-  public static readonly VER_13_4 = AuroraPostgresEngineVersion.of('13.4', '13', { s3Import: true, s3Export: true });
+  public static readonly VER_13_4 = AuroraPostgresEngineVersion.of('13.4', '13', { s3Import: true, s3Export: true, lambda: true });
   /** Version "13.5". */
-  public static readonly VER_13_5 = AuroraPostgresEngineVersion.of('13.5', '13', { s3Import: true, s3Export: true });
+  public static readonly VER_13_5 = AuroraPostgresEngineVersion.of('13.5', '13', { s3Import: true, s3Export: true, lambda: true });
   /** Version "13.6". */
-  public static readonly VER_13_6 = AuroraPostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
+  public static readonly VER_13_6 = AuroraPostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true, lambda: true });
   /** Version "13.7". */
-  public static readonly VER_13_7 = AuroraPostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true });
+  public static readonly VER_13_7 = AuroraPostgresEngineVersion.of('13.7', '13', { s3Import: true, s3Export: true, lambda: true });
   /** Version "14.3". */
-  public static readonly VER_14_3 = AuroraPostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
+  public static readonly VER_14_3 = AuroraPostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true, lambda: true });
   /**
    *  Version "14.4".
    * @deprecated Version 14.4 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_14_4 = AuroraPostgresEngineVersion.of('14.4', '14', { s3Import: true, s3Export: true });
+  public static readonly VER_14_4 = AuroraPostgresEngineVersion.of('14.4', '14', { s3Import: true, s3Export: true, lambda: true });
   /** Version "14.5". */
-  public static readonly VER_14_5 = AuroraPostgresEngineVersion.of('14.5', '14', { s3Import: true, s3Export: true });
+  public static readonly VER_14_5 = AuroraPostgresEngineVersion.of('14.5', '14', { s3Import: true, s3Export: true, lambda: true });
   /** Version "14.6". */
-  public static readonly VER_14_6 = AuroraPostgresEngineVersion.of('14.6', '14', { s3Import: true, s3Export: true });
+  public static readonly VER_14_6 = AuroraPostgresEngineVersion.of('14.6', '14', { s3Import: true, s3Export: true, lambda: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
@@ -712,6 +757,7 @@ export class AuroraPostgresEngineVersion {
     this._features = {
       s3Import: auroraPostgresFeatures?.s3Import ? 's3Import' : undefined,
       s3Export: auroraPostgresFeatures?.s3Export ? 's3Export' : undefined,
+      lambda: auroraPostgresFeatures?.lambda ? 'Lambda' : undefined,
     };
   }
 }
@@ -736,6 +782,11 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
    */
   private static readonly S3_EXPORT_FEATURE_NAME = 's3Export';
 
+  /**
+   * feature name for the lambda invocation feature
+   */
+  private static readonly LAMBDA_FEATURE_NAME = 'Lambda';
+
   public readonly engineFamily = 'POSTGRESQL';
   public readonly defaultUsername = 'postgres';
   public readonly supportedLogTypes: string[] = ['postgresql'];
@@ -756,10 +807,12 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
         ? {
           s3Import: version._features.s3Import ? AuroraPostgresClusterEngine.S3_IMPORT_FEATURE_NAME : undefined,
           s3Export: version._features.s3Export ? AuroraPostgresClusterEngine.S3_EXPORT_FEATURE_NAME : undefined,
+          lambda: version._features.lambda ? AuroraPostgresClusterEngine.LAMBDA_FEATURE_NAME : undefined,
         }
         : {
           s3Import: AuroraPostgresClusterEngine.S3_IMPORT_FEATURE_NAME,
           s3Export: AuroraPostgresClusterEngine.S3_EXPORT_FEATURE_NAME,
+          lambda: AuroraPostgresClusterEngine.LAMBDA_FEATURE_NAME,
         },
     });
   }
@@ -773,6 +826,9 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
       }
       if (options.s3ExportRole && !(config.features?.s3Export)) {
         throw new Error(`s3Export is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Export feature.`);
+      }
+      if (options.lambdaInvocationRole && !(config.features?.lambda)) {
+        throw new Error(`Lambda is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the Lambda feature.`);
       }
     }
     return config;
