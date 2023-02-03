@@ -32,7 +32,7 @@ export function mockSpawn(...invocations: Invocation[]) {
       } else {
         expect(binary).not.toContain('"');
       }
-      
+
       if (invocation.args != null) {
         expect(args).toEqual(invocation.args);
       }
