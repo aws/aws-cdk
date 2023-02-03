@@ -1,4 +1,23 @@
 
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Models.PrimitiveItemType (__changed__)
+  * Old: String
+  * New: Map
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification (us-west-2) v109.0.0
 
 ## New Resource Types
