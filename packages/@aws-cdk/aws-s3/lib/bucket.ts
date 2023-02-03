@@ -1616,20 +1616,29 @@ export class Bucket extends BucketBase {
     Bucket.validateBucketName(bucketName);
 
     const _regionInfo = regionInfo.RegionInfo.get(region);
-
     const oldUrlFormatRegions = new Set(regionsBefore(RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN));
 
     const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
       ? !oldUrlFormatRegions.has(region)
       : attrs.bucketWebsiteNewUrlFormat;
 
-    const websiteDomain = attrs.bucketWebsiteNewUrlFormat === undefined
-      ? (_regionInfo.s3StaticWebsiteEndpoint !== undefined
-        ? `${bucketName}.${_regionInfo.s3StaticWebsiteEndpoint}`
-        : (oldUrlFormatRegions.has(region)
-          ? `${bucketName}.s3-website-${region}.${urlSuffix}`
-          : `${bucketName}.s3-website.${region}.${urlSuffix}`))
-      : (attrs.bucketWebsiteNewUrlFormat ? `${bucketName}.s3-website.${region}.${urlSuffix}` : `${bucketName}.s3-website-${region}.${urlSuffix}`);
+    let bucketWebsiteUrlFormat: (bucketWebsiteNewUrlFormat: boolean) => string =
+      function (bucketWebsiteNewUrlFormat): string {
+        return bucketWebsiteNewUrlFormat ? `s3-website.${region}.${urlSuffix}` : `s3-website-${region}.${urlSuffix}`;
+      };
+
+    let bucketWebsiteUrl: () => string =
+      function (): string {
+        if (attrs.bucketWebsiteNewUrlFormat === undefined) {
+          return _regionInfo.s3StaticWebsiteEndpoint !== undefined
+            ? _regionInfo.s3StaticWebsiteEndpoint
+            : bucketWebsiteUrlFormat(!oldUrlFormatRegions.has(region));
+        } else {
+          return bucketWebsiteUrlFormat(attrs.bucketWebsiteNewUrlFormat);
+        }
+      };
+
+    const websiteDomain = `${bucketName}.` + bucketWebsiteUrl();
 
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;
