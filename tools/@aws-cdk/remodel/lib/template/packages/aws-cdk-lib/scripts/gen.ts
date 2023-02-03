@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 const srcDir = path.join(__dirname, '..', 'lib');
-generateAll(srcDir, {
+const modulesGenerated = await generateAll(srcDir, {
   coreImport: '../../core',
 });
 
@@ -34,7 +34,6 @@ modulesGenerated.forEach((module) => {
     pkgJson.exports[`./${module.moduleName}`] = `./lib/${module.moduleName}/index.js`;
   }
 });
-
 
 await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
 await fs.writeFile(topLevelIndexFilePath, topLevelIndexFileEntries.join('\n'));
