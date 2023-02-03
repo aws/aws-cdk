@@ -122,7 +122,7 @@ test('environment owner can be an IAM user', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
-    owner: Owner.User(user),
+    owner: Owner.user(user),
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
@@ -137,7 +137,7 @@ test('environment owner can be account root', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
-    owner: Owner.AccountRoot('12345678'),
+    owner: Owner.accountRoot('12345678'),
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {

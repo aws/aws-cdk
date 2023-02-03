@@ -106,6 +106,7 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 ```
 
 ## Specifying Owners
+
 `Owner` is a user that owns a Cloud9 environment . `Owner` has their own access permissions, resources. And we can specify an `Owner`in an Ec2 environment which could be of two types, 1. AccountRoot and 2. Iam User. It allows AWS to determine who has permissions to manage the environment, either an IAM user or the account root user
 
 ### AccountRoot
@@ -129,7 +130,7 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 })
 ```
 
-### create a new Cloud9 environment with an owner as an Iam User.
+### create a new Cloud9 environment with an owner as an Iam User
 
 ```ts
 const user = new iam.User(stack, 'User');

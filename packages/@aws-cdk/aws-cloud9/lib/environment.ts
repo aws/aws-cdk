@@ -61,6 +61,7 @@ export interface Ec2EnvironmentProps {
   /**
    * Owner of the environment.
    *
+   * @default - If this value is not specified, the owner defaults to this environment's creator
    */
   readonly owner?: Owner;
 
@@ -238,7 +239,7 @@ export class Owner {
    *
    * @param user the User object to use as the environment owner
    */
-  public static User(user: IUser): Owner {
+  public static user(user: IUser): Owner {
     return { ownerArn: user.userArn };
   }
 
@@ -248,7 +249,7 @@ export class Owner {
    *
    * @param accountId the AccountId to use as the environment owner.
    */
-  public static AccountRoot(accountId: string): Owner {
+  public static accountRoot(accountId: string): Owner {
     return { ownerArn: `arn:aws:iam::${accountId}:root` };
   }
 
