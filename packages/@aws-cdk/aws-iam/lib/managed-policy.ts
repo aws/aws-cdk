@@ -322,9 +322,6 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   }
 }
 
-/**
- * A `grantPrincipal` of ManagedPolicy.
- */
 class ManagedPolicyGrantPrincipal implements IPrincipal {
   public readonly assumeRoleAction = 'sts:AssumeRole';
   public readonly grantPrincipal: IPrincipal;
@@ -336,7 +333,10 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot use a ManagedPolicy ${this._managedPolicy.node.path} as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    // This property is referenced to add policy statements as a resource-based policy.
+    // We should fail because a managed policy cannot be used as a principal of a policy document.
+    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    throw new Error(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

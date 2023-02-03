@@ -266,9 +266,6 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   }
 }
 
-/**
- * A `grantPrincipal` of Policy.
- */
 class PolicyGrantPrincipal implements IPrincipal {
   public readonly assumeRoleAction = 'sts:AssumeRole';
   public readonly grantPrincipal: IPrincipal;
@@ -280,7 +277,10 @@ class PolicyGrantPrincipal implements IPrincipal {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot use a Policy ${this._policy.node.path} as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    // This property is referenced to add policy statements as a resource-based policy.
+    // We should fail because a policy cannot be used as a principal of a policy document.
+    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
+    throw new Error(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
